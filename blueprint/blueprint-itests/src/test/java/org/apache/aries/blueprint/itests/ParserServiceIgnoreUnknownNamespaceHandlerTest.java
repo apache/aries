@@ -18,10 +18,13 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.blueprintBundles;
+import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
+import static org.ops4j.pax.exam.CoreOptions.keepCaches;
+import static org.ops4j.pax.exam.CoreOptions.streamBundle;
+
 import java.io.InputStream;
 import java.net.URL;
-
-import javax.inject.Inject;
 
 import org.apache.aries.blueprint.itests.cm.service.Foo;
 import org.apache.aries.blueprint.itests.cm.service.FooFactory;
@@ -29,10 +32,7 @@ import org.apache.aries.blueprint.itests.cm.service.FooInterface;
 import org.apache.aries.blueprint.services.ParserService;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
-import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
 import org.ops4j.pax.exam.TestProbeBuilder;
@@ -42,46 +42,49 @@ import org.osgi.framework.Constants;
 
 
 public class ParserServiceIgnoreUnknownNamespaceHandlerTest extends AbstractBlueprintIntegrationTest {
-	private static final String CM_BUNDLE = "org.apache.aries.blueprint.cm";
-	private static final String TEST_BUNDLE = "org.apache.aries.blueprint.cm.test.b1";
-	
-	@ProbeBuilder
-	public TestProbeBuilder probeConfiguration(TestProbeBuilder probe) {
-		probe.setHeader(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName());
-    	probe.setHeader(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName());
-		return probe;
-	}
+    private static final String CM_BUNDLE = "org.apache.aries.blueprint.cm";
+    private static final String TEST_BUNDLE = "org.apache.aries.blueprint.cm.test.b1";
+
+    @ProbeBuilder
+    public TestProbeBuilder probeConfiguration(TestProbeBuilder probe) {
+        probe.setHeader(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName());
+        probe.setHeader(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName());
+        return probe;
+    }
 
     @org.ops4j.pax.exam.Configuration
     public Option[] config() {
-    	InputStream testBundle = TinyBundles.bundle()
+        InputStream testBundle = createTestBundle();
+        return new Option[] {
+            baseOptions(),
+            frameworkProperty("org.apache.aries.blueprint.parser.service.ignore.unknown.namespace.handlers").value("true"),
+            blueprintBundles(),
+            keepCaches(),
+            streamBundle(testBundle)
+        };
+    }
+
+    private InputStream createTestBundle() {
+        return TinyBundles.bundle()
     		.add(FooInterface.class)
     		.add(Foo.class)
     		.add(FooFactory.class)
-    		.add("OSGI-INF/blueprint/context.xml", 
-    				getResource("ManagedServiceFactoryTest.xml"))
+    		.add("OSGI-INF/blueprint/context.xml", getResource("IgnoreUnknownNamespaceTest.xml"))
     		.set(Constants.BUNDLE_SYMBOLICNAME, TEST_BUNDLE)
     		.set(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName())
     		.set(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName())
     		.build(TinyBundles.withBnd());
-    	return new Option[] {
-    			baseOptions(),
-                CoreOptions.frameworkProperty("org.apache.aries.blueprint.parser.service.ignore.unknown.namespace.handlers").value("true"),
-    			Helper.blueprintBundles(),
-    			CoreOptions.keepCaches(),
-    			CoreOptions.streamBundle(testBundle)
-    	};
     }
 
-	@Before
-	public void stopCM() throws BundleException {
-		context().getBundleByName(CM_BUNDLE).stop();
-	}
+    @Before
+    public void stopCM() throws BundleException {
+        context().getBundleByName(CM_BUNDLE).stop();
+    }
 
-	@After
-	public void startCM() throws BundleException {
-		context().getBundleByName(CM_BUNDLE).start();
-	}
+    @After
+    public void startCM() throws BundleException {
+        context().getBundleByName(CM_BUNDLE).start();
+    }
 
     @Test
     public void testIgnoreTrue() throws Exception {
