@@ -104,7 +104,7 @@
             <id>dev</id>
             <properties>
                 <blueprint.annotation.api.version>1.0.1-SNAPSHOT</blueprint.annotation.api.version>
-                <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
+                <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
                 <blueprint.parser.version>1.2.1-SNAPSHOT</blueprint.parser.version>
                 <proxy.api.version>1.0.0</proxy.api.version>
                 <proxy.impl.version>1.0.0</proxy.impl.version>
