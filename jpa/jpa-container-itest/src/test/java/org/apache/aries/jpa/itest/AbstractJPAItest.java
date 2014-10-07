@@ -43,8 +43,8 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
 	}
 	
 	protected EntityManagerFactory getProxyEMF(String name) {
-		return context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=" + name + ")" 
-				+ FILTER_CONTAINER_MANAGED + FILTER_PROXY +")");
+		String filter = "(&(osgi.unit.name=" + name + ")" + FILTER_CONTAINER_MANAGED + FILTER_PROXY +")";
+        return context().getService(EntityManagerFactory.class, filter, 5000);
 	}
 	
 	protected EntityManagerFactory getEMF(String name) {
