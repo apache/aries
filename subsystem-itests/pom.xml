@@ -340,24 +340,6 @@
                 <version>2.3</version>
                 <executions>
                     <execution>
-                        <id>core-fragment</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifestFile>src/test/bundles/core.fragment/META-INF/MANIFEST.MF</manifestFile>
-                            </archive>
-                            <excludes>
-                                <exclude>**/*</exclude>
-                            </excludes>
-                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-                            <outputDirectory>${project.build.directory}/test-classes/core.fragment</outputDirectory>
-                            <finalName>core.fragment</finalName>
-                        </configuration>
-                        <phase>process-test-classes</phase>
-                    </execution>
-                    <execution>
                         <id>tb1-application1</id>
                         <goals>
                             <goal>jar</goal>
@@ -509,26 +491,6 @@
 
                     <!-- End of new pom for hello tests, part 1 -->
 
-                    <execution>
-                        <id>basic-blueprint-application</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifestFile>src/test/bundles/blueprint/META-INF/MANIFEST.MF</manifestFile>
-                            </archive>
-                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-                            <includes>
-                                <include>org/apache/aries/subsystem/itests/blueprint/**</include>
-                                <include>OSGI-INF/blueprint/blueprint.xml</include>
-                            </includes>
-                            <outputDirectory>${project.build.directory}/test-classes/blueprint</outputDirectory>
-                            <finalName>blueprint</finalName>
-                        </configuration>
-                        <phase>process-test-classes</phase>
-                    </execution>
-
                 </executions>
             </plugin>
             <plugin>
@@ -536,18 +498,6 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>1.5</version>
                 <executions>
-                    <execution>
-                        <id>core-fragment</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/bundles/core.fragment</source>
-                            </sources>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>add-source-tb1</id>
                         <phase>generate-sources</phase>
@@ -614,19 +564,6 @@
                     </execution>
 
                     <!-- End of new pom for hello tests, part 2 -->
-
-                    <execution>
-                        <id>add-source-blueprint</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/bundles/blueprint</source>
-                            </sources>
-                        </configuration>
-                    </execution>
 
                     <execution>
                         <id>add-source-classes</id>

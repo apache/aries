@@ -50,8 +50,8 @@ import org.apache.aries.itest.RichBundleContext;
 import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
+import org.apache.aries.subsystem.core.archive.TypeAttribute;
 import org.apache.aries.subsystem.core.internal.BundleResource;
-import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.SubsystemIdentifier;
 import org.apache.aries.subsystem.itests.util.TestRepository;
 import org.apache.aries.subsystem.itests.util.Utils;
@@ -65,11 +65,14 @@ import org.eclipse.equinox.region.RegionDigraph;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.ops4j.io.StreamUtils;
 import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -78,7 +81,6 @@ import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -86,6 +88,7 @@ import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
 import org.osgi.service.repository.RepositoryContent;
@@ -96,7 +99,8 @@ import org.osgi.service.subsystem.SubsystemConstants;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public abstract class SubsystemTest extends AbstractIntegrationTest {
-	protected static boolean createdApplications = false;
+	private static final String SUBSYSTEM_CORE_NAME = "org.apache.aries.subsystem.core";
+    protected static boolean createdApplications = false;
 	boolean installModeler = true;
 	
 	public SubsystemTest() {
@@ -104,103 +108,6 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	
 	public SubsystemTest(boolean installModeller) {
 		this.installModeler = installModeller;
-	}
-	
-	protected static class SubsystemEventHandler implements ServiceListener {
-		private static class ServiceEventInfo {
-			private final ServiceEvent event;
-			private final long id;
-			private final State state;
-			private final String symbolicName;
-			private final String type;
-			private final Version version;
-			
-			public ServiceEventInfo(ServiceEvent event) {
-				id = (Long)event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_ID_PROPERTY);
-				state = (State)event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_STATE_PROPERTY);
-				symbolicName = (String)event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME_PROPERTY);
-				type = (String)event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_TYPE_PROPERTY);
-				version = (Version)event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_VERSION_PROPERTY);
-				this.event = event;
-			}
-			
-			public int getEventType() {
-				return event.getType();
-			}
-			
-			public long getId() {
-				return id;
-			}
-			
-			public State getState() {
-				return state;
-			}
-			
-			public String getSymbolicName() {
-				return symbolicName;
-			}
-			
-			public String getType() {
-				return type;
-			}
-			
-			public Version getVersion() {
-				return version;
-			}
-		}
-		
-		private final Map<Long, List<ServiceEventInfo>> subsystemIdToEvents = new HashMap<Long, List<ServiceEventInfo>>();
-		
-		public void clear() {
-			synchronized (subsystemIdToEvents) {
-				subsystemIdToEvents.clear();
-			}
-		}
-		
-		public ServiceEventInfo poll(long subsystemId) throws InterruptedException {
-			return poll(subsystemId, 0);
-		}
-		
-		public ServiceEventInfo poll(long subsystemId, long timeout) throws InterruptedException {
-			List<ServiceEventInfo> events;
-			synchronized (subsystemIdToEvents) {
-				events = subsystemIdToEvents.get(subsystemId);
-				if (events == null) {
-					events = new ArrayList<ServiceEventInfo>();
-					subsystemIdToEvents.put(subsystemId, events);
-				}
-			}
-			synchronized (events) {
-				if (events.isEmpty()) {
-					events.wait(timeout);
-					if (events.isEmpty()) {
-						return null;
-					}
-				}
-				return events.remove(0);
-			}
-		}
-		
-		public void serviceChanged(ServiceEvent event) {
-			Long subsystemId = (Long)event.getServiceReference().getProperty(SubsystemConstants.SUBSYSTEM_ID_PROPERTY);
-			synchronized (subsystemIdToEvents) {
-				List<ServiceEventInfo> events = subsystemIdToEvents.get(subsystemId);
-				if (events == null) {
-					events = new ArrayList<ServiceEventInfo>();
-					subsystemIdToEvents.put(subsystemId, events);
-				}
-				synchronized (events) {
-					events.add(new ServiceEventInfo(event));
-					events.notify();
-				}
-			}
-		}
-		
-		public int size() {
-			synchronized (subsystemIdToEvents) {
-				return subsystemIdToEvents.size();
-			}
-		}
 	}
 	
 	public Option baseOptions() {
@@ -216,8 +123,8 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	
 	@Configuration
 	public Option[] configuration() throws Exception {
-		// The itests need private packages from the core subsystems bundle.
-		InputStream fragment = SubsystemTest.class.getClassLoader().getResourceAsStream("core.fragment/core.fragment.jar");
+	    new File("target").mkdirs();
+	    init();
 		return new Option[] {
 				baseOptions(),
 				systemProperty("org.osgi.framework.bsnversion").value("multiple"),
@@ -225,13 +132,10 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 				mavenBundle("org.apache.aries",             "org.apache.aries.util").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
-				when(installModeler).useOptions(
-						mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").versionAsInProject(),
-						mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").versionAsInProject(),
-						mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").versionAsInProject()),
+				when(installModeler).useOptions(modelerBundles()),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.api").versionAsInProject(),
-				streamBundle(fragment).noStart(),
-				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.core").versionAsInProject(),
+				mavenBundle("org.apache.aries.subsystem",   SUBSYSTEM_CORE_NAME).versionAsInProject(),
+				streamBundle(createCoreFragment()).noStart(),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.itest.interfaces").versionAsInProject(),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				mavenBundle("org.apache.felix",             "org.apache.felix.resolver").versionAsInProject(),
@@ -245,10 +149,35 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 		};
 	}
+
+    protected void init() throws Exception {
+       
+    }
+
+    private Option modelerBundles() {
+        return CoreOptions.composite(
+        		mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").versionAsInProject(),
+        		mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").versionAsInProject(),
+        		mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").versionAsInProject());
+    }
+
+    /**
+     * The itests need private packages from the core subsystems bundle.
+     * So this fragment exports them.
+     * @return stream containing the fragment 
+     */
+    private InputStream createCoreFragment() {
+	return TinyBundles.bundle()
+	    .set("Bundle-SymbolicName", SUBSYSTEM_CORE_NAME + ".fragment")
+	    .set("Export-Package", "org.apache.aries.subsystem.core.internal,org.apache.aries.subsystem.core.archive")
+	    .set("Fragment-Host", SUBSYSTEM_CORE_NAME)
+	    .build();
+    }
 	
 	protected final SubsystemEventHandler subsystemEvents = new SubsystemEventHandler();
 	
-	protected Collection<ServiceRegistration> serviceRegistrations = new ArrayList<ServiceRegistration>();
+	@SuppressWarnings("rawtypes")
+    protected Collection<ServiceRegistration> serviceRegistrations = new ArrayList<ServiceRegistration>();
 	
 	@Before
 	public void setUp() throws Exception {
@@ -256,18 +185,14 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			createApplications();
 			createdApplications = true;
 		}
-		try {
-			bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
-		}
-		catch (InvalidSyntaxException e) {
-			fail("Invalid filter: " + e.getMessage());
-		}
-		assertSubsystemNotNull(getRootSubsystem());
+		bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
 	}
 	
-	protected abstract void createApplications() throws Exception;
+	protected void createApplications() throws Exception {
+	}
 
-	@After
+	@SuppressWarnings("rawtypes")
+    @After
 	public void tearDown() throws Exception 
 	{
 		bundleContext.removeServiceListener(subsystemEvents);
@@ -356,20 +281,6 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertEquals("Wrong number of constituents", size, subsystem.getConstituents().size());
 	}
 	
- 	protected void assertDirectory(Subsystem subsystem) {
- 		Bundle bundle = getSubsystemCoreBundle();
- 		File file = bundle.getDataFile("subsystem" + subsystem.getSubsystemId());
- 		assertNotNull("Subsystem data file was null", file);
- 		assertTrue("Subsystem data file does not exist", file.exists());
- 	}
- 	
- 	protected void assertNotDirectory(Subsystem subsystem) {
- 		Bundle bundle = getSubsystemCoreBundle();
- 		File file = bundle.getDataFile("subsystem" + subsystem.getSubsystemId());
- 		assertNotNull("Subsystem data file was null", file);
- 		assertFalse("Subsystem data file exists", file.exists());
- 	}
- 	
  	protected void assertEvent(Subsystem subsystem, Subsystem.State state) throws InterruptedException {
  		assertEvent(subsystem, state, 0);
  	}
@@ -725,15 +636,39 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		return null;
 	}
 	
-	protected Resource getConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
+	public static Object getIdentityAttribute(Resource resource, String name) {
+	    List<Capability> capabilities = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE);
+        Capability capability = capabilities.get(0);
+        return capability.getAttributes().get(name);
+    }
+	
+	public static String getSymbolicNameAttribute(Resource resource) {
+        return (String)getIdentityAttribute(resource, IdentityNamespace.IDENTITY_NAMESPACE);
+    }
+	
+   public static Version getVersionAttribute(Resource resource) {
+        Version result = (Version)getIdentityAttribute(resource, IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
+        if (result == null)
+            result = Version.emptyVersion;
+        return result;
+    }
+   
+   public static String getTypeAttribute(Resource resource) {
+       String result = (String)getIdentityAttribute(resource, IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
+       if (result == null)
+           result = TypeAttribute.DEFAULT_VALUE;
+       return result;
+   }
+	
+   protected Resource getConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
 		for (Resource resource : subsystem.getConstituents()) {
-			if (symbolicName.equals(ResourceHelper.getSymbolicNameAttribute(resource))) {
+			if (symbolicName.equals(getSymbolicNameAttribute(resource))) {
 				if (version == null)
 					version = Version.emptyVersion;
-				if (version.equals(ResourceHelper.getVersionAttribute(resource))) {
+				if (version.equals(getVersionAttribute(resource))) {
 					if (type == null)
 						type = IdentityNamespace.TYPE_BUNDLE;
-					if (type.equals(ResourceHelper.getTypeAttribute(resource))) {
+					if (type.equals(getTypeAttribute(resource))) {
 						return resource;
 					}
 				}
@@ -813,7 +748,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 	
 	protected Bundle getSubsystemCoreBundle() {
-		return context().getBundleByName("org.apache.aries.subsystem.core");
+		return context().getBundleByName(SUBSYSTEM_CORE_NAME);
 	}
 	
 	protected Bundle installBundleFromFile(String fileName) throws FileNotFoundException, BundleException {
@@ -1014,7 +949,16 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 	}
 	
-	protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException 
+	protected void writeToFile(InputStream is, String name) {
+        try {
+            FileOutputStream dest = new FileOutputStream(name);
+            StreamUtils.copyStream(is, dest, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException 
 	{
 		write(new File(file), fixture);
 	}
@@ -1029,24 +973,23 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
     	}
 	}
 	
-	static void createApplication(String name, String ... content) throws Exception 
+	static void createApplication(String name, String ... contents) throws Exception 
 	{
-		ZipFixture feature = ArchiveFixture
+		ClassLoader cl = SubsystemTest.class.getClassLoader();
+        ZipFixture feature = ArchiveFixture
 				.newZip()
 				.binary("OSGI-INF/SUBSYSTEM.MF",
 						// The following input stream is closed by ArchiveFixture.copy.
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								name + "/OSGI-INF/SUBSYSTEM.MF"));
-		for (String s : content) {
+						cl.getResourceAsStream(name + "/OSGI-INF/SUBSYSTEM.MF"));
+		for (String content : contents) {
 			try {
-				feature.binary(s,
+				feature.binary(content,
 						// The following input stream is closed by ArchiveFixture.copy.
-						SubsystemTest.class.getClassLoader().getResourceAsStream(
-								name + '/' + s));
+						cl.getResourceAsStream(name + '/' + content));
 			}
 			catch (Exception e) {
 				// The following input stream is closed by ArchiveFixture.copy.
-				feature.binary(s, new FileInputStream(new File(s)));
+				feature.binary(content, new FileInputStream(new File(content)));
 			}
 		}
 		feature.end();
@@ -1064,79 +1007,12 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		return location;
 	}
 	
-	protected static final byte[] EMPTY_CLASS = new byte[] {
-			(byte)0xca, (byte)0xfe, (byte)0xba, (byte)0xbe, 
-			(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x32, 
-			(byte)0x00, (byte)0x12, (byte)0x07, (byte)0x00, 
-			(byte)0x02, (byte)0x01, (byte)0x00, (byte)0x05, 
-			(byte)0x45, (byte)0x6d, (byte)0x70, (byte)0x74, 
-			(byte)0x79, (byte)0x07, (byte)0x00, (byte)0x04, 
-			(byte)0x01, (byte)0x00, (byte)0x10, (byte)0x6a, 
-			(byte)0x61, (byte)0x76, (byte)0x61, (byte)0x2f, 
-			(byte)0x6c, (byte)0x61, (byte)0x6e, (byte)0x67, 
-			(byte)0x2f, (byte)0x4f, (byte)0x62, (byte)0x6a, 
-			(byte)0x65, (byte)0x63, (byte)0x74, (byte)0x07, 
-			(byte)0x00, (byte)0x06, (byte)0x01, (byte)0x00, 
-			(byte)0x14, (byte)0x6a, (byte)0x61, (byte)0x76, 
-			(byte)0x61, (byte)0x2f, (byte)0x69, (byte)0x6f, 
-			(byte)0x2f, (byte)0x53, (byte)0x65, (byte)0x72, 
-			(byte)0x69, (byte)0x61, (byte)0x6c, (byte)0x69, 
-			(byte)0x7a, (byte)0x61, (byte)0x62, (byte)0x6c, 
-			(byte)0x65, (byte)0x01, (byte)0x00, (byte)0x06, 
-			(byte)0x3c, (byte)0x69, (byte)0x6e, (byte)0x69, 
-			(byte)0x74, (byte)0x3e, (byte)0x01, (byte)0x00, 
-			(byte)0x03, (byte)0x28, (byte)0x29, (byte)0x56, 
-			(byte)0x01, (byte)0x00, (byte)0x04, (byte)0x43, 
-			(byte)0x6f, (byte)0x64, (byte)0x65, (byte)0x0a, 
-			(byte)0x00, (byte)0x03, (byte)0x00, (byte)0x0b, 
-			(byte)0x0c, (byte)0x00, (byte)0x07, (byte)0x00, 
-			(byte)0x08, (byte)0x01, (byte)0x00, (byte)0x0f, 
-			(byte)0x4c, (byte)0x69, (byte)0x6e, (byte)0x65, 
-			(byte)0x4e, (byte)0x75, (byte)0x6d, (byte)0x62, 
-			(byte)0x65, (byte)0x72, (byte)0x54, (byte)0x61, 
-			(byte)0x62, (byte)0x6c, (byte)0x65, (byte)0x01, 
-			(byte)0x00, (byte)0x12, (byte)0x4c, (byte)0x6f, 
-			(byte)0x63, (byte)0x61, (byte)0x6c, (byte)0x56, 
-			(byte)0x61, (byte)0x72, (byte)0x69, (byte)0x61, 
-			(byte)0x62, (byte)0x6c, (byte)0x65, (byte)0x54, 
-			(byte)0x61, (byte)0x62, (byte)0x6c, (byte)0x65, 
-			(byte)0x01, (byte)0x00, (byte)0x04, (byte)0x74, 
-			(byte)0x68, (byte)0x69, (byte)0x73, (byte)0x01, 
-			(byte)0x00, (byte)0x07, (byte)0x4c, (byte)0x45, 
-			(byte)0x6d, (byte)0x70, (byte)0x74, (byte)0x79, 
-			(byte)0x3b, (byte)0x01, (byte)0x00, (byte)0x0a, 
-			(byte)0x53, (byte)0x6f, (byte)0x75, (byte)0x72, 
-			(byte)0x63, (byte)0x65, (byte)0x46, (byte)0x69, 
-			(byte)0x6c, (byte)0x65, (byte)0x01, (byte)0x00, 
-			(byte)0x0a, (byte)0x45, (byte)0x6d, (byte)0x70, 
-			(byte)0x74, (byte)0x79, (byte)0x2e, (byte)0x6a, 
-			(byte)0x61, (byte)0x76, (byte)0x61, (byte)0x00, 
-			(byte)0x21, (byte)0x00, (byte)0x01, (byte)0x00, 
-			(byte)0x03, (byte)0x00, (byte)0x01, (byte)0x00, 
-			(byte)0x05, (byte)0x00, (byte)0x00, (byte)0x00, 
-			(byte)0x01, (byte)0x00, (byte)0x01, (byte)0x00, 
-			(byte)0x07, (byte)0x00, (byte)0x08, (byte)0x00, 
-			(byte)0x01, (byte)0x00, (byte)0x09, (byte)0x00, 
-			(byte)0x00, (byte)0x00, (byte)0x2f, (byte)0x00, 
-			(byte)0x01, (byte)0x00, (byte)0x01, (byte)0x00, 
-			(byte)0x00, (byte)0x00, (byte)0x05, (byte)0x2a, 
-			(byte)0xb7, (byte)0x00, (byte)0x0a, (byte)0xb1, 
-			(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x02, 
-			(byte)0x00, (byte)0x0c, (byte)0x00, (byte)0x00, 
-			(byte)0x00, (byte)0x06, (byte)0x00, (byte)0x01, 
-			(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x04, 
-			(byte)0x00, (byte)0x0d, (byte)0x00, (byte)0x00, 
-			(byte)0x00, (byte)0x0c, (byte)0x00, (byte)0x01, 
-			(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x05, 
-			(byte)0x00, (byte)0x0e, (byte)0x00, (byte)0x0f, 
-			(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x01, 
-			(byte)0x00, (byte)0x10, (byte)0x00, (byte)0x00, 
-			(byte)0x00, (byte)0x02, (byte)0x00, (byte)0x11
-		};
-	
-	protected static void createEmptyClass() throws IOException {
-		FileOutputStream fos = new FileOutputStream("Empty.class");
-		fos.write(EMPTY_CLASS);
-		fos.close();
+	protected InputStream getResource(String path) {
+	    InputStream is = this.getClass().getClassLoader().getResourceAsStream(path);
+	    if (is == null) {
+	        throw new IllegalArgumentException("No resource found at path " + path);
+	    }
+	    return is;
 	}
+
 }

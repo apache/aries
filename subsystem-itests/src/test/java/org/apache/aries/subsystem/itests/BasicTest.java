@@ -18,12 +18,7 @@
  */
 package org.apache.aries.subsystem.itests;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -36,27 +31,6 @@ public class BasicTest extends SubsystemTest {
 		createApplication("emptySubsystem", new String[]{});
 	}
 	
-	/*
-	 * When the subsystems implementation bundle is installed, there should be
-	 * a Subsystem service available.
-	 */
-    @Test
-    public void test1() throws Exception {
-    	Bundle[] bundles = bundleContext.getBundles();
-    	boolean found = false;
-    	for (Bundle bundle : bundles) {
-    		if ("org.apache.aries.subsystem.core".equals(bundle.getSymbolicName())) {
-    			found = true;
-    			break;
-    		}
-    	}
-    	assertTrue("Subsystems implementation bundle not found", found);
-    	ServiceReference serviceReference = bundleContext.getServiceReference(Subsystem.class);
-    	assertNotNull("Reference to subsystem service not found", serviceReference);
-    	Subsystem subsystem = (Subsystem) bundleContext.getService(serviceReference);
-    	assertNotNull("Subsystem service not found", subsystem);
-    }
-    
     @Test
     public void testEmptyFeature() throws Exception {
     	Subsystem emptyFeature = installSubsystemFromFile("emptyFeature.esa");
