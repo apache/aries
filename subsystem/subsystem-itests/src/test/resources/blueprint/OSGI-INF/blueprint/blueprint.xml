@@ -15,7 +15,7 @@
         License.
     -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-    <bean id="helloBP" class="org.apache.aries.subsystem.itests.blueprint.BPHelloImpl"
+    <bean id="helloBP" class="org.apache.aries.subsystem.itests.bundles.blueprint.BPHelloImpl"
           init-method="init">
       <property name="message" value="messageFromBlueprint"/>
       <property name="initMessage" value="BPHelloImpl init method invoked"/>
