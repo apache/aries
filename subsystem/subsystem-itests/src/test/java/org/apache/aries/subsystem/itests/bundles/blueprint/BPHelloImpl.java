@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.apache.aries.subsystem.itests.blueprint;
+package org.apache.aries.subsystem.itests.bundles.blueprint;
 
 import org.apache.aries.subsystem.itests.hello.api.Hello;
 
