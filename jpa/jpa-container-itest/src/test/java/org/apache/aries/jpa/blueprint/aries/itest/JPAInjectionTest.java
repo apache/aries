@@ -16,7 +16,6 @@
 package org.apache.aries.jpa.blueprint.aries.itest;
 
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 
 import org.apache.aries.jpa.blueprint.itest.JPATestBean;
