@@ -40,6 +40,7 @@ import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class PersistenceXMLParsingTest
 {
 
@@ -228,7 +229,7 @@ public class PersistenceXMLParsingTest
       
       Bundle b = Skeleton.newMock(Bundle.class);
       
-      Collection<? extends ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+      new PersistenceDescriptorParserImpl().parse(b, descriptor);
 
       fail("Parsing should not succeed");
     } finally {
@@ -338,7 +339,7 @@ public class PersistenceXMLParsingTest
 	      
 	      Bundle b = Skeleton.newMock(Bundle.class);
 	      
-	      Collection<? extends ParsedPersistenceUnit> parsedUnits = new PersistenceDescriptorParserImpl().parse(b, descriptor);
+	      new PersistenceDescriptorParserImpl().parse(b, descriptor);
 	      fail("should throw");
 	     
 	    } finally {

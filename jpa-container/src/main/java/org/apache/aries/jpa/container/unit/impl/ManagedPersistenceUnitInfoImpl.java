@@ -55,6 +55,7 @@ public class ManagedPersistenceUnitInfoImpl implements
   
   private final PersistenceUnitInfoImpl info;
   
+  @SuppressWarnings("rawtypes")
   public ManagedPersistenceUnitInfoImpl(Bundle persistenceBundle,
       ParsedPersistenceUnit unit,
       ServiceReference providerRef) {
