@@ -170,8 +170,6 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
         //If we are Resolved as a result of having stopped
         //and missed the STOPPING event we need to unregister
         unregisterEntityManagerFactories();
-      //Create the EMF objects if necessary
-        createEntityManagerFactories();
         break;
         //Starting and active both require EMFs to be registered
       case Bundle.STARTING :
