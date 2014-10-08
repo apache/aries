@@ -70,6 +70,7 @@ import org.slf4j.LoggerFactory;
  * It also keeps track of PersistenceProvider services and delegates the EMF creation to the 
  * matching PersistenceProvider
  */
+@SuppressWarnings("rawtypes")
 public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator
 {
   /** The QuiesceParticipant implementation class name */
@@ -634,6 +635,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   }
 
 
+  @SuppressWarnings("unchecked")
   public void start(BundleContext context) throws Exception {
     
     ctx = context;

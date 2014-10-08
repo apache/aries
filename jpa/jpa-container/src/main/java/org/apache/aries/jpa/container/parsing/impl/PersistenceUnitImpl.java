@@ -26,13 +26,12 @@ import java.util.Properties;
 
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceReference;
 
 /**
  * An implementation of PersistenceUnit for parsed persistence unit metadata
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class PersistenceUnitImpl implements ParsedPersistenceUnit
 {
   /** A map to hold the metadata from the xml */
@@ -40,13 +39,6 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
   /** The bundle defining this persistence unit */
   private final Bundle bundle;
 
-  /**
-   * The Service Reference for the provider to which this persistence
-   * unit is tied
-   */
-  private ServiceReference provider;
-
-  
   /**
    * Create a new persistence unit with the given name, transaction type, location and
    * defining bundle
@@ -173,14 +165,6 @@ public class PersistenceUnitImpl implements ParsedPersistenceUnit
     props.setProperty(name, value);
   }
 
-  /**
-   * @param providerRef
-   */
-  public void setProviderReference(ServiceReference providerRef)
-  {
-    provider = providerRef;
-  }
-  
   /**
    * @param sharedCacheMode
    */
