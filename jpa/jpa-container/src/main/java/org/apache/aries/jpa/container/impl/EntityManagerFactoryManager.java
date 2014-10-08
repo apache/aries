@@ -31,7 +31,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -39,7 +38,6 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
-import org.apache.aries.quiesce.participant.QuiesceParticipant;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -53,6 +51,9 @@ import org.slf4j.LoggerFactory;
  * This class manages the lifecycle of Persistence Units and their associated
  * {@link EntityManagerFactory} objects.
  */
+@SuppressWarnings({
+    "unchecked", "rawtypes"
+})
 public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
 
   /**

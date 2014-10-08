@@ -219,6 +219,7 @@ public class PersistenceBundleHelper
         //Remember to trim off the "!/"
         String toLocate = location.substring(bangIndex + 2);
       
+        @SuppressWarnings("resource")
         JarInputStream jis = new JarInputStream(url.openStream());
         JarEntry entry = jis.getNextJarEntry();
         
