@@ -68,6 +68,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.service.jdbc.DataSourceFactory;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class PersistenceBundleLifecycleTest
 {
   private Bundle persistenceBundle;
@@ -490,6 +491,7 @@ public class PersistenceBundleLifecycleTest
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
   }
   
+  
   @Test
   public void testBundleChangedUnresolved() throws Exception
   {
@@ -563,10 +565,8 @@ private void assertCloseCalled() {
     
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+    persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
-    ServiceReference ref = reg.getReference();
-    
     setupPersistenceBundle("file3", "");
     
     mgr.start(extenderContext);
@@ -658,7 +658,7 @@ private void assertCloseCalled() {
     Hashtable<String,Object> hash2 = new Hashtable<String, Object>();
     hash2.put("javax.persistence.provider", "do.not.use.this.Provider");
     hash2.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
-    ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+    persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp2, hash2 );
     
     setupPersistenceBundle("file6", "");
@@ -692,7 +692,7 @@ private void assertCloseCalled() {
     Hashtable<String,Object> hash2 = new Hashtable<String, Object>();
     hash2.put("javax.persistence.provider", "do.not.use.this.Provider");
     hash2.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
-    ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+    persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp2, hash2 );
     
     setupPersistenceBundle("file7", "");
@@ -717,18 +717,15 @@ private void assertCloseCalled() {
     
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    ServiceRegistration reg = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+    persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp, hash1 );
-    ServiceReference ref = reg.getReference();
 
     PersistenceProvider pp2 = Skeleton.newMock(PersistenceProvider.class);
     Hashtable<String,Object> hash2 = new Hashtable<String, Object>();
     hash2.put("javax.persistence.provider", "do.not.use.this.Provider");
     hash2.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
-    ServiceRegistration reg2 = persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
+    persistenceBundle.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()} ,
         pp2, hash2 );
-    ServiceReference ref2 = reg2.getReference();
-
     setupPersistenceBundle("file8", "");
     
     mgr.start(extenderContext);
@@ -1400,27 +1397,18 @@ private void assertCloseCalled() {
   }
   
   private void registerVersionedPersistenceProviders() {
-    
     providerP100 = Skeleton.newMock(PersistenceProvider.class);
     providerP101 = Skeleton.newMock(PersistenceProvider.class);
     providerP110 = Skeleton.newMock(PersistenceProvider.class);
     providerP111 = Skeleton.newMock(PersistenceProvider.class);
     
-    ServiceRegistration reg;
-    
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
-    reg = providerBundleP100.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
-            providerP100, hash1 );
-    
-    reg = providerBundleP101.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
-            providerP101, hash1 );
-    
-    reg = providerBundleP110.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
-            providerP110, hash1 );
-    
-    reg = providerBundleP111.getBundleContext().registerService(new String[] {PersistenceProvider.class.getName()},
-            providerP111, hash1 );
+    String[] ifs = new String[] {PersistenceProvider.class.getName()};
+    providerBundleP100.getBundleContext().registerService(ifs, providerP100, hash1 );
+    providerBundleP101.getBundleContext().registerService(ifs, providerP101, hash1 );
+    providerBundleP110.getBundleContext().registerService(ifs, providerP110, hash1 );
+    providerBundleP111.getBundleContext().registerService(ifs,providerP111, hash1 );
   }
   
 

@@ -46,12 +46,12 @@ import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JPAWeavingHookTest {
 
   private Bundle b1;
   
   private ClassTransformer ct1a;
-  
   
   @Before
   public void setup() {
