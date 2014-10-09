@@ -141,7 +141,7 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
             <scope>test</scope>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.1.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
