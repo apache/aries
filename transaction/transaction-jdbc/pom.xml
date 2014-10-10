@@ -135,7 +135,30 @@
                             <goal>mapping</goal>
                         </goals>
                         <configuration>
-                            <namespace>http://aries.apache.org/xmlns/transaction-jdbc/2.0</namespace>
+                            <namespace>http://aries.apache.org/xmlns/transaction-jdbc/2.1</namespace>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>concat</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <target name="concat">
+                                <concat destfile="${basedir}/target/xbean/META-INF/spring.handlers" append="true">
+                                    <filelist dir="${basedir}/src/main/resources/META-INF" files="spring.handlers"/>
+                                </concat>
+                                <concat destfile="${basedir}/target/xbean/META-INF/spring.schemas" append="true">
+                                    <filelist dir="${basedir}/src/main/resources/META-INF" files="spring.schemas"/>
+                                </concat>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
