@@ -80,7 +80,7 @@ public class ConnectionManagerFactory {
         // Apply the default value for property if necessary
         if (transactionSupport == null) {
             // No transaction
-            if (transaction == null || "local".equalsIgnoreCase(transaction)) {
+            if ("local".equalsIgnoreCase(transaction)) {
                 transactionSupport = LocalTransactions.INSTANCE;
             } else if ("none".equalsIgnoreCase(transaction)) {
                 transactionSupport = NoTransactions.INSTANCE;
