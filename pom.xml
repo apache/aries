@@ -50,10 +50,18 @@
         <aries.osgi.private.pkg>
             org.apache.aries.transaction.jms.internal
         </aries.osgi.private.pkg>
+        <aries.osgi.activator>
+            org.apache.aries.transaction.jms.internal.Activator
+        </aries.osgi.activator>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
