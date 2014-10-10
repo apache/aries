@@ -48,7 +48,7 @@ public class Activator implements BundleActivator,
     private ServiceTracker t;
     private ServiceReference ref;
     private BundleContext context;
-    private ServiceRegistration nshReg;
+    private ServiceRegistration[] nshReg;
 
     public void start(BundleContext ctx) {
         context = ctx;
@@ -95,7 +95,9 @@ public class Activator implements BundleActivator,
             context.ungetService(ref);
         }
         if (nshReg != null) {
-            nshReg.unregister();
+            for (ServiceRegistration reg : nshReg) {
+                reg.unregister();
+            }
         }
     }
 
@@ -160,16 +162,28 @@ public class Activator implements BundleActivator,
 
     static class JdbcNamespaceHandler {
 
-        public static ServiceRegistration register(BundleContext context) throws Exception {
-            XBeanNamespaceHandler nsh = new XBeanNamespaceHandler(
+        public static ServiceRegistration[] register(BundleContext context) throws Exception {
+            XBeanNamespaceHandler nsh20 = new XBeanNamespaceHandler(
                     "http://aries.apache.org/xmlns/transaction-jdbc/2.0",
-                    "org.apache.aries.transaction.jdbc.xsd",
+                    "org.apache.aries.transaction.jdbc-2.0.xsd",
                     context.getBundle(),
                     "META-INF/services/org/apache/xbean/spring/http/aries.apache.org/xmlns/transaction-jdbc/2.0"
             );
-            Hashtable<String, Object> props = new Hashtable<String, Object>();
-            props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transaction-jdbc/2.0");
-            return context.registerService(NamespaceHandler.class.getName(), nsh, props);
+            Hashtable<String, Object> props20 = new Hashtable<String, Object>();
+            props20.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transaction-jdbc/2.0");
+            ServiceRegistration reg20 = context.registerService(NamespaceHandler.class.getName(), nsh20, props20);
+
+            XBeanNamespaceHandler nsh21 = new XBeanNamespaceHandler(
+                    "http://aries.apache.org/xmlns/transaction-jdbc/2.1",
+                    "org.apache.aries.transaction.jdbc.xsd",
+                    context.getBundle(),
+                    "META-INF/services/org/apache/xbean/spring/http/aries.apache.org/xmlns/transaction-jdbc/2.1"
+            );
+            Hashtable<String, Object> props21 = new Hashtable<String, Object>();
+            props21.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transaction-jdbc/2.1");
+            ServiceRegistration reg21 = context.registerService(NamespaceHandler.class.getName(), nsh21, props21);
+
+            return new ServiceRegistration[] { reg20, reg21 };
         }
 
     }
