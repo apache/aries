@@ -206,7 +206,7 @@ public class RecoverableDataSource implements DataSource {
         } else if (dataSource instanceof DataSource) {
             mcf = new DataSourceMCFFactory();
             if (transaction == null) {
-                transaction = "none";
+                transaction = transactionManager != null ? "local" : "none";
             }
         } else {
             throw new IllegalArgumentException("dataSource must be of type javax.sql.DataSource/XADataSource");
