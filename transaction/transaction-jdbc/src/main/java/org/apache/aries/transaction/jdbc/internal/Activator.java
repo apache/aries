@@ -20,13 +20,12 @@ package org.apache.aries.transaction.jdbc.internal;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.transaction.AriesTransactionManager;
+import org.apache.aries.util.tracker.SingleServiceTracker;
 import org.apache.xbean.blueprint.context.impl.XBeanNamespaceHandler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -35,18 +34,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.CommonDataSource;
-import javax.transaction.TransactionManager;
 import java.util.Hashtable;
+
 
 public class Activator implements BundleActivator,
                                   ServiceTrackerCustomizer<CommonDataSource, ManagedDataSourceFactory>,
-                                  ServiceListener {
+                                  SingleServiceTracker.SingleServiceListener
+{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
-    private AriesTransactionManager tm;
-    private ServiceTracker t;
-    private ServiceReference ref;
+    private ServiceTracker<CommonDataSource, ManagedDataSourceFactory> t;
+    private SingleServiceTracker<AriesTransactionManager> tm;
     private BundleContext context;
     private ServiceRegistration[] nshReg;
 
@@ -71,32 +70,16 @@ public class Activator implements BundleActivator,
         }
         t = new ServiceTracker<CommonDataSource, ManagedDataSourceFactory>(ctx, filter, this);
 
-        try {
-            ctx.addServiceListener(this, "(objectClass=" + AriesTransactionManager.class.getName() + ")");
-        } catch (InvalidSyntaxException e) {
-        }
-        ref = ctx.getServiceReference(TransactionManager.class.getName());
-        if (ref != null) {
-            tm = (AriesTransactionManager) ctx.getService(ref);
-        }
-
-        if (tm != null) {
-            t.open();
-        }
+        tm = new SingleServiceTracker<AriesTransactionManager>(ctx, AriesTransactionManager.class, this);
+        tm.open();
     }
 
     public void stop(BundleContext ctx) {
-        // it is possible these are not cleaned by serviceChanged method when the
-        // tm service is still active
-        if (t != null) {
-            t.close();
-        }
-        if (ref != null) {
-            context.ungetService(ref);
-        }
+        tm.close();
+        t.close();
         if (nshReg != null) {
             for (ServiceRegistration reg : nshReg) {
-                reg.unregister();
+                safeUnregisterService(reg);
             }
         }
     }
@@ -104,7 +87,7 @@ public class Activator implements BundleActivator,
     public ManagedDataSourceFactory addingService(ServiceReference<CommonDataSource> ref) {
         try {
             LOGGER.info("Wrapping DataSource " + ref);
-            ManagedDataSourceFactory mdsf = new ManagedDataSourceFactory(ref, tm);
+            ManagedDataSourceFactory mdsf = new ManagedDataSourceFactory(ref, tm.getService());
             mdsf.register();
             return mdsf;
         } catch (Exception e) {
@@ -134,22 +117,6 @@ public class Activator implements BundleActivator,
         }
     }
 
-    public void serviceChanged(ServiceEvent event) {
-        if (event.getType() == ServiceEvent.REGISTERED && tm == null) {
-            ref = event.getServiceReference();
-            tm = (AriesTransactionManager) context.getService(ref);
-
-            if (tm == null) ref = null;
-            else t.open();
-        } else if (event.getType() == ServiceEvent.UNREGISTERING && tm != null &&
-                ref.getProperty("service.id").equals(event.getServiceReference().getProperty("service.id"))) {
-            t.close();
-            context.ungetService(ref);
-            ref = null;
-            tm = null;
-        }
-    }
-
     static void safeUnregisterService(ServiceRegistration reg) {
         if (reg != null) {
             try {
@@ -158,6 +125,25 @@ public class Activator implements BundleActivator,
                 //This can be safely ignored
             }
         }
+    }
+
+    @Override
+    public void serviceFound()
+    {
+        t.open();
+    }
+
+    @Override
+    public void serviceLost()
+    {
+        t.close();
+    }
+
+    @Override
+    public void serviceReplaced()
+    {
+        t.close();
+        t.open();
     }
 
     static class JdbcNamespaceHandler {
