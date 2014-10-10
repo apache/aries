@@ -192,7 +192,13 @@ public class RecoverableDataSource implements DataSource {
      */
     public void start() throws Exception {
         AbstractMCFFactory mcf;
-        if (dataSource instanceof XADataSource) {
+        if (("xa".equals(transaction) || "local".equals(transaction)) && transactionManager == null) {
+            throw new IllegalArgumentException("xa or local transactions specified, but no TransactionManager set");
+        }
+        if ("xa".equals(transaction) && !(dataSource instanceof XADataSource)) {
+            throw new IllegalArgumentException("xa transactions specified, but DataSource does not implement javax.sql.XADataSource");
+        }
+        if ("xa".equals(transaction) || (transactionManager != null && dataSource instanceof XADataSource)) {
             mcf = new XADataSourceMCFFactory();
             if (transaction == null) {
                 transaction = "xa";
@@ -200,7 +206,7 @@ public class RecoverableDataSource implements DataSource {
         } else if (dataSource instanceof DataSource) {
             mcf = new DataSourceMCFFactory();
             if (transaction == null) {
-                transaction = "local";
+                transaction = "none";
             }
         } else {
             throw new IllegalArgumentException("dataSource must be of type javax.sql.DataSource/XADataSource");

@@ -71,7 +71,7 @@ public class ConnectionManagerFactory {
     }
 
     public void init() throws Exception {
-        if (transactionManager == null) {
+        if (transactionManager == null && ("xa".equals(transaction) || "local".equals(transaction))) {
             throw new IllegalArgumentException("transactionManager must be set");
         }
         if (managedConnectionFactory == null) {
@@ -138,7 +138,7 @@ public class ConnectionManagerFactory {
         if (connectionTracker == null) {
             connectionTracker = new ConnectionTrackingCoordinator();
         }
-        if (transactionManagerMonitor == null) {
+        if (transactionManagerMonitor == null && transactionManager != null) {
             transactionManagerMonitor = new GeronimoTransactionListener(connectionTracker);
             transactionManager.addTransactionAssociationListener(transactionManagerMonitor);
         }
