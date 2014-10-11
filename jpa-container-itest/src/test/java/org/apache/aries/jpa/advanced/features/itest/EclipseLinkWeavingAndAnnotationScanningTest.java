@@ -15,32 +15,38 @@
  */
 package org.apache.aries.jpa.advanced.features.itest;
 
-import static org.ops4j.pax.exam.CoreOptions.options;
-
-import org.junit.Ignore;
+import org.apache.aries.jpa.container.PersistenceUnitConstants;
+import org.apache.aries.jpa.container.advanced.itest.bundle.entities.Car;
+import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
+import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-@Ignore
+import static org.junit.Assert.assertTrue;
+import static org.ops4j.pax.exam.CoreOptions.*;
+
+import java.util.Arrays;
+
+import javax.persistence.EntityManagerFactory;
+
 public class EclipseLinkWeavingAndAnnotationScanningTest extends JPAWeavingAndAnnotationScanningTest {
     @Configuration
     public Option[] eclipseLinkConfig() {
         return options(        
-        		baseOptions(), 
-        		eclipseLink(),
-        		openJpa(),
-        		testBundleAdvanced()
-
+            baseOptions(),
+            ariesJpa21(),
+            eclipseLink(),
+            testBundleAdvanced()          
         );
     }
     
-    /* Aries-811: EclipseLink removed from build to debug other build breaks
     @Test
     public void testClassIsWoven() throws Exception {
       context().getService(EntityManagerFactory.class, "(&(osgi.unit.name=test-unit)(" + PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT + "=true))");
       
+      Thread.sleep(200);
       assertTrue("Not PersistenceCapable", Arrays.asList(Car.class.getInterfaces())
           .contains(PersistenceWeaved.class));
     }
-	*/
+	
 }

@@ -18,14 +18,6 @@
  */
 package org.apache.aries.jpa.eclipselink.adapter;
 
-import java.lang.reflect.Constructor;
-import java.util.Map;
-
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.spi.PersistenceProvider;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.ProviderUtil;
-
 import org.apache.aries.jpa.eclipselink.adapter.platform.OSGiTSServer;
 import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
@@ -34,11 +26,19 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
+import java.util.Map;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.ProviderUtil;
 
 /**
  * Service factory for generating the Eclipselink OSGi compatible provider. It proxies the provider so that
  * we can go in at entity manager creation time and set the eclipselink target-server to be {@link OSGiTSServer}.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class EclipseLinkProviderService implements ServiceFactory {
   private static final Logger logger = LoggerFactory.getLogger(Activator.class);
   private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(EclipseLinkProviderService.class, "org.apache.aries.jpa.eclipselink.adapter.jpaEclipseLinkAdapter");
@@ -49,11 +49,12 @@ public class EclipseLinkProviderService implements ServiceFactory {
       eclipseLinkJpaBundle = b;
   }
   
+  @Override
   public Object getService(Bundle bundle, ServiceRegistration registration) {
     logger.debug("Requested EclipseLink Provider service");
     
     try {
-      Class<? extends PersistenceProvider> providerClass = eclipseLinkJpaBundle.loadClass(Activator.ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
+      Class<? extends PersistenceProvider> providerClass = (Class<? extends PersistenceProvider>) eclipseLinkJpaBundle.loadClass(Activator.ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
       Constructor<? extends PersistenceProvider> con = providerClass.getConstructor();
       final PersistenceProvider provider = con.newInstance();
       
@@ -68,10 +69,21 @@ public class EclipseLinkProviderService implements ServiceFactory {
         
         public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo punit, Map props) {
           return provider.createContainerEntityManagerFactory(new PersistenceUnitProxyWithTargetServer(punit, 
-                eclipseLinkJpaBundle), props);
+                  eclipseLinkJpaBundle), props);
+        }
+        
+        @Override
+        public void generateSchema(PersistenceUnitInfo punit, Map arg1) {
+          provider.generateSchema(new PersistenceUnitProxyWithTargetServer(punit, 
+              eclipseLinkJpaBundle), arg1);
+        }
+
+        @Override
+        public boolean generateSchema(String arg0, Map arg1) {
+          return provider.generateSchema(arg0, arg1);
         }
       };
-        
+      
     } catch (Exception e) {
         logger.error(MESSAGES.getMessage("error.creating.eclipselink.provider"), e);
         return null;                

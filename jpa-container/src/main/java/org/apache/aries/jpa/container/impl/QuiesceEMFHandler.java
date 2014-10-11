@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
 
 import org.apache.aries.jpa.container.impl.EntityManagerFactoryManager.NamedCallback;
 import org.apache.aries.util.AriesFrameworkUtil;
@@ -51,7 +52,14 @@ class QuiesceEMFHandler implements InvocationHandler, DestroyCallback {
             clearQuiesce();
             return null;
         }
-        Object res = method.invoke(delegate, args);
+        Object res = null;
+        try {
+          res = method.invoke(delegate, args);
+        } catch (IllegalArgumentException e) {
+          new PersistenceException(NLS.MESSAGES.getMessage("wrong.JPA.version", new Object[]{
+              method.getName(), delegate
+          }), e);
+        }
 
         // This will only ever be called once, the second time there
         // will be an IllegalStateException from the line above
