@@ -133,7 +133,11 @@ public abstract class JPAContextTest extends AbstractJPAItest {
       ensureTREBehaviour(false, managedEm, "createNativeQuery", "hi", "hi");
       ensureTREBehaviour(false, managedEm, "createQuery", "hi");
       ensureTREBehaviour(false, managedEm, "find", Object.class, new Object());
+      ut.rollback();
+      ut.begin();
       ensureTREBehaviour(false, managedEm, "flush");
+      ut.rollback();
+      ut.begin();
       ensureTREBehaviour(false, managedEm, "getDelegate");
       ensureTREBehaviour(false, managedEm, "getFlushMode");
       ensureTREBehaviour(false, managedEm, "getReference", Object.class, new Object());
@@ -353,12 +357,19 @@ public abstract class JPAContextTest extends AbstractJPAItest {
                 fail("Should have failed with TransactionRequiredException");
             }
         } catch (InvocationTargetException ite) {
+            Throwable e = ite;
+            while(e != null && !(e instanceof TransactionRequiredException)) {
+              e = e.getCause();
+            }
+            if(e==null) {
+              e = ite.getCause();
+            }
             if (expectedToFail && !(ite.getCause() instanceof TransactionRequiredException)) {
-                fail("We got the wrong failure. Expected a TransactionRequiredException" + ", got a "
-                     + ite.toString());
+                        fail("We got the wrong failure. Expected a TransactionRequiredException" + ", got a "
+                             + ite.toString());
             } else if (!expectedToFail && ite.getCause() instanceof TransactionRequiredException) {
-                fail("We got the wrong failure. Expected not to get a TransactionRequiredException"
-                     + ", but we got one anyway!");
+                       fail("We got the wrong failure. Expected not to get a TransactionRequiredException"
+                             + ", but we got one anyway!");
             }
         }
     }

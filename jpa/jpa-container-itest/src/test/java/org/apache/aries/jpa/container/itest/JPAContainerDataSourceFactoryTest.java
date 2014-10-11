@@ -171,7 +171,7 @@ public class JPAContainerDataSourceFactoryTest extends AbstractJPAItest {
 	public Option[] configuration() {
 		return options(
 				baseOptions(),
-				ariesJpa(),
+				ariesJpa20(),
 				transactionWrapper(),
 				openJpa(),
 				testBundle()

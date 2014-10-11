@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
+import javax.persistence.PersistenceException;
 import javax.persistence.TransactionRequiredException;
 
 import org.apache.aries.jpa.container.context.impl.NLS;
@@ -170,16 +171,23 @@ public class JTAEntityManagerHandler implements InvocationHandler {
         boolean forceTransaction = transactedMethods.contains(methodName);
         
         // TODO Check if this can be reached
-        if ("joinTransaction".equals(methodName)) {
+        if ("joinTransaction".equals(methodName) && args != null && args.length > 2 && args[2].getClass() == LockModeType.class) {
             forceTransaction = args[2] != LockModeType.NONE;
         }
         
-        if ("find".equals(methodName) && args.length >= 3 && args[2].getClass() == LockModeType.class) {
+        if ("find".equals(methodName) && args != null && args.length >= 3 && args[2].getClass() == LockModeType.class) {
             forceTransaction = args[2] != LockModeType.NONE;
         }
         
         EntityManager delegate = getPersistenceContext(forceTransaction); 
-        Object res = method.invoke(delegate, args);
+        Object res = null;
+        try {
+          res = method.invoke(delegate, args);
+        } catch (IllegalArgumentException e) {
+          new PersistenceException(NLS.MESSAGES.getMessage("wrong.JPA.version", new Object[]{
+              method.getName(), delegate
+          }), e);
+        }
         return res;
 
     }

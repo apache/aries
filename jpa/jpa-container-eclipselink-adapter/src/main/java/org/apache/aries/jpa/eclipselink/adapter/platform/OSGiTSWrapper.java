@@ -25,6 +25,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class OSGiTSWrapper extends JTATransactionController {
 
     @Override

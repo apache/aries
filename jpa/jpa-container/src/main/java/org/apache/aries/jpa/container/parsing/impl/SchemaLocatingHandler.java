@@ -40,6 +40,7 @@ public class SchemaLocatingHandler extends DefaultHandler
   * URI for the JPA persistence namespace 
   */
   private static final String PERSISTENCE_NS_URI = "http://java.sun.com/xml/ns/persistence";
+  private static final String PERSISTENCE_21_NS_URI = "http://xmlns.jcp.org/xml/ns/persistence";
   
   /**
    * A static cache of schemas in use in the runtime
@@ -53,7 +54,7 @@ public class SchemaLocatingHandler extends DefaultHandler
     
     Schema s = null;
     String version = null;
-    if(PERSISTENCE_NS_URI.equals(uri) && "persistence".equals(localName) ) {
+    if((PERSISTENCE_NS_URI.equals(uri) || PERSISTENCE_21_NS_URI.equals(uri)) && "persistence".equals(localName) ) {
       version = attributes.getValue("version");
        s = validate(version);
     }
@@ -93,6 +94,8 @@ public class SchemaLocatingHandler extends DefaultHandler
       schemaURL = this.getClass().getResource("persistence.xsd.rsrc");
     } else if ("2.0".equals(type)) {
       schemaURL = this.getClass().getResource("persistence_2_0.xsd.rsrc");
+    } else if ("2.1".equals(type)) {
+      schemaURL = this.getClass().getResource("persistence_2_1.xsd.rsrc");
     }
 
     Schema schema = null;    
