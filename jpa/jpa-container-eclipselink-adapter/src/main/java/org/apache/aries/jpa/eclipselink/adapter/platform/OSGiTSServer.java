@@ -21,6 +21,7 @@ package org.apache.aries.jpa.eclipselink.adapter.platform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
+@SuppressWarnings("rawtypes")
 public class OSGiTSServer extends ServerPlatformBase {
 
     public OSGiTSServer(DatabaseSession newDatabaseSession) {

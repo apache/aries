@@ -18,8 +18,20 @@
  */
 package org.apache.aries.jpa.eclipselink.adapter;
 
-import java.util.Arrays;
-import java.util.Collections;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -29,21 +41,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
-
-import org.apache.aries.jpa.eclipselink.adapter.EclipseLinkProviderService;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceFactory;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.packageadmin.ExportedPackage;
-import org.osgi.service.packageadmin.PackageAdmin;
-import org.osgi.util.tracker.ServiceTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Eclipselink adapter main class.
@@ -58,20 +55,16 @@ import org.slf4j.LoggerFactory;
 public class Activator implements BundleActivator, BundleListener {
     public static final String ECLIPSELINK_JPA_PROVIDER_BUNDLE_SYMBOLIC_NAME = "org.eclipse.persistence.jpa";
     public static final String ECLIPSELINK_JPA_PROVIDER_CLASS_NAME = "org.eclipse.persistence.jpa.PersistenceProvider";
-    private final ConcurrentMap<Bundle, ServiceRegistration> registeredProviders = new ConcurrentHashMap<Bundle, ServiceRegistration>();
+    private final ConcurrentMap<Bundle, ServiceRegistration<?>> registeredProviders = new ConcurrentHashMap<Bundle, ServiceRegistration<?>>();
     
     private static final Logger logger = LoggerFactory.getLogger(Activator.class);
     
-    private ServiceTracker tracker;
     private BundleContext context;
     
     public void start(BundleContext ctx) {
         logger.debug("Starting EclipseLink adapter");
         
         context = ctx;
-        
-        tracker = new ServiceTracker(ctx, PackageAdmin.class.getName(), null);
-        tracker.open();
         
         ctx.addBundleListener(this);
         
@@ -80,22 +73,15 @@ public class Activator implements BundleActivator, BundleListener {
                 handlePotentialEclipseLink(b);
         }
     }
-  
+    
     public void stop(BundleContext ctx) {
-        logger.debug("Stopping EclipseLink adapter");
-        
-        tracker.close();
-        
-        for (ServiceRegistration reg : registeredProviders.values()) {
-            reg.unregister();
-        }
     }
-
+    
     public void bundleChanged(BundleEvent event) {
         if ((event.getType() & (BundleEvent.RESOLVED)) != 0) {
             handlePotentialEclipseLink(event.getBundle());
         } else if (event.getType() == BundleEvent.UNRESOLVED | event.getType() == BundleEvent.UNINSTALLED) {
-            ServiceRegistration reg = registeredProviders.remove(event.getBundle());
+            ServiceRegistration<?> reg = registeredProviders.remove(event.getBundle());
             if (reg != null) {
                 reg.unregister();
             }
@@ -118,7 +104,7 @@ public class Activator implements BundleActivator, BundleListener {
             if (!!!registeredProviders.containsKey(b)) {
                 logger.debug("Adding new EclipseLink provider for bundle {}", b);
                 
-                ServiceFactory factory = new EclipseLinkProviderService(b);
+                ServiceFactory<?> factory = new EclipseLinkProviderService(b);
                 
                 Hashtable<String, Object> props = new Hashtable<String, Object>();
                 props.put("org.apache.aries.jpa.container.weaving.packages", getJPAPackages(b));
@@ -148,25 +134,24 @@ public class Activator implements BundleActivator, BundleListener {
     private String[] getJPAPackages(Bundle jpaBundle) {
         Set<String> result = new HashSet<String>();
         
-        PackageAdmin admin = (PackageAdmin) tracker.getService();
         for (Bundle b : context.getBundles()) {
-            for (ExportedPackage ep : nullSafe(admin.getExportedPackages(b))) {
-                boolean add = true;
+            BundleWiring bw = b.adapt(BundleWiring.class);
+            List<BundleWire> wires = bw.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
+
+            for (BundleWire w : wires) {
+                String pkgName = (String) w.getCapability().getAttributes().get(BundleRevision.PACKAGE_NAMESPACE);
+
+                boolean add = false;
                 if (b.equals(jpaBundle)) {
                     add = true;
-                } else if (ep.getName().startsWith("org.eclipse.persistence")) {
-                    inner: for (Bundle b2 : nullSafe(ep.getImportingBundles())) {
-                        if (b2.equals(jpaBundle)) {
-                            add = true;
-                            break inner;
-                        }
-                    }
+                } else if (pkgName.startsWith("org.eclipse.persistence")) {
+                    add = true;
                 }
                 
                 if (add) {
                     String suffix = ";" + Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE + "=" + b.getSymbolicName() + ";" + Constants.BUNDLE_VERSION_ATTRIBUTE  + "=" + b.getVersion();                    
-                    result.add(ep.getName()+suffix);
-                }                
+                    result.add(pkgName + suffix);
+                }
             }
         }
         
@@ -177,10 +162,5 @@ public class Activator implements BundleActivator, BundleListener {
         logger.debug("Found JPA packages {}", result);
         
         return result.toArray(new String[0]);
-    }
-    
-    private<T> List<T> nullSafe(T[] array) {
-        if (array == null) return Collections.emptyList();
-        else return Arrays.asList(array);
     }
 }

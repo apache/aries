@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 
 public class EntityManagerProxyFactory {
     static EntityManager create(EntityManager delegate, DestroyCallback destroyCallback) {
@@ -25,7 +26,14 @@ public class EntityManagerProxyFactory {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Object res = method.invoke(delegate, args);
+            Object res = null;
+            try {
+              res = method.invoke(delegate, args);
+            } catch (IllegalArgumentException e) {
+              new PersistenceException(NLS.MESSAGES.getMessage("wrong.JPA.version", new Object[]{
+                  method.getName(), delegate
+              }), e);
+            }
             
             // This will only ever be called once, the second time there
             // will be an IllegalStateException from the line above
