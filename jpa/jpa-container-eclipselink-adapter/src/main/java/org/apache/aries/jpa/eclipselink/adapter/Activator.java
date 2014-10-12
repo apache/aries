@@ -75,7 +75,12 @@ public class Activator implements BundleActivator, BundleListener {
     }
     
     public void stop(BundleContext ctx) {
-    }
+        logger.debug("Stopping EclipseLink adapter");
+
+        for (ServiceRegistration<?> reg : registeredProviders.values()) {
+          reg.unregister();
+        }
+      }
     
     public void bundleChanged(BundleEvent event) {
         if ((event.getType() & (BundleEvent.RESOLVED)) != 0) {
