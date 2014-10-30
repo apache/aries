@@ -36,6 +36,7 @@ import org.apache.aries.proxy.UnableToProxyException;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleWiring;
 
 /**
  * This class is used to aggregate several interfaces into a real class which implements all of them
@@ -51,8 +52,8 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
     
   }
 
-  private static final Map<Bundle, WeakReference<ProxyClassLoader>> cache = 
-            new WeakHashMap<Bundle, WeakReference<ProxyClassLoader>>(128);
+  private static final Map<BundleWiring, WeakReference<ProxyClassLoader>> cache =
+            new WeakHashMap<BundleWiring, WeakReference<ProxyClassLoader>>(128);
   
   /**
    * Generate a new proxy instance implementing the supplied interfaces and using the supplied
@@ -65,7 +66,7 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
    * @return
    * @throws UnableToProxyException
    */
-  public static final Object getProxyInstance(Bundle client, Class<?> superclass,
+  public static Object getProxyInstance(Bundle client, Class<?> superclass,
       Collection<Class<?>> ifaces, Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException{
     
     if(superclass != null && (superclass.getModifiers() & Modifier.FINAL) != 0)
@@ -76,24 +77,25 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
     SortedSet<Class<?>> interfaces = createSet(ifaces);
     
     synchronized (cache) {
-      WeakReference<ProxyClassLoader> ref = cache.get(client);
+      BundleWiring wiring = client == null ? null : (BundleWiring)client.adapt(BundleWiring.class);
+      WeakReference<ProxyClassLoader> ref = cache.get(wiring);
       
       if(ref != null)
         pcl = ref.get();
       
       if (pcl != null && pcl.isInvalid(interfaces)) {
           pcl = null;
-          cache.remove(client);
+          cache.remove(wiring);
       }
       
       if(pcl == null) {
         pcl = new ProxyClassLoader(client);
-        cache.put(client, new WeakReference<ProxyClassLoader>(pcl));
+        cache.put(wiring, new WeakReference<ProxyClassLoader>(pcl));
       }
     }
-    
+
     Class<?> c = pcl.createProxyClass(superclass, interfaces);
-        
+
     try {
       Constructor<?> con = c.getDeclaredConstructor(Callable.class, InvocationListener.class);
       con.setAccessible(true);
