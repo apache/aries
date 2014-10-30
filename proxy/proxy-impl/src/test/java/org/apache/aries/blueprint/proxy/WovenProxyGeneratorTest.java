@@ -55,6 +55,7 @@ import org.apache.aries.util.ClassLoaderProxy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleWiring;
 
 
 public class WovenProxyGeneratorTest extends AbstractProxyTest
@@ -496,10 +497,13 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testWovenClassPlusInterfaces() throws Exception {
     Bundle b = (Bundle) Skeleton.newMock(new Class<?>[] {Bundle.class, ClassLoaderProxy.class});
-    
+    BundleWiring bw = (BundleWiring) Skeleton.newMock(BundleWiring.class);
+
     Skeleton.getSkeleton(b).setReturnValue(new MethodCall(
         ClassLoaderProxy.class, "getClassLoader"), weavingLoader);
-    
+    Skeleton.getSkeleton(b).setReturnValue(new MethodCall(
+        ClassLoaderProxy.class, "adapt", BundleWiring.class), bw);
+
     Object toCall = new AsmProxyManager().createDelegatingProxy(b, Arrays.asList(
         getProxyClass(ProxyTestClassAbstract.class), Callable.class), new Callable() {
 
