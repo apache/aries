@@ -27,10 +27,12 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,9 @@ import org.apache.aries.util.ClassLoaderProxy;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
 
 
 public class InterfaceProxyingTest {
@@ -67,12 +72,34 @@ public class InterfaceProxyingTest {
       list = o;
     }
   }
-  
+
   private Bundle testBundle;
-  
+
+  /**
+   * Extended BundleMock which handles update() and adapt() methods
+   */
+  public static class BundleMockEx extends BundleMock {
+    private BundleWiring currentWiring = Skeleton.newMock(BundleWiring.class);
+
+    public BundleMockEx(String name, Dictionary<?, ?> properties) {
+      super(name, properties);
+    }
+
+    public <A> A adapt(Class<A> type) {
+      if (type == BundleWiring.class) {
+        return (A) currentWiring;
+      }
+      return null;
+    }
+
+    public void update() throws BundleException {
+      this.currentWiring = Skeleton.newMock(BundleWiring.class);
+    }
+  }
+
   @Before
   public void setup() {
-    testBundle = Skeleton.newMock(new BundleMock("test", 
+    testBundle = Skeleton.newMock(new BundleMockEx("test",
         new Hashtable<Object, Object>()), Bundle.class);
   }
   
@@ -249,25 +276,35 @@ public class InterfaceProxyingTest {
       TestClassLoader loader = new TestClassLoader();
       skel.setReturnValue(new MethodCall(ClassLoaderProxy.class, "getClassLoader"), loader);
       skel.setReturnValue(new MethodCall(Bundle.class, "getLastModified"), 10l);
-      
+      skel.setReturnValue(new MethodCall(Bundle.class, "adapt", BundleWiring.class), Skeleton.newMock(BundleWiring.class));
+
       Class<?> clazz = loader.loadClass("org.apache.aries.blueprint.proxy.TestInterface");
       
       Object proxy = InterfaceProxyGenerator.getProxyInstance(bundle, null, Arrays.<Class<?>>asList(clazz), constantly(null), null);
       assertTrue(clazz.isInstance(proxy));
+
+      ClassLoader parent1 = proxy.getClass().getClassLoader().getParent();
       
       /* Now again but with a changed classloader as if the bundle had refreshed */
       
       TestClassLoader loaderToo = new TestClassLoader();
       skel.setReturnValue(new MethodCall(ClassLoaderProxy.class, "getClassLoader"), loaderToo);
       skel.setReturnValue(new MethodCall(Bundle.class, "getLastModified"), 20l);
+
+      // let's change the returned revision
+      skel.setReturnValue(new MethodCall(Bundle.class, "adapt", BundleWiring.class), Skeleton.newMock(BundleWiring.class));
       
       Class<?> clazzToo = loaderToo.loadClass("org.apache.aries.blueprint.proxy.TestInterface");
       
       Object proxyToo = InterfaceProxyGenerator.getProxyInstance(bundle, null, Arrays.<Class<?>>asList(clazzToo), constantly(null), null);
       assertTrue(clazzToo.isInstance(proxyToo));
+
+      ClassLoader parent2= proxyToo.getClass().getClassLoader().getParent();
+
+      // parents should be different, as the are the classloaders of different bundle revisions
+      assertTrue(parent1 != parent2);
   }
-  
-  
+
   protected void assertCalled(TestListener listener, boolean pre, boolean post, boolean ex) {
     assertEquals(pre, listener.preInvoke);
     assertEquals(post, listener.postInvoke);

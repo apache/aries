@@ -49,6 +49,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleWiring;
 
 /**
  * This class uses the {@link ProxySubclassGenerator} to test
@@ -64,13 +65,17 @@ public class WovenProxyPlusSubclassGeneratorTest extends WovenProxyGeneratorTest
   private Callable<Object> testCallable = null;
   
   private static Bundle testBundle;
-  
+  private static BundleWiring testBundleWiring;
+
   @BeforeClass
   public static void createTestBundle() {
 	  testBundle = (Bundle) Skeleton.newMock(new Class<?>[] {Bundle.class, ClassLoaderProxy.class});
-	    
+	  testBundleWiring = (BundleWiring) Skeleton.newMock(BundleWiring.class);
+
 	    Skeleton.getSkeleton(testBundle).setReturnValue(new MethodCall(
 	        ClassLoaderProxy.class, "getClassLoader"), weavingLoader);
+	    Skeleton.getSkeleton(testBundle).setReturnValue(new MethodCall(
+	        ClassLoaderProxy.class, "adapt", BundleWiring.class), testBundleWiring);
   }
 
   //Avoid running four weaving tests that don't apply to us
