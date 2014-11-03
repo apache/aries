@@ -284,11 +284,16 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     EntityManagerFactoryManager mgr = (EntityManagerFactoryManager) object;
     //If the bundle was updated we need to destroy it and re-initialize
     //the EntityManagerFactoryManager
-    if(event != null && event.getType() == BundleEvent.UPDATED) {
+    //If the bundle becomes unresolved we need to destroy persistenceUnits, since they
+    //keep a reference to bundle classloader which has wiring m_isDisposed set to true
+    //this occurs when Karaf BundleWatcher is used.
+    if(event != null && (event.getType() == BundleEvent.UPDATED || event.getType() == BundleEvent.UNRESOLVED)) {
       mgr.destroy();
       persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
-      //Don't add to the managersAwaitingProviders, the setupManager will do it
-      setupManager(bundle, mgr, true);
+      if (event.getType() == BundleEvent.UPDATED) {
+          //Don't add to the managersAwaitingProviders, the setupManager will do it
+          setupManager(bundle, mgr, true);
+      }
     } else {
       try {
         boolean reassign;
