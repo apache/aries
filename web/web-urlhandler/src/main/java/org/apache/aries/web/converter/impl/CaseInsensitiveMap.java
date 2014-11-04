@@ -29,6 +29,7 @@ import org.osgi.framework.Constants;
  * Simple key case-insensitive map where only selected set of keys are 
  * treated in case-insensitive way.
  */
+@SuppressWarnings("serial")
 public class CaseInsensitiveMap extends HashMap<String, String> {
     
     private static final Map<String, String> DEFAULT_KEY_MAP = new HashMap<String, String>();
