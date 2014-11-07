@@ -27,8 +27,6 @@
     
     <jta-data-source>osgi:service/javax.sql.DataSource</jta-data-source>
     <non-jta-data-source>osgi:service/javax.sql.DataSource</non-jta-data-source>
-    <class>org.apache.aries.jpa.container.itest.entities.Car</class>
-    <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
         <!-- This is to avoid compile time enhancement which would conflict with hibernate -->
         <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
@@ -47,8 +45,6 @@
     <description>Test persistence unit for the JPA Container and Context iTests</description>
     <jta-data-source>blueprint:comp/jta</jta-data-source>
     <non-jta-data-source>blueprint:comp/nonjta</non-jta-data-source>
-    <class>org.apache.aries.jpa.container.itest.entities.Car</class>
-    <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
           to create a database  -->
@@ -64,8 +60,6 @@
     <description>Test persistence unit for the JPA Container and Context iTests</description>
     <jta-data-source>blueprint:comp/xa</jta-data-source>
     <non-jta-data-source>blueprint:comp/nonjta</non-jta-data-source>
-    <class>org.apache.aries.jpa.container.itest.entities.Car</class>
-    <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
           to create a database  -->
@@ -78,8 +72,6 @@
   
   <persistence-unit name="dsf-test-unit" transaction-type="RESOURCE_LOCAL">
     <description>Test persistence unit for the JPA Container DataSourceFactory iTests</description>
-    <class>org.apache.aries.jpa.container.itest.entities.Car</class>
-    <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
           to create a database  -->
@@ -94,8 +86,6 @@
   
   <persistence-unit name="dsf-xa-test-unit" transaction-type="JTA">
     <description>Test persistence unit for the JPA Container DataSourceFactory iTests</description>
-    <class>org.apache.aries.jpa.container.itest.entities.Car</class>
-    <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
           to create a database  -->
