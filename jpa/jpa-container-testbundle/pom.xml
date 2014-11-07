@@ -41,12 +41,17 @@
     </scm>
 
     <properties>
+        <!-- As this is only a test bundle we skip the check -->
+        <aries.skip.version.check>true</aries.skip.version.check>
+    
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
             org.apache.aries.jpa.container.itest.entities
         </aries.osgi.export.pkg>
         <aries.osgi.import>
             javax.persistence;version="[1.0.0,3.0.0)",
+            org.hibernate.proxy;resolution:=optional,
+            javassist.util.proxy;resolution:=optional,
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg />
@@ -58,12 +63,6 @@
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
             <version>1.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>2.2.2</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -78,29 +77,6 @@
                         <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
                     </instructions>
                 </configuration>
-            </plugin>
-            <plugin>
-              <artifactId>maven-antrun-plugin</artifactId>
-              <executions>
-                <execution>
-                  <phase>process-classes</phase>
-                  <configuration>
-                    <tasks>
-                      <taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="maven.compile.classpath" />
-                      <openjpac>
-                          <classpath refid="maven.compile.classpath" /> 
-                          <classpath>
-                            <pathelement location="target/classes" />
-                            <pathelement location="src/main/resources" />
-                          </classpath>
-                      </openjpac>
-                    </tasks>
-                  </configuration>
-                  <goals>
-                    <goal>run</goal>
-                  </goals>
-                </execution>
-              </executions>
             </plugin>
         </plugins>
     </build>
