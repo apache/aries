@@ -24,12 +24,22 @@
   
   <persistence-unit name="test-unit" transaction-type="RESOURCE_LOCAL">
     <description>Test persistence unit for the JPA Container and Context iTests</description>
+    
     <jta-data-source>osgi:service/javax.sql.DataSource</jta-data-source>
     <non-jta-data-source>osgi:service/javax.sql.DataSource</non-jta-data-source>
     <class>org.apache.aries.jpa.container.itest.entities.Car</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
-      
+        <!-- This is to avoid compile time enhancement which would conflict with hibernate -->
+        <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+    
+        <!-- These properties are creating the database on the fly. We are using them to avoid the tests having
+          to create a database  -->
+        <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+        <property name="openjpa.jdbc.DBDictionary" value="derby"/>
+
+        <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
+        <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
     </properties>
   </persistence-unit>
   
@@ -44,6 +54,9 @@
           to create a database  -->
      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
      <property name="openjpa.jdbc.DBDictionary" value="derby"/>
+     <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
+        <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+        <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
     </properties>
   </persistence-unit>
   
@@ -58,6 +71,8 @@
           to create a database  -->
      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
      <property name="openjpa.jdbc.DBDictionary" value="derby"/>
+        <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
+        <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
     </properties>
   </persistence-unit>
   
@@ -72,6 +87,8 @@
       <property name="javax.persistence.jdbc.databaseName" value="memory:TEST;create=true"/>
      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
      <property name="openjpa.jdbc.DBDictionary" value="derby"/>
+        <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
+        <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
     </properties>
   </persistence-unit>
   
@@ -86,6 +103,8 @@
       <property name="javax.persistence.jdbc.databaseName" value="memory:TEST;create=true"/>
      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
      <property name="openjpa.jdbc.DBDictionary" value="derby"/>
+        <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect"/>
+        <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
     </properties>
   </persistence-unit>
 </persistence>
