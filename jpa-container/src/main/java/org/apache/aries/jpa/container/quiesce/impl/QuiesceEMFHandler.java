@@ -1,4 +1,4 @@
-package org.apache.aries.jpa.container.impl;
+package org.apache.aries.jpa.container.quiesce.impl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 
-import org.apache.aries.jpa.container.impl.EntityManagerFactoryManager.NamedCallback;
+import org.apache.aries.jpa.container.impl.NLS;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 
@@ -82,6 +82,9 @@ class QuiesceEMFHandler implements InvocationHandler, DestroyCallback {
         }
     }
     
+    /**
+     * Called on EntityManager.close()
+     */
     public void callback() {
         if (count.decrementAndGet() == 0) {
             NamedCallback c = callback.getAndSet(null);

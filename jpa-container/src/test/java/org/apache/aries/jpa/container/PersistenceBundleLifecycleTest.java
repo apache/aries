@@ -961,7 +961,7 @@ private void assertCloseCalled() {
     
     QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
     
-    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+    QuiesceParticipant p = getQuiesceParticipant(ctx);
   
     p.quiesce(cbk, Collections.singletonList(persistenceBundle));
     
@@ -970,7 +970,7 @@ private void assertCloseCalled() {
     Skeleton.getSkeleton(cbk).assertCalledExactNumberOfTimes(new MethodCall(QuiesceCallback.class,
         "bundleQuiesced", Bundle[].class), 1);
   }
-  
+
   /**
    * Quiesce a JPA bundle that is not active
    * @throws Exception
@@ -990,7 +990,7 @@ private void assertCloseCalled() {
     
     QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
     
-    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+    QuiesceParticipant p = getQuiesceParticipant(ctx);
   
     p.quiesce(cbk, Collections.singletonList(persistenceBundle));
     
@@ -1027,7 +1027,7 @@ private void assertCloseCalled() {
     
     QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
     
-    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+    QuiesceParticipant p = getQuiesceParticipant(ctx);
   
     p.quiesce(cbk, Collections.singletonList(persistenceBundle));
     
@@ -1073,7 +1073,7 @@ private void assertCloseCalled() {
     
     QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
     
-    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+    QuiesceParticipant p = getQuiesceParticipant(ctx);
   
     p.quiesce(cbk, Collections.singletonList(extenderBundle));
     
@@ -1101,7 +1101,7 @@ private void assertCloseCalled() {
     
     QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
     
-    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+    QuiesceParticipant p = getQuiesceParticipant(ctx);
   
     p.quiesce(cbk, Collections.singletonList(extenderBundle));
     
@@ -1158,7 +1158,7 @@ private void assertCloseCalled() {
     
     QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
     
-    QuiesceParticipant p = (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+    QuiesceParticipant p = getQuiesceParticipant(ctx);
   
     p.quiesce(cbk, Collections.singletonList(extenderBundle));
     
@@ -1485,5 +1485,11 @@ private void assertCloseCalled() {
     
     return map.get(persistenceBundle);
   }
+  
+
+  private QuiesceParticipant getQuiesceParticipant(BundleContext ctx) {
+    return (QuiesceParticipant) ctx.getService(ctx.getServiceReference(QuiesceParticipant.class.getName()));
+  }
+  
 }
 

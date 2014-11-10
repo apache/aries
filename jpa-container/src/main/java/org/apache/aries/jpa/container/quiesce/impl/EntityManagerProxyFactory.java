@@ -1,4 +1,4 @@
-package org.apache.aries.jpa.container.impl;
+package org.apache.aries.jpa.container.quiesce.impl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -7,7 +7,9 @@ import java.lang.reflect.Proxy;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
-public class EntityManagerProxyFactory {
+import org.apache.aries.jpa.container.impl.NLS;
+
+class EntityManagerProxyFactory {
     static EntityManager create(EntityManager delegate, DestroyCallback destroyCallback) {
         ClassLoader cl = delegate.getClass().getClassLoader();
         Class<?>[] ifAr = new Class[]{EntityManager.class};
