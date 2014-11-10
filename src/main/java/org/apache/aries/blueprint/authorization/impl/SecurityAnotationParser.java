@@ -60,4 +60,30 @@ class SecurityAnotationParser {
         return ann;
     }
 
+    /**
+     * A class is secured if either the class or one of its methods is secured.
+     * An AnnotatedElement is secured if @RolesAllowed or @DenyAll is present.
+     * 
+     * @param clazz
+     * @return
+     */
+    public boolean isSecured(Class<?> clazz) {
+        if (clazz == Object.class) {
+            return false;
+        }
+        if (isSecuredEl(clazz)) {
+            return true;
+        }
+        for (Method m : clazz.getMethods()) {
+            if (isSecuredEl(m)) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+    
+    private boolean isSecuredEl(AnnotatedElement element) {
+        return element.isAnnotationPresent(RolesAllowed.class) || element.isAnnotationPresent(DenyAll.class); 
+    }
 }
