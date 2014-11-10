@@ -18,23 +18,18 @@
  */
 package org.apache.aries.blueprint.authorization.impl;
 
-import java.lang.reflect.Method;
-
-import javax.annotation.security.DenyAll;
-import javax.annotation.security.RolesAllowed;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
-public class AnnotationParser implements BeanProcessor {
+public class AuthorizationBeanProcessor implements BeanProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationInterceptor.class);
+    public static final String AUTH_PROCESSOR_BEAN_NAME = "org_apache_aries_authz_annotations";
     private ComponentDefinitionRegistry cdr;
-    public static final String ANNOTATION_PARSER_BEAN_NAME = "org_apache_aries_authz_annotations";
 
-    public AnnotationParser() {
+    public AuthorizationBeanProcessor() {
     }
 
     public void setCdr(ComponentDefinitionRegistry cdr) {
@@ -53,36 +48,11 @@ public class AnnotationParser implements BeanProcessor {
 
     public Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
         Class<?> c = bean.getClass();
-        if (isSecured(c)) {
+        if (new SecurityAnotationParser().isSecured(c)) {
             LOGGER.debug("Adding annotation based authorization interceptor for bean {} with class {}", beanName, c);
             cdr.registerInterceptorWithComponent(beanData, new AuthorizationInterceptor());
         }
         return bean;
-    }
-
-    /**
-     * A class is secured if @RolesAllowed is used on class or method level of the class or its hierarchy.
-     * 
-     * @param clazz
-     * @return
-     */
-    private boolean isSecured(Class<?> clazz) {
-        if (clazz == Object.class) {
-            return false;
-        }
-        if (clazz.getAnnotation(RolesAllowed.class) != null || clazz.getAnnotation(DenyAll.class) != null) {
-            return true;
-        }
-        for (Method m : clazz.getMethods()) {
-            if (m.getAnnotation(RolesAllowed.class) != null) {
-                return true;
-            }
-            if (m.getAnnotation(DenyAll.class) != null) {
-                return true;
-            }
-
-        }
-        return false;
     }
 
 }

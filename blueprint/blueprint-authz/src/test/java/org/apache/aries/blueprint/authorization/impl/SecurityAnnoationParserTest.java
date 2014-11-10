@@ -35,6 +35,13 @@ public class SecurityAnnoationParserTest {
     public SecurityAnnoationParserTest() {
         annParser = new SecurityAnotationParser();
     }
+    
+    @Test
+    public void testIsSecured() {
+        Assert.assertTrue(annParser.isSecured(SecuredClass.class));
+        Assert.assertFalse(annParser.isSecured(Object.class));
+        Assert.assertFalse(annParser.isSecured(Activator.class));
+    }
 
     @Test
     public void testAnnotationType() throws NoSuchMethodException, SecurityException {
@@ -59,4 +66,5 @@ public class SecurityAnnoationParserTest {
         Assert.assertTrue(ann instanceof RolesAllowed);
         return ((RolesAllowed)ann).value();
     }
+
 }
