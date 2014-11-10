@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.impl;
+package org.apache.aries.jpa.container.quiesce.impl;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -27,9 +29,14 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.aries.jpa.container.impl.PersistenceBundleManager;
 import org.apache.aries.quiesce.manager.QuiesceCallback;
 import org.apache.aries.quiesce.participant.QuiesceParticipant;
+import org.apache.aries.util.AriesFrameworkUtil;
+import org.apache.aries.util.io.IOUtils;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * This class provides Quiesce Participant support for JPA managed units. It is the only
@@ -37,7 +44,7 @@ import org.osgi.framework.Bundle;
  * optionally depend on the API. If no Quiesce API is available then this class will not be
  * loaded and no Quiesce support will be available.
  */
-public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallback {
+public class QuiesceParticipantImpl implements QuiesceParticipant, Closeable {
   
   /**
    * A wrapper to protect our internals from the Quiesce API so that we can make it
@@ -72,18 +79,18 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallba
     /** The bundle being quiesced */
     private final Bundle bundleToQuiesce;
     /** The {@link PersistenceBundleManager} instance */
-    private final PersistenceBundleManager mgr; 
+    private final QuiesceHandler quiesceHandler; 
 
     public QuiesceBundle(QuiesceCallback callback, Bundle bundleToQuiesce,
-        PersistenceBundleManager mgr) {
+        QuiesceHandler quiesceHandler) {
       super();
       this.callback = new QuiesceDelegatingCallback(callback, bundleToQuiesce);
       this.bundleToQuiesce = bundleToQuiesce;
-      this.mgr = mgr;
+      this.quiesceHandler = quiesceHandler;
     }
 
     public void run() {
-      mgr.quiesceBundle(bundleToQuiesce, callback);
+      quiesceHandler.quiesceBundle(bundleToQuiesce, callback);
     }
   }
 
@@ -100,19 +107,23 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallba
       return t;
     }
   });
-  
-  /** The manager for persistence bundles */
-  private final PersistenceBundleManager mgr;
+
+  private QuiesceHandler quiesceHandler;
+  private final BundleContext context;
+  private ServiceRegistration quiesceReg;
   
   /** Some events that we need to tidy up */
-  private final BlockingQueue<DestroyCallback> unhandledQuiesces = new LinkedBlockingQueue<DestroyCallback>(); 
+  private final BlockingQueue<DestroyCallback> unhandledQuiesces = new LinkedBlockingQueue<DestroyCallback>();
   
-  public QuiesceParticipantImpl(PersistenceBundleManager mgr) {
-    this.mgr = mgr;
+  public QuiesceParticipantImpl(BundleContext context, QuiesceHandler quiesceHandler) {
+    this.context = context;
+    this.quiesceHandler = quiesceHandler;
+    context.registerService(QuiesceParticipant.class.getName(), this, null);
   }
 
 
   public void quiesce(QuiesceCallback qc, List<Bundle> arg1) {
+    boolean closeSelf = false;
     //Run a quiesce operation for each bundle being quiesced
     for(Bundle b : arg1) {
       try {
@@ -120,30 +131,33 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, DestroyCallba
           //This bundle is not in an "ACTIVE" state (or starting or stopping)
           qc.bundleQuiesced(b);
         } else {
-          executor.execute(new QuiesceBundle(qc, b, mgr));
+          executor.execute(new QuiesceBundle(qc, b, quiesceHandler));
         }
       } catch (RejectedExecutionException re) {
         unhandledQuiesces.add(new QuiesceDelegatingCallback(qc, b));
       }
       //If we are quiescing, then we need to quiesce this threadpool!
-      if(b.equals(mgr.getCtx().getBundle()))
-        executor.shutdown();
+      if(b.equals(context.getBundle())) {
+          closeSelf = true;
+      }
+    }
+    if (closeSelf) {
+        IOUtils.close(this);
     }
   }
   
-  /**
-   * Close down this object
-   */
-  public void callback() {
-    executor.shutdown();
-    try {
-      for(DestroyCallback cbk : unhandledQuiesces) {
-        cbk.callback();
+  @Override
+  public void close() throws IOException {
+      executor.shutdown();
+      try {
+        for(DestroyCallback cbk : unhandledQuiesces) {
+          cbk.callback();
+        }
+        executor.awaitTermination(5, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        //We don't care
       }
-      executor.awaitTermination(5, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      //We don't care
-    }
-    executor.shutdownNow();
+      executor.shutdownNow();
+      AriesFrameworkUtil.safeUnregisterService(quiesceReg);
   }
 }

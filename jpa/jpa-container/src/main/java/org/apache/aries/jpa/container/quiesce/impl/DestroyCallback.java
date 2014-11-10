@@ -16,24 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.impl;
+package org.apache.aries.jpa.container.quiesce.impl;
 
 /**
- * A {@link DestroyCallback} that delegates after the correct
- * number of calls 
+ * An asynchronous callback for destroying something
  */
-public final class CoundownCallback implements DestroyCallback {
-  private final DestroyCallback callback;
-  private int counter;
-
-  public CoundownCallback(int count,
-      DestroyCallback callback) {
-    this.callback = callback;
-    counter = count;
-  }
-
-  public void callback() {
-    if(--counter == 0)
-      callback.callback();
-  }
+public interface DestroyCallback {
+  public void callback();
 }
