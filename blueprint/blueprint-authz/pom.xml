@@ -45,6 +45,12 @@
         <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-authz</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-authz</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-authz</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
