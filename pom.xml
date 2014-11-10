@@ -43,6 +43,12 @@
         <aether.version>1.11</aether.version>
     </properties>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-maven-plugin</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-maven-plugin</url>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
