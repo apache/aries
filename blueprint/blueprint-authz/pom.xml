@@ -30,7 +30,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.authz</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Apache Aries Blueprint Annotation based authorization</name>
 
     <properties>
@@ -90,5 +90,11 @@
 
     </dependencies>
 
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.authz-1.0.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.authz-1.0.0</developerConnection>
+    <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.authz-1.0.0</url>
+  </scm>
 </project>
 
