@@ -1,0 +1,6 @@
+Subsystem-SymbolicName: org.apache.aries.subsystem.itests.composite2
+Subsystem-Type: osgi.subsystem.composite
+Subsystem-Content: org.apache.aries.subsystem.itests.tb4;version="[1.0.0,1.0.0]"
+Import-Package: org.osgi.framework,org.osgi.util.tracker
+Subsystem-ExportService: *;filter:="(test=tb4)"
+Subsystem-ImportService: *;filter:="(test=testCompositeServiceImports)"
