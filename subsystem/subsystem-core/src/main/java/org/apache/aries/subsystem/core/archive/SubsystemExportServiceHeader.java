@@ -36,19 +36,19 @@ import org.osgi.service.subsystem.SubsystemConstants;
 public class SubsystemExportServiceHeader implements Header<SubsystemExportServiceHeader.Clause> {
 	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
-		
-		private static final Pattern PATTERN_OBJECTCLASS = Pattern.compile('(' + Grammar.OBJECTCLASS + ")(?=;|\\z)");
+
+		private static final Pattern PATTERN_OBJECTCLASS_OR_STAR = Pattern.compile("((" + Grammar.OBJECTCLASS + ")|[*])(?=;|\\z)");
 		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
-		
+
 		private static void fillInDefaults(Map<String, Parameter> parameters) {
 			// No defaults.
 		}
-		
+
 		private final String path;
 		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		
+
 		public Clause(String clause) {
-			Matcher main = PATTERN_OBJECTCLASS.matcher(clause);
+			Matcher main = PATTERN_OBJECTCLASS_OR_STAR.matcher(clause);
 			if (!main.find())
 				throw new IllegalArgumentException("Missing objectClass path: " + clause);
 			path = main.group();
@@ -59,7 +59,7 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 			}
 			fillInDefaults(parameters);
 		}
-		
+
 		@Override
 		public Attribute getAttribute(String name) {
 			Parameter result = parameters.get(name);
@@ -101,7 +101,7 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 			directives.trimToSize();
 			return directives;
 		}
-		
+
 		public String getObjectClass() {
 			return path;
 		}
@@ -115,12 +115,12 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 		public Collection<Parameter> getParameters() {
 			return Collections.unmodifiableCollection(parameters.values());
 		}
-		
+
 		@Override
 		public String getPath() {
 			return path;
 		}
-		
+
 		public List<Capability> toCapabilities(Resource resource) throws InvalidSyntaxException {
 			List<Capability> capabilities = resource.getCapabilities(ServiceNamespace.SERVICE_NAMESPACE);
 			if (capabilities.isEmpty())
@@ -133,7 +133,7 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 			result.trimToSize();
 			return result;
 		}
-		
+
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -143,11 +143,11 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 			}
 			return builder.toString();
 		}
-		
+
 		private Filter computeFilter() throws InvalidSyntaxException {
 			return FrameworkUtil.createFilter(computeFilterString());
 		}
-		
+
 		private String computeFilterString() {
 			Directive directive = getDirective(DIRECTIVE_FILTER);
 			return new StringBuilder()
@@ -161,13 +161,13 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 					.toString();
 		}
 	}
-	
+
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_EXPORTSERVICE;
-	
-	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.SERVICE + ")(?=,|\\z)");
-	
+
+    private static final Pattern PATTERN = Pattern.compile("(" + Grammar.SUBSYSTEM_EXPORTSERVICE + ")(?=,|\\z)");
+
 	private final Set<Clause> clauses = new HashSet<Clause>();
-	
+
 	public SubsystemExportServiceHeader(String value) {
 		Matcher matcher = PATTERN.matcher(value);
 		while (matcher.find())
@@ -175,7 +175,7 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 		if (clauses.isEmpty())
 			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
 	}
-	
+
 	@Override
 	public Collection<SubsystemExportServiceHeader.Clause> getClauses() {
 		return Collections.unmodifiableSet(clauses);
@@ -190,14 +190,14 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 	public String getValue() {
 		return toString();
 	}
-	
+
 	public List<Capability> toCapabilities(Resource resource) throws InvalidSyntaxException {
 		List<Capability> result = new ArrayList<Capability>();
 		for (Clause clause : clauses)
 			result.addAll(clause.toCapabilities(resource));
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
