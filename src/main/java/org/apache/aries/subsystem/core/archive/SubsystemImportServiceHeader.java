@@ -35,10 +35,10 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
 		public static final String DIRECTIVE_RESOLUTION = Constants.RESOLUTION_DIRECTIVE;
-		
-		private static final Pattern PATTERN_NAMESPACE = Pattern.compile('(' + Grammar.NAMESPACE + ")(?=;|\\z)");
+
+		private static final Pattern PATTERN_OBJECTCLASS_OR_STAR = Pattern.compile("((" + Grammar.OBJECTCLASS + ")|[*])(?=;|\\z)");
 		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
-		
+
 		private static void fillInDefaults(Map<String, Parameter> parameters) {
 			Parameter parameter = parameters.get(DIRECTIVE_EFFECTIVE);
 			if (parameter == null)
@@ -47,12 +47,12 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 			if (parameter == null)
 				parameters.put(DIRECTIVE_RESOLUTION, ResolutionDirective.MANDATORY);
 		}
-		
+
 		private final String path;
 		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		
+
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_NAMESPACE.matcher(clause);
+			Matcher matcher = PATTERN_OBJECTCLASS_OR_STAR.matcher(clause);
 			if (!matcher.find())
 				throw new IllegalArgumentException("Missing namespace path: " + clause);
 			path = matcher.group();
@@ -63,13 +63,13 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 			}
 			fillInDefaults(parameters);
 		}
-		
+
 		public Clause(Requirement requirement) {
 			path = requirement.getNamespace();
 			for (Entry<String, String> directive : requirement.getDirectives().entrySet())
 				parameters.put(directive.getKey(), DirectiveFactory.createDirective(directive.getKey(), directive.getValue()));
 		}
-		
+
 		@Override
 		public Attribute getAttribute(String name) {
 			Parameter result = parameters.get(name);
@@ -126,11 +126,11 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 		public String getPath() {
 			return path;
 		}
-		
+
 		public SubsystemImportServiceRequirement toRequirement(Resource resource) {
 			return new SubsystemImportServiceRequirement(this, resource);
 		}
-		
+
 		@Override
 		public String toString() {
 			StringBuilder builder = new StringBuilder()
@@ -141,12 +141,11 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 			return builder.toString();
 		}
 	}
-	
+
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_IMPORTSERVICE;
-	
-	// TODO Subsystem-ImportService currently does not have its own grammar, but it's similar to Require-Capability.
-	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.REQUIREMENT + ")(?=,|\\z)");
-	
+
+    private static final Pattern PATTERN = Pattern.compile("(" + Grammar.SUBSYSTEM_IMPORTSERVICE + ")(?=,|\\z)");
+
 	private static Collection<Clause> processHeader(String header) {
 		Matcher matcher = PATTERN.matcher(header);
 		Set<Clause> clauses = new HashSet<Clause>();
@@ -154,19 +153,19 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 			clauses.add(new Clause(matcher.group()));
 		return clauses;
 	}
-	
+
 	private final Set<Clause> clauses;
-	
+
 	public SubsystemImportServiceHeader(String value) {
 		this(processHeader(value));
 	}
-	
+
 	public SubsystemImportServiceHeader(Collection<Clause> clauses) {
 		if (clauses.isEmpty())
 			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
 		this.clauses = new HashSet<Clause>(clauses);
 	}
-	
+
 	@Override
 	public Collection<SubsystemImportServiceHeader.Clause> getClauses() {
 		return Collections.unmodifiableSet(clauses);
@@ -181,7 +180,7 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 	public String getValue() {
 		return toString();
 	}
-	
+
 	@Override
 	public List<SubsystemImportServiceRequirement> toRequirements(Resource resource) {
 		List<SubsystemImportServiceRequirement> requirements = new ArrayList<SubsystemImportServiceRequirement>(clauses.size());
@@ -189,7 +188,7 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
