@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TB4
+Bundle-SymbolicName: org.apache.aries.subsystem.itests.tb4
+Bundle-Version: 1.0.0
+Bundle-Activator: org.apache.aries.subsystem.itests.tb4.Activator
+Import-Package: org.osgi.framework,org.osgi.util.tracker
