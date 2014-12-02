@@ -27,31 +27,36 @@ import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 
 public class OsgiIdentityCapability extends AbstractCapability {
-	private final Map<String, Object> attributes = new HashMap<String, Object>();
+	private final Map<String, Object> attributes;
 	private final Resource resource;
-	
+
 	public OsgiIdentityCapability(Resource resource, String symbolicName) {
 		this(resource, symbolicName, Version.emptyVersion);
 	}
-	
+
 	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version) {
 		this(resource, symbolicName, version, IdentityNamespace.TYPE_BUNDLE);
 	}
-	
+
 	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version, String identityType) {
+	    this(resource, symbolicName, version, identityType, new HashMap<String, Object>());
+	}
+
+    public OsgiIdentityCapability(Resource resource, String symbolicName, Version version, String identityType, Map<String, Object> attrs) {
 		this.resource = resource;
+		attributes = attrs;
 		attributes.put(
-				IdentityNamespace.IDENTITY_NAMESPACE, 
+				IdentityNamespace.IDENTITY_NAMESPACE,
 				symbolicName);
 		attributes.put(
-				IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE, 
+				IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE,
 				version);
 		attributes.put(
-				IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE, 
+				IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE,
 				identityType);
 		// TODO Add directives, particularly "effective" and "singleton".
 	}
-	
+
 	public OsgiIdentityCapability(Resource resource, SubsystemManifest manifest) {
 		this(
 				resource,
@@ -59,7 +64,7 @@ public class OsgiIdentityCapability extends AbstractCapability {
 				manifest.getSubsystemVersionHeader().getVersion(),
 				manifest.getSubsystemTypeHeader().getType());
 	}
-	
+
 	public OsgiIdentityCapability(Resource resource, BundleManifest manifest) {
 		this(
 				resource,
