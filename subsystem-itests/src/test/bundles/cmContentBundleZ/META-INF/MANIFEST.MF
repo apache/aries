@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: CM Content Test Bundle
+Bundle-SymbolicName: org.apache.aries.subsystem.itests.cmcontent.impl
+Bundle-Version: 1.0.0
+Import-Package: org.osgi.framework, org.osgi.service.cm
+Bundle-Activator: org.apache.aries.subsystem.itests.cmcontent.impl.Activator
+

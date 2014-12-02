@@ -102,14 +102,15 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	private static final String SUBSYSTEM_CORE_NAME = "org.apache.aries.subsystem.core";
     protected static boolean createdApplications = false;
 	boolean installModeler = true;
-	
+    boolean installConfigAdmin = false;
+
 	public SubsystemTest() {
 	}
-	
+
 	public SubsystemTest(boolean installModeller) {
 		this.installModeler = installModeller;
 	}
-	
+
 	public Option baseOptions() {
         String localRepo = getLocalRepo();
         return composite(
@@ -120,7 +121,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
                 when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
          );
     }
-	
+
 	@Configuration
 	public Option[] configuration() throws Exception {
 	    new File("target").mkdirs();
@@ -133,6 +134,8 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
 				when(installModeler).useOptions(modelerBundles()),
+                when(installConfigAdmin).useOptions(
+                        mavenBundle("org.apache.felix",     "org.apache.felix.configadmin").versionAsInProject()),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.api").versionAsInProject(),
 				mavenBundle("org.apache.aries.subsystem",   SUBSYSTEM_CORE_NAME).versionAsInProject(),
 				streamBundle(createCoreFragment()).noStart(),
@@ -151,7 +154,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
     protected void init() throws Exception {
-       
+
     }
 
     private Option modelerBundles() {
@@ -164,7 +167,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
     /**
      * The itests need private packages from the core subsystems bundle.
      * So this fragment exports them.
-     * @return stream containing the fragment 
+     * @return stream containing the fragment
      */
     private InputStream createCoreFragment() {
 	return TinyBundles.bundle()
@@ -173,12 +176,12 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	    .set("Fragment-Host", SUBSYSTEM_CORE_NAME)
 	    .build();
     }
-	
+
 	protected final SubsystemEventHandler subsystemEvents = new SubsystemEventHandler();
-	
+
 	@SuppressWarnings("rawtypes")
     protected Collection<ServiceRegistration> serviceRegistrations = new ArrayList<ServiceRegistration>();
-	
+
 	@Before
 	public void setUp() throws Exception {
 		if (!createdApplications) {
@@ -187,68 +190,68 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
 	}
-	
+
 	protected void createApplications() throws Exception {
 	}
 
 	@SuppressWarnings("rawtypes")
     @After
-	public void tearDown() throws Exception 
+	public void tearDown() throws Exception
 	{
 		bundleContext.removeServiceListener(subsystemEvents);
 		for (ServiceRegistration registration : serviceRegistrations)
 			Utils.unregisterQuietly(registration);
 		serviceRegistrations.clear();
 	}
-	
+
 	protected RichBundleContext context(Subsystem subsystem) {
 		return new RichBundleContext(subsystem.getBundleContext());
 	}
-	
+
 	protected void assertEmptySubsystem(Subsystem subsystem) {
     	assertSymbolicName("org.apache.aries.subsystem.itests.subsystem.empty", subsystem);
     	assertVersion("0", subsystem);
     	assertType(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION, subsystem);
     }
-	
+
 	protected void assertBundleState(int state, String symbolicName, Subsystem subsystem) {
     	Bundle bundle = context(subsystem).getBundleByName(symbolicName);
     	assertNotNull("Bundle not found: " + symbolicName, bundle);
     	assertBundleState(bundle, state);
     }
-	
+
 	protected void assertBundleState(Bundle bundle, int state) {
 		assertTrue("Wrong state: " + bundle + " [expected " + state + " but was " + bundle.getState() + "]", (bundle.getState() & state) != 0);
 	}
-	
+
 	protected Subsystem assertChild(Subsystem parent, String symbolicName) {
 		return assertChild(parent, symbolicName, null, null);
 	}
-	
+
 	protected Subsystem assertChild(Subsystem parent, String symbolicName, Version version) {
 		return assertChild(parent, symbolicName, version, null);
 	}
-	
+
 	protected Subsystem assertChild(Subsystem parent, String symbolicName, Version version, String type) {
 		Subsystem result = getChild(parent, symbolicName, version, type);
 		assertNotNull("Child does not exist: " + symbolicName, result);
 		return result;
 	}
-	
+
 	protected void assertChild(Subsystem parent, Subsystem child) {
 		Collection<Subsystem> children = new ArrayList<Subsystem>(1);
 		children.add(child);
 		assertChildren(parent, children);
 	}
-	
+
 	protected void assertChildren(int size, Subsystem subsystem) {
 		assertEquals("Wrong number of children", size, subsystem.getChildren().size());
 	}
-	
+
 	protected void assertChildren(Subsystem parent, Collection<Subsystem> children) {
 		assertTrue("Parent did not contain all children", parent.getChildren().containsAll(children));
 	}
-	
+
 	protected void assertClassLoadable(String clazz, Bundle bundle) {
 		try {
 			bundle.loadClass(clazz);
@@ -258,33 +261,33 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			fail("Class " + clazz + " from bundle " + bundle + " should be loadable");
 		}
 	}
-	
+
 	protected void assertConstituent(Subsystem subsystem, String symbolicName) {
 		assertConstituent(subsystem, symbolicName, Version.emptyVersion);
 	}
-	
+
 	protected void assertConstituent(Subsystem subsystem, String symbolicName, Version version) {
 		assertConstituent(subsystem, symbolicName, version, IdentityNamespace.TYPE_BUNDLE);
 	}
-	
+
 	protected void assertContituent(Subsystem subsystem, String symbolicName, String type) {
 		assertConstituent(subsystem, symbolicName, Version.emptyVersion, type);
 	}
-	
+
 	protected Resource assertConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
 		Resource constituent = getConstituent(subsystem, symbolicName, version, type);
 		assertNotNull("Constituent not found: " + symbolicName + ';' + version + ';' + type, constituent);
 		return constituent;
 	}
-	
+
 	protected void assertConstituents(int size, Subsystem subsystem) {
 		assertEquals("Wrong number of constituents", size, subsystem.getConstituents().size());
 	}
-	
+
  	protected void assertEvent(Subsystem subsystem, Subsystem.State state) throws InterruptedException {
  		assertEvent(subsystem, state, 0);
  	}
- 	
+
  	protected void assertEvent(Subsystem subsystem, Subsystem.State state, long timeout) throws InterruptedException {
  		assertEvent(subsystem, state, subsystemEvents.poll(subsystem.getSubsystemId(), timeout));
  	}
@@ -294,7 +297,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
  		else
  			assertEvent(subsystem, state, event, ServiceEvent.MODIFIED);
  	}
-	
+
 	protected void assertEvent(Subsystem subsystem, Subsystem.State state, SubsystemEventHandler.ServiceEventInfo event, int type) {
 		// TODO Could accept a ServiceRegistration as an argument and verify it against the one in the event.
 		assertNotNull("No event", event);
@@ -305,64 +308,64 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertEquals("Wrong state", state, event.getState());
 		assertEquals("Wrong event type", type, event.getEventType());
 	}
-	
+
 	protected String assertHeaderExists(Subsystem subsystem, String name) {
 		String header = subsystem.getSubsystemHeaders(null).get(name);
 		assertNotNull("Missing header: " + name, header);
 		return header;
 	}
-	
+
 	protected void assertId(Subsystem subsystem) {
 		assertId(subsystem.getSubsystemId());
 	}
-	
+
 	protected void assertId(Long id) {
 		assertTrue("Subsystem ID was not a positive integer: " + id, id > 0);
 	}
-	
+
 	protected void assertLastId(long id) throws Exception {
 		Subsystem root = getRootSubsystem();
 		Field lastId = SubsystemIdentifier.class.getDeclaredField("lastId");
 		lastId.setAccessible(true);
 		assertEquals("Wrong lastId", id, lastId.getLong(root));
 	}
-	
+
 	protected void resetLastId() throws Exception {
 		Field lastId = SubsystemIdentifier.class.getDeclaredField("lastId");
 		lastId.setAccessible(true);
 		lastId.setInt(SubsystemIdentifier.class, 0);
 	}
-	
+
 	protected void assertLocation(String expected, String actual) {
 		assertTrue("Wrong location: " + actual, actual.indexOf(expected) != -1);
 	}
-	
+
 	protected void assertLocation(String expected, Subsystem subsystem) {
 		assertLocation(expected, subsystem.getLocation());
 	}
-	
+
 	protected void assertNotChild(Subsystem parent, Subsystem child) {
 		assertFalse("Parent contained child", parent.getChildren().contains(child));
 	}
-	
+
 	protected void assertNotConstituent(Subsystem subsystem, String symbolicName) {
 		assertNotConstituent(subsystem, symbolicName, Version.emptyVersion, IdentityNamespace.TYPE_BUNDLE);
 	}
-	
+
 	protected void assertNotConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
 		Resource constituent = getConstituent(subsystem, symbolicName, version, type);
 		assertNull("Constituent found: " + symbolicName + ';' + version + ';' + type, constituent);
 	}
-	
+
 	protected void assertParent(Subsystem expected, Subsystem subsystem) {
 		for (Subsystem parent : subsystem.getParents()) {
 			if (parent.equals(expected))
 				return;
-			
+
 		}
 		fail("Parent did not exist: " + expected.getSymbolicName());
 	}
-	
+
 	protected void assertProvisionPolicy(Subsystem subsystem, boolean acceptsDependencies) {
 		String headerStr = subsystem.getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_TYPE);
 		assertNotNull("Missing subsystem type header", headerStr);
@@ -373,7 +376,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		else
 			assertTrue("Subsystem accepts dependencies", directive.isRejectDependencies());
 	}
-	
+
 	protected void assertRefresh(Collection<Bundle> bundles) throws InterruptedException {
 		FrameworkWiring wiring = getSystemBundleAsFrameworkWiring();
 		final AtomicBoolean refreshed = new AtomicBoolean(false);
@@ -393,12 +396,12 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		assertTrue("Bundles not refreshed", refreshed.get());
 	}
-	
+
 	protected void assertRefreshAndResolve(Collection<Bundle> bundles) throws InterruptedException {
 		assertRefresh(bundles);
 		assertResolve(bundles);
 	}
-	
+
 	protected void assertRegionContextBundle(Subsystem s) {
 		Bundle b = getRegionContextBundle(s);
 		assertEquals("Not active", Bundle.ACTIVE, b.getState());
@@ -407,59 +410,59 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertEquals("Wrong version", Version.parseVersion("1.0.0"), b.getVersion());
 		assertConstituent(s, "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 	}
-	
+
 	protected void assertResolve(Collection<Bundle> bundles) {
 		FrameworkWiring wiring = getSystemBundleAsFrameworkWiring();
 		assertTrue("Bundles not resolved", wiring.resolveBundles(bundles));
 	}
-	
+
 	protected void assertServiceEventsInstall(Subsystem subsystem) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 	}
-	
+
 	protected void assertServiceEventsResolve(Subsystem subsystem) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertServiceEventResolved(subsystem, ServiceEvent.MODIFIED);
 	}
-	
+
 	protected void assertServiceEventsStart(Subsystem subsystem) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.STARTING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.ACTIVE, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 	}
-	
+
 	protected void assertServiceEventsStop(Subsystem subsystem) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertServiceEventResolved(subsystem, ServiceEvent.MODIFIED);
 		// Don't forget about the unregistering event, which will have the same state as before.
 		assertServiceEventResolved(subsystem, ServiceEvent.UNREGISTERING);
 	}
-	
+
 	protected void assertServiceEventResolved(Subsystem subsystem, int type) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000), type);
 	}
-	
+
 	protected void assertStartLevel(Bundle bundle, int expected) {
 		assertNotNull("Bundle is null", bundle);
-		assertEquals("Wrong start level", expected, ((BundleStartLevel) bundle.adapt(BundleStartLevel.class)).getStartLevel());
+		assertEquals("Wrong start level", expected, bundle.adapt(BundleStartLevel.class).getStartLevel());
 	}
-	
+
 	protected void assertState(State expected, State actual) {
 		assertState(EnumSet.of(expected), actual);
 	}
-	
+
 	protected void assertState(EnumSet<State> expected, State actual) {
 		assertTrue("Wrong state: expected=" + expected + ", actual=" + actual, expected.contains(actual));
 	}
-	
+
 	protected void assertState(State expected, Subsystem subsystem) {
 		assertState(expected, subsystem.getState());
 	}
-	
+
 	protected void assertState(EnumSet<State> expected, Subsystem subsystem) {
 		assertState(expected, subsystem.getState());
 	}
-	
+
 	protected Subsystem assertSubsystemLifeCycle(File file) throws Exception {
 		Subsystem rootSubsystem = context().getService(Subsystem.class);
         assertNotNull("Root subsystem was null", rootSubsystem);
@@ -486,47 +489,47 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertNotChild(rootSubsystem, subsystem);
 		return subsystem;
 	}
-	
+
 	protected void assertSubsystemNotNull(Subsystem subsystem) {
 		assertNotNull("Subsystem was null", subsystem);
 	}
-	
+
 	protected void assertSymbolicName(String expected, Subsystem subsystem) {
 		assertSymbolicName(expected, subsystem.getSymbolicName());
 	}
-	
+
 	protected void assertSymbolicName(String expected, String actual) {
 		assertEquals("Wrong symbolic name", expected, actual);
 	}
-	
+
 	protected void assertType(String expected, Subsystem subsystem) {
 		assertEquals("Wrong type", expected, subsystem.getType());
 	}
-	
+
 	protected void assertVersion(String expected, Subsystem subsystem) {
 		assertVersion(Version.parseVersion(expected), subsystem);
 	}
-	
+
 	protected void assertVersion(Version expected, Subsystem subsystem) {
 		assertVersion(expected, subsystem.getVersion());
 	}
-	
+
 	protected void assertVersion(Version expected, Version actual) {
 		assertEquals("Wrong version", expected, actual);
 	}
-	
+
 	protected Header version(String version) {
 		return new Header(Constants.BUNDLE_VERSION, version);
 	}
-	
+
 	protected Header name(String name) {
 		return new Header(Constants.BUNDLE_SYMBOLICNAME, name);
 	}
-	
+
 	protected Header exportPackage(String exportPackage) {
 		return new Header(Constants.EXPORT_PACKAGE, exportPackage);
 	}
-	
+
 	protected Header importPackage(String importPackage) {
 		return new Header(Constants.IMPORT_PACKAGE, importPackage);
 	}
@@ -534,7 +537,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	protected Header requireBundle(String bundleName) {
 		return new Header(Constants.REQUIRE_BUNDLE, bundleName);
 	}
-	
+
 	protected Header requireCapability(String capability) {
 		return new Header(Constants.REQUIRE_CAPABILITY, capability);
 	}
@@ -553,8 +556,8 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		createBundle(emptyFiles, headerMap);
 	}
-	
-	private static void createBundle(List<String> emptyFiles, Map<String, String> headers) throws IOException 
+
+	private static void createBundle(List<String> emptyFiles, Map<String, String> headers) throws IOException
 	{
 		String symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
 		JarFixture bundle = ArchiveFixture.newJar();
@@ -567,22 +570,22 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		write(symbolicName, bundle);
 	}
-	
+
 	protected static void createBlueprintBundle(String symbolicName, String blueprintXml)
 			throws IOException {
 		write(symbolicName,
 				ArchiveFixture.newJar().manifest().symbolicName(symbolicName)
 						.end().file("OSGI-INF/blueprint/blueprint.xml", blueprintXml));
 	}
-	
+
 	private RepositoryContent createBundleRepositoryContent(String file) throws Exception {
 		return createBundleRepositoryContent(new File(file));
 	}
-	
+
 	private RepositoryContent createBundleRepositoryContent(File file) throws Exception {
 		return new BundleResource(FileSystem.getFSRoot(file));
 	}
-	
+
 	protected static void createManifest(String name, Map<String, String> headers) throws IOException {
 		ManifestFixture manifest = ArchiveFixture.newJar().manifest();
 		for (Entry<String, String> header : headers.entrySet()) {
@@ -590,7 +593,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		write(name, manifest);
 	}
-	
+
 	protected static void createSubsystem(String name, String...contents) throws IOException {
 		File manifest = new File(name + ".mf");
 		ZipFixture fixture = ArchiveFixture.newZip();
@@ -605,20 +608,20 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		write(name, fixture);
 	}
-	
+
 	protected Subsystem findSubsystemService(long id) throws InvalidSyntaxException {
 		String filter = "(" + SubsystemConstants.SUBSYSTEM_ID_PROPERTY + "=" + id + ")";
 		return context().getService(Subsystem.class, filter, 5000);
 	}
-	
+
 	protected Subsystem getChild(Subsystem parent, String symbolicName) {
 		return getChild(parent, symbolicName, null, null);
 	}
-	
+
 	protected Subsystem getChild(Subsystem parent, String symbolicName, Version version) {
 		return getChild(parent, symbolicName, version, null);
 	}
-	
+
 	protected Subsystem getChild(Subsystem parent, String symbolicName, Version version, String type) {
 		for (Subsystem child : parent.getChildren()) {
 			if (symbolicName.equals(child.getSymbolicName())) {
@@ -635,31 +638,31 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		return null;
 	}
-	
+
 	public static Object getIdentityAttribute(Resource resource, String name) {
 	    List<Capability> capabilities = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE);
         Capability capability = capabilities.get(0);
         return capability.getAttributes().get(name);
     }
-	
+
 	public static String getSymbolicNameAttribute(Resource resource) {
         return (String)getIdentityAttribute(resource, IdentityNamespace.IDENTITY_NAMESPACE);
     }
-	
+
    public static Version getVersionAttribute(Resource resource) {
         Version result = (Version)getIdentityAttribute(resource, IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
         if (result == null)
             result = Version.emptyVersion;
         return result;
     }
-   
+
    public static String getTypeAttribute(Resource resource) {
        String result = (String)getIdentityAttribute(resource, IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
        if (result == null)
            result = TypeAttribute.DEFAULT_VALUE;
        return result;
    }
-	
+
    protected Resource getConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
 		for (Resource resource : subsystem.getConstituents()) {
 			if (symbolicName.equals(getSymbolicNameAttribute(resource))) {
@@ -676,26 +679,26 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		return null;
 	}
-	
+
 	protected AriesSubsystem getConstituentAsAriesSubsystem(Subsystem subsystem, String symbolicName, Version version, String type) {
 		Resource resource = getConstituent(subsystem, symbolicName, version, type);
 		return (AriesSubsystem)resource;
 	}
-	
+
 	protected Bundle getConstituentAsBundle(Subsystem subsystem, String symbolicName, Version version, String type) {
 		return getConstituentAsBundleRevision(subsystem, symbolicName, version, type).getBundle();
 	}
-	
+
 	protected BundleRevision getConstituentAsBundleRevision(Subsystem subsystem, String symbolicName, Version version, String type) {
 		Resource resource = getConstituent(subsystem, symbolicName, version, type);
 		return (BundleRevision)resource;
 	}
-	
+
 	protected Subsystem getConstituentAsSubsystem(Subsystem subsystem, String symbolicName, Version version, String type) {
 		Resource resource = getConstituent(subsystem, symbolicName, version, type);
 		return (Subsystem)resource;
 	}
-	
+
 	protected Region getRegion(Subsystem subsystem) {
 		RegionDigraph digraph = context().getService(RegionDigraph.class);
 		String name = getRegionName(subsystem);
@@ -703,27 +706,27 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertNotNull("Region not found: " + name, region);
 		return region;
 	}
-	
+
 	protected Bundle getRegionContextBundle(Subsystem subsystem) {
 		BundleContext bc = subsystem.getBundleContext();
 		assertNotNull("No region context bundle", bc);
 		return bc.getBundle();
 	}
-	
+
 	protected String getRegionName(Subsystem subsystem) {
 		if (subsystem.getSubsystemId() == 0)
 			return "org.eclipse.equinox.region.kernel";
 		return subsystem.getSymbolicName() + ';' + subsystem.getVersion() + ';' + subsystem.getType() + ';' + subsystem.getSubsystemId();
 	}
-	
+
 	protected AriesSubsystem getRootAriesSubsystem() {
 		return context().getService(AriesSubsystem.class);
 	}
-	
+
 	protected Subsystem getRootSubsystem() {
 		return context().getService(Subsystem.class, "(subsystem.id=0)");
 	}
-	
+
 	protected Subsystem getRootSubsystemInState(Subsystem.State state, long timeout) throws InterruptedException {
 		Subsystem root = getRootSubsystem();
 		long now = System.currentTimeMillis();
@@ -734,71 +737,71 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			fail("Root subsystem never achieved state: " + state);
 		return root;
 	}
-	
+
 	protected Bundle getSystemBundle() {
 		return bundleContext.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
 	}
-	
+
 	protected FrameworkStartLevel getSystemBundleAsFrameworkStartLevel() {
-		return (FrameworkStartLevel) getSystemBundle().adapt(FrameworkStartLevel.class);
+		return getSystemBundle().adapt(FrameworkStartLevel.class);
 	}
-	
+
 	protected FrameworkWiring getSystemBundleAsFrameworkWiring() {
-		return (FrameworkWiring) getSystemBundle().adapt(FrameworkWiring.class);
+		return getSystemBundle().adapt(FrameworkWiring.class);
 	}
-	
+
 	protected Bundle getSubsystemCoreBundle() {
 		return context().getBundleByName(SUBSYSTEM_CORE_NAME);
 	}
-	
+
 	protected Bundle installBundleFromFile(String fileName) throws FileNotFoundException, BundleException {
 		return installBundleFromFile(new File(fileName), getRootSubsystem());
 	}
-	
+
 	protected Bundle installBundleFromFile(String fileName, Subsystem subsystem) throws FileNotFoundException, BundleException {
 		return installBundleFromFile(new File(fileName), subsystem);
 	}
-	
+
 	private Bundle installBundleFromFile(File file, Subsystem subsystem) throws FileNotFoundException, BundleException {
 		Bundle bundle = installBundleFromFile(file, subsystem.getBundleContext());
 		assertBundleState(Bundle.INSTALLED|Bundle.RESOLVED, bundle.getSymbolicName(), subsystem);
 		return bundle;
 	}
-	
+
 	private Bundle installBundleFromFile(File file, BundleContext bundleContext) throws FileNotFoundException, BundleException {
 		// The following input stream is closed by the bundle context.
 		return bundleContext.installBundle(file.toURI().toString(), new FileInputStream(file));
 	}
-	
+
 	protected Subsystem installSubsystemFromFile(Subsystem parent, String fileName) throws Exception {
 		return installSubsystemFromFile(parent, new File(fileName));
 	}
-	
+
 	protected Subsystem installSubsystemFromFile(String fileName) throws Exception {
 		return installSubsystemFromFile(new File(fileName));
 	}
-	
+
 	protected Subsystem installSubsystemFromFile(Subsystem parent, File file) throws Exception {
 		return installSubsystem(parent, file.toURI().toURL().toExternalForm());
 	}
-	
+
 	private Subsystem installSubsystemFromFile(File file) throws Exception {
 		return installSubsystem(getRootSubsystem(), file.toURI().toURL().toExternalForm());
 	}
-	
+
 	protected Subsystem installSubsystem(String location) throws Exception {
 		return installSubsystem(getRootSubsystem(), location);
 	}
-	
+
 	protected Subsystem installSubsystem(String location, InputStream content) throws Exception {
 		return installSubsystem(getRootSubsystem(), location, content);
 	}
-	
+
 	protected Subsystem installSubsystem(Subsystem parent, String location) throws Exception {
 		// The following input stream is closed by Subsystem.install.
 		return installSubsystem(parent, location, new URL(location).openStream());
 	}
-	
+
 	protected Subsystem installSubsystem(Subsystem parent, String location, InputStream content) throws Exception {
 		subsystemEvents.clear();
 		Subsystem subsystem = parent.install(location, content);
@@ -815,12 +818,12 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 //		assertDirectory(subsystem);
 		return subsystem;
 	}
-	
+
 	protected void registerRepositoryService(Repository repository) {
 		serviceRegistrations.add(bundleContext.registerService(
 				Repository.class, repository, null));
 	}
-	
+
 	protected void registerRepositoryService(Resource...resources) {
 		TestRepository.Builder builder = new TestRepository.Builder();
 		for (Resource resource : resources) {
@@ -828,7 +831,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		registerRepositoryService(builder.build());
 	}
-	
+
 	protected void registerRepositoryService(String...files) throws Exception {
 		Resource[] resources = new Resource[files.length];
 		int i = 0;
@@ -837,26 +840,26 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		registerRepositoryService(resources);
 	}
-	
+
 	protected void restartSubsystemsImplBundle() throws BundleException {
 		Bundle b = getSubsystemCoreBundle();
 		b.stop();
 		b.start();
 	}
-	
+
 	protected void startBundle(Bundle bundle) throws BundleException {
 		startBundle(bundle, getRootSubsystem());
 	}
-	
+
 	protected void startBundle(Bundle bundle, Subsystem subsystem) throws BundleException {
 		bundle.start();
 		assertBundleState(Bundle.ACTIVE, bundle.getSymbolicName(), subsystem);
 	}
-	
+
 	protected void startSubsystem(Subsystem subsystem) throws Exception {
 		startSubsystemFromInstalled(subsystem);
 	}
-	
+
 	protected void startSubsystemFromInstalled(Subsystem subsystem) throws InterruptedException {
 		assertState(State.INSTALLED, subsystem);
 		subsystemEvents.clear();
@@ -867,7 +870,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertEvent(subsystem, State.ACTIVE, 5000);
 		assertState(State.ACTIVE, subsystem);
 	}
-	
+
 	protected void startSubsystemFromResolved(Subsystem subsystem) throws InterruptedException {
 		assertState(State.RESOLVED, subsystem);
 		subsystemEvents.clear();
@@ -876,12 +879,12 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertEvent(subsystem, State.ACTIVE, 5000);
 		assertState(State.ACTIVE, subsystem);
 	}
-	
+
 	protected void stopAndUninstallSubsystemSilently(Subsystem subsystem) {
 		stopSubsystemSilently(subsystem);
 		uninstallSubsystemSilently(subsystem);
 	}
-	
+
 	protected void stopSubsystem(Subsystem subsystem) throws Exception {
 		assertState(State.ACTIVE, subsystem);
 		subsystemEvents.clear();
@@ -890,7 +893,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertEvent(subsystem, State.RESOLVED, 5000);
 		assertState(State.RESOLVED, subsystem);
 	}
-	
+
 	protected void stopSubsystemSilently(Subsystem subsystem) {
 		try {
 			stopSubsystem(subsystem);
@@ -899,7 +902,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			t.printStackTrace();
 		}
 	}
-	
+
 	protected void uninstallSilently(Bundle bundle) {
 		if (bundle == null)
 			return;
@@ -908,7 +911,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		catch (Exception e) {}
 	}
-	
+
 	protected void uninstallSubsystem(Subsystem subsystem) throws Exception {
 		assertState(EnumSet.of(State.INSTALLED, State.RESOLVED), subsystem);
 		subsystemEvents.clear();
@@ -937,7 +940,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			assertNull("Region not removed", digraph.getRegion(region.getName()));
 		}
 	}
-	
+
 	protected void uninstallSubsystemSilently(Subsystem subsystem) {
 		if (subsystem == null)
 			return;
@@ -948,7 +951,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			t.printStackTrace();
 		}
 	}
-	
+
 	protected void writeToFile(InputStream is, String name) {
         try {
             FileOutputStream dest = new FileOutputStream(name);
@@ -958,11 +961,11 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
         }
     }
 
-    protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException 
+    protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException
 	{
 		write(new File(file), fixture);
 	}
-	
+
 	private static void write(File file, ArchiveFixture.AbstractFixture fixture) throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
     	try {
@@ -972,8 +975,8 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
     		fos.close();
     	}
 	}
-	
-	static void createApplication(String name, String ... contents) throws Exception 
+
+	static void createApplication(String name, String ... contents) throws Exception
 	{
 		ClassLoader cl = SubsystemTest.class.getClassLoader();
         ZipFixture feature = ArchiveFixture
@@ -1000,13 +1003,13 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			Utils.closeQuietly(fos);
 		}
 	}
-	
+
 	protected static String normalizeBundleLocation(String location) {
 		if (location.startsWith("initial@"))
 			return location.substring(8);
 		return location;
 	}
-	
+
 	protected InputStream getResource(String path) {
 	    InputStream is = this.getClass().getClassLoader().getResourceAsStream(path);
 	    if (is == null) {

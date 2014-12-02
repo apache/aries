@@ -13,7 +13,9 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import org.apache.aries.subsystem.ContentHandler;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
@@ -24,31 +26,37 @@ import org.slf4j.LoggerFactory;
 
 public abstract class ResourceUninstaller {
 	private static final Logger logger = LoggerFactory.getLogger(ResourceUninstaller.class);
-	
+
 	public static ResourceUninstaller newInstance(Resource resource, BasicSubsystem subsystem) {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type)) {
 			return new SubsystemResourceUninstaller(resource, subsystem);
-		else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type))
+		} else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
 			return new BundleResourceUninstaller(resource, subsystem);
-		else
-			throw new SubsystemException("No uninstaller exists for resource type: " + type);
+		} else {
+		    ServiceReference<ContentHandler> handlerRef = CustomResources.getCustomContentHandler(subsystem, type);
+		    if (handlerRef != null) {
+		        return new CustomResourceUninstaller(resource, type, subsystem, handlerRef);
+		    } else {
+		        throw new SubsystemException("No uninstaller exists for resource type: " + type);
+		    }
+		}
 	}
-	
+
 	protected static void removeConstituent(BasicSubsystem subsystem, Resource resource) {
 		Activator.getInstance().getSubsystems().removeConstituent(subsystem, resource);
 	}
-	
+
 	protected static void removeReference(BasicSubsystem subsystem, Resource resource) {
 		Activator.getInstance().getSubsystems().removeReference(subsystem, resource);
 	}
-	
+
 	protected final BasicSubsystem provisionTo;
 	protected final Resource resource;
 	protected final BasicSubsystem subsystem;
-	
+
 	public ResourceUninstaller(Resource resource, BasicSubsystem subsystem) {
 		if (resource == null)
 			throw new NullPointerException("Missing required parameter: resource");
@@ -61,9 +69,9 @@ public abstract class ResourceUninstaller {
 		else
 			provisionTo = subsystem;
 	}
-	
+
 	public abstract void uninstall();
-	
+
 	protected boolean isExplicit() {
 		// The operation is explicit if it was requested by a user, in which
 		// case the resource and subsystem are the same.
@@ -80,14 +88,14 @@ public abstract class ResourceUninstaller {
 		}
 		return false;
 	}
-	
+
 	protected boolean isTransitive() {
 		ProvisionResourceHeader header = subsystem.getDeploymentManifest().getProvisionResourceHeader();
 		if (header == null)
 			return false;
 		return header.contains(resource);
 	}
-	
+
 	protected boolean isResourceUninstallable() {
 		int referenceCount = Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource).size();
 		if (referenceCount == 0)
@@ -98,11 +106,11 @@ public abstract class ResourceUninstaller {
 		}
 		return false;
 	}
-	
+
 	protected void removeConstituent() {
 		removeConstituent(subsystem, resource);
 	}
-	
+
 	protected void removeReference() {
 		removeReference(subsystem, resource);
 	}
