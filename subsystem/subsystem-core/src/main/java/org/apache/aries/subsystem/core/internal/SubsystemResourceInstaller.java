@@ -29,7 +29,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	public SubsystemResourceInstaller(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
 		super(coordination, resource, subsystem);
 	}
-	
+
 	public Resource install() throws Exception {
 		BasicSubsystem result;
 		if (resource instanceof RepositoryContent)
@@ -42,7 +42,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 			result = installSubsystemResource((SubsystemResource)resource);
 		return result;
 	}
-	
+
 	private void addChild(final BasicSubsystem child) {
 		// provisionTo will be null if the resource is an already installed
 		// dependency.
@@ -64,7 +64,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 			}
 		});
 	}
-	
+
 	private void addSubsystem(final BasicSubsystem subsystem) {
 		Activator.getInstance().getSubsystems().addSubsystem(subsystem);
 		coordination.addParticipant(new Participant() {
@@ -72,14 +72,14 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 			public void ended(Coordination arg0) throws Exception {
 				// Nothing
 			}
-	
+
 			@Override
 			public void failed(Coordination arg0) throws Exception {
 				Activator.getInstance().getSubsystems().removeSubsystem(subsystem);
 			}
 		});
 	}
-	
+
 	private BasicSubsystem installAriesSubsystem(BasicSubsystem subsystem) throws Exception {
 		addChild(subsystem);
 		addReference(subsystem);
@@ -124,12 +124,12 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 			Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
 		return subsystem;
 	}
-	
+
 	private BasicSubsystem installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
 		SubsystemResource subsystemResource = new SubsystemResource(resource, provisionTo);
 		return installSubsystemResource(subsystemResource);
 	}
-	
+
 	private void installRegionContextBundle(final BasicSubsystem subsystem) throws Exception {
 		if (!subsystem.isScoped())
 			return;
@@ -146,12 +146,12 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 			}
 		});
 	}
-	
+
 	private BasicSubsystem installRepositoryContent(RepositoryContent resource) throws Exception {
-		RawSubsystemResource rawSubsystemResource = new RawSubsystemResource(getLocation(), FileSystem.getFSRoot(resource.getContent()));
+		RawSubsystemResource rawSubsystemResource = new RawSubsystemResource(getLocation(), FileSystem.getFSRoot(resource.getContent()), subsystem);
 		return installRawSubsystemResource(rawSubsystemResource);
 	}
-	
+
 	private BasicSubsystem installSubsystemResource(SubsystemResource resource) throws Exception {
 		BasicSubsystem subsystem = new BasicSubsystem(resource);
 		installAriesSubsystem(subsystem);

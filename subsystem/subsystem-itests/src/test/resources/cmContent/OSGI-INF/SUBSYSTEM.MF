@@ -1,0 +1,5 @@
+Subsystem-SymbolicName: org.apache.aries.subsystem.itests.cmContent
+Subsystem-Type: osgi.subsystem.feature
+Subsystem-Content: com.blah.Blah;embedded-resource=com.blah.Blah.cfg;type=osgi.config.properties,
+ org.foo.Bar;embedded-resource=org.foo.Bar.cfg;type=felix.cm.config,
+ org.apache.aries.subsystem.itests.cmcontent.impl
