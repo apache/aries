@@ -13,8 +13,10 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import org.apache.aries.subsystem.ContentHandler;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
@@ -27,28 +29,32 @@ public abstract class ResourceInstaller {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type)) {
 			return new SubsystemResourceInstaller(coordination, resource, subsystem);
-		else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type))
+		} else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
 			return new BundleResourceInstaller(coordination, resource, subsystem);
-		else if (Constants.ResourceTypeSynthesized.equals(type)) {
+		} else if (Constants.ResourceTypeSynthesized.equals(type)) {
 			return new ResourceInstaller(coordination, resource, subsystem) {
-				
 				@Override
 				public Resource install() throws Exception {
 					// do nothing;
 					return resource;
 				}
 			};
+		} else {
+		    ServiceReference<ContentHandler> handlerRef = CustomResources.getCustomContentHandler(subsystem, type);
+		    if (handlerRef != null)
+		        return new CustomResourceInstaller(coordination, resource, type, subsystem, handlerRef);
+
 		}
-			throw new SubsystemException("No installer exists for resource type: " + type);
+		throw new SubsystemException("No installer exists for resource type: " + type);
 	}
-	
-	protected final Coordination coordination;
+
+    protected final Coordination coordination;
 	protected final BasicSubsystem provisionTo;
 	protected final Resource resource;
 	protected final BasicSubsystem subsystem;
-	
+
 	public ResourceInstaller(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
 		this.coordination = coordination;
 		this.resource = resource;
@@ -62,9 +68,9 @@ public abstract class ResourceInstaller {
 		else
 			provisionTo = subsystem;
 	}
-	
+
 	public abstract Resource install() throws Exception;
-	
+
 	protected void addConstituent(final Resource resource) {
 		// Don't let a resource become a constituent of itself.
 		if (provisionTo == null || resource.equals(provisionTo))
@@ -82,7 +88,7 @@ public abstract class ResourceInstaller {
 			}
 		});
 	}
-	
+
 	protected void addReference(final Resource resource) {
 		// Don't let a resource reference itself.
 		if (resource.equals(subsystem))
@@ -106,19 +112,19 @@ public abstract class ResourceInstaller {
 			});
 		}
 	}
-	
+
 	protected String getLocation() {
 		return provisionTo.getLocation() + "!/" + ResourceHelper.getLocation(resource);
 	}
-	
+
 	protected boolean isContent() {
 		return Utils.isContent(subsystem, resource);
 	}
-	
+
 	protected boolean isDependency() {
 		return Utils.isDependency(subsystem, resource);
 	}
-	
+
 	protected boolean isReferencedProvisionTo() {
 		DeploymentManifest manifest = subsystem.getDeploymentManifest();
 		if (manifest != null) {
@@ -130,7 +136,7 @@ public abstract class ResourceInstaller {
 			return isReferencedSubsystem();
 		return false;
 	}
-	
+
 	protected boolean isReferencedSubsystem() {
 		DeploymentManifest manifest = subsystem.getDeploymentManifest();
 		if (manifest != null) {
