@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.subsystem</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystems Bundle</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <description>This is a standalone bundle to support Aries Subsystems.</description>
 
     <scm>
@@ -52,7 +52,7 @@
             *
         </aries.osgi.import>
         <aries.osgi.export.pkg>
-            org.apache.aries.subsystem;version="1.0",
+            org.apache.aries.subsystem;version="1.1",
             org.osgi.service.repository;version="1.0",
             org.osgi.service.subsystem;version="1.0"
         </aries.osgi.export.pkg>
@@ -66,12 +66,12 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>1.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
