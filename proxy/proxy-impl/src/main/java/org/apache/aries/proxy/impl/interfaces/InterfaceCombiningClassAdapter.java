@@ -61,7 +61,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
    */
   InterfaceCombiningClassAdapter(String className,
       ClassLoader loader, Class<?> superclass, Collection<Class<?>> interfaces) {
-    super(Opcodes.ASM4);
+    super(Opcodes.ASM5);
     writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader);
     ClassVisitor cv = new OSGiFriendlyClassVisitor(writer, ClassWriter.COMPUTE_FRAMES);
     adapter = new InterfaceUsingWovenProxyAdapter(cv, className, loader);
