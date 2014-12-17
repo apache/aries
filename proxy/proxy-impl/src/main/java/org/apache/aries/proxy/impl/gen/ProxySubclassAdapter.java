@@ -66,7 +66,7 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
   public ProxySubclassAdapter(ClassVisitor writer, String newClassName, ClassLoader loader)
   {
     // call the superclass constructor
-    super(Opcodes.ASM4, writer);
+    super(Opcodes.ASM5, writer);
     // the writer is now the cv in the superclass of ClassAdapter
 
     LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassAdapter", new Object[] { this, writer,
