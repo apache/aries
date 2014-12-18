@@ -124,9 +124,12 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    * @param ref  The provider service reference
    * @return true if the the provider is being used by this manager
    */
-  public synchronized boolean providerRemoved(ServiceReference ref) {
-    
-    boolean toReturn = provider.equals(ref);
+  public synchronized boolean providerRemoved(ServiceReference ref) 
+  {
+    boolean toReturn = false;
+    if (provider != null) {
+    	toReturn = provider.equals(ref);
+    }
     
     if(toReturn)
       destroy();
