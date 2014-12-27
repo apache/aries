@@ -124,8 +124,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    * @param ref  The provider service reference
    * @return true if the the provider is being used by this manager
    */
-  public synchronized boolean providerRemoved(ServiceReference ref) 
-  {
+  public synchronized boolean providerRemoved(ServiceReference ref) {
     boolean toReturn = false;
     if (provider != null) {
     	toReturn = provider.equals(ref);
@@ -262,6 +261,48 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     }
   }
 
+  public void registerEntityManagerFactory(String unitName) throws InvalidPersistenceUnitException {
+    //Only register if there is a provider and we are not
+    //quiescing
+    if(registrations == null) {
+      registrations = new ConcurrentHashMap<String, ServiceRegistration>();
+    }
+    
+    if(provider != null && !quiesce) {
+      //Make sure the EntityManagerFactories are instantiated
+      createEntityManagerFactory(unitName);
+      
+      String providerName = (String) provider.getProperty("javax.persistence.provider");
+      if(providerName == null) {
+        _logger.warn( NLS.MESSAGES.getMessage("no.provider.specified", 
+                      bundle.getSymbolicName() + '/' + bundle.getVersion(), 
+                      PersistenceUnitConstants.OSGI_UNIT_PROVIDER, provider));
+      }
+      //Register each EMF
+        
+        Hashtable<String,Object> props = new Hashtable<String, Object>();
+        
+        if(registrations.containsKey(unitName) || !!!availableDataSourceFactory(unitName)) {
+          unregisterEntityManagerFactory(unitName);
+        }
+        
+        props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, unitName);
+        if(providerName != null)
+          props.put(PersistenceUnitConstants.OSGI_UNIT_PROVIDER, providerName);
+        
+        props.put(PersistenceUnitConstants.OSGI_UNIT_VERSION, bundle.getVersion());
+        props.put(PersistenceUnitConstants.CONTAINER_MANAGED_PERSISTENCE_UNIT, Boolean.TRUE);
+        props.put(PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME, "".equals(unitName));
+        try {
+          registrations.put(unitName, bundle.getBundleContext().registerService(EntityManagerFactory.class.getCanonicalName(), emfs.get(unitName), props));
+          persistenceUnits.get(unitName).registered();
+        } catch (Exception e) {
+          _logger.error(NLS.MESSAGES.getMessage("cannot.register.persistence.unit", unitName, bundle.getSymbolicName() + '/' + bundle.getVersion()));
+          throw new InvalidPersistenceUnitException(e);
+        }
+    }
+  }
+
   private boolean availableDataSourceFactory(String unitName) {
     ManagedPersistenceUnitInfo mpui = persistenceUnits.get(unitName);
         
@@ -328,6 +369,37 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     }
   }
   
+  private void createEntityManagerFactory(String unitName) throws InvalidPersistenceUnitException {
+    if (emfs == null) {  
+      emfs = new HashMap<String, EntityManagerFactory>();
+    }
+    //Only try if we have a provider and EMFs
+    if(provider == null || quiesce) {
+        return;
+    }
+    try {
+      //Get hold of the provider
+      PersistenceProvider providerService = (PersistenceProvider) containerContext.getService(provider);
+
+      if(providerService == null) {
+        _logger.warn(NLS.MESSAGES.getMessage("persistence.provider.gone.awol", bundle.getSymbolicName() + '/' + bundle.getVersion()));
+        throw new InvalidPersistenceUnitException();
+      }
+
+      
+        ManagedPersistenceUnitInfo mpui = persistenceUnits.get(unitName);
+        try {
+          EntityManagerFactory emf = providerService.createContainerEntityManagerFactory(mpui.getPersistenceUnitInfo(), mpui.getContainerProperties());
+          EntityManagerFactory emfProxy = EMFProxyFactory.createProxy(emf, unitName);
+          emfs.put(unitName, emfProxy);
+        } catch (Exception e) {
+          _logger.warn("Error creating EntityManagerFactory", e);
+        }
+    } finally {
+      //Remember to unget the provider
+      containerContext.ungetService(provider);
+    }
+  }
 
 
   /**
@@ -511,4 +583,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     }
   }
 
+  public ManagedPersistenceUnitInfo getPersistenceUni(String unitName) { 
+    return persistenceUnits.get(unitName);
+  }
 }

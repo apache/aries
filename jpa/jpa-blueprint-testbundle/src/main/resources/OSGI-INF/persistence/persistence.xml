@@ -42,4 +42,11 @@
     <class>org.apache.aries.jpa.blueprint.itest.entities.Car</class>
     <exclude-unlisted-classes/>
   </persistence-unit>
+
+  <persistence-unit name="properties-test-unit" transaction-type="JTA">
+    <description>Test persistence unit for the JPA Container and Context iTests</description>
+	<properties>
+      
+    </properties>
+  </persistence-unit>
 </persistence>

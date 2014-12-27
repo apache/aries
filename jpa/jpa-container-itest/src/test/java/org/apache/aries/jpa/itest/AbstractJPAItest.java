@@ -36,7 +36,7 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
     private static final String FILTER_PROXY = "(" + PersistenceContextProvider.PROXY_FACTORY_EMF_ATTRIBUTE + "=*)";
 
     protected void registerClient(String unitName) {
-        PersistenceContextProvider provider = context().getService(PersistenceContextProvider.class);
+        PersistenceContextProvider provider = context().getService(PersistenceContextProvider.class, "(" + PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE + "=context)");
         HashMap<String, Object> props = new HashMap<String, Object>();
         props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
         provider.registerContext(unitName, bundleContext.getBundle(), props);

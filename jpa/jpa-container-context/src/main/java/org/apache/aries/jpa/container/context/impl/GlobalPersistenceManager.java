@@ -20,8 +20,10 @@ package org.apache.aries.jpa.container.context.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -252,7 +254,9 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
     subsystemContextBundleTracker.open();
     
     //Register our service
-    pcpReg = context.registerService(PersistenceContextProvider.class.getName(), this, null);
+    Dictionary<String, Object> properties = new Hashtable<String, Object>();
+    properties.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, "context");
+    pcpReg = context.registerService(PersistenceContextProvider.class.getName(), this, properties);
     registryReg = context.registerService(JTAPersistenceContextManager.class.getName(), registry, null);
     try{
       context.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);

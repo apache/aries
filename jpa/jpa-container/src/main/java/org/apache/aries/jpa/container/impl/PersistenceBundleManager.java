@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,7 @@ import javax.persistence.spi.PersistenceProvider;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
+import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
@@ -77,7 +80,8 @@ import org.slf4j.LoggerFactory;
  * matching PersistenceProvider
  */
 @SuppressWarnings("rawtypes")
-public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator, QuiesceHandler
+public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator, QuiesceHandler, 
+                              PersistenceContextProvider
 {
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
@@ -649,6 +653,9 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     initConfig();
     initParser();
     
+    Dictionary<String, Object> properties = new Hashtable<String, Object>();
+    properties.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, "unit");
+    ctx.registerService(PersistenceContextProvider.class, this, properties);
     serviceTracker = new ServiceTracker(ctx, PersistenceProvider.class.getName(), this);
     
     tracker = new RecursiveBundleTracker(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
@@ -718,5 +725,28 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
       
     }
     
+  }
+
+  @Override
+  public void registerContext(String unitName, Bundle bundle, HashMap<String, Object> properties) {
+    EntityManagerFactoryManager mgr = bundleToManagerMap.get(bundle);
+    if(mgr!=null) {
+      ManagedPersistenceUnitInfo mUnitInfo = mgr.getPersistenceUni(unitName);
+      if(mUnitInfo != null) {
+        mUnitInfo.getContainerProperties().putAll(properties);
+    
+        try {
+          mgr.registerEntityManagerFactory(unitName);
+        } catch (InvalidPersistenceUnitException e) {
+          logInvalidPersistenceUnitException(bundle, e);
+          mgr.destroy();
+          persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
+          
+          //Try re-initializing the manager immediately, this wasn't an
+          //update so the units don't need to be re-parsed
+          setupManager(bundle, mgr, false);
+        }
+      }
+    }
   }
 }

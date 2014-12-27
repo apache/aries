@@ -21,6 +21,8 @@ package org.apache.aries.jpa.blueprint.itest;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
 
+import java.util.Map;
+
 public class JPATestBean {
   
   private EntityManagerFactory persistenceUnit;
@@ -77,5 +79,9 @@ public class JPATestBean {
   public boolean constructorPContextAvailable() {
     constructorEM.isOpen();
     return true;
+  }
+  
+  public Map<String,Object> getContextProperties() {
+    return persistenceContext.getProperties();
   }
 }

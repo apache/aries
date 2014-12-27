@@ -119,12 +119,20 @@ public class NSHandler implements NamespaceHandler {
     private static final Collection<Class<?>> IFACES = Arrays.asList(new Class<?>[] {EntityManager.class});
     
     /** The {@link PersistenceManager} to register contexts with */
-    private PersistenceContextProvider manager;
+    private PersistenceContextProvider contextManager;
+
+    /** The {@link PersistenceManager} to register unit with */
+    private PersistenceContextProvider unitManager;
+
     /** Used to indicate whether the PersistenceContextProvider is available */
     private final AtomicBoolean contextsAvailable = new AtomicBoolean();
     
-    public void setManager(PersistenceContextProvider manager) {
-        this.manager = manager;
+    public void setContextManager(PersistenceContextProvider contextManager) {
+        this.contextManager = contextManager;
+    }
+
+    public void setUnitManager(PersistenceContextProvider unitManager) {
+      this.unitManager = unitManager;
     }
 
     /**
@@ -205,9 +213,10 @@ public class NSHandler implements NamespaceHandler {
                 // EntityManager    
                 properties.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE,
                         parseType(element));
-                properties.putAll(parseJPAProperties(element, context));
                 if(contextsAvailable.get()) {
-                    manager.registerContext(unitName, client, properties);
+                    contextManager.registerContext(unitName, client, properties);
+                properties.putAll(parseJPAProperties(element, context));
+                    unitManager.registerContext(unitName, client, properties);
                 } else {
                     _logger.warn(MESSAGES.getMessage("no.persistence.context.provider", client.getSymbolicName() + '/' + client.getVersion(), unitName, properties));
                 }

@@ -33,12 +33,17 @@
   </service>
   
   <bean id="namespaceHandler" class="org.apache.aries.jpa.blueprint.aries.impl.NSHandler">
-    <property name="manager" ref="persistenceContextProvider" />
+    <property name="contextManager" ref="persistenceContextProvider" />
+    <property name="unitManager" ref="persistenceUnitProvider" />
   </bean>
   
   <reference id="persistenceContextProvider" availability="optional"
-       interface="org.apache.aries.jpa.container.context.PersistenceContextProvider">
+       interface="org.apache.aries.jpa.container.context.PersistenceContextProvider"
+       filter="(org.apache.aries.jpa.context.type=context)">
   <reference-listener ref="namespaceHandler" bind-method="contextAvailable"
             unbind-method="contextUnavailable"/>
   </reference>
+  <reference id="persistenceUnitProvider" availability="optional"
+       interface="org.apache.aries.jpa.container.context.PersistenceContextProvider"
+       filter="(org.apache.aries.jpa.context.type=unit)"/>
 </blueprint>

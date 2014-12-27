@@ -20,6 +20,8 @@ package org.apache.aries.jpa.container.unit.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
@@ -55,16 +57,26 @@ public class ManagedPersistenceUnitInfoImpl implements
   
   private final PersistenceUnitInfoImpl info;
   
+  private final Map<String, Object> props;
+  
   @SuppressWarnings("rawtypes")
   public ManagedPersistenceUnitInfoImpl(Bundle persistenceBundle,
       ParsedPersistenceUnit unit,
       ServiceReference providerRef) {
     info = new PersistenceUnitInfoImpl(persistenceBundle, unit, providerRef, useDataSourceFactory);
+    props = new HashMap<String, Object>();
+    props.put(PersistenceUnitConstants.USE_DATA_SOURCE_FACTORY, useDataSourceFactory.toString());
   }
 
   public Map<String, Object> getContainerProperties() {
-    Map<String, Object> props = new HashMap<String, Object>();
-    props.put(PersistenceUnitConstants.USE_DATA_SOURCE_FACTORY, useDataSourceFactory.toString());
+    
+    Properties xmlProperties = info.getProperties();
+    for(Entry<Object, Object> entry : xmlProperties.entrySet()) {
+      String key = (String) entry.getKey();
+      if(!props.containsKey(key)) {
+        props.put(key, entry.getValue());
+      }
+    }
     return props;
   }
 

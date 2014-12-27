@@ -66,7 +66,8 @@ public class NSHandlerTest {
   private Element root;
   private Element root_110;
   private NSHandler sut;
-  private PersistenceContextProvider manager;
+  private PersistenceContextProvider contextManager;
+  private PersistenceContextProvider unitManager;
   private ParserContext parserCtx;
   private Bundle clientBundle;
   private List<ComponentMetadata> registeredComponents = new ArrayList<ComponentMetadata>();
@@ -86,8 +87,10 @@ public class NSHandlerTest {
     root_110 = doc.getDocumentElement();
     
     sut = new NSHandler();
-    manager = Skeleton.newMock(PersistenceContextProvider.class);
-    sut.setManager(manager);
+    contextManager = Skeleton.newMock(PersistenceContextProvider.class);
+    sut.setContextManager(contextManager);
+    unitManager = Skeleton.newMock(PersistenceContextProvider.class);
+    sut.setUnitManager(unitManager);
     sut.contextAvailable(null);
     
     clientBundle = Skeleton.newMock(Bundle.class);
@@ -144,7 +147,7 @@ public class NSHandlerTest {
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
     assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))(osgi.unit.name=myUnit))", reference.getFilter());
     
-    Skeleton.getSkeleton(manager).assertSkeletonNotCalled();
+    Skeleton.getSkeleton(contextManager).assertSkeletonNotCalled();
     
     assertTrue(registeredComponents.isEmpty());
   }
@@ -161,7 +164,7 @@ public class NSHandlerTest {
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
     assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))(osgi.unit.name=myUnit))", reference.getFilter());
     
-    Skeleton.getSkeleton(manager).assertSkeletonNotCalled();
+    Skeleton.getSkeleton(contextManager).assertSkeletonNotCalled();
     
     assertTrue(registeredComponents.isEmpty());
   }
@@ -271,7 +274,9 @@ public class NSHandlerTest {
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
-    Skeleton.getSkeleton(manager).assertCalled(
+    Skeleton.getSkeleton(contextManager).assertCalled(
+        new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, props));
+    Skeleton.getSkeleton(unitManager).assertCalled(
         new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, props));
   }
 
@@ -297,7 +302,9 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
-    Skeleton.getSkeleton(manager).assertCalled(
+    Skeleton.getSkeleton(contextManager).assertCalled(
+        new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, props));
+    Skeleton.getSkeleton(unitManager).assertCalled(
         new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, props));
   }
   
@@ -318,7 +325,7 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
-    Skeleton.getSkeleton(manager).assertNotCalled(
+    Skeleton.getSkeleton(contextManager).assertNotCalled(
         new MethodCall(PersistenceContextProvider.class, "registerContext", String.class, Bundle.class, Map.class));
   }
   
@@ -339,7 +346,7 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
     
     Map<String,Object> props = new HashMap<String, Object>();
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
-    Skeleton.getSkeleton(manager).assertNotCalled(
+    Skeleton.getSkeleton(contextManager).assertNotCalled(
         new MethodCall(PersistenceContextProvider.class, "registerContext", String.class, Bundle.class, Map.class));
   }
   
@@ -363,7 +370,9 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.EXTENDED);
     props.put("one", "eins");
     props.put("two", "zwo");
-    Skeleton.getSkeleton(manager).assertCalled(
+    Skeleton.getSkeleton(contextManager).assertCalled(
+        new MethodCall(PersistenceContextProvider.class, "registerContext", "", clientBundle, props));    
+    Skeleton.getSkeleton(unitManager).assertCalled(
         new MethodCall(PersistenceContextProvider.class, "registerContext", "", clientBundle, props));    
   }
   
@@ -387,7 +396,9 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
     props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.EXTENDED);
     props.put("one", "eins");
     props.put("two", "zwo");
-    Skeleton.getSkeleton(manager).assertCalled(
+    Skeleton.getSkeleton(contextManager).assertCalled(
+        new MethodCall(PersistenceContextProvider.class, "registerContext", "", clientBundle, props));
+    Skeleton.getSkeleton(unitManager).assertCalled(
         new MethodCall(PersistenceContextProvider.class, "registerContext", "", clientBundle, props));    
   }
   
@@ -423,7 +434,7 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
       assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
       assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))(osgi.unit.name=myUnit))", reference.getFilter());
       
-      Skeleton.getSkeleton(manager).assertSkeletonNotCalled();
+      Skeleton.getSkeleton(contextManager).assertSkeletonNotCalled();
       assertTrue(registeredComponents.isEmpty());
       
       e = getTestElement("withContextArg", root_110);
@@ -447,7 +458,7 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
       
       Map<String,Object> props = new HashMap<String, Object>();
       props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
-      Skeleton.getSkeleton(manager).assertCalled(
+      Skeleton.getSkeleton(contextManager).assertCalled(
           new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, Map.class));
   }
 
@@ -474,7 +485,7 @@ private void assertConstructorInnerBean(BeanMetadata input) {
       assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
       assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))(osgi.unit.name=myUnit))", reference.getFilter());
       
-      Skeleton.getSkeleton(manager).assertSkeletonNotCalled();
+      Skeleton.getSkeleton(contextManager).assertSkeletonNotCalled();
       assertTrue(registeredComponents.isEmpty());
       
       e = getTestElement("withIndexedContextArg", root_110);
@@ -498,7 +509,7 @@ private void assertConstructorInnerBean(BeanMetadata input) {
       
       Map<String,Object> props = new HashMap<String, Object>();
       props.put(PersistenceContextProvider.PERSISTENCE_CONTEXT_TYPE, PersistenceContextType.TRANSACTION);
-      Skeleton.getSkeleton(manager).assertCalled(
+      Skeleton.getSkeleton(contextManager).assertCalled(
           new MethodCall(PersistenceContextProvider.class, "registerContext", "myUnit", clientBundle, Map.class));
   }
   
@@ -538,8 +549,7 @@ private void assertConstructorInnerBean(BeanMetadata input) {
   }
   
   @Test
-  public void testgetSchemaLocation()
-  {
+  public void testgetSchemaLocation() {
     assertNotNull("No schema found", sut.getSchemaLocation(NSHandler.NS_URI_100));
     assertNotNull("No schema found", sut.getSchemaLocation(NSHandler.NS_URI_110));
     assertFalse("Should not be the same schema", sut.getSchemaLocation(NSHandler.NS_URI_100)

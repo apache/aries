@@ -15,18 +15,29 @@
  */
 package org.apache.aries.jpa.blueprint.aries.itest;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.options;
 
 import org.apache.aries.jpa.blueprint.itest.JPATestBean;
 import org.apache.aries.jpa.itest.AbstractJPAItest;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
+import java.util.Map;
+
 public class JPAInjectionTest extends AbstractJPAItest {
 
+  @Test
+  public void findResourcesWithProperties() throws Exception {
+    JPATestBean bean = context().getService(JPATestBean.class, "(properties=true)");
+    
+    assertTrue("No persistence unit injection", bean.pContextAvailable());
+    Map<String,Object> props = bean.getContextProperties();
+    assertEquals("jdbc:derby:memory:TEST;create=true", props.get("javax.persistence.jdbc.url"));
+    assertEquals("org.apache.derby.jdbc.EmbeddedDriver", props.get("javax.persistence.jdbc.driver"));
+  }
+  
   @Test
   public void findResources() throws Exception {
     JPATestBean bean = context().getService(JPATestBean.class, "(version=1.0.0)");

@@ -41,4 +41,21 @@
     </bean>
   </service>
             
+	<service interface="org.apache.aries.jpa.blueprint.itest.JPATestBean">
+		<service-properties>
+			<entry key="properties" value="true" />
+		</service-properties>
+
+		<bean class="org.apache.aries.jpa.blueprint.itest.JPATestBean">
+	        <jpa:unit property="persistenceUnit" unitname="properties-test-unit"/>
+			<jpa:context property="persistenceContext" unitname="properties-test-unit">
+				<jpa:map>
+					<entry key="javax.persistence.jdbc.url" value="jdbc:derby:memory:TEST;create=true" />
+					<entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+					<entry key="openjpa.jdbc.DBDictionary" value="derby" />
+					<entry key="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
+				</jpa:map>
+			</jpa:context>
+		</bean>
+	</service>
 </blueprint>

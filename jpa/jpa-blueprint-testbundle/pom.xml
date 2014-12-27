@@ -47,8 +47,11 @@
         </aries.osgi.export.pkg>
         <aries.osgi.import>
             javax.persistence;version="[1.0.0,3.0.0)",
+            org.apache.derby.jdbc;resolution:=optional,
             *
         </aries.osgi.import>
+        <!-- Only test bundle -->
+        <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
 
     <dependencies>
