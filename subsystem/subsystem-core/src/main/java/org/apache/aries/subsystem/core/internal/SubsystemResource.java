@@ -72,7 +72,7 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public class SubsystemResource implements Resource {
 	private Region region;
-	
+
 	private final List<Capability> capabilities;
 	private final DeploymentManifest deploymentManifest;
 	private final Collection<Resource> installableContent = new HashSet<Resource>();
@@ -84,11 +84,11 @@ public class SubsystemResource implements Resource {
 	private final RawSubsystemResource resource;
 	private final Collection<Resource> sharedContent = new HashSet<Resource>();
 	private final Collection<Resource> sharedDependencies = new HashSet<Resource>();
-	
+
 	public SubsystemResource(String location, IDirectory content, BasicSubsystem parent) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException {
-		this(new RawSubsystemResource(location, content), parent);
+		this(new RawSubsystemResource(location, content, parent), parent);
 	}
-	
+
 	public SubsystemResource(RawSubsystemResource resource, BasicSubsystem parent) throws IOException, BundleException, InvalidSyntaxException, URISyntaxException {
 		this.parent = parent;
 		this.resource = resource;
@@ -97,20 +97,20 @@ public class SubsystemResource implements Resource {
 		computeDependencies(resource.getDeploymentManifest());
 		deploymentManifest = computeDeploymentManifest();
 	}
-	
+
 	public SubsystemResource(File file) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
 		this(FileSystem.getFSRoot(file));
 	}
-	
+
 	public SubsystemResource(IDirectory directory) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
 		parent = null;
-		resource = new RawSubsystemResource(directory);
+		resource = new RawSubsystemResource(directory, parent);
 		deploymentManifest = resource.getDeploymentManifest();
 		computeContentResources(deploymentManifest);
 		capabilities = computeCapabilities();
 		computeDependencies(deploymentManifest);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == this)
@@ -125,7 +125,7 @@ public class SubsystemResource implements Resource {
 	public List<Capability> getCapabilities(String namespace) {
 		return Collections.unmodifiableList(capabilities);
 	}
-	
+
 	private List<Capability> computeCapabilities() throws InvalidSyntaxException {
 		List<Capability> capabilities = new ArrayList<Capability>();
 		if (isScoped())
@@ -134,18 +134,18 @@ public class SubsystemResource implements Resource {
 			computeUnscopedCapabilities(capabilities);
 		return capabilities;
 	}
-	
+
 	private void computeUnscopedCapabilities(List<Capability> capabilities) {
 		capabilities.addAll(resource.getCapabilities(null));
 		for (Resource r : getContentResources())
 			capabilities.addAll(r.getCapabilities(null));
 	}
-	
+
 	private void computeScopedCapabilities(List<Capability> capabilities) throws InvalidSyntaxException {
 		capabilities.addAll(resource.getCapabilities(null));
 		computeOsgiServiceCapabilities(capabilities);
 	}
-	
+
 	private void computeOsgiServiceCapabilities(List<Capability> capabilities) throws InvalidSyntaxException {
 		SubsystemExportServiceHeader header = getSubsystemManifest().getSubsystemExportServiceHeader();
 		if (header == null)
@@ -153,31 +153,31 @@ public class SubsystemResource implements Resource {
 		for (Resource resource : getContentResources())
 			capabilities.addAll(header.toCapabilities(resource));
 	}
-	
+
 	public DeploymentManifest getDeploymentManifest() {
 		return deploymentManifest;
 	}
-	
+
 	public long getId() {
 		return resource.getId();
 	}
-	
+
 	public Collection<Resource> getInstallableContent() {
 		return installableContent;
 	}
-	
+
 	public Collection<Resource> getInstallableDependencies() {
 		return installableDependencies;
 	}
-	
+
 	public org.apache.aries.subsystem.core.repository.Repository getLocalRepository() {
 		return resource.getLocalRepository();
 	}
-	
+
 	public String getLocation() {
 		return resource.getLocation().getValue();
 	}
-	
+
 	Collection<Resource> getMandatoryResources() {
 		return mandatoryResources;
 	}
@@ -185,7 +185,7 @@ public class SubsystemResource implements Resource {
 	public Collection<DeployedContentHeader.Clause> getMissingResources() {
 		return missingResources;
 	}
-	
+
 	Collection<Resource> getOptionalResources() {
 		return optionalResources;
 	}
@@ -203,7 +203,7 @@ public class SubsystemResource implements Resource {
 		}
 		return Collections.singleton(parent);
 	}
-	
+
 	public synchronized Region getRegion() throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (region == null) {
 			region = createRegion(getId());
@@ -240,19 +240,19 @@ public class SubsystemResource implements Resource {
 			return result;
 		}
 	}
-	
+
 	public Collection<Resource> getSharedContent() {
 		return sharedContent;
 	}
-	
+
 	public Collection<Resource> getSharedDependencies() {
 		return sharedDependencies;
 	}
-	
+
 	public SubsystemManifest getSubsystemManifest() {
 		return resource.getSubsystemManifest();
 	}
-	
+
 	public Collection<TranslationFile> getTranslations() {
 		return resource.getTranslations();
 	}
@@ -263,7 +263,7 @@ public class SubsystemResource implements Resource {
 		result = 31 * result + getLocation().hashCode();
 		return result;
 	}
-	
+
 	private void addContentResource(Resource resource) {
 		if (resource == null)
 			return;
@@ -276,7 +276,7 @@ public class SubsystemResource implements Resource {
 		else
 			sharedContent.add(resource);
 	}
-	
+
 	private void addDependency(Resource resource) {
 		if (resource == null)
 			return;
@@ -285,11 +285,11 @@ public class SubsystemResource implements Resource {
 		else
 			sharedDependencies.add(resource);
 	}
-	
+
 	private void addMissingResource(DeployedContentHeader.Clause resource) {
 		missingResources.add(resource);
 	}
-	
+
 	private void addSubsystemServiceImportToSharingPolicy(
 			RegionFilterBuilder builder) throws InvalidSyntaxException, BundleException, IOException, URISyntaxException {
 		builder.allow(
@@ -302,7 +302,7 @@ public class SubsystemResource implements Resource {
 						.append('=').append(getRegion().getName())
 						.append("))").toString());
 	}
-	
+
 	private void addSubsystemServiceImportToSharingPolicy(RegionFilterBuilder builder, Region to)
 			throws InvalidSyntaxException, BundleException, IOException, URISyntaxException {
 		Region root = Activator.getInstance().getSubsystems().getRootSubsystem().getRegion();
@@ -316,7 +316,7 @@ public class SubsystemResource implements Resource {
 			getRegion().connectRegion(to, regionFilter);
 		}
 	}
-	
+
 	private void computeContentResources(DeploymentManifest manifest) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (manifest == null)
 			computeContentResources(getSubsystemManifest());
@@ -333,7 +333,7 @@ public class SubsystemResource implements Resource {
 			}
 		}
 	}
-	
+
 	private void computeContentResources(SubsystemManifest manifest) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		if (contentHeader == null)
@@ -349,7 +349,7 @@ public class SubsystemResource implements Resource {
 			addContentResource(resource);
 		}
 	}
-	
+
 	private void computeDependencies(DeploymentManifest manifest) {
 		if (manifest == null)
 			computeDependencies(getSubsystemManifest());
@@ -363,9 +363,9 @@ public class SubsystemResource implements Resource {
 					throw new SubsystemException("A required dependency could not be found. This means the resource was either missing or not recognized as a supported resource format due to, for example, an invalid bundle manifest or blueprint XML file. Turn on debug logging for more information. The resource was: " + resource);
 				addDependency(resource);
 			}
-		}	
+		}
 	}
-	
+
 	private void computeDependencies(SubsystemManifest manifest)  {
 		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		try {
@@ -397,14 +397,14 @@ public class SubsystemResource implements Resource {
 			throw new SubsystemException(e);
 		}
 	}
-	
+
 	private DeployedContentHeader computeDeployedContentHeader() {
 		Collection<Resource> content = getContentResources();
 		if (content.isEmpty())
 			return null;
 		return DeployedContentHeader.newInstance(content);
 	}
-	
+
 	private DeploymentManifest computeDeploymentManifest() throws IOException {
 		DeploymentManifest result = computeExistingDeploymentManifest();
 		if (result != null)
@@ -414,18 +414,18 @@ public class SubsystemResource implements Resource {
 				.header(computeProvisionResourceHeader()).build();
 		return result;
 	}
-	
+
 	private DeploymentManifest computeExistingDeploymentManifest() throws IOException {
 		return resource.getDeploymentManifest();
 	}
-	
+
 	private ProvisionResourceHeader computeProvisionResourceHeader() {
 		Collection<Resource> dependencies = getDepedencies();
 		if (dependencies.isEmpty())
 			return null;
 		return ProvisionResourceHeader.newInstance(dependencies);
 	}
-	
+
 	private Region createRegion(long id) throws BundleException {
 		if (!isScoped())
 			return getParents().iterator().next().getRegion();
@@ -450,11 +450,11 @@ public class SubsystemResource implements Resource {
 			return digraph.createRegion(name);
 		return region;
 	}
-	
+
 	private ResolveContext createResolveContext() {
 		return new org.apache.aries.subsystem.core.internal.ResolveContext(this);
 	}
-	
+
 	private Resource findContent(Requirement requirement) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Map<Requirement, Collection<Capability>> map;
 		// TODO System repository for scoped subsystems should be searched in
@@ -489,7 +489,7 @@ public class SubsystemResource implements Resource {
 			return capabilities.iterator().next().getResource();
 		return null;
 	}
-	
+
 	private Resource findContent(DeployedContentHeader.Clause clause) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		Attribute attribute = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
 		long resourceId = attribute == null ? -1 : Long.parseLong(String.valueOf(attribute.getValue()));
@@ -506,7 +506,7 @@ public class SubsystemResource implements Resource {
 		}
 		return findContent(clause.toRequirement(this));
 	}
-	
+
 	private Resource findDependency(ProvisionResourceHeader.Clause clause) {
 		Attribute attribute = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
 		long resourceId = attribute == null ? -1 : Long.parseLong(String.valueOf(attribute.getValue()));
@@ -525,26 +525,26 @@ public class SubsystemResource implements Resource {
 			return null;
 		return capabilities.get(0).getResource();
 	}
-	
+
 	private Collection<Resource> getContentResources() {
 		Collection<Resource> result = new ArrayList<Resource>(installableContent.size() + sharedContent.size());
 		result.addAll(installableContent);
 		result.addAll(sharedContent);
 		return result;
 	}
-	
+
 	private Collection<Resource> getDepedencies() {
 		Collection<Resource> result = new ArrayList<Resource>(installableDependencies.size() + sharedDependencies.size());
 		result.addAll(installableDependencies);
 		result.addAll(sharedDependencies);
 		return result;
 	}
-	
+
 	boolean isApplication() {
 		String type = resource.getSubsystemManifest().getSubsystemTypeHeader().getType();
 		return SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type);
 	}
-	
+
 	boolean isComposite() {
 		String type = resource.getSubsystemManifest().getSubsystemTypeHeader().getType();
 		return SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type);
@@ -553,30 +553,30 @@ public class SubsystemResource implements Resource {
 	private boolean isInstallable(Resource resource) {
 		return !isShared(resource);
 	}
-	
+
 	private boolean isMandatory(Resource resource) {
 		SubsystemContentHeader header = this.resource.getSubsystemManifest().getSubsystemContentHeader();
 		if (header == null)
 			return false;
 		return header.isMandatory(resource);
 	}
-	
+
 	boolean isRoot() {
 		return BasicSubsystem.ROOT_LOCATION.equals(getLocation());
 	}
-	
+
 	private boolean isShared(Resource resource) {
 		return Utils.isSharedResource(resource);
 	}
-	
+
 	private boolean isScoped() {
 		return isApplication() || isComposite();
 	}
-	
+
 	private boolean isUnscoped() {
 		return !isScoped();
 	}
-	
+
 	private void setImportIsolationPolicy(Map<Resource, List<Wire>> resolution) throws Exception {
 		if (!isApplication()) {
 			return;
@@ -623,14 +623,14 @@ public class SubsystemResource implements Resource {
 		RegionFilter regionFilter = builder.build();
 		from.connectRegion(to, regionFilter);
 	}
-	
+
 	private void setImportIsolationPolicy() throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (isRoot() || !isScoped())
 			return;
 		Region region = getRegion();
 		Region from = region;
 		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
-		Region to = ((BasicSubsystem)getParents().iterator().next()).getRegion();
+		Region to = getParents().iterator().next().getRegion();
 		addSubsystemServiceImportToSharingPolicy(builder, to);
 		// TODO Is this check really necessary? Looks like it was done at the beginning of this method.
 		if (isScoped()) {
@@ -654,7 +654,7 @@ public class SubsystemResource implements Resource {
 		RegionFilter regionFilter = builder.build();
 		from.connectRegion(to, regionFilter);
 	}
-	
+
 	private void setImportIsolationPolicy(RegionFilterBuilder builder, ImportPackageHeader header) throws InvalidSyntaxException {
 		String policy = RegionFilter.VISIBLE_PACKAGE_NAMESPACE;
 		if (header == null)
@@ -676,7 +676,7 @@ public class SubsystemResource implements Resource {
 			builder.allow(policy, filter);
 		}
 	}
-	
+
 	private void setImportIsolationPolicy(RegionFilterBuilder builder, RequireCapabilityHeader header) throws InvalidSyntaxException {
 		if (header == null)
 			return;

@@ -44,6 +44,8 @@ import org.osgi.framework.Bundle;
 
 public final class AsmProxyManager extends AbstractProxyManager implements ProxyManager
 {
+  static final ClassLoader bootClassLoader = new ClassLoader(Object.class.getClassLoader()) { /* boot class loader */};
+	
   public Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes, 
       Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException
   {
@@ -111,6 +113,9 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
         // If we could generate a proper constructor this would not be necessary, but since we have to rely
         // on the generated serialization constructor to bypass the JVM verifier, we don't have much choice
         ClassLoader classLoader = classToProxy.getClassLoader();
+        if (classLoader == null) {
+        	classLoader = bootClassLoader;
+        }
         boolean allVisible = true;
         for (Class<?> clazz : classes) {
           try {

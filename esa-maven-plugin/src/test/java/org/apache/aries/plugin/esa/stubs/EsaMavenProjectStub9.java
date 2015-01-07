@@ -23,6 +23,10 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
+import org.apache.maven.artifact.versioning.VersionRange;
+
 public class EsaMavenProjectStub9
     extends EsaMavenProjectStub
 {
@@ -30,15 +34,24 @@ public class EsaMavenProjectStub9
     {
         return new File( getBasedir(), "src/test/resources/unit/basic-esa-content-type/plugin-config.xml" );
     }
-    
+
     public Set getArtifacts()
-    {   
-        Set artifacts = new HashSet();
- 
-        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
-        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact02", "1.0-SNAPSHOT", false ) );
-        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact03", "1.1-SNAPSHOT", false ) );
-        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact04", "1.2-SNAPSHOT", "esa", true ) );
-        return artifacts;
+    {
+        try
+        {
+            Set artifacts = new HashSet();
+
+            artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
+            Artifact artifact02 = createArtifact( "org.apache.maven.test", "maven-artifact02", "1.0-SNAPSHOT", false );
+            artifact02.setVersionRange(VersionRange.createFromVersionSpec("[1.3, 2.5)"));
+            artifacts.add( artifact02 );
+            artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact03", "1.1-SNAPSHOT", false ) );
+            artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact04", "1.2-SNAPSHOT", "esa", true ) );
+            return artifacts;
+        }
+        catch (InvalidVersionSpecificationException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

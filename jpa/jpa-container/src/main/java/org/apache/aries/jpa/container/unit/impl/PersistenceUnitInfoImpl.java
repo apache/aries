@@ -45,6 +45,7 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("rawtypes")
 public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   
   private final Bundle bundle;

@@ -20,12 +20,12 @@ package org.apache.aries.transaction.jdbc.internal;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.transaction.AriesTransactionManager;
+import org.apache.aries.util.tracker.SingleServiceTracker;
 import org.apache.xbean.blueprint.context.impl.XBeanNamespaceHandler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -33,18 +33,21 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.transaction.TransactionManager;
+import javax.sql.CommonDataSource;
 import java.util.Hashtable;
 
-public class Activator implements BundleActivator, ServiceTrackerCustomizer, ServiceListener {
+
+public class Activator implements BundleActivator,
+                                  ServiceTrackerCustomizer<CommonDataSource, ManagedDataSourceFactory>,
+                                  SingleServiceTracker.SingleServiceListener
+{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
-    private AriesTransactionManager tm;
-    private ServiceTracker t;
-    private ServiceReference ref;
+    private ServiceTracker<CommonDataSource, ManagedDataSourceFactory> t;
+    private SingleServiceTracker<AriesTransactionManager> tm;
     private BundleContext context;
-    private ServiceRegistration nshReg;
+    private ServiceRegistration[] nshReg;
 
     public void start(BundleContext ctx) {
         context = ctx;
@@ -58,76 +61,59 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
             LOGGER.error("Unable to register JDBC blueprint namespace handler", e);
         }
 
-        t = new ServiceTracker(ctx, javax.sql.XADataSource.class.getName(), this);
-
+        Filter filter;
+        String flt = "(&(|(objectClass=javax.sql.XADataSource)(objectClass=javax.sql.DataSource))(!(aries.managed=true)))";
         try {
-            ctx.addServiceListener(this, "(objectClass=" + AriesTransactionManager.class.getName() + ")");
+            filter = context.createFilter(flt);
         } catch (InvalidSyntaxException e) {
+            throw new IllegalStateException(e);
         }
-        ref = ctx.getServiceReference(TransactionManager.class.getName());
-        if (ref != null) {
-            tm = (AriesTransactionManager) ctx.getService(ref);
-        }
+        t = new ServiceTracker<CommonDataSource, ManagedDataSourceFactory>(ctx, filter, this);
 
-        if (tm != null) {
-            t.open();
-        }
+        tm = new SingleServiceTracker<AriesTransactionManager>(ctx, AriesTransactionManager.class, this);
+        tm.open();
     }
 
     public void stop(BundleContext ctx) {
-        // it is possible these are not cleaned by serviceChanged method when the
-        // tm service is still active
-        if (t != null) {
-            t.close();
-        }
-        if (ref != null) {
-            context.ungetService(ref);
-        }
+        tm.close();
+        t.close();
         if (nshReg != null) {
-            nshReg.unregister();
+            for (ServiceRegistration reg : nshReg) {
+                safeUnregisterService(reg);
+            }
         }
     }
 
-    public Object addingService(ServiceReference ref) {
+    public ManagedDataSourceFactory addingService(ServiceReference<CommonDataSource> ref) {
         try {
-            LOGGER.info("Wrapping XADataSource " + ref);
-            ManagedDataSourceFactory mdsf = new ManagedDataSourceFactory(ref, tm);
-            return mdsf.register();
+            LOGGER.info("Wrapping DataSource " + ref);
+            ManagedDataSourceFactory mdsf = new ManagedDataSourceFactory(ref, tm.getService());
+            mdsf.register();
+            return mdsf;
         } catch (Exception e) {
-            LOGGER.warn("Error wrapping XADataSource " + ref, e);
+            LOGGER.warn("Error wrapping DataSource " + ref, e);
             return null;
         }
     }
 
-    public void modifiedService(ServiceReference ref, Object service) {
-        ServiceRegistration reg = (ServiceRegistration) service;
-
-        Hashtable<String, Object> map = new Hashtable<String, Object>();
-        for (String key : ref.getPropertyKeys()) {
-            map.put(key, ref.getProperty(key));
+    public void modifiedService(ServiceReference<CommonDataSource> ref, ManagedDataSourceFactory service) {
+        try {
+            service.unregister();
+        } catch (Exception e) {
+            LOGGER.warn("Error closing DataSource " + ref, e);
         }
-        map.put("aries.xa.aware", "true");
-
-        reg.setProperties(map);
+        try {
+            service.register();
+        } catch (Exception e) {
+            LOGGER.warn("Error wrapping DataSource " + ref, e);
+        }
     }
 
-    public void removedService(ServiceReference ref, Object service) {
-        safeUnregisterService((ServiceRegistration) service);
-    }
-
-    public void serviceChanged(ServiceEvent event) {
-        if (event.getType() == ServiceEvent.REGISTERED && tm == null) {
-            ref = event.getServiceReference();
-            tm = (AriesTransactionManager) context.getService(ref);
-
-            if (tm == null) ref = null;
-            else t.open();
-        } else if (event.getType() == ServiceEvent.UNREGISTERING && tm != null &&
-                ref.getProperty("service.id").equals(event.getServiceReference().getProperty("service.id"))) {
-            t.close();
-            context.ungetService(ref);
-            ref = null;
-            tm = null;
+    public void removedService(ServiceReference<CommonDataSource> ref, ManagedDataSourceFactory service) {
+        try {
+            service.unregister();
+        } catch (Exception e) {
+            LOGGER.warn("Error closing DataSource " + ref, e);
         }
     }
 
@@ -141,18 +127,49 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer, Ser
         }
     }
 
+    @Override
+    public void serviceFound()
+    {
+        t.open();
+    }
+
+    @Override
+    public void serviceLost()
+    {
+        t.close();
+    }
+
+    @Override
+    public void serviceReplaced()
+    {
+        t.close();
+        t.open();
+    }
+
     static class JdbcNamespaceHandler {
 
-        public static ServiceRegistration register(BundleContext context) throws Exception {
-            XBeanNamespaceHandler nsh = new XBeanNamespaceHandler(
+        public static ServiceRegistration[] register(BundleContext context) throws Exception {
+            XBeanNamespaceHandler nsh20 = new XBeanNamespaceHandler(
                     "http://aries.apache.org/xmlns/transaction-jdbc/2.0",
-                    "org.apache.aries.transaction.jdbc.xsd",
+                    "org.apache.aries.transaction.jdbc-2.0.xsd",
                     context.getBundle(),
                     "META-INF/services/org/apache/xbean/spring/http/aries.apache.org/xmlns/transaction-jdbc/2.0"
             );
-            Hashtable<String, Object> props = new Hashtable<String, Object>();
-            props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transaction-jdbc/2.0");
-            return context.registerService(NamespaceHandler.class.getName(), nsh, props);
+            Hashtable<String, Object> props20 = new Hashtable<String, Object>();
+            props20.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transaction-jdbc/2.0");
+            ServiceRegistration reg20 = context.registerService(NamespaceHandler.class.getName(), nsh20, props20);
+
+            XBeanNamespaceHandler nsh21 = new XBeanNamespaceHandler(
+                    "http://aries.apache.org/xmlns/transaction-jdbc/2.1",
+                    "org.apache.aries.transaction.jdbc.xsd",
+                    context.getBundle(),
+                    "META-INF/services/org/apache/xbean/spring/http/aries.apache.org/xmlns/transaction-jdbc/2.1"
+            );
+            Hashtable<String, Object> props21 = new Hashtable<String, Object>();
+            props21.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/transaction-jdbc/2.1");
+            ServiceRegistration reg21 = context.registerService(NamespaceHandler.class.getName(), nsh21, props21);
+
+            return new ServiceRegistration[] { reg20, reg21 };
         }
 
     }

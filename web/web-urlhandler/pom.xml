@@ -49,6 +49,7 @@
             org.apache.aries.web.converter.impl,
             org.apache.aries.web.url
         </aries.osgi.private.pkg>
+        <aries.osgi.activator>org.apache.aries.web.converter.impl.Activator</aries.osgi.activator>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
@@ -67,12 +68,6 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-debug-all</artifactId>
             <version>5.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <scope>test</scope>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 

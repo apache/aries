@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.subsystem.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystem Core</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <description>Subsystems Core.</description>
 
     <scm>
@@ -51,7 +51,7 @@
             org.apache.aries.application.*;resolution:=optional,
             *
         </aries.osgi.import>
-        <aries.osgi.export.pkg/>
+        <aries.osgi.export.pkg />
         <aries.osgi.private.pkg>
             org.apache.aries.subsystem.core.*
         </aries.osgi.private.pkg>

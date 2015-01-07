@@ -42,6 +42,8 @@ public class ConnectionManagerFactory {
     private AriesTransactionManager transactionManager;
     private ManagedConnectionFactory managedConnectionFactory;
 
+    private String name;
+
     private TransactionSupport transactionSupport;
     private String transaction;
 
@@ -69,7 +71,7 @@ public class ConnectionManagerFactory {
     }
 
     public void init() throws Exception {
-        if (transactionManager == null) {
+        if (transactionManager == null && ("xa".equals(transaction) || "local".equals(transaction))) {
             throw new IllegalArgumentException("transactionManager must be set");
         }
         if (managedConnectionFactory == null) {
@@ -78,7 +80,7 @@ public class ConnectionManagerFactory {
         // Apply the default value for property if necessary
         if (transactionSupport == null) {
             // No transaction
-            if (transaction == null || "local".equalsIgnoreCase(transaction)) {
+            if ("local".equalsIgnoreCase(transaction)) {
                 transactionSupport = LocalTransactions.INSTANCE;
             } else if ("none".equalsIgnoreCase(transaction)) {
                 transactionSupport = NoTransactions.INSTANCE;
@@ -136,7 +138,7 @@ public class ConnectionManagerFactory {
         if (connectionTracker == null) {
             connectionTracker = new ConnectionTrackingCoordinator();
         }
-        if (transactionManagerMonitor == null) {
+        if (transactionManagerMonitor == null && transactionManager != null) {
             transactionManagerMonitor = new GeronimoTransactionListener(connectionTracker);
             transactionManager.addTransactionAssociationListener(transactionManagerMonitor);
         }
@@ -154,7 +156,7 @@ public class ConnectionManagerFactory {
                         connectionTracker,
                         transactionManager,
                         managedConnectionFactory,
-                        getClass().getName(),
+                        name != null ? name : getClass().getName(),
                         getClass().getClassLoader(),
                         backgroundValidationMilliseconds);
             } else {
@@ -166,7 +168,7 @@ public class ConnectionManagerFactory {
                         connectionTracker,
                         transactionManager,
                         managedConnectionFactory,
-                        getClass().getName(),
+                        name != null ? name : getClass().getName(),
                         getClass().getClassLoader());
             }
 
@@ -210,6 +212,14 @@ public class ConnectionManagerFactory {
 
     public String getTransaction() {
         return transaction;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setTransaction(String transaction) {

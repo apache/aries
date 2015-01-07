@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.subsystem</groupId>
     <artifactId>org.apache.aries.subsystem.itests</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>Apache Aries Subsystem iTests</name>
     <description>
         Integration tests using the subsystem api, core for the implementation
@@ -141,7 +141,7 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
             <scope>test</scope>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.2.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -181,7 +181,7 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
             <scope>test</scope>
-            <version>1.2.8</version>
+            <version>1.8.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -297,7 +297,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.eclipse</groupId>
+            <groupId>org.eclipse.tycho</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
             <version>3.10.0.v20140606-1445</version>
         </dependency>
@@ -320,24 +320,6 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3</version>
                 <executions>
-                    <execution>
-                        <id>core-fragment</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifestFile>src/test/bundles/core.fragment/META-INF/MANIFEST.MF</manifestFile>
-                            </archive>
-                            <excludes>
-                                <exclude>**/*</exclude>
-                            </excludes>
-                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-                            <outputDirectory>${project.build.directory}/test-classes/core.fragment</outputDirectory>
-                            <finalName>core.fragment</finalName>
-                        </configuration>
-                        <phase>process-test-classes</phase>
-                    </execution>
                     <execution>
                         <id>tb1-application1</id>
                         <goals>
@@ -447,6 +429,24 @@
                         </configuration>
                         <phase>process-test-classes</phase>
                     </execution>
+                    <execution>
+                        <id>tb4-composite2</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/tb4/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/tb4/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/composite2</outputDirectory>
+                            <finalName>tb4</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
 
                     <!-- New pom for hello + related tests, part 1 -->
 
@@ -465,6 +465,85 @@
                             </includes>
                             <outputDirectory>${project.build.directory}/test-classes/hello</outputDirectory>
                             <finalName>helloImpl</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <execution>
+                        <id>cm-content-bundleZ</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/cmContentBundleZ/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/cmcontent/impl/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/cmContent</outputDirectory>
+                            <finalName>cmContentBundleZ</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <execution>
+                        <id>custom-content-bundleA</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/customContentBundleA/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <outputDirectory>${project.build.directory}/test-classes/customContent</outputDirectory>
+                            <finalName>customContentBundleA</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <execution>
+                        <id>custom-content-bundleB</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/customContentBundleB/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <outputDirectory>${project.build.directory}/test-classes/customContent1</outputDirectory>
+                            <finalName>customContentBundleB</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <execution>
+                        <id>custom-content-bundleC</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/customContentBundleC/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <outputDirectory>${project.build.directory}/test-classes/customContent2</outputDirectory>
+                            <finalName>customContentBundleC</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <execution>
+                        <id>custom-content-bundleD</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/customContentBundleD/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <outputDirectory>${project.build.directory}/test-classes/customContent3</outputDirectory>
+                            <finalName>customContentBundleD</finalName>
                         </configuration>
                         <phase>process-test-classes</phase>
                     </execution>
@@ -490,26 +569,6 @@
 
                     <!-- End of new pom for hello tests, part 1 -->
 
-                    <execution>
-                        <id>basic-blueprint-application</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifestFile>src/test/bundles/blueprint/META-INF/MANIFEST.MF</manifestFile>
-                            </archive>
-                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
-                            <includes>
-                                <include>org/apache/aries/subsystem/itests/blueprint/**</include>
-                                <include>OSGI-INF/blueprint/blueprint.xml</include>
-                            </includes>
-                            <outputDirectory>${project.build.directory}/test-classes/blueprint</outputDirectory>
-                            <finalName>blueprint</finalName>
-                        </configuration>
-                        <phase>process-test-classes</phase>
-                    </execution>
-
                 </executions>
             </plugin>
             <plugin>
@@ -517,18 +576,6 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>1.5</version>
                 <executions>
-                    <execution>
-                        <id>core-fragment</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/bundles/core.fragment</source>
-                            </sources>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>add-source-tb1</id>
                         <phase>generate-sources</phase>
@@ -565,6 +612,18 @@
                             </sources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>add-source-tb4</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/tb4</source>
+                            </sources>
+                        </configuration>
+                    </execution>
 
                     <!-- New pom for hello tests, part 2 -->
 
@@ -577,6 +636,19 @@
                         <configuration>
                             <sources>
                                 <source>src/test/bundles/helloImpl</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>add-source-cmContentBundleZ</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/cmContentBundleZ</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -595,19 +667,6 @@
                     </execution>
 
                     <!-- End of new pom for hello tests, part 2 -->
-
-                    <execution>
-                        <id>add-source-blueprint</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/bundles/blueprint</source>
-                            </sources>
-                        </configuration>
-                    </execution>
 
                     <execution>
                         <id>add-source-classes</id>

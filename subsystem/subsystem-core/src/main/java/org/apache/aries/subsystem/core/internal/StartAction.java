@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.aries.subsystem.ContentHandler;
 import org.apache.aries.subsystem.core.archive.ExportPackageCapability;
 import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ProvideCapabilityCapability;
@@ -35,7 +36,10 @@ import org.eclipse.equinox.region.RegionFilterBuilder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.startlevel.BundleStartLevel;
+import org.osgi.framework.startlevel.FrameworkStartLevel;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Resource;
@@ -51,16 +55,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StartAction extends AbstractAction {
-	private static final Logger logger = LoggerFactory.getLogger(BasicSubsystem.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(StartAction.class);
+
 	private final Coordination coordination;
 	private final BasicSubsystem instigator;
 	private final boolean resolveOnly;
-	
+
 	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target) {
 		this(instigator, requestor, target, false);
 	}
-	
+
 	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, boolean resolveOnly) {
 		this(instigator, requestor, target, null, resolveOnly);
 	}
@@ -75,7 +79,7 @@ public class StartAction extends AbstractAction {
 		this.coordination = coordination;
 		this.resolveOnly = resolveOnly;
 	}
-	
+
 	@Override
 	public Object run() {
 		State state = target.getState();
@@ -129,7 +133,7 @@ public class StartAction extends AbstractAction {
 			// region and transition to INSTALLED.
 		} finally {
 			try {
-				// Don't end the coordination if the subsystem being started 
+				// Don't end the coordination if the subsystem being started
 				// (i.e. the target) did not begin it.
 				if (coordination.getName().equals(Utils.computeCoordinationName(target)))
 					coordination.end();
@@ -143,7 +147,7 @@ public class StartAction extends AbstractAction {
 		}
 		return null;
 	}
-	
+
 	private static Collection<Bundle> getBundles(BasicSubsystem subsystem) {
 		Collection<Resource> constituents = Activator.getInstance().getSubsystems().getConstituents(subsystem);
 		ArrayList<Bundle> result = new ArrayList<Bundle>(constituents.size());
@@ -154,7 +158,7 @@ public class StartAction extends AbstractAction {
 		result.trimToSize();
 		return result;
 	}
-	
+
 	private static void resolve(BasicSubsystem subsystem) {
 		// Don't propagate a RESOLVING event if this is a persisted subsystem
 		// that is already RESOLVED.
@@ -168,16 +172,26 @@ public class StartAction extends AbstractAction {
 			if (!subsystem.isRoot()) {
 				for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(subsystem))
 					resolve((BasicSubsystem)child);
+
+				FrameworkWiring frameworkWiring = Activator.getInstance().getBundleContext().getBundle(0)
+						.adapt(FrameworkWiring.class);
+
 				// TODO I think this is insufficient. Do we need both
 				// pre-install and post-install environments for the Resolver?
 				Collection<Bundle> bundles = getBundles(subsystem);
-				if (!Activator.getInstance().getBundleContext().getBundle(0)
-						.adapt(FrameworkWiring.class).resolveBundles(bundles)) {
+				if (!frameworkWiring.resolveBundles(bundles)) {
+					//work out which bundles could not be resolved
+					Collection<Bundle> unresolved = new ArrayList<Bundle>();
+					for(Bundle bundle:bundles){
+						if((bundle.getState() & Bundle.RESOLVED) != Bundle.RESOLVED){
+							unresolved.add(bundle);
+						}
+					}
 					logger.error(
 							"Unable to resolve bundles for subsystem/version/id {}/{}/{}: {}",
 							new Object[] { subsystem.getSymbolicName(), subsystem.getVersion(),
-									subsystem.getSubsystemId(), bundles });
-					throw new SubsystemException("Framework could not resolve the bundles");
+									subsystem.getSubsystemId(), unresolved });
+					throw new SubsystemException("Framework could not resolve the bundles: " + unresolved);
 				}
 				setExportIsolationPolicy(subsystem);
 			}
@@ -193,7 +207,7 @@ public class StartAction extends AbstractAction {
 			throw new SubsystemException(t);
 		}
 	}
-	
+
 	private static void setExportIsolationPolicy(BasicSubsystem subsystem) throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
 		if (!subsystem.isComposite())
 			return;
@@ -211,7 +225,7 @@ public class StartAction extends AbstractAction {
 					+ ", to=" + to + ", filter=" + regionFilter);
 		from.connectRegion(to, regionFilter);
 	}
-	
+
 	private static void setExportIsolationPolicy(RegionFilterBuilder builder, ExportPackageHeader header, BasicSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
@@ -226,7 +240,7 @@ public class StartAction extends AbstractAction {
 			builder.allow(policy, filter.toString());
 		}
 	}
-	
+
 	private static void setExportIsolationPolicy(RegionFilterBuilder builder, ProvideCapabilityHeader header, BasicSubsystem subsystem) throws InvalidSyntaxException {
 		if (header == null)
 			return;
@@ -255,7 +269,7 @@ public class StartAction extends AbstractAction {
 			builder.allow(policy, filter);
 		}
 	}
-	
+
 	private void startBundleResource(Resource resource, Coordination coordination) throws BundleException {
 		if (target.isRoot())
 			// Starting the root subsystem should not affect bundles within the
@@ -265,36 +279,72 @@ public class StartAction extends AbstractAction {
 			// The region context bundle was persistently started elsewhere.
 			return;
 		final Bundle bundle = ((BundleRevision)resource).getBundle();
+
 		if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0)
 			return;
+
+		if (logger.isDebugEnabled()) {
+			int bundleStartLevel = bundle.adapt(BundleStartLevel.class).getStartLevel();
+			Bundle systemBundle=Activator.getInstance().getBundleContext().getBundle(0);
+			int fwStartLevel = systemBundle.adapt(FrameworkStartLevel.class).getStartLevel();
+			logger.debug("StartAction: starting bundle " + bundle.getSymbolicName()
+				+ " " + bundle.getVersion().toString()
+				+ " bundleStartLevel=" + bundleStartLevel
+				+ " frameworkStartLevel=" + fwStartLevel);
+		}
+
 		bundle.start(Bundle.START_TRANSIENT | Bundle.START_ACTIVATION_POLICY);
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("StartAction: bundle " + bundle.getSymbolicName()
+				+ " " + bundle.getVersion().toString()
+				+ " started correctly");
+		}
+
 		if (coordination == null)
 			return;
 		coordination.addParticipant(new Participant() {
 			public void ended(Coordination coordination) throws Exception {
 				// noop
 			}
-	
+
 			public void failed(Coordination coordination) throws Exception {
 				bundle.stop();
 			}
 		});
 	}
-	
+
 	private void startResource(Resource resource, Coordination coordination) throws BundleException, IOException {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type)) {
 			startSubsystemResource(resource, coordination);
-		else if (IdentityNamespace.TYPE_BUNDLE.equals(type))
+	    } else if (IdentityNamespace.TYPE_BUNDLE.equals(type)) {
 			startBundleResource(resource, coordination);
-		else if (IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
+	    } else if (IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
 			// Fragments are not started.
+		} else {
+		    if (!startCustomHandler(resource, type, coordination))
+		        throw new SubsystemException("Unsupported resource type: " + type);
 		}
-		else
-			throw new SubsystemException("Unsupported resource type: " + type);
 	}
+
+    private boolean startCustomHandler(Resource resource, String type, Coordination coordination) {
+        ServiceReference<ContentHandler> customHandlerRef = CustomResources.getCustomContentHandler(target, type);
+        if (customHandlerRef != null) {
+            ContentHandler customHandler = target.getBundleContext().getService(customHandlerRef);
+            if (customHandler != null) {
+                try {
+                    customHandler.start(ResourceHelper.getSymbolicNameAttribute(resource), type, target, coordination);
+                    return true;
+                } finally {
+                    target.getBundleContext().ungetService(customHandlerRef);
+                }
+            }
+        }
+        return false;
+    }
 
 	private void startSubsystemResource(Resource resource, Coordination coordination) throws IOException {
 		final BasicSubsystem subsystem = (BasicSubsystem)resource;
@@ -309,7 +359,7 @@ public class StartAction extends AbstractAction {
 			public void ended(Coordination coordination) throws Exception {
 				// noop
 			}
-	
+
 			public void failed(Coordination coordination) throws Exception {
 				new StopAction(target, subsystem, !subsystem.isRoot()).run();
 			}

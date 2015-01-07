@@ -26,7 +26,7 @@ public class OpenjpaContextTest extends JPAContextTest {
     public Option[] configuration() {
         return options(
         		baseOptions(),
-        		ariesJpa(),
+        		ariesJpa20(),
         		transactionWrapper(),
         		openJpa(),
                 testBundle()

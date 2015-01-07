@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jpa.blueprint.aries.impl;
 
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.PersistenceUnit;
 
+import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
@@ -42,8 +44,10 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
+import org.apache.aries.jpa.container.sync.Synchronization;
 import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -54,6 +58,7 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -64,6 +69,7 @@ import org.w3c.dom.NodeList;
  * namespace handler also registers clients of managed persistence contexts with
  * the {@link GlobalPersistenceManager}.
  */
+@SuppressWarnings("rawtypes")
 public class NSHandler implements NamespaceHandler {
     private static final String ATTR_INDEX = "index";
 
@@ -126,39 +132,8 @@ public class NSHandler implements NamespaceHandler {
      */
     public ComponentMetadata decorate(Node node, ComponentMetadata component,
             ParserContext context) {
-        // The node should always be an element
-        if (node.getNodeType() != Node.ELEMENT_NODE) {
-            _logger.error(MESSAGES.getMessage("unexpected.node", node));
-            throw new IllegalArgumentException(node.toString());
-        }
-
-        Element element = (Element) node;
-        // The surrounding component should always be a bean
-        if (!(component instanceof BeanMetadata)) {
-            _logger.error(MESSAGES.getMessage("incorrect.component.type", component));
-            throw new IllegalArgumentException(component.toString());
-        }
-        
-        if (!(component instanceof MutableBeanMetadata)) {
-            _logger.error(MESSAGES.getMessage("non.mutable.bean", component));
-            throw new IllegalArgumentException(component.toString());
-        }
-
-        MutableBeanMetadata bean = (MutableBeanMetadata) component;
-
-        if (!NS_URI_100.equals(element.getNamespaceURI())
-            && !NS_URI_110.equals(element.getNamespaceURI())) {
-            String message = MESSAGES.getMessage("unexpected.namespace", element.getNamespaceURI());
-            _logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
-
-        if (!TAG_UNIT.equals(element.getLocalName())
-                && !TAG_CONTEXT.equals(element.getLocalName())) {
-            String message = MESSAGES.getMessage("unexpected.element", element.getLocalName());
-            _logger.error(message);
-            throw new IllegalArgumentException(message);
-        }
+        Element element = getValidNode(node, component);
+        MutableBeanMetadata bean = getValidBean(component, element);
 
         String property = element.getAttribute(ATTR_PROPERTY);
         property = property.isEmpty() ? null : property;
@@ -236,6 +211,20 @@ public class NSHandler implements NamespaceHandler {
                 } else {
                     _logger.warn(MESSAGES.getMessage("no.persistence.context.provider", client.getSymbolicName() + '/' + client.getVersion(), unitName, properties));
                 }
+                boolean foundSync = false;
+                try {
+                    Collection<ServiceReference<Synchronization>> refs = client.getBundleContext().getServiceReferences(Synchronization.class, "(" + PersistenceUnitConstants.OSGI_UNIT_NAME + "=" + unitName + ")");
+                    if (refs.size() > 0) {
+                        final Synchronization sync = client.getBundleContext().getService(refs.iterator().next());
+                        context.getComponentDefinitionRegistry().registerInterceptorWithComponent(component, createSyncInterceptor(sync));
+                        foundSync = true;
+                    }
+                } catch (InvalidSyntaxException e) {
+                    // Ignore
+                }
+                if (!foundSync) {
+                    _logger.error(MESSAGES.getMessage("no.synchronization.registered", client.getSymbolicName() + '/' + client.getVersion(), unitName, properties));
+                }
             } else {
                 _logger.debug("No bundle: this must be a dry, parse only run.");
             }
@@ -244,7 +233,68 @@ public class NSHandler implements NamespaceHandler {
         return bean;
     }
 
-    @SuppressWarnings("unchecked")
+    private MutableBeanMetadata getValidBean(ComponentMetadata component, Element element) {
+        MutableBeanMetadata bean = (MutableBeanMetadata) component;
+
+        if (!NS_URI_100.equals(element.getNamespaceURI())
+            && !NS_URI_110.equals(element.getNamespaceURI())) {
+            String message = MESSAGES.getMessage("unexpected.namespace", element.getNamespaceURI());
+            _logger.error(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        if (!TAG_UNIT.equals(element.getLocalName())
+                && !TAG_CONTEXT.equals(element.getLocalName())) {
+            String message = MESSAGES.getMessage("unexpected.element", element.getLocalName());
+            _logger.error(message);
+            throw new IllegalArgumentException(message);
+        }
+        return bean;
+    }
+
+    private Element getValidNode(Node node, ComponentMetadata component) {
+        // The node should always be an element
+        if (node.getNodeType() != Node.ELEMENT_NODE) {
+            _logger.error(MESSAGES.getMessage("unexpected.node", node));
+            throw new IllegalArgumentException(node.toString());
+        }
+
+        Element element = (Element) node;
+        // The surrounding component should always be a bean
+        if (!(component instanceof BeanMetadata)) {
+            _logger.error(MESSAGES.getMessage("incorrect.component.type", component));
+            throw new IllegalArgumentException(component.toString());
+        }
+        
+        if (!(component instanceof MutableBeanMetadata)) {
+            _logger.error(MESSAGES.getMessage("non.mutable.bean", component));
+            throw new IllegalArgumentException(component.toString());
+        }
+        return element;
+    }
+
+    private Interceptor createSyncInterceptor(final Synchronization sync) {
+        return new Interceptor() {
+            @Override
+            public Object preCall(ComponentMetadata componentMetadata, Method method, Object... objects) throws Throwable {
+                sync.preCall();
+                return null;
+            }
+            @Override
+            public void postCallWithReturn(ComponentMetadata componentMetadata, Method method, Object o, Object o2) throws Throwable {
+                sync.postCall();
+            }
+            @Override
+            public void postCallWithException(ComponentMetadata componentMetadata, Method method, Throwable throwable, Object o) throws Throwable {
+                sync.postCall();
+            }
+            @Override
+            public int getRank() {
+                return 0;
+            }
+        };
+    }
+
     public Set<Class> getManagedClasses() {
         // This is a no-op
         return null;
@@ -288,6 +338,7 @@ public class NSHandler implements NamespaceHandler {
         _logger.warn(MESSAGES.getMessage("jpa.support.gone"));
     }
     
+    @SuppressWarnings("unchecked")
     private ComponentMetadata createTargetMetadata(boolean isPersistenceUnit,
         ParserContext ctx, String unitName) {
       // Create a service reference for the EMF (it is an EMF for persistence

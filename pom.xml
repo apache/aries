@@ -53,7 +53,6 @@
         <module>ejb</module>
         <module>jmx</module>
         <module>jpa</module>
-        <module>jpa20</module>
         <module>spi-fly</module>
         <module>samples</module>
         <module>esa-maven-plugin</module>

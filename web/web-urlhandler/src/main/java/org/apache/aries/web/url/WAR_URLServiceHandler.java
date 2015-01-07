@@ -96,7 +96,7 @@ public class WAR_URLServiceHandler extends AbstractURLStreamHandlerService imple
 
   public void start(BundleContext context) throws Exception
   {
-    Dictionary properties = new Hashtable();
+    Dictionary<String, Object> properties = new Hashtable<String, Object>();
     properties.put( URLConstants.URL_HANDLER_PROTOCOL, new String[] {urlScheme});
     context.registerService(URLStreamHandlerService.class.getName(), this, properties);
   }

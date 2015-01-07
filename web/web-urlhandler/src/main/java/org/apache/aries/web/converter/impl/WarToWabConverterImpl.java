@@ -339,6 +339,7 @@ public class WarToWabConverterImpl implements WabConversion {
       properties.put(Constants.BUNDLE_CLASSPATH, classPathValue.toString().substring(1));
     }
 
+    @SuppressWarnings("serial")
     ArrayList<String> packages = new ArrayList<String>() {
       @Override
       public boolean contains(Object elem) {

@@ -48,7 +48,7 @@ public class JPAContainerTest extends AbstractJPAItest {
 	public Option[] configuration() {
 		return options(
 				baseOptions(),
-				ariesJpa(),
+				ariesJpa20(),
 				// Needed for the BP_TEST_UNIT
 				transactionWrapper(),
 				openJpa(),

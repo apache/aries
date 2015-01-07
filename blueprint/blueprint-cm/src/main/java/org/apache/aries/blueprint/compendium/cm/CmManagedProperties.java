@@ -152,6 +152,9 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
         LOGGER.debug("Configuration updated for bean={} / pid={}", beanName, persistentId);
         synchronized (lock) {
             properties = props;
+            for (Object bean : beans) {
+                updated(bean, properties);
+            }
         }
     }
 

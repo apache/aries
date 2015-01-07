@@ -22,10 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -37,6 +35,10 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
+import org.apache.aries.jpa.container.quiesce.impl.DestroyCallback;
+import org.apache.aries.jpa.container.quiesce.impl.EMFProxyFactory;
+import org.apache.aries.jpa.container.quiesce.impl.NamedCallback;
+import org.apache.aries.jpa.container.quiesce.impl.QuiesceEMF;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -50,28 +52,10 @@ import org.slf4j.LoggerFactory;
  * This class manages the lifecycle of Persistence Units and their associated
  * {@link EntityManagerFactory} objects.
  */
+@SuppressWarnings({
+    "unchecked", "rawtypes"
+})
 public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
-
-  /**
-   * A callback for a named persistence units
-   */
-  class NamedCallback {
-    private final Set<String> names;
-    private final DestroyCallback callback;
-    public NamedCallback(Collection<String> names, DestroyCallback countdown) {
-      this.names = new HashSet<String>(names);
-      callback = countdown;
-    }
-
-    public void callback(String name) {
-      boolean winner;
-      synchronized (this) {
-        winner = !!!names.isEmpty() && names.remove(name) && names.isEmpty();
-      }
-      if(winner)
-        callback.callback();
-    }
-  }
 
   /** The container's {@link BundleContext} */
   private final BundleContext containerContext;
@@ -84,7 +68,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   /** The original parsed data */
   private Collection<ParsedPersistenceUnit> parsedData;
   /** A Map of created {@link EntityManagerFactory}s */
-  private Map<String, CountingEntityManagerFactory> emfs = null;
+  private Map<String, EntityManagerFactory> emfs = null;
   /** The {@link ServiceRegistration} objects for the {@link EntityManagerFactory}s */
   private ConcurrentMap<String, ServiceRegistration> registrations = null;
   /** Quiesce this Manager */
@@ -107,18 +91,13 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    * {@link PersistenceBundleManager} that is synchronized
    * on itself, and the resulting manager should be immediately
    * stored in the bundleToManager Map
-   * 
+   *
+   * @param containerCtx
    * @param b
-   * @param infos 
-   * @param ref 
-   * @param parsedUnits 
    */
-  public EntityManagerFactoryManager(BundleContext containerCtx, Bundle b, Collection<ParsedPersistenceUnit> parsedUnits, ServiceReference ref, Collection<? extends ManagedPersistenceUnitInfo> infos) {
+  public EntityManagerFactoryManager(BundleContext containerCtx, Bundle b) {
     containerContext = containerCtx;
     bundle = b;
-    provider = ref;
-    persistenceUnits = getInfoMap(infos);
-    parsedData = parsedUnits;
   }
 
   private Map<String, ? extends ManagedPersistenceUnitInfo> getInfoMap(
@@ -145,9 +124,12 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    * @param ref  The provider service reference
    * @return true if the the provider is being used by this manager
    */
-  public synchronized boolean providerRemoved(ServiceReference ref) {
-    
-    boolean toReturn = provider.equals(ref);
+  public synchronized boolean providerRemoved(ServiceReference ref) 
+  {
+    boolean toReturn = false;
+    if (provider != null) {
+    	toReturn = provider.equals(ref);
+    }
     
     if(toReturn)
       destroy();
@@ -171,8 +153,6 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
         //If we are Resolved as a result of having stopped
         //and missed the STOPPING event we need to unregister
         unregisterEntityManagerFactories();
-      //Create the EMF objects if necessary
-        createEntityManagerFactories();
         break;
         //Starting and active both require EMFs to be registered
       case Bundle.STARTING :
@@ -208,7 +188,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     if(registrations != null) {
       for(Entry<String, ServiceRegistration> entry : registrations.entrySet()) {
         AriesFrameworkUtil.safeUnregisterService(entry.getValue());
-        emfs.get(entry.getKey()).clearQuiesce();
+        clearQuiesce(emfs.get(entry.getKey()));
         persistenceUnits.get(entry.getKey()).unregistered();
       }
       // remember to set registrations to be null
@@ -216,14 +196,21 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     }
   }
 
+
   private void unregisterEntityManagerFactory(String unit) {
     if(registrations != null) {
       AriesFrameworkUtil.safeUnregisterService(registrations.remove(unit));
-      emfs.get(unit).clearQuiesce();
+      clearQuiesce(emfs.get(unit));
       persistenceUnits.get(unit).unregistered();
     }
   }
-
+  
+  private void clearQuiesce(EntityManagerFactory emf) {
+      if (emf instanceof QuiesceEMF) {
+          ((QuiesceEMF) emf).clearQuiesce();
+      }
+  }
+  
   /**
    * Register {@link EntityManagerFactory} services
    * 
@@ -248,7 +235,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
                       PersistenceUnitConstants.OSGI_UNIT_PROVIDER, provider));
       }
       //Register each EMF
-      for(Entry<String, ? extends EntityManagerFactory> entry : emfs.entrySet())
+      for(Entry<String, EntityManagerFactory> entry : emfs.entrySet())
       {
         
         Hashtable<String,Object> props = new Hashtable<String, Object>();
@@ -302,7 +289,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
       return true;
     }
   }
-
+  
   /**
    * Create {@link EntityManagerFactory} services for this peristence unit
    * throws InvalidPersistenceUnitException if this {@link EntityManagerFactory} is no longer
@@ -310,7 +297,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
    */
   private void createEntityManagerFactories() throws InvalidPersistenceUnitException {
     if (emfs == null) {  
-      emfs = new HashMap<String, CountingEntityManagerFactory>();
+      emfs = new HashMap<String, EntityManagerFactory>();
     }
     //Only try if we have a provider and EMFs
     if(provider == null || !emfs.isEmpty() || quiesce) {
@@ -329,7 +316,8 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
         ManagedPersistenceUnitInfo mpui = persistenceUnits.get(unitName);
         try {
           EntityManagerFactory emf = providerService.createContainerEntityManagerFactory(mpui.getPersistenceUnitInfo(), mpui.getContainerProperties());
-          emfs.put(unitName, new CountingEntityManagerFactory(emf, unitName));
+          EntityManagerFactory emfProxy = EMFProxyFactory.createProxy(emf, unitName);
+          emfs.put(unitName, emfProxy);
         } catch (Exception e) {
           _logger.warn("Error creating EntityManagerFactory", e);
         }
@@ -339,6 +327,8 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
       containerContext.ungetService(provider);
     }
   }
+  
+
 
   /**
    * Manage the EntityManagerFactories for the following
@@ -395,7 +385,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     if(registrations != null)
       unregisterEntityManagerFactories();
     if(emfs != null) {
-      for(Entry<String, ? extends EntityManagerFactory> entry : emfs.entrySet()) {
+      for(Entry<String, EntityManagerFactory> entry : emfs.entrySet()) {
         try {
           entry.getValue().close();
         } catch (Exception e) {
@@ -414,11 +404,12 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   {
     return parsedData;
   }
+
   /** Quiesce this Manager */
   public void quiesce(DestroyCallback countdown) {
     
     //Find the EMFs to quiesce, and their Service registrations
-    Map<CountingEntityManagerFactory, ServiceRegistration> entries = new HashMap<CountingEntityManagerFactory, ServiceRegistration>();
+    Map<EntityManagerFactory, ServiceRegistration> entries = new HashMap<EntityManagerFactory, ServiceRegistration>();
     Collection<String> names = new ArrayList<String>();
     synchronized(this) {
       if((bundle.getState() & (Bundle.ACTIVE | Bundle.STARTING)) != 0)
@@ -434,14 +425,19 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     if(entries.isEmpty())
       countdown.callback();
     else {
-    NamedCallback callback = new NamedCallback(names, countdown);
-      for(Entry<CountingEntityManagerFactory, ServiceRegistration> entry : entries.entrySet()) {
-        CountingEntityManagerFactory emf = entry.getKey();
-        emf.quiesce(callback, entry.getValue());
+      NamedCallback callback = new NamedCallback(names, countdown);
+      for(Entry<EntityManagerFactory, ServiceRegistration> entry : entries.entrySet()) {
+        quiesce(entry.getKey(), callback, entry.getValue());
       }
     }
   }
-
+  
+  private void quiesce(EntityManagerFactory emf, NamedCallback callback, ServiceRegistration reg) {
+      if (emf instanceof QuiesceEMF) {
+          ((QuiesceEMF) emf).quiesce(callback, reg);
+      }
+  }
+  
   @Override
   public StringBuffer addingService(ServiceReference reference) {
     //Use String.valueOf to save us from nulls
@@ -514,4 +510,5 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
       } 
     }
   }
+
 }

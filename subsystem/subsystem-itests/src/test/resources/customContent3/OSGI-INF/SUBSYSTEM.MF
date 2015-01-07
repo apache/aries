@@ -1,0 +1,4 @@
+Subsystem-SymbolicName: org.apache.aries.subsystem.itests.customContent
+Subsystem-Type: osgi.subsystem.feature
+Subsystem-Content: customContent4;embedded-resource=custom4.sausages;type=foo.sausages,
+ org.apache.aries.subsystem.itests.customcontent.bundleD
