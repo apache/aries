@@ -19,9 +19,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.apache.aries.subsystem.ContentHandler;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
@@ -33,11 +35,11 @@ import org.slf4j.LoggerFactory;
 
 public class StopAction extends AbstractAction {
 	private static final Logger logger = LoggerFactory.getLogger(StopAction.class);
-	
+
 	public StopAction(BasicSubsystem requestor, BasicSubsystem target, boolean disableRootCheck) {
 		super(requestor, target, disableRootCheck);
 	}
-	
+
 	@Override
 	public Object run() {
 		checkRoot();
@@ -63,7 +65,7 @@ public class StopAction extends AbstractAction {
 				continue;
 			try {
 				stopResource(resource);
-			} 
+			}
 			catch (Exception e) {
 				logger.error("An error occurred while stopping resource " + resource + " of subsystem " + target, e);
 			}
@@ -88,29 +90,47 @@ public class StopAction extends AbstractAction {
 		}
 		return null;
 	}
-	
+
 	private void stopBundleResource(Resource resource) throws BundleException {
 		if (target.isRoot())
 			return;
 		((BundleRevision)resource).getBundle().stop();
 	}
-	
+
 	private void stopResource(Resource resource) throws BundleException, IOException {
 		if (Utils.getActiveUseCount(resource) > 0)
 			return;
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
-				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type))
+				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type)) {
 			stopSubsystemResource(resource);
-		else if (IdentityNamespace.TYPE_BUNDLE.equals(type))
+		} else if (IdentityNamespace.TYPE_BUNDLE.equals(type)) {
 			stopBundleResource(resource);
-		else if (IdentityNamespace.TYPE_FRAGMENT.equals(type))
+		} else if (IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
 			return;
-		else
-			throw new SubsystemException("Unsupported resource type: " + type);
+		} else {
+		    if (!stopCustomHandler(resource, type))
+		        throw new SubsystemException("Unsupported resource type: " + type);
+		}
 	}
-	
+
+    private boolean stopCustomHandler(Resource resource, String type) {
+        ServiceReference<ContentHandler> customHandlerRef = CustomResources.getCustomContentHandler(target, type);
+        if (customHandlerRef != null) {
+            ContentHandler customHandler = target.getBundleContext().getService(customHandlerRef);
+            if (customHandler != null) {
+                try {
+                    customHandler.stop(ResourceHelper.getSymbolicNameAttribute(resource), type, target);
+                    return true;
+                } finally {
+                    target.getBundleContext().ungetService(customHandlerRef);
+                }
+            }
+        }
+        return false;
+    }
+
 	private void stopSubsystemResource(Resource resource) throws IOException {
 		new StopAction(target, (BasicSubsystem)resource, !((BasicSubsystem)resource).isRoot()).run();
 	}

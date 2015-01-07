@@ -63,7 +63,7 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
   public MethodCopyingClassAdapter(AbstractWovenProxyAdapter awpa, ClassLoader definingLoader,
       Class<?> superToCopy, Type overridingClassType, Set<Method> knownMethods, 
       Map<String, TypeMethod> transformedMethods) {
-    super(Opcodes.ASM4);
+    super(Opcodes.ASM5);
     this.wovenProxyAdapter = awpa;
     this.superToCopy = superToCopy;
     this.overridingClassType = overridingClassType;
@@ -170,7 +170,7 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
     
     public CopyingMethodAdapter(GeneratorAdapter mv, Type superType, 
         Method currentTransformMethod) {
-      super(Opcodes.ASM4);
+      super(Opcodes.ASM5);
       this.mv = mv;
       this.superType = superType;
       this.currentTransformMethod = currentTransformMethod;

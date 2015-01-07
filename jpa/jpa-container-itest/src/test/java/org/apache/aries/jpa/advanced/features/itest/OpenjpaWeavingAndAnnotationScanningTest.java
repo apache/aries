@@ -35,7 +35,7 @@ public class OpenjpaWeavingAndAnnotationScanningTest extends JPAWeavingAndAnnota
 				baseOptions(),
 				openJpa(),
 				derbyDataSourceFactory(),
-				ariesJpa(),
+				ariesJpa20(),
 				transactionWrapper(),
 
 				testBundleAdvanced()

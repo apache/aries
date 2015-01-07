@@ -34,6 +34,7 @@ import javax.persistence.PersistenceContextType;
 
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
+import org.apache.aries.jpa.container.sync.Synchronization;
 import org.apache.aries.jpa.container.context.transaction.impl.DestroyCallback;
 import org.apache.aries.jpa.container.context.transaction.impl.JTAPersistenceContextRegistry;
 import org.apache.aries.util.AriesFrameworkUtil;
@@ -284,7 +285,8 @@ public class PersistenceContextManager extends ServiceTracker{
       
       BundleContext persistenceBundleContext = unit.getBundle().getBundleContext();
       reg = persistenceBundleContext.registerService(
-          EntityManagerFactory.class.getName(), entityManagerServiceFactory, props);
+          new String[]{EntityManagerFactory.class.getName(),
+                  Synchronization.class.getName()}, entityManagerServiceFactory, props);
     } finally {
       //As we have to register from outside a synchronized then someone may be trying to
       //unregister us. They will try to wait for us to finish, but in order to prevent 

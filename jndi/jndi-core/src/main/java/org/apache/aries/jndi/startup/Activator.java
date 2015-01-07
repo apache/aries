@@ -34,7 +34,10 @@ import org.apache.aries.jndi.OSGiInitialContextFactoryBuilder;
 import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
 import org.apache.aries.jndi.ProviderAdminServiceFactory;
 import org.apache.aries.jndi.Utils;
+import org.apache.aries.jndi.AugmenterInvokerImpl;
 import org.apache.aries.jndi.spi.EnvironmentAugmentation;
+import org.apache.aries.jndi.spi.EnvironmentUnaugmentation;
+import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
 import org.osgi.framework.BundleActivator;
@@ -62,6 +65,7 @@ public class Activator implements BundleActivator {
     private static ServiceTracker initialContextFactories;
     private static ServiceTracker objectFactories;
     private static ServiceTracker environmentAugmentors;
+    private static ServiceTracker environmentUnaugmentors;
 
     public void start(BundleContext context) {
 
@@ -70,6 +74,7 @@ public class Activator implements BundleActivator {
         icfBuilders = initServiceTracker(context, InitialContextFactoryBuilder.class, ServiceTrackerCustomizers.LAZY);
         urlObjectFactoryFinders = initServiceTracker(context, URLObjectFactoryFinder.class, ServiceTrackerCustomizers.LAZY);
         environmentAugmentors = initServiceTracker(context, EnvironmentAugmentation.class, null);
+        environmentUnaugmentors = initServiceTracker(context, EnvironmentUnaugmentation.class, null);
 
         try {
             OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder();
@@ -108,6 +113,10 @@ public class Activator implements BundleActivator {
         context.registerService(JNDIContextManager.class.getName(),
                                 new ContextManagerServiceFactory(),
                                 null);
+               context.registerService(AugmenterInvoker.class.getName(),
+                                               AugmenterInvokerImpl.getInstance(),
+                                               null);
+
     }
 
     private String getClassName(Class<?> expectedType)
@@ -151,6 +160,7 @@ public class Activator implements BundleActivator {
         objectFactories.close();
         initialContextFactories.close();
         environmentAugmentors.close();
+        environmentUnaugmentors.close();
     }
 
     /*
@@ -202,4 +212,10 @@ public class Activator implements BundleActivator {
     {
       return environmentAugmentors.getServices();
     }
+
+    public static Object[] getEnvironmentUnaugmentors()
+    {
+      return environmentUnaugmentors.getServices();
+    }
+
 }

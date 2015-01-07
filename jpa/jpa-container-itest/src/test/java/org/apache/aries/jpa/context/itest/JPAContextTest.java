@@ -45,11 +45,7 @@ import javax.transaction.UserTransaction;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.itest.AbstractJPAItest;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.ops4j.pax.exam.Configuration;
-import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.Option;
 
 public abstract class JPAContextTest extends AbstractJPAItest {
   
@@ -82,7 +78,6 @@ public abstract class JPAContextTest extends AbstractJPAItest {
     EntityManagerFactory emf = getProxyEMF(BP_TEST_UNIT);
     
     final EntityManager managedEm = emf.createEntityManager();
-    
     ensureTREBehaviour(false, managedEm, "contains", new Object());
     ensureTREBehaviour(false, managedEm, "createNamedQuery", "hi");
     ensureTREBehaviour(false, managedEm, "createNativeQuery", "hi");
@@ -116,8 +111,7 @@ public abstract class JPAContextTest extends AbstractJPAItest {
     ensureTREBehaviour(true, managedEm, "find", Object.class, new Object(), LockModeType.OPTIMISTIC);
     ensureTREBehaviour(false, managedEm, "find", Object.class, new Object(), LockModeType.NONE, 
         new HashMap());
-    ensureTREBehaviour(true, managedEm, "find", Object.class, new Object(), LockModeType.OPTIMISTIC, 
-        new HashMap());
+    ensureTREBehaviour(true, managedEm, "find", Object.class, new Object(), LockModeType.OPTIMISTIC, new HashMap());
     ensureTREBehaviour(false, managedEm, "getCriteriaBuilder");
     ensureTREBehaviour(true, managedEm, "getLockMode", new Object());
     ensureTREBehaviour(false, managedEm, "getMetamodel");
@@ -139,7 +133,11 @@ public abstract class JPAContextTest extends AbstractJPAItest {
       ensureTREBehaviour(false, managedEm, "createNativeQuery", "hi", "hi");
       ensureTREBehaviour(false, managedEm, "createQuery", "hi");
       ensureTREBehaviour(false, managedEm, "find", Object.class, new Object());
+      ut.rollback();
+      ut.begin();
       ensureTREBehaviour(false, managedEm, "flush");
+      ut.rollback();
+      ut.begin();
       ensureTREBehaviour(false, managedEm, "getDelegate");
       ensureTREBehaviour(false, managedEm, "getFlushMode");
       ensureTREBehaviour(false, managedEm, "getReference", Object.class, new Object());
@@ -333,41 +331,48 @@ public abstract class JPAContextTest extends AbstractJPAItest {
     assertEquals("black", list.get(0).getColour());
     assertEquals("C3CCC", list.get(0).getNumberPlate());
     
-    assertEquals(5, list.get(1).getNumberOfSeats());
-    assertEquals(1200, list.get(1).getEngineSize());
-    assertEquals("blue", list.get(1).getColour());
+    assertEquals(2, list.get(1).getNumberOfSeats());
+    assertEquals(2000, list.get(1).getEngineSize());
+    assertEquals("red", list.get(1).getColour());
     assertEquals("A1AAA", list.get(1).getNumberPlate());
   }
 
-  private void ensureTREBehaviour(boolean expectedToFail, EntityManager em, String methodName, Object... args) throws Exception {
-    List<Class<?>> argTypes = new ArrayList<Class<?>>();
-    for(Object o : args) {
-      if(o instanceof Map)
-        argTypes.add(Map.class);
-      else if (o instanceof CriteriaQuery)
-        argTypes.add(CriteriaQuery.class);
-      else
-        argTypes.add(o.getClass());
+    private void ensureTREBehaviour(boolean expectedToFail, EntityManager em, String methodName,
+                                    Object... args) throws Exception {
+        List<Class<?>> argTypes = new ArrayList<Class<?>>();
+        for (Object o : args) {
+            if (o instanceof Map)
+                argTypes.add(Map.class);
+            else if (o instanceof CriteriaQuery)
+                argTypes.add(CriteriaQuery.class);
+            else
+                argTypes.add(o.getClass());
+        }
+
+        Method m = EntityManager.class.getMethod(methodName, argTypes.toArray(new Class[args.length]));
+
+        try {
+            m.invoke(em, args);
+            if (expectedToFail) {
+                fail("Should have failed with TransactionRequiredException");
+            }
+        } catch (InvocationTargetException ite) {
+            Throwable e = ite;
+            while(e != null && !(e instanceof TransactionRequiredException)) {
+              e = e.getCause();
+            }
+            if(e==null) {
+              e = ite.getCause();
+            }
+            if (expectedToFail && !(ite.getCause() instanceof TransactionRequiredException)) {
+                        fail("We got the wrong failure. Expected a TransactionRequiredException" + ", got a "
+                             + ite.toString());
+            } else if (!expectedToFail && ite.getCause() instanceof TransactionRequiredException) {
+                       fail("We got the wrong failure. Expected not to get a TransactionRequiredException"
+                             + ", but we got one anyway!");
+            }
+        }
     }
-    
-    Method m = EntityManager.class.getMethod(methodName, 
-        argTypes.toArray(new Class[args.length]));
-    
-    try {
-      m.invoke(em, args);
-      if(expectedToFail)
-        fail("A transaction is required");
-    } catch (InvocationTargetException ite) {
-      if(expectedToFail && 
-          !!!(ite.getCause() instanceof TransactionRequiredException))
-        fail("We got the wrong failure. Expected a TransactionRequiredException" +
-        		", got a " + ite.toString());
-      else if (!!!expectedToFail && 
-          ite.getCause() instanceof TransactionRequiredException)
-        fail("We got the wrong failure. Expected not to get a TransactionRequiredException" +
-            ", but we got one anyway!");
-    }
-  }
   
 
 }

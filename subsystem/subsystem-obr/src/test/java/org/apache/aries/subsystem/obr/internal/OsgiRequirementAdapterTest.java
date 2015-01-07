@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.util.felix.OsgiRequirementAdapter;
 import org.apache.felix.bundlerepository.Capability;
 import org.easymock.EasyMock;
 import org.junit.Test;

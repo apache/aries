@@ -15,20 +15,16 @@
  */
 package org.apache.aries.jpa.context.itest;
 
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.spi.PersistenceProvider;
-
 import org.apache.aries.jpa.itest.AbstractJPAItest;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 
-@Ignore
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceProvider;
+
 public class EclipseLinkStartupTest extends AbstractJPAItest {
     
     @Test
@@ -49,9 +45,9 @@ public class EclipseLinkStartupTest extends AbstractJPAItest {
     public Option[] configuration() {
         return CoreOptions.options(
         		baseOptions(),
-        		ariesJpa(),
+        		ariesJpa21(),
         		eclipseLink(),
-                mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle.eclipselink").noStart()
+        		testBundleEclipseLink().noStart()
             );
     }
 }

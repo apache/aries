@@ -51,6 +51,12 @@ public class LocationTest {
 	}
 
     @Test
+    public void testAnyURIScheme() throws Exception {
+        Location l = new Location("foo://bar");
+        assertEquals("foo://bar", l.getValue());
+    }
+
+    @Test
     public void testSubsystemLocation() throws Exception {
         String locationString = "subsystem://?Subsystem-SymbolicName=org.osgi.service.subsystem.root&Subsystem-Version=1.2.3";
 
@@ -77,7 +83,7 @@ public class LocationTest {
         	Version v = location.getVersion();
         	fail("Expecting an error: " + v);
         } catch (IllegalArgumentException e) {
-        	// expected 
+        	// expected
         }
     }
 }

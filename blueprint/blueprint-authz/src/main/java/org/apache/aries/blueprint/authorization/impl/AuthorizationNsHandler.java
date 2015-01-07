@@ -38,10 +38,10 @@ public class AuthorizationNsHandler implements NamespaceHandler {
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
         
         if ("enable".equals(elt.getLocalName())) {
-            if (!cdr.containsComponentDefinition(AnnotationParser.ANNOTATION_PARSER_BEAN_NAME)) {
+            if (!cdr.containsComponentDefinition(AuthorizationBeanProcessor.AUTH_PROCESSOR_BEAN_NAME)) {
                 MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
-                meta.setId(AnnotationParser.ANNOTATION_PARSER_BEAN_NAME);
-                meta.setRuntimeClass(AnnotationParser.class);
+                meta.setId(AuthorizationBeanProcessor.AUTH_PROCESSOR_BEAN_NAME);
+                meta.setRuntimeClass(AuthorizationBeanProcessor.class);
                 meta.setProcessor(true);
                 MutablePassThroughMetadata cdrMeta = pc.createMetadata(MutablePassThroughMetadata.class);
                 cdrMeta.setObject(cdr);

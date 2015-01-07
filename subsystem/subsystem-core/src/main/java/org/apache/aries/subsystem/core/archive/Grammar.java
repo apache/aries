@@ -15,17 +15,17 @@ package org.apache.aries.subsystem.core.archive;
 
 
 public interface Grammar {
-//	  section:                       *header +newline 
-//	  nonempty-section:      +header +newline 
-//	  newline:                      CR LF | LF | CR (not followed by LF) 
-//	  header:                       name : value 
-//	  name:                         alphanum *headerchar 
-//	  value:                          SPACE *otherchar newline *continuation 
-//	  continuation:              SPACE *otherchar newline 
-//	  alphanum:                  {A-Z} | {a-z} | {0-9} 
-//	  headerchar:                alphanum | - | _ 
+//	  section:                       *header +newline
+//	  nonempty-section:      +header +newline
+//	  newline:                      CR LF | LF | CR (not followed by LF)
+//	  header:                       name : value
+//	  name:                         alphanum *headerchar
+//	  value:                          SPACE *otherchar newline *continuation
+//	  continuation:              SPACE *otherchar newline
+//	  alphanum:                  {A-Z} | {a-z} | {0-9}
+//	  headerchar:                alphanum | - | _
 //	  otherchar:                  any UTF-8 character except NUL, CR and LF
-	
+
 //	public static final String ALPHA = "[A-Za-z]";
 //	public static final String DIGIT = "[0-9]";
 //	public static final String ALPHANUM = ALPHA + '|' + DIGIT;
@@ -39,16 +39,16 @@ public interface Grammar {
 //	public static final String HEADER = NAME + ':' + VALUE;
 //	public static final String SECTION = "(?:" + HEADER + ")*(?:" + NEWLINE + ")+";
 //	public static final String NONEMPTY_SECTION = "(?:" + HEADER + ")+(?:" + NEWLINE + ")+";
-	
-//	  manifest-file:                    main-section newline *individual-section 
-//	  main-section:                    version-info newline *main-attribute 
-//	  version-info:                      Manifest-Version : version-number 
-//	  version-number :               digit+{.digit+}* 
-//	  main-attribute:                 (any legitimate main attribute) newline 
-//	  individual-section:             Name : value newline *perentry-attribute 
-//	  perentry-attribute:            (any legitimate perentry attribute) newline  
+
+//	  manifest-file:                    main-section newline *individual-section
+//	  main-section:                    version-info newline *main-attribute
+//	  version-info:                      Manifest-Version : version-number
+//	  version-number :               digit+{.digit+}*
+//	  main-attribute:                 (any legitimate main attribute) newline
+//	  individual-section:             Name : value newline *perentry-attribute
+//	  perentry-attribute:            (any legitimate perentry attribute) newline
 //	   digit:                                {0-9}
-	
+
 //	public static final String VERSION_NUMBER = DIGIT + "+(?:\\." + DIGIT + "+)*";
 //	public static final String VERSION_INFO = "Manifest-Version: " + VERSION_NUMBER;
 //	public static final String MAIN_ATTRIBUTE = HEADER + NEWLINE;
@@ -56,7 +56,7 @@ public interface Grammar {
 //	public static final String PERENTRY_ATTRIBUTE = HEADER + NEWLINE;
 //	public static final String INDIVIDUAL_SECTION = "Name: " + VALUE + NEWLINE + "(?:" + PERENTRY_ATTRIBUTE + ")*";
 //	public static final String MANIFEST_FILE = MAIN_SECTION + NEWLINE + "(?:" + INDIVIDUAL_SECTION + ")*";
-	
+
 //	digit ::= [0..9]
 //	alpha ::= [a..zA..Z]
 //	alphanum ::= alpha | digit
@@ -72,7 +72,7 @@ public interface Grammar {
 //	path-sep ::= /
 //	header ::= clause ( , clause ) *
 //	clause ::= path ( ; path ) * ( ; parameter ) *
-	
+
 	public static final String DIGIT = "[0-9]";
 	public static final String ALPHA = "[A-Za-z]";
 	public static final String ALPHANUM = DIGIT + '|' + ALPHA;
@@ -93,7 +93,7 @@ public interface Grammar {
 	public static final String HEADERCHAR = ALPHANUM + "|_|-";
 	public static final String NAME = ALPHANUM + "(?:" + HEADERCHAR + ")*";
 	public static final String HEADER = NAME + ": " + CLAUSE + "(?:," + CLAUSE + ")*";
-	
+
 	/*
 	 * jletter ::= a character for which the method Character.isJavaIdentifierStart(int) returns true
 	 * jletterordigit::= a character for which the method Character.isJavaIdentifierPart(int) returns true
@@ -104,7 +104,7 @@ public interface Grammar {
 	 * import ::= package-names ( ';' parameter )*
 	 * package-names ::= package-name ( ';' package-name )* // See 1.3.2
 	 */
-	
+
 	public static final String JLETTER = "\\p{javaJavaIdentifierStart}";
 	public static final String JLETTERORDIGIT = "\\p{javaJavaIdentifierPart}";
 	public static final String IDENTIFIER = JLETTER + "(?:" + JLETTERORDIGIT + ")*";
@@ -114,32 +114,33 @@ public interface Grammar {
 	public static final String PACKAGENAMES = PACKAGENAME + "\\s*(?:\\;\\s*" + PACKAGENAME + ")*";
 	public static final String IMPORT = PACKAGENAMES + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String IMPORTPACKAGE = IMPORT + "(?:\\,\\s*" + IMPORT + ")*";
-	
+
 	public static final String NAMESPACE = SYMBOLICNAME;
 	public static final String REQUIREMENT = NAMESPACE + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String REQUIRE_CAPABILITY = REQUIREMENT + "(?:,\\s*(?:" + REQUIREMENT + "))*";
-	
+
 	public static final String BUNDLE_DESCRIPTION = SYMBOLICNAME + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String REQUIRE_BUNDLE = BUNDLE_DESCRIPTION + "(?:,\\s*(?:" + BUNDLE_DESCRIPTION + "))*";
-	
+
 	public static final String EXPORT = PACKAGENAMES + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String EXPORT_PACKAGE = EXPORT + "(?:,\\s*(?:" + EXPORT + "))*";
-	
+
 	public static final String SCALAR = "String|Version|Long|Double";
 	public static final String LIST = "List<(?:" + SCALAR + ")>";
 	public static final String TYPE = "(?:" + SCALAR + ")|" + LIST;
 	public static final String TYPED_ATTR = EXTENDED + "(?:\\:" + TYPE + ")?=(?:" + ARGUMENT + ')';
 	public static final String CAPABILITY = NAMESPACE + "(?:;\\s*(?:(?:" + DIRECTIVE + ")|(?:" + TYPED_ATTR + ")))*";
 	public static final String PROVIDE_CAPABILITY = CAPABILITY + "(?:,\\s*(?:" + CAPABILITY + "))*";
-	
+
 	public static final String OBJECTCLASS = PACKAGENAME;
-	public static final String SERVICE = OBJECTCLASS + "(?:;\\s*(?:" + PARAMETER + "))*";
-	public static final String SUBSYSTEM_EXPORTSERVICE = SERVICE + "(?:,\\s*(?:" + SERVICE + "))*";
-	public static final String SUBSYSTEM_IMPORTSERVICE = SERVICE + "(?:,\\s*(?:" + SERVICE + "))*";
-	
+	public static final String SERVICE_OR_WILDCARD = "(" + OBJECTCLASS + "|[*])(?:;\\s*(?:" + PARAMETER + "))*";
+	public static final String SUBSYSTEM_IMPORTEXPORTSERVICE = SERVICE_OR_WILDCARD + "(?:,\\s*(?:" + SERVICE_OR_WILDCARD + "))*";
+    public static final String SUBSYSTEM_EXPORTSERVICE = SUBSYSTEM_IMPORTEXPORTSERVICE;
+	public static final String SUBSYSTEM_IMPORTSERVICE = SUBSYSTEM_IMPORTEXPORTSERVICE;
+
 	public static final String RESOURCE = SYMBOLICNAME + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String PREFERRED_PROVIDER = RESOURCE + "(?:,\\s*(?:" + RESOURCE + "))*";
-	
+
 	/*
 	 * number ::= digit+
 	 * version ::= major( '.' minor ( '.' micro ( '.' qualifier )? )? )?
@@ -153,7 +154,7 @@ public interface Grammar {
 	 * floor ::= version
 	 * ceiling ::= version
 	 */
-	
+
 	public static final String NUMBER = DIGIT + '+';
 	public static final String MAJOR = NUMBER;
 	public static final String MINOR = NUMBER;

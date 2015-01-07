@@ -1,8 +1,0 @@
-<platform>
-
-  <name>Equinox 3.7.0</name>
-  <system>mvn:org.eclipse/osgi/3.7.0.v20110221</system>
-
-  <profile name="minimal" default="true"/>
-
-</platform>

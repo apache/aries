@@ -487,7 +487,7 @@ public class PackageFinder extends ClassVisitor//AnnotationVisitor, SignatureVis
       return pfav;
     }
 
-    public void visitTableSwitchInsn(int arg0, int arg1, Label arg2, Label[] arg3)
+    public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels)
     {
       //no-op
     }

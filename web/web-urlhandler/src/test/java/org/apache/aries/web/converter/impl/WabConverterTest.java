@@ -132,6 +132,7 @@ public class WabConverterTest
     props.put(Constants.BUNDLE_SYMBOLICNAME, "test.bundle");
     WarToWabConverterImpl sut = new WarToWabConverterImpl(input, WAR_FILE_NAME, props);
     
+    @SuppressWarnings("resource")
     Manifest m = new JarInputStream(sut.getWAB()).getManifest();
     assertEquals("test.bundle", m.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME));
   }

@@ -20,11 +20,7 @@ package org.apache.aries.jpa.container.tx.impl;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
 import javax.transaction.InvalidTransactionException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -44,6 +40,7 @@ public class OSGiTransactionManager implements SingleServiceListener {
   
   private final SingleServiceTracker<TransactionManager> tracker;
   
+  @SuppressWarnings("unchecked")
   public static void init(BundleContext ctx) {
     
     try {

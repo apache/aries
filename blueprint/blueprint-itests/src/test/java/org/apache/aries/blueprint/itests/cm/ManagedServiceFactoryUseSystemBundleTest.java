@@ -56,6 +56,7 @@ import org.osgi.framework.hooks.service.FindHook;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintIntegrationTest {
 	private static final String CM_BUNDLE = "org.apache.aries.blueprint.cm";
 	private static final String TEST_BUNDLE = "org.apache.aries.blueprint.cm.test.b1";
@@ -145,7 +146,6 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
         props.put("a", "5");
         cf.update(props);
         
-		@SuppressWarnings("rawtypes")
 		ServiceReference sr = getServiceRef(Foo.class, "(key=foo1)");
         Foo foo = (Foo)context().getService(sr);
         assertNotNull(foo);
@@ -176,7 +176,6 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
         props.put("a", "5");
         cf.update(props);
 
-        @SuppressWarnings("rawtypes")
 		ServiceReference sr = getServiceRef(Foo.class, "(key=foo2)");
 		Foo foo = (Foo)context().getService(sr);
         assertNotNull(foo);
@@ -209,7 +208,6 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
         props.put("a", "5");
         cf.update(props);
 
-        @SuppressWarnings("rawtypes")
 		ServiceReference sr = getServiceRef(Foo.class, "(&(key=foo3)(a=5))");
         assertNotNull(sr);
         Foo foo = (Foo) context().getService(sr);
@@ -235,7 +233,6 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
         cf.delete();
     }
 
-    @SuppressWarnings("rawtypes")
 	@Test
     public void testCreateAndUpdate() throws Exception {
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
@@ -295,8 +292,7 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
         cf2.delete();
     }
 
-  @SuppressWarnings("rawtypes")
-@Test
+  @Test
   public void testCreateAndUpdateUsingUpdateMethod() throws Exception {
     Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory4", null);
     Hashtable<String, String> props = new Hashtable<String, String>();
@@ -360,7 +356,6 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
     props.put("a", "5");
     cf.update(props);
 
-    @SuppressWarnings("rawtypes")
 	ServiceReference sr = getServiceRef(Foo.class, "(key=foo5)");
     Foo foo = (Foo) context().getService(sr);
     assertNotNull(foo);
@@ -384,7 +379,6 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
     assertNull(sr.getProperty("b"));
   }
   
-	@SuppressWarnings("rawtypes")
 	private ServiceReference getServiceRef(Class serviceInterface, String filter) throws InvalidSyntaxException {
 		int tries = 0;
 		do {

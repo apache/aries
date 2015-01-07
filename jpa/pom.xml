@@ -39,9 +39,9 @@
         <module>jpa-container</module>
         <module>jpa-container-context</module>
         <module>jpa-blueprint-aries</module>
-        <!--  <module>jpa-container-eclipselink-adapter</module> -->
+        <module>jpa-container-eclipselink-adapter</module> 
         <module>jpa-container-testbundle</module>
-        <!--  <module>jpa-container-testbundle-eclipselink</module> -->
+        <module>jpa-container-testbundle-eclipselink</module>
         <module>jpa-container-advancedtestbundle</module>
         <module>jpa-container-itest</module>
         <module>jpa-blueprint-testbundle</module>

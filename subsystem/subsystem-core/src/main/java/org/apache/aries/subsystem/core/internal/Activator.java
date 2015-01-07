@@ -19,6 +19,8 @@ import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 
+import org.apache.aries.subsystem.ContentHandler;
+import org.apache.aries.subsystem.core.content.ConfigAdminContentHandler;
 import org.apache.aries.util.filesystem.IDirectoryFinder;
 import org.eclipse.equinox.region.RegionDigraph;
 import org.osgi.framework.BundleActivator;
@@ -49,24 +51,25 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
     public static final String LOG_EXIT = "Method exit: {}, returning {}";
 
     private static Activator instance;
-	
+
 	public static synchronized Activator getInstance() {
 		logger.debug(LOG_ENTRY, "getInstance");
 		checkInstance();
 		logger.debug(LOG_EXIT, "getInstance", instance);
 		return instance;
 	}
-	
+
 	private static synchronized void checkInstance() {
 		logger.debug(LOG_ENTRY, "checkInstance");
 		if (instance == null)
 			throw new IllegalStateException("The activator has not been initialized or has been shutdown");
 		logger.debug(LOG_EXIT, "checkInstance");
 	}
-	
+
 	// @GuardedBy("this")
 	private BundleEventHook bundleEventHook;
 	private volatile BundleContext bundleContext;
+    private volatile ConfigAdminContentHandler configAdminHandler;
 	private volatile Coordinator coordinator;
     private volatile Object modelledResourceManager;
     private volatile ServiceModeller serviceModeller;
@@ -76,18 +79,18 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private ServiceTracker<?,?> serviceTracker;
 
 	private volatile Subsystems subsystems;
-	
+
 	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
 	private final Collection<IDirectoryFinder> finders = Collections.synchronizedSet(new HashSet<IDirectoryFinder>());
-	
+
 	public BundleContext getBundleContext() {
 		return bundleContext;
 	}
-	
+
 	public Coordinator getCoordinator() {
 		return coordinator;
 	}
-	
+
     public ServiceModeller getServiceModeller() {
         return serviceModeller;
     }
@@ -95,26 +98,26 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
     public RegionDigraph getRegionDigraph() {
 		return regionDigraph;
 	}
-	
+
 	public Collection<IDirectoryFinder> getIDirectoryFinders() {
 		return Collections.unmodifiableCollection(finders);
 	}
-	
+
 	public Resolver getResolver() {
 		return resolver;
 	}
-	
+
 	public Subsystems getSubsystems() {
 		return subsystems;
 	}
-	
+
 	public SubsystemServiceRegistrar getSubsystemServiceRegistrar() {
 		logger.debug(LOG_ENTRY, "getSubsystemServiceRegistrar");
 		SubsystemServiceRegistrar result = registrar;
 		logger.debug(LOG_EXIT, "getSubsystemServiceRegistrar", result);
 		return result;
 	}
-	
+
 	public org.apache.aries.subsystem.core.repository.Repository getSystemRepository() {
 		return new SystemRepository(getSubsystems().getRootSubsystem());
 	}
@@ -136,7 +139,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		bundleContext = null;
 		logger.debug(LOG_EXIT, "stop");
 	}
-	
+
 	private void activate() {
 		if (isActive() || !hasRequiredServices())
 			return;
@@ -146,13 +149,17 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		subsystems = new Subsystems();
 		registerBundleEventHook();
 		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(subsystems), null));
+        Dictionary<String, Object> handlerProps = new Hashtable<String, Object>();
+        handlerProps.put(ContentHandler.CONTENT_TYPE_PROPERTY, ConfigAdminContentHandler.CONTENT_TYPES);
+        configAdminHandler = new ConfigAdminContentHandler(bundleContext);
+        registrations.add(bundleContext.registerService(ContentHandler.class, configAdminHandler, handlerProps));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
 		BasicSubsystem root = subsystems.getRootSubsystem();
 		bundleEventHook.activate();
 		root.start();
 		registerWovenClassListener();
 	}
-	
+
 	private void deactivate() {
 		if (!isActive())
 			return;
@@ -166,12 +173,13 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				logger.debug("Service had already been unregistered", e);
 			}
 		}
+        configAdminHandler.shutDown();
 		bundleEventHook.processPendingEvents();
 		synchronized (Activator.class) {
 			instance = null;
 		}
 	}
-	
+
 	private <T> T findAlternateServiceFor(Class<T> service) {
 		Object[] services = serviceTracker.getServices();
 		if (services == null)
@@ -181,11 +189,11 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 					return service.cast(alternate);
 		return null;
 	}
-	
+
 	private Filter generateServiceFilter() throws InvalidSyntaxException {
 		return FrameworkUtil.createFilter(generateServiceFilterString());
 	}
-	
+
 	private String generateServiceFilterString() {
 		return new StringBuilder("(|(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
@@ -201,26 +209,26 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(IDirectoryFinder.class.getName()).append("))").toString();
 	}
-	
+
 	private boolean hasRequiredServices() {
 		return coordinator != null &&
 				regionDigraph != null &&
 				resolver != null;
 	}
-	
+
 	private boolean isActive() {
 		synchronized (Activator.class) {
 			return instance != null && getSubsystems() != null;
 		}
 	}
-	
+
 	private void registerBundleEventHook() {
 		Dictionary<String, Object> properties = new Hashtable<String, Object>(1);
 		properties.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.MAX_VALUE);
 		bundleEventHook = new BundleEventHook();
 		registrations.add(bundleContext.registerService(EventHook.class, bundleEventHook, properties));
 	}
-	
+
 	private void registerWovenClassListener() {
 		registrations.add(
 				bundleContext.registerService(
@@ -319,6 +327,6 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
             }
         }
 	}
-	
+
 	/* End ServiceTrackerCustomizer methods */
 }

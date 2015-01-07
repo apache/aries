@@ -32,11 +32,13 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+@SuppressWarnings("rawtypes")
 public class ManagedPersistenceUnitInfoFactoryImpl implements
     ManagedPersistenceUnitInfoFactory {
 
   private ConcurrentMap<Bundle, Collection<ManagedPersistenceUnitInfoImpl>> persistenceUnits = 
       new ConcurrentHashMap<Bundle, Collection<ManagedPersistenceUnitInfoImpl>>();
+  
   
   public Collection<? extends ManagedPersistenceUnitInfo> createManagedPersistenceUnitMetadata(
       BundleContext containerContext, Bundle persistenceBundle,

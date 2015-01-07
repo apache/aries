@@ -19,6 +19,7 @@
 
 package org.apache.aries.jpa.container.impl;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -46,10 +47,15 @@ import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
 import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
+import org.apache.aries.jpa.container.quiesce.impl.CountdownCallback;
+import org.apache.aries.jpa.container.quiesce.impl.DestroyCallback;
+import org.apache.aries.jpa.container.quiesce.impl.QuiesceHandler;
+import org.apache.aries.jpa.container.quiesce.impl.QuiesceParticipantFactory;
 import org.apache.aries.jpa.container.tx.impl.OSGiTransactionManager;
 import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactoryImpl;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.aries.util.VersionRange;
+import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -70,11 +76,9 @@ import org.slf4j.LoggerFactory;
  * It also keeps track of PersistenceProvider services and delegates the EMF creation to the 
  * matching PersistenceProvider
  */
-public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator
+@SuppressWarnings("rawtypes")
+public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator, QuiesceHandler
 {
-  /** The QuiesceParticipant implementation class name */
-  private static final String QUIESCE_PARTICIPANT_CLASS = "org.apache.aries.quiesce.participant.QuiesceParticipant";
-  
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
@@ -110,10 +114,8 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   private RecursiveBundleTracker tracker;
   private ServiceTracker serviceTracker;
 
-  /** The quiesce participant service */
-  private ServiceRegistration quiesceReg;
   /** A callback to shutdown the quiesce participant when it is done */
-  private DestroyCallback quiesceParticipant;
+  private Closeable quiesceParticipant;
   /** Are we quiescing */
   private AtomicBoolean quiesce = new AtomicBoolean(false);
   
@@ -283,11 +285,16 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     EntityManagerFactoryManager mgr = (EntityManagerFactoryManager) object;
     //If the bundle was updated we need to destroy it and re-initialize
     //the EntityManagerFactoryManager
-    if(event != null && event.getType() == BundleEvent.UPDATED) {
+    //If the bundle becomes unresolved we need to destroy persistenceUnits, since they
+    //keep a reference to bundle classloader which has wiring m_isDisposed set to true
+    //this occurs when Karaf BundleWatcher is used.
+    if(event != null && (event.getType() == BundleEvent.UPDATED || event.getType() == BundleEvent.UNRESOLVED)) {
       mgr.destroy();
       persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
-      //Don't add to the managersAwaitingProviders, the setupManager will do it
-      setupManager(bundle, mgr, true);
+      if (event.getType() == BundleEvent.UPDATED) {
+          //Don't add to the managersAwaitingProviders, the setupManager will do it
+          setupManager(bundle, mgr, true);
+      }
     } else {
       try {
         boolean reassign;
@@ -380,11 +387,11 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
           infos = persistenceUnitFactory.
               createManagedPersistenceUnitMetadata(ctx, bundle, ref, pUnits);
         }
-        //Either update the existing manager or create a new one
-        if(mgr != null)
-          mgr.manage(pUnits, ref, infos);
-        else 
-          mgr = new EntityManagerFactoryManager(ctx, bundle, pUnits, ref, infos);
+
+        if(mgr == null) {
+            mgr = new EntityManagerFactoryManager(ctx, bundle);
+        }
+        mgr.manage(pUnits, ref, infos);
           
         //Register the manager (this may re-add, but who cares)
         synchronized (this) {
@@ -634,6 +641,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   }
 
 
+  @SuppressWarnings("unchecked")
   public void start(BundleContext context) throws Exception {
     
     ctx = context;
@@ -648,15 +656,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     
     open();
     
-    try{
-      context.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
-      //Class was loaded, register
-      quiesceParticipant = new QuiesceParticipantImpl(this);
-      quiesceReg = context.registerService(QUIESCE_PARTICIPANT_CLASS,
-         quiesceParticipant, null);
-    } catch (ClassNotFoundException e) {
-      _logger.info(NLS.MESSAGES.getMessage("quiesce.manager.not.there"));
-    }
+    QuiesceParticipantFactory.create(context, this);
   }
 
   private void initParser() {
@@ -667,22 +667,21 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   public void stop(BundleContext context) throws Exception {
     close();
     AriesFrameworkUtil.safeUnregisterService(parserReg);
-    AriesFrameworkUtil.safeUnregisterService(quiesceReg);
-    if(quiesceParticipant != null)
-      quiesceParticipant.callback();
+    IOUtils.close(quiesceParticipant);
   }
   
   public BundleContext getCtx() {
     return ctx;
   }
 
+  @Override
   public void quiesceBundle(Bundle bundleToQuiesce, final DestroyCallback callback) {
     
     boolean thisBundle =  bundleToQuiesce.equals(ctx.getBundle());
     
     if(thisBundle) {
       quiesce.compareAndSet(false, true);
-      AriesFrameworkUtil.safeUnregisterService(quiesceReg);
+      
     }
     
     Collection<EntityManagerFactoryManager> toDestroyNow = new ArrayList<EntityManagerFactoryManager>();
@@ -712,7 +711,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     if(quiesceNow.isEmpty()) {
       callback.callback();
     } else {
-      DestroyCallback countdown = new CoundownCallback(quiesceNow.size(), callback);
+      DestroyCallback countdown = new CountdownCallback(quiesceNow.size(), callback);
       
       for(EntityManagerFactoryManager emfm : quiesceNow)
         emfm.quiesce(countdown);
