@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jpa.container.impl;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,8 +26,15 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
@@ -162,7 +170,17 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
               "org.osgi.service.jdbc.DataSourceFactory", this);
           tracker.open();
         }
-        registerEntityManagerFactories();
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Void> result = executor.submit(new Callable<Void>() {
+            
+            @Override
+            public Void call() throws InvalidPersistenceUnitException {
+                registerEntityManagerFactories();
+                return null;
+            }
+        });
+        executor.shutdown();
+        handleCreationResult(result);
         break;
         //Stopping means the EMFs should
       case Bundle.STOPPING :
@@ -179,6 +197,22 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
         destroyEntityManagerFactories();
     }
   }
+
+    private void handleCreationResult(Future<Void> result) throws InvalidPersistenceUnitException {
+        try {
+            result.get(5000, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            _logger.warn(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof InvalidPersistenceUnitException) {
+                throw (InvalidPersistenceUnitException) e.getCause();
+            } else if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+        } catch (TimeoutException e) {
+            _logger.info("EntityManagerFactory creation takes long. Continuing in background", e);
+        }
+    }
 
   /**
    * Unregister all {@link EntityManagerFactory} services
