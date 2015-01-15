@@ -1,6 +1,7 @@
 package org.apache.aries.jpa.container.quiesce.impl;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -35,7 +36,9 @@ class EntityManagerProxyFactory {
               new PersistenceException(NLS.MESSAGES.getMessage("wrong.JPA.version", new Object[]{
                   method.getName(), delegate
               }), e);
-            }
+            } catch (InvocationTargetException e) {
+                throw e.getCause();
+            } 
             
             // This will only ever be called once, the second time there
             // will be an IllegalStateException from the line above
