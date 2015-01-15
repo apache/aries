@@ -97,17 +97,11 @@ public class JTAEntityManagerHandler implements InvocationHandler {
      */
     private EntityManager getPersistenceContext(boolean forceTransaction) {
         if (forceTransaction) {
-            EntityManager manager = activeManager.get();
-            if (manager != null) {
-                manager.clear();
-            }
+            clearDetachedManager();
             return reg.getCurrentPersistenceContext(emf, props, instanceCount, callback);
         } else {
             if (reg.isTransactionActive()) {
-                EntityManager manager = activeManager.get();
-                if (manager != null) {
-                    manager.clear();
-                }
+                clearDetachedManager();
                 return reg.getCurrentPersistenceContext(emf, props, instanceCount, callback);
             } else {
                 if (!!!reg.jtaIntegrationAvailable() && _logger.isDebugEnabled())
@@ -123,6 +117,13 @@ public class JTAEntityManagerHandler implements InvocationHandler {
                 }
                 return manager;
             }
+        }
+    }
+
+    private void clearDetachedManager() {
+        EntityManager manager = activeManager.get();
+        if (manager != null) {
+            manager.clear();
         }
     }
 
