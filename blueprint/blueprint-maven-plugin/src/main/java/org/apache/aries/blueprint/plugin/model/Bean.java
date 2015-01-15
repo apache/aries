@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.SortedSet;
@@ -43,11 +44,11 @@ public class Bean implements Comparable<Bean>{
         this.clazz = clazz;
         this.id = getBeanName(clazz);
         for (Method method : clazz.getDeclaredMethods()) {
-            PostConstruct postConstruct = method.getAnnotation(PostConstruct.class);
+            PostConstruct postConstruct = getEffectiveAnnotation(method, PostConstruct.class);
             if (postConstruct != null) {
                 this.initMethod = method.getName();
             }
-            PreDestroy preDestroy = method.getAnnotation(PreDestroy.class);
+            PreDestroy preDestroy = getEffectiveAnnotation(method, PreDestroy.class);
             if (preDestroy != null) {
                 this.destroyMethod = method.getName();
             }
@@ -104,6 +105,46 @@ public class Bean implements Comparable<Bean>{
     private static String getBeanNameFromSimpleName(String name) {
         return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
     }
+    
+    private static <T extends Annotation> T getEffectiveAnnotation(Method method, Class<T> annotationClass) {
+        final Class<?> methodClass = method.getDeclaringClass();
+        final String name = method.getName();
+        final Class<?>[] params = method.getParameterTypes();
+
+        // 1. Current class
+        final T rootAnnotation = method.getAnnotation(annotationClass);
+        if (rootAnnotation != null) {
+            return rootAnnotation;
+        }
+
+        // 2. Superclass
+        final Class<?> superclass = methodClass.getSuperclass();
+        if (superclass != null) {
+            final T annotation = getMethodAnnotation(superclass, name, params, annotationClass);
+            if (annotation != null)
+                return annotation;
+        }
+
+        // 3. Interfaces
+        for (final Class<?> intfs : methodClass.getInterfaces()) {
+            final T annotation = getMethodAnnotation(intfs, name, params, annotationClass);
+            if (annotation != null)
+                return annotation;
+        }
+
+        return null;
+    }
+
+    private static <T extends Annotation> T getMethodAnnotation(Class<?> searchClass, String name, Class<?>[] params,
+            Class<T> annotationClass) {
+        try {
+            Method method = searchClass.getMethod(name, params);
+            return getEffectiveAnnotation(method, annotationClass);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+    
 
     public boolean matches(Class<?> destType, String destId) {
         boolean assignable = destType.isAssignableFrom(this.clazz);

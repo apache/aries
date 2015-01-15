@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import javax.inject.Named;
 
 import org.ops4j.pax.cdi.api.OsgiService;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class Context implements Matcher {
 
@@ -67,8 +68,7 @@ public class Context implements Matcher {
     }
     
     public Bean getMatching(Field field) {
-        Named named = field.getAnnotation(Named.class);
-        String destId = (named == null) ? null : named.value();
+        String destId = getDestinationId(field);
         // TODO Replace loop by lookup
         for (Bean bean : beans) {
             if (bean.matches(field.getType(), destId)) {
@@ -82,6 +82,18 @@ public class Context implements Matcher {
         }
         return null;
     }
+
+	private String getDestinationId(Field field) {
+		Named named = field.getAnnotation(Named.class);
+		if (named != null) {
+			return named.value();
+		}
+		Qualifier qualifier = field.getAnnotation(Qualifier.class);
+        if (qualifier != null) {
+        	return qualifier.value();
+        }
+		return null;
+	}
 
     public SortedSet<Bean> getBeans() {
         return beans;

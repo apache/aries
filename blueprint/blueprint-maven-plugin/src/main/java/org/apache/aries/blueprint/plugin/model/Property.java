@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 public class Property implements Comparable<Property> {
@@ -58,7 +59,14 @@ public class Property implements Comparable<Property> {
      */
     private static String getRefName(Field field) {
         Named named = field.getAnnotation(Named.class);
-        return (named != null) ? named.value() : Bean.getBeanName(field.getType());
+        if (named != null) {
+        	return named.value();
+        }
+    	Qualifier qualifier = field.getAnnotation(Qualifier.class);
+        if (qualifier != null) {
+        	return qualifier.value();
+        }
+        return Bean.getBeanName(field.getType());
     }
 
     private static boolean needsInject(Field field) {
