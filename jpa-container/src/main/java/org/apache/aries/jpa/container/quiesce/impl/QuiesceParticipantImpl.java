@@ -110,6 +110,7 @@ public class QuiesceParticipantImpl implements QuiesceParticipant, Closeable {
 
   private QuiesceHandler quiesceHandler;
   private final BundleContext context;
+  @SuppressWarnings("rawtypes")
   private ServiceRegistration quiesceReg;
   
   /** Some events that we need to tidy up */
