@@ -18,26 +18,16 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+public class ParentBean {
 
-@Singleton
-@Transactional(propagation=Propagation.REQUIRES_NEW)
-public class MyBean3 {
-
-    @Inject
-    @Named("my1")
-    ServiceA serviceA1;
-
-    @Inject
-    @Qualifier("my2")
-    ServiceA serviceA2;
-
-    @Inject
-    ServiceB serviceB;
+    @PostConstruct
+    public void init() {
+    }
+    
+    @PreDestroy
+    public void destroy() {
+    }
 }
