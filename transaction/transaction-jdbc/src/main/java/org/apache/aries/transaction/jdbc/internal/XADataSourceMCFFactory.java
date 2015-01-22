@@ -25,11 +25,15 @@ import org.tranql.connector.NoExceptionsAreFatalSorter;
 import org.tranql.connector.jdbc.AbstractXADataSourceMCF;
 import org.tranql.connector.jdbc.ConfigurableSQLStateExceptionSorter;
 import org.tranql.connector.jdbc.KnownSQLStateExceptionSorter;
+import org.tranql.connector.jdbc.ManagedXAConnection;
 
 import javax.resource.ResourceException;
+import javax.resource.spi.ConnectionRequestInfo;
+import javax.resource.spi.ManagedConnection;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.resource.spi.ResourceAdapterInternalException;
 import javax.resource.spi.TransactionSupport;
+import javax.security.auth.Subject;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
@@ -61,6 +65,26 @@ public class XADataSourceMCFFactory extends AbstractMCFFactory {
         @Override
         public String getPassword() {
             return XADataSourceMCFFactory.this.getPassword();
+        }
+
+        @Override
+        public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo) throws ResourceException {
+            CredentialExtractor credentialExtractor = new CredentialExtractor(subject, connectionRequestInfo, this);
+
+            XAConnection sqlConnection = getPhysicalConnection(credentialExtractor);
+            try {
+                return new ManagedXAConnection(this, sqlConnection, credentialExtractor, exceptionSorter) {
+                    @Override
+                    public void cleanup() throws ResourceException {
+                        // ARIES-1279 - Transaction does not work on error SQLException
+                        // that's why we don't call super.cleanup() which calls con.setAutocommit(true)
+                        // super.cleanup();
+                        dissociateConnections();
+                    }
+                };
+            } catch (SQLException e) {
+                throw new ResourceAdapterInternalException("Could not set up ManagedXAConnection", e);
+            }
         }
 
         @Override

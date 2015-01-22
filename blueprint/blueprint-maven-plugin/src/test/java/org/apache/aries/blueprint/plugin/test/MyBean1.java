@@ -18,8 +18,6 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceUnit;
@@ -30,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Singleton
 @Transactional(value=TxType.REQUIRED)
-public class MyBean1 {
+public class MyBean1 extends ParentBean {
 
     @Autowired
     ServiceA bean2;
@@ -38,14 +36,10 @@ public class MyBean1 {
     @PersistenceUnit(unitName="person")
     EntityManager em;
     
-    @PostConstruct
     public void init() {
-        
     }
     
-    @PreDestroy
     public void destroy() {
-        
     }
 
     public void saveData() {
