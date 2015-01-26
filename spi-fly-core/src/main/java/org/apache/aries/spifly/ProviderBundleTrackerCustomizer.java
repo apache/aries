@@ -106,10 +106,6 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             activator.registerProviderBundle(svc, bundle, customAttributes);
         }
 
-        URL servicesDir = bundle.getResource("/" + METAINF_SERVICES);
-        if (servicesDir == null)
-            return null;
-
         List<URL> serviceFileURLs = new ArrayList<URL>();
 
         @SuppressWarnings("unchecked")
