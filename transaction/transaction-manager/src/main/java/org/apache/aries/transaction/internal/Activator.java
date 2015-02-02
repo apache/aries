@@ -42,23 +42,25 @@ public class Activator implements BundleActivator, ManagedService {
 
     public void start(BundleContext bundleContext) throws Exception {
         this.bundleContext = bundleContext;
-        Hashtable props = new Hashtable();
+        // Make sure TransactionManager comes up even if no config admin is installed
+        updated(null);
+        bundleContext.registerService(ManagedService.class.getName(), this, getProps());
+    }
+
+    private Dictionary<String, Object> getProps() {
+        Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put(Constants.SERVICE_PID, PID);
-        updated(props);
-        bundleContext.registerService(ManagedService.class.getName(), this, props);
+        return props;
     }
 
     public void stop(BundleContext context) throws Exception {
         deleted();
     }
 
-    public synchronized void updated(Dictionary properties) throws ConfigurationException {
-    	if (properties == null)
-    	{
-    		// Use defaults if there's no configuration for us
-    		properties = new Hashtable();
-    		properties.put(Constants.SERVICE_PID, PID);
-    	}
+    public synchronized void updated(@SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
+        if (properties == null) {
+            properties = getProps();
+        }
         deleted();
         manager = new TransactionManagerService(PID, properties, bundleContext);
         try {

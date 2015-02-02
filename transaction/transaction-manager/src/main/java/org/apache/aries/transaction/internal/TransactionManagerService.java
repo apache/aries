@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Properties;
+
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
@@ -29,7 +30,6 @@ import javax.transaction.xa.XAException;
 import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
-import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
@@ -64,7 +64,9 @@ public class TransactionManagerService {
 
     private static final String PLATFORM_TRANSACTION_MANAGER_CLASS = "org.springframework.transaction.PlatformTransactionManager";
 
+    @SuppressWarnings("unused")
     private final String pid;
+    @SuppressWarnings("rawtypes")
     private final Dictionary properties;
     private final BundleContext bundleContext;
     private boolean useSpring;
@@ -72,7 +74,7 @@ public class TransactionManagerService {
     private TransactionLog transactionLog;
     private ServiceRegistration serviceRegistration;
 
-    public TransactionManagerService(String pid, Dictionary properties, BundleContext bundleContext) throws ConfigurationException {
+    public TransactionManagerService(String pid, @SuppressWarnings("rawtypes") Dictionary properties, BundleContext bundleContext) throws ConfigurationException {
         this.pid = pid;
         this.properties = properties;
         this.bundleContext = bundleContext;
