@@ -26,7 +26,6 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.xa.XAException;
 
-import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
@@ -150,6 +149,7 @@ public class AriesPlatformTransactionManager extends AriesTransactionManagerImpl
             this.readOnly = readOnly;
         }
 
+        @SuppressWarnings("unused")
         public Object getSuspendedResources() {
             return suspendedResources;
         }
