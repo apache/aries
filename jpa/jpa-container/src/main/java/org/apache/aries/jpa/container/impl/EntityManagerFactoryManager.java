@@ -616,7 +616,11 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     }
   }
 
-  public ManagedPersistenceUnitInfo getPersistenceUni(String unitName) { 
-    return persistenceUnits.get(unitName);
+  public ManagedPersistenceUnitInfo getPersistenceUnit(String unitName) {
+	  ManagedPersistenceUnitInfo ret = null;
+	  if(persistenceUnits != null) {
+		  ret = persistenceUnits.get(unitName);
+	  }
+	  return ret;
   }
 }

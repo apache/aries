@@ -80,7 +80,9 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
                 // this is how you set the default log level when using pax
                 // logging (logProfile)
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
-                when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)));
+                when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
+//               , vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+                );
     }
 
     private Option ariesJpaInternal() {

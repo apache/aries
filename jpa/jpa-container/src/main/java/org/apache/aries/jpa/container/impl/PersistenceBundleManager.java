@@ -731,7 +731,7 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   public void registerContext(String unitName, Bundle bundle, HashMap<String, Object> properties) {
     EntityManagerFactoryManager mgr = bundleToManagerMap.get(bundle);
     if(mgr!=null) {
-      ManagedPersistenceUnitInfo mUnitInfo = mgr.getPersistenceUni(unitName);
+      ManagedPersistenceUnitInfo mUnitInfo = mgr.getPersistenceUnit(unitName);
       if(mUnitInfo != null) {
         mUnitInfo.getContainerProperties().putAll(properties);
     
