@@ -135,7 +135,7 @@ public class TransactionManagerService {
                 ((HOWLLog) transactionLog).doStart();
             } catch (Exception e) {
                 // This should not really happen as we've checked properties earlier
-                throw new ConfigurationException(null, null, e);
+                throw new ConfigurationException(null, e.getMessage(), e);
             }
         } else {
             transactionLog =  new UnrecoverableLog();
