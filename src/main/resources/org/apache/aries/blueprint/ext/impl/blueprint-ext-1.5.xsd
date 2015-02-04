@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<xsd:schema xmlns="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0" 
+	xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	attributeFormDefault="unqualified" elementFormDefault="qualified" 
+	targetNamespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0" version="1.0.0">
+
+    <xsd:import namespace="http://www.osgi.org/xmlns/blueprint/v1.0.0"/>
+
+    <!-- property placeholder -->
+
+    <xsd:element name="property-placeholder" type="TpropertyPlaceholder"/>
+
+    <xsd:complexType name="TpropertyPlaceholder">
+        <xsd:complexContent>
+            <xsd:extension base="bp:Tcomponent">
+                <xsd:sequence>
+                    <!-- nested properties declaration -->
+                    <xsd:element maxOccurs="1" minOccurs="0" name="default-properties" type="TdefaultProperties"/>
+                    <xsd:element maxOccurs="unbounded" minOccurs="0" name="location" type="xsd:string"/>
+                </xsd:sequence>
+                <xsd:attribute default="${" name="placeholder-prefix" type="xsd:string" use="optional"/>
+                <xsd:attribute default="}" name="placeholder-suffix" type="xsd:string" use="optional"/>
+                <xsd:attribute name="defaults-ref" type="bp:Tidref" use="optional"/>
+                <xsd:attribute default="false" name="ignore-missing-locations" type="xsd:boolean" use="optional"/>
+                <xsd:attribute default="fallback" name="system-properties" use="optional">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:NMTOKEN">
+                            <xsd:enumeration value="never"/>
+                            <xsd:enumeration value="fallback"/>
+                            <xsd:enumeration value="override"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
+                <xsd:attribute name="evaluator" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="TdefaultProperties">
+        <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+            <xsd:element name="property" type="bp:Tproperty"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- proxy method -->
+
+    <xsd:attribute default="default" name="proxy-method">
+        <xsd:simpleType>
+            <xsd:restriction>
+                <xsd:simpleType>
+                    <xsd:list>
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:NMTOKEN">
+                                <xsd:enumeration value="default"/>
+                                <xsd:enumeration value="classes"/>
+                                <xsd:enumeration value="greedy"/>
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:list>
+                </xsd:simpleType>
+                <xsd:minLength value="1"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:attribute>
+
+    <!-- role -->
+
+    <xsd:attribute name="role">
+        <xsd:simpleType>
+            <xsd:restriction>
+                <xsd:simpleType>
+                    <xsd:list>
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:NMTOKEN">
+                                <xsd:enumeration value="processor"/>
+                            </xsd:restriction>
+                        </xsd:simpleType>
+                    </xsd:list>
+                </xsd:simpleType>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:attribute>
+
+    <!-- CM property placeholder extenstion -->
+
+    <xsd:element name="location" type="xsd:string"/>
+    <xsd:attribute default="false" name="ignore-missing-locations" type="xsd:boolean"/>
+    <xsd:attribute default="fallback" name="system-properties">
+        <xsd:simpleType>
+            <xsd:restriction base="xsd:NMTOKEN">
+                <xsd:enumeration value="never"/>
+                <xsd:enumeration value="fallback"/>
+                <xsd:enumeration value="override"/>
+            </xsd:restriction>
+        </xsd:simpleType>
+    </xsd:attribute>
+    
+    <xsd:attribute default="false" name="field-injection" type="xsd:boolean"/>
+
+    <!-- Default reference bean -->
+    <xsd:attribute name="default" type="bp:Tidref"/>
+
+    <!-- Filter attribute -->
+    <xsd:attribute name="filter" type="xsd:normalizedString"/>
+    
+    <!-- Additional interfaces for references -->
+    <xsd:element name="additional-interfaces" type="bp:Tinterfaces"/>
+    
+    <!-- ARIES-1293, provide a way to create or reference beans from within -->
+    <!-- custom namespace handlers and other locations. (blueprint.xsd does  -->
+    <!-- not provide top level element definitions for these) -->
+    <xsd:element name="bean" type="bp:Tinlined-bean"/>
+    <xsd:element name="reference" type="bp:Tref"/>
+    
+</xsd:schema>
