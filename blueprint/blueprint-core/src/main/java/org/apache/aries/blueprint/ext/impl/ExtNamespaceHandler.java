@@ -75,6 +75,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_3 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_4 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0";
+    public static final String BLUEPRINT_EXT_NAMESPACE_V1_5 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String DEFAULT_PROPERTIES_ELEMENT = "default-properties";
@@ -110,6 +111,10 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     
     public static final String ADDITIONAL_INTERFACES = "additional-interfaces";
     public static final String INTERFACE_VALUE = "value";
+    
+    public static final String BEAN = "bean";
+    public static final String REFERENCE = "reference";
+    
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
@@ -132,6 +137,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             return getClass().getResource("blueprint-ext-1.3.xsd");
         } else if (BLUEPRINT_EXT_NAMESPACE_V1_4.equals(namespace)) {
             return getClass().getResource("blueprint-ext-1.4.xsd");
+        } else if (BLUEPRINT_EXT_NAMESPACE_V1_5.equals(namespace)) {
+            return getClass().getResource("blueprint-ext-1.5.xsd");
         } else if ("http://www.w3.org/XML/1998/namespace".equals(namespace)) {
             return getClass().getResource("xml.xsd");
         }
@@ -142,7 +149,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e)
             || BLUEPRINT_EXT_NAMESPACE_V1_2.equals(e)
             || BLUEPRINT_EXT_NAMESPACE_V1_3.equals(e)
-            || BLUEPRINT_EXT_NAMESPACE_V1_4.equals(e);            
+            || BLUEPRINT_EXT_NAMESPACE_V1_4.equals(e)
+            || BLUEPRINT_EXT_NAMESPACE_V1_5.equals(e);            
     }
 
     public Set<Class> getManagedClasses() {
@@ -155,6 +163,11 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         LOGGER.debug("Parsing element {{}}{}", element.getNamespaceURI(), element.getLocalName());
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             return parsePropertyPlaceholder(context, element);
+        } else if (nodeNameEquals(element, BEAN)) {
+            return context.parseElement(BeanMetadata.class, context.getEnclosingComponent(), element);
+        } else if (nodeNameEquals(element, REFERENCE)) {
+            RefMetadata rd = context.parseElement(RefMetadata.class, context.getEnclosingComponent(), element);
+            return createReference(context, rd.getComponentId());
         } else {
             throw new ComponentDefinitionException("Unsupported element: " + element.getNodeName());
         }
@@ -173,6 +186,11 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             return decorateFilter(node, component, context);
         } else if (node instanceof Element && nodeNameEquals(node, ADDITIONAL_INTERFACES)) {
             return decorateAdditionalInterfaces(node, component, context);
+        } else if (node instanceof Element && nodeNameEquals(node, BEAN)) {
+            return context.parseElement(BeanMetadata.class, component, (Element)node);
+        } else if (node instanceof Element && nodeNameEquals(node, REFERENCE)) {
+            RefMetadata rd = context.parseElement(RefMetadata.class, component, (Element)node);
+            return createReference(context, rd.getComponentId());
         } else {
             throw new ComponentDefinitionException("Unsupported node: " + node.getNodeName());
         }
