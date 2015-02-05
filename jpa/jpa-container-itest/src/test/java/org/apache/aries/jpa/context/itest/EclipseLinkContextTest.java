@@ -78,8 +78,8 @@ public class EclipseLinkContextTest extends JPAContextTest {
       ut.rollback();
     }
     
-    Car c = em.find(Car.class, "AB11CDE");
-    assertEquals(c, null);
+    Car car = em.find(Car.class, "AB11CDE");
+    assertEquals(car, null);
   }
   
   @Test
@@ -88,8 +88,8 @@ public class EclipseLinkContextTest extends JPAContextTest {
     EntityManagerFactory emf = getProxyEMF(SCRIPT_TEST_UNIT);
     EntityManager em = emf.createEntityManager();
         
-    Car c = em.find(Car.class, "AB11CDE");
-    assertEquals(1300, em.find(Car.class, "AB11CDE").getEngineSize());
+    Car car = em.find(Car.class, "AB11CDE");
+    assertEquals(1300, car.getEngineSize());
   }
 
   @Configuration

@@ -15,39 +15,35 @@
  */
 package org.apache.aries.jpa.context.itest;
 
-import org.apache.aries.jpa.itest.AbstractJPAItest;
-import org.junit.Test;
-import org.ops4j.pax.exam.Configuration;
-import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.Option;
-import org.osgi.framework.Bundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 
+import org.apache.aries.itest.RichBundleContext;
+import org.apache.aries.jpa.itest.AbstractJPAItest;
+import org.junit.Test;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.Option;
+
 public class EclipseLinkStartupTest extends AbstractJPAItest {
-    
+
     @Test
     public void testContextCreationWithStartingBundle() throws Exception {
+        RichBundleContext context = context();
         // wait for the Eclipselink provider to come up
-        context().getService(PersistenceProvider.class);
-        
-        for (Bundle b : bundleContext.getBundles()) {
-            if (b.getSymbolicName().equals("org.apache.aries.jpa.container.itest.bundle.eclipselink")) {
-                b.start();
-            }
-        }
-        
-        context().getService(EntityManagerFactory.class);
+        context.getService(PersistenceProvider.class);
+        context.getBundleByName("org.apache.aries.jpa.container.itest.bundle.eclipselink").start();
+        context.getService(EntityManagerFactory.class);
     }
 
     @Configuration
     public Option[] configuration() {
-        return CoreOptions.options(
-        		baseOptions(),
-        		ariesJpa21(),
-        		eclipseLink(),
-        		testBundleEclipseLink().noStart()
-            );
+        return options(//
+                baseOptions(),//
+                ariesJpa21(),//
+                eclipseLink(),//
+                testBundleEclipseLink().noStart()//
+        );
     }
 }
