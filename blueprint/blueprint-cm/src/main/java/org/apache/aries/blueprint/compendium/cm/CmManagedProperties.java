@@ -141,6 +141,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
             if (config != null) {
                 properties = config.getProperties();
             }
+            updated(properties);
         }
     }
 
