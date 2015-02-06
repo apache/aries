@@ -44,6 +44,7 @@ import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
 import org.apache.aries.blueprint.reflect.RefMetadataImpl;
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.aries.jpa.blueprint.aries.impl.NSHandler;
+import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.context.PersistenceContextProvider;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -63,6 +64,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class NSHandlerTest {
+  private static final String EMPTY_UNIT_NAME_FILTER = "("
+          + PersistenceUnitConstants.EMPTY_PERSISTENCE_UNIT_NAME + "=true)";
+
   private Element root;
   private Element root_110;
   private NSHandler sut;
@@ -105,10 +109,12 @@ public class NSHandlerTest {
   }
   
   private static class ParserContextMock {
+    @SuppressWarnings("unused")
     public<T> T parseElement(Class<T> type, ComponentMetadata enclosingComponent, Element element) {
       return new Parser().parseElement(type, enclosingComponent, element);
     }
     
+    @SuppressWarnings("unused")
     public<T extends Metadata> T createMetadata(Class<T> clazz) {
       if (ReferenceMetadata.class.isAssignableFrom(clazz))
         return clazz.cast(new ReferenceMetadataImpl());
@@ -120,6 +126,7 @@ public class NSHandlerTest {
   }
   
   private class ComponentDefinitionRegistryMock {
+    @SuppressWarnings("unused")
     public ComponentMetadata getComponentDefinition(String id) {
       PassThroughMetadata bundleMeta =  Skeleton.newMock(PassThroughMetadata.class);
       Skeleton.getSkeleton(bundleMeta).setReturnValue(
@@ -127,6 +134,7 @@ public class NSHandlerTest {
       return bundleMeta;
     }
     
+    @SuppressWarnings("unused")
     public void registerComponentDefinition(ComponentMetadata component) {
       registeredComponents.add(component);
     }
@@ -175,7 +183,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
     assertEquals("emf2", property.getName());
-    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
+    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+EMPTY_UNIT_NAME_FILTER+")", 
         reference.getFilter());
 
     assertTrue(registeredComponents.isEmpty());
@@ -190,7 +198,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
     assertEquals("emf2", property.getName());
-    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
+    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+EMPTY_UNIT_NAME_FILTER+")", 
         reference.getFilter());
 
     assertTrue(registeredComponents.isEmpty());
@@ -205,7 +213,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
     assertEquals("emf3", property.getName());
-    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+NSHandler.EMPTY_UNIT_NAME_FILTER+")",
+    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+EMPTY_UNIT_NAME_FILTER+")",
         reference.getFilter());
     
     assertTrue(registeredComponents.isEmpty());
@@ -220,7 +228,7 @@ public class NSHandlerTest {
     ReferenceMetadata reference = (ReferenceMetadata) property.getValue();
     
     assertEquals("emf3", property.getName());
-    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+NSHandler.EMPTY_UNIT_NAME_FILTER+")",
+    assertEquals("(&(!(org.apache.aries.jpa.proxy.factory=*))"+EMPTY_UNIT_NAME_FILTER+")",
         reference.getFilter());
     
     assertTrue(registeredComponents.isEmpty());
@@ -356,7 +364,7 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)"+EMPTY_UNIT_NAME_FILTER+")", 
         reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
@@ -380,7 +388,7 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
     ReferenceMetadata reference = (ReferenceMetadata) registeredComponents.get(0);
     
     assertEquals(EntityManagerFactory.class.getName(), reference.getInterface());
-    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)"+NSHandler.EMPTY_UNIT_NAME_FILTER+")", 
+    assertEquals("(&(org.apache.aries.jpa.proxy.factory=true)"+EMPTY_UNIT_NAME_FILTER+")", 
         reference.getFilter());
     
     Map<String,Object> props = new HashMap<String, Object>();
@@ -411,7 +419,7 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
   public void testNonIndexedArgs_110() {
       Element e = getTestElement("withUnitArg", root_110);
       BeanMetadata input = new BeanMetadataImpl();
-      Object output = sut.decorate(e, input, parserCtx);
+      sut.decorate(e, input, parserCtx);
       assertEquals("Wrong number of arguments",
           1 ,input.getArguments().size());
       assertEquals("Wrong class type", "javax.persistence.EntityManagerFactory",
@@ -428,7 +436,7 @@ private void assertInnerBeanCorrect(BeanMetadata bean) {
       
       e = getTestElement("withContextArg", root_110);
       input = new BeanMetadataImpl();
-      output = sut.decorate(e, input, parserCtx);
+      sut.decorate(e, input, parserCtx);
       
       assertEquals("Wrong number of arguments",
           1 ,input.getArguments().size());
@@ -462,7 +470,7 @@ private void assertConstructorInnerBean(BeanMetadata input) {
   public void testIndexedArgs_110() {
       Element e = getTestElement("withIndexedUnitArg", root_110);
       BeanMetadata input = new BeanMetadataImpl();
-      Object output = sut.decorate(e, input, parserCtx);
+      sut.decorate(e, input, parserCtx);
       assertEquals("Wrong number of arguments",
           1 ,input.getArguments().size());
       assertEquals("Wrong class type", "javax.persistence.EntityManagerFactory",
@@ -479,7 +487,7 @@ private void assertConstructorInnerBean(BeanMetadata input) {
       
       e = getTestElement("withIndexedContextArg", root_110);
       input = new BeanMetadataImpl();
-      output = sut.decorate(e, input, parserCtx);
+      sut.decorate(e, input, parserCtx);
       
       assertEquals("Wrong number of arguments",
           1 ,input.getArguments().size());
@@ -507,7 +515,7 @@ private void assertConstructorInnerBean(BeanMetadata input) {
       Element e = getTestElement("withInvalidIndexArg", root_110);
       BeanMetadata input = new BeanMetadataImpl();
       try {
-          Object output = sut.decorate(e, input, parserCtx);
+          sut.decorate(e, input, parserCtx);
           fail("Should throw an exception");
       } catch (IllegalArgumentException iae) {
           assertTrue("Wrong cause type", iae.getCause() instanceof NumberFormatException);
