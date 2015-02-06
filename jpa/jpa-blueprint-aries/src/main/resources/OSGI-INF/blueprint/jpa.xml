@@ -38,7 +38,7 @@
   
   <reference id="persistenceContextProvider" availability="optional"
        interface="org.apache.aries.jpa.container.context.PersistenceContextProvider">
-  <reference-listener ref="namespaceHandler" bind-method="contextAvailable"
+    <reference-listener ref="namespaceHandler" bind-method="contextAvailable"
             unbind-method="contextUnavailable"/>
   </reference>
 </blueprint>
