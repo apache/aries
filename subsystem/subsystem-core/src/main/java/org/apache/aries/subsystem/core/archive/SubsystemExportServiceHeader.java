@@ -164,7 +164,7 @@ public class SubsystemExportServiceHeader implements Header<SubsystemExportServi
 
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_EXPORTSERVICE;
 
-    private static final Pattern PATTERN = Pattern.compile("(" + Grammar.SUBSYSTEM_EXPORTSERVICE + ")(?=,|\\z)");
+    private static final Pattern PATTERN = Pattern.compile("(" + Grammar.SERVICE_OR_WILDCARD + ")(?=,|\\z)");
 
 	private final Set<Clause> clauses = new HashSet<Clause>();
 

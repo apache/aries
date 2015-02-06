@@ -144,7 +144,7 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_IMPORTSERVICE;
 
-    private static final Pattern PATTERN = Pattern.compile("(" + Grammar.SUBSYSTEM_IMPORTSERVICE + ")(?=,|\\z)");
+    private static final Pattern PATTERN = Pattern.compile("(" + Grammar.SERVICE_OR_WILDCARD + ")(?=,|\\z)");
 
 	private static Collection<Clause> processHeader(String header) {
 		Matcher matcher = PATTERN.matcher(header);
