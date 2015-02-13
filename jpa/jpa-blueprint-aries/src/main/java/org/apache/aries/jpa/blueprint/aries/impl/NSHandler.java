@@ -377,7 +377,12 @@ public class NSHandler implements NamespaceHandler {
     private Map<String, Object> parseJPAProperties(Element element,
             ParserContext context) {
         Map<String, Object> result = new HashMap<String, Object>();
-        NodeList ns = element.getElementsByTagNameNS(BLUEPRINT_NS, TAG_MAP);
+        NodeList ns = null;
+        if(NS_URI_100.equals(element.getNamespaceURI())) {
+            ns = element.getElementsByTagNameNS(NS_URI_100, TAG_MAP);
+        } else {
+            ns = element.getElementsByTagNameNS(NS_URI_110, TAG_MAP);
+        }
         // Use the parser context to parse the map for us
         for (int i = 0; i < ns.getLength(); i++) {
             MapMetadata metadata = context.parseElement(MapMetadata.class,
