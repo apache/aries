@@ -36,10 +36,10 @@
   
   <bean id="contextWithProps">
     <jpa:context property="em" type="EXTENDED">
-      <map>
+      <jpa:map>
         <entry key="one" value="eins" />
         <entry key="two" value="zwo" />
-      </map>
+      </jpa:map>
     </jpa:context>
   </bean>
 
