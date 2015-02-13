@@ -18,7 +18,7 @@
  */
 
 
-package org.apache.aries.jpa.container;
+package org.apache.aries.jpa.container.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,8 +47,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
 
+import org.apache.aries.jpa.container.ManagedPersistenceUnitInfoFactory;
+import org.apache.aries.jpa.container.PersistenceUnitConstants;
 import org.apache.aries.jpa.container.impl.EntityManagerFactoryManager;
 import org.apache.aries.jpa.container.impl.PersistenceBundleManager;
+import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.quiesce.manager.QuiesceCallback;
@@ -133,7 +136,7 @@ public class PersistenceBundleLifecycleTest
         new MethodCall(BundleContext.class, "getBundles"),
         new Bundle[] {persistenceBundle});
     
-    mgr = new PersistenceBundleManager();
+    mgr = new PersistenceBundleManager(extenderContext, new PersistenceDescriptorParserImpl());
 
     return extenderContext;
   }
@@ -141,8 +144,8 @@ public class PersistenceBundleLifecycleTest
   @Test
   public void testManager_NonPersistenceBundle() throws Exception
   {
-    BundleContext ctx = preExistingBundleSetup();
-    mgr.start(ctx);
+    preExistingBundleSetup();
+    mgr.open();
 
     //Check the persistence.xml was not looked for
     Skeleton.getSkeleton(persistenceBundle).assertNotCalled(new MethodCall(Bundle.class, "getEntry", String.class));
@@ -158,12 +161,12 @@ public class PersistenceBundleLifecycleTest
   @Test
   public void testManager_OnePreExistingPersistenceBundle_NoProvider() throws Exception
   {
-    BundleContext ctx = preExistingBundleSetup();
+    preExistingBundleSetup();
     
     //Set the persistence.xml etc
     setupPersistenceBundle("file4", "");
     
-    mgr.start(ctx);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -190,7 +193,7 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     ServiceReference ref = reg.getReference();
     
-    mgr.start(ctx);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -217,7 +220,7 @@ public class PersistenceBundleLifecycleTest
     ServiceReference ref = reg.getReference();
     setupWABBundle();
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     
     Skeleton.getSkeleton(persistenceBundle).assertCalledExactNumberOfTimes(new MethodCall(Bundle.class, "getEntry", String.class), 3);
@@ -240,7 +243,7 @@ public class PersistenceBundleLifecycleTest
     ServiceReference ref = reg.getReference();
     setupEJBBundle();
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     
     Skeleton.getSkeleton(persistenceBundle).assertCalledExactNumberOfTimes(new MethodCall(Bundle.class, "getEntry", String.class), 1);
@@ -262,7 +265,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file4", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -280,7 +283,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file4", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -309,7 +312,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file4", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -360,7 +363,7 @@ public class PersistenceBundleLifecycleTest
   {
     testManager_OnePreExistingPersistenceBundle_OneExistingProvider();
     
-    mgr.stop(extenderBundle.getBundleContext());
+    mgr.close();
     
     assertCloseCalled();
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
@@ -373,8 +376,8 @@ public class PersistenceBundleLifecycleTest
     
     BundleContext extenderContext = extenderBundle.getBundleContext();
     
-    mgr = new PersistenceBundleManager();
-    mgr.start(extenderContext);
+    mgr = new PersistenceBundleManager(extenderContext, new PersistenceDescriptorParserImpl());
+    mgr.open();
     
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
@@ -459,7 +462,7 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     
     ServiceReference ref = reg.getReference();
-    mgr.start(extenderContext);
+    mgr.open();
 
     testSuccessfulCreationEvent(ref, extenderContext, 1);
     testSuccessfulRegistrationEvent(ref, extenderContext, 1);
@@ -501,7 +504,7 @@ public class PersistenceBundleLifecycleTest
         pp, hash1 );
     
     ServiceReference ref = reg.getReference();
-    mgr.start(extenderContext);
+    mgr.open();
 
     testSuccessfulCreationEvent(ref, extenderContext, 1);
     testSuccessfulRegistrationEvent(ref, extenderContext, 1);
@@ -536,7 +539,7 @@ public class PersistenceBundleLifecycleTest
     
     setupPersistenceBundle("file4", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     testSuccessfulCreationEvent(ref, extenderContext, 1);
     testSuccessfulRegistrationEvent(ref, extenderContext, 1);
     
@@ -558,7 +561,7 @@ private void assertCloseCalled() {
   
     BundleContext extenderContext = extenderBundle.getBundleContext();
     
-    mgr = new PersistenceBundleManager();
+    mgr = new PersistenceBundleManager(extenderContext, new PersistenceDescriptorParserImpl());
     
     Hashtable<String,String> hash1 = new Hashtable<String, String>();
     hash1.put("javax.persistence.provider", "no.such.Provider");
@@ -566,7 +569,7 @@ private void assertCloseCalled() {
         pp, hash1 );
     setupPersistenceBundle("file3", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     Object o = mgr.addingBundle(persistenceBundle, null);
     
@@ -598,7 +601,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file5", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     testSuccessfulCreationEvent(ppRef, extenderContext, 1);
     testSuccessfulRegistrationEvent(ppRef, extenderContext, 1);
     Skeleton.getSkeleton(pp).clearMethodCalls();
@@ -631,7 +634,7 @@ private void assertCloseCalled() {
     Skeleton.getSkeleton(extenderBundle).setReturnValue(new MethodCall(Bundle.class, "getResource", ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES),
         getClass().getClassLoader().getResource("testProps.props"));
     
-    mgr.start(extenderContext);
+    mgr.open();
     testSuccessfulCreationEvent(ppRef, extenderContext, 1);
     testSuccessfulRegistrationEvent(ppRef, extenderContext, 1);
     //Clear the call to createContainerEntityManagerFactory so that we can check nothing
@@ -660,7 +663,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file6", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -694,7 +697,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file7", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -725,7 +728,7 @@ private void assertCloseCalled() {
         pp2, hash2 );
     setupPersistenceBundle("file8", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
@@ -747,7 +750,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file9", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP100);
   }
@@ -761,7 +764,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file10", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP101);
   }
@@ -775,7 +778,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file11", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP101);
   }
@@ -789,7 +792,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file12", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP111);
   }
@@ -803,7 +806,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file13", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -820,7 +823,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file14", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
     
     assertCorrectPersistenceProviderUsed(extenderContext, providerP101, 2);
   }
@@ -834,7 +837,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file15", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -851,7 +854,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file16", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -868,7 +871,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file17", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -886,7 +889,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file18", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -903,7 +906,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file19", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -920,7 +923,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file20", "");
 
-    mgr.start(extenderContext);
+    mgr.open();
 
     BundleContextMock.assertNoServiceExists(EntityManagerFactory.class.getName());
 
@@ -942,7 +945,7 @@ private void assertCloseCalled() {
     ServiceReference ref = reg.getReference();
     setupPersistenceBundle21();
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     testSuccessfulCreationEvent(ref, extenderContext, 4);
     testSuccessfulRegistrationEvent(ref, extenderContext, 4, "persistence", "found", "jar", "another");
@@ -957,7 +960,7 @@ private void assertCloseCalled() {
   public void testQuiesceNoOp() throws Exception
   {
     BundleContext ctx = preExistingBundleSetup();
-    mgr.start(ctx);
+    mgr.open();
     
     QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
     
@@ -984,7 +987,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file14", "");
 
-    mgr.start(ctx);
+    mgr.open();
     
     assertCorrectPersistenceProviderUsed(ctx, providerP101, 2);
     
@@ -1015,7 +1018,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file14", "");
 
-    mgr.start(ctx);
+    mgr.open();
     
     assertCorrectPersistenceProviderUsed(ctx, providerP101, 2);
     
@@ -1069,7 +1072,7 @@ private void assertCloseCalled() {
   public void testQuiesceAllNoOp() throws Exception
   {
     BundleContext ctx = preExistingBundleSetup();
-    mgr.start(ctx);
+    mgr.open();
     
     QuiesceCallback cbk = Skeleton.newMock(QuiesceCallback.class);
     
@@ -1095,7 +1098,7 @@ private void assertCloseCalled() {
     
     setupPersistenceBundle("file14", "");
 
-    mgr.start(ctx);
+    mgr.open();
     
     assertCorrectPersistenceProviderUsed(ctx, providerP101, 2);
     
@@ -1142,7 +1145,7 @@ private void assertCloseCalled() {
     skel.setReturnValue(new MethodCall(Bundle.class, "getVersion"), new Version("0.0.0"));
     
 
-    mgr.start(ctx);
+    mgr.open();
     
     mgr.addingBundle(persistenceBundle2, new BundleEvent(BundleEvent.STARTING, persistenceBundle2));
     
@@ -1217,7 +1220,7 @@ private void assertCloseCalled() {
 
     setupPersistenceBundle("file25", "");
     
-    mgr.start(extenderContext);
+    mgr.open();
     
     //Check the persistence.xml was looked for
     Skeleton.getSkeleton(persistenceBundle).assertCalled(new MethodCall(Bundle.class, "getEntry", "META-INF/persistence.xml"));
