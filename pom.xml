@@ -62,7 +62,7 @@
             javax.transaction;version="[1.1,2)"
         </aries.osgi.dynamic>
       <aries.osgi.activator>
-          org.apache.aries.jpa.container.impl.PersistenceBundleManager
+          org.apache.aries.jpa.container.impl.Activator
       </aries.osgi.activator>
       <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
