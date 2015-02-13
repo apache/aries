@@ -20,10 +20,8 @@
 package org.apache.aries.jpa.container.impl;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,24 +44,18 @@ import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptor;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParser;
 import org.apache.aries.jpa.container.parsing.PersistenceDescriptorParserException;
-import org.apache.aries.jpa.container.parsing.impl.PersistenceDescriptorParserImpl;
 import org.apache.aries.jpa.container.quiesce.impl.CountdownCallback;
 import org.apache.aries.jpa.container.quiesce.impl.DestroyCallback;
 import org.apache.aries.jpa.container.quiesce.impl.QuiesceHandler;
 import org.apache.aries.jpa.container.quiesce.impl.QuiesceParticipantFactory;
-import org.apache.aries.jpa.container.tx.impl.OSGiTransactionManager;
-import org.apache.aries.jpa.container.unit.impl.ManagedPersistenceUnitInfoFactoryImpl;
-import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.io.IOUtils;
 import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.osgi.util.tracker.ServiceTracker;
@@ -77,9 +69,8 @@ import org.slf4j.LoggerFactory;
  * matching PersistenceProvider
  */
 @SuppressWarnings("rawtypes")
-public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, BundleActivator, QuiesceHandler
+public class PersistenceBundleManager implements BundleTrackerCustomizer, ServiceTrackerCustomizer, QuiesceHandler
 {
-  /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
   
   /** The bundle context for this bundle */
@@ -107,10 +98,6 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   private ManagedPersistenceUnitInfoFactory persistenceUnitFactory; 
   /** Parser for persistence descriptors */
   private PersistenceDescriptorParser parser;
-  /** Registration for the Parser */
-  private ServiceRegistration parserReg;
-  /** Configuration for this extender */
-  private Properties config;
   private RecursiveBundleTracker tracker;
   private ServiceTracker serviceTracker;
 
@@ -118,42 +105,37 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
   private Closeable quiesceParticipant;
   /** Are we quiescing */
   private AtomicBoolean quiesce = new AtomicBoolean(false);
+
+    public PersistenceBundleManager(BundleContext ctx, PersistenceDescriptorParser parser) {
+        this.ctx = ctx;
+        this.parser = parser;
+    }
   
-  @SuppressWarnings("unchecked")
-  private void open() {
-    //Create the pluggable ManagedPersistenceUnitInfoFactory
-    String className = config.getProperty(ManagedPersistenceUnitInfoFactory.DEFAULT_PU_INFO_FACTORY_KEY);
-    
-    if(className != null) {
-      try {
-        Class<? extends ManagedPersistenceUnitInfoFactory> clazz = 
-          (Class<? extends ManagedPersistenceUnitInfoFactory>) ctx.getBundle().loadClass(className);
-        persistenceUnitFactory = clazz.newInstance();
-      } catch (Exception e) {
-        _logger.error(NLS.MESSAGES.getMessage("unable.to.create.mpuif", className), e);
-      }
+    @SuppressWarnings("unchecked")
+    void open() {
+        quiesceParticipant = QuiesceParticipantFactory.create(ctx, this);
+        persistenceUnitFactory = ManagedPersistenceUnitFactoryFactory.create(ctx.getBundle());
+
+        serviceTracker = new ServiceTracker(ctx, PersistenceProvider.class.getName(), this);
+
+        tracker = new RecursiveBundleTracker(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING
+                                                  | Bundle.ACTIVE | Bundle.STOPPING, this);
+
+        serviceTracker.open();
+        tracker.open();
     }
-    
-    if(persistenceUnitFactory == null)
-      persistenceUnitFactory = new ManagedPersistenceUnitInfoFactoryImpl();
-     serviceTracker.open();
-     tracker.open();
-  }
   
-  private void close()
-  {
-    if (tracker != null) {
-      tracker.close();
+    void close() {
+        if (tracker != null) {
+            tracker.close();
+        }
+
+        if (serviceTracker != null) {
+            serviceTracker.close();
+        }
+        IOUtils.close(quiesceParticipant);
     }
-    
-    if (serviceTracker != null) {
-      serviceTracker.close();
-    }
-    
-    OSGiTransactionManager otm = OSGiTransactionManager.get();
-    if(otm != null)
-      otm.destroy();
-  } 
+
   public Object addingBundle(Bundle bundle, BundleEvent event) 
   {
     if(!!!quiesce.get()){
@@ -246,40 +228,6 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     }
   }
   
-  /**
-   * Add config properties, making sure to read in the properties file
-   * and override the supplied properties
-   * @param props
-   */
-  private void initConfig() {
-    config = new Properties();
-    URL u = ctx.getBundle().getResource(ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES);
-    
-    if(u != null) {
-      if(_logger.isInfoEnabled())
-        _logger.info(NLS.MESSAGES.getMessage("aries.jpa.config.file.found", 
-                                             ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, 
-                                             ctx.getBundle().getSymbolicName(),
-                                             ctx.getBundle().getVersion(),
-                                             config));
-      try {
-        config.load(u.openStream());
-      } catch (IOException e) {
-        _logger.error(NLS.MESSAGES.getMessage("aries.jpa.config.file.read.error", 
-                                              ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES,
-                                              ctx.getBundle().getSymbolicName(),
-                                              ctx.getBundle().getVersion()), e);
-      }
-    } else {
-      if(_logger.isInfoEnabled())
-        _logger.info(NLS.MESSAGES.getMessage("aries.jpa.config.file.not.found", 
-            ManagedPersistenceUnitInfoFactory.ARIES_JPA_CONTAINER_PROPERTIES, 
-            ctx.getBundle().getSymbolicName(),
-            ctx.getBundle().getVersion(),
-            config));
-    }
-  }
-
   public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
 
     EntityManagerFactoryManager mgr = (EntityManagerFactoryManager) object;
@@ -638,36 +586,6 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     //Just remove and re-add as the properties have changed
     removedService(reference, service);
     addingService(reference);
-  }
-
-
-  @SuppressWarnings("unchecked")
-  public void start(BundleContext context) throws Exception {
-    
-    ctx = context;
-    
-    initConfig();
-    initParser();
-    
-    serviceTracker = new ServiceTracker(ctx, PersistenceProvider.class.getName(), this);
-    
-    tracker = new RecursiveBundleTracker(ctx, Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING |
-        Bundle.ACTIVE | Bundle.STOPPING, this);
-    
-    open();
-    
-    QuiesceParticipantFactory.create(context, this);
-  }
-
-  private void initParser() {
-    parser = new PersistenceDescriptorParserImpl();
-    parserReg = ctx.registerService(PersistenceDescriptorParser.class.getName(), parser, null);
-  }
-
-  public void stop(BundleContext context) throws Exception {
-    close();
-    AriesFrameworkUtil.safeUnregisterService(parserReg);
-    IOUtils.close(quiesceParticipant);
   }
   
   public BundleContext getCtx() {
