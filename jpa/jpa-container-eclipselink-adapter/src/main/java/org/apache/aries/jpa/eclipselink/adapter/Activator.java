@@ -141,22 +141,24 @@ public class Activator implements BundleActivator, BundleListener {
         
         for (Bundle b : context.getBundles()) {
             BundleWiring bw = b.adapt(BundleWiring.class);
-            List<BundleWire> wires = bw.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
-
-            for (BundleWire w : wires) {
-                String pkgName = (String) w.getCapability().getAttributes().get(BundleRevision.PACKAGE_NAMESPACE);
-
-                boolean add = false;
-                if (b.equals(jpaBundle)) {
-                    add = true;
-                } else if (pkgName.startsWith("org.eclipse.persistence")) {
-                    add = true;
-                }
-                
-                if (add) {
-                    String suffix = ";" + Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE + "=" + b.getSymbolicName() + ";" + Constants.BUNDLE_VERSION_ATTRIBUTE  + "=" + b.getVersion();                    
-                    result.add(pkgName + suffix);
-                }
+            if(bw != null) {
+	            List<BundleWire> wires = bw.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
+	
+	            for (BundleWire w : wires) {
+	                String pkgName = (String) w.getCapability().getAttributes().get(BundleRevision.PACKAGE_NAMESPACE);
+	
+	                boolean add = false;
+	                if (b.equals(jpaBundle)) {
+	                    add = true;
+	                } else if (pkgName.startsWith("org.eclipse.persistence")) {
+	                    add = true;
+	                }
+	                
+	                if (add) {
+	                    String suffix = ";" + Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE + "=" + b.getSymbolicName() + ";" + Constants.BUNDLE_VERSION_ATTRIBUTE  + "=" + b.getVersion();                    
+	                    result.add(pkgName + suffix);
+	                }
+	            }
             }
         }
         
