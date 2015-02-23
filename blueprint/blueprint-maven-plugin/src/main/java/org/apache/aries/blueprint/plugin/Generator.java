@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.plugin;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -97,9 +98,7 @@ public class Generator implements PropertyWriter {
         writer.writeCharacters("\n");
         writeTransactional(bean.transactionDef);
 
-        if (bean.persistenceUnitField != null) {
-            writePersistenceUnit(bean.persistenceUnitField);
-        }
+        writePersistenceFields(bean.persistenceFields);
     }
     
     private void writeTransactional(TransactionalDef transactionDef)
@@ -113,17 +112,32 @@ public class Generator implements PropertyWriter {
         }
     }
 
-    private void writePersistenceUnit(Field field) throws XMLStreamException {
-        PersistenceUnit persistenceUnit = field.getAnnotation(PersistenceUnit.class);
-        if (persistenceUnit !=null) {
+    
+    private void writePersistenceFields(Field[] fields) throws XMLStreamException {
+        for (Field field : fields) {
+            writePersistenceField(field);
+        }
+    }
+
+    private void writePersistenceField(Field field) throws XMLStreamException {
+        PersistenceContext persistenceContext = field.getAnnotation(PersistenceContext.class);
+        if (persistenceContext != null) {
             writer.writeCharacters("    ");
             writer.writeEmptyElement("jpa", "context", NS_JPA);
+            writer.writeAttribute("unitname", persistenceContext.unitName());
+            writer.writeAttribute("property", field.getName());
+            writer.writeCharacters("\n");
+        }
+        PersistenceUnit persistenceUnit = field.getAnnotation(PersistenceUnit.class);
+        if (persistenceUnit != null) {
+            writer.writeCharacters("    ");
+            writer.writeEmptyElement("jpa", "unit", NS_JPA);
             writer.writeAttribute("unitname", persistenceUnit.unitName());
             writer.writeAttribute("property", field.getName());
             writer.writeCharacters("\n");
         }
     }
-    
+
     private void writeServiceRefs() throws XMLStreamException {
         for (OsgiServiceBean serviceBean : context.getServiceRefs()) {
             writeServiceRef(serviceBean);

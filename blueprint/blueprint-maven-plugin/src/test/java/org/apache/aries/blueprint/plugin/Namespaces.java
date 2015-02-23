@@ -16,37 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test;
+package org.apache.aries.blueprint.plugin;
 
-import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+import java.util.Iterator;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 
-@Singleton
-@Transactional(value=TxType.REQUIRED)
-public class MyBean1 extends ParentBean {
+import org.w3c.dom.Document;
 
-    @Autowired
-    ServiceA bean2;
-    
-    @PersistenceContext(unitName="person")
-    EntityManager em;
-    
-    @PersistenceUnit(unitName="person")
-    EntityManager emf;
-    
-    public void init() {
-    }
-    
-    public void destroy() {
+
+public class Namespaces implements NamespaceContext {
+    private Document doc;
+
+    public Namespaces(Document doc) {
+        this.doc = doc;
     }
 
-    public void saveData() {
-        
+    @Override
+    public String getNamespaceURI(String prefix) {
+        if (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)) {
+            return doc.lookupNamespaceURI(null);
+        } else {
+            return doc.lookupNamespaceURI(prefix);
+        }
+    }
+
+    @Override
+    public String getPrefix(String namespaceURI) {
+        return doc.lookupPrefix(namespaceURI);
+    }
+
+    @Override
+    public Iterator<String> getPrefixes(String namespaceURI) {
+        return null;
     }
 }

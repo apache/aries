@@ -26,6 +26,7 @@ import javax.inject.Named;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.ServiceAImpl1;
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -39,7 +40,9 @@ public class BeanTest {
         assertEquals("myBean1", bean.id); // Name derived from class name
         assertEquals("init", bean.initMethod);
         assertEquals("destroy", bean.destroyMethod);
-        assertEquals("em", bean.persistenceUnitField.getName());
+        Assert.assertEquals(2, bean.persistenceFields.length);
+        assertEquals("em", bean.persistenceFields[0].getName());
+        assertEquals("emf", bean.persistenceFields[1].getName());
         assertEquals("*", bean.transactionDef.getMethod());
         assertEquals("Required", bean.transactionDef.getType());
         assertEquals(1, bean.properties.size());
@@ -56,7 +59,7 @@ public class BeanTest {
         assertEquals("myBean3", bean.id); // Name derived from class name
         assertNull("There should be no initMethod", bean.initMethod);
         assertNull("There should be no destroyMethod", bean.destroyMethod);
-        assertNull("There should be no persistenceUnit", bean.persistenceUnitField);
+        assertEquals("There should be no persistence fields", 0, bean.persistenceFields.length);
         assertEquals("*", bean.transactionDef.getMethod());
         assertEquals("RequiresNew", bean.transactionDef.getType());
         assertEquals(3, bean.properties.size());
@@ -71,7 +74,7 @@ public class BeanTest {
         assertEquals("Name should be defined using @Named", definedName, bean.id);
         assertNull("There should be no initMethod", bean.initMethod);
         assertNull("There should be no destroyMethod", bean.destroyMethod);
-        assertNull("There should be no persistenceUnit", bean.persistenceUnitField);
+        assertEquals("There should be no persistence fields", 0, bean.persistenceFields.length);
         assertNull("There should be no transaction definition", bean.transactionDef);
         assertEquals("There should be no properties", 0, bean.properties.size());
     }
