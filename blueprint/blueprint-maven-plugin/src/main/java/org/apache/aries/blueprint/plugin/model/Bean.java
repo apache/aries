@@ -21,12 +21,15 @@ package org.apache.aries.blueprint.plugin.model;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
 import org.springframework.stereotype.Component;
@@ -37,7 +40,7 @@ public class Bean implements Comparable<Bean>{
     public String initMethod;
     public String destroyMethod;
     public SortedSet<Property> properties;
-    public Field persistenceUnitField;
+    public Field[] persistenceFields;
     public TransactionalDef transactionDef; 
     
     public Bean(Class<?> clazz) {
@@ -53,7 +56,7 @@ public class Bean implements Comparable<Bean>{
                 this.destroyMethod = method.getName();
             }
         }
-        this.persistenceUnitField = getPersistenceUnit();
+        this.persistenceFields = getPersistenceFields();
         this.transactionDef = new JavaxTransactionFactory().create(clazz);
         if (this.transactionDef == null) {
             this.transactionDef = new SpringTransactionFactory().create(clazz);
@@ -61,15 +64,17 @@ public class Bean implements Comparable<Bean>{
         properties = new TreeSet<Property>();
     }
 
-    private Field getPersistenceUnit() {
+    private Field[] getPersistenceFields() {
+        List<Field> persistenceFields = new ArrayList<Field>();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
+            PersistenceContext persistenceContext = field.getAnnotation(PersistenceContext.class);
             PersistenceUnit persistenceUnit = field.getAnnotation(PersistenceUnit.class);
-            if (persistenceUnit !=null) {
-                 return field;
+            if (persistenceContext !=null || persistenceUnit != null) {
+                 persistenceFields.add(field);
             }
         }
-        return null;
+        return persistenceFields.toArray(new Field[]{});
     }
     
     public void resolve(Matcher matcher) {
