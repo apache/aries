@@ -98,6 +98,9 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     }
 
     public void init() throws Exception {
+        init(true);
+    }
+    public void init(boolean validate) throws Exception {
         // Parse xml resources
         Parser parser = new Parser();
         parser.parse(getResources());
@@ -107,8 +110,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
         NamespaceHandlerSet handlerSet = createNamespaceHandlerSet(namespaces);
         // Add predefined beans
         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
-        // Validate
-        parser.validate(handlerSet.getSchema());
+        if (validate) {
+            // Validate
+            parser.validate(handlerSet.getSchema());
+        }
         // Populate
         parser.populate(handlerSet, componentDefinitionRegistry);
         // Create repository
