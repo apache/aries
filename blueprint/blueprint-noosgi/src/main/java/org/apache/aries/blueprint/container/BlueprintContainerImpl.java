@@ -18,6 +18,19 @@
  */
 package org.apache.aries.blueprint.container;
 
+import java.net.URI;
+import java.net.URL;
+import java.security.AccessControlContext;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.Processor;
@@ -32,15 +45,23 @@ import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
-import org.osgi.service.blueprint.reflect.*;
+import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URI;
-import java.net.URL;
-import java.security.AccessControlContext;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
 
@@ -55,7 +76,8 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     private BlueprintRepository repository;
     private List<Processor> processors = new ArrayList<Processor>();
     private Map<String, String> properties;
-
+    private NamespaceHandlerSet nsHandlerSet;
+    
     public BlueprintContainerImpl(ClassLoader loader, List<URL> resources) throws Exception {
         this(loader, resources, null, true);
     }
@@ -65,16 +87,20 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     }
 
     public BlueprintContainerImpl(ClassLoader loader, List<URL> resources, Map<String, String> properties, boolean init) throws Exception {
+        this(loader, resources, properties, null, init);
+    }
+    public BlueprintContainerImpl(ClassLoader loader, List<URL> resources, Map<String, String> properties, 
+                                  NamespaceHandlerSet nsHandlerSet, boolean init) throws Exception {
         this.loader = loader;
         this.converter = new AggregateConverter(this);
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.resources = resources;
         this.properties = properties;
+        this.nsHandlerSet = nsHandlerSet;
         if (init) {
             init();
         }
     }
-
     public String getProperty(String key) {
         if (properties != null && properties.containsKey(key)) {
             return properties.get(key);
@@ -83,7 +109,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     }
 
     protected NamespaceHandlerSet createNamespaceHandlerSet(Set<URI> namespaces) {
-        NamespaceHandlerSet handlerSet = new SimpleNamespaceHandlerSet();
+        NamespaceHandlerSet handlerSet = createNamespaceHandlerSet();
         // Check namespaces
         Set<URI> unsupported = new LinkedHashSet<URI>();
         for (URI ns : namespaces) {
@@ -97,6 +123,10 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
         return handlerSet;
     }
 
+    protected NamespaceHandlerSet createNamespaceHandlerSet() {
+        return nsHandlerSet == null ? new SimpleNamespaceHandlerSet() : nsHandlerSet;
+    } 
+    
     public void init() throws Exception {
         init(true);
     }
