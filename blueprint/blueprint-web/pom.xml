@@ -45,7 +45,7 @@
     </scm>
 
     <properties>
-        <blueprint.nosgi.version>1.1.0-SNAPSHOT</blueprint.nosgi.version>
+        <blueprint.nosgi.version>1.1.0</blueprint.nosgi.version>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
