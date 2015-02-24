@@ -17,10 +17,6 @@
  */
 package org.apache.aries.blueprint.web;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,8 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
 import org.apache.aries.blueprint.container.BlueprintContainerImpl;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 
 /**
  * Initialises all the blueprint XML files called <code>META-INF/blueprint.xml</code> on the classpath
@@ -83,11 +84,16 @@ public class BlueprintContextListener implements ServletContextListener {
                 }
             }
 
-            BlueprintContainerImpl container = new BlueprintContainerImpl(classLoader, resourcePaths, properties, true);
+            NamespaceHandlerSet nsHandlerSet = getNamespaceHandlerSet(classLoader);
+            BlueprintContainerImpl container = new BlueprintContainerImpl(classLoader, resourcePaths, properties, nsHandlerSet, true);
             servletContext.setAttribute(CONTAINER_ATTRIBUTE, container);
         } catch (Exception e) {
             servletContext.log("Failed to startup blueprint container. " + e, e);
         }
+    }
+    
+    protected NamespaceHandlerSet getNamespaceHandlerSet(ClassLoader tccl) {
+        return null;
     }
 
     public void contextDestroyed(ServletContextEvent event) {
