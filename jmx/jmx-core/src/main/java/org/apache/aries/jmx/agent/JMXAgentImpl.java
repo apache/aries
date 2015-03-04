@@ -18,8 +18,10 @@ package org.apache.aries.jmx.agent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -62,7 +64,7 @@ public class JMXAgentImpl implements JMXAgent {
     /**
      * {@link MBeanHandler} store.
      */
-    private List<MBeanServer> mbeanServers;
+    private Map<MBeanServer, Boolean> mbeanServers;
     private Map<MBeanHandler, Boolean> mbeansHandlers;
     private BundleContext context;
     private Logger logger;
@@ -75,8 +77,8 @@ public class JMXAgentImpl implements JMXAgent {
     public JMXAgentImpl(BundleContext context, Logger logger) {
         this.context = context;
         this.logger = logger;
-        this.mbeanServers = new ArrayList<MBeanServer>();
-        this.mbeansHandlers = new HashMap<MBeanHandler, Boolean>();
+        this.mbeanServers = new IdentityHashMap<MBeanServer, Boolean>();
+        this.mbeansHandlers = new IdentityHashMap<MBeanHandler, Boolean>();
     }
 
     /**
@@ -146,7 +148,7 @@ public class JMXAgentImpl implements JMXAgent {
                 }
             }
         }
-        mbeanServers.add(server);
+        mbeanServers.put(server, Boolean.TRUE);
     }
 
     /**
@@ -155,25 +157,24 @@ public class JMXAgentImpl implements JMXAgent {
     public synchronized void unregisterMBeans(final MBeanServer server) {
         for (MBeanHandler mBeanHandler : mbeansHandlers.keySet()) {
             if (mbeansHandlers.get(mBeanHandler) == Boolean.TRUE) {
-                try
-                {
-                   String name = mBeanHandler.getName();
-                   StandardMBean mbean = mBeanHandler.getMbean();
-                   if (mbean != null) {
-                       logger.log(LogService.LOG_INFO, "Unregistering " + mbean.getMBeanInterface().getName()
-                             + " to MBeanServer " + server + " with name " + name);
-                       server.unregisterMBean(new ObjectName(name));
-                   }
+                try {
+                    String name = mBeanHandler.getName();
+                    StandardMBean mbean = mBeanHandler.getMbean();
+                    if (mbean != null) {
+                        logger.log(LogService.LOG_INFO, "Unregistering " + mbean.getMBeanInterface().getName()
+                                + " to MBeanServer " + server + " with name " + name);
+                        server.unregisterMBean(new ObjectName(name));
+                    }
                 } catch (MBeanRegistrationException e) {
-                   logger.log(LogService.LOG_ERROR, "Can't unregister MBean", e);
+                    logger.log(LogService.LOG_ERROR, "Can't unregister MBean", e);
                 } catch (InstanceNotFoundException e) {
-                   logger.log(LogService.LOG_ERROR, "MBean doesn't exist in the repository", e);
+                    logger.log(LogService.LOG_ERROR, "MBean doesn't exist in the repository", e);
                 } catch (MalformedObjectNameException e) {
-                   logger.log(LogService.LOG_ERROR, "Try to unregister with no valid objectname", e);
+                    logger.log(LogService.LOG_ERROR, "Try to unregister with no valid objectname", e);
                 } catch (NullPointerException e) {
-                   logger.log(LogService.LOG_ERROR, "Name of objectname can't be null ", e);
+                    logger.log(LogService.LOG_ERROR, "Name of objectname can't be null ", e);
                 } catch (Exception e) {
-                   logger.log(LogService.LOG_ERROR, "Cannot unregister MBean: " + mBeanHandler, e);
+                    logger.log(LogService.LOG_ERROR, "Cannot unregister MBean: " + mBeanHandler, e);
                 }
             }
         }
@@ -184,7 +185,7 @@ public class JMXAgentImpl implements JMXAgent {
      * @see org.apache.aries.jmx.agent.JMXAgent#registerMBean(org.apache.aries.jmx.MBeanHandler)
      */
     public synchronized void registerMBean(final MBeanHandler mBeanHandler) {
-        for (MBeanServer server : mbeanServers) {
+        for (MBeanServer server : mbeanServers.keySet()) {
             String name = mBeanHandler.getName();
             StandardMBean mbean = mBeanHandler.getMbean();
             try {
@@ -214,7 +215,7 @@ public class JMXAgentImpl implements JMXAgent {
      * @see org.apache.aries.jmx.agent.JMXAgent#unregisterMBean(org.apache.aries.jmx.MBeanHandler)
      */
     public synchronized void unregisterMBean(final MBeanHandler mBeanHandler) {
-        for (MBeanServer server : mbeanServers) {
+        for (MBeanServer server : mbeanServers.keySet()) {
             String name = mBeanHandler.getName();
             try {
                 logger.log(LogService.LOG_INFO, "Unregistering mbean " + " to MBeanServer " + server + " with name "
