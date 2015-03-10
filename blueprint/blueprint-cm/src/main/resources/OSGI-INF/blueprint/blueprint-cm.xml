@@ -41,15 +41,5 @@
             <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"/>
         </service-properties>
     </service>
-    <service ref="CmNamespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
-        <service-properties>
-            <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.4.0"/>
-        </service-properties>
-    </service>
-    <service ref="CmNamespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
-        <service-properties>
-            <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.5.0"/>
-        </service-properties>
-    </service>
     
 </blueprint>
