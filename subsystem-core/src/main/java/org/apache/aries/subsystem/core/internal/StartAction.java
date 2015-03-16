@@ -170,15 +170,45 @@ public class StartAction extends AbstractAction {
 				if (!frameworkWiring.resolveBundles(bundles)) {
 					//work out which bundles could not be resolved
 					Collection<Bundle> unresolved = new ArrayList<Bundle>();
+					StringBuilder diagnostics = new StringBuilder();
+					diagnostics.append(String.format("Unable to resolve bundles for subsystem/version/id %s/%s/%s:\n", 
+							subsystem.getSymbolicName(), subsystem.getVersion(), subsystem.getSubsystemId()));
+					String fmt = "%d : STATE %s : %s : %s : %s";
 					for(Bundle bundle:bundles){
-						if((bundle.getState() & Bundle.RESOLVED) != Bundle.RESOLVED){
+						if((bundle.getState() & Bundle.RESOLVED) != Bundle.RESOLVED) {
 							unresolved.add(bundle);
 						}
+						String state = null;
+						switch(bundle.getState()) {
+							case Bundle.ACTIVE :
+								state = "ACTIVE";
+								break;
+							case Bundle.INSTALLED :
+								state = "INSTALLED";
+								break;
+							case Bundle.RESOLVED :
+								state = "RESOLVED";
+								break;
+							case Bundle.STARTING :
+								state = "STARTING";
+								break;
+							case Bundle.STOPPING :
+								state = "STOPPING";
+								break;
+							case Bundle.UNINSTALLED :
+								state = "UNINSTALLED";
+								break;
+							default :
+								//convert common states to text otherwise default to just showing the ID
+								state = "[" + Integer.toString(bundle.getState()) + "]";
+								break;
+						}
+						diagnostics.append(String.format(fmt, bundle.getBundleId(), state, 
+								bundle.getSymbolicName(), bundle.getVersion().toString(), 
+								bundle.getLocation()));
+						diagnostics.append("\n");
 					}
-					logger.error(
-							"Unable to resolve bundles for subsystem/version/id {}/{}/{}: {}",
-							new Object[] { subsystem.getSymbolicName(), subsystem.getVersion(),
-									subsystem.getSubsystemId(), unresolved });
+					logger.error(diagnostics.toString());
 					throw new SubsystemException("Framework could not resolve the bundles: " + unresolved);
 				}
 				setExportIsolationPolicy(subsystem);
