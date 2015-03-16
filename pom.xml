@@ -55,6 +55,7 @@
         <module>jpa</module>
         <module>spi-fly</module>
         <module>samples</module>
+        <module>esa-ant-task</module>
         <module>esa-maven-plugin</module>
     </modules>
 
