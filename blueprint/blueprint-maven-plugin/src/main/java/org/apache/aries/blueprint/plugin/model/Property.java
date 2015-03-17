@@ -41,7 +41,7 @@ public class Property implements Comparable<Property> {
     public static Property create(Matcher matcher, Field field) {
         Value value = field.getAnnotation(Value.class);
         if (needsInject(field)) {
-            Bean matching = matcher.getMatching(field);
+            BeanRef matching = matcher.getMatching(new BeanRef(field));
             String ref = (matching == null) ? getRefName(field) : matching.id;
             return new Property(field.getName(), ref, null);
         } else if (value != null){

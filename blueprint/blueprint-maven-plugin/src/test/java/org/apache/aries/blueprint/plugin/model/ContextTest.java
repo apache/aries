@@ -18,12 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import java.lang.reflect.Field;
-
-import org.apache.aries.blueprint.plugin.model.Bean;
-import org.apache.aries.blueprint.plugin.model.Context;
-import org.apache.aries.blueprint.plugin.model.OsgiServiceBean;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
+import org.apache.aries.blueprint.plugin.test.MyFactoryBean;
+import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.ServiceB;
 import org.apache.aries.blueprint.plugin.test.ServiceReferences;
 import org.junit.Assert;
@@ -48,10 +45,20 @@ public class ContextTest {
     @Test
     public void testMatching() throws NoSuchFieldException, SecurityException  {
         Context context = new Context(ServiceReferences.class);
-        Field field = ServiceReferences.class.getDeclaredFields()[0];
-        Bean matching = context.getMatching(field);
-        Assert.assertEquals(OsgiServiceBean.class, matching.getClass());
+        BeanRef matching = context.getMatching(new BeanRef(ServiceB.class));
+        Assert.assertEquals(OsgiServiceRef.class, matching.getClass());
         Assert.assertEquals(ServiceB.class, matching.clazz);
         Assert.assertEquals("serviceB", matching.id);
     }
+    
+    @Test
+    public void testProduced() throws NoSuchFieldException, SecurityException  {
+        Context context = new Context(MyFactoryBean.class);
+        
+        ProducedBean matching = (ProducedBean)context.getMatching(new BeanRef(MyProduced.class));
+        Assert.assertEquals(MyProduced.class, matching.clazz);
+        Assert.assertEquals("myFactoryBean", matching.factoryBeanId);
+        Assert.assertEquals("create", matching.factoryMethod);
+    }
+    
 }

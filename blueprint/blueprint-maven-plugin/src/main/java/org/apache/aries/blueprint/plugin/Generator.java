@@ -29,7 +29,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.aries.blueprint.plugin.model.Bean;
 import org.apache.aries.blueprint.plugin.model.Context;
-import org.apache.aries.blueprint.plugin.model.OsgiServiceBean;
+import org.apache.aries.blueprint.plugin.model.OsgiServiceRef;
+import org.apache.aries.blueprint.plugin.model.ProducedBean;
 import org.apache.aries.blueprint.plugin.model.Property;
 import org.apache.aries.blueprint.plugin.model.PropertyWriter;
 import org.apache.aries.blueprint.plugin.model.TransactionalDef;
@@ -89,6 +90,9 @@ public class Generator implements PropertyWriter {
         writer.writeAttribute("id", bean.id);
         writer.writeAttribute("class", bean.clazz.getName());
         writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
+        if (bean instanceof ProducedBean) {
+            writeFactory((ProducedBean)bean);
+        }
         if (bean.initMethod != null) {
             writer.writeAttribute("init-method", bean.initMethod);
         }
@@ -101,6 +105,11 @@ public class Generator implements PropertyWriter {
         writePersistenceFields(bean.persistenceFields);
     }
     
+    private void writeFactory(ProducedBean bean) throws XMLStreamException {
+        writer.writeAttribute("factory-ref", bean.factoryBeanId);
+        writer.writeAttribute("factory-method", bean.factoryMethod);
+    }
+
     private void writeTransactional(TransactionalDef transactionDef)
             throws XMLStreamException {
         if (transactionDef != null) {
@@ -139,12 +148,12 @@ public class Generator implements PropertyWriter {
     }
 
     private void writeServiceRefs() throws XMLStreamException {
-        for (OsgiServiceBean serviceBean : context.getServiceRefs()) {
+        for (OsgiServiceRef serviceBean : context.getServiceRefs()) {
             writeServiceRef(serviceBean);
         }
     }
 
-    private void writeServiceRef(OsgiServiceBean serviceBean) throws XMLStreamException {
+    private void writeServiceRef(OsgiServiceRef serviceBean) throws XMLStreamException {
         writer.writeEmptyElement("reference");
         writer.writeAttribute("id", serviceBean.id);
         writer.writeAttribute("interface", serviceBean.clazz.getName());
