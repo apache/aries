@@ -19,11 +19,13 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 
 import org.ops4j.pax.cdi.api.OsgiService;
@@ -32,15 +34,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class Context implements Matcher {
 
     SortedSet<Bean> beans;
-    SortedSet<OsgiServiceBean> serviceRefs;
-    
+    SortedSet<OsgiServiceRef> serviceRefs;
+
     public Context(Class<?>... beanClasses) {
         this(Arrays.asList(beanClasses));
     }
 
     public Context(Collection<Class<?>> beanClasses) {
         this.beans = new TreeSet<Bean>();
-        this.serviceRefs = new TreeSet<OsgiServiceBean>();
+        this.serviceRefs = new TreeSet<OsgiServiceRef>();
         addBeans(beanClasses);
     }
 
@@ -49,6 +51,18 @@ public class Context implements Matcher {
             Bean bean = new Bean(clazz);
             beans.add(bean);
             addServiceRefs(clazz);
+            addProducedBeans(clazz, bean.id);
+        }
+    }
+
+    private void addProducedBeans(Class<?> clazz, String factoryBeanId) {
+        for (Method method : clazz.getMethods()) {
+            Produces produces = method.getAnnotation(Produces.class);
+            if (produces != null) {
+                Class<?> producedClass = method.getReturnType();
+                ProducedBean producedBean = new ProducedBean(producedClass, factoryBeanId, method.getName());
+                beans.add(producedBean);
+            }
         }
     }
 
@@ -56,52 +70,37 @@ public class Context implements Matcher {
         for (Field field : clazz.getDeclaredFields()) {
             OsgiService osgiService = field.getAnnotation(OsgiService.class);
             if (osgiService != null) {
-                serviceRefs.add(new OsgiServiceBean(field.getType(), osgiService));
+                serviceRefs.add(new OsgiServiceRef(field.getType(), osgiService));
             }
         }
     }
-    
+
     public void resolve() {
         for (Bean bean : beans) {
             bean.resolve(this);
         }
     }
     
-    public Bean getMatching(Field field) {
-        String destId = getDestinationId(field);
-        // TODO Replace loop by lookup
+    public BeanRef getMatching(BeanRef template) {
         for (Bean bean : beans) {
-            if (bean.matches(field.getType(), destId)) {
+            if (bean.matches(template)) {
                 return bean;
             }
         }
-        for (Bean bean : serviceRefs) {
-            if (bean.matches(field.getType(), destId)) {
+        for (BeanRef bean : serviceRefs) {
+            if (bean.matches(template)) {
                 return bean;
             }
         }
         return null;
     }
 
-	private String getDestinationId(Field field) {
-		Named named = field.getAnnotation(Named.class);
-		if (named != null) {
-			return named.value();
-		}
-		Qualifier qualifier = field.getAnnotation(Qualifier.class);
-        if (qualifier != null) {
-        	return qualifier.value();
-        }
-		return null;
-	}
-
     public SortedSet<Bean> getBeans() {
         return beans;
     }
-    
-    public SortedSet<OsgiServiceBean> getServiceRefs() {
+
+    public SortedSet<OsgiServiceRef> getServiceRefs() {
         return serviceRefs;
     }
-
 
 }

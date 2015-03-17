@@ -40,4 +40,7 @@ public class MyBean3 {
 
     @Inject
     ServiceB serviceB;
+    
+    @Inject
+    MyProduced myProduced;
 }
