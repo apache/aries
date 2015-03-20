@@ -74,7 +74,7 @@ public class Bean extends BeanRef {
     
     public void resolve(Matcher matcher) {
         Class<?> curClass = this.clazz;
-        while (curClass != Object.class) {
+        while (curClass != null && curClass != Object.class) {
             resolveProperties(matcher, curClass);
             curClass = curClass.getSuperclass();
         }
