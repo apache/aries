@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyFactoryBean;
 import org.apache.aries.blueprint.plugin.test.MyProduced;
@@ -25,6 +27,10 @@ import org.apache.aries.blueprint.plugin.test.ServiceB;
 import org.apache.aries.blueprint.plugin.test.ServiceReferences;
 import org.junit.Assert;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.Converter;
 
 public class ContextTest {
 
@@ -49,6 +55,20 @@ public class ContextTest {
         Assert.assertEquals(OsgiServiceRef.class, matching.getClass());
         Assert.assertEquals(ServiceB.class, matching.clazz);
         Assert.assertEquals("serviceB", matching.id);
+    }
+    
+    private void assertSpecialRef(String expectedId, Class<?> clazz) {
+        Context context = new Context();
+        BeanRef ref = context.getMatching(new BeanRef(clazz));
+        assertEquals(expectedId, ref.id);
+    }
+    
+    @Test
+    public void testSpecialRefs() {
+        assertSpecialRef("blueprintBundleContext", BundleContext.class);
+        assertSpecialRef("blueprintBundle", Bundle.class);
+        assertSpecialRef("blueprintContainer", BlueprintContainer.class);
+        assertSpecialRef("blueprintConverter", Converter.class);
     }
     
     @Test
