@@ -26,10 +26,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.enterprise.inject.Produces;
-import javax.inject.Named;
 
 import org.ops4j.pax.cdi.api.OsgiService;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.Converter;
 
 public class Context implements Matcher {
 
@@ -92,6 +94,19 @@ public class Context implements Matcher {
                 return bean;
             }
         }
+        if (template.clazz == BundleContext.class) {
+            return new BeanRef(BundleContext.class, "blueprintBundleContext");
+        }
+        if (template.clazz == Bundle.class) {
+            return new BeanRef(Bundle.class, "blueprintBundle");
+        }
+        if (template.clazz == BlueprintContainer.class) {
+            return new BeanRef(BlueprintContainer.class, "blueprintContainer");
+        }
+        if (template.clazz == Converter.class) {
+            return new BeanRef(Converter.class, "blueprintConverter");
+        }
+        
         return null;
     }
 
