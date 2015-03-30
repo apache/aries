@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.util.manifest.BundleManifest;
@@ -77,6 +78,9 @@ public class VersionCheckerMojo extends AbstractMojo {
     @Parameter(defaultValue="${project.basedir}/src/main/java")
     private File source;
 
+    @Parameter
+    private List<String> excludes;
+    
     @Component
     private RepositorySystem repository;
     
@@ -121,7 +125,8 @@ public class VersionCheckerMojo extends AbstractMojo {
                 BundleCompatibility bundleCompatibility = new BundleCompatibility(bundleSymbolicName,
                                                                                   newBundle, oldBundle,
                                                                                   oldClassLoader,
-                                                                                  newClassLoader);
+                                                                                  newClassLoader,
+                                                                                  excludes);
                 bundleCompatibility.invoke();
                 String bundleElement = bundleCompatibility.getBundleElement();
                 String pkgElement = bundleCompatibility.getPkgElements().toString();
