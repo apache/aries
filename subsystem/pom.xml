@@ -48,6 +48,7 @@
         <module>subsystem-itests</module>
         <module>subsystem-itests-api-bundle</module>
         <module>subsystem-bundle</module>
+        <module>subsystem-gogo-command</module>
     </modules>
 
 </project>
