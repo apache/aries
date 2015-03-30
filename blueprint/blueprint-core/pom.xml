@@ -232,6 +232,12 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.3.1-SNAPSHOT</version>
+                <configuration>
+                    <excludes>
+                      <exclude>method org.apache.aries.blueprint.di.Repository getRepository() has been deleted</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-verify</id>
