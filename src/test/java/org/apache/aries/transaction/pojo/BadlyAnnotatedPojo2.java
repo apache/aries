@@ -36,5 +36,6 @@ public class BadlyAnnotatedPojo2 {
 		return null;
 	}
 	
+	@Transaction
 	public static void alsoDoesNotWork() {}
 }
