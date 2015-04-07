@@ -21,6 +21,7 @@ package org.apache.aries.transaction;
 import static org.junit.Assert.*;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.parsing.TxBlueprintListener;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.Test;
@@ -39,8 +40,8 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
       BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
-      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));        
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+      assertEquals(TransactionPropagationType.Never, txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));        
     }
 	
     @Test
@@ -70,8 +71,8 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
       BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
-      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+      assertEquals(TransactionPropagationType.Never, txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
         
     }
     
@@ -102,9 +103,9 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
       BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
-      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anonToo, "require")); 
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+      assertEquals(TransactionPropagationType.Never, txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(anonToo, "require")); 
     }
     
     @Test
@@ -134,12 +135,12 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       BeanMetadata compSomeTx = (BeanMetadata) cdr.getComponentDefinition("someTx");
       BeanMetadata compAnotherBean = (BeanMetadata) cdr.getComponentDefinition("anotherBean");
 
-      assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compRequiresNew, "doSomething"));
-      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(compNoTx, "doSomething"));
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compSomeTx, "doSomething"));
-      assertEquals("Mandatory", txenhancer.getComponentMethodTxAttribute(compSomeTx, "getRows"));
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "doSomething"));
-      assertEquals("Supports", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));       
+      assertEquals(TransactionPropagationType.RequiresNew, txenhancer.getComponentMethodTxAttribute(compRequiresNew, "doSomething"));
+      assertEquals(TransactionPropagationType.Never, txenhancer.getComponentMethodTxAttribute(compNoTx, "doSomething"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compSomeTx, "doSomething"));
+      assertEquals(TransactionPropagationType.Mandatory, txenhancer.getComponentMethodTxAttribute(compSomeTx, "getRows"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compAnotherBean, "doSomething"));
+      assertEquals(TransactionPropagationType.Supports, txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));       
     }
     
     @Test
@@ -162,8 +163,8 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
         BeanMetadata anon = (BeanMetadata) (comp.getProperties().get(0)).getValue();
         BeanMetadata anonToo = (BeanMetadata) (comp.getProperties().get(1)).getValue();
 
-        assertEquals("Required", txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
-        assertEquals("Never", txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
+        assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
+        assertEquals(TransactionPropagationType.Never, txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
         
         assertTrue(namespaceHandler.isRegistered(cdr));
         
@@ -201,12 +202,12 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
         BeanMetadata compSomeTx = (BeanMetadata) cdr.getComponentDefinition("someTx");
         BeanMetadata compAnotherBean = (BeanMetadata) cdr.getComponentDefinition("anotherBean");
 
-        assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compRequiresNew, "doSomething"));
-        assertEquals("Never", txenhancer.getComponentMethodTxAttribute(compNoTx, "doSomething"));
-        assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compSomeTx, "doSomething"));
-        assertEquals("Mandatory", txenhancer.getComponentMethodTxAttribute(compSomeTx, "getRows"));
-        assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "doSomething"));
-        assertEquals("Supports", txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));   
+        assertEquals(TransactionPropagationType.RequiresNew, txenhancer.getComponentMethodTxAttribute(compRequiresNew, "doSomething"));
+        assertEquals(TransactionPropagationType.Never, txenhancer.getComponentMethodTxAttribute(compNoTx, "doSomething"));
+        assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compSomeTx, "doSomething"));
+        assertEquals(TransactionPropagationType.Mandatory, txenhancer.getComponentMethodTxAttribute(compSomeTx, "getRows"));
+        assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compAnotherBean, "doSomething"));
+        assertEquals(TransactionPropagationType.Supports, txenhancer.getComponentMethodTxAttribute(compAnotherBean, "getWhatever"));   
         
         // cleanup
         

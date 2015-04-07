@@ -20,7 +20,7 @@ package org.apache.aries.transaction;
 
 import javax.transaction.Transaction;
 
-class TransactionToken
+public class TransactionToken
 {
    private Transaction activeTransaction;
    private Transaction suspendedTransaction;
@@ -46,31 +46,15 @@ class TransactionToken
        return activeTransaction;
    }
 
-   public void setActiveTransaction(Transaction activeTransaction) {
-       this.activeTransaction = activeTransaction;
-   }
-
    public Transaction getSuspendedTransaction() {
        return suspendedTransaction;
-   }
-
-   public void setSuspendedTransaction(Transaction suspendedTransaction) {
-       this.suspendedTransaction = suspendedTransaction;
    }
 
    public TransactionAttribute getTransactionAttribute() {
        return transactionAttribute;
    }
 
-   public void setTransactionStrategy(TransactionAttribute transactionAttribute) {
-       this.transactionAttribute = transactionAttribute;
-   }
-
    public boolean isCompletionAllowed() {
        return isCompletionAllowed;
-   }
-
-   public void setCompletionAllowed(boolean isCompletionAllowed) {
-       this.isCompletionAllowed = isCompletionAllowed;
    }
 }

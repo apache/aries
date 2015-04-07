@@ -19,17 +19,18 @@
 package org.apache.aries.transaction;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 public interface TxComponentMetaDataHelper {
 
     public void setComponentTransactionData(ComponentDefinitionRegistry registry, 
-            ComponentMetadata component, String value, String method);
+            ComponentMetadata component, TransactionPropagationType type, String method);
 
-    public String getComponentMethodTxAttribute(
+    public TransactionPropagationType getComponentMethodTxAttribute(
             ComponentMetadata component, String methodName);
     
-    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, String value,
+    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, TransactionPropagationType value,
         String method, String bean);
 
     public void unregister(ComponentDefinitionRegistry registry);

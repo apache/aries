@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
+
 public class BundleWideTxDataUtil {
     
     
@@ -36,14 +38,14 @@ public class BundleWideTxDataUtil {
      * @param bundleData
      * @return
      */
-    public static String getAttribute(String compId, String method, List<BundleWideTxData> bundleData) {
+    public static TransactionPropagationType getAttribute(String compId, String method, List<BundleWideTxData> bundleData) {
         BundleWideTxData txData = null;
         if (bundleData.size() == 1)  {
             txData = bundleData.get(0);
             
             List<Pattern> beans = txData.getBean();
             List<Pattern> mtds = txData.getMethod();
-            String value = txData.getValue();
+            TransactionPropagationType value = txData.getValue();
             
             if (!beans.isEmpty() && !mtds.isEmpty()) {
                 for (Pattern bean : beans) {
@@ -81,7 +83,7 @@ public class BundleWideTxDataUtil {
         return null;
     }
     
-    private static String getTransactionAttribute(List<BundleWideTxData> bundleData, String compId, String method) {
+    private static TransactionPropagationType getTransactionAttribute(List<BundleWideTxData> bundleData, String compId, String method) {
         List<BundleWideTxData> bundleDataBothMethodAndBean = new ArrayList<BundleWideTxData>();
         List<BundleWideTxData> bundleDataOnlyBean = new ArrayList<BundleWideTxData>();
         List<BundleWideTxData> bundleDataOnlyMethod = new ArrayList<BundleWideTxData>();
@@ -107,7 +109,7 @@ public class BundleWideTxDataUtil {
         for (BundleWideTxData txData : bundleDataBothMethodAndBean) {
             List<Pattern> beans = txData.getBean();
             List<Pattern> mtds = txData.getMethod();
-            String value = txData.getValue();
+            TransactionPropagationType value = txData.getValue();
             
             for (Pattern bean : beans) {
                 if (bean.matcher(compId).matches()) {
@@ -128,7 +130,7 @@ public class BundleWideTxDataUtil {
         // let's then check bundle data that has bean only next
         for (BundleWideTxData txData : bundleDataOnlyBean) {
             List<Pattern> beans = txData.getBean();
-            String value = txData.getValue();
+            TransactionPropagationType value = txData.getValue();
             
             for (Pattern bean : beans) {
                 if (bean.matcher(compId).matches()) {
@@ -144,7 +146,7 @@ public class BundleWideTxDataUtil {
         // let's then check bundle data that has method only next
         for (BundleWideTxData txData : bundleDataOnlyMethod) {
             List<Pattern> mtds = txData.getMethod();
-            String value = txData.getValue();
+            TransactionPropagationType value = txData.getValue();
             
             for (Pattern mtd : mtds) {
                 if (mtd.matcher(method).matches()) {
@@ -175,7 +177,7 @@ public class BundleWideTxDataUtil {
     }
     
     // this method assume matchedTxData isn't empty.
-    private static String findBestMatch(List<MatchedTxData> matchedTxData) {
+    private static TransactionPropagationType findBestMatch(List<MatchedTxData> matchedTxData) {
         
         if (matchedTxData.size() == 1) {
             return matchedTxData.get(0).getValue();
@@ -209,7 +211,7 @@ public class BundleWideTxDataUtil {
     }
     
     // this method assume matchedTxData isn't empty.
-    private static String findBestMatchBeanOnly(List<MatchedTxData> matchedTxData) {
+    private static TransactionPropagationType findBestMatchBeanOnly(List<MatchedTxData> matchedTxData) {
         
         if (matchedTxData.size() == 1) {
             return matchedTxData.get(0).getValue();
@@ -232,7 +234,7 @@ public class BundleWideTxDataUtil {
     }
     
     // this method assume matchedTxData isn't empty.
-    private static String findBestMatchMethodOnly(List<MatchedTxData> matchedTxData) {
+    private static TransactionPropagationType findBestMatchMethodOnly(List<MatchedTxData> matchedTxData) {
         
         if (matchedTxData.size() == 1) {
             return matchedTxData.get(0).getValue();
