@@ -28,6 +28,7 @@ import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
+import org.apache.aries.transaction.TxComponentMetaDataHelper;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.parsing.AnnotationParser;
 import org.apache.aries.transaction.pojo.AnnotatedPojo;

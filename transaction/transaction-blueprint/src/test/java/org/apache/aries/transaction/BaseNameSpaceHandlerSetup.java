@@ -37,7 +37,7 @@ import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
-import org.apache.aries.transaction.parsing.TxElementHandler;
+import org.apache.aries.transaction.parsing.TxNamespaceHandler;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
@@ -50,7 +50,7 @@ public class BaseNameSpaceHandlerSetup {
     protected Bundle b;
     protected NamespaceHandlerRegistry nhri;
     protected TxComponentMetaDataHelperImpl txenhancer;
-    protected TxElementHandler namespaceHandler;
+    protected TxNamespaceHandler namespaceHandler;
     
     @Before
     public void setUp() {
@@ -66,11 +66,11 @@ public class BaseNameSpaceHandlerSetup {
         txinterceptor.setTransactionManager(tm);
         txinterceptor.setTxMetaDataHelper(txenhancer);
         
-        namespaceHandler = new TxElementHandler();
+        namespaceHandler = new TxNamespaceHandler();
         
         BlueprintContainer container = Skeleton.newMock(BlueprintContainer.class);
         Skeleton.getSkeleton(container).setReturnValue(
-                new MethodCall(BlueprintContainer.class, "getComponentInstance", TxElementHandler.DEFAULT_INTERCEPTOR_ID),
+                new MethodCall(BlueprintContainer.class, "getComponentInstance", TxNamespaceHandler.DEFAULT_INTERCEPTOR_ID),
                 txinterceptor);
         namespaceHandler.setBlueprintContainer(container);
         namespaceHandler.setTxMetaDataHelper(txenhancer);
