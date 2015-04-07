@@ -38,7 +38,7 @@
     </service-properties>
   </service>
 
-  <bean id="nsHandler" class="org.apache.aries.transaction.parsing.TxElementHandler">
+  <bean id="nsHandler" class="org.apache.aries.transaction.parsing.TxNamespaceHandler">
     <property ref="txenhancer" name="txMetaDataHelper"/>
     <property name="blueprintContainer" ref="blueprintContainer" />
   </bean>

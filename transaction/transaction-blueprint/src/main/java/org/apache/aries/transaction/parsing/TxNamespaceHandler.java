@@ -21,6 +21,7 @@ package org.apache.aries.transaction.parsing;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -49,16 +50,28 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class TxElementHandler implements NamespaceHandler {
+public class TxNamespaceHandler implements NamespaceHandler {
+    public static final String ANNOTATION_PARSER_BEAN_NAME = ".org_apache_aries_transaction_annotations";
+    private static final String BEAN = "bean";
+    private static final String VALUE = "value";
+    private static final String METHOD = "method";
     public static final String DEFAULT_INTERCEPTOR_ID = "txinterceptor";
-    public static final String INTERCEPTOR_BLUEPRINT_ID = "interceptor.blueprint.id";
+    private static final String INTERCEPTOR_BLUEPRINT_ID = "interceptor.blueprint.id";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TxElementHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TxNamespaceHandler.class);
 
     private TxComponentMetaDataHelper metaDataHelper;
     private Interceptor interceptor = null;
 
     private final ConcurrentMap<ComponentDefinitionRegistry,Bundle> registered = new ConcurrentHashMap<ComponentDefinitionRegistry, Bundle>();
+    private final Map<String, String> schemaMap;
+    
+    public TxNamespaceHandler() {
+        schemaMap = new HashMap<String, String>();
+        schemaMap.put("http://aries.apache.org/xmlns/transactions/v1.0.0", "transactionv10.xsd");
+        schemaMap.put("http://aries.apache.org/xmlns/transactions/v1.1.0", "transactionv11.xsd");
+        schemaMap.put("http://aries.apache.org/xmlns/transactions/v1.2.0", "transactionv12.xsd");
+    }
 
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
     {
@@ -79,12 +92,12 @@ public class TxElementHandler implements NamespaceHandler {
             // don't register components if we have no bundle (= dry parse)
             if (blueprintBundle != null) {
               registered.put(cdr, blueprintBundle);
-              TransactionPropagationType value = getType(elt.getAttribute(Constants.VALUE));
-              String method = elt.getAttribute(Constants.METHOD);
+              TransactionPropagationType value = getType(elt.getAttribute(VALUE));
+              String method = elt.getAttribute(METHOD);
               if (cm == null) {
                   // if the enclosing component is null, then we assume this is the top element                 
                   
-                  String bean = elt.getAttribute(Constants.BEAN);
+                  String bean = elt.getAttribute(BEAN);
                   registerComponentsWithInterceptor(cdr, bean);
   
                   metaDataHelper.populateBundleWideTransactionData(pc.getComponentDefinitionRegistry(), 
@@ -101,10 +114,10 @@ public class TxElementHandler implements NamespaceHandler {
             Node n = elt.getChildNodes().item(0);
             if(n == null || Boolean.parseBoolean(n.getNodeValue())) {
                 //We need to register a bean processor to add annotation-based config
-                if(!!!cdr.containsComponentDefinition(Constants.ANNOTATION_PARSER_BEAN_NAME)) {
+                if(!!!cdr.containsComponentDefinition(ANNOTATION_PARSER_BEAN_NAME)) {
                 	
                 	MutablePassThroughMetadata mptmd = pc.createMetadata(MutablePassThroughMetadata.class);
-                	mptmd.setId(Constants.ANNOTATION_PARSER_BEAN_NAME);
+                	mptmd.setId(ANNOTATION_PARSER_BEAN_NAME);
                 	mptmd.setObject(new AnnotationParser(cdr, interceptor, metaDataHelper));
                     cdr.registerComponentDefinition(mptmd);
                 }
@@ -134,16 +147,10 @@ public class TxElementHandler implements NamespaceHandler {
         return null;
     }
 
-    public URL getSchemaLocation(String arg0)
+    public URL getSchemaLocation(String namespaceUri)
     {
-    	if (Constants.TRANSACTION10URI.equals(arg0)) {
-    	    return this.getClass().getResource(Constants.TX10_SCHEMA);
-    	} else if (Constants.TRANSACTION11URI.equals(arg0)) {
-    	    return this.getClass().getResource(Constants.TX11_SCHEMA);
-    	} else if (Constants.TRANSACTION12URI.equals(arg0)) {
-    		return this.getClass().getResource(Constants.TX12_SCHEMA);
-    	}
-    	return null;
+        String xsdPath = schemaMap.get(namespaceUri);
+        return xsdPath != null ? this.getClass().getResource(xsdPath) : null;
     }
 
     public final void setTxMetaDataHelper(TxComponentMetaDataHelper transactionEnhancer)
@@ -154,7 +161,7 @@ public class TxElementHandler implements NamespaceHandler {
     public final void setBlueprintContainer(BlueprintContainer container) 
     {
         String id = DEFAULT_INTERCEPTOR_ID;
-        InputStream is = TxElementHandler.class.getResourceAsStream("/provider.properties");
+        InputStream is = TxNamespaceHandler.class.getResourceAsStream("/provider.properties");
         
         if (is != null) {
             try {

@@ -26,6 +26,7 @@ import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.parsing.AnnotationParser;
+import org.apache.aries.transaction.parsing.TxNamespaceHandler;
 import org.apache.aries.transaction.pojo.AnnotatedPojo;
 import org.junit.Test;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -44,7 +45,7 @@ public class AnnotationEnablingNameSpaceHandlerTest extends BaseNameSpaceHandler
       assertNull(txenhancer.getComponentMethodTxAttribute(compTop, "increment"));
       
       
-      PassThroughMetadata pmd = (PassThroughMetadata) cdr.getComponentDefinition(Constants.ANNOTATION_PARSER_BEAN_NAME);
+      PassThroughMetadata pmd = (PassThroughMetadata) cdr.getComponentDefinition(TxNamespaceHandler.ANNOTATION_PARSER_BEAN_NAME);
       assertNotNull(pmd);
       
       AnnotationParser parser  = (AnnotationParser) pmd.getObject();
@@ -66,7 +67,7 @@ public class AnnotationEnablingNameSpaceHandlerTest extends BaseNameSpaceHandler
         assertNull(txenhancer.getComponentMethodTxAttribute(compTop, "increment"));
         
         
-        PassThroughMetadata pmd = (PassThroughMetadata) cdr.getComponentDefinition(Constants.ANNOTATION_PARSER_BEAN_NAME);
+        PassThroughMetadata pmd = (PassThroughMetadata) cdr.getComponentDefinition(TxNamespaceHandler.ANNOTATION_PARSER_BEAN_NAME);
         assertNull(pmd);
     }
 }
