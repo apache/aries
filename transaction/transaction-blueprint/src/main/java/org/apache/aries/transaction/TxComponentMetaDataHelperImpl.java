@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,54 +50,58 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
           cache = new ConcurrentHashMap<String, String>();
       }
       
-      public void add(Pattern pattern, String txAttribute) {
-          map.put(pattern, txAttribute);
+      public void add(Pattern pattern, TransactionPropagationType txAttribute) {
+          map.put(pattern, txAttribute.name());
       }
       
-      public String getAttribute(String name)
-      {
+    public TransactionPropagationType getAttribute(String name) {
         String txAttribute = cache.get(name);
-        
-        if (txAttribute == null) {
-            List<Pattern> matches = findMatches(name);
-            int size = matches.size();
 
-            if (size == 0) {
-                // we should default to no transaction since we cannot find a match
-                txAttribute = null;
-            }
-            else if (size == 1) {
+        if (txAttribute != null) {
+            return getType(txAttribute);
+        }
+        List<Pattern> matches = findMatches(name);
+        int size = matches.size();
+
+        if (size == 0) {
+            // we should default to no transaction since we cannot find a match
+            return null;
+        }
+
+        if (size == 1) {
+            txAttribute = map.get(matches.get(0));
+        } else {
+            matches = selectPatternsWithFewestWildcards(matches);
+            size = matches.size();
+
+            if (size == 1) {
                 txAttribute = map.get(matches.get(0));
-            }
-            else {
-                matches = selectPatternsWithFewestWildcards(matches);
+            } else {
+                matches = selectLongestPatterns(matches);
                 size = matches.size();
 
                 if (size == 1) {
                     txAttribute = map.get(matches.get(0));
+                } else {
+                    throw new IllegalStateException(
+                                                    Constants.MESSAGES
+                                                        .getMessage("unable.to.apply.patterns", matches));
                 }
-                else {
-                    matches = selectLongestPatterns(matches);
-                    size = matches.size();
-
-                    if (size == 1) {
-                        txAttribute = map.get(matches.get(0));
-                    }
-                    else {
-                        throw new IllegalStateException(Constants.MESSAGES.getMessage("unable.to.apply.patterns", matches));
-                    }
-                }
-            }
-            
-            if (txAttribute != null) {
-                cache.put(name, txAttribute);
             }
         }
-        
-        return txAttribute;
-      }
-      
-      private List<Pattern> findMatches(String name)
+
+        if (txAttribute != null) {
+            cache.put(name, txAttribute);
+        }
+
+        return getType(txAttribute);
+    }
+  
+    private TransactionPropagationType getType(String typeSt) {
+        return typeSt == null || typeSt.length() == 0 ? null : TransactionPropagationType.valueOf(typeSt);
+    }
+
+    private List<Pattern> findMatches(String name)
       {
         List<Pattern> matches = new ArrayList<Pattern>();
         for (Pattern p : map.keySet()) {
@@ -173,7 +178,7 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
         }
     }
     
-    public synchronized void setComponentTransactionData(ComponentDefinitionRegistry registry, ComponentMetadata component, String value, String method)
+    public synchronized void setComponentTransactionData(ComponentDefinitionRegistry registry, ComponentMetadata component, TransactionPropagationType value, String method)
     {
       TranData td = data.get(component);
           
@@ -188,8 +193,8 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
       if (method == null || method.length() == 0) {
     	  method = "*";
       }
-      if(value == null || value.length() == 0) {
-        value = "Required";
+      if(value == null) {
+        value = TransactionPropagationType.Required;
       }
       
       String[] names = method.split("[, \t]");
@@ -200,13 +205,13 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
       }
     }
 
-    public String getComponentMethodTxAttribute(ComponentMetadata component, String methodName)
+    public TransactionPropagationType getComponentMethodTxAttribute(ComponentMetadata component, String methodName)
     {
     	if (LOGGER.isDebugEnabled()) {
     	    LOGGER.debug("Getting the txAttribute for the component {0} and method {1}", component.getId(), methodName);
     	}
         TranData td = data.get(component);
-        String result = null;
+        TransactionPropagationType result = null;
 
         if (td != null) {
             // bean level transaction always overwrite bundle wide transaction 
@@ -242,7 +247,7 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
         return result;
     }
     
-    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, String value,
+    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, TransactionPropagationType value,
             String method, String bean) {
     	if (LOGGER.isDebugEnabled()) {
     	    LOGGER.debug("Start populating bundle wide transaction data value {0} method {1} bean {2} per component definition registry", new Object[]{value, method, bean});

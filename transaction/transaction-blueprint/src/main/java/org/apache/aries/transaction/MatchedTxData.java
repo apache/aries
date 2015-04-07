@@ -20,20 +20,22 @@ package org.apache.aries.transaction;
 
 import java.util.regex.Pattern;
 
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
+
 public final class MatchedTxData
 {
-  private String value;
+  private TransactionPropagationType value;
   private Pattern method;
   private Pattern bean;
   
-  public MatchedTxData(String value,
+  public MatchedTxData(TransactionPropagationType value,
           Pattern method, Pattern bean) {
       this.value = value;
       this.method = method;
       this.bean = bean;
   }
 
-  public String getValue() {
+  public TransactionPropagationType getValue() {
       return this.value;
   }
   

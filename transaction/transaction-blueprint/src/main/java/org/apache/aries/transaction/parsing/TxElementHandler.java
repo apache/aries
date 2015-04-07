@@ -39,6 +39,7 @@ import org.apache.aries.blueprint.mutable.MutablePassThroughMetadata;
 import org.apache.aries.transaction.BundleWideTxData;
 import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -78,7 +79,8 @@ public class TxElementHandler implements NamespaceHandler {
             // don't register components if we have no bundle (= dry parse)
             if (blueprintBundle != null) {
               registered.put(cdr, blueprintBundle);
-              
+              TransactionPropagationType value = getType(elt.getAttribute(Constants.VALUE));
+              String method = elt.getAttribute(Constants.METHOD);
               if (cm == null) {
                   // if the enclosing component is null, then we assume this is the top element                 
                   
@@ -86,15 +88,13 @@ public class TxElementHandler implements NamespaceHandler {
                   registerComponentsWithInterceptor(cdr, bean);
   
                   metaDataHelper.populateBundleWideTransactionData(pc.getComponentDefinitionRegistry(), 
-                          elt.getAttribute(Constants.VALUE), elt.getAttribute(Constants.METHOD), bean);
+                          value, method, bean);
               } else {
                   cdr.registerInterceptorWithComponent(cm, interceptor);
                   if (LOGGER.isDebugEnabled())
-                      LOGGER.debug("parser setting comp trans data for " + elt.getAttribute(Constants.VALUE) + "  "
-                              + elt.getAttribute(Constants.METHOD));
+                      LOGGER.debug("parser setting comp trans data for " + value + "  " + method);
       
-                  metaDataHelper.setComponentTransactionData(cdr, cm, elt.getAttribute(Constants.VALUE), elt
-                          .getAttribute(Constants.METHOD));
+                  metaDataHelper.setComponentTransactionData(cdr, cm, value, method);
               }
             }
         } else if ("enable-annotations".equals(elt.getLocalName())) {
@@ -113,6 +113,10 @@ public class TxElementHandler implements NamespaceHandler {
         
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("parser done with " + elt);
+    }
+
+    private TransactionPropagationType getType(String typeSt) {
+        return typeSt == null || typeSt.length() == 0 ? null : TransactionPropagationType.valueOf(typeSt);
     }
 
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc)
