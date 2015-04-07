@@ -18,10 +18,14 @@
  */
 package org.apache.aries.transaction;
 
+import static org.apache.aries.transaction.annotations.TransactionPropagationType.NotSupported;
+import static org.apache.aries.transaction.annotations.TransactionPropagationType.Required;
+import static org.apache.aries.transaction.annotations.TransactionPropagationType.RequiresNew;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.junit.Test;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
@@ -41,8 +45,8 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       assertEquals(1, cdr.getInterceptors(compTop).size());
       assertEquals(1, cdr.getInterceptors(compDown).size());
       
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
-      assertEquals("Never", txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
+      assertEquals(TransactionPropagationType.Never, txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
         
     }
     
@@ -72,12 +76,12 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       assertEquals(1, cdr.getInterceptors(compDown).size());
       assertEquals(0, cdr.getInterceptors(compMiddle).size());
       
-      assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compTop, "update1234"));
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "update"));
-      assertEquals("NotSupported", txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
+      assertEquals(RequiresNew, txenhancer.getComponentMethodTxAttribute(compTop, "update1234"));
+      assertEquals(Required, txenhancer.getComponentMethodTxAttribute(compTop, "update"));
+      assertEquals(NotSupported, txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
       
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
-      assertEquals("NotSupported", txenhancer.getComponentMethodTxAttribute(compDown, "update1234"));
+      assertEquals(Required, txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
+      assertEquals(NotSupported, txenhancer.getComponentMethodTxAttribute(compDown, "update1234"));
       
       assertEquals(null, txenhancer.getComponentMethodTxAttribute(compMiddle, "doSomething"));
         
@@ -109,14 +113,14 @@ public class BundleWideNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
       assertEquals(1, cdr.getInterceptors(compDown).size());
       assertEquals(1, cdr.getInterceptors(compMiddle).size());
       
-      assertEquals("RequiresNew", txenhancer.getComponentMethodTxAttribute(compTop, "update1234"));
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "update"));
-      assertEquals("NotSupported", txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
+      assertEquals(TransactionPropagationType.RequiresNew, txenhancer.getComponentMethodTxAttribute(compTop, "update1234"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compTop, "update"));
+      assertEquals(TransactionPropagationType.NotSupported, txenhancer.getComponentMethodTxAttribute(compTop, "doSomething"));
       
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
-      assertEquals("NotSupported", txenhancer.getComponentMethodTxAttribute(compDown, "update1234"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compDown, "doSomething"));
+      assertEquals(TransactionPropagationType.NotSupported, txenhancer.getComponentMethodTxAttribute(compDown, "update1234"));
       
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compMiddle, "doSomething"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compMiddle, "doSomething"));
         
     }
     

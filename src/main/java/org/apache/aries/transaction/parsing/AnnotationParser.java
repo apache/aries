@@ -25,7 +25,6 @@ import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
-import org.apache.aries.transaction.TxInterceptorImpl;
 import org.apache.aries.transaction.annotations.Transaction;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
@@ -68,7 +67,7 @@ public class AnnotationParser implements BeanProcessor {
                     throw new IllegalArgumentException(Constants.MESSAGES.getMessage("private.or.static.method", m));
 			    Transaction t = m.getAnnotation(Transaction.class);
 			    if(t != null && helper.getComponentMethodTxAttribute(arg3, m.getName()) == null) {
-			    	helper.setComponentTransactionData(cdr, arg3, t.value().toString(), m.getName());
+			    	helper.setComponentTransactionData(cdr, arg3, t.value(), m.getName());
 			    	
 			    	outer: if(!!!interceptorAssigned) {
 			    		for(Interceptor i : cdr.getInterceptors(arg3)) {

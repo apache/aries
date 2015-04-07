@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNull;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.parsing.AnnotationParser;
 import org.apache.aries.transaction.pojo.AnnotatedPojo;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class AnnotationEnablingNameSpaceHandlerTest extends BaseNameSpaceHandler
       AnnotationParser parser  = (AnnotationParser) pmd.getObject();
       parser.beforeInit(new AnnotatedPojo(), "top", null, compTop);
       
-      assertEquals("Required", txenhancer.getComponentMethodTxAttribute(compTop, "increment"));
+      assertEquals(TransactionPropagationType.Required, txenhancer.getComponentMethodTxAttribute(compTop, "increment"));
       assertEquals(1, cdr.getInterceptors(compTop).size());
     }
     

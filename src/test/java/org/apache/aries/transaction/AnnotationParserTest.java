@@ -18,12 +18,17 @@
  */
 package org.apache.aries.transaction;
 
+import static org.apache.aries.transaction.annotations.TransactionPropagationType.Mandatory;
+import static org.apache.aries.transaction.annotations.TransactionPropagationType.Required;
+import static org.apache.aries.transaction.annotations.TransactionPropagationType.Supports;
+
 import java.util.Arrays;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.parsing.AnnotationParser;
 import org.apache.aries.transaction.pojo.AnnotatedPojo;
 import org.apache.aries.transaction.pojo.BadlyAnnotatedPojo1;
@@ -63,11 +68,11 @@ public class AnnotationParserTest {
 	    		"getComponentMethodTxAttribute", mbm, String.class), 3);
 	    
 	    Skeleton.getSkeleton(helper).assertCalledExactNumberOfTimes(new MethodCall(TxComponentMetaDataHelper.class,
-	    		"setComponentTransactionData", cdr, mbm, "Required", "increment"), 1);
+	    		"setComponentTransactionData", cdr, mbm, Required, "increment"), 1);
 	    Skeleton.getSkeleton(helper).assertCalledExactNumberOfTimes(new MethodCall(TxComponentMetaDataHelper.class,
-	    		"setComponentTransactionData", cdr, mbm, "Supports", "checkValue"), 1);
+	    		"setComponentTransactionData", cdr, mbm, Supports, "checkValue"), 1);
 	    Skeleton.getSkeleton(helper).assertCalledExactNumberOfTimes(new MethodCall(TxComponentMetaDataHelper.class,
-	    		"setComponentTransactionData", cdr, mbm, "Mandatory", "getRealObject"), 1);
+	    		"setComponentTransactionData", cdr, mbm, Mandatory, "getRealObject"), 1);
 	    
 	    Skeleton.getSkeleton(cdr).assertCalledExactNumberOfTimes(new MethodCall(ComponentDefinitionRegistry.class,
 	    		"registerInterceptorWithComponent", mbm, i), 1);
@@ -85,7 +90,7 @@ public class AnnotationParserTest {
 					
 					public Object handle(MethodCall arg0, Skeleton arg1) throws Exception {
 						if(arg0.getArguments()[1].equals("increment"))
-							return "Never";
+							return TransactionPropagationType.Never;
 						
 						return null;
 					}
@@ -100,11 +105,11 @@ public class AnnotationParserTest {
 	    		"getComponentMethodTxAttribute", mbm, String.class), 3);
 	    
 	    Skeleton.getSkeleton(helper).assertNotCalled(new MethodCall(TxComponentMetaDataHelper.class,
-	    		"setComponentTransactionData", cdr, mbm, "Required", "increment"));
+	    		"setComponentTransactionData", cdr, mbm, Required, "increment"));
 	    Skeleton.getSkeleton(helper).assertCalledExactNumberOfTimes(new MethodCall(TxComponentMetaDataHelper.class,
-	    		"setComponentTransactionData", cdr, mbm, "Supports", "checkValue"), 1);
+	    		"setComponentTransactionData", cdr, mbm, Supports, "checkValue"), 1);
 	    Skeleton.getSkeleton(helper).assertCalledExactNumberOfTimes(new MethodCall(TxComponentMetaDataHelper.class,
-	    		"setComponentTransactionData", cdr, mbm, "Mandatory", "getRealObject"), 1);
+	    		"setComponentTransactionData", cdr, mbm, TransactionPropagationType.Mandatory, "getRealObject"), 1);
 	    
 	    Skeleton.getSkeleton(cdr).assertNotCalled(new MethodCall(ComponentDefinitionRegistry.class,
 	    		"registerInterceptorWithComponent", mbm, i));
