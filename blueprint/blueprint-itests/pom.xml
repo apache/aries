@@ -44,8 +44,8 @@
     </scm>
     
     <properties>
-        <exam.version>3.4.0</exam.version>
-        <url.version>1.6.0</url.version>
+        <exam.version>4.5.0</exam.version>
+        <url.version>2.2.0</url.version>
     </properties>
 
     <dependencies>
