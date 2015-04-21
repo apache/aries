@@ -18,6 +18,10 @@
  */
 package org.apache.aries.blueprint.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,29 +33,22 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Future;
 
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.di.CircularDependencyException;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
-import org.apache.aries.unittest.mocks.Skeleton;
+import org.easymock.Capture;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.ReifiedType;
 
-import static org.junit.Assert.*;
-
 public class ReflectionUtilsTest {
     private PropertyDescriptor[] sut;
-    private final ExtendedBlueprintContainer mockBlueprint = Skeleton.newMock(
-            new Object() {
-                public Class<?> loadClass(String name) throws ClassNotFoundException {
-                    return Thread.currentThread().getContextClassLoader().loadClass(name);
-                }
-            },            
-            ExtendedBlueprintContainer.class);
-    
+    private static ExtendedBlueprintContainer mockBlueprint;
     public static class GetterOnly {
         public String getValue() { return "test"; }
     }
@@ -59,8 +56,17 @@ public class ReflectionUtilsTest {
     private class Inconvertible {}
     
     @BeforeClass
-    public static void before()
+    public static void before() throws ClassNotFoundException
     {
+        mockBlueprint = EasyMock.createNiceMock(ExtendedBlueprintContainer.class);
+        final Capture<String> nameCapture = new Capture<String>();
+        EasyMock.expect(mockBlueprint.loadClass(EasyMock.capture(nameCapture))).andAnswer(new IAnswer<Class<?>>() {
+            public Class<?> answer() throws Throwable {
+                return Thread.currentThread().getContextClassLoader().loadClass(nameCapture.getValue());
+            }
+        });
+        EasyMock.replay(mockBlueprint);
+
         ExecutionContext.Holder.setContext(new ExecutionContext() {
             public void addPartialObject(String name, Object object) {}
             public boolean containsObject(String name) { return false; }
