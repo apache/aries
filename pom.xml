@@ -169,9 +169,9 @@
             <version>${quiesce.api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>

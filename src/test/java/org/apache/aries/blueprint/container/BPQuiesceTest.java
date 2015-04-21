@@ -18,28 +18,28 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static junit.framework.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.aries.quiesce.manager.QuiesceCallback;
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-import static junit.framework.Assert.*;
-
 public class BPQuiesceTest {
   @Test
   public void canQuiesceNoBPBundle() throws Exception {
-    BundleContext ctx = Skeleton.newMock(BundleContext.class);
-    Bundle bpBundle = Skeleton.newMock(Bundle.class);
-    Bundle testBundle = Skeleton.newMock(Bundle.class);
+    IMocksControl c = EasyMock.createControl();
+    BundleContext ctx = c.createMock(BundleContext.class);
+    Bundle bpBundle = c.createMock(Bundle.class);
+    Bundle testBundle = c.createMock(Bundle.class);
     
-    Skeleton.getSkeleton(ctx).setReturnValue(
-        new MethodCall(BundleContext.class, "getBundle"), bpBundle);
+    EasyMock.expect(ctx.getBundle()).andReturn(bpBundle);
     
     BlueprintQuiesceParticipant bqp = new BlueprintQuiesceParticipant(ctx, new BlueprintExtender() {
       @Override
@@ -55,9 +55,9 @@ public class BPQuiesceTest {
         result.release();
       }
     };
-    
+    c.replay();
     bqp.quiesce(qc, Arrays.asList(testBundle));
-    
+    c.verify();
     assertTrue(result.tryAcquire(2, TimeUnit.SECONDS));
   }
 }
