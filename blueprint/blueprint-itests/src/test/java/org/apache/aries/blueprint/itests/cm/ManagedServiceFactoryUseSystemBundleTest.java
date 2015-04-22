@@ -44,6 +44,7 @@ import org.osgi.framework.hooks.service.FindHook;
  * Shows that the cm bundle can process config even if the events are hidden from it
  * when the property to use the system bundle context is set
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ManagedServiceFactoryUseSystemBundleTest extends ManagedServiceFactoryTest {
     private static final String CM_BUNDLE = "org.apache.aries.blueprint.cm";
 
@@ -58,8 +59,8 @@ public class ManagedServiceFactoryUseSystemBundleTest extends ManagedServiceFact
         };
     }
 
-    ServiceRegistration<?> eventHook;
-    ServiceRegistration<?> findHook;
+    ServiceRegistration eventHook;
+    ServiceRegistration findHook;
 
     @Before
     public void regiserHook() throws BundleException {
@@ -67,11 +68,6 @@ public class ManagedServiceFactoryUseSystemBundleTest extends ManagedServiceFact
         final BundleContext systemContext = context().getBundle(Constants.SYSTEM_BUNDLE_LOCATION)
             .getBundleContext();
         eventHook = context().registerService(EventListenerHook.class, new EventListenerHook() {
-
-            @SuppressWarnings({
-                "unchecked", "rawtypes"
-            })
-            @Override
             public void event(ServiceEvent event, Map contexts) {
                 if (CM_BUNDLE.equals(event.getServiceReference().getBundle().getSymbolicName())) {
                     // hide from everything but the system bundle
@@ -84,10 +80,6 @@ public class ManagedServiceFactoryUseSystemBundleTest extends ManagedServiceFact
 
         }, null);
         findHook = context().registerService(FindHook.class, new FindHook() {
-            @SuppressWarnings({
-                "rawtypes", "unchecked"
-            })
-            @Override
             public void find(BundleContext context, String arg1, String arg2, boolean arg3,
                              Collection references) {
                 // hide from everything but the system bundle
