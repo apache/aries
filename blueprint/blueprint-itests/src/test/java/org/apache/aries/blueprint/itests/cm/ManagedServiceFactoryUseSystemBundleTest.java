@@ -18,77 +18,48 @@
  */
 package org.apache.aries.blueprint.itests.cm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.ops4j.pax.exam.CoreOptions.keepCaches;
+import static org.ops4j.pax.exam.CoreOptions.streamBundle;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.inject.Inject;
-
-import org.apache.aries.blueprint.itests.AbstractBlueprintIntegrationTest;
 import org.apache.aries.blueprint.itests.Helper;
-import org.apache.aries.blueprint.itests.cm.service.Foo;
-import org.apache.aries.blueprint.itests.cm.service.FooFactory;
-import org.apache.aries.blueprint.itests.cm.service.FooInterface;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
-import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.ProbeBuilder;
-import org.ops4j.pax.exam.TestProbeBuilder;
-import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.service.EventListenerHook;
 import org.osgi.framework.hooks.service.FindHook;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 
-@SuppressWarnings({
-    "rawtypes", "unchecked"
-})
-public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintIntegrationTest {
+/**
+ * Shows that the cm bundle can process config even if the events are hidden from it
+ * when the property to use the system bundle context is set
+ */
+public class ManagedServiceFactoryUseSystemBundleTest extends ManagedServiceFactoryTest {
     private static final String CM_BUNDLE = "org.apache.aries.blueprint.cm";
-    private static final String TEST_BUNDLE = "org.apache.aries.blueprint.cm.test.b1";
-    @Inject
-    ConfigurationAdmin ca;
-
-    @ProbeBuilder
-    public TestProbeBuilder probeConfiguration(TestProbeBuilder probe) {
-        probe.setHeader(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName());
-        probe.setHeader(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName());
-        return probe;
-    }
 
     @org.ops4j.pax.exam.Configuration
     public Option[] config() {
-        InputStream testBundle = TinyBundles.bundle().add(FooInterface.class).add(Foo.class)
-            .add(FooFactory.class)
-            .add("OSGI-INF/blueprint/context.xml", getResource("ManagedServiceFactoryTest.xml"))
-            .set(Constants.BUNDLE_SYMBOLICNAME, TEST_BUNDLE)
-            .set(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName())
-            .set(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName()).build(TinyBundles.withBnd());
         return new Option[] {
             baseOptions(),
-            CoreOptions.systemProperty("org.apache.aries.blueprint.use.system.context").value("true"),
-            Helper.blueprintBundles(), CoreOptions.keepCaches(), CoreOptions.streamBundle(testBundle)
+            systemProperty("org.apache.aries.blueprint.use.system.context").value("true"),
+            Helper.blueprintBundles(), //
+            keepCaches(), //
+            streamBundle(testBundle())
         };
     }
 
-    ServiceRegistration eventHook;
-    ServiceRegistration findHook;
+    ServiceRegistration<?> eventHook;
+    ServiceRegistration<?> findHook;
 
     @Before
     public void regiserHook() throws BundleException {
@@ -97,6 +68,9 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
             .getBundleContext();
         eventHook = context().registerService(EventListenerHook.class, new EventListenerHook() {
 
+            @SuppressWarnings({
+                "unchecked", "rawtypes"
+            })
             @Override
             public void event(ServiceEvent event, Map contexts) {
                 if (CM_BUNDLE.equals(event.getServiceReference().getBundle().getSymbolicName())) {
@@ -110,6 +84,9 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
 
         }, null);
         findHook = context().registerService(FindHook.class, new FindHook() {
+            @SuppressWarnings({
+                "rawtypes", "unchecked"
+            })
             @Override
             public void find(BundleContext context, String arg1, String arg2, boolean arg3,
                              Collection references) {
@@ -137,259 +114,4 @@ public class ManagedServiceFactoryUseSystemBundleTest extends AbstractBlueprintI
         findHook.unregister();
     }
 
-    @Test
-    public void test1() throws Exception {
-        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory", null);
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("a", "5");
-        cf.update(props);
-
-        ServiceReference sr = getServiceRef(Foo.class, "(key=foo1)");
-        Foo foo = (Foo)context().getService(sr);
-        assertNotNull(foo);
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-        assertEquals("5", sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-
-        props = new Hashtable<String, String>();
-        props.put("a", "5");
-        props.put("b", "foo");
-        cf.update(props);
-        Thread.sleep(500);
-
-        // No update of bean after creation
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-
-        // Only initial update of service properties
-        assertEquals("5", sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-    }
-
-    @Test
-    public void test2() throws Exception {
-        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory2", null);
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("a", "5");
-        cf.update(props);
-
-        ServiceReference sr = getServiceRef(Foo.class, "(key=foo2)");
-        Foo foo = (Foo)context().getService(sr);
-        assertNotNull(foo);
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-        assertNull(sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-
-        props = new Hashtable<String, String>();
-        props.put("a", "5");
-        props.put("b", "foo");
-        cf.update(props);
-
-        // Update after creation
-        Thread.sleep(500);
-        assertEquals(5, foo.getA());
-        assertEquals("foo", foo.getB());
-
-        // No update of service properties
-        assertNull(sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-    }
-
-    @Test
-    public void test3() throws Exception {
-        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("a", "5");
-        cf.update(props);
-
-        ServiceReference sr = getServiceRef(Foo.class, "(&(key=foo3)(a=5))");
-        assertNotNull(sr);
-        Foo foo = (Foo)context().getService(sr);
-        assertNotNull(foo);
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-        assertEquals("5", sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-
-        props = new Hashtable<String, String>();
-        props.put("a", "5");
-        props.put("b", "foo");
-        cf.update(props);
-
-        // Update after creation
-        Thread.sleep(500);
-        assertEquals(5, foo.getA());
-        assertEquals("foo", foo.getB());
-
-        // Update of service properties
-        assertEquals("5", sr.getProperty("a"));
-        assertEquals("foo", sr.getProperty("b"));
-        cf.delete();
-    }
-
-    @Test
-    public void testCreateAndUpdate() throws Exception {
-        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("a", "5");
-        cf.update(props);
-
-        Configuration cf2 = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
-        Hashtable<String, String> props2 = new Hashtable<String, String>();
-        props2.put("a", "7");
-        cf2.update(props2);
-
-        ServiceReference sr = getServiceRef(Foo.class, "(&(key=foo3)(a=5))");
-        ServiceReference sr2 = getServiceRef(Foo.class, "(&(key=foo3)(a=7))");
-
-        Foo foo = (Foo)context().getService(sr);
-        assertNotNull(foo);
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-        assertEquals("5", sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-
-        Foo foo2 = (Foo)context().getService(sr2);
-        assertNotNull(foo2);
-        assertEquals(7, foo2.getA());
-        assertEquals("default", foo2.getB());
-        assertEquals("7", sr2.getProperty("a"));
-        assertNull(sr2.getProperty("b"));
-
-        props = new Hashtable<String, String>();
-        props.put("a", "5");
-        props.put("b", "foo");
-        cf.update(props);
-
-        props2 = new Hashtable<String, String>();
-        props2.put("a", "7");
-        props2.put("b", "foo2");
-        cf2.update(props2);
-
-        // Update after creation
-        Thread.sleep(500);
-        assertEquals(5, foo.getA());
-        assertEquals("foo", foo.getB());
-
-        // Update of service properties
-        assertEquals("5", sr.getProperty("a"));
-        assertEquals("foo", sr.getProperty("b"));
-
-        // 2a Update after creation
-        assertEquals(7, foo2.getA());
-        assertEquals("foo2", foo2.getB());
-
-        // 2b Update of service properties
-        assertEquals("7", sr2.getProperty("a"));
-        assertEquals("foo2", sr2.getProperty("b"));
-        cf.delete();
-        cf2.delete();
-    }
-
-    @Test
-    public void testCreateAndUpdateUsingUpdateMethod() throws Exception {
-        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory4", null);
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("a", "5");
-        cf.update(props);
-
-        Configuration cf2 = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory4", null);
-        Hashtable<String, String> props2 = new Hashtable<String, String>();
-        props2.put("a", "7");
-        cf2.update(props2);
-
-        ServiceReference sr = getServiceRef(Foo.class, "(&(key=foo4)(a=5))");
-        ServiceReference sr2 = getServiceRef(Foo.class, "(&(key=foo4)(a=7))");
-
-        Foo foo = (Foo)context().getService(sr);
-        assertNotNull(foo);
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-        assertEquals("5", sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-
-        Foo foo2 = (Foo)context().getService(sr2);
-        assertNotNull(foo2);
-        assertEquals(7, foo2.getA());
-        assertEquals("default", foo2.getB());
-        assertEquals("7", sr2.getProperty("a"));
-        assertNull(sr2.getProperty("b"));
-
-        props = new Hashtable<String, String>();
-        props.put("a", "5");
-        props.put("b", "foo");
-        cf.update(props);
-
-        props2 = new Hashtable<String, String>();
-        props2.put("a", "7");
-        props2.put("b", "foo2");
-        cf2.update(props2);
-
-        // Update after creation
-        Thread.sleep(500);
-        assertEquals(5, foo.getA());
-        assertEquals("foo", foo.getB());
-
-        // Update of service properties
-        assertEquals("5", sr.getProperty("a"));
-        assertEquals("foo", sr.getProperty("b"));
-
-        // 2a Update after creation
-        assertEquals(7, foo2.getA());
-        assertEquals("foo2", foo2.getB());
-
-        // 2b Update of service properties
-        assertEquals("7", sr2.getProperty("a"));
-        assertEquals("foo2", sr2.getProperty("b"));
-    }
-
-    @Test
-    public void testFactoryCreation() throws Exception {
-        Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory5", null);
-        Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put("a", "5");
-        cf.update(props);
-
-        ServiceReference sr = getServiceRef(Foo.class, "(key=foo5)");
-        Foo foo = (Foo)context().getService(sr);
-        assertNotNull(foo);
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-        assertEquals("5", sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-
-        props = new Hashtable<String, String>();
-        props.put("a", "5");
-        props.put("b", "foo");
-        cf.update(props);
-        Thread.sleep(500);
-
-        // No update of bean after creation
-        assertEquals(5, foo.getA());
-        assertEquals("default", foo.getB());
-
-        // Only initial update of service properties
-        assertEquals("5", sr.getProperty("a"));
-        assertNull(sr.getProperty("b"));
-    }
-
-    private ServiceReference getServiceRef(Class serviceInterface, String filter)
-        throws InvalidSyntaxException {
-        int tries = 0;
-        do {
-            ServiceReference[] srAr = bundleContext.getServiceReferences(serviceInterface.getName(), filter);
-            if (srAr != null && srAr.length > 0) {
-                return (ServiceReference)srAr[0];
-            }
-            tries++;
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // Ignore
-            }
-        } while (tries < 100);
-        throw new RuntimeException("Could not find service " + serviceInterface.getName() + ", " + filter);
-    }
 }

@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Collection;
@@ -38,6 +37,9 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.framework.hooks.bundle.FindHook;
 
+/**
+ * Shows that the blueprint extender uses the system bundle to find user bundles if the respective property is set
+ */
 public class BlueprintContainerUseSystemContextTest extends AbstractBlueprintIntegrationTest {
 
 	ServiceRegistration eventHook;
