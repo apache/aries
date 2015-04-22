@@ -21,6 +21,8 @@ package org.apache.aries.blueprint.itests.cm;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.ops4j.pax.exam.CoreOptions.keepCaches;
+import static org.ops4j.pax.exam.CoreOptions.streamBundle;
 
 import java.io.InputStream;
 import java.util.Hashtable;
@@ -33,7 +35,6 @@ import org.apache.aries.blueprint.itests.cm.service.Foo;
 import org.apache.aries.blueprint.itests.cm.service.FooFactory;
 import org.apache.aries.blueprint.itests.cm.service.FooInterface;
 import org.junit.Test;
-import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
 import org.ops4j.pax.exam.TestProbeBuilder;
@@ -45,6 +46,8 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest {
+    private static final String TEST_BUNDLE = "org.apache.aries.blueprint.cm.test.b1";
+
     @Inject
     ConfigurationAdmin ca;
 
@@ -57,15 +60,24 @@ public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest 
 
     @org.ops4j.pax.exam.Configuration
     public Option[] config() {
-        InputStream testBundle = TinyBundles.bundle().add(FooInterface.class).add(Foo.class)
-            .add(FooFactory.class)
-            .add("OSGI-INF/blueprint/context.xml", getResource("ManagedServiceFactoryTest.xml"))
-            .set(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName())
-            .set(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName()).build(TinyBundles.withBnd());
         return new Option[] {
-            baseOptions(), Helper.blueprintBundles(), CoreOptions.keepCaches(),
-            CoreOptions.streamBundle(testBundle)
+            baseOptions(), 
+            Helper.blueprintBundles(), 
+            keepCaches(),
+            streamBundle(testBundle())
         };
+    }
+
+    protected InputStream testBundle() {
+        return TinyBundles.bundle() //
+            .add(FooInterface.class) //
+            .add(Foo.class) //
+            .add(FooFactory.class) //
+            .add("OSGI-INF/blueprint/context.xml", getResource("ManagedServiceFactoryTest.xml"))
+            .set(Constants.BUNDLE_SYMBOLICNAME, TEST_BUNDLE) //
+            .set(Constants.EXPORT_PACKAGE, Foo.class.getPackage().getName()) //
+            .set(Constants.IMPORT_PACKAGE, Foo.class.getPackage().getName()) //
+            .build(TinyBundles.withBnd());
     }
 
     @Test
