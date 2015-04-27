@@ -29,6 +29,7 @@ import javax.transaction.xa.XAException;
 
 import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.aries.util.AriesFrameworkUtil;
+import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionLog;
