@@ -43,6 +43,11 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/application/application-itests</url>
     </scm>
 
+    <properties>
+        <exam.version>3.4.0</exam.version>
+        <url.version>1.6.0</url.version>
+    </properties>
+
     <dependencies>
         <!-- framework -->
         <dependency>
@@ -73,31 +78,31 @@
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>
 			<artifactId>pax-exam</artifactId>
-            <version>3.4.0</version>
+            <version>${exam.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>
 			<artifactId>pax-exam-junit4</artifactId>
-            <version>3.4.0</version>
+            <version>${exam.version}</version>
 			<scope>test</scope>
 		</dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-native</artifactId>
-            <version>3.4.0</version>
+            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-mvn</artifactId>
-            <version>3.4.0</version>
+            <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
-            <version>1.6.0</version>
+            <version>${url.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
