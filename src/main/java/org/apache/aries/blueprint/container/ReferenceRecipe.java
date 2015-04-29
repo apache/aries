@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
+@SuppressWarnings("rawtypes")
 public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReferenceRecipe.class);
@@ -206,7 +207,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             if (isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0
                     && metadata.getAvailability() == ServiceReferenceMetadata.AVAILABILITY_MANDATORY) {
                 //Here we want to get the blueprint bundle itself, so don't use #getBundleContextForServiceLookup()
-                blueprintContainer.getEventDispatcher().blueprintEvent(new BlueprintEvent(BlueprintEvent.WAITING, blueprintContainer.getBundleContext().getBundle(), blueprintContainer.getExtenderBundle(), new String[] { getOsgiFilter() }));
+                blueprintContainer.getEventDispatcher().blueprintEvent(createWaitingevent());
                 monitor.wait(metadata.getTimeout());
             }
             Object result = null;
@@ -253,6 +254,13 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             }
             return result;
         }
+    }
+
+    private BlueprintEvent createWaitingevent() {
+        return new BlueprintEvent(BlueprintEvent.WAITING, 
+                                  blueprintContainer.getBundleContext().getBundle(), 
+                                  blueprintContainer.getExtenderBundle(), 
+                                  new String[] { getOsgiFilter() });
     }
 
     private ServiceReference getServiceReference() throws InterruptedException {
