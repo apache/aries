@@ -307,8 +307,9 @@ public class GlobalPersistenceManager implements PersistenceContextProvider, Syn
 	  // Assume only the ACTIVE state is being tracked.
 	  return new BundleTrackerCustomizer() {
 		public Bundle addingBundle(Bundle bundle, BundleEvent event) {
+		        String symName = bundle.getSymbolicName(); 
 			// Only track the region context bundles of subsystems.
-			if (bundle.getSymbolicName().startsWith("org.osgi.service.subsystem.region.context."))
+			if (symName != null && symName.startsWith("org.osgi.service.subsystem.region.context."))
 				return bundle;
 			return null;
 		}
