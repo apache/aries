@@ -57,6 +57,7 @@
         <module>samples</module>
         <module>esa-ant-task</module>
         <module>esa-maven-plugin</module>
+        <module>async</module>
     </modules>
 
     <build>

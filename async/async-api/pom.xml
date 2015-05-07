@@ -29,31 +29,30 @@
     </parent>
 
     <groupId>org.apache.aries.async</groupId>
-    <artifactId>org.apache.aries.async.promise.api</artifactId>
+    <artifactId>org.apache.aries.async.api</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries Async Promise API</name>
+    <name>OSGI Async API</name>
     <version>0.0.1-SNAPSHOT</version>
     <description>
-        This bundle contains the Apache Aries Async Promise service API.
+        This bundle contains the OSGi Async Service API.
     </description>
 
     <!--<scm>-->
-        <!--<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/promise-api</connection>-->
-        <!--<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/promise-api</developerConnection>-->
-        <!--<url>http://svn.apache.org/viewvc/aries/trunk/async/promise-api</url>-->
+        <!--<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/async-api</connection>-->
+        <!--<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/async-api</developerConnection>-->
+        <!--<url>http://svn.apache.org/viewvc/aries/trunk/async/async-api</url>-->
     <!--</scm>-->
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
-            org.osgi.util.function,
-            org.osgi.util.promise;provide:=true,
-            org.apache.aries.async.promise
+            org.osgi.service.async,
+            org.osgi.service.async.delegate
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg />
         <aries.osgi.import.pkg>
-            org.osgi.util.function,
-            org.osgi.util.promise,
+            org.osgi.service.async,
+            org.osgi.service.async.delegate,
             *
         </aries.osgi.import.pkg>
         <lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
@@ -61,14 +60,18 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries</groupId>
-            <artifactId>org.apache.aries.util</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.apache.aries.async</groupId>
+            <artifactId>org.apache.aries.async.promise.api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.annotation</artifactId>
+            <version>6.0.1</version>
         </dependency>
     </dependencies>
 
