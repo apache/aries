@@ -29,31 +29,29 @@
     </parent>
 
     <groupId>org.apache.aries.async</groupId>
-    <artifactId>org.apache.aries.async.promise.api</artifactId>
+    <artifactId>org.apache.aries.async.impl</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Aries Async Promise API</name>
+    <name>Aries Async Service</name>
     <version>0.0.1-SNAPSHOT</version>
     <description>
-        This bundle contains the Apache Aries Async Promise service API.
+        This bundle contains the Aries Async Service implementation.
     </description>
 
     <!--<scm>-->
-        <!--<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/promise-api</connection>-->
-        <!--<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/promise-api</developerConnection>-->
-        <!--<url>http://svn.apache.org/viewvc/aries/trunk/async/promise-api</url>-->
+        <!--<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/async-api</connection>-->
+        <!--<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/async-api</developerConnection>-->
+        <!--<url>http://svn.apache.org/viewvc/aries/trunk/async/async-api</url>-->
     <!--</scm>-->
 
     <properties>
+    	<aries.osgi.activator>org.apache.aries.async.impl.Activator</aries.osgi.activator>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
-            org.osgi.util.function,
-            org.osgi.util.promise;provide:=true,
-            org.apache.aries.async.promise
         </aries.osgi.export.pkg>
-        <aries.osgi.private.pkg />
+        <aries.osgi.private.pkg>
+        	org.apache.aries.async.impl
+        </aries.osgi.private.pkg>
         <aries.osgi.import.pkg>
-            org.osgi.util.function,
-            org.osgi.util.promise,
             *
         </aries.osgi.import.pkg>
         <lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
@@ -61,13 +59,47 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.aries</groupId>
-            <artifactId>org.apache.aries.util</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.apache.aries.async</groupId>
+            <artifactId>org.apache.aries.async.promise.api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.async</groupId>
+            <artifactId>org.apache.aries.async.api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.annotation</artifactId>
+            <version>6.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.annotation</artifactId>
+            <version>6.0.1</version>
+        </dependency>
+        <dependency>
+	        <groupId>cglib</groupId>
+	  		<artifactId>cglib-nodep</artifactId>
+	  		<version>3.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -87,6 +119,15 @@
                     </execution>
                 </executions>
             </plugin>
+	        <plugin>
+		        <groupId>org.apache.felix</groupId>
+		        <artifactId>maven-bundle-plugin</artifactId>
+	            <configuration>
+	              	<instructions>
+	              		<Provide-Capability>osgi.service;objectClass:List&lt;String&gt;=org.osgi.service.async.Async;uses:=org.osgi.service.async,osgi.implementation;osgi.implementation=osgi.async;version:Version=1.0.0;uses:=org.osgi.service.async</Provide-Capability>
+	              	</instructions>
+	            </configuration>
+	        </plugin>
         </plugins>
     </build>
 

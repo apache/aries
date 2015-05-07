@@ -39,6 +39,9 @@
 
     <modules>
         <module>promise-api</module>
+        <module>async-api</module>
+        <module>async-impl</module>
+        <module>async-all</module>
     </modules>
 
 </project>
