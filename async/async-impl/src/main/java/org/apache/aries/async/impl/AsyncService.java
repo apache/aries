@@ -97,15 +97,13 @@ public class AsyncService implements Async {
 		TrackingInvocationHandler handler = new TrackingInvocationHandler(this, 
 				clientBundle, logServiceTracker, ref);
 		
-		Bundle registeringBundle = ref.getBundle();
-
 		if(iface.isInterface()) {
 			return (T) Proxy.newProxyInstance(
-					new ClassLoader(registeringBundle.adapt(BundleWiring.class).getClassLoader()){}, 
+					new ClassLoader(iface.getClassLoader()){}, 
 					new Class[] {iface}, handler);
 		} else {
 			return (T) proxyClass(iface, handler, 
-					new CGLibAwareClassLoader(registeringBundle));
+					new CGLibAwareClassLoader(iface.getClassLoader()));
 		}
 	}
 
