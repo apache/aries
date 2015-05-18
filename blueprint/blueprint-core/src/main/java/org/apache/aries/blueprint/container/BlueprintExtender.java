@@ -378,7 +378,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                 }
             }
             // Check annotations
-            if (pathList.isEmpty() && blueprintHeaderAnnotation != null && blueprintHeaderAnnotation.trim().equalsIgnoreCase("true")) {
+            if (blueprintHeaderAnnotation != null && blueprintHeaderAnnotation.trim().equalsIgnoreCase("true")) {
                 LOGGER.debug("Scanning bundle {} for blueprint annotations", bundle.getSymbolicName());
                 ServiceReference sr = this.context.getServiceReference(BlueprintAnnotationScanner.class.getName());
                 if (sr != null) {
