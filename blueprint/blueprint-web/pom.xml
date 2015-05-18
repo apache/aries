@@ -46,6 +46,7 @@
 
     <properties>
         <blueprint.nosgi.version>1.1.0</blueprint.nosgi.version>
+        <blueprint.parser.version>1.3.1-SNAPSHOT</blueprint.parser.version>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
@@ -63,6 +64,12 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.noosgi</artifactId>
             <version>${blueprint.nosgi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>blueprint-parser</artifactId>
+            <version>${blueprint.parser.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
