@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.tasklist.closure.impl;
+package org.apache.aries.jpa.example.tasklist.ds.impl;
 
 import java.util.Collection;
 

@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.aries.jpa.example.tasklist.ds.impl.TaskServiceImpl;
 import org.apache.aries.jpa.example.tasklist.model.Task;
 import org.apache.aries.jpa.support.impl.EMSupplierImpl;
 import org.apache.aries.jpa.support.impl.ResourceLocalJpaTemplate;
