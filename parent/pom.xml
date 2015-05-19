@@ -87,10 +87,12 @@
 
     <repositories>
         <repository>
-            <id>codehaus.snapshots</id>
-            <name>Codehaus Snapshots Repository</name>
-            <url>http://snapshots.repository.codehaus.org</url>
-            <layout>default</layout>
+            <id>EclipseLink Repo</id>
+            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
+        </repository>
+        <repository>
+            <id>ops4j.sonatype.snapshots.deploy</id>
+            <url>https://oss.sonatype.org/content/repositories/ops4j-snapshots</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -99,11 +101,6 @@
             <releases>
                 <enabled>false</enabled>
             </releases>
-        </repository>
-
-        <repository>
-            <id>EclipseLink Repo</id>
-            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
         </repository>
     </repositories>
 
@@ -112,21 +109,6 @@
             <id>apache.snapshots</id>
             <name>Apache Snapshots Repository</name>
             <url>https://repository.apache.org/content/groups/snapshots-group</url>
-            <layout>default</layout>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-
-        <pluginRepository>
-            <id>codehaus.snapshots</id>
-            <name>Codehaus Snapshots Repository</name>
-            <url>http://snapshots.repository.codehaus.org</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>true</enabled>
