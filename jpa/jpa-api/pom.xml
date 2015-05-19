@@ -31,8 +31,8 @@
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.api</artifactId>
     <packaging>bundle</packaging>
-    <name>Aries JPA Container API</name>
-    <version>1.0.3-SNAPSHOT</version>
+    <name>Apache Aries JPA Container API</name>
+    <version>2.0.0-SNAPSHOT</version>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-api</connection>
@@ -43,15 +43,10 @@
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
-            org.apache.aries.jpa.container.parsing,
-            org.apache.aries.jpa.container.sync,
-            org.apache.aries.jpa.container,
-            org.apache.aries.jpa.container.context
+            org.apache.aries.jpa.supplier,
+            org.apache.aries.jpa.template
         </aries.osgi.export.pkg>
         <aries.osgi.import>
-             javax.persistence;version="[1.0.0,3.0.0)",
-             javax.persistence.spi;version="[1.0.0,3.0.0)",
-             org.osgi.framework;version="[1.5.0,2.0.0)"
         </aries.osgi.import>
         <aries.osgi.private.pkg />
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
