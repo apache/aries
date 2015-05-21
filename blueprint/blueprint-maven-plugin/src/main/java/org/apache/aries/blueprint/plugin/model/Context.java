@@ -72,7 +72,7 @@ public class Context implements Matcher {
         for (Field field : clazz.getDeclaredFields()) {
             OsgiService osgiService = field.getAnnotation(OsgiService.class);
             if (osgiService != null) {
-                serviceRefs.add(new OsgiServiceRef(field.getType(), osgiService));
+                serviceRefs.add(new OsgiServiceRef(field));
             }
         }
     }
