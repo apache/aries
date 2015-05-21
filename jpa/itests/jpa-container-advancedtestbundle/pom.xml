@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.jpa.container.advanced.itest.bundle</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Test Bundle for Aries JPA Container advanced iTests</name>
+    <name>Apache Aries JPA test bundle advanced iTests</name>
     <description>For load time weaving and annotation scanning tests</description>
 
     <scm>
@@ -53,6 +53,7 @@
         </aries.osgi.import>
         <aries.osgi.private.pkg />
         <aries.osgi.symbolic.name>${project.groupId}.${project.artifactId}</aries.osgi.symbolic.name>
+        <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
 
     <dependencies>
