@@ -45,7 +45,7 @@ public class ContextTest {
     public void testLists2()  {
         Context context = new Context(ServiceReferences.class);
         Assert.assertEquals(1, context.getBeans().size());
-        Assert.assertEquals(1, context.getServiceRefs().size());
+        Assert.assertEquals(2, context.getServiceRefs().size());
     }
     
     @Test

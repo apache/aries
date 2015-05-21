@@ -42,5 +42,9 @@ public class MyBean3 {
     ServiceB serviceB;
     
     @Inject
+    @Named("serviceB2Id")
+    ServiceB serviceB2;
+    
+    @Inject
     MyProduced myProduced;
 }
