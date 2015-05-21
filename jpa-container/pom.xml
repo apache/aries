@@ -27,10 +27,18 @@
     </parent>
     <artifactId>org.apache.aries.jpa.container</artifactId>
     <name>Apache Aries JPA container</name>
+    <description>Implements the OSGi JPA Container from the enterprise spec. Provider a EntityManagerFactory and EntityManagerFactoryBuilder service</description>
     <packaging>bundle</packaging>
     
     <properties>
         <aries.skip.version.check>true</aries.skip.version.check>
+        <aries.osgi.export>
+            org.osgi.service.jdbc,
+            org.osgi.service.jpa
+        </aries.osgi.export>
+        <aries.osgi.activator>
+            org.apache.aries.jpa.container.impl.Activator
+        </aries.osgi.activator>
     </properties>
     
     <scm>
@@ -53,37 +61,6 @@
             <artifactId>hibernate-jpa-2.0-api</artifactId>
             <version>1.0.1.Final</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-bundleutils</artifactId>
-            <version>4.1</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-finder</artifactId>
-            <version>4.1</version>
-            <optional>true</optional>
-        </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>org.apache.aries.jpa.container.impl.Activator</Bundle-Activator>
-                        <Export-Package>
-                            org.osgi.service.jdbc,
-                            org.osgi.service.jpa
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <description>Implements the OSGi JPA Container from the enterprise spec. Provider a EntityManagerFactory and EntityManagerFactoryBuilder service</description>
 </project>
