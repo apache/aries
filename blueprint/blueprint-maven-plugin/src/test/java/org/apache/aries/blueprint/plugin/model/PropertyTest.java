@@ -34,7 +34,7 @@ public class PropertyTest {
     public void testRefInject() throws XMLStreamException {
         Field field = TestBeanForRef.class.getDeclaredFields()[0];
         Matcher matcher = new Matcher() {
-            public Bean getMatching(Field field) {
+            public Bean getMatching(BeanRef template) {
                 return new Bean(ServiceAImpl1.class);
             }
         };
@@ -48,7 +48,7 @@ public class PropertyTest {
     public void testRefAutowired() throws XMLStreamException {
         Field field = TestBeanForRef.class.getDeclaredFields()[1];
         Matcher matcher = new Matcher() {
-            public Bean getMatching(Field field) {
+            public Bean getMatching(BeanRef template) {
                 return null;
             }
         };

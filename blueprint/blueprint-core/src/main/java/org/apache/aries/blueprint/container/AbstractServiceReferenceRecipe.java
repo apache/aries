@@ -71,6 +71,7 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe implements ServiceListener, SatisfiableRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceReferenceRecipe.class);
@@ -112,12 +113,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.filter = createOsgiFilter(metadata, null);
         
-        if (System.getSecurityManager() != null) {
-            accessControlContext = createAccessControlContext();
-        } else
-        {
-        	accessControlContext = null;
-        }
+        accessControlContext = (System.getSecurityManager() != null) ? createAccessControlContext() : null;
     }
 
 
@@ -233,63 +229,61 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         return null;
     }
 
-	protected Object getServiceSecurely(final ServiceReference serviceReference) {
-		if (accessControlContext == null) {
-			return getBundleContextForServiceLookup().getService(
-					serviceReference);
-
-		} else {
-			// If we're operating with security, use the privileges of the bundle
-			// we're managing to do the lookup
-			return AccessController.doPrivileged(
-					new PrivilegedAction<Object>() {
-						public Object run() {
-							return getBundleContextForServiceLookup()
-									.getService(serviceReference);
-						}
-					}, accessControlContext);
-		}
-	}
-    
-
-	/**
-	 * We may need to execute code within a doPrivileged block, and if so, it should be the 
-	 * privileges of the bundle with the blueprint file that get used, not the privileges 
-	 * of blueprint-core. To achieve this we use an access context. 
-	 * @return
-	 */
-    private AccessControlContext createAccessControlContext() {
-        return new AccessControlContext(AccessController.getContext(),
-                new DomainCombiner() {               
-                    public ProtectionDomain[] combine(ProtectionDomain[] arg0,
-                                                      ProtectionDomain[] arg1) {                    
-                        return new ProtectionDomain[] { new ProtectionDomain(null, null) {                        
-                            public boolean implies(Permission permission) {                                                           
-                                return getBundleContextForServiceLookup().getBundle().hasPermission(permission);
-                            }
-                        } 
-                    };
+    @SuppressWarnings("unchecked")
+    protected Object getServiceSecurely(final ServiceReference serviceReference) {
+        if (accessControlContext == null) {
+            return getBundleContextForServiceLookup().getService(serviceReference);
+        } else {
+            // If we're operating with security, use the privileges of the bundle
+            // we're managing to do the lookup
+            return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+                public Object run() {
+                    return getBundleContextForServiceLookup().getService(serviceReference);
                 }
+            }, accessControlContext);
+        }
+    }
+
+    /**
+     * We may need to execute code within a doPrivileged block, and if so, it should be the privileges of the
+     * bundle with the blueprint file that get used, not the privileges of blueprint-core. To achieve this we
+     * use an access context.
+     * 
+     * @return
+     */
+    private AccessControlContext createAccessControlContext() {
+        return new AccessControlContext(AccessController.getContext(), new DomainCombiner() {
+            public ProtectionDomain[] combine(ProtectionDomain[] arg0, ProtectionDomain[] arg1) {
+                ProtectionDomain protectionDomain = new ProtectionDomain(null, null) {
+                    public boolean implies(Permission permission) {
+                        return getBundleContextForServiceLookup().getBundle().hasPermission(permission);
+                    }
+                };
+                return new ProtectionDomain[] {
+                    protectionDomain
+                };
+            }
         });
     }
 
+    @SuppressWarnings("unchecked")
     protected void createListeners() {
-            if (listenersRecipe != null) {
-                List<Listener> listeners = (List<Listener>) listenersRecipe.create();
-                for (Listener listener : listeners) {
-                    List<Class> classList = new ArrayList<Class>();
-                    Class clz = getInterfaceClass();
-                    if (clz != null) { 
-                        classList.add(clz);
-                    } else {
-                        classList.add(Object.class);
-                    }
-                    listener.init(classList);
+        if (listenersRecipe != null) {
+            List<Listener> listeners = (List<Listener>)listenersRecipe.create();
+            for (Listener listener : listeners) {
+                List<Class> classList = new ArrayList<Class>();
+                Class clz = getInterfaceClass();
+                if (clz != null) {
+                    classList.add(clz);
+                } else {
+                    classList.add(Object.class);
                 }
-                this.listeners = listeners;
-            } else {
-                this.listeners = Collections.emptyList();
+                listener.init(classList);
             }
+            this.listeners = listeners;
+        } else {
+            this.listeners = Collections.emptyList();
+        }
     }
 
     protected List<Class<?>> loadAllClasses(Iterable<String> interfaceNames) {

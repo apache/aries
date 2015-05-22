@@ -22,16 +22,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
+
 public final class BundleWideTxData
 {
-  private String value;
+  private TransactionPropagationType value;
   private final List<Pattern> methodList = new ArrayList<Pattern>();
   private final List<Pattern> beanList = new ArrayList<Pattern>();
   
-  public BundleWideTxData(String value,
+  public BundleWideTxData(TransactionPropagationType value,
           String method, String bean) {
-      if(value == null || value.length() == 0)
-        this.value = "Required";
+      if (value == null)
+        this.value = TransactionPropagationType.Required;
       else
         this.value = value;
       setupPatterns(method, bean);  
@@ -60,7 +62,7 @@ public final class BundleWideTxData
           this.beanList.add(p);
       }
   }
-  public String getValue() {
+  public TransactionPropagationType getValue() {
       return this.value;
   }
   

@@ -27,9 +27,9 @@ import org.osgi.service.blueprint.container.BlueprintListener;
  */
 public class TxBlueprintListener implements BlueprintListener {
     
-    private final TxElementHandler handler;
+    private final TxNamespaceHandler handler;
     
-    public TxBlueprintListener(TxElementHandler handler) {
+    public TxBlueprintListener(TxNamespaceHandler handler) {
         this.handler = handler;
     }
     

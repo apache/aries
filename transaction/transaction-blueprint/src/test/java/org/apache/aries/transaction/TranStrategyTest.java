@@ -34,7 +34,6 @@ import javax.transaction.TransactionManager;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import org.apache.aries.transaction.TransactionAttribute;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
