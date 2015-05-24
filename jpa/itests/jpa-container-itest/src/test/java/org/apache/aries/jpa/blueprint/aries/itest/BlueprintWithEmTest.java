@@ -26,14 +26,14 @@ import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-public class BlueprintTest extends AbstractJPAItest {
+public class BlueprintWithEmTest extends AbstractJPAItest {
     
 	CarService carService;
 
 	@Test
     public void testEmfAddQuery() throws Exception {
 		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "emf");
+		filters.put("type", "em");
 		carService = getServie(CarService.class, filters);
 		
 		resolveBundles();

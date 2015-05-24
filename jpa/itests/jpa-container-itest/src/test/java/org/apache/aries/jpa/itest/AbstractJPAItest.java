@@ -8,6 +8,8 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
+import java.util.Map;
+
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
