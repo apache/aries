@@ -19,7 +19,6 @@
 package org.apache.aries.jpa.blueprint.impl;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,7 +32,7 @@ import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.jpa.blueprint.supplier.impl.EmProxyFactory;
 import org.apache.aries.jpa.blueprint.supplier.impl.EmSupplierProxy;
-import org.apache.aries.jpa.blueprint.supplier.impl.EmfProxy;
+import org.apache.aries.jpa.blueprint.supplier.impl.EmfProxyFactory;
 import org.apache.aries.jpa.supplier.EmSupplier;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -81,12 +80,13 @@ public class JpaBeanProcessor implements BeanProcessor {
         if (field == null) {
             return bean;
         }
+        BundleContext context = FrameworkUtil.getBundle(c).getBundleContext();
+        field.setAccessible(true);
+        
         PersistenceContext pcAnn = field.getAnnotation(PersistenceContext.class);
         if (pcAnn != null) {
 	        LOGGER.debug("Adding jpa/jta interceptor bean {} with class {}", beanName, c);
-	
-	        field.setAccessible(true);
-	        BundleContext context = FrameworkUtil.getBundle(c).getBundleContext();
+        
 	        EmSupplierProxy supplierProxy = new EmSupplierProxy(context, pcAnn.unitName());
 	        emProxies.put(bean, supplierProxy);
 	        try {
@@ -101,14 +101,10 @@ public class JpaBeanProcessor implements BeanProcessor {
         	if(puAnn != null) {
         		LOGGER.debug("Adding emf proxy");
         		
-    	        field.setAccessible(true);
-    	        BundleContext context = FrameworkUtil.getBundle(c).getBundleContext();
-    	        ClassLoader cl = EntityManagerFactory.class.getClassLoader();
-    	        Class<?>[] ifAr = new Class[] { EntityManagerFactory.class };
-    	        EntityManagerFactory supplierProxy = (EntityManagerFactory) Proxy.newProxyInstance(cl, ifAr, new EmfProxy(context, puAnn.unitName()));
-    	        emfProxies.put(bean, supplierProxy);
+    	        EntityManagerFactory emfProxy = EmfProxyFactory.create(context, puAnn.unitName()); 
+    	        emfProxies.put(bean, emfProxy);
     	        try {
-    	            field.set(bean, getEmfProxy(field, supplierProxy));
+    	            field.set(bean, getEmfProxy(field, emfProxy));
     	        } catch (Exception e) {
     	            throw new IllegalStateException("Error setting field " + field, e);
     	        }	
