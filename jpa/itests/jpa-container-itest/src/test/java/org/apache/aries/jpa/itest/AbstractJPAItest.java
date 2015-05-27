@@ -8,6 +8,8 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
+import java.util.Map;
+
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
@@ -38,6 +40,20 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
     protected EntityManagerFactory getEMF(String name) {
         return context().getService(EntityManagerFactory.class, "osgi.unit.name=" + name);
     }
+
+    protected <T> T getServie(Class<T> type, Map<String, String> filters) {
+		if (filters.size() > 0) {
+			String filterS = "(&";
+			for (String key : filters.keySet()) {
+				String value = filters.get(key);
+				filterS += String.format("(%s=%s)", key, value);
+			}
+			filterS += ")";
+			return context().getService(type, filterS);
+		} else {
+			return context().getService(type);
+		}
+	}
 
     @SuppressWarnings("rawtypes")
     protected ServiceReference[] getEMFRefs(String name) throws InvalidSyntaxException {
