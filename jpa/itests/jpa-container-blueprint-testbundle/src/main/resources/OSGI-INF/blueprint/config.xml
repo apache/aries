@@ -7,9 +7,39 @@
 
 	<jpa:enable />
 
-	<service ref="carService" interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+	<service ref="carServiceEmf"
+		interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+		<service-properties>
+			<entry key="type" value="emf" />
+		</service-properties>
 	</service>
-	<bean id="carService" class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithSupplierImpl">
+	
+	<bean id="carServiceEmf"
+		class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithEmfImpl">
+		<tx:transaction method="*" value="Required" />
+	</bean>
+	
+	<service ref="carServiceEm"
+		interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+		<service-properties>
+			<entry key="type" value="em" />
+		</service-properties>
+	</service>
+	
+	<bean id="carServiceEm"
+		class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceImpl">
+		<tx:transaction method="*" value="Required" />
+	</bean>
+	
+	<service ref="carServiceEmSupplier"
+		interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+		<service-properties>
+			<entry key="type" value="supplier" />
+		</service-properties>
+	</service>
+	
+	<bean id="carServiceEmSupplier"
+		class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithSupplierImpl">
 		<tx:transaction method="*" value="Required" />
 	</bean>
     
