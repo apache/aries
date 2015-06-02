@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import java.lang.reflect.Field;
+
 import org.ops4j.pax.cdi.api.OsgiService;
 
 /**
@@ -27,8 +29,12 @@ public class OsgiServiceRef extends BeanRef {
 
     public String filter;
 
-    public OsgiServiceRef(Class<?> clazz, OsgiService osgiService) {
-        super(clazz);
+    public OsgiServiceRef(Field field) {
+        super(field);
+        if (id == null) {
+            id = getBeanName(clazz);
+        }
+        OsgiService osgiService = field.getAnnotation(OsgiService.class);
         filter = osgiService.filter();
     }
 
