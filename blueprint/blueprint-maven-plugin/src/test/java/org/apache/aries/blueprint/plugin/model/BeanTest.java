@@ -63,7 +63,7 @@ public class BeanTest {
         assertEquals("There should be no persistence fields", 0, bean.persistenceFields.length);
         assertEquals("*", bean.transactionDef.getMethod());
         assertEquals("RequiresNew", bean.transactionDef.getType());
-        assertEquals(4, bean.properties.size());
+        assertEquals(5, bean.properties.size());
     }
     
     @Test

@@ -21,11 +21,10 @@ package org.apache.aries.jpa.container.weaving.impl;
 import javax.persistence.spi.ClassTransformer;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceReference;
 
 /**
  * {@link ClassTransformer} instances should be registered with the
- * instance of this interface returned by {@link TransformerRegistryFactory#getTransformerRegistry()}
+ * instance of this interface returned by {@link TransformerRegistrySingleton#getTransformerRegistry()}
  */
 public interface TransformerRegistry {
 
@@ -36,7 +35,7 @@ public interface TransformerRegistry {
    * @param transformer  The transformer to weave with
    * @param provider The provider to provide packages from
    */
-  public void addTransformer(Bundle pBundle, ClassTransformer transformer, ServiceReference<?> provider);
+  public void addTransformer(Bundle pBundle, ClassTransformer transformer);
   
   
   /**

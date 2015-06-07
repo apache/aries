@@ -20,112 +20,115 @@ package org.apache.aries.jpa.container.weaving.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 
 import javax.persistence.spi.ClassTransformer;
 
-import org.apache.aries.jpa.container.impl.NLS;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.hooks.weaving.WeavingException;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.framework.wiring.BundleWiring;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This weaving hook delegates to any registered {@link ClassTransformer} instances
- * for a given bundle
+ * This weaving hook delegates to any registered {@link ClassTransformer} instances for a given bundle
  */
 public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JPAWeavingHook.class);
 
-  /**
-   * This constructor should not be called directly, the {@link JPAWeavingHookFactory} 
-   * should be used to ensure that Weaving support is available.
-   */
-  JPAWeavingHook() { }
-  
-  /** 
-   * With luck we will only have one persistence unit per bundle, but
-   * if we don't we'll need to call them until one of them does a transform
-   * or we run out.
-   */
-  private final ConcurrentMap<Bundle, LinkedHashSet<WrappingTransformer>> registeredTransformers
-      = new ConcurrentHashMap<Bundle, LinkedHashSet<WrappingTransformer>>();
-  
-  public void weave(WovenClass wovenClass) {
-    
-    BundleWiring wiring = wovenClass.getBundleWiring();
-    
-    Collection<WrappingTransformer> transformers = registeredTransformers.get(
-        wiring.getBundle());
-    
-    if(transformers != null) {
-      Collection<WrappingTransformer> transformersToTry;
-      synchronized (transformers) {
-        transformersToTry = new ArrayList<WrappingTransformer>(transformers);
-      }
-      for(WrappingTransformer transformer : transformersToTry) {
-        try {
-          byte[] result = transformer.transform(wiring.getClassLoader(), 
-              wovenClass.getClassName(), wovenClass.getDefinedClass(), 
-              wovenClass.getProtectionDomain(), wovenClass.getBytes());
-          if(result != null) {
-            wovenClass.setBytes(result);
-            wovenClass.getDynamicImports().addAll(transformer.getPackagesToAdd());
-            break;
-          }
-        } catch (Throwable t) {
-          if(t instanceof ThreadDeath)
-            throw (ThreadDeath)t;
-          else if (t instanceof OutOfMemoryError)
-            throw (OutOfMemoryError) t;
-          else {
-            Bundle b = wovenClass.getBundleWiring().getBundle();
-            throw new WeavingException(NLS.MESSAGES.getMessage("jpa.weaving.failure", wovenClass.getClassName(), b.getSymbolicName(), b.getVersion(), transformer), t);
-          }
+    /**
+     * This constructor should not be called directly, the {@link JPAWeavingHookFactory} should be used to
+     * ensure that Weaving support is available.
+     */
+    JPAWeavingHook() {
+    }
+
+    /**
+     * With luck we will only have one persistence unit per bundle, but if we don't we'll need to call them
+     * until one of them does a transform or we run out.
+     */
+    private final Map<Bundle, LinkedHashSet<ClassTransformer>> registeredTransformers = new HashMap<Bundle, LinkedHashSet<ClassTransformer>>();
+
+    public void weave(WovenClass wovenClass) {
+        BundleWiring wiring = wovenClass.getBundleWiring();
+        Bundle bundle = wiring.getBundle();
+        ClassLoader cl = wiring.getClassLoader();
+        Collection<ClassTransformer> transformersToTry = getTransformers(bundle);
+        if (transformersToTry.size() == 0 && wovenClass.getClassName().endsWith("Car")) {
+            LOGGER.error("Loading " + wovenClass.getClassName() + " before transformer is present");
+            //for (StackTraceElement el : Thread.currentThread().getStackTrace()) {
+//                LOGGER.info(el.toString());
+//            }
         }
-      }
-    }
-  }
-  
-  public void addTransformer(Bundle pBundle, ClassTransformer transformer, ServiceReference<?> provider) {
-    
-    //Optimised for single adds
-    
-    LinkedHashSet<WrappingTransformer> set = new LinkedHashSet<WrappingTransformer>();
-    WrappingTransformer wt = new WrappingTransformer(transformer, provider);
-    set.add(wt);
-    
-    LinkedHashSet<WrappingTransformer> existingSet = registeredTransformers.putIfAbsent(pBundle, set);
-    
-    if(existingSet != null) {
-      synchronized (existingSet) {
-        existingSet.add(wt);
-      }
-    }
-  }
-   
-  public void removeTransformer(Bundle pBundle, ClassTransformer transformer) {
-    LinkedHashSet<WrappingTransformer> set = registeredTransformers.get(pBundle);
-    
-    if(set == null || !!!safeRemove(set, transformer))
-      throw new IllegalStateException(NLS.MESSAGES.getMessage("jpa.weaving.transformer.not.registered", transformer));
-    
-    if(set.isEmpty())
-      registeredTransformers.remove(pBundle);
-  }
+        for (ClassTransformer transformer : transformersToTry) {
 
-  /**
-   * Perform a remove on the collection while synchronized on it
-   * @param set
-   * @param t
-   * @return
-   */
-  private boolean safeRemove(Collection<WrappingTransformer> set, ClassTransformer t) {
-    synchronized(set) {
-        return set.remove(new WrappingTransformer(t));
-      }
-  }
+            if (transformClass(wovenClass, cl, transformer)) {
+                LOGGER.info("Weaving " + wovenClass.getClassName() + " using " + transformer.getClass().getName());
+                break;
+            };
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private synchronized Collection<ClassTransformer> getTransformers(Bundle bundle) {
+        LinkedHashSet<ClassTransformer> transformers = registeredTransformers.get(bundle);
+        return transformers != null ? new ArrayList<ClassTransformer>(transformers) : Collections.EMPTY_LIST;
+    }
+
+    private boolean transformClass(WovenClass wovenClass, ClassLoader cl, ClassTransformer transformer)
+        throws ThreadDeath, OutOfMemoryError {
+        try {
+            byte[] result = transformer
+                .transform(cl, 
+                           wovenClass.getClassName(),
+                           wovenClass.getDefinedClass(), 
+                           wovenClass.getProtectionDomain(),
+                           wovenClass.getBytes());
+            if (result != null) {
+                wovenClass.setBytes(result);
+                wovenClass.getDynamicImports().add("org.eclipse.persistence.*");
+                wovenClass.getDynamicImports().add("org.apache.openjpa.*");
+                
+                return true;
+            }
+        } catch (Throwable t) {
+            if (t instanceof ThreadDeath)
+                throw (ThreadDeath)t;
+            else if (t instanceof OutOfMemoryError)
+                throw (OutOfMemoryError)t;
+            else {
+                Bundle b = wovenClass.getBundleWiring().getBundle();
+                String msg = String.format("Weaving failure", wovenClass.getClassName(),
+                                           b.getSymbolicName(), b.getVersion(), transformer);
+                throw new WeavingException(msg, t);
+            }
+        }
+        return false;
+    }
+
+    public synchronized void addTransformer(Bundle pBundle, ClassTransformer transformer) {
+        LOGGER.info("Adding transformer " + transformer.getClass().getName());
+        LinkedHashSet<ClassTransformer> transformers = registeredTransformers.get(pBundle);
+        if (transformers == null) {
+            transformers = new LinkedHashSet<ClassTransformer>();
+            registeredTransformers.put(pBundle, transformers);
+        }
+        transformers.add(transformer);
+    }
+
+    public synchronized void removeTransformer(Bundle pBundle, ClassTransformer transformer) {
+        LinkedHashSet<ClassTransformer> set = registeredTransformers.get(pBundle);
+        if (set == null || !set.remove(transformer)) {
+            throw new IllegalStateException("Transformer " + transformer + " not registered");
+        }
+        if (set.isEmpty()) {
+            registeredTransformers.remove(pBundle);
+        }
+    }
+
 }

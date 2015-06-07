@@ -17,12 +17,17 @@
  */
 package org.apache.aries.blueprint.web;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -44,19 +49,20 @@ public class BlueprintContextListener implements ServletContextListener {
 
     public static final String CONTAINER_ATTRIBUTE = "org.apache.aries.blueprint.container";
 
-    public static final String LOCATION = "blueprintLocation";
-
-    public static final String NAMESPACE_HANDLERS = "blueprintNamespaceHandlers";
+    public static final String CONTEXT_LOCATION = "blueprintLocation";
+    public static final String DEFAULT_CONTEXT_LOCATION = "META-INF/blueprint.xml";
+    
+    public static final String NAMESPACE_HANDLERS_PARAMETER = "blueprintNamespaceHandlers";
+    public static final String NAMESPACE_HANDLERS_LOCATION = "META-INF/blueprint.handlers";
     
     public static final String PROPERTIES = "blueprintProperties";
-
-    public static final String DEFAULT_LOCATION = "META-INF/blueprint.xml";
+    
 
     public void contextInitialized(ServletContextEvent event) {
         ServletContext servletContext = event.getServletContext();
-        String location = servletContext.getInitParameter(LOCATION);
+        String location = servletContext.getInitParameter(CONTEXT_LOCATION);
         if (location == null) {
-            location = DEFAULT_LOCATION;
+            location = DEFAULT_CONTEXT_LOCATION;
         }
         List<URL> resourcePaths = new ArrayList<URL>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -99,13 +105,55 @@ public class BlueprintContextListener implements ServletContextListener {
     }
     
     protected NamespaceHandlerSet getNamespaceHandlerSet(ServletContext servletContext, ClassLoader tccl) {
-        String handlersProp = servletContext.getInitParameter(NAMESPACE_HANDLERS);
+        NamespaceHandlerSet nsSet = getNamespaceHandlerSetFromParameter(servletContext, tccl);
+        if (nsSet != null) {
+            return nsSet;
+        }
+        return getNamespaceHandlerSetFromLocation(servletContext, tccl);
+    }
+
+    protected NamespaceHandlerSet getNamespaceHandlerSetFromParameter(ServletContext servletContext, ClassLoader tccl) {
+        String handlersProp = servletContext.getInitParameter(NAMESPACE_HANDLERS_PARAMETER);
         if (handlersProp == null) {
             return null;
         }
+        return getNamespaceHandlerSetFromClassNames(servletContext, tccl, Arrays.asList(handlersProp.split(",")));
+    }
+        
+    protected NamespaceHandlerSet getNamespaceHandlerSetFromLocation(ServletContext servletContext, ClassLoader tccl) {
+        List<String> handlerClassNames = new LinkedList<String>();
+        try {
+            Enumeration<URL> resources = tccl.getResources(NAMESPACE_HANDLERS_LOCATION);
+            while (resources.hasMoreElements()) {
+                URL resource = resources.nextElement();
+                BufferedReader br = new BufferedReader(new InputStreamReader(resource.openStream()));
+                try {
+                    for (String line = br.readLine(); line != null; line = br.readLine()) {
+                        String trimmedLine = line.trim();
+                        if (trimmedLine.isEmpty() || trimmedLine.startsWith("#")) {
+                            continue;
+                        }
+                        handlerClassNames.add(trimmedLine);
+                    }
+                } finally {
+                    br.close();
+                }
+            }
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to load namespace handler resources", ex);
+        }
+        if (!handlerClassNames.isEmpty()) {
+            return getNamespaceHandlerSetFromClassNames(servletContext, tccl, handlerClassNames);
+        } else {
+            return null;
+        }
+        
+    }
+    
+    protected NamespaceHandlerSet getNamespaceHandlerSetFromClassNames(ServletContext servletContext, ClassLoader tccl, 
+        List<String> handlerClassNames) {
         SimpleNamespaceHandlerSet nsSet = new SimpleNamespaceHandlerSet();
         
-        String[] handlerClassNames = handlersProp.split(",");
         for (String name : handlerClassNames) {
             String trimmedName = name.trim();
             Object instance = null; 
@@ -128,7 +176,7 @@ public class BlueprintContextListener implements ServletContextListener {
         
         return nsSet;
     }
-
+    
     public void contextDestroyed(ServletContextEvent event) {
         ServletContext servletContext = event.getServletContext();
         Object container = servletContext.getAttribute(CONTAINER_ATTRIBUTE);

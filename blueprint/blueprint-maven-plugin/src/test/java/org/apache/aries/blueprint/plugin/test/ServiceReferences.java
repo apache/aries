@@ -20,6 +20,7 @@
 package org.apache.aries.blueprint.plugin.test;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.ops4j.pax.cdi.api.OsgiService;
 import org.springframework.stereotype.Component;
@@ -27,4 +28,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServiceReferences {
     @Inject @OsgiService ServiceB serviceB;
+    
+    @Named("serviceB2Id") @Inject @OsgiService ServiceB serviceB2;
 }
