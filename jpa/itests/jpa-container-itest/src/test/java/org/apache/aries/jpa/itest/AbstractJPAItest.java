@@ -8,28 +8,37 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
-import java.util.Map;
-
+import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.options.AbstractProvisionControl;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public abstract class AbstractJPAItest extends AbstractIntegrationTest {
+public abstract class AbstractJPAItest {
     protected static final String TEST_UNIT = "test-unit";
     protected static final String BP_TEST_UNIT = "bp-test-unit";
     protected static final String BP_XA_TEST_UNIT = "bp-xa-test-unit";
     protected static final String TEST_BUNDLE_NAME = "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle";
     
+    @Inject
+    protected BundleContext bundleContext;
+
     /**
      * TODO check calls to this. Eventually switch to EmSupplier 
      */
@@ -38,22 +47,62 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
     }
     
     protected EntityManagerFactory getEMF(String name) {
-        return context().getService(EntityManagerFactory.class, "osgi.unit.name=" + name);
+        return getService(EntityManagerFactory.class, "osgi.unit.name=" + name);
     }
 
-    protected <T> T getServie(Class<T> type, Map<String, String> filters) {
-		if (filters.size() > 0) {
-			String filterS = "(&";
-			for (String key : filters.keySet()) {
-				String value = filters.get(key);
-				filterS += String.format("(%s=%s)", key, value);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public <T> T getService(Class<T> type, String filter) {
+        ServiceTracker tracker = null;
+        try {
+            String flt;
+            if (filter != null) {
+                if (filter.startsWith("(")) {
+                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")" + filter + ")";
+                } else {
+                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")(" + filter + "))";
+                }
+            } else {
+                flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
+            }
+            Filter osgiFilter = FrameworkUtil.createFilter(flt);
+            tracker = new ServiceTracker(bundleContext, osgiFilter, null);
+            tracker.open();
+
+            Object svc = type.cast(tracker.waitForService(10000));
+            if (svc == null) {
+                throw new RuntimeException("Gave up waiting for service " + flt);
+            }
+            return type.cast(svc);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalArgumentException("Invalid filter", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+	/**
+	 * Helps to diagnose bundles that are not resolved as it will throw a detailed exception
+	 * 
+	 * @throws BundleException
+	 */
+	public void resolveBundles() throws BundleException {
+		Bundle[] bundles = bundleContext.getBundles();
+		for (Bundle bundle : bundles) {
+			if (bundle.getState() == Bundle.INSTALLED) {
+				System.out.println("Found non resolved bundle " + bundle.getBundleId() + ":" + bundle.getSymbolicName() + ":" + bundle.getVersion());
+				bundle.start();
 			}
-			filterS += ")";
-			return context().getService(type, filterS);
-		} else {
-			return context().getService(type);
 		}
 	}
+	
+    public Bundle getBundleByName(String symbolicName) {
+        for (Bundle b : bundleContext.getBundles()) {
+            if (b.getSymbolicName().equals(symbolicName)) {
+                return b;
+            }
+        }
+        return null;
+    }
 
     @SuppressWarnings("rawtypes")
     protected ServiceReference[] getEMFRefs(String name) throws InvalidSyntaxException {
@@ -73,7 +122,6 @@ public abstract class AbstractJPAItest extends AbstractIntegrationTest {
         return composite(junitBundles(),
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-service", "1.7.2"),
-                mvnBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
                 // this is how you set the default log level when using pax
                 // logging (logProfile)
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
