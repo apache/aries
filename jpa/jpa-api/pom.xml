@@ -32,12 +32,6 @@
     <packaging>bundle</packaging>
     <name>Apache Aries JPA Container API</name>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-api</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-api</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-api</url>
-    </scm>
-
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
