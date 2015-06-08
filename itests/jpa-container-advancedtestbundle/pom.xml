@@ -30,16 +30,9 @@
 
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.container.advanced.itest.bundle</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Aries JPA test bundle advanced iTests</name>
     <description>For load time weaving and annotation scanning tests</description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-advancedtestbundle</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-advancedtestbundle</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-container-advancedtestbundle</url>
-    </scm>
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->

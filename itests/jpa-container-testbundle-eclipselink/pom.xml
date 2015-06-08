@@ -30,15 +30,8 @@
 
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.container.itest.bundle.eclipselink</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Aries JPA test bundle Eclipselink</name>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-testbundle-eclipselink</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container-testbundle-eclipselink</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-container-testbundle-eclipselink</url>
-    </scm>
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
