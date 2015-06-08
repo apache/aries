@@ -28,13 +28,9 @@ import org.ops4j.pax.exam.Option;
 
 public class BlueprintWithEmfTest extends AbstractJPAItest {
     
-	CarService carService;
-
 	@Test
     public void testEmfAddQuery() throws Exception {
-		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "emf");
-		carService = getServie(CarService.class, filters);
+		CarService carService = getService(CarService.class, "(type=emf)");
 		
 		resolveBundles();
         Car c = new Car();
@@ -51,9 +47,7 @@ public class BlueprintWithEmfTest extends AbstractJPAItest {
 
 	@Test
     public void testEmAddQuery() throws Exception {
-		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "em");
-		carService = getServie(CarService.class, filters);
+		CarService carService = getService(CarService.class, "(type=emf)");
 		
 		resolveBundles();
         Car c = new Car();
@@ -70,9 +64,7 @@ public class BlueprintWithEmfTest extends AbstractJPAItest {
 	
 	@Test
     public void testSupplierAddQuery() throws Exception {
-		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "supplier");
-		carService = getServie(CarService.class, filters);
+		CarService carService = getService(CarService.class, "(type=supplier)");
 		
 		resolveBundles();
         Car c = new Car();

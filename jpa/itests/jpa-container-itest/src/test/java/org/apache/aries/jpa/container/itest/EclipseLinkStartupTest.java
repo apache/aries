@@ -19,16 +19,18 @@ import org.apache.aries.jpa.itest.AbstractJPAItest;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.options.AbstractProvisionControl;
+import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 
 public class EclipseLinkStartupTest extends AbstractJPAItest {
 
     @Test
     public void testContextCreationWithStartingBundle() throws Exception {
-        context().getBundleByName("org.apache.aries.jpa.container.itest.bundle.eclipselink").start();
+        getBundleByName("org.apache.aries.jpa.container.itest.bundle.eclipselink").start();
         getEMF("script-test-unit");
     }
 
-    @Configuration
+	@Configuration
     public Option[] configuration() {
         return new Option[] {//
             baseOptions(),//

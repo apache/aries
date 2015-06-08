@@ -34,7 +34,7 @@ public class BlueprintWithEmTest extends AbstractJPAItest {
     public void testEmfAddQuery() throws Exception {
 		Map<String,String> filters = new HashMap<String,String>();
 		filters.put("type", "em");
-		carService = getServie(CarService.class, filters);
+		carService = getService(CarService.class, "(type=em)");
 		
 		resolveBundles();
         Car c = new Car();
@@ -51,9 +51,7 @@ public class BlueprintWithEmTest extends AbstractJPAItest {
 
 	@Test
     public void testEmAddQuery() throws Exception {
-		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "em");
-		carService = getServie(CarService.class, filters);
+		carService = getService(CarService.class, "(type=em)");
 		
 		resolveBundles();
         Car c = new Car();
@@ -70,9 +68,7 @@ public class BlueprintWithEmTest extends AbstractJPAItest {
 	
 	@Test
     public void testSupplierAddQuery() throws Exception {
-		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "supplier");
-		carService = getServie(CarService.class, filters);
+		carService = getService(CarService.class, "(type=supplier)");
 		
 		resolveBundles();
         Car c = new Car();
