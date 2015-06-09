@@ -13,44 +13,39 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.internal.AbstractRequirement;
-import org.osgi.framework.Constants;
-import org.osgi.namespace.service.ServiceNamespace;
-import org.osgi.resource.Namespace;
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.resource.Resource;
 
-public class SubsystemImportServiceRequirement extends AbstractRequirement {
-	public static final String DIRECTIVE_FILTER = Namespace.REQUIREMENT_FILTER_DIRECTIVE;
-	public static final String NAMESPACE = ServiceNamespace.SERVICE_NAMESPACE;
+public class DynamicImportPackageRequirement extends AbstractRequirement {
+	public static final String DIRECTIVE_FILTER = PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE;
+	public static final String NAMESPACE = PackageNamespace.PACKAGE_NAMESPACE;
 	
-	private final Map<String, String> directives = new HashMap<String, String>(1);
+	private final Map<String, String> directives;
+	private final String packageName;
 	private final Resource resource;
 	
-	public SubsystemImportServiceRequirement(
-			SubsystemImportServiceHeader.Clause clause, Resource resource) {
-		boolean appendObjectClass = !ServiceNamespace.SERVICE_NAMESPACE.equals(clause.getPath());
-		StringBuilder builder = new StringBuilder();
-		if (appendObjectClass) {
-			builder.append("(&(").append(Constants.OBJECTCLASS).append('=').append(clause.getPath()).append(')');
+	public DynamicImportPackageRequirement(String pkg, DynamicImportPackageHeader.Clause clause, Resource resource) {
+		packageName = pkg;
+		Collection<Directive> clauseDirectives = clause.getDirectives();
+		directives = new HashMap<String, String>(clauseDirectives.size() + 1);
+		for (Directive directive : clauseDirectives)
+			directives.put(directive.getName(), directive.getValue());
+		StringBuilder filter = new StringBuilder("(&(").append(NAMESPACE)
+				.append('=').append(pkg).append(')');
+		VersionRangeAttribute versionRange = clause.getVersionRangeAttribute();
+		if (versionRange != null) {
+			versionRange.appendToFilter(filter);
 		}
-		Directive filter = clause.getDirective(SubsystemExportServiceHeader.Clause.DIRECTIVE_FILTER);
-		if (filter != null) {
-			builder.append(filter.getValue());
-		}
-		if (appendObjectClass) {
-			builder.append(')');
-		}
-		String filterStr = builder.toString();
-		if (!filterStr.isEmpty()) {
-			directives.put(DIRECTIVE_FILTER, filterStr);
-		}
+		directives.put(DIRECTIVE_FILTER, filter.append(')').toString());
 		this.resource = resource;
 	}
-
+	
 	@Override
 	public Map<String, Object> getAttributes() {
 		return Collections.emptyMap();
@@ -64,6 +59,10 @@ public class SubsystemImportServiceRequirement extends AbstractRequirement {
 	@Override
 	public String getNamespace() {
 		return NAMESPACE;
+	}
+	
+	public String getPackageName() {
+		return packageName;
 	}
 
 	@Override

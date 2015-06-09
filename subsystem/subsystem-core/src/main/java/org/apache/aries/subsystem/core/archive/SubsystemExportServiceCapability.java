@@ -19,13 +19,13 @@ import java.util.Map;
 
 import org.apache.aries.subsystem.core.internal.AbstractCapability;
 import org.osgi.framework.Constants;
+import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Resource;
 
 public class SubsystemExportServiceCapability extends AbstractCapability {
 	public static final String DIRECTIVE_FILTER = Namespace.REQUIREMENT_FILTER_DIRECTIVE;
-	// TODO Replace value with ServiceNamspace.SERVICE_NAMESPACE constant when available.
-	public static final String NAMESPACE = "osgi.service";
+	public static final String NAMESPACE = ServiceNamespace.SERVICE_NAMESPACE;
 	
 	private final Map<String, Object> attributes = new HashMap<String, Object>();
 	private final Map<String, String> directives = new HashMap<String, String>();
@@ -36,7 +36,7 @@ public class SubsystemExportServiceCapability extends AbstractCapability {
 				.append(Constants.OBJECTCLASS).append('=')
 				.append(clause.getObjectClass()).append(')');
 		Directive filter = clause
-				.getDirective(SubsystemImportServiceHeader.Clause.DIRECTIVE_FILTER);
+				.getDirective(SubsystemExportServiceHeader.Clause.DIRECTIVE_FILTER);
 		if (filter != null)
 			builder.append(filter.getValue());
 		directives.put(DIRECTIVE_FILTER, builder.append(')').toString());

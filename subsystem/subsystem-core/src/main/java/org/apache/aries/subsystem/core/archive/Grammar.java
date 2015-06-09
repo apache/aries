@@ -163,4 +163,9 @@ public interface Grammar {
 	public static final String CEILING = VERSION;
 	public static final String INTERVAL = "[\\[\\(]" + FLOOR + ',' + CEILING + "[\\[\\)]";
 	public static final String VERSIONRANGE = INTERVAL + '|' + ATLEAST;
+	
+	public static final String WILDCARD_NAME = PACKAGENAME + '|' + PACKAGENAME + "\\.\\*" + "|\\*";
+	public static final String WILDCARD_NAMES = WILDCARD_NAME + "\\s*(?:\\;\\s*" + WILDCARD_NAME + ")*";
+	public static final String DYNAMIC_DESCRIPTION = WILDCARD_NAMES + "(?:;\\s*(?:" + PARAMETER + "))*";
+	public static final String DYNAMICIMPORT_PACKAGE = DYNAMIC_DESCRIPTION + "(?:\\,\\s*" + DYNAMIC_DESCRIPTION + ")*";
 }

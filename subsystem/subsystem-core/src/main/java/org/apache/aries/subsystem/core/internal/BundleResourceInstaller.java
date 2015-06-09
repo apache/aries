@@ -33,7 +33,6 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
-import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class BundleResourceInstaller extends ResourceInstaller {
@@ -175,16 +174,21 @@ public class BundleResourceInstaller extends ResourceInstaller {
 			revision = (BundleRevision)resource;
 		else {
 			ThreadLocalSubsystem.set(provisionTo);
-			revision = installBundle();
+			try {
+				revision = installBundle();
+			}
+			catch (Exception e) {
+				throw new SubsystemException(e);
+			}
 		}
 		addReference(revision);
 		addConstituent(new BundleConstituent(resource, revision));
 		return revision;
 	}
 	
-	private BundleRevision installBundle() {
+	private BundleRevision installBundle() throws Exception {
 		final Bundle bundle;
-		InputStream is = ((RepositoryContent)resource).getContent();
+		InputStream is = (InputStream)resource.getClass().getMethod("getContent").invoke(resource);
 		try {
 			bundle = provisionTo.getRegion().installBundleAtLocation(getLocation(), is);
 		}

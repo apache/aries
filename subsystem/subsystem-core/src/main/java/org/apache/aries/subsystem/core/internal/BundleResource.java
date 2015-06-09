@@ -41,13 +41,13 @@ import org.apache.aries.subsystem.core.archive.RequirementHeader;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
+import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.SubsystemException;
 
-public class BundleResource implements Resource, RepositoryContent {
+public class BundleResource implements Resource, org.apache.aries.subsystem.core.repository.RepositoryContent {
 	private static BundleManifest computeManifest(IDirectory directory) {
 		return new BundleManifest(org.apache.aries.util.manifest.BundleManifest
 				.fromBundle(directory)
@@ -187,14 +187,25 @@ public class BundleResource implements Resource, RepositoryContent {
 		// to services.
 		computeRequirementsOtherThanService();
 		computeCapabilitiesOtherThanService();
+		// OSGi RFC 201 for R6: The presence of any Require/Provide-Capability
+		// clauses in the osgi.service namespace overrides any service related
+		// requirements or capabilities that might have been found by other
+		// means.
+		boolean computeServiceRequirements = getRequirements(ServiceNamespace.SERVICE_NAMESPACE).isEmpty();
+		boolean computeServiceCapabilities = getCapabilities(ServiceNamespace.SERVICE_NAMESPACE).isEmpty();
+		if (!(computeServiceCapabilities || computeServiceRequirements))
+			return;
 		// Compute service requirements and capabilities if the optional
 		// ModelledResourceManager service is present.
 		ServiceModeller modeller = getServiceModeller();
 		if (modeller == null)
 			return;
-        ServiceModeller.ServiceModel model = modeller.computeRequirementsAndCapabilities(this, directory);
-        capabilities.addAll(model.getServiceCapabilities());
-        requirements.addAll(model.getServiceRequirements());
+
+		ServiceModeller.ServiceModel model = modeller.computeRequirementsAndCapabilities(this, directory);
+		if (computeServiceCapabilities)
+			capabilities.addAll(model.getServiceCapabilities());
+		if (computeServiceRequirements)
+			requirements.addAll(model.getServiceRequirements());
 	}
 	
 	private void computeRequirementsOtherThanService() {

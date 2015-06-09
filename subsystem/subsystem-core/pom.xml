@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.subsystem.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystem Core</name>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <description>Subsystems Core.</description>
 
     <scm>
@@ -45,10 +45,9 @@
         <aries.osgi.activator>
             org.apache.aries.subsystem.core.internal.Activator
         </aries.osgi.activator>
-        <aries.osgi.import>
-            org.osgi.service.repository;version="[1.0,2)",
-            org.osgi.service.subsystem;version="[1.0,2)",
-            org.apache.aries.subsystem;version="[1.1,2)",
+    	<aries.osgi.import>
+            org.osgi.service.subsystem;version="[1.1,1.2)",
+            org.apache.aries.subsystem;version="[1.2,1.3)",
             org.apache.aries.application.*;resolution:=optional,
             *
         </aries.osgi.import>
@@ -63,7 +62,7 @@
         <dependency>
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>1.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
@@ -83,7 +82,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>5.0.0</version>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
