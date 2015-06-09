@@ -41,7 +41,7 @@
         <module>eba-maven-plugin</module>
         <module>testsupport</module>
         <module>util</module>
-        <!--module>versioning</module-->
+        <module>versioning</module>
         <module>proxy</module>
         <module>quiesce</module>
         <module>blueprint</module>
@@ -55,7 +55,9 @@
         <module>jpa</module>
         <module>spi-fly</module>
         <module>samples</module>
+        <module>esa-ant-task</module>
         <module>esa-maven-plugin</module>
+        <module>async</module>
     </modules>
 
     <build>

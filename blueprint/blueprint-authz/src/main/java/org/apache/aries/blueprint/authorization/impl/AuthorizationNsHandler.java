@@ -53,8 +53,7 @@ public class AuthorizationNsHandler implements NamespaceHandler {
 
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc) {
         if (node instanceof Element) {
-            Element elt = (Element)node;
-            parseElement(elt, cm, pc);
+            parseElement((Element)node, cm, pc);
         }
         return cm;
     }

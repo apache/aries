@@ -24,6 +24,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.aries.blueprint.Interceptor;
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.exception.TransactionRollbackException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.slf4j.Logger;
@@ -99,13 +100,13 @@ public class TxInterceptorImpl implements Interceptor {
     public Object preCall(ComponentMetadata cm, Method m,
         Object... parameters) throws Throwable  {
       final String methodName = m.getName();
-      final String attribute = metaDataHelper.getComponentMethodTxAttribute(cm, methodName);
+      final TransactionPropagationType type = metaDataHelper.getComponentMethodTxAttribute(cm, methodName);
       
       // attribute could be null here which means no transaction
-      if (attribute == null) {
+      if (type == null) {
           return null;
       }
-      TransactionAttribute txAttribute = TransactionAttribute.fromValue(attribute);
+      TransactionAttribute txAttribute = TransactionAttribute.fromValue(type);
       
       if (LOGGER.isDebugEnabled())
           LOGGER.debug("Method: " + m + ", has transaction strategy: " + txAttribute);

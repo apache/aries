@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.blueprint.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Core</name>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.4-SNAPSHOT</version>
     <description>
         This bundle contains the core implementation of Blueprint
         along with the "ext" namespace handler.
@@ -169,9 +169,9 @@
             <version>${quiesce.api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -232,6 +232,12 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.3.1-SNAPSHOT</version>
+                <configuration>
+                    <excludes>
+                      <exclude>method org.apache.aries.blueprint.di.Repository getRepository() has been deleted</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-verify</id>

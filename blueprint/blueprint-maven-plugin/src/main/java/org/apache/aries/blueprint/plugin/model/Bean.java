@@ -21,28 +21,26 @@ package org.apache.aries.blueprint.plugin.model;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Named;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
-import org.springframework.stereotype.Component;
-
-public class Bean implements Comparable<Bean>{
-    public String id;
-    public Class<?> clazz;
+public class Bean extends BeanRef {
     public String initMethod;
     public String destroyMethod;
     public SortedSet<Property> properties;
-    public Field persistenceUnitField;
-    public TransactionalDef transactionDef; 
-    
+    public Field[] persistenceFields;
+    public TransactionalDef transactionDef;
+
     public Bean(Class<?> clazz) {
-        this.clazz = clazz;
-        this.id = getBeanName(clazz);
+        super(clazz);
+
         for (Method method : clazz.getDeclaredMethods()) {
             PostConstruct postConstruct = getEffectiveAnnotation(method, PostConstruct.class);
             if (postConstruct != null) {
@@ -53,7 +51,7 @@ public class Bean implements Comparable<Bean>{
                 this.destroyMethod = method.getName();
             }
         }
-        this.persistenceUnitField = getPersistenceUnit();
+        this.persistenceFields = getPersistenceFields();
         this.transactionDef = new JavaxTransactionFactory().create(clazz);
         if (this.transactionDef == null) {
             this.transactionDef = new SpringTransactionFactory().create(clazz);
@@ -61,20 +59,22 @@ public class Bean implements Comparable<Bean>{
         properties = new TreeSet<Property>();
     }
 
-    private Field getPersistenceUnit() {
+    private Field[] getPersistenceFields() {
+        List<Field> persistenceFields = new ArrayList<Field>();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
+            PersistenceContext persistenceContext = field.getAnnotation(PersistenceContext.class);
             PersistenceUnit persistenceUnit = field.getAnnotation(PersistenceUnit.class);
-            if (persistenceUnit !=null) {
-                 return field;
+            if (persistenceContext !=null || persistenceUnit != null) {
+                 persistenceFields.add(field);
             }
         }
-        return null;
+        return persistenceFields.toArray(new Field[]{});
     }
     
     public void resolve(Matcher matcher) {
         Class<?> curClass = this.clazz;
-        while (curClass != Object.class) {
+        while (curClass != null && curClass != Object.class) {
             resolveProperties(matcher, curClass);
             curClass = curClass.getSuperclass();
         }
@@ -89,23 +89,6 @@ public class Bean implements Comparable<Bean>{
         }
     }
 
-    public static String getBeanName(Class<?> clazz) {
-        Component component = clazz.getAnnotation(Component.class);
-        Named named = clazz.getAnnotation(Named.class);
-        if (component != null && !"".equals(component.value())) {
-            return component.value();
-        } else if (named != null && !"".equals(named.value())) {
-            return named.value();    
-        } else {
-            String name = clazz.getSimpleName();
-            return getBeanNameFromSimpleName(name);
-        }
-    }
-
-    private static String getBeanNameFromSimpleName(String name) {
-        return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
-    }
-    
     private static <T extends Annotation> T getEffectiveAnnotation(Method method, Class<T> annotationClass) {
         final Class<?> methodClass = method.getDeclaringClass();
         final String name = method.getName();
@@ -144,17 +127,7 @@ public class Bean implements Comparable<Bean>{
             return null;
         }
     }
-    
 
-    public boolean matches(Class<?> destType, String destId) {
-        boolean assignable = destType.isAssignableFrom(this.clazz);
-        return assignable && ((destId == null) || id.equals(destId));
-    }
-
-    @Override
-    public int compareTo(Bean other) {
-        return this.clazz.getName().compareTo(other.clazz.getName());
-    }
 
     @Override
     public int hashCode() {

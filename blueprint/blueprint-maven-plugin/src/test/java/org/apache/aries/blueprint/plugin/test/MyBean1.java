@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.plugin.test;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -33,8 +34,11 @@ public class MyBean1 extends ParentBean {
     @Autowired
     ServiceA bean2;
     
-    @PersistenceUnit(unitName="person")
+    @PersistenceContext(unitName="person")
     EntityManager em;
+    
+    @PersistenceUnit(unitName="person")
+    EntityManager emf;
     
     public void init() {
     }

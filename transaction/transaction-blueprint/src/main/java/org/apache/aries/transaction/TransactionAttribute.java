@@ -28,6 +28,8 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import org.apache.aries.transaction.annotations.TransactionPropagationType;
+
 public enum TransactionAttribute {
     MANDATORY
     {
@@ -101,27 +103,18 @@ public enum TransactionAttribute {
       public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
           InvalidTransactionException, IllegalStateException
       {
-        TransactionToken tranToken;
-        if (man.getStatus() == Status.STATUS_ACTIVE) {
-          tranToken = new TransactionToken(null, man.suspend(), REQUIRESNEW);
-        } else {
-          tranToken = new TransactionToken(null, null, REQUIRESNEW);
-        }
+         Transaction suspendedTransaction = (man.getStatus() == Status.STATUS_ACTIVE) ? man.suspend() : null;
 
         try {
           man.begin();
         } catch (SystemException e) {
-          man.resume(tranToken.getSuspendedTransaction());
+          man.resume(suspendedTransaction);
           throw e;
         } catch (NotSupportedException e) {
-          man.resume(tranToken.getSuspendedTransaction());
+          man.resume(suspendedTransaction);
           throw e;
         }
-        
-        tranToken.setActiveTransaction(man.getTransaction());
-        tranToken.setCompletionAllowed(true);
-        
-        return tranToken;
+        return new TransactionToken(man.getTransaction(), suspendedTransaction, REQUIRESNEW, true);
       }
 
       public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
@@ -155,9 +148,9 @@ public enum TransactionAttribute {
       }
     };
 
-    public static TransactionAttribute fromValue(String value)
+    public static TransactionAttribute fromValue(TransactionPropagationType type)
     {
-      return valueOf(value.toUpperCase());
+      return valueOf(type.name().toUpperCase());
     }
 
     public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
