@@ -77,6 +77,10 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	private final IDirectory directory;
 	
 	public BasicSubsystem(SubsystemResource resource) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
+		this(resource, null);
+	}
+	
+	public BasicSubsystem(SubsystemResource resource, InputStream deploymentManifest) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
 		this.resource = resource;
 		final File file = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(resource.getId()));
 		file.mkdirs();
@@ -99,7 +103,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		SubsystemManifestValidator.validate(this, getSubsystemManifest());
 		setDeploymentManifest(new DeploymentManifest.Builder()
 				.manifest(resource.getSubsystemManifest())
-				.manifest(resource.getDeploymentManifest())
+				.manifest(deploymentManifest == null ? resource.getDeploymentManifest() : new DeploymentManifest(deploymentManifest))
 				.location(resource.getLocation())
 				.autostart(false)
 				.id(resource.getId())
@@ -107,6 +111,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 				.region(resource.getRegion().getName())
 				.state(State.INSTALLING)
 				.build());
+		setTranslations();
 	}
 	
 	public BasicSubsystem(File file) throws IOException, URISyntaxException, ResolutionException {
@@ -194,7 +199,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	@Override
 	public Map<String, String> getSubsystemHeaders(Locale locale) {
 		SecurityManager.checkMetadataPermission(this);
-		return AccessController.doPrivileged(new GetSubsystemHeadersAction(this));
+		return AccessController.doPrivileged(new GetSubsystemHeadersAction(this, locale));
 	}
 
 	@Override
@@ -254,20 +259,8 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	}
 
 	@Override
-	public AriesSubsystem install(String location, final InputStream content) {
-		try {
-			return install(location, content == null ? null : 
-				AccessController.doPrivileged(new PrivilegedAction<IDirectory>() {
-					@Override
-					public IDirectory run() {
-						return FileSystem.getFSRoot(content);
-					}
-				}));
-		}
-		finally {
-			// This method must guarantee the content input stream was closed.
-			IOUtils.close(content);
-		}
+	public AriesSubsystem install(String location, InputStream content) {
+		return install(location, content, null);
 	}
 
 	@Override
@@ -618,7 +611,17 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 
 	@Override
 	public AriesSubsystem install(String location, IDirectory content) {
-		return AccessController.doPrivileged(new InstallAction(location, content, this, AccessController.getContext()));
+		return install(location, content, null);
+	}
+	
+	@Override
+	public AriesSubsystem install(String location, IDirectory content, InputStream deploymentManifest) {
+		try {
+			return AccessController.doPrivileged(new InstallAction(location, content, this, AccessController.getContext(), deploymentManifest));
+		}
+		finally {
+			IOUtils.close(deploymentManifest);
+		}
 	}
 
 	private static class SaveManifestParticipant implements Participant {
@@ -647,5 +650,39 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 			// Do no saving
 		}
 		
+	}
+
+	@Override
+	public Map<String, String> getDeploymentHeaders() {
+		SecurityManager.checkMetadataPermission(this);
+		return AccessController.doPrivileged(new GetDeploymentHeadersAction(this));
+	}
+
+	@Override
+	public AriesSubsystem install(String location, final InputStream content, InputStream deploymentManifest) {
+		try {
+			return install(location, content == null ? null : 
+				AccessController.doPrivileged(new PrivilegedAction<IDirectory>() {
+					@Override
+					public IDirectory run() {
+						return FileSystem.getFSRoot(content);
+					}
+				}),
+				deploymentManifest);
+		}
+		finally {
+			// This method must guarantee the content input stream was closed.
+			IOUtils.close(content);
+		}
+	}
+	
+	private void setTranslations() throws IOException {
+		String directoryName = getSubsystemManifest().getSubsystemLocalizationHeader().getDirectoryName();
+		File file = directoryName == null ? getDirectory() : new File(getDirectory(), directoryName);
+		if (!file.exists())
+			file.mkdirs();
+		for (TranslationFile translation : getResource().getTranslations()) {
+			translation.write(file);
+		}
 	}
 }

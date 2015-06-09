@@ -46,12 +46,15 @@ public interface AriesSubsystem extends Subsystem {
 	@Override
 	AriesSubsystem install(String location, InputStream content);
 	
+	@Override
+	AriesSubsystem install(String location, InputStream content, InputStream deploymentManifest);
+	
 	/**
 	 * Installs a subsystem from the specified location identifier and content.
 	 * <p>
 	 * This method performs the same function as calling
-	 * {@link #install(String, InputStream)} except the content is retrieved
-	 * from the specified {@link IDirectory} instead.
+	 * {@link #install(String, IDirectory, InputStream)} with a null deployment
+	 * manifest.
 	 * 
 	 * @param location The location identifier of the subsystem to install.
 	 * @param content The directory from which this subsystem will be read or
@@ -66,7 +69,35 @@ public interface AriesSubsystem extends Subsystem {
 	 * @throws SecurityException If the caller does not have the appropriate
 	 *         {@link SubsystemPermission}[installed subsystem,LIFECYCLE], and
 	 *         the runtime supports permissions.
-	 * @see #install(String, InputStream)
+	 * @see #install(String, IDirectory, InputStream)
 	 */
 	AriesSubsystem install(String location, IDirectory content);
+	
+	/**
+	 * Installs a subsystem from the specified location identifier and content
+	 * but uses the provided deployment manifest, if any, rather than the 
+	 * computed one or the one provided as part of the content.
+	 * <p>
+	 * This method performs the same function as calling
+	 * {@link #install(String, InputStream, InputStream)} except the content is 
+	 * retrieved from the specified {@link IDirectory} instead.
+	 * 
+	 * @param location The location identifier of the subsystem to install.
+	 * @param content The directory from which this subsystem will be read or
+	 *        {@code null} to indicate the directory must be created from the
+	 *        specified location identifier.
+	 * @param deploymentManifest The deployment manifest to use in lieu of any
+	 *        others.
+	 * @return The installed subsystem.
+	 * @throws IllegalStateException If this subsystem's state is in
+	 *         {@link State#INSTALLING INSTALLING}, {@link State#INSTALL_FAILED
+	 *         INSTALL_FAILED}, {@link State#UNINSTALLING UNINSTALLING},
+	 *         {@link State#UNINSTALLED UNINSTALLED}.
+	 * @throws SubsystemException If the installation failed.
+	 * @throws SecurityException If the caller does not have the appropriate
+	 *         {@link SubsystemPermission}[installed subsystem,LIFECYCLE], and
+	 *         the runtime supports permissions.
+	 * @see #install(String, InputStream, InputStream)
+	 */
+	AriesSubsystem install(String location, IDirectory content, InputStream deploymentManifest);
 }

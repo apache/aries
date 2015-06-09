@@ -115,6 +115,8 @@ public class HeaderFactory {
 			return new AriesSubsystemParentsHeader(value);
 		if (BundleRequiredExecutionEnvironmentHeader.NAME.equals(name))
 			return new BundleRequiredExecutionEnvironmentHeader(value);
+		if (SubsystemLocalizationHeader.NAME.equals(name))
+			return new SubsystemLocalizationHeader(value);
 		return new GenericHeader(name, value);
 			
 	}

@@ -13,19 +13,16 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.InputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
-import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.SubsystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +30,17 @@ import org.slf4j.LoggerFactory;
 public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 	private final IDirectory content;
 	private final AccessControlContext context;
+	private final InputStream deploymentManifest;
 	private final String location;
 	private final BasicSubsystem parent;
 	private static final Logger logger = LoggerFactory.getLogger(InstallAction.class);
 	
-	public InstallAction(String location, IDirectory content, BasicSubsystem parent, AccessControlContext context) {
+	public InstallAction(String location, IDirectory content, BasicSubsystem parent, AccessControlContext context, InputStream deploymentManifest) {
 		this.location = location;
 		this.content = content;
 		this.parent = parent;
 		this.context = context;
+		this.deploymentManifest = deploymentManifest;
 	}
 	
 	@Override
@@ -52,7 +51,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 		BasicSubsystem result = null;
 		try {
 			TargetRegion region = new TargetRegion(parent);
-			SubsystemResource ssr = createSubsystemResource(location, content, parent);
+			SubsystemResource ssr = new SubsystemResource(location, content, parent);
 			result = Activator.getInstance().getSubsystems().getSubsystemByLocation(location);
 			if (result != null) {
 				checkLifecyclePermission(result);
@@ -73,7 +72,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
 				return (BasicSubsystem)ResourceInstaller.newInstance(coordination, result, parent).install();
 			}
-			result = createSubsystem(ssr);
+			result = new BasicSubsystem(ssr, deploymentManifest);
 			checkLifecyclePermission(result);
 			return (BasicSubsystem)ResourceInstaller.newInstance(coordination, result, parent).install();
 		}
@@ -96,7 +95,6 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 				closeContentIfIClosable();
 			}
 		}
-		closeContentIfIClosable();
 		return result;
 	}
 
@@ -122,16 +120,5 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 			}
 		},
 		context);
-	}
-	
-	private BasicSubsystem createSubsystem(SubsystemResource resource) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
-		final BasicSubsystem result = new BasicSubsystem(resource);
-		return result;
-		
-	}
-	
-	private SubsystemResource createSubsystemResource(String location, IDirectory content, BasicSubsystem parent) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException {
-		final SubsystemResource result = new SubsystemResource(location, content, parent);
-		return result;
 	}
 }

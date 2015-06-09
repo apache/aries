@@ -94,7 +94,7 @@ public class UnmanagedBundleTest extends SubsystemTest {
 		try {
 			Bundle a = bundleContext.installBundle(BUNDLE_A, new FileInputStream(BUNDLE_A));
 			try {
-				core = bundleContext.installBundle(core.getLocation());
+				core = bundleContext.installBundle(normalizeBundleLocation(core));
 				core.start();
 				assertConstituent(getRootSubsystem(), BUNDLE_A);
 			}
@@ -104,7 +104,7 @@ public class UnmanagedBundleTest extends SubsystemTest {
 		}
 		finally {
 			if (core.getState() == Bundle.UNINSTALLED) {
-				core = bundleContext.installBundle(core.getLocation());
+				core = bundleContext.installBundle(normalizeBundleLocation(core));
 				core.start();
 			}
 		}

@@ -106,7 +106,7 @@ public class RootSubsystemTest extends SubsystemTest {
 		core.stop();
 		assertServiceEventsStop(root);
 		core.uninstall();
-		core = bundleContext.installBundle(core.getLocation());
+		core = bundleContext.installBundle(normalizeBundleLocation(core));
 		core.start();
 		// There should be install events since the persisted root subsystem was
 		// deleted when the subsystems implementation bundle was uninstalled.
