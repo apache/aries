@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +41,7 @@ import org.apache.aries.subsystem.core.archive.RequireCapabilityHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader.Clause;
 import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
+import org.apache.aries.subsystem.core.archive.SubsystemLocalizationHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemSymbolicNameHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
@@ -58,7 +61,6 @@ import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-import org.osgi.service.repository.Repository;
 import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -108,13 +110,14 @@ public class RawSubsystemResource implements Resource {
 	private final List<Capability> capabilities;
 	private final DeploymentManifest deploymentManifest;
 	private final long id;
-	private final Repository localRepository;
+	private final org.apache.aries.subsystem.core.repository.Repository localRepository;
 	private final Location location;
     private final BasicSubsystem parentSubsystem;
 	private final List<Requirement> requirements;
 	private final Collection<Resource> resources;
 	private final Resource fakeImportServiceResource;
 	private final SubsystemManifest subsystemManifest;
+	private final Collection<TranslationFile> translations;
 
 	public RawSubsystemResource(String location, IDirectory content, BasicSubsystem parent) throws URISyntaxException, IOException, ResolutionException {
 		id = SubsystemIdentifier.getNextId();
@@ -132,6 +135,7 @@ public class RawSubsystemResource implements Resource {
 			subsystemManifest = computeSubsystemManifestAfterRequirements(manifest);
 			capabilities = computeCapabilities();
 			deploymentManifest = computeDeploymentManifest(content);
+			translations = computeTranslations(content);
 		}
 		finally {
 			IOUtils.close(content.toCloseable());
@@ -153,6 +157,7 @@ public class RawSubsystemResource implements Resource {
 		id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
 		location = new Location(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue());
 		parentSubsystem = parent;
+		translations = Collections.emptyList();
 	}
 
 	private static Resource createFakeResource(SubsystemManifest manifest) {
@@ -232,7 +237,7 @@ public class RawSubsystemResource implements Resource {
 		return id;
 	}
 
-	public Repository getLocalRepository() {
+	public org.apache.aries.subsystem.core.repository.Repository getLocalRepository() {
 		return localRepository;
 	}
 
@@ -252,14 +257,14 @@ public class RawSubsystemResource implements Resource {
 		return Collections.unmodifiableList(result);
 	}
 
-	public Collection<Resource> getResources() {
-		return Collections.unmodifiableCollection(resources);
-	}
-
 	public SubsystemManifest getSubsystemManifest() {
 		return subsystemManifest;
 	}
 
+	public Collection<TranslationFile> getTranslations() {
+		return translations;
+	}
+	
 	@Override
 	public int hashCode() {
 		int result = 17;
@@ -331,7 +336,7 @@ public class RawSubsystemResource implements Resource {
 		return new ImportPackageHeader(clauses);
 	}
 
-	private Repository computeLocalRepository() {
+	private org.apache.aries.subsystem.core.repository.Repository computeLocalRepository() {
 		if (fakeImportServiceResource != null) {
 			Collection<Resource> temp = new ArrayList<Resource>(resources);
 			temp.add(fakeImportServiceResource);
@@ -374,23 +379,34 @@ public class RawSubsystemResource implements Resource {
 	}
 
 	private List<Requirement> computeRequirements(SubsystemManifest manifest) throws ResolutionException {
-		if (isComposite(manifest))
+		if (isComposite(manifest)) {
+			// Composites determine their own requirements.
 			return manifest.toRequirements(this);
+		}
+		// Gather up all of the content resources for the subsystem.
 		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
-		if (header == null)
+		if (header == null) {
+			// Empty subsystems (i.e. subsystems with no content) are allowed.
 			return Collections.emptyList();
-		// TODO Need the system repository in here. Preferred provider as well?
-		LocalRepository localRepo = new LocalRepository(resources);
-		RepositoryServiceRepository serviceRepo = new RepositoryServiceRepository(Activator.getInstance().getBundleContext());
-		CompositeRepository compositeRepo = new CompositeRepository(localRepo, serviceRepo);
+		}
 		List<Requirement> requirements = header.toRequirements(this);
 		List<Resource> resources = new ArrayList<Resource>(requirements.size());
+		// TODO Do we need the system repository in here (e.g., for features)?
+		// What about the preferred provider repository?
+		// Search the local repository and service repositories for content.
+		RepositoryServiceRepository serviceRepo = new RepositoryServiceRepository();
+		// TODO Should we search the service repositories first, the assumption
+		// being they will contain more current content than the subsystem
+		// archive?
+		CompositeRepository compositeRepo = new CompositeRepository(localRepository, serviceRepo);
 		for (Requirement requirement : requirements) {
 			Collection<Capability> capabilities = compositeRepo.findProviders(requirement);
-			if (capabilities.isEmpty())
-				continue;
-			resources.add(capabilities.iterator().next().getResource());
+			if (!capabilities.isEmpty()) {
+				resources.add(capabilities.iterator().next().getResource());
+			}
 		}
+		// Now compute the dependencies of the content resources. These are
+		// dependencies not satisfied by the content resources themselves.
 		return new DependencyCalculator(resources).calculateDependencies();
 	}
 
@@ -523,6 +539,33 @@ public class RawSubsystemResource implements Resource {
 		return header;
 	}
 
+	private Collection<TranslationFile> computeTranslations(IDirectory directory) throws IOException {
+		SubsystemManifest manifest = getSubsystemManifest();
+		SubsystemLocalizationHeader header = manifest.getSubsystemLocalizationHeader();
+		String directoryName = header.getDirectoryName();
+		// TODO Assumes the ZIP file includes directory entries. Issues?
+		IFile file = directoryName == null ? directory : directory.getFile(directoryName);
+		if (file == null || !file.isDirectory())
+			return Collections.emptyList();
+		List<IFile> files = file.convert().listFiles();
+		if (files == null || files.isEmpty())
+			return Collections.emptyList();
+		ArrayList<TranslationFile> result = new ArrayList<TranslationFile>(files.size());
+		for (IFile f : files) {
+			Properties properties = new Properties();
+			InputStream is = f.open();
+			try {
+				properties.load(is);
+				result.add(new TranslationFile(f.getName(), properties));
+			}
+			finally {
+				is.close();
+			}
+		}
+		result.trimToSize();
+		return result;
+	}
+	
 	private DeploymentManifest initializeDeploymentManifest(IDirectory idir)
 			throws IOException {
 		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(idir,

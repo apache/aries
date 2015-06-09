@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.ExecutionEnvironmentNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.framework.namespace.NativeNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
@@ -35,8 +36,6 @@ import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.resolver.Resolver;
 
 public class DependencyCalculator {
-	// TODO replace with NativeNamespace constant in R6.
-	static final String NATIVE_NAMESPACE = "osgi.native";
 	private static class ResolveContext extends
 			org.osgi.service.resolver.ResolveContext {
 		private final Collection<Resource> resources;
@@ -50,7 +49,7 @@ public class DependencyCalculator {
 			ArrayList<Capability> capabilities = new ArrayList<Capability>();
 			// never check local resources for osgi.ee or osgi.native capabilities
 			if (!(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE.equals(requirement.getNamespace()) 
-					|| NATIVE_NAMESPACE.equals(requirement.getNamespace()))) {
+					|| NativeNamespace.NATIVE_NAMESPACE.equals(requirement.getNamespace()))) {
 				for (Resource resource : resources)
 					for (Capability capability : resource
 							.getCapabilities(requirement.getNamespace()))
@@ -86,7 +85,7 @@ public class DependencyCalculator {
 		}
 	}
 
-	private static class MissingCapability extends AbstractCapability {
+	static class MissingCapability extends AbstractCapability {
 		private static class Resource implements org.osgi.resource.Resource {
 			public static final Resource INSTANCE = new Resource();
 			
