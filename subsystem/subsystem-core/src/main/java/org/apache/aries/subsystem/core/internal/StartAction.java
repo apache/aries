@@ -59,15 +59,25 @@ public class StartAction extends AbstractAction {
 
 	private final Coordination coordination;
 	private final BasicSubsystem instigator;
+	private final boolean resolveOnly;
 
 	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target) {
-		this(instigator, requestor, target, null);
+		this(instigator, requestor, target, false);
 	}
 
+	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, boolean resolveOnly) {
+		this(instigator, requestor, target, null, resolveOnly);
+	}
+	
 	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, Coordination coordination) {
+		this(instigator, requestor, target, coordination, false);
+	}
+	
+	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, Coordination coordination, boolean resolveOnly) {
 		super(requestor, target, false);
 		this.instigator = instigator;
 		this.coordination = coordination;
+		this.resolveOnly = resolveOnly;
 	}
 
 	@Override
@@ -104,6 +114,8 @@ public class StartAction extends AbstractAction {
 			// Resolve if necessary.
 			if (State.INSTALLED.equals(state))
 				resolve(target);
+			if (resolveOnly)
+				return null;
 			target.setState(State.STARTING);
 			// TODO Need to hold a lock here to guarantee that another start
 			// operation can't occur when the state goes to RESOLVED.
@@ -284,7 +296,7 @@ public class StartAction extends AbstractAction {
 			String filter = capability.getDirectives().get(SubsystemExportServiceCapability.DIRECTIVE_FILTER);
 			if (logger.isDebugEnabled())
 				logger.debug("Allowing " + policy + " of " + filter);
-			builder.allow(policy, filter.toString());
+			builder.allow(policy, filter);
 		}
 	}
 
