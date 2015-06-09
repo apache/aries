@@ -21,6 +21,8 @@ package org.apache.aries.blueprint.itests;
 import java.util.Currency;
 import java.util.Hashtable;
 
+import javax.inject.Inject;
+
 import org.apache.aries.blueprint.sample.Foo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +31,7 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
@@ -42,105 +45,56 @@ import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
 public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
+    @Inject
+    ConfigurationAdmin ca;
 
     @Test
     public void testStrategyNone() throws Exception {
-        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);
-        Configuration cf = ca.getConfiguration("blueprint-sample-managed.none", null);
-        Hashtable<String,String> props = new Hashtable<String,String>();
-        props.put("a", "5");
-        props.put("currency", "PLN");
-        cf.update(props);
+        ca.getConfiguration("blueprint-sample-managed.none", null).update(getConfig1());
+        startTestBundle();
 
-        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-        assertNotNull(bundle);
-        bundle.start();
-
-        BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
-        assertNotNull(blueprintContainer);
-
-        Foo foo = (Foo) blueprintContainer.getComponentInstance("none-managed");
-        assertNotNull(foo);
-
+        // foo should receive initial configuration
+        Foo foo = getComponent("none-managed");
         assertEquals(5, foo.getA());
         assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
 
-        props = new Hashtable<String,String>();
-        props.put("a", "10");
-        props.put("currency", "USD");
-        cf = ca.getConfiguration("blueprint-sample-managed.none", null);
-        cf.update(props);
-
+        // foo should not reflect changes in config
+        ca.getConfiguration("blueprint-sample-managed.none", null).update(getConfig2());
         Thread.sleep(100);
-
         assertEquals(5, foo.getA());
         assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
     }
 
+
+
     @Test
     public void testStrategyContainer() throws Exception {
-        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);
-        Configuration cf = ca.getConfiguration("blueprint-sample-managed.container", null);
-        Hashtable<String,String> props = new Hashtable<String,String>();
-        props.put("a", "5");
-        props.put("currency", "PLN");
-        cf.update(props);
-
-        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-        assertNotNull(bundle);
-        bundle.start();
-
-        BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
-        assertNotNull(blueprintContainer);
-
-        Foo foo = (Foo) blueprintContainer.getComponentInstance("container-managed");
-        assertNotNull(foo);
-
+        // foo should have received initial configuration
+        ca.getConfiguration("blueprint-sample-managed.container", null).update(getConfig1());
+        startTestBundle();
+        Foo foo = getComponent("container-managed");
         assertEquals(5, foo.getA());
         assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
 
-        props = new Hashtable<String,String>();
-        props.put("a", "10");
-        props.put("currency", "USD");
-        cf.update(props);
-
+        // foo bean properties should have been updated 
+        ca.getConfiguration("blueprint-sample-managed.container", null).update(getConfig2());
         Thread.sleep(100);
-
         assertEquals(10, foo.getA());
         assertEquals(Currency.getInstance("USD"), foo.getCurrency());
     }
 
     @Test
     public void testStrategyComponent() throws Exception {
-        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);
-        Configuration cf = ca.getConfiguration("blueprint-sample-managed.component", null);
-        Hashtable<String,String> props = new Hashtable<String,String>();
-        props.put("a", "5");
-        props.put("currency", "PLN");
-        cf.update(props);
-        
-        Thread.sleep(2000);
-
-        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-        assertNotNull(bundle);
-        bundle.start();
-
-        BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
-        assertNotNull(blueprintContainer);
-
-        Foo foo = (Foo) blueprintContainer.getComponentInstance("component-managed");
-        assertNotNull(foo);
-
+        // foo should receive initial configuration
+        ca.getConfiguration("blueprint-sample-managed.component", null).update(getConfig1());
+        startTestBundle();
+        Foo foo = getComponent("component-managed");
         assertEquals(5, foo.getA());
         assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
 
-        props = new Hashtable<String,String>();
-        props.put("a", "10");
-        props.put("currency", "USD");
-        cf.update(props);
-
+        // Foo.update() should have been called but the bean properties should not have been updated
+        ca.getConfiguration("blueprint-sample-managed.component", null).update(getConfig2());
         Thread.sleep(100);
-
         assertEquals(5, foo.getA());
         assertEquals(Currency.getInstance("PLN"), foo.getCurrency());
         assertNotNull(foo.getProps());
@@ -151,32 +105,47 @@ public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void testManagedServiceFactory() throws Exception {
-
-        ConfigurationAdmin ca = context().getService(ConfigurationAdmin.class);
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory", null);
-        Hashtable<String,String> props = new Hashtable<String,String>();
-        props.put("a", "5");
-        props.put("currency", "PLN");
-        cf.update(props);
+        cf.update(getConfig1());
+        startTestBundle();
         
-        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-        assertNotNull(bundle);
-        bundle.start();
-        
-        BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
-        assertNotNull(blueprintContainer);
-
         // Make sure only one service is registered
         // Ask the service registry, not the container, since the container might have got it wrong :)
         Foo foo = context().getService(Foo.class, "(service.pid=blueprint-sample-managed-service-factory.*)");
-        assertNotNull(foo);
-
         ServiceReference[] refs = context().getAllServiceReferences(Foo.class.getName(), "(service.pid=blueprint-sample-managed-service-factory.*)");
-        
         assertNotNull("No services were registered for the managed service factory", refs);
         assertEquals("Multiple services were registered for the same pid.", 1, refs.length);
-        
+    }
 
+    private Hashtable<String, String> getConfig1() {
+        Hashtable<String,String> props = new Hashtable<String,String>();
+        props.put("a", "5");
+        props.put("currency", "PLN");
+        return props;
+    }
+
+    private Hashtable<String, String> getConfig2() {
+        Hashtable<String, String> props;
+        props = new Hashtable<String,String>();
+        props.put("a", "10");
+        props.put("currency", "USD");
+        return props;
+    }
+
+    private <T>T getComponent(String componentId) {
+        BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
+        assertNotNull(blueprintContainer);
+
+        @SuppressWarnings("unchecked")
+        T component = (T)blueprintContainer.getComponentInstance(componentId);
+        assertNotNull(component);
+        return component;
+    }
+    
+    private void startTestBundle() throws BundleException {
+        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
+        assertNotNull(bundle);
+        bundle.start();
     }
 
     @org.ops4j.pax.exam.Configuration

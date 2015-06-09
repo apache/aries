@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,16 +69,28 @@ public class BundleCompatibility {
   private BundleInfo currentBundle;
   private BundleInfo baseBundle;
   private StringBuilder pkgElements = new StringBuilder();
+  private List<String> pkgElementsList = new ArrayList<String>();
+  private List<String> excludes;
 
   private VersionChange bundleChange;
   private final Map<String, VersionChange> packageChanges = new HashMap<String, VersionChange>();
 
   public BundleCompatibility(String bundleSymbolicName, BundleInfo currentBundle, BundleInfo baseBundle, URLClassLoader oldJarsLoader, URLClassLoader newJarsLoader) {
+    this(bundleSymbolicName,
+         currentBundle,
+         baseBundle,
+         oldJarsLoader,
+         newJarsLoader,
+         null);
+  }
+  
+  public BundleCompatibility(String bundleSymbolicName, BundleInfo currentBundle, BundleInfo baseBundle, URLClassLoader oldJarsLoader, URLClassLoader newJarsLoader, List<String> excludes) {
     this.bundleSymbolicName = bundleSymbolicName;
     this.currentBundle = currentBundle;
     this.baseBundle = baseBundle;
     this.oldJarsLoader = oldJarsLoader;
     this.newJarsLoader = newJarsLoader;
+    this.excludes = excludes != null ? excludes : new ArrayList<String>();
   }
 
   public VersionChange getBundleChange() {
@@ -95,7 +108,19 @@ public class BundleCompatibility {
   public StringBuilder getPkgElements() {
     return pkgElements;
   }
-
+  
+  private boolean ignoreChange(String reason) {
+    if ((reason == null) || (this.excludes.isEmpty())) return false;
+    
+    for (String exclude : this.excludes) {
+      // Could have interpreted each exclude as a regex, but that makes it easy to write loose rules
+      // that match more strings than intended.
+      if ((reason != null) && reason.contains(exclude)) return true; 
+    }
+    
+    return false;
+  }
+  
   public boolean isBundleVersionCorrect() {
     return bundleVersionCorrect;
   }
@@ -145,26 +170,24 @@ public class BundleCompatibility {
           //                    if (majorChange.isChange() || minorChange.isChange()) {
           String oldVersion = pkg.getValue().getPackageVersion();
           String newVersion = currPkgContents.getPackageVersion();
-          if (majorChange.isChange()) {
+          if (majorChange.isChange() && !!!ignoreChange(majorChange.getReason())) {
             packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion));
             pkg_major_change = true;
             fatal_package = pkgName;
             if (!!!isVersionCorrect(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion)) {
-              pkgElements.append(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion, majorChange.getReason(), majorChange.getChangeClass()));
+              pkgElementsList.add(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion, majorChange.getReason(), majorChange.getChangeClass()));
             }
-          } else if (minorChange.isChange()) {
+          } else if (minorChange.isChange() && !!!ignoreChange(minorChange.getReason())) {
             packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion));
             pkg_minor_change = true;
             if (fatal_package == null) fatal_package = pkgName;
             if (!!!isVersionCorrect(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion)) {
-              pkgElements.append(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MINOR_CHANGE, pkg.getValue().getPackageVersion(), currPkgContents.getPackageVersion(), minorChange.getReason(), minorChange.getChangeClass()));
+              pkgElementsList.add(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MINOR_CHANGE, pkg.getValue().getPackageVersion(), currPkgContents.getPackageVersion(), minorChange.getReason(), minorChange.getChangeClass()));
             }
           }  else {
             packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.NO_CHANGE, oldVersion, newVersion));
-            pkgElements.append(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.NO_CHANGE, pkg.getValue().getPackageVersion(), currPkgContents.getPackageVersion(), "", ""));
+            pkgElementsList.add(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.NO_CHANGE, pkg.getValue().getPackageVersion(), currPkgContents.getPackageVersion(), "", ""));
           }
-          pkgElements.append("\r\n");
-          //                    }
       }
       }
       // If there is a package version change, the bundle version needs to be updated.

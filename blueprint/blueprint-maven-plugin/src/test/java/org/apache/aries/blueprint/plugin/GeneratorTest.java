@@ -21,16 +21,33 @@ package org.apache.aries.blueprint.plugin;
 import static java.util.Arrays.asList;
 import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
 
-import org.apache.aries.blueprint.plugin.Generator;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.xbean.finder.ClassFinder;
+import org.junit.Assert;
 import org.junit.Test;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 public class GeneratorTest {
+
+    private XPath xpath;
+    private Document document;
+
     @Test
     public void testGenerate() throws Exception {
         ClassFinder classFinder = new ClassFinder(this.getClass().getClassLoader());
@@ -38,7 +55,45 @@ public class GeneratorTest {
         Set<Class<?>> beanClasses = findClasses(classFinder, asList(packageName));
         Context context = new Context(beanClasses);
         context.resolve();
-        new Generator(context, System.out).generate();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        new Generator(context, os).generate();
+        System.out.println(os.toString("UTF-8"));
+
+        document = readToDocument(os);
+        xpath = XPathFactory.newInstance().newXPath();
+        //xpath.setNamespaceContext(new NameSpaces(document));
+        Node bean1 = (Node) xpath.evaluate("/blueprint/bean[@id='myBean1']", document, XPathConstants.NODE);
+
+        // Bean
+        Assert.assertEquals(MyBean1.class.getName(), xpath.evaluate("@class", bean1));
+        Assert.assertEquals("init", xpath.evaluate("@init-method", bean1));
+        Assert.assertEquals("destroy", xpath.evaluate("@destroy-method", bean1));
+        Assert.assertEquals("true", xpath.evaluate("@field-injection", bean1));
+        
+        // @Transactional
+        Assert.assertEquals("*", xpath.evaluate("transaction/@method", bean1));
+        Assert.assertEquals("Required", xpath.evaluate("transaction/@value", bean1));
+
+        // @PersistenceContext
+        Assert.assertEquals("person", xpath.evaluate("context/@unitname", bean1));
+        Assert.assertEquals("em", xpath.evaluate("context/@property", bean1));
+        
+        // @PersistenceUnit
+        Assert.assertEquals("person", xpath.evaluate("unit/@unitname", bean1));
+        Assert.assertEquals("emf", xpath.evaluate("unit/@property", bean1));
+        
+        // @Autowired
+        Assert.assertEquals("my1", xpath.evaluate("property[@name='bean2']/@ref", bean1));
+
+
     }
-    
+
+    private Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
+        SAXException, IOException {
+        InputStream is = new ByteArrayInputStream(os.toByteArray());
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = builderFactory.newDocumentBuilder();
+        return builder.parse(is);
+    }
+
 }
