@@ -30,6 +30,7 @@ import java.util.Currency;
 
 import org.apache.aries.blueprint.sample.Bar;
 import org.apache.aries.blueprint.sample.Foo;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -41,12 +42,16 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 @RunWith(PaxExam.class)
 public class BlueprintAnnotationTest extends AbstractBlueprintIntegrationTest {
 
+    private BlueprintContainer blueprintContainer;
+
+    @Before
+    public void setUp() throws InvalidSyntaxException, InterruptedException {
+        blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample-annotation");
+        assertNotNull(blueprintContainer);
+    }
+
     @Test
     public void test() throws Exception {
-        BlueprintContainer blueprintContainer = getBlueprintContainerForBundle("org.apache.aries.blueprint.sample-annotation");
-    
-        assertNotNull(blueprintContainer);
-    
         Object obj = blueprintContainer.getComponentInstance("bar");
         assertNotNull(obj);
         assertEquals(Bar.class, obj.getClass());
@@ -69,9 +74,16 @@ public class BlueprintAnnotationTest extends AbstractBlueprintIntegrationTest {
         
         assertNotNull(blueprintContainer.getComponentInstance("fragment"));
     
-        obj = context().getService(Foo.class, null, 5000);
+        obj = context().getService(Foo.class, "(blueprint.annotation.sample=true)", 5000);
         assertNotNull(obj);
         assertEquals(foo.toString(), obj.toString());
+    }
+
+    @Test
+    public void testXmlConfig() {
+        Object obj = blueprintContainer.getComponentInstance("testXmlConfigBean");
+        assertNotNull(obj);
+        assertEquals("org.apache.aries.blueprint.sample.TestXmlConfigBean", obj.getClass().getName());
     }
 
     private BlueprintContainer getBlueprintContainerForBundle(String symbolicName) throws InvalidSyntaxException, InterruptedException {

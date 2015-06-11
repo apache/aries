@@ -36,6 +36,7 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutablePassThroughMetadata;
 import org.apache.aries.transaction.BundleWideTxData;
 import org.apache.aries.transaction.Constants;
@@ -114,12 +115,25 @@ public class TxNamespaceHandler implements NamespaceHandler {
             Node n = elt.getChildNodes().item(0);
             if(n == null || Boolean.parseBoolean(n.getNodeValue())) {
                 //We need to register a bean processor to add annotation-based config
-                if(!!!cdr.containsComponentDefinition(ANNOTATION_PARSER_BEAN_NAME)) {
-                	
-                	MutablePassThroughMetadata mptmd = pc.createMetadata(MutablePassThroughMetadata.class);
-                	mptmd.setId(ANNOTATION_PARSER_BEAN_NAME);
-                	mptmd.setObject(new AnnotationParser(cdr, interceptor, metaDataHelper));
-                    cdr.registerComponentDefinition(mptmd);
+                if (!cdr.containsComponentDefinition(ANNOTATION_PARSER_BEAN_NAME)) {
+                    MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
+                    meta.setId(ANNOTATION_PARSER_BEAN_NAME);
+                    meta.setRuntimeClass(AnnotationParser.class);
+                    meta.setProcessor(true);
+
+                	MutablePassThroughMetadata cdrMeta = pc.createMetadata(MutablePassThroughMetadata.class);
+                    cdrMeta.setObject(cdr);
+                    meta.addArgument(cdrMeta, ComponentDefinitionRegistry.class.getName(), 0);
+
+                    MutablePassThroughMetadata interceptorMeta = pc.createMetadata(MutablePassThroughMetadata.class);
+                    interceptorMeta.setObject(interceptor);
+                    meta.addArgument(interceptorMeta, Interceptor.class.getName(), 1);
+
+                    MutablePassThroughMetadata helperMeta = pc.createMetadata(MutablePassThroughMetadata.class);
+                    helperMeta.setObject(metaDataHelper);
+                    meta.addArgument(helperMeta, TxComponentMetaDataHelper.class.getName(), 2);
+
+                    cdr.registerComponentDefinition(meta);
                 }
             }
         }
