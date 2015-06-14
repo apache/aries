@@ -19,10 +19,11 @@
 package org.apache.aries.jpa.eclipselink.adapter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.apache.aries.util.io.IOUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 
@@ -53,7 +54,7 @@ public final class UnionClassLoader extends ClassLoader implements BundleReferen
       
       
       try {
-        IOUtils.copy(is, baos);
+        copy(is, baos);
       } catch (IOException ioe) {
         throw new ClassNotFoundException(name, ioe);
       }
@@ -68,4 +69,25 @@ public final class UnionClassLoader extends ClassLoader implements BundleReferen
   public Bundle getBundle() {
     return adaptorBundle;
   }
+  
+	private static void copy(InputStream in, OutputStream out)
+			throws IOException {
+		try {
+			int len;
+			byte[] b = new byte[1024];
+			while ((len = in.read(b)) != -1)
+				out.write(b, 0, len);
+		} finally {
+			close(in);
+		}
+	}
+
+	private static void close(Closeable c) {
+		try {
+			if (c != null)
+				c.close();
+		} catch (IOException e) {
+			c = null;
+		}
+	}
 }
