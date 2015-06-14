@@ -1,0 +1,4 @@
+cp org.osgi.test.cases.jpa.bnd target
+cd target
+java -jar lib/bnd-2.4.0.jar runtests --title osgi.ct
+cd ..

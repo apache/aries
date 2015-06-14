@@ -32,20 +32,6 @@
     <artifactId>org.apache.aries.jpa.container.itest</artifactId>
     <name>Apache Aries JPA iTests</name>
 
-    <properties>
-        <exam.version>4.5.0</exam.version>
-        <url.version>1.6.0</url.version>
-        <hibernate42.version>4.2.15.Final</hibernate42.version>
-        <hibernate43.version>4.2.15.Final</hibernate43.version>
-        <ant.bundle.version>1.8.2_2</ant.bundle.version>
-        <antlr.bundle.version>2.7.7_5</antlr.bundle.version>
-        <dom4j.bundle.version>1.6.1_5</dom4j.bundle.version>
-        <serp.bundle.version>1.14.1_1</serp.bundle.version>
-        <eclipselink.version>2.5.2</eclipselink.version>
-        <openjpa.version>2.3.0</openjpa.version>
-        <paxjdbc.version>0.6.0</paxjdbc.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.eclipse</groupId>
