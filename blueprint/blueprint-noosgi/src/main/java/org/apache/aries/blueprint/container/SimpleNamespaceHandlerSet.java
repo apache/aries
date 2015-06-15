@@ -96,9 +96,20 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
                                                    String systemId, String baseURI) {
                         try {
                             if (systemId != null && !URI.create(systemId).isAbsolute()) {
-                                URI namespaceURI = URI.create(namespace);
-                                if (namespaces.containsKey(namespaceURI)) {
-                                    URI systemIdUri = namespaces.get(namespaceURI).toURI().resolve(systemId);
+                                URL namespaceURL = namespaces.get(URI.create(namespace));
+                                if (namespaceURL != null) {
+                                    URI systemIdUri = namespaceURL.toURI().resolve(systemId);
+                                    if (!systemIdUri.isAbsolute() && "jar".equals(namespaceURL.getProtocol())) {
+                                        String urlString = namespaceURL.toString();
+                                        int jarFragmentIndex = urlString.lastIndexOf('!');
+                                        if (jarFragmentIndex > 0 && jarFragmentIndex < urlString.length() - 1) {
+                                            String jarUrlOnly = urlString.substring(0, jarFragmentIndex);
+                                            String oldFragment = urlString.substring(jarFragmentIndex + 1);
+                                            String newFragment = URI.create(oldFragment).resolve(systemId).toString();
+                                            String newJarUri = jarUrlOnly + '!' + newFragment;
+                                            systemIdUri = URI.create(newJarUri);
+                                        }
+                                    }
                                     InputStream resourceStream = systemIdUri.toURL().openStream();
                                     return new LSInputImpl(publicId, systemId, resourceStream);
                                 }
