@@ -48,27 +48,23 @@ public abstract class AbstractJPAItest {
     protected EntityManagerFactory getEMF(String name) {
         return getService(EntityManagerFactory.class, "osgi.unit.name=" + name);
     }
+    
+    public <T> T getService(Class<T> type, String filter) {
+    	return getService(type, filter, true);
+    }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	public <T> T getService(Class<T> type, String filter) {
+	public <T> T getService(Class<T> type, String filter, boolean mandatory) {
         ServiceTracker tracker = null;
         try {
-            String flt;
-            if (filter != null) {
-                if (filter.startsWith("(")) {
-                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")" + filter + ")";
-                } else {
-                    flt = "(&(" + Constants.OBJECTCLASS + "=" + type.getName() + ")(" + filter + "))";
-                }
-            } else {
-                flt = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
-            }
+        	String objClassFilter = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
+            String flt = filter != null ? "(&" + objClassFilter + sanitizeFilter(filter) + ")" : objClassFilter;
             Filter osgiFilter = FrameworkUtil.createFilter(flt);
             tracker = new ServiceTracker(bundleContext, osgiFilter, null);
             tracker.open();
 
             Object svc = type.cast(tracker.waitForService(10000));
-            if (svc == null) {
+            if (svc == null && mandatory) {
                 throw new RuntimeException("Gave up waiting for service " + flt);
             }
             return type.cast(svc);
@@ -76,8 +72,15 @@ public abstract class AbstractJPAItest {
             throw new IllegalArgumentException("Invalid filter", e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        } finally {
+        	tracker.close();
         }
     }
+
+	public String sanitizeFilter(String filter) {
+		return filter.startsWith("(") ? filter : "(" + filter + ")";
+	}	
+		
     
 	/**
 	 * Helps to diagnose bundles that are not resolved as it will throw a detailed exception

@@ -83,11 +83,11 @@ public class ManagedEMF implements Closeable, ManagedService {
         } catch (Exception e) {
             // Ignore. May happen if persistence unit bundle is unloaded/updated
         }
-        if (emf != null) {
+        if (emf != null && emf.isOpen()) {
             try {
                 emf.close();
             } catch (Exception e) {
-                LOGGER.warn("EntityManagerFactory for " + persistenceUnit.getPersistenceUnitName() + " already close", e);
+                LOGGER.warn("Error closing EntityManagerFactory for " + persistenceUnit.getPersistenceUnitName(), e);
             }
         }
         reg = null;
