@@ -55,8 +55,7 @@ public class TCKJPATestCase extends AbstractJPAItest {
             ariesJpa20(), //
             derbyDSF(), //
             hibernate(), //
-            streamBundle(testBundle),
-            debug()
+            streamBundle(testBundle)
         };
     }
 }
