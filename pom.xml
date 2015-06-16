@@ -6,7 +6,7 @@
     <groupId>org.apache.aries.jpa</groupId>
     <artifactId>org.apache.aries.jpa.main</artifactId>
     <name>Apache Aries JPA parent</name>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <parent>
@@ -21,9 +21,9 @@
     </properties>
     
     <scm>
-	<connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa-2.0.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa-2.0.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jpa-2.0.0</url>
+	<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jpa</url>
     </scm>
 
     <modules>
