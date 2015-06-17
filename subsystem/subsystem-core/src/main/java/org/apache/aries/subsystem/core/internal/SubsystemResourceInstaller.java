@@ -13,6 +13,8 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,7 +24,6 @@ import org.apache.aries.util.filesystem.FileSystem;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
-import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.Subsystem.State;
 
 public class SubsystemResourceInstaller extends ResourceInstaller {
@@ -31,16 +32,15 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	}
 
 	public Resource install() throws Exception {
-		BasicSubsystem result;
-		if (resource instanceof RepositoryContent)
-			result = installRepositoryContent((RepositoryContent)resource);
-		else if (resource instanceof BasicSubsystem)
-			result = installAriesSubsystem((BasicSubsystem)resource);
+		if (resource instanceof BasicSubsystem)
+			return installAriesSubsystem((BasicSubsystem)resource);
 		else if (resource instanceof RawSubsystemResource)
-			result = installRawSubsystemResource((RawSubsystemResource)resource);
-		else
-			result = installSubsystemResource((SubsystemResource)resource);
-		return result;
+			return installRawSubsystemResource((RawSubsystemResource)resource);
+		else if (resource instanceof SubsystemResource)
+			return installSubsystemResource((SubsystemResource)resource);
+		else {
+			return installRepositoryContent(resource);
+		}
 	}
 
 	private void addChild(final BasicSubsystem child) {
@@ -147,8 +147,10 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		});
 	}
 
-	private BasicSubsystem installRepositoryContent(RepositoryContent resource) throws Exception {
-		RawSubsystemResource rawSubsystemResource = new RawSubsystemResource(getLocation(), FileSystem.getFSRoot(resource.getContent()), subsystem);
+	private BasicSubsystem installRepositoryContent(Resource resource) throws Exception {
+		Method method = resource.getClass().getMethod("getContent");
+		InputStream is = (InputStream)method.invoke(resource);
+		RawSubsystemResource rawSubsystemResource = new RawSubsystemResource(getLocation(), FileSystem.getFSRoot(is), subsystem);
 		return installRawSubsystemResource(rawSubsystemResource);
 	}
 

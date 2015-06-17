@@ -1,0 +1,51 @@
+# Copyright (c) OSGi Alliance (2012). All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# bnd pack for project org.osgi.test.cases.jpa
+# Thu Nov 01 12:39:45 EDT 2012
+-runpath = \
+    lib/org.eclipse.osgi-3.8.0.v20120529-1548.jar;version=file, \
+    lib/org.apache.servicemix.bundles.junit-3.8.2_2.jar;version=file;export="junit.framework;version=3.8" 
+
+-runtrace = true
+
+-target = \
+    lib/org.osgi.test.cases.jpa-5.0.0.jar;version=file,
+
+-runbundles = \
+lib/pax-logging-api-1.7.3.jar;version=file, \
+lib/pax-logging-service-1.7.3.jar;version=file, \
+lib/derbyclient-10.11.1.1.jar;version=file, \
+lib/pax-jdbc-spec-0.6.0.jar;version=file, \
+lib/pax-jdbc-derbyclient-0.6.0.jar;version=file, \
+lib/javax.persistence-2.1.0.jar;version=file, \
+lib/geronimo-jta_1.1_spec-1.1.1.jar;version=file, \
+lib/geronimo-servlet_2.5_spec-1.2.jar;version=file, \
+lib/org.apache.felix.eventadmin-1.4.2.jar;version=file, \
+lib/org.apache.felix.configadmin-1.8.0.jar;version=file, \
+lib/org.eclipse.persistence.core-2.6.0.jar;version=file, \
+lib/org.eclipse.persistence.jpa-2.6.0.jar;version=file, \
+lib/org.eclipse.persistence.antlr-2.6.0.jar;version=file, \
+lib/org.eclipse.persistence.jpa.jpql-2.6.0.jar;version=file, \
+lib/org.eclipse.persistence.asm-2.6.0.jar;version=file, \
+lib/org.apache.aries.jpa.eclipselink.adapter-2.0.0-SNAPSHOT.jar;version=file, \
+lib/org.apache.aries.jpa.container-2.0.0-SNAPSHOT.jar;version=file, \
+lib/org.osgi.test.cases.jpa-5.0.0.jar;version=file 
+
+-runproperties = \
+    report="true", \
+    osgi.resolverMode="strict"
+
+-runsystempackages=javax.xml.stream; version=1.0, javax.xml.stream.events; version=1.0, javax.xml.stream.util; version=1.0
+

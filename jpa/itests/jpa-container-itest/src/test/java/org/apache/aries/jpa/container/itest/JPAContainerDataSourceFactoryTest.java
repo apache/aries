@@ -41,6 +41,9 @@ public class JPAContainerDataSourceFactoryTest extends AbstractJPAItest {
     @Filter("(osgi.unit.name=" + DSF_XA_TEST_UNIT + ")")
     EntityManagerFactory emfDSFXA;
     
+    @Inject
+    UserTransaction ut;
+    
 
     @Test
     public void testDataSourceFactoryLifecycle() throws Exception {
@@ -65,7 +68,6 @@ public class JPAContainerDataSourceFactoryTest extends AbstractJPAItest {
         EntityManager em = emfDSFXA.createEntityManager();
 
         // Use a JTA transaction to show integration
-        UserTransaction ut = context().getService(UserTransaction.class);
         ut.begin();
         em.joinTransaction();
         Car c = createCar();

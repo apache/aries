@@ -23,22 +23,21 @@ import java.util.Set;
 
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
-import org.osgi.service.repository.Repository;
 
-public class CompositeRepository implements Repository {
-	private final Collection<Repository> repositories;
+public class CompositeRepository implements org.apache.aries.subsystem.core.repository.Repository {
+	private final Collection<org.apache.aries.subsystem.core.repository.Repository> repositories;
 	
-	public CompositeRepository(Repository...repositories) {
+	public CompositeRepository(org.apache.aries.subsystem.core.repository.Repository...repositories) {
 		this(Arrays.asList(repositories));
 	}
 	
-	public CompositeRepository(Collection<Repository> repositories) {
+	public CompositeRepository(Collection<org.apache.aries.subsystem.core.repository.Repository> repositories) {
 		this.repositories = repositories;
 	}
 	
 	public Collection<Capability> findProviders(Requirement requirement) {
 		Set<Capability> result = new HashSet<Capability>();
-		for (Repository repository : repositories) {
+		for (org.apache.aries.subsystem.core.repository.Repository repository : repositories) {
 			Map<Requirement, Collection<Capability>> map = repository.findProviders(Collections.singleton(requirement));
 			Collection<Capability> capabilities = map.get(requirement);
 			if (capabilities == null)

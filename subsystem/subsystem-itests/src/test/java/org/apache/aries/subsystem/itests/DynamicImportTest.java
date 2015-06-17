@@ -8,9 +8,7 @@ import static org.junit.Assert.fail;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -75,16 +73,18 @@ public class DynamicImportTest extends SubsystemTest
 	
 	class TokenWeaver implements WeavingHook {
 		@Override
-		public void weave(WovenClass arg0) {} 
+		public void weave(WovenClass arg0) {
+			if ("org.apache.aries.subsystem.itests.dynamicImport".equals(arg0.getBundleWiring().getBundle().getSymbolicName())) {
+				arg0.getDynamicImports().add("org.apache.aries.subsystem.itests.hello.api");
+			}
+		} 
 	}
 	
 	@SuppressWarnings("rawtypes")
     @Test
 	public void testFirstPassWeavingApproach() throws Exception
 	{
-		Dictionary<String, String> props = new Hashtable<String, String>();
-		props.put("osgi.woven.packages", "some.woven.package, org.apache.aries.subsystem.itests.hello.api");
-		ServiceRegistration sr = bundleContext.registerService(WeavingHook.class, new TokenWeaver(), props);
+		ServiceRegistration<?> sr = bundleContext.registerService(WeavingHook.class, new TokenWeaver(), null);
 		try { 
 			Subsystem subsystem = installSubsystemFromFile ("dynamicImport.esa");
 			startSubsystem(subsystem);
@@ -139,8 +139,6 @@ public class DynamicImportTest extends SubsystemTest
     @Test
 	public void testDynamicPackageImportsAddedToSharingPolicyWhenNoImportPackageHeader() throws Exception {
 		final AtomicBoolean weavingHookCalled = new AtomicBoolean(false);
-		Dictionary<String, Object> props = new Hashtable<String, Object>();
-		props.put("osgi.woven.packages", "org.osgi.framework");
 		ServiceRegistration reg = bundleContext.registerService(
 				WeavingHook.class, 
 				new WeavingHook() {
@@ -152,7 +150,7 @@ public class DynamicImportTest extends SubsystemTest
 						}
 					}
 				}, 
-				props);
+				null);
 		try {
 			Subsystem s = installSubsystemFromFile(APPLICATION_A);
 			try {

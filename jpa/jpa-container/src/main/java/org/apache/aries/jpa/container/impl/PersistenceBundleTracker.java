@@ -114,6 +114,7 @@ public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle>
         case BundleEvent.STOPPED:
             return "STOPPED";
         case BundleEvent.UNINSTALLED:
+        case 256: // Not sure why but this event is sent when a bundle is uninstalled
             return "UNINSTALLED";
         case BundleEvent.UNRESOLVED:
             return "UNRESOLVED";

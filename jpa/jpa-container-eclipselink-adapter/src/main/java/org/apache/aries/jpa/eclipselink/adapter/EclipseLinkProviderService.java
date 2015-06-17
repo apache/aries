@@ -19,7 +19,6 @@
 package org.apache.aries.jpa.eclipselink.adapter;
 
 import org.apache.aries.jpa.eclipselink.adapter.platform.OSGiTSServer;
-import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
@@ -41,7 +40,6 @@ import javax.persistence.spi.ProviderUtil;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class EclipseLinkProviderService implements ServiceFactory {
   private static final Logger logger = LoggerFactory.getLogger(Activator.class);
-  private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(EclipseLinkProviderService.class, "org.apache.aries.jpa.eclipselink.adapter.jpaEclipseLinkAdapter");
   
   private final Bundle eclipseLinkJpaBundle;
     
@@ -85,7 +83,7 @@ public class EclipseLinkProviderService implements ServiceFactory {
       };
       
     } catch (Exception e) {
-        logger.error(MESSAGES.getMessage("error.creating.eclipselink.provider"), e);
+        logger.error("An exception was caught trying to instantiate the EclipseLink JPA provider.", e);
         return null;                
     }
   }
