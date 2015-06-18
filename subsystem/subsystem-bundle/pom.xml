@@ -32,13 +32,13 @@
     <artifactId>org.apache.aries.subsystem</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystems Bundle</name>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
     <description>This is a standalone bundle to support Aries Subsystems.</description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.subsystem-2.0.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.subsystem-2.0.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.subsystem-2.0.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/application/subsystem-bundle</url>
     </scm>
 
     <properties>
