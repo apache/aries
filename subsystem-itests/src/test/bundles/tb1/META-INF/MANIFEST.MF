@@ -3,5 +3,5 @@ Bundle-ManifestVersion: 2
 Bundle-Name: TB1
 Bundle-SymbolicName: org.apache.aries.subsystem.itests.tb1
 Bundle-Version: 1.0.0
-Export-Package: org.apache.aries.subsystem.itests.tb1
+Export-Package: org.apache.aries.subsystem.itests.tb1; vendor="Balcones Fault Software"; mandatory:=vendor
 Import-Package: org.apache.aries.subsystem.itests.tb3
