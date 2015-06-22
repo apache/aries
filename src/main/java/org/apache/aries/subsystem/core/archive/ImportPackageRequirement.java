@@ -43,10 +43,15 @@ public class ImportPackageRequirement extends AbstractRequirement {
 		if (versionRange != null) {
 			versionRange.appendToFilter(filter);
 		}
+		for(Attribute packageAttribute : clause.getAttributes()) {
+			if (!(packageAttribute instanceof  VersionRangeAttribute)) {
+			    packageAttribute.appendToFilter(filter);
+			}
+		}
 		directives.put(DIRECTIVE_FILTER, filter.append(')').toString());
 		this.resource = resource;
 	}
-	
+
 	@Override
 	public Map<String, Object> getAttributes() {
 		return Collections.emptyMap();
