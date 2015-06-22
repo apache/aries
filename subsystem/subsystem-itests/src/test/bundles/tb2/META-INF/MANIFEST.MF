@@ -4,4 +4,4 @@ Bundle-Name: TB2
 Bundle-SymbolicName: org.apache.aries.subsystem.itests.tb2
 Bundle-Version: 2.0.0
 Export-Package: org.apache.aries.subsystem.itests.tb2
-Import-Package: org.apache.aries.subsystem.itests.tb1
+Import-Package: org.apache.aries.subsystem.itests.tb1; vendor="Balcones Fault Software"
