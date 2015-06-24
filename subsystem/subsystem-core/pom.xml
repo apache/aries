@@ -32,13 +32,13 @@
     <artifactId>org.apache.aries.subsystem.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Subsystem Core</name>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.1</version>
     <description>Subsystems Core.</description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-core</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-core</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-core</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.subsystem.core-2.0.1</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.subsystem.core-2.0.1</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.subsystem.core-2.0.1</url>
     </scm>
 
     <properties>
