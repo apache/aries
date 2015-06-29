@@ -26,15 +26,20 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
+import org.osgi.service.repository.Repository;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class RepositoryServiceRepository implements org.apache.aries.subsystem.core.repository.Repository {
-	private BundleContext context;
-	
+    final BundleContext context;
+
 	public RepositoryServiceRepository() {
-		context = Activator.getInstance().getBundleContext();
+		this(Activator.getInstance().getBundleContext());
 	}
-	
+
+	RepositoryServiceRepository(BundleContext ctx) {
+	    context = ctx;
+	}
+
 	@SuppressWarnings("unchecked")
 	public Collection<Capability> findProviders(Requirement requirement) {
 		Set<Capability> result = new HashSet<Capability>();
@@ -52,10 +57,31 @@ public class RepositoryServiceRepository implements org.apache.aries.subsystem.c
 			if (repository == null)
 				continue;
 			try {
+			    // Reflection is used here to allow the service to work with a mixture of
+			    // Repository services implementing different versions of the API.
+
 				Class<?> clazz = repository.getClass();
+				Class<?> repoInterface = null;
+
+				while (clazz != null && repoInterface == null) {
+				    for (Class<?> intf : clazz.getInterfaces()) {
+				        if (Repository.class.getName().equals(intf.getName())) {
+				            // Compare interfaces by name so that we can work with different versions of the
+				            // interface.
+				            repoInterface = intf;
+				            break;
+				        }
+				    }
+                    clazz = clazz.getSuperclass();
+				}
+
+				if (repoInterface == null) {
+				    continue;
+				}
+
 				Map<Requirement, Collection<Capability>> map;
 				try {
-					Method method = clazz.getMethod("findProviders", Collection.class);
+					Method method = repoInterface.getMethod("findProviders", Collection.class);
 					map = (Map<Requirement, Collection<Capability>>)method.invoke(repository, Collections.singleton(requirement));
 				}
 				catch (Exception e) {
@@ -72,7 +98,7 @@ public class RepositoryServiceRepository implements org.apache.aries.subsystem.c
 		}
 		return result;
 	}
-	
+
 	@Override
 	public Map<Requirement, Collection<Capability>> findProviders(Collection<? extends Requirement> requirements) {
 		Map<Requirement, Collection<Capability>> result = new HashMap<Requirement, Collection<Capability>>();
