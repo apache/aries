@@ -45,14 +45,14 @@
 
     <properties>
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <lastReleaseVersion>1.2.0</lastReleaseVersion>
+        <lastReleaseVersion>1.3.0</lastReleaseVersion>
     </properties>
 
     <profiles>
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
+                <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
             </properties>
         </profile>
     </profiles>
