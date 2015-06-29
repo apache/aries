@@ -31,16 +31,16 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.noosgi</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.1</version>
+    <version>1.1.1-SNAPSHOT</version>
     <name>Apache Aries Blueprint no-OSGI</name>
     <description>
         This jar contains everything needed to run Blueprint outside OSGi.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.noosgi-1.1.1</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.noosgi-1.1.1</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.noosgi-1.1.1</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-noosgi</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-noosgi</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-noosgi</url>
     </scm>
 
     <properties>
