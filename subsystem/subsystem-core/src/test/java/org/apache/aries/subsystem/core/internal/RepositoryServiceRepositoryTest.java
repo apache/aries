@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.internal.sub.Creator;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
@@ -39,16 +40,21 @@ public class RepositoryServiceRepositoryTest {
         ServiceReference<Object> sr = EasyMock.createMock(ServiceReference.class);
         @SuppressWarnings("unchecked")
         ServiceReference<Object> sr2 = EasyMock.createMock(ServiceReference.class);
+        @SuppressWarnings("unchecked")
+        ServiceReference<Object> sr3 = EasyMock.createMock(ServiceReference.class);
+
         EasyMock.expect(bc.getAllServiceReferences("org.osgi.service.repository.Repository", null)).
-            andReturn(new ServiceReference[] {sr, sr2}).anyTimes();
+            andReturn(new ServiceReference[] {sr, sr2, sr3}).anyTimes();
 
         TestRepository tr = new TestRepository();
         EasyMock.expect(bc.getService(sr)).andReturn(tr).anyTimes();
 
         ToastRepository tr2 = new ToastRepository();
         EasyMock.expect(bc.getService(sr2)).andReturn(tr2).anyTimes();
-        EasyMock.replay(bc);
 
+        Repository tr3 = Creator.create();
+        EasyMock.expect(bc.getService(sr3)).andReturn(tr3).anyTimes();
+        EasyMock.replay(bc);
 
         Map<String, String> dirs = Collections.singletonMap("filter", "(org.foo=bar)");
         Requirement req = new TestRequirement("org.foo", dirs);
@@ -67,6 +73,15 @@ public class RepositoryServiceRepositoryTest {
         assertEquals("poing", cap2.getNamespace());
         assertEquals(1, cap2.getAttributes().size());
         assertEquals("b", cap2.getAttributes().get("org.foo"));
+
+        Map<String, String> dirs3 = Collections.singletonMap("filter", "(x=y)");
+        Requirement req3 = new TestRequirement("ns1", dirs3);
+        Collection<Capability> res3 = rsr.findProviders(req3);
+        assertEquals(1, res3.size());
+        Capability cap3 = res3.iterator().next();
+        assertEquals("ns1", cap3.getNamespace());
+        assertEquals(1, cap3.getAttributes().size());
+        assertEquals("y", cap3.getAttributes().get("x"));
     }
 
     private static class TestRequirement implements Requirement {
@@ -91,36 +106,6 @@ public class RepositoryServiceRepositoryTest {
         @Override
         public Map<String, String> getDirectives() {
             return directives;
-        }
-
-        @Override
-        public Resource getResource() {
-            return null;
-        }
-    }
-
-    private static class TestCapability implements Capability {
-        private final String namespace;
-        private final Map<String, Object> attributes;
-
-        private TestCapability(String ns, Map<String, Object> attrs) {
-            namespace = ns;
-            attributes = attrs;
-        }
-
-        @Override
-        public String getNamespace() {
-            return namespace;
-        }
-
-        @Override
-        public Map<String, String> getDirectives() {
-            return Collections.emptyMap();
-        }
-
-        @Override
-        public Map<String, Object> getAttributes() {
-            return attributes;
         }
 
         @Override
