@@ -65,9 +65,9 @@
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.api.version>1.0.1-SNAPSHOT</blueprint.api.version>
-                <blueprint.core.version>1.4.1-SNAPSHOT</blueprint.core.version>
-                <blueprint.parser.version>1.1.1-SNAPSHOT</blueprint.parser.version>
+                <blueprint.api.version>1.0.1</blueprint.api.version>
+                <blueprint.core.version>1.4.4-SNAPSHOT</blueprint.core.version>
+                <blueprint.parser.version>1.3.2-SNAPSHOT</blueprint.parser.version>
             </properties>
         </profile>
     </profiles>
