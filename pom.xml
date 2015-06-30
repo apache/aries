@@ -103,11 +103,11 @@
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.annotation.api.version>1.0.1-SNAPSHOT</blueprint.annotation.api.version>
-                <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
-                <blueprint.parser.version>1.2.1-SNAPSHOT</blueprint.parser.version>
-                <proxy.api.version>1.0.0</proxy.api.version>
-                <proxy.impl.version>1.0.0</proxy.impl.version>
+                <blueprint.annotation.api.version>1.0.1</blueprint.annotation.api.version>
+                <blueprint.api.version>1.0.1</blueprint.api.version>
+                <blueprint.parser.version>1.3.2-SNAPSHOT</blueprint.parser.version>
+                <proxy.api.version>1.0.1</proxy.api.version>
+                <proxy.impl.version>1.0.1</proxy.impl.version>
                 <quiesce.api.version>1.0.0</quiesce.api.version>
                 <util.version>1.0.0</util.version>
             </properties>
