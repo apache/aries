@@ -56,7 +56,7 @@
             org.osgi.util.promise,
             *
         </aries.osgi.import.pkg>
-        <lastReleaseVersion>1.0.0-SNAPSHOT</lastReleaseVersion>
+        <lastReleaseVersion>1.0.1-SNAPSHOT</lastReleaseVersion>
     </properties>
 
     <dependencies>
