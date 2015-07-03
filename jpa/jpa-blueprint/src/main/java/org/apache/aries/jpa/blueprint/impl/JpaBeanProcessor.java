@@ -19,6 +19,8 @@
 package org.apache.aries.jpa.blueprint.impl;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,110 +43,125 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JpaBeanProcessor implements BeanProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaInterceptor.class);
-    public static final String JPA_PROCESSOR_BEAN_NAME = "org_apache_aries_jpan";
-    private Map<Object, EmSupplierProxy> emProxies;
-    private Map<Object, EntityManagerFactory> emfProxies;
-    private ComponentDefinitionRegistry cdr;
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(JpaInterceptor.class);
+	public static final String JPA_PROCESSOR_BEAN_NAME = "org_apache_aries_jpan";
+	private Map<Object, EmSupplierProxy> emProxies;
+	private Map<Object, EntityManagerFactory> emfProxies;
+	private ComponentDefinitionRegistry cdr;
 
-    public JpaBeanProcessor() {
-        emProxies = new ConcurrentHashMap<Object, EmSupplierProxy>();
-        emfProxies = new ConcurrentHashMap<Object, EntityManagerFactory>();
-    }
+	public JpaBeanProcessor() {
+		emProxies = new ConcurrentHashMap<Object, EmSupplierProxy>();
+		emfProxies = new ConcurrentHashMap<Object, EntityManagerFactory>();
+	}
 
-    public void setCdr(ComponentDefinitionRegistry cdr) {
-        this.cdr = cdr;
-    }
+	public void setCdr(ComponentDefinitionRegistry cdr) {
+		this.cdr = cdr;
+	}
 
-    public void afterDestroy(Object bean, String beanName) {
-        EmSupplierProxy emProxy = emProxies.get(bean);
-        if (emProxy != null) {
-            emProxy.close();
-        }
-        EntityManagerFactory emfProxy = emfProxies.get(bean);
-        if (emfProxy != null) {
-        	emfProxy.close();
-        }
-    }
+	public void afterDestroy(Object bean, String beanName) {
+		EmSupplierProxy emProxy = emProxies.get(bean);
+		if (emProxy != null) {
+			emProxy.close();
+		}
+		EntityManagerFactory emfProxy = emfProxies.get(bean);
+		if (emfProxy != null) {
+			emfProxy.close();
+		}
+	}
 
-    public Object afterInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
-        return bean;
-    }
+	public Object afterInit(Object bean, String beanName,
+			BeanCreator beanCreator, BeanMetadata beanData) {
+		return bean;
+	}
 
-    public void beforeDestroy(Object bean, String beanName) {
-    }
+	public void beforeDestroy(Object bean, String beanName) {
+	}
 
-    public Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
-        Class<?> c = bean.getClass();
-        Field field = getPersistenceField(c);
-        if (field == null) {
-            return bean;
-        }
-        BundleContext context = FrameworkUtil.getBundle(c).getBundleContext();
-        field.setAccessible(true);
+	public Object beforeInit(Object bean, String beanName,
+			BeanCreator beanCreator, BeanMetadata beanData) {
+		Class<?> c = bean.getClass();
+		List<Field> jpaAnnotated = new ArrayList<Field>();
+		getPersistenceFields(c, jpaAnnotated);
 
-        PersistenceContext pcAnn = field.getAnnotation(PersistenceContext.class);
-        if (pcAnn != null) {
-        LOGGER.debug("Adding jpa/jta interceptor bean {} with class {}", beanName, c);
+		for (Field field : jpaAnnotated) {
+			if (field == null) {
+				return bean;
+			}
+			BundleContext context = FrameworkUtil.getBundle(c)
+					.getBundleContext();
+			field.setAccessible(true);
 
-        EmSupplierProxy supplierProxy = new EmSupplierProxy(context, pcAnn.unitName());
-	        emProxies.put(bean, supplierProxy);
-        try {
-	            field.set(bean, getEmProxy(field, supplierProxy));
-        } catch (Exception e) {
-            throw new IllegalStateException("Error setting field " + field, e);
-        }
-        Interceptor interceptor = new JpaInterceptor(supplierProxy);
-        cdr.registerInterceptorWithComponent(beanData, interceptor);
-        } else {
-        	PersistenceUnit puAnn = field.getAnnotation(PersistenceUnit.class);
-        	if(puAnn != null) {
-        		LOGGER.debug("Adding emf proxy");
-        		
-    	        EntityManagerFactory emfProxy = EmfProxyFactory.create(context, puAnn.unitName()); 
-    	        emfProxies.put(bean, emfProxy);
-    	        try {
-    	            field.set(bean, getEmfProxy(field, emfProxy));
-    	        } catch (Exception e) {
-    	            throw new IllegalStateException("Error setting field " + field, e);
-    	        }	
-        	}
-        }
-        return bean;
-    }
+			PersistenceContext pcAnn = field
+					.getAnnotation(PersistenceContext.class);
+			if (pcAnn != null) {
+				LOGGER.debug(
+						"Adding jpa/jta interceptor bean {} with class {}",
+						beanName, c);
 
-    private Object getEmfProxy(Field field, EntityManagerFactory supplierProxy) {
-        if (field.getType() == EntityManagerFactory.class) {
-            return supplierProxy;
-        } else {
-            throw new IllegalStateException(
-                                            "Field with @PersistenceUnit is not of type EntityManagerFactory "
-                                                + field);
-        }
-    }
+				EmSupplierProxy supplierProxy = new EmSupplierProxy(context,
+						pcAnn.unitName());
+				emProxies.put(bean, supplierProxy);
+				try {
+					field.set(bean, getEmProxy(field, supplierProxy));
+				} catch (Exception e) {
+					throw new IllegalStateException("Error setting field "
+							+ field, e);
+				}
+				Interceptor interceptor = new JpaInterceptor(supplierProxy);
+				cdr.registerInterceptorWithComponent(beanData, interceptor);
+			} else {
+				PersistenceUnit puAnn = field
+						.getAnnotation(PersistenceUnit.class);
+				if (puAnn != null) {
+					LOGGER.debug("Adding emf proxy");
 
-    private Object getEmProxy(Field field, EmSupplierProxy supplierProxy) {
-        if (field.getType() == EmSupplier.class) {
-            return supplierProxy;
-        } else if (field.getType() == EntityManager.class) {
-            return EmProxyFactory.create(supplierProxy);
-        } else {
-            throw new IllegalStateException(
-                                            "Field with @PersistenceContext is not of type EntityManager or EmSupplier "
-                                                + field);
-        }
-    }
+					EntityManagerFactory emfProxy = EmfProxyFactory.create(
+							context, puAnn.unitName());
+					emfProxies.put(bean, emfProxy);
+					try {
+						field.set(bean, getEmfProxy(field, emfProxy));
+					} catch (Exception e) {
+						throw new IllegalStateException("Error setting field "
+								+ field, e);
+					}
+				}
+			}
+		}
+		return bean;
+	}
 
-    private Field getPersistenceField(Class<?> c) {
-        for (Field field : c.getDeclaredFields()) {
-            if (field.getAnnotation(PersistenceContext.class) != null) {
-                return field;
-            }
-            if (field.getAnnotation(PersistenceUnit.class) != null) {
-                return field;
-            }
-        }
-        return null;
-    }
+	private Object getEmfProxy(Field field, EntityManagerFactory supplierProxy) {
+		if (field.getType() == EntityManagerFactory.class) {
+			return supplierProxy;
+		} else {
+			throw new IllegalStateException(
+					"Field with @PersistenceUnit is not of type EntityManagerFactory "
+							+ field);
+		}
+	}
+
+	private Object getEmProxy(Field field, EmSupplierProxy supplierProxy) {
+		if (field.getType() == EmSupplier.class) {
+			return supplierProxy;
+		} else if (field.getType() == EntityManager.class) {
+			return EmProxyFactory.create(supplierProxy);
+		} else {
+			throw new IllegalStateException(
+					"Field with @PersistenceContext is not of type EntityManager or EmSupplier "
+							+ field);
+		}
+	}
+
+	private void getPersistenceFields(Class<?> c, List<Field> jpaAnnotated) {
+		for (Field field : c.getDeclaredFields()) {
+			if (field.getAnnotation(PersistenceContext.class) != null
+					|| field.getAnnotation(PersistenceUnit.class) != null) {
+				if (jpaAnnotated != null) {
+					jpaAnnotated.add(field);
+				}
+			}
+		}
+	}
 
 }
