@@ -15,9 +15,6 @@
  */
 package org.apache.aries.jpa.blueprint.aries.itest;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.aries.jpa.itest.AbstractJPAItest;
 import org.apache.aries.jpa.itest.testbundle.entities.Car;
 import org.apache.aries.jpa.itest.testbundle.service.CarService;
@@ -26,11 +23,11 @@ import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-public class BlueprintWithEmfTest extends AbstractJPAItest {
+public class BlueprintWithMultiAnnotationTest extends AbstractJPAItest {
     
 	@Test
-    public void testEmfAddQuery() throws Exception {
-		CarService carService = getService(CarService.class, "(type=emf)");
+    public void testMultiAnnotationQuery() throws Exception {
+		CarService carService = getService(CarService.class, "(type=multiannotation)");
 		
 		resolveBundles();
         Car c = new Car();
@@ -43,42 +40,11 @@ public class BlueprintWithEmfTest extends AbstractJPAItest {
 
         Car car2 = carService.getCar("AB11EMF");
         Assert.assertEquals(c.getNumberPlate(), car2.getNumberPlate());
+        
+        carService.deleteCar("AB11EMF");
+        car2 = carService.getCar("AB11EMF");
+        Assert.assertNull(car2);
     }
-
-	@Test
-    public void testEmAddQuery() throws Exception {
-		CarService carService = getService(CarService.class, "(type=emf)");
-		
-		resolveBundles();
-        Car c = new Car();
-        c.setColour("Blue");
-        c.setNumberPlate("AB11EM");
-        c.setNumberOfSeats(7);
-        c.setEngineSize(1900);
-
-        carService.addCar(c);
-
-        Car car2 = carService.getCar("AB11EM");
-        Assert.assertEquals(c.getNumberPlate(), car2.getNumberPlate());
-    }
-	
-	@Test
-    public void testSupplierAddQuery() throws Exception {
-		CarService carService = getService(CarService.class, "(type=supplier)");
-		
-		resolveBundles();
-        Car c = new Car();
-        c.setColour("Blue");
-        c.setNumberPlate("AB11SUPPLIER");
-        c.setNumberOfSeats(7);
-        c.setEngineSize(1900);
-
-        carService.addCar(c);
-
-        Car car2 = carService.getCar("AB11SUPPLIER");
-        Assert.assertEquals(c.getNumberPlate(), car2.getNumberPlate());
-    }
-
 
 	@Configuration
     public Option[] configuration() {

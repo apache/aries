@@ -42,6 +42,18 @@
 		class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithSupplierImpl">
 		<tx:transaction method="*" value="Required" />
 	</bean>
+	
+	<service ref="carServiceMulti"
+		interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+		<service-properties>
+			<entry key="type" value="multiannotation" />
+		</service-properties>
+	</service>
+	
+	<bean id="carServiceMulti"
+		class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithMultiAnnotationImpl">
+		<tx:transaction method="*" value="Required" />
+	</bean>
     
 </blueprint>
 
