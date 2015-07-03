@@ -31,7 +31,7 @@
     <artifactId>org.apache.aries.transaction.manager</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Transaction Manager</name>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager</connection>
