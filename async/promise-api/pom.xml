@@ -32,15 +32,15 @@
     <artifactId>org.apache.aries.async.promise.api</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Async Promise API</name>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <description>
         This bundle contains the Apache Aries Async Promise service API.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/promise-api</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/promise-api</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/async/promise-api</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.async-1.0.0/promise-api</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.async-1.0.0/promise-api</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.async-1.0.0/promise-api</url>
     </scm>
 
     <properties>
