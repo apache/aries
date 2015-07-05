@@ -91,7 +91,6 @@ import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
 import org.osgi.service.repository.Repository;
-import org.osgi.service.repository.RepositoryContent;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -141,7 +140,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 				streamBundle(createCoreFragment()).noStart(),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.itest.interfaces").versionAsInProject(),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
-				mavenBundle("org.apache.felix",             "org.apache.felix.resolver").versionAsInProject(),
+				//mavenBundle("org.apache.felix",             "org.apache.felix.resolver").versionAsInProject(),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.coordinator").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").versionAsInProject(),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
@@ -578,11 +577,11 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 						.end().file("OSGI-INF/blueprint/blueprint.xml", blueprintXml));
 	}
 
-	private RepositoryContent createBundleRepositoryContent(String file) throws Exception {
+	protected Resource createBundleRepositoryContent(String file) throws Exception {
 		return createBundleRepositoryContent(new File(file));
 	}
 
-	private RepositoryContent createBundleRepositoryContent(File file) throws Exception {
+	protected Resource createBundleRepositoryContent(File file) throws Exception {
 		return new BundleResource(FileSystem.getFSRoot(file));
 	}
 
@@ -1004,6 +1003,10 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 	}
 
+	protected static String normalizeBundleLocation(Bundle bundle) {
+		return normalizeBundleLocation(bundle.getLocation());
+	}
+	
 	protected static String normalizeBundleLocation(String location) {
 		if (location.startsWith("initial@"))
 			return location.substring(8);

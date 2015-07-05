@@ -14,14 +14,18 @@
 package org.apache.aries.subsystem.core.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.easymock.EasyMock.*;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Requirement;
 
 public class BundleRevisionResourceTest {
     Activator storedActivator;
@@ -44,7 +48,9 @@ public class BundleRevisionResourceTest {
 
     @Test
     public void testNoModellerServiceCapabilities() {
-        BundleRevision br = EasyMock.createNiceMock(BundleRevision.class);
+        BundleRevision br = createNiceMock(BundleRevision.class);
+        expect(br.getCapabilities(anyObject(String.class))).andReturn(Collections.<Capability>emptyList());
+        replay(br);
         BundleRevisionResource brr = new BundleRevisionResource(br);
         assertEquals(0, brr.getCapabilities("osgi.service").size());
     }
@@ -52,6 +58,8 @@ public class BundleRevisionResourceTest {
     @Test
     public void testNoModellerServiceRequirements() {
         BundleRevision br = EasyMock.createNiceMock(BundleRevision.class);
+        expect(br.getRequirements(anyObject(String.class))).andReturn(Collections.<Requirement>emptyList());
+        replay(br);
         BundleRevisionResource brr = new BundleRevisionResource(br);
         assertEquals(0, brr.getRequirements("osgi.service").size());
     }

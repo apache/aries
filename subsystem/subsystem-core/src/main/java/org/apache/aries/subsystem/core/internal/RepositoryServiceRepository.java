@@ -13,6 +13,7 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,33 +27,66 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.service.repository.Repository;
+import org.osgi.service.subsystem.SubsystemException;
 
-public class RepositoryServiceRepository implements Repository {
-	private final BundleContext context;
-	
+public class RepositoryServiceRepository implements org.apache.aries.subsystem.core.repository.Repository {
+    final BundleContext context;
+
 	public RepositoryServiceRepository() {
 		this(Activator.getInstance().getBundleContext());
 	}
-	
-	public RepositoryServiceRepository(BundleContext context) {
-		this.context = context;
+
+	RepositoryServiceRepository(BundleContext ctx) {
+	    context = ctx;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public Collection<Capability> findProviders(Requirement requirement) {
 		Set<Capability> result = new HashSet<Capability>();
-		Collection<ServiceReference<Repository>> references;
+		ServiceReference<?>[] references;
 		try {
-			references = context.getServiceReferences(Repository.class, null);
+			references = context.getAllServiceReferences("org.osgi.service.repository.Repository", null);
+			if (references == null)
+				return result;
 		}
 		catch (InvalidSyntaxException e) {
 			throw new IllegalStateException(e);
 		}
-		for (ServiceReference<Repository> reference : references) {
-			Repository repository = context.getService(reference);
+		for (ServiceReference<?> reference : references) {
+			Object repository = context.getService(reference);
+			if (repository == null)
+				continue;
 			try {
-				if (repository == null)
-					continue;
-				Map<Requirement, Collection<Capability>> map = repository.findProviders(Collections.singleton(requirement));
+			    // Reflection is used here to allow the service to work with a mixture of
+			    // Repository services implementing different versions of the API.
+
+				Class<?> clazz = repository.getClass();
+				Class<?> repoInterface = null;
+
+				while (clazz != null && repoInterface == null) {
+				    for (Class<?> intf : clazz.getInterfaces()) {
+				        if (Repository.class.getName().equals(intf.getName())) {
+				            // Compare interfaces by name so that we can work with different versions of the
+				            // interface.
+				            repoInterface = intf;
+				            break;
+				        }
+				    }
+                    clazz = clazz.getSuperclass();
+				}
+
+				if (repoInterface == null) {
+				    continue;
+				}
+
+				Map<Requirement, Collection<Capability>> map;
+				try {
+					Method method = repoInterface.getMethod("findProviders", Collection.class);
+					map = (Map<Requirement, Collection<Capability>>)method.invoke(repository, Collections.singleton(requirement));
+				}
+				catch (Exception e) {
+					throw new SubsystemException(e);
+				}
 				Collection<Capability> capabilities = map.get(requirement);
 				if (capabilities == null)
 					continue;
@@ -64,15 +98,12 @@ public class RepositoryServiceRepository implements Repository {
 		}
 		return result;
 	}
-	
+
 	@Override
-	public Map<Requirement, Collection<Capability>> findProviders(
-			Collection<? extends Requirement> requirements) {
+	public Map<Requirement, Collection<Capability>> findProviders(Collection<? extends Requirement> requirements) {
 		Map<Requirement, Collection<Capability>> result = new HashMap<Requirement, Collection<Capability>>();
 		for (Requirement requirement : requirements)
 			result.put(requirement, findProviders(requirement));
 		return result;
-				
-		
 	}
 }

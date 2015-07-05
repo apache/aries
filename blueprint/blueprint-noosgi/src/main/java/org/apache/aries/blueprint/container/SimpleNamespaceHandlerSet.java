@@ -18,21 +18,30 @@
  */
 package org.apache.aries.blueprint.container;
 
-import org.apache.aries.blueprint.NamespaceHandler;
-import org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler;
-import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.*;
+
+import org.apache.aries.blueprint.NamespaceHandler;
+import org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler;
+import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
+import org.w3c.dom.ls.LSInput;
+import org.w3c.dom.ls.LSResourceResolver;
+import org.xml.sax.SAXException;
 
 public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
 
@@ -81,6 +90,36 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
                     schemaSources.add(new StreamSource(is));
                 }
                 SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                schemaFactory.setResourceResolver(new LSResourceResolver() {
+                    
+                    public LSInput resolveResource(String type, String namespace, String publicId,
+                                                   String systemId, String baseURI) {
+                        try {
+                            if (systemId != null && !URI.create(systemId).isAbsolute()) {
+                                URL namespaceURL = namespaces.get(URI.create(namespace));
+                                if (namespaceURL != null) {
+                                    URI systemIdUri = namespaceURL.toURI().resolve(systemId);
+                                    if (!systemIdUri.isAbsolute() && "jar".equals(namespaceURL.getProtocol())) {
+                                        String urlString = namespaceURL.toString();
+                                        int jarFragmentIndex = urlString.lastIndexOf('!');
+                                        if (jarFragmentIndex > 0 && jarFragmentIndex < urlString.length() - 1) {
+                                            String jarUrlOnly = urlString.substring(0, jarFragmentIndex);
+                                            String oldFragment = urlString.substring(jarFragmentIndex + 1);
+                                            String newFragment = URI.create(oldFragment).resolve(systemId).toString();
+                                            String newJarUri = jarUrlOnly + '!' + newFragment;
+                                            systemIdUri = URI.create(newJarUri);
+                                        }
+                                    }
+                                    InputStream resourceStream = systemIdUri.toURL().openStream();
+                                    return new LSInputImpl(publicId, systemId, resourceStream);
+                                }
+                            }
+                        } catch (Exception ex) {
+                            // ignore
+                        }
+                        return null;
+                    }
+                });
                 schema = schemaFactory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
             } finally {
                 for (InputStream is : streams) {
@@ -103,4 +142,93 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
         schema = null;
     }
 
+    private static class LSInputImpl implements LSInput {
+
+        protected String fPublicId;
+
+        protected String fSystemId;
+
+        protected String fBaseSystemId;
+
+        protected InputStream fByteStream;
+
+        protected Reader fCharStream;
+
+        protected String fData;
+
+        protected String fEncoding;
+
+        protected boolean fCertifiedText;
+
+        LSInputImpl(String publicId, String systemId, InputStream byteStream) {
+            fPublicId = publicId;
+            fSystemId = systemId;
+            fByteStream = byteStream;
+        }
+
+        public InputStream getByteStream() {
+            return fByteStream;
+        }
+
+        public void setByteStream(InputStream byteStream) {
+            fByteStream = byteStream;
+        }
+
+        public Reader getCharacterStream() {
+            return fCharStream;
+        }
+
+        public void setCharacterStream(Reader characterStream) {
+            fCharStream = characterStream;
+        }
+
+        public String getStringData() {
+            return fData;
+        }
+
+        public void setStringData(String stringData) {
+            fData = stringData;
+        }
+
+        public String getEncoding() {
+            return fEncoding;
+        }
+
+        public void setEncoding(String encoding) {
+            fEncoding = encoding;
+        }
+
+        public String getPublicId() {
+            return fPublicId;
+        }
+
+        public void setPublicId(String publicId) {
+            fPublicId = publicId;
+        }
+
+        public String getSystemId() {
+            return fSystemId;
+        }
+
+        public void setSystemId(String systemId) {
+            fSystemId = systemId;
+        }
+
+        public String getBaseURI() {
+            return fBaseSystemId;
+        }
+
+        public void setBaseURI(String baseURI) {
+            fBaseSystemId = baseURI;
+        }
+
+        public boolean getCertifiedText() {
+            return fCertifiedText;
+        }
+
+        public void setCertifiedText(boolean certifiedText) {
+            fCertifiedText = certifiedText;
+        }
+
+    }
 }

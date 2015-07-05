@@ -42,9 +42,13 @@ public class BundleRevisionResource implements Resource {
 			result.addAll(sCaps);
 			return Collections.unmodifiableList(result);
 		}
-		if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
-			return Collections.unmodifiableList(computeServiceCapabilities());
-		return revision.getCapabilities(namespace);
+		List<Capability> result = revision.getCapabilities(namespace);
+		// OSGi RFC 201 for R6: The presence of any Provide-Capability clauses
+		// in the osgi.service namespace overrides any service related
+		// capabilities that might have been found by other means.
+		if (result.isEmpty() && ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
+			result = Collections.unmodifiableList(computeServiceCapabilities());
+		return result;
 	}
 
 	@Override
@@ -57,9 +61,13 @@ public class BundleRevisionResource implements Resource {
 			result.addAll(sReqs);
 			return Collections.unmodifiableList(result);
 		}
-		if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
-			return Collections.unmodifiableList(computeServiceRequirements());
-		return revision.getRequirements(namespace);
+		// OSGi RFC 201 for R6: The presence of any Require-Capability clauses
+		// in the osgi.service namespace overrides any service related
+		// requirements that might have been found by other means.
+		List<Requirement> result = revision.getRequirements(namespace);
+		if (result.isEmpty() && ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
+			result = Collections.unmodifiableList(computeServiceRequirements());
+		return result;
 	}
 
 	private List<Capability> computeServiceCapabilities() {

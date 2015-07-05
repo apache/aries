@@ -15,9 +15,6 @@
  */
 package org.apache.aries.jpa.blueprint.aries.itest;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.aries.jpa.itest.AbstractJPAItest;
 import org.apache.aries.jpa.itest.testbundle.entities.Car;
 import org.apache.aries.jpa.itest.testbundle.service.CarService;
@@ -26,15 +23,11 @@ import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-public class BlueprintWithEmTest extends AbstractJPAItest {
-    
-	CarService carService;
+public class BlueprintWithSingleAnnotationTest extends AbstractJPAItest {
 
 	@Test
     public void testEmfAddQuery() throws Exception {
-		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "em");
-		carService = getServie(CarService.class, filters);
+		CarService carService = getService(CarService.class, "(type=emf)");
 		
 		resolveBundles();
         Car c = new Car();
@@ -51,9 +44,7 @@ public class BlueprintWithEmTest extends AbstractJPAItest {
 
 	@Test
     public void testEmAddQuery() throws Exception {
-		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "em");
-		carService = getServie(CarService.class, filters);
+		CarService carService = getService(CarService.class, "(type=em)");
 		
 		resolveBundles();
         Car c = new Car();
@@ -70,9 +61,7 @@ public class BlueprintWithEmTest extends AbstractJPAItest {
 	
 	@Test
     public void testSupplierAddQuery() throws Exception {
-		Map<String,String> filters = new HashMap<String,String>();
-		filters.put("type", "supplier");
-		carService = getServie(CarService.class, filters);
+		CarService carService = getService(CarService.class, "(type=supplier)");
 		
 		resolveBundles();
         Car c = new Car();
