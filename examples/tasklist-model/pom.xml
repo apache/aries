@@ -27,12 +27,13 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.5.4</version>
+                <extensions>true</extensions>
+                <inherited>true</inherited>
                 <configuration>
                     <instructions>
                         <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
-                        <!-- Needed for runtime enhancement -->
-                        <Import-Package>*, org.hibernate.proxy,
-                            javassist.util.proxy</Import-Package>
+                        <!-- Needed for runtime enhancement when using hibernate -->
+                        <Dynamic-Import-Package>*, org.hibernate.proxy, javassist.util.proxy</Dynamic-Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
