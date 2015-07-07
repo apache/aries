@@ -125,24 +125,37 @@
        <property name="password" value="password"/>
    </bean>
 
-   <bean id="mandatoryAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.AnnotatedTestBeanImpl" init-method="initialize">
-       <property name="enlistingDataSource" ref="enlistingDataSource"/>
-       <property name="dataSource" ref="dataSource"/>
-       <property name="user" value="user"/>
-       <property name="password" value="password"/>
-   </bean>
-
-   <service id="mandatoryAnnotatedBean" ref="mandatoryAnnotatedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
-       <service-properties>
-           <entry key="tranAttribute" value="MandatoryAnnotated"/>
-       </service-properties>
-   </service>
-
    <service id="invalidBean" ref="invalidBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
        <service-properties>
            <entry key="tranAttribute" value="Invalid"/>
        </service-properties>
    </service>
+
+    <bean id="mandatoryAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.AnnotatedTestBeanImpl" init-method="initialize">
+        <property name="enlistingDataSource" ref="enlistingDataSource"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="user" value="user"/>
+        <property name="password" value="password"/>
+    </bean>
+
+    <service id="mandatoryAnnotatedBean" ref="mandatoryAnnotatedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+        <service-properties>
+            <entry key="tranAttribute" value="MandatoryAnnotated"/>
+        </service-properties>
+    </service>
+
+    <bean id="mandatoryJtaAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.JtaAnnotatedTestBeanImpl" init-method="initialize">
+        <property name="enlistingDataSource" ref="enlistingDataSource"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="user" value="user"/>
+        <property name="password" value="password"/>
+    </bean>
+
+    <service id="mandatoryJtaAnnotatedBean" ref="mandatoryJtaAnnotatedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+        <service-properties>
+            <entry key="tranAttribute" value="MandatoryJtaAnnotated"/>
+        </service-properties>
+    </service>
    
    <reference id="enlistingDataSource" interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=jdbc/xads)"/>
    
