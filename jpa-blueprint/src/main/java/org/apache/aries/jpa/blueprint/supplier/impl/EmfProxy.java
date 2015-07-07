@@ -33,43 +33,41 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class EmfProxy implements InvocationHandler {
-	private ServiceTracker<EntityManagerFactory, EntityManagerFactory> tracker;
+    private ServiceTracker<EntityManagerFactory, EntityManagerFactory> tracker;
 
-	public EmfProxy(BundleContext context, String unitName) {
-		String filterS = String.format("(&(objectClass=%s)(%s=%s))",
-				EntityManagerFactory.class.getName(), JPA_UNIT_NAME, unitName);
-		Filter filter;
-		try {
-			filter = FrameworkUtil.createFilter(filterS);
-		} catch (InvalidSyntaxException e) {
-			throw new IllegalStateException(e);
-		}
-		tracker = new ServiceTracker<>(context, filter, null);
-		tracker.open();
-	}
+    public EmfProxy(BundleContext context, String unitName) {
+        String filterS = String.format("(&(objectClass=%s)(%s=%s))", EntityManagerFactory.class.getName(),
+                                       JPA_UNIT_NAME, unitName);
+        Filter filter;
+        try {
+            filter = FrameworkUtil.createFilter(filterS);
+        } catch (InvalidSyntaxException e) {
+            throw new IllegalStateException(e);
+        }
+        tracker = new ServiceTracker<>(context, filter, null);
+        tracker.open();
+    }
 
-	private EntityManagerFactory getEntityManagerFactory() {
-		try {
-			return tracker.waitForService(10000);
-		} catch (InterruptedException e) {
-			throw new IllegalStateException(e);
-		}
-	}
+    private EntityManagerFactory getEntityManagerFactory() {
+        try {
+            return tracker.waitForService(10000);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
-	@Override
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
-		Object res = null;
-
-		EntityManagerFactory delegate = getEntityManagerFactory();
-
-		try {
-			res = method.invoke(delegate, args);
-		} catch (IllegalArgumentException e) {
-			new IllegalStateException(e);
-		} catch (InvocationTargetException e) {
-			new IllegalStateException(e);
-		}
-		return res;
-	}
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if ("close".equals(method.getName())) {
+            tracker.close();
+            return null;
+        }
+        try {
+            return method.invoke(getEntityManagerFactory(), args);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }
