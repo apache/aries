@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jpa.blueprint.impl;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -33,12 +34,8 @@ import javax.persistence.PersistenceUnit;
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.jpa.blueprint.supplier.impl.EmProxyFactory;
 import org.apache.aries.jpa.blueprint.supplier.impl.EmSupplierProxy;
-import org.apache.aries.jpa.blueprint.supplier.impl.EmfProxyFactory;
 import org.apache.aries.jpa.supplier.EmSupplier;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,162 +78,83 @@ public class JpaBeanProcessor implements BeanProcessor {
 
 	public Object beforeInit(Object bean, String beanName,
 			BeanCreator beanCreator, BeanMetadata beanData) {
-		managePersistenceFields(bean, beanName, beanCreator, beanData);
-		managePersistenceMethods(bean, beanName, beanCreator, beanData);
+		List<AccessibleObject> jpaAnnotatedMember = getJpaAnnotatedMembers(bean
+				.getClass());
+		managePersistenceMembers(jpaAnnotatedMember, bean, beanName,
+				beanData);
 		return bean;
 	}
 
-	private Object getEmfProxy(Class<?> clazz, EntityManagerFactory supplierProxy) {
-		if (clazz == EntityManagerFactory.class) {
-			return supplierProxy;
-		} else {
-			throw new IllegalStateException(
-					"Field or setter Mthod with @PersistenceUnit has class not supported "
-							+ clazz);
-		}
-	}
+	private void managePersistenceMembers(List<AccessibleObject> jpaAnnotated,
+			Object bean, String beanName,
+			BeanMetadata beanData) {
 
-	private Object getEmProxy(Class<?> clazz, EmSupplierProxy supplierProxy) {
-		if (clazz == EmSupplier.class) {
-			return supplierProxy;
-		} else if (clazz == EntityManager.class) {
-			return EmProxyFactory.create(supplierProxy);
-		} else {
-			throw new IllegalStateException(
-					"Field or setter Method with @PersistenceContext has class not supported "
-							+ clazz.getName());
-		}
-	}
-
-	private void managePersistenceMethods(Object bean, String beanName,
-			BeanCreator beanCreator, BeanMetadata beanData) {
-
-		Class<?> c = bean.getClass();
-		List<Method> jpaAnnotated = getPersistenceMethods(c);
-
-		for (Method method : jpaAnnotated) {
-			BundleContext context = FrameworkUtil.getBundle(c)
-					.getBundleContext();
-			method.setAccessible(true);
-
-			PersistenceContext pcAnn = method
+		JpaAnnotatedMemberHandler jpaAnnotatedMember = new JpaAnnotatedMemberHandler(bean);
+		for (AccessibleObject member : jpaAnnotated) {
+			member.setAccessible(true);
+			PersistenceContext pcAnn = member
 					.getAnnotation(PersistenceContext.class);
 			if (pcAnn != null) {
 				LOGGER.debug(
 						"Adding jpa/jta interceptor bean {} with class {}",
-						beanName, c);
+						beanName, bean.getClass());
 
-				EmSupplierProxy supplierProxy = new EmSupplierProxy(context,
-						pcAnn.unitName());
+				EmSupplierProxy supplierProxy = jpaAnnotatedMember
+						.handleSupplierMember(member, pcAnn.unitName());
+
 				emProxies.put(bean, supplierProxy);
-				try {
-					method.invoke(bean, getEmProxy(method.getParameterTypes()[0], supplierProxy));
-				} catch (Exception e) {
-					throw new IllegalStateException("Error invoking method "
-							+ method, e);
-				}
+
 				Interceptor interceptor = new JpaInterceptor(supplierProxy);
 				cdr.registerInterceptorWithComponent(beanData, interceptor);
 			} else {
-				PersistenceUnit puAnn = method
+				PersistenceUnit puAnn = member
 						.getAnnotation(PersistenceUnit.class);
 				if (puAnn != null) {
 					LOGGER.debug("Adding emf proxy");
 
-					EntityManagerFactory emfProxy = EmfProxyFactory.create(
-							context, puAnn.unitName());
+					EntityManagerFactory emfProxy = jpaAnnotatedMember
+							.handleEmFactoryMethod(member, puAnn.unitName());
 					emfProxies.put(bean, emfProxy);
-					try {
-						method.invoke(bean, getEmfProxy(method.getParameterTypes()[0], emfProxy));
-					} catch (Exception e) {
-						throw new IllegalStateException("Error invoking method "
-								+ method, e);
+
 					}
 				}
 			}
 		}
-	}
 
-	private List<Method> getPersistenceMethods(Class<?> c) {
-		List<Method> jpaAnnotated = new ArrayList<Method>();
-
+	private List<AccessibleObject> getJpaAnnotatedMembers(Class<?> c) {
+		final List<AccessibleObject> jpaAnnotated = new ArrayList<AccessibleObject>();
 		List<Class<?>> managedJpaClasses = new ArrayList<Class<?>>();
 		managedJpaClasses.add(EntityManagerFactory.class);
 		managedJpaClasses.add(EntityManager.class);
 		managedJpaClasses.add(EmSupplier.class);
 
-		for (Method method : c.getDeclaredMethods()) {
+		Class<?> cl = c;
+		if (c != Object.class) {
+			while (cl != Object.class) {
+				for (Field field : cl.getDeclaredFields()) {
+					if (field.getAnnotation(PersistenceContext.class) != null
+							|| field.getAnnotation(PersistenceUnit.class) != null) {
+						jpaAnnotated.add(field);
+					}
+				}
+
+				for (Method method : cl.getDeclaredMethods()) {
 			if (method.getAnnotation(PersistenceContext.class) != null
 					|| method.getAnnotation(PersistenceUnit.class) != null) {
 
 				Class<?>[] pType = method.getParameterTypes();
-				if (method.getName().startsWith("set") && pType.length == 1
+						if (method.getName().startsWith("set")
+								&& pType.length == 1
 						&& managedJpaClasses.contains(pType[0])) {
 					jpaAnnotated.add(method);
 				}
 			}
 		}
-		return jpaAnnotated;
-	}
 
-	private void managePersistenceFields(Object bean, String beanName,
-			BeanCreator beanCreator, BeanMetadata beanData) {
-		Class<?> c = bean.getClass();
-		List<Field> jpaAnnotated = getPersistenceFields(c);
-
-		for (Field field : jpaAnnotated) {
-			BundleContext context = FrameworkUtil.getBundle(c)
-					.getBundleContext();
-			field.setAccessible(true);
-
-			PersistenceContext pcAnn = field
-					.getAnnotation(PersistenceContext.class);
-			if (pcAnn != null) {
-				LOGGER.debug(
-						"Adding jpa/jta interceptor bean {} with class {}",
-						beanName, c);
-
-				EmSupplierProxy supplierProxy = new EmSupplierProxy(context,
-						pcAnn.unitName());
-				emProxies.put(bean, supplierProxy);
-				try {
-					field.set(bean, getEmProxy(field.getType(), supplierProxy));
-				} catch (Exception e) {
-					throw new IllegalStateException("Error setting field "
-							+ field, e);
-				}
-				Interceptor interceptor = new JpaInterceptor(supplierProxy);
-				cdr.registerInterceptorWithComponent(beanData, interceptor);
-			} else {
-				PersistenceUnit puAnn = field
-						.getAnnotation(PersistenceUnit.class);
-				if (puAnn != null) {
-					LOGGER.debug("Adding emf proxy");
-
-					EntityManagerFactory emfProxy = EmfProxyFactory.create(
-							context, puAnn.unitName());
-					emfProxies.put(bean, emfProxy);
-					try {
-						field.set(bean, getEmfProxy(field.getType(), emfProxy));
-					} catch (Exception e) {
-						throw new IllegalStateException("Error setting field "
-								+ field, e);
-					}
-				}
-			}
+				cl = cl.getSuperclass();
 		}
 	}
 
-	private List<Field> getPersistenceFields(Class<?> c) {
-		List<Field> jpaAnnotated = new ArrayList<Field>();
-
-		for (Field field : c.getDeclaredFields()) {
-			if (field.getAnnotation(PersistenceContext.class) != null
-					|| field.getAnnotation(PersistenceUnit.class) != null) {
-				jpaAnnotated.add(field);
-			}
-		}
 		return jpaAnnotated;
 	}
-
 }
