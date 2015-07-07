@@ -48,7 +48,7 @@ public class AnnotationParser implements BeanProcessor {
     }
 
     public Object afterInit(Object arg0, String arg1, BeanCreator arg2, BeanMetadata arg3) {
-        return null;
+        return arg0;
     }
 
     public void beforeDestroy(Object arg0, String arg1) {
