@@ -28,6 +28,7 @@ import static org.ops4j.pax.exam.CoreOptions.when;
 
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
@@ -73,11 +74,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
-                mavenBundle("javax.interceptor", "javax.interceptor-api", "1.2"),
-                mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject", "1_2"),
-                mavenBundle("javax.el", "javax.el-api", "3.0.0"),
-                mavenBundle("javax.enterprise", "cdi-api", "1.2"),
-                mavenBundle("javax.transaction", "javax.transaction-api", "1.2"),
+                jta12Bundles(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager").versionAsInProject(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint").versionAsInProject(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.jdbc").versionAsInProject(),
@@ -88,4 +85,14 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
                 //new TimeoutOption( 0 ),
         };
     }
+
+	private Option jta12Bundles() {
+		return CoreOptions.composite(
+                mavenBundle("javax.interceptor", "javax.interceptor-api", "1.2"),
+                mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject", "1_2"),
+                mavenBundle("javax.el", "javax.el-api", "3.0.0"),
+                mavenBundle("javax.enterprise", "cdi-api", "1.2"),
+                mavenBundle("javax.transaction", "javax.transaction-api", "1.2")
+				);
+	}
 }
