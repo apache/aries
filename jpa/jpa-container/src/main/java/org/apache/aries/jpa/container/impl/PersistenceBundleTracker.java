@@ -50,25 +50,23 @@ public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle>
         trackers = new HashMap<Bundle, Collection<PersistenceProviderTracker>>();
     }
 
-    public Bundle addingBundle(Bundle bundle, BundleEvent event) {
+    public synchronized Bundle addingBundle(Bundle bundle, BundleEvent event) {
         if (getTrackers(bundle).size() == 0) {
             findPersistenceUnits(bundle);
         }
         return bundle;
     }
 
-    public void removedBundle(Bundle bundle, BundleEvent event, Bundle object) {
-        Collection<PersistenceProviderTracker> providerTrackers = trackers.get(bundle);
-        if (providerTrackers != null) {
-            if (providerTrackers.size() > 0)  {
-                LOGGER.info("removing persistence units for " + bundle.getSymbolicName() + " " + getType(event));
-            }
-            for (PersistenceProviderTracker providerTracker : providerTrackers) {
-                providerTracker.close();
-            }
-            providerTrackers.clear();
-            trackers.remove(bundle);
+    public synchronized void removedBundle(Bundle bundle, BundleEvent event, Bundle object) {
+        Collection<PersistenceProviderTracker> providerTrackers = trackers.remove(bundle);
+        if (providerTrackers == null || providerTrackers.size() > 0) {
+            return;
         }
+        LOGGER.info("removing persistence units for " + bundle.getSymbolicName() + " " + getType(event));
+        for (PersistenceProviderTracker providerTracker : providerTrackers) {
+            providerTracker.close();
+        }
+        providerTrackers.clear();
     }
 
     private void findPersistenceUnits(Bundle bundle) {
