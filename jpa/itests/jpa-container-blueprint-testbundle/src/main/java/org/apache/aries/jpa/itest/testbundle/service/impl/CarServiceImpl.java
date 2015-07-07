@@ -21,17 +21,12 @@ package org.apache.aries.jpa.itest.testbundle.service.impl;
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.apache.aries.jpa.itest.testbundle.entities.Car;
-import org.apache.aries.jpa.itest.testbundle.service.CarService;
 
 
-public class CarServiceImpl implements CarService {
+public class CarServiceImpl extends AbstractCarServiceImpl {
 
-	@PersistenceContext(unitName="test_unit_blueprint")
-	EntityManager em;
-	
 	@Override
 	public Car getCar(String id) {
 		return em.find(Car.class, id);
