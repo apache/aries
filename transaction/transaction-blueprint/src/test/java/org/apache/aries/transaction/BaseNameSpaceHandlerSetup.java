@@ -18,91 +18,83 @@
  */
 package org.apache.aries.transaction;
 
+import static org.easymock.EasyMock.expect;
+
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.transaction.TransactionManager;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.NamespaceHandler;
-import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
-import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.reflect.PassThroughMetadataImpl;
-import org.apache.aries.mocks.BundleContextMock;
-import org.apache.aries.mocks.BundleMock;
 import org.apache.aries.transaction.parsing.TxNamespaceHandler;
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 public class BaseNameSpaceHandlerSetup {
     protected Bundle b;
-    protected NamespaceHandlerRegistry nhri;
+    protected DummyNamespaceHandlerRegistry nhri;
     protected TxComponentMetaDataHelperImpl txenhancer;
     protected TxNamespaceHandler namespaceHandler;
-    
+    protected IMocksControl control;
+
     @Before
-    public void setUp() {
-        b = Skeleton.newMock(new BundleMock("org.apache.aries.tx", new Properties()), Bundle.class);
-        BundleContext ctx = b.getBundleContext();
-        nhri = new NamespaceHandlerRegistryImpl(ctx);
-        
-        TransactionManager tm = Skeleton.newMock(TransactionManager.class);
-        
+    public void setUp() throws InvalidSyntaxException {
+        control = EasyMock.createControl();
+        b = control.createMock(Bundle.class);
+        TransactionManager tm = control.createMock(TransactionManager.class);
         txenhancer = new TxComponentMetaDataHelperImpl();
-        
         TxInterceptorImpl txinterceptor = new TxInterceptorImpl();
         txinterceptor.setTransactionManager(tm);
         txinterceptor.setTxMetaDataHelper(txenhancer);
-        
         namespaceHandler = new TxNamespaceHandler();
-        
-        BlueprintContainer container = Skeleton.newMock(BlueprintContainer.class);
-        Skeleton.getSkeleton(container).setReturnValue(
-                new MethodCall(BlueprintContainer.class, "getComponentInstance", TxNamespaceHandler.DEFAULT_INTERCEPTOR_ID),
-                txinterceptor);
+
+        BlueprintContainer container = control.createMock(BlueprintContainer.class);
+        expect(container.getComponentInstance(EasyMock.eq(TxNamespaceHandler.DEFAULT_INTERCEPTOR_ID))).andReturn(txinterceptor);
+        control.replay();
         namespaceHandler.setBlueprintContainer(container);
         namespaceHandler.setTxMetaDataHelper(txenhancer);
-            
-        Properties props = new Properties();
-        props.put("osgi.service.blueprint.namespace", new String[]{"http://aries.apache.org/xmlns/transactions/v1.0.0", "http://aries.apache.org/xmlns/transactions/v1.1.0", "http://aries.apache.org/xmlns/transactions/v1.2.0"});
-        ctx.registerService(NamespaceHandler.class.getName(), namespaceHandler, (Dictionary) props);
+
+        String[] namespaces = new String[]
+            {"http://aries.apache.org/xmlns/transactions/v1.0.0", 
+             "http://aries.apache.org/xmlns/transactions/v1.1.0", 
+             "http://aries.apache.org/xmlns/transactions/v1.2.0"
+            };
+        nhri = new DummyNamespaceHandlerRegistry();
+        nhri.addNamespaceHandlers(namespaces, namespaceHandler);
     }
-      
+
     @After
     public void tearDown() throws Exception{
-      b = null;
-      nhri = null;
-      txenhancer = null;
-      
-      BundleContextMock.clear();
+        control.verify();
+        b = null;
+        nhri = null;
+        txenhancer = null;
     }
-    
+
     protected ComponentDefinitionRegistry parseCDR(String name) throws Exception {
         Parser p = new Parser();
-        
+
         URL bpxml = this.getClass().getResource(name);
         p.parse(Arrays.asList(bpxml));
-        
+
         Set<URI> nsuris = p.getNamespaces();
         NamespaceHandlerSet nshandlers = nhri.getNamespaceHandlers(nsuris, b);
-        p.validate(nshandlers.getSchema());
-        
+
         ComponentDefinitionRegistry cdr = new ComponentDefinitionRegistryImpl();
         cdr.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", b));
         p.populate(nshandlers, cdr);
-        
+
         return cdr;
     }
 }

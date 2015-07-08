@@ -15,25 +15,18 @@
  */
 package org.apache.aries.transaction.itests;
 
-import static org.junit.Assert.fail;
+import javax.inject.Inject;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
+import org.ops4j.pax.exam.util.Filter;
 
 public class InvalidTranAttributeTest extends AbstractIntegrationTest {
-  
-  @Test
+    @Inject @Filter("(tranAttribute=MandatoryJtaAnnotated)") 
+    TestBean bean;
+    
+  @Test(expected=IllegalStateException.class)
   public void testInvalid() throws Exception {
-      TestBean bean = context().getService(TestBean.class, "(tranAttribute=Invalid)");
-      
-      //Test without client transaction - an exception is thrown because the bean is not
-      //configured correctly, i.e. multiple transaction elements match to the same method
-      //name.
-      try {
-          bean.insertRow("testWithoutClientTran", 1);
-          fail("IllegalStateException not thrown");
-      } catch (IllegalStateException e) {
-          e.printStackTrace();
-      }
+      bean.insertRow("testWithoutClientTran", 1);
   }
 }

@@ -19,19 +19,22 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 
-import javax.transaction.UserTransaction;
+import javax.inject.Inject;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
+import org.ops4j.pax.exam.util.Filter;
 
 public class RequiresNewTranAttributeTest extends AbstractIntegrationTest {
-  
+    @Inject @Filter("(tranAttribute=RequiresNew)") 
+    TestBean rnBean;
+    
+    @Inject @Filter("(tranAttribute=Required)") 
+    TestBean rBean;
+
+    
   @Test
   public void testRequiresNew() throws Exception {
-      TestBean rnBean = context().getService(TestBean.class, "(tranAttribute=RequiresNew)");
-      TestBean rBean = context().getService(TestBean.class, "(tranAttribute=Required)");
-      UserTransaction tran = context().getService(UserTransaction.class);
-      
       //Test with client transaction - a container transaction is used to insert the row
       int initialRows = rnBean.countRows();
       

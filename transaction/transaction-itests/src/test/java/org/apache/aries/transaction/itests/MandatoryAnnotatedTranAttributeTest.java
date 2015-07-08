@@ -15,25 +15,25 @@
  */
 package org.apache.aries.transaction.itests;
 
-import org.apache.aries.transaction.test.TestBean;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import javax.transaction.RollbackException;
-import javax.transaction.UserTransaction;
-import java.sql.SQLException;
-
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.SQLException;
+
+import javax.inject.Inject;
+import javax.transaction.RollbackException;
+
+import org.apache.aries.transaction.test.TestBean;
+import org.junit.Test;
+import org.ops4j.pax.exam.util.Filter;
+
 public class MandatoryAnnotatedTranAttributeTest extends AbstractIntegrationTest {
+    @Inject @Filter("(tranAttribute=MandatoryAnnotated)") 
+    TestBean bean;
   
   @Test
   public void testMandatory() throws Exception {
-	  String prefix = "MTAT";
-      TestBean bean = context().getService(TestBean.class, "(tranAttribute=MandatoryAnnotated)");
-      UserTransaction tran = context().getService(UserTransaction.class);
-      
+      String prefix = "MTAT";
       //Test with client transaction - the user transaction is used to insert a row
       int initialRows = bean.countRows();
       

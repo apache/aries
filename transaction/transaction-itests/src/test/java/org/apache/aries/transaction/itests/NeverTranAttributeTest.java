@@ -18,18 +18,18 @@ package org.apache.aries.transaction.itests;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import javax.transaction.UserTransaction;
+import javax.inject.Inject;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
+import org.ops4j.pax.exam.util.Filter;
 
 public class NeverTranAttributeTest extends AbstractIntegrationTest {
+    @Inject @Filter("(tranAttribute=Never)") 
+    TestBean bean;
   
   @Test
   public void testNever() throws Exception {
-      TestBean bean = context().getService(TestBean.class, "(tranAttribute=Never)");
-      UserTransaction tran = context().getService(UserTransaction.class);
-      
       //Test with client transaction - an exception is thrown because transactions are not allowed
       int initialRows = bean.countRows();
       
