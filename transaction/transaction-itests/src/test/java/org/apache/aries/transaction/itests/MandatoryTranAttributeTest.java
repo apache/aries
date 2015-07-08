@@ -20,19 +20,22 @@ import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
 
+import javax.inject.Inject;
 import javax.transaction.RollbackException;
-import javax.transaction.UserTransaction;
+
+import junit.framework.Assert;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
+import org.ops4j.pax.exam.util.Filter;
 
 public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
+    @Inject @Filter("(tranAttribute=Mandatory)") 
+    TestBean bean;
   
   @Test
   public void testMandatory() throws Exception {
-	  String prefix = "MTAT";
-      TestBean bean = context().getService(TestBean.class, "(tranAttribute=Mandatory)");
-      UserTransaction tran = context().getService(UserTransaction.class);
+      String prefix = "MTAT";
       
       //Test with client transaction - the user transaction is used to insert a row
       int initialRows = bean.countRows();
@@ -51,9 +54,9 @@ public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
       bean.insertRow(prefix + "testWithClientTranAndWithAppException", 1);
       
       try {
-          bean.insertRow(prefix + "testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
+        bean.insertRow(prefix + "testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
       } catch (SQLException e) {
-          e.printStackTrace();
+        Assert.assertEquals("Dummy exception", e.getMessage());
       }
       
       tran.commit();
@@ -70,14 +73,14 @@ public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
       try {
           bean.insertRow(prefix + "testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
       } catch (RuntimeException e) {
-          e.printStackTrace();
-      }
+          Assert.assertEquals("Dummy exception", e.getMessage());
+        }
       
       try {
           tran.commit();
           fail("RollbackException not thrown");
       } catch (RollbackException e) {
-          e.printStackTrace();
+          // Ignore expected
       }
       
       finalRows = bean.countRows();

@@ -20,19 +20,19 @@ import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
 
+import javax.inject.Inject;
 import javax.transaction.RollbackException;
-import javax.transaction.UserTransaction;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
+import org.ops4j.pax.exam.util.Filter;
 
 public class SupportsTranAttributeTest extends AbstractIntegrationTest {
+    @Inject @Filter("(tranAttribute=Supports)") 
+    TestBean bean;
   
   @Test
   public void testSupports() throws Exception {
-      TestBean bean = context().getService(TestBean.class, "(tranAttribute=Supports)");
-      UserTransaction tran = context().getService(UserTransaction.class);
-      
       //Test with client transaction - the insert succeeds because the bean delegates to
       //another bean with a transaction strategy of Mandatory, and the user transaction
       //is delegated

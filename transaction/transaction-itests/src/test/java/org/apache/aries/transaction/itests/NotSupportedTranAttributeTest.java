@@ -20,19 +20,22 @@ import static org.junit.Assert.fail;
 
 import java.sql.SQLException;
 
-import javax.transaction.UserTransaction;
+import javax.inject.Inject;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
+import org.ops4j.pax.exam.util.Filter;
 
 public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
+    @Inject @Filter("(tranAttribute=NotSupported)") 
+    TestBean nsBean;
+    
+    @Inject @Filter("(tranAttribute=Required)") 
+    TestBean rBean;
+
   
   @Test
   public void testNotSupported() throws Exception {
-      TestBean nsBean = context().getService(TestBean.class, "(tranAttribute=NotSupported)");
-      TestBean rBean = context().getService(TestBean.class, "(tranAttribute=Required)");
-      UserTransaction tran = context().getService(UserTransaction.class);
-      
       //Test with client transaction - the insert fails because the bean delegates to another
       //bean with a transaction strategy of Mandatory, and no transaction is available, i.e.
       //the user transaction is not propagated, and there is no container transaction.

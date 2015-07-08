@@ -24,15 +24,9 @@ import static org.junit.Assert.assertNull;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.PassThroughMetadata;
-import org.apache.aries.blueprint.container.BeanRecipe;
-import org.apache.aries.blueprint.container.BlueprintContainerImpl;
-import org.apache.aries.transaction.annotations.TransactionPropagationType;
-import org.apache.aries.transaction.parsing.AnnotationParser;
 import org.apache.aries.transaction.parsing.TxNamespaceHandler;
-import org.apache.aries.transaction.pojo.AnnotatedPojo;
 import org.junit.Test;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
 
 public class AnnotationEnablingNameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
     
@@ -40,16 +34,9 @@ public class AnnotationEnablingNameSpaceHandlerTest extends BaseNameSpaceHandler
     public void testAnnotationEnabled() throws Exception
     {
       ComponentDefinitionRegistry cdr = parseCDR("enable-annotations.xml");
-            
-      BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top");
-      
-      assertNotNull(compTop);
-      assertEquals(0, cdr.getInterceptors(compTop).size());
-      assertNull(txenhancer.getComponentMethodTxAttribute(compTop, "increment"));
-
+      checkCompTop(cdr);
       BeanMetadata pmd = (BeanMetadata) cdr.getComponentDefinition(TxNamespaceHandler.ANNOTATION_PARSER_BEAN_NAME);
       assertNotNull(pmd);
-
       assertEquals(3, pmd.getArguments().size());
       assertEquals(cdr, ((PassThroughMetadata)pmd.getArguments().get(0).getValue()).getObject());
       assertEquals(txenhancer, ((PassThroughMetadata) pmd.getArguments().get(2).getValue()).getObject());
@@ -59,15 +46,15 @@ public class AnnotationEnablingNameSpaceHandlerTest extends BaseNameSpaceHandler
     public void testAnnotationDisabled() throws Exception
     {
         ComponentDefinitionRegistry cdr = parseCDR("enable-annotations2.xml");
-              
+        checkCompTop(cdr);
+        BeanMetadata pmd = (BeanMetadata) cdr.getComponentDefinition(TxNamespaceHandler.ANNOTATION_PARSER_BEAN_NAME);
+        assertNull(pmd);
+    }
+
+    private void checkCompTop(ComponentDefinitionRegistry cdr) {
         BeanMetadata compTop = (BeanMetadata) cdr.getComponentDefinition("top");
-        
         assertNotNull(compTop);
         assertEquals(0, cdr.getInterceptors(compTop).size());
         assertNull(txenhancer.getComponentMethodTxAttribute(compTop, "increment"));
-
-
-        BeanMetadata pmd = (BeanMetadata) cdr.getComponentDefinition(TxNamespaceHandler.ANNOTATION_PARSER_BEAN_NAME);
-        assertNull(pmd);
     }
 }
