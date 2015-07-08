@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.parsing.TxBlueprintListener;
-import org.apache.aries.unittest.mocks.Skeleton;
+import org.easymock.EasyMock;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintEvent;
@@ -167,9 +167,9 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
         assertEquals(TransactionPropagationType.Never, txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
         
         assertTrue(namespaceHandler.isRegistered(cdr));
-        
+        Bundle extenderBundle = EasyMock.createMock(Bundle.class);
         new TxBlueprintListener(namespaceHandler).blueprintEvent(
-                new BlueprintEvent(BlueprintEvent.DESTROYED, b, Skeleton.newMock(Bundle.class)));
+                new BlueprintEvent(BlueprintEvent.DESTROYED, b, extenderBundle));
 
         assertNull(txenhancer.getComponentMethodTxAttribute(anon, "doSomething"));
         assertNull(txenhancer.getComponentMethodTxAttribute(anonToo, "doSomething"));
@@ -212,9 +212,10 @@ public class NameSpaceHandlerTest extends BaseNameSpaceHandlerSetup {
         // cleanup
         
         assertTrue(namespaceHandler.isRegistered(cdr));
-        
+
+        Bundle extenderBundle = EasyMock.createMock(Bundle.class);
         new TxBlueprintListener(namespaceHandler).blueprintEvent(
-                new BlueprintEvent(BlueprintEvent.DESTROYED, b, Skeleton.newMock(Bundle.class)));
+                new BlueprintEvent(BlueprintEvent.DESTROYED, b, extenderBundle));
         
         assertFalse(namespaceHandler.isRegistered(cdr));
         assertNull(txenhancer.getComponentMethodTxAttribute(compRequiresNew, "doSomething"));

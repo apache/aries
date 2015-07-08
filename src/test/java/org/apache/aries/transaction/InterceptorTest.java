@@ -23,39 +23,35 @@ import java.io.IOException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.Test;
 
 public class InterceptorTest {
-    private Transaction t;
-    
-    @Test
-    public void testRollbackOnException() {
-        TxInterceptorImpl sut = new TxInterceptorImpl();
-        sut.setTransactionManager(Skeleton.newMock(TransactionManager.class));
-        
-        sut.postCallWithException(null, null, new IllegalStateException(), newTranToken());
-        assertRolledBack();
-        sut.postCallWithException(null, null, new Error(), newTranToken());
-        assertRolledBack();
 
-        sut.postCallWithException(null, null, new Exception(), newTranToken());
-        assertNotRolledBack();
-        sut.postCallWithException(null, null, new IOException(), newTranToken());
-        assertNotRolledBack();
+    @Test
+    public void testRollbackOnException() throws Throwable {
+        postCallWithTransaction(new IllegalStateException(), true);
+        postCallWithTransaction(new Error(), true);
+        postCallWithTransaction(new Exception(), false);
+        postCallWithTransaction(new IOException(), false);
     }
     
-    private void assertNotRolledBack() {
-        Skeleton.getSkeleton(t).assertNotCalled(new MethodCall(Transaction.class, "setRollbackOnly"));
+    private void postCallWithTransaction(Throwable th, boolean expectRollback) throws Throwable {
+        IMocksControl c = EasyMock.createControl();
+        TxInterceptorImpl sut = new TxInterceptorImpl();
+        sut.setTransactionManager(c.createMock(TransactionManager.class));
+        Transaction tran = c.createMock(Transaction.class);
+        
+        if (expectRollback) {
+            tran.setRollbackOnly();
+            EasyMock.expectLastCall();
+        }
+        
+        c.replay();
+        TransactionToken tt = new TransactionToken(tran, null, TransactionAttribute.REQUIRED);
+        sut.postCallWithException(null, null, th, tt);
+        c.verify();
     }
     
-    private void assertRolledBack() {
-        Skeleton.getSkeleton(t).assertCalled(new MethodCall(Transaction.class, "setRollbackOnly"));
-    }
-    
-    private TransactionToken newTranToken() {
-        t = Skeleton.newMock(Transaction.class);
-        return new TransactionToken(t, null, TransactionAttribute.REQUIRED);
-    }
 }
