@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.sql.CommonDataSource;
-import javax.sql.XADataSource;
 
 import org.tranql.connector.AllExceptionsAreFatalSorter;
 import org.tranql.connector.ExceptionSorter;

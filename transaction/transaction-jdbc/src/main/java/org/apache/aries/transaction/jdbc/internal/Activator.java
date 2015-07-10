@@ -34,9 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.CommonDataSource;
+
 import java.util.Hashtable;
 
-
+@SuppressWarnings("rawtypes")
 public class Activator implements BundleActivator,
                                   ServiceTrackerCustomizer<CommonDataSource, ManagedDataSourceFactory>,
                                   SingleServiceTracker.SingleServiceListener

@@ -27,9 +27,11 @@ import org.osgi.framework.ServiceRegistration;
 import javax.sql.CommonDataSource;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
+
 import java.util.Hashtable;
 import java.util.Map;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ManagedDataSourceFactory {
 
     private final ServiceReference reference;

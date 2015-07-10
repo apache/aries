@@ -35,6 +35,7 @@ public class DataSourceMCFFactory extends AbstractMCFFactory {
         }
     }
 
+    @SuppressWarnings("serial")
     public class DataSourceMCF extends AbstractLocalDataSourceMCF<DataSource> implements TransactionSupport {
         public DataSourceMCF() {
             super((DataSource) DataSourceMCFFactory.this.getDataSource(), DataSourceMCFFactory.this.getExceptionSorter(), true);
