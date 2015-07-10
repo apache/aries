@@ -290,15 +290,15 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             }
             String val = context.getProperty("org.apache.aries.blueprint.synchronous");
             if (Boolean.parseBoolean(val)) {
-                LOGGER.debug("Starting creation of blueprint bundle {} synchronously", bundle.getSymbolicName());
+                LOGGER.debug("Starting creation of blueprint bundle {}/{} synchronously", bundle.getSymbolicName(), bundle.getVersion());
                 blueprintContainer.run();
             } else {
-                LOGGER.debug("Scheduling creation of blueprint bundle {} asynchronously", bundle.getSymbolicName());
+                LOGGER.debug("Scheduling creation of blueprint bundle {}/{} asynchronously", bundle.getSymbolicName(), bundle.getVersion());
                 blueprintContainer.schedule();
             }
             return true;
         } catch (Throwable t) {
-            LOGGER.warn("Error while creating blueprint container for bundle " + bundle, t);
+            LOGGER.warn("Error while creating blueprint container for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion(), t);
             return false;
         }
     }
@@ -306,19 +306,19 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     private void destroyContainer(final Bundle bundle) {
         FutureTask future;
         synchronized (containers) {
-            LOGGER.debug("Starting BlueprintContainer destruction process for bundle {}", bundle.getSymbolicName());
+            LOGGER.debug("Starting BlueprintContainer destruction process for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
             future = destroying.get(bundle);
             if (future == null) {
                 final BlueprintContainerImpl blueprintContainer = containers.remove(bundle);
                 if (blueprintContainer != null) {
-                    LOGGER.debug("Scheduling BlueprintContainer destruction for {}.", bundle.getSymbolicName());
+                    LOGGER.debug("Scheduling BlueprintContainer destruction for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
                     future = new FutureTask<Void>(new Runnable() {
                         public void run() {
-                            LOGGER.info("Destroying BlueprintContainer for bundle {}", bundle.getSymbolicName());
+                            LOGGER.info("Destroying BlueprintContainer for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
                             try {
                                 blueprintContainer.destroy();
                             } finally {
-                                LOGGER.debug("Finished destroying BlueprintContainer for bundle {}", bundle.getSymbolicName());
+                                LOGGER.debug("Finished destroying BlueprintContainer for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
                                 eventDispatcher.removeBlueprintBundle(bundle);
                                 synchronized (containers) {
                                     destroying.remove(bundle);
@@ -328,25 +328,25 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                     }, null);
                     destroying.put(bundle, future);
                 } else {
-                    LOGGER.debug("Not a blueprint bundle or destruction of BlueprintContainer already finished for {}.", bundle.getSymbolicName());
+                    LOGGER.debug("Not a blueprint bundle or destruction of BlueprintContainer already finished for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
                 }
             } else {
-                LOGGER.debug("Destruction already scheduled for {}.", bundle.getSymbolicName());
+                LOGGER.debug("Destruction already scheduled for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
             }
         }
         if (future != null) {
             try {
-                LOGGER.debug("Waiting for BlueprintContainer destruction for {}.", bundle.getSymbolicName());
+                LOGGER.debug("Waiting for BlueprintContainer destruction for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
                 future.run();
                 future.get();
             } catch (Throwable t) {
-                LOGGER.warn("Error while destroying blueprint container for bundle " + bundle, t);
+                LOGGER.warn("Error while destroying blueprint container for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion(), t);
             }
         }
     }
 
     private List<Object> getBlueprintPaths(Bundle bundle) {
-        LOGGER.debug("Scanning bundle {} for blueprint application", bundle.getSymbolicName());
+        LOGGER.debug("Scanning bundle {}/{} for blueprint application", bundle.getSymbolicName(), bundle.getVersion());
         try {
             List<Object> pathList = new ArrayList<Object>();
             String blueprintHeader = (String) bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
@@ -379,7 +379,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             }
             // Check annotations
             if (blueprintHeaderAnnotation != null && blueprintHeaderAnnotation.trim().equalsIgnoreCase("true")) {
-                LOGGER.debug("Scanning bundle {} for blueprint annotations", bundle.getSymbolicName());
+                LOGGER.debug("Scanning bundle {}/{} for blueprint annotations", bundle.getSymbolicName(), bundle.getVersion());
                 ServiceReference sr = this.context.getServiceReference(BlueprintAnnotationScanner.class.getName());
                 if (sr != null) {
                     BlueprintAnnotationScanner bas = (BlueprintAnnotationScanner) this.context.getService(sr);
@@ -395,7 +395,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                 }
             }
             if (!pathList.isEmpty()) {
-                LOGGER.debug("Found blueprint application in bundle {} with paths: {}", bundle.getSymbolicName(), pathList);
+                LOGGER.debug("Found blueprint application in bundle {}/{} with paths: {}", bundle.getSymbolicName(), bundle.getVersion(), pathList);
                 // Check compatibility
                 // TODO: For lazy bundles, the class is either loaded from an imported package or not found, so it should
                 // not trigger the activation.  If it does, we need to use something else like package admin or
@@ -403,14 +403,14 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                 if (isCompatible(bundle)) {
                     return pathList;
                 } else {
-                    LOGGER.info("Bundle {} is not compatible with this blueprint extender", bundle.getSymbolicName());
+                    LOGGER.info("Bundle {}/{} is not compatible with this blueprint extender", bundle.getSymbolicName(), bundle.getVersion());
                 }
             } else {
-                LOGGER.debug("No blueprint application found in bundle {}", bundle.getSymbolicName());
+                LOGGER.debug("No blueprint application found in bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
             }
         } catch (Throwable t) {
             if (!stopping) {
-                LOGGER.warn("Error creating blueprint container for bundle " + bundle.getSymbolicName(), t);
+                LOGGER.warn("Error creating blueprint container for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion(), t);
                 eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, bundle, context.getBundle(), t));
             }
         }
@@ -427,7 +427,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                     usage += getServiceUsage(reference);
                 }
             }
-            LOGGER.debug("Usage for bundle {} is {}", bundle, usage);
+            LOGGER.debug("Usage for bundle {}/{} is {}", bundle.getSymbolicName(), bundle.getVersion(), usage);
             if (usage == 0) {
                 bundlesToDestroy.add(bundle);
             }
@@ -438,7 +438,9 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                     return (int) (b2.getLastModified() - b1.getLastModified());
                 }
             });
-            LOGGER.debug("Selected bundles {} for destroy (no services in use)", bundlesToDestroy);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Selected bundles {} for destroy (no services in use)", toString(bundlesToDestroy));
+            }
         } else {
             ServiceReference ref = null;
             for (Bundle bundle : containers.keySet()) {
@@ -448,7 +450,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                         continue;
                     }
                     if (ref == null || reference.compareTo(ref) < 0) {
-                        LOGGER.debug("Currently selecting bundle {} for destroy (with reference {})", bundle, reference);
+                        LOGGER.debug("Currently selecting bundle {}/{} for destroy (with reference {})", bundle.getSymbolicName(), bundle.getVersion(), reference);
                         ref = reference;
                     }
                 }
@@ -456,9 +458,26 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             if (ref != null) {
                 bundlesToDestroy.add(ref.getBundle());
             }
-            LOGGER.debug("Selected bundle {} for destroy (lowest ranking service)", bundlesToDestroy);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Selected bundles {} for destroy (lowest ranking service)", toString(bundlesToDestroy));
+            }
         }
         return bundlesToDestroy;
+    }
+
+    private static String toString(List<Bundle> bundles) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < bundles.size(); i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            sb.append(bundles.get(i).getSymbolicName());
+            sb.append("/");
+            sb.append(bundles.get(i).getVersion());
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     private static int getServiceUsage(ServiceReference ref) {
