@@ -24,6 +24,7 @@
             xmlns:ext120="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0"
             xmlns:ext130="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0"
             xmlns:ext140="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0"
+            xmlns:ext150="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             targetNamespace="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
@@ -37,6 +38,7 @@
     <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0" />
     <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0" />
     <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0" />
+    <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0" />
 
     <!-- property placeholder -->
 
@@ -54,6 +56,7 @@
                         <xsd:element ref="ext120:location" />
                         <xsd:element ref="ext130:location" />
                         <xsd:element ref="ext140:location" />
+                        <xsd:element ref="ext150:location" />
                     </xsd:choice>
                 </xsd:sequence>
 
@@ -90,11 +93,13 @@
         <xsd:attribute ref="ext120:ignore-missing-locations" use="optional" />
         <xsd:attribute ref="ext130:ignore-missing-locations" use="optional" />
         <xsd:attribute ref="ext140:ignore-missing-locations" use="optional" />
+        <xsd:attribute ref="ext150:ignore-missing-locations" use="optional" />
         <xsd:attribute ref="ext100:system-properties" use="optional" />
         <xsd:attribute ref="ext110:system-properties" use="optional" />
         <xsd:attribute ref="ext120:system-properties" use="optional" />
         <xsd:attribute ref="ext130:system-properties" use="optional" />
         <xsd:attribute ref="ext140:system-properties" use="optional" />
+        <xsd:attribute ref="ext150:system-properties" use="optional" />
     </xsd:attributeGroup>
 
     <!--  managed-properties  -->
