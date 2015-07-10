@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -101,19 +100,10 @@ public class PersistenceUnitParser {
             JPAHandler handler = new JPAHandler(bundle);
             parser.parse(is, handler);
             punits.addAll(handler.getPersistenceUnits());
-            for (PersistenceUnit punit : punits) {
-                validate(punit);
-            }
         } catch (Exception e) {
             throw new RuntimeException("persistence.description.parse.error", e);
         } finally {
             safeClose(is);
-        }
-    }
-
-    private static void validate(PersistenceUnit punit) {
-        if (punit.getTransactionType() == null) {
-            throw new IllegalArgumentException("No transaction type specified for persistence unit " + punit.getName());
         }
     }
 
