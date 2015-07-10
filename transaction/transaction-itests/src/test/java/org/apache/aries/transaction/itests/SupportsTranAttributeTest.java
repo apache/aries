@@ -15,9 +15,6 @@
  */
 package org.apache.aries.transaction.itests;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import javax.inject.Inject;
 
 import org.apache.aries.transaction.test.TestBean;
@@ -37,14 +34,7 @@ public class SupportsTranAttributeTest extends AbstractIntegrationTest {
      */
     @Test
     public void testDelegatedInsertWithClientTransaction() throws Exception {
-        int initialRows = bean.countRows();
-
-        tran.begin();
-        bean.insertRow("testWithClientTran", 1, true);
-        tran.commit();
-
-        int finalRows = bean.countRows();
-        assertEquals("Added rows", 1, finalRows - initialRows);
+        assertDelegateInsert();
     }
     
     /**
@@ -72,15 +62,8 @@ public class SupportsTranAttributeTest extends AbstractIntegrationTest {
      */
     @Test
     public void testDelegatedWithoutClientTransactionFails() throws Exception {
-        int initialRows = bean.countRows();
-        try {
-            bean.insertRow("testWithoutClientTran", 1, true);
-            fail("Exception not thrown");
-        } catch (Exception e) {
-            // Ignore expected
-        }
-        int finalRows = bean.countRows();
-        assertEquals("Added rows", 0, finalRows - initialRows);
+        clientTransaction = false;
+        assertDelegateInsertFails();
     }
 
     @Override

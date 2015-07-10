@@ -41,8 +41,8 @@
     </scm>
 
     <properties>
+        <aries.skip.version.check>true</aries.skip.version.check>
         <!-- Export package versions are maintained in packageinfo files -->
-
         <aries.osgi.export.pkg>
             org.apache.aries.transaction.test
         </aries.osgi.export.pkg>

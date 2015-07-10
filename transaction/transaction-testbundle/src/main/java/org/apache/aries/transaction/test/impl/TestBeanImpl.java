@@ -22,63 +22,35 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
-import javax.sql.DataSource;
 
 import org.apache.aries.transaction.test.TestBean;
 
 public class TestBeanImpl implements TestBean {
-    private DataSource xads;
-    private DataSource ds;
-    private String user;
-    private String password;
+    private Connector connector;
     private TestBean bean;
 
     public TestBeanImpl() {
     }
 
-    public void initialize() {
-        Connection conn = null;
-        Statement stmt = null;
-
-        try {
-            conn = ds.getConnection(user, password);
-            conn.setAutoCommit(true);
-            stmt = conn.createStatement();
-            stmt.executeUpdate("DROP TABLE TESTTABLE");
-        }
-        catch (Exception e) {
-            // Ignore
-        }
-        finally {
-            safeClose(stmt);
-            safeClose(conn);
-        }
-
-        try {
-            conn = ds.getConnection(user, password);
-            conn.setAutoCommit(true);
-            stmt = conn.createStatement();
-            stmt.executeUpdate("CREATE TABLE TESTTABLE (NAME VARCHAR(64), VALUE INTEGER, PRIMARY KEY(NAME, VALUE))");
-        }
-        catch (Exception e) {
-            // Ignore
-        }
-        finally {
-            safeClose(stmt);
-            safeClose(conn);
-        }
-    }
-
-
-
     public void insertRow(String name, int value) throws SQLException {
-        insertRow(name, value, false);
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = connector.connect();
+            stmt = conn.prepareStatement("INSERT INTO TESTTABLE VALUES (?, ?)");
+            stmt.setString(1, name);
+            stmt.setInt(2, value);
+            stmt.executeUpdate();
+        }
+        finally {
+            connector.safeClose(stmt);
+            connector.safeClose(conn);
+        }
     }
 
     public void insertRow(String name, int value, Exception e) throws SQLException {
-        insertRow(name, value, false);
+        insertRow(name, value);
         
         if (e instanceof SQLException)
             throw (SQLException) e;
@@ -86,26 +58,8 @@ public class TestBeanImpl implements TestBean {
             throw (RuntimeException) e;
     }
 
-    public void insertRow(String name, int value, boolean delegate) throws SQLException {
-        if (delegate) {
-            bean.insertRow(name, value);
-        }
-        else {
-            Connection conn = null;
-            PreparedStatement stmt = null;
-
-            try {
-                conn = xads.getConnection(user, password);
-                stmt = conn.prepareStatement("INSERT INTO TESTTABLE VALUES (?, ?)");
-                stmt.setString(1, name);
-                stmt.setInt(2, value);
-                stmt.executeUpdate();
-            }
-            finally {
-                safeClose(stmt);
-                safeClose(conn);
-            }
-        }
+    public void delegateInsertRow(String name, int value) throws SQLException {
+        bean.insertRow(name, value);
     }
 
     public int countRows() throws SQLException {
@@ -115,7 +69,7 @@ public class TestBeanImpl implements TestBean {
         int count = -1;
 
         try {
-            conn = ds.getConnection(user, password);
+            conn = connector.connect();
             stmt = conn.prepareStatement("SELECT * FROM TESTTABLE", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             rs = stmt.executeQuery();
             rs.last();
@@ -124,8 +78,8 @@ public class TestBeanImpl implements TestBean {
         finally {
             if (rs != null)
                 rs.close();
-            safeClose(stmt);
-            safeClose(conn);
+            connector.safeClose(stmt);
+            connector.safeClose(conn);
         }
 
         return count;
@@ -139,45 +93,12 @@ public class TestBeanImpl implements TestBean {
         throw new RuntimeException("Test exception");
     }
 
-    public void setEnlistingDataSource(DataSource xads) {
-        this.xads = xads;
-    }
-
-    public void setDataSource(DataSource ds) {
-        this.ds = ds;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
     public void setTestBean(TestBean bean) {
         this.bean = bean;
     }
     
-    private void safeClose(Connection conn) {
-        if (conn == null) {
-            return;
-        }
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            // Ignore
-        }
+    public void setConnector(Connector connector) {
+        this.connector = connector;
     }
 
-    private void safeClose(Statement stmt) {
-        if (stmt == null) {
-            return;
-        }
-        try {
-            stmt.close();
-        } catch (SQLException e) {
-            // Ignore
-        }
-    }
 }

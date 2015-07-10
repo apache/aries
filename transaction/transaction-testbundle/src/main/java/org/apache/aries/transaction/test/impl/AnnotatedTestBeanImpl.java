@@ -39,8 +39,8 @@ public class AnnotatedTestBeanImpl extends TestBeanImpl {
 
     @Override
     @Transaction(TransactionPropagationType.Mandatory)
-    public void insertRow(String name, int value, boolean delegate) throws SQLException {
-        super.insertRow(name, value, delegate);
+    public void delegateInsertRow(String name, int value) throws SQLException {
+        super.delegateInsertRow(name, value);
     }
 
     @Override

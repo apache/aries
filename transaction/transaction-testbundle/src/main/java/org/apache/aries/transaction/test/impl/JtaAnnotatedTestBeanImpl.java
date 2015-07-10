@@ -37,8 +37,8 @@ public class JtaAnnotatedTestBeanImpl extends TestBeanImpl {
 
     @Override
     @Transactional(Transactional.TxType.MANDATORY)
-    public void insertRow(String name, int value, boolean delegate) throws SQLException {
-        super.insertRow(name, value, delegate);
+    public void delegateInsertRow(String name, int value) throws SQLException {
+        super.delegateInsertRow(name, value);
     }
 
     @Override

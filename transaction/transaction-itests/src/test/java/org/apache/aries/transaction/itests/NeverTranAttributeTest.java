@@ -26,10 +26,20 @@ public class NeverTranAttributeTest extends AbstractIntegrationTest {
     @Filter("(tranAttribute=Never)")
     TestBean bean;
 
+    /**
+     * Test with client transaction - an exception is thrown because transactions are not allowed
+     * @throws Exception
+     */
     @Test
-    public void testNever() throws Exception {
-        assertInsertWithTranFails();
-        assertDelegatedInsertWithoutTranFails();
+    public void testInsertFails() throws Exception {
+        clientTransaction = true;
+        assertInsertFails();
+    }
+    
+    @Test
+    public void testDelegateInsertFails() throws Exception {
+        clientTransaction = false;
+        assertDelegateInsertFails();
     }
 
     @Override
