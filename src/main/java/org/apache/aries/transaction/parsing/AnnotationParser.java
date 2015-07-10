@@ -18,8 +18,9 @@
  */
 package org.apache.aries.transaction.parsing;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+
+import javax.transaction.Transactional;
 
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
@@ -29,8 +30,6 @@ import org.apache.aries.transaction.TxComponentMetaDataHelper;
 import org.apache.aries.transaction.annotations.Transaction;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
-
-import javax.transaction.Transactional;
 
 /**
  * Adds the transactional interceptor if Transaction annotation is present
@@ -60,75 +59,68 @@ public class AnnotationParser implements BeanProcessor {
 
     public Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
         Class<?> c = bean.getClass();
-        boolean interceptorAssigned = isInterceptorAssigned(beanData);
+        boolean shouldAssignInterceptor = false;
+        // Check class hierarchy
         while (c != Object.class) {
-            for (Method m : c.getDeclaredMethods()) {
-                try {
-                    if (beanData != null && helper.getComponentMethodTxAttribute(beanData, m.getName()) == null) {
-                        Transaction t = tryGetTransaction(m);
-                        if (t != null) {
-                            assertAllowedModifier(m);
-                            helper.setComponentTransactionData(cdr, beanData, t.value(), m.getName());
-                            if (!interceptorAssigned) {
-                                cdr.registerInterceptorWithComponent(beanData, interceptor);
-                                interceptorAssigned = true;
-                            }
-                        }
-                    }
-                } catch(IllegalStateException e) {
-                    // don't break bean creation due to invalid transaction attribute
-                }
-
-            }
+            shouldAssignInterceptor |= parseTxData(beanData, c);
             c = c.getSuperclass();
         }
+        
+        if (shouldAssignInterceptor && !isInterceptorAssigned(beanData)) {
+            cdr.registerInterceptorWithComponent(beanData, interceptor);
+        }
+
         return bean;
     }
 
-    private Transaction tryGetTransaction(Method m) {
-        Transaction t = m.getAnnotation(Transaction.class);
+    private boolean parseTxData(BeanMetadata beanData, Class<?> c) {
+        boolean shouldAssignInterceptor = false;
+        // TODO Class level annotations do not yet work
+        TransactionPropagationType t = tryGetTransaction(c);
         if (t != null) {
-            return t;
+            helper.setComponentTransactionData(cdr, beanData, t, "*");
+            shouldAssignInterceptor = true;
         }
-        final Transactional jtaT = m.getAnnotation(Transactional.class);
+        for (Method m : c.getDeclaredMethods()) {
+            try {
+                if (beanData != null && helper.getComponentMethodTxAttribute(beanData, m.getName()) == null) {
+                    t = tryGetTransaction(m);
+                    if (t != null) {
+                        assertAllowedModifier(m);
+                        helper.setComponentTransactionData(cdr, beanData, t, m.getName());
+                        shouldAssignInterceptor = true;
+                    }
+                }
+            } catch(IllegalStateException e) {
+                // don't break bean creation due to invalid transaction attribute
+            }
+        }
+
+        return shouldAssignInterceptor;
+    }
+    
+    private TransactionPropagationType tryGetTransaction(Class<?> clazz) {
+        Transaction t = clazz.getAnnotation(Transaction.class);
+        if (t != null) {
+            return t.value();
+        }
+        final Transactional jtaT = clazz.getAnnotation(Transactional.class);
         if (jtaT != null) {
-            return toTransaction(jtaT);
+            return TxTypeConverter.convert(jtaT.value());
         }
         return null;
     }
 
-    private Transaction toTransaction(final Transactional jtaT) {
-        Transaction t;
-        t = new Transaction() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return Transactional.class;
-            }
-
-            @Override
-            public TransactionPropagationType value() {
-                return convert(jtaT.value());
-            }
-        };
-        return t;
-    }
-
-    private static TransactionPropagationType convert(Transactional.TxType type) {
-        switch(type) {
-            case MANDATORY:
-                return TransactionPropagationType.Mandatory;
-            case REQUIRED:
-                return TransactionPropagationType.Required;
-            case REQUIRES_NEW:
-                return TransactionPropagationType.RequiresNew;
-            case SUPPORTS:
-                return TransactionPropagationType.Supports;
-            case NOT_SUPPORTED:
-                return TransactionPropagationType.NotSupported;
-            case NEVER:
-                return TransactionPropagationType.Never;
+    private TransactionPropagationType tryGetTransaction(Method m) {
+        Transaction t = m.getAnnotation(Transaction.class);
+        if (t != null) {
+            return t.value();
         }
-        throw new IllegalArgumentException(Constants.MESSAGES.getMessage("unknown.jta.transaction.type", type.name()));
+        final Transactional jtaT = m.getAnnotation(Transactional.class);
+        if (jtaT != null) {
+            return TxTypeConverter.convert(jtaT.value());
+        }
+        return null;
     }
 
     private boolean isInterceptorAssigned(BeanMetadata beanData) {
