@@ -546,7 +546,7 @@ public class ServiceRecipe extends AbstractRecipe {
                         getClassesForProxying(original), original, collaborator);
             } catch (Exception u) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
-                LOGGER.info("Unable to create a proxy object for the service " + getName() + " defined in bundle " + b.getSymbolicName() + " at version " + b.getVersion() + " with id " + b.getBundleId() + ". Returning the original object instead.", u);
+                LOGGER.info("Unable to create a proxy object for the service " + getName() + " defined in bundle " + b.getSymbolicName() + "/" + b.getVersion() + " with id. Returning the original object instead.", u);
                 LOGGER.debug(LOG_EXIT, "getService", original);
                 return original;
             }

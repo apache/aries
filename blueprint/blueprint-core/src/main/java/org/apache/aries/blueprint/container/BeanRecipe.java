@@ -768,7 +768,7 @@ public class BeanRecipe extends AbstractRecipe {
                 requiredInterfaces, original, new Collaborator(interceptorLookupKey, interceptors));
             } catch (org.apache.aries.proxy.UnableToProxyException e) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
-                throw new ComponentDefinitionException("Unable to create proxy for bean " + name + " in bundle " + b.getSymbolicName() + " version " + b.getVersion(), e);
+                throw new ComponentDefinitionException("Unable to create proxy for bean " + name + " in bundle " + b.getSymbolicName() + "/" + b.getVersion(), e);
             }
         } else {
             intercepted = original;
@@ -869,13 +869,11 @@ public class BeanRecipe extends AbstractRecipe {
           Throwable t = ite.getTargetException();
           BundleContext ctx = blueprintContainer.getBundleContext();
           Bundle b = ctx.getBundle();
-          String bundleIdentifier = b.getSymbolicName() + '/' + b.getVersion();
-          LOGGER.error("The blueprint bean " + getName() + " in bundle " + bundleIdentifier + " incorrectly threw an exception from its destroy method.", t);
+          LOGGER.error("The blueprint bean {} in bundle {}/{} incorrectly threw an exception from its destroy method.", getName(), b.getSymbolicName(), b.getVersion(), t);
         } catch (Exception e) {
             BundleContext ctx = blueprintContainer.getBundleContext();
             Bundle b = ctx.getBundle();
-            String bundleIdentifier = b.getSymbolicName() + '/' + b.getVersion();
-            LOGGER.error("An exception occurred while calling the destroy method of the blueprint bean " + getName() + " in bundle " + bundleIdentifier + ".", getRealCause(e));
+            LOGGER.error("An exception occurred while calling the destroy method of the blueprint bean  in bundle {}/{}.", getName(), b.getSymbolicName(), b.getVersion(), getRealCause(e));
         }
         for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.afterDestroy(obj, getName());

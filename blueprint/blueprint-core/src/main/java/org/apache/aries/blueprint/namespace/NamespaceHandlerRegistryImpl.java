@@ -122,8 +122,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 LOGGER.warn("Error registering NamespaceHandler", e);
             }
         } else {
-            LOGGER.warn("Error resolving NamespaceHandler, null Service obtained from tracked ServiceReference {} for bundle {}, ver {}",
-                    new Object[] { reference.toString(), reference.getBundle().getSymbolicName(), reference.getBundle().getVersion() });
+            LOGGER.warn("Error resolving NamespaceHandler, null Service obtained from tracked ServiceReference {} for bundle {}/{}",
+                    reference.toString(), reference.getBundle().getSymbolicName(), reference.getBundle().getVersion());
         }
         return handler;
     }
