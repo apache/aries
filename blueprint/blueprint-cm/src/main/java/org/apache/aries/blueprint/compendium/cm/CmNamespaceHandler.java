@@ -87,6 +87,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_3 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_4 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0";
+    public static final String BLUEPRINT_EXT_NAMESPACE_V1_5 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String MANAGED_PROPERTIES_ELEMENT = "managed-properties";
@@ -315,6 +316,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
         systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_3, SYSTEM_PROPERTIES_ATTRIBUTE);
       } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_4, SYSTEM_PROPERTIES_ATTRIBUTE)) {
         systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_4, SYSTEM_PROPERTIES_ATTRIBUTE);
+      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_5, SYSTEM_PROPERTIES_ATTRIBUTE)) {
+        systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_5, SYSTEM_PROPERTIES_ATTRIBUTE);
       }
       return systemProperties;
     }
@@ -331,6 +334,8 @@ public class CmNamespaceHandler implements NamespaceHandler {
         ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_3, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
       } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_4, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
         ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_4, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
+      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_5, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
+        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_5, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
       }
       return ignoreMissingLocations;
     }
