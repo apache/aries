@@ -46,6 +46,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReadWriteLock;
 
+@SuppressWarnings({
+    "unchecked", "serial"
+})
 public final class ValidatingGenericConnectionManager extends GenericConnectionManager {
 
     private static final Timer TIMER = new Timer("ValidatingGenericConnectionManagerTimer", true);

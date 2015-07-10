@@ -18,28 +18,20 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
-import org.tranql.connector.AllExceptionsAreFatalSorter;
-import org.tranql.connector.CredentialExtractor;
-import org.tranql.connector.ExceptionSorter;
-import org.tranql.connector.NoExceptionsAreFatalSorter;
-import org.tranql.connector.jdbc.AbstractXADataSourceMCF;
-import org.tranql.connector.jdbc.ConfigurableSQLStateExceptionSorter;
-import org.tranql.connector.jdbc.KnownSQLStateExceptionSorter;
-import org.tranql.connector.jdbc.ManagedXAConnection;
+import java.sql.SQLException;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.ManagedConnection;
-import javax.resource.spi.ManagedConnectionFactory;
 import javax.resource.spi.ResourceAdapterInternalException;
 import javax.resource.spi.TransactionSupport;
 import javax.security.auth.Subject;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import org.tranql.connector.CredentialExtractor;
+import org.tranql.connector.jdbc.AbstractXADataSourceMCF;
+import org.tranql.connector.jdbc.ManagedXAConnection;
 
 public class XADataSourceMCFFactory extends AbstractMCFFactory {
 
@@ -52,6 +44,7 @@ public class XADataSourceMCFFactory extends AbstractMCFFactory {
         }
     }
 
+    @SuppressWarnings("serial")
     public class XADataSourceMCF extends AbstractXADataSourceMCF<XADataSource> implements TransactionSupport {
 
         public XADataSourceMCF() {

@@ -42,6 +42,9 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings({
+    "rawtypes", "serial", "unchecked"
+})
 public final class ValidatingDelegatingManagedConnectionFactory implements UserPasswordManagedConnectionFactory, ValidatingManagedConnectionFactory, TransactionSupport {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValidatingDelegatingManagedConnectionFactory.class);
