@@ -23,7 +23,6 @@ import static org.apache.aries.transaction.annotations.TransactionPropagationTyp
 import static org.apache.aries.transaction.annotations.TransactionPropagationType.Supports;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
-import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 
