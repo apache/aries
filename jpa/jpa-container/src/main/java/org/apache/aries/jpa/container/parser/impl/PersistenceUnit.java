@@ -38,7 +38,6 @@ import org.apache.aries.jpa.container.weaving.impl.TransformerRegistry;
 import org.apache.aries.jpa.container.weaving.impl.TransformerRegistrySingleton;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.packageadmin.PackageAdmin;
 
 public class PersistenceUnit implements PersistenceUnitInfo {
 
@@ -218,7 +217,7 @@ public class PersistenceUnit implements PersistenceUnitInfo {
         this.validationMode = validationMode;
     }
 
-    public void addAnnotated(PackageAdmin packageAdmin) {
+    public void addAnnotated() {
         if (!excludeUnlistedClasses()) {
             Collection<String> detected = JPAAnnotationScanner.findJPAAnnotatedClasses(bundle);
             for (String name : detected) {

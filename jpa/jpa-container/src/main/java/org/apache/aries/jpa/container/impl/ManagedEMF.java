@@ -40,7 +40,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
-import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,32 +55,37 @@ public class ManagedEMF implements Closeable, ManagedService {
 
     private EntityManagerFactory emf;
     private ServiceRegistration<EntityManagerFactory> reg;
-    private ServiceRegistration<EntityManagerFactoryBuilder> regBuilder;
     private PersistenceProvider provider;
     private PersistenceUnitInfo persistenceUnit;
     private Bundle bundle;
+    private ServiceRegistration<?> configReg;
+
+    private boolean closed;
 
     public ManagedEMF(BundleContext containerContext, Bundle bundle, PersistenceProvider provider, PersistenceUnitInfo persistenceUnit) {
         this.provider = provider;
         this.persistenceUnit = persistenceUnit;
         this.bundle = bundle;
+        registerManagedService(containerContext, persistenceUnit);
+        //createAndPublishEMF(null);
+        closed = false;
+    }
 
+    private void registerManagedService(BundleContext containerContext, PersistenceUnitInfo persistenceUnit) {
         Dictionary<String, Object> configuration = new Hashtable<String, Object>();
         configuration.put(Constants.SERVICE_PID,
                           JPA_CONFIGURATION_PREFIX + persistenceUnit.getPersistenceUnitName());
-        containerContext.registerService(ManagedService.class.getName(), this, configuration);
+        configReg = containerContext.registerService(ManagedService.class.getName(), this, configuration);
     }
 
-    public void close() {
-        try {
-            reg.unregister();
-        } catch (Exception e) {
-            // Ignore. May happen if persistence unit bundle is unloaded/updated
-        }
-        try {
-            regBuilder.unregister();
-        } catch (Exception e) {
-            // Ignore. May happen if persistence unit bundle is unloaded/updated
+    public void closeEMF() {
+        if (reg != null) {
+            try {
+
+                reg.unregister();
+            } catch (Exception e) {
+                // Ignore. May happen if persistence unit bundle is unloaded/updated
+            }
         }
         if (emf != null && emf.isOpen()) {
             try {
@@ -93,17 +97,37 @@ public class ManagedEMF implements Closeable, ManagedService {
         reg = null;
         emf = null;
     }
+    
+    public void close() {
+        closeEMF();
+        closed = true;
+        if (configReg != null) {
+            configReg.unregister();
+        }
+    }
 
     @Override
     public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
+        if (closed) {
+            return;
+        }
         if (emf != null) {
-            close();
+            closeEMF();
+        }
+        if (bundle.getState() == Bundle.UNINSTALLED || bundle.getState() == Bundle.INSTALLED) {
+            // Not sure why but during the TCK tests updated sometimes was called
+            // for uninstalled bundles
+            return;
         }
         Map<String, Object> overrides = (properties != null) ? asMap(properties) : null;
         LOGGER.info("Registering EntityManagerFactory for persistence unit " + persistenceUnit.getPersistenceUnitName());
         if (LOGGER.isDebugEnabled()) {
            LOGGER.debug("Using properties override " + overrides); 
         }
+        createAndPublishEMF(overrides);
+    }
+
+    private void createAndPublishEMF(Map<String, Object> overrides) {
         emf = provider.createContainerEntityManagerFactory(persistenceUnit, overrides);
         Dictionary<String, String> props = createProperties(persistenceUnit, bundle);
         BundleContext uctx = bundle.getBundleContext();

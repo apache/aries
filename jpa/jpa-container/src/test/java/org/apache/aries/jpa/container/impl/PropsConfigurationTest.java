@@ -34,12 +34,15 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.apache.aries.jpa.container.impl.ManagedEMF;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
 import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 
 public class PropsConfigurationTest {
 
@@ -54,6 +57,9 @@ public class PropsConfigurationTest {
             .thenReturn("org.eclipse.persistence.jpa.PersistenceProvider");
         when(punit.getTransactionType()).thenReturn(PersistenceUnitTransactionType.JTA);
         BundleContext context = mock(BundleContext.class);
+        ServiceRegistration reg = mock(ServiceRegistration.class);
+        when(context.registerService(Mockito.eq(ManagedService.class.getName()), Mockito.any(), Mockito.any(Dictionary.class)))
+            .thenReturn(reg);
         Bundle bundle = mock(Bundle.class);
         when(bundle.getBundleContext()).thenReturn(context);
         when(bundle.getVersion()).thenReturn(new Version("4.3.1"));
@@ -69,7 +75,9 @@ public class PropsConfigurationTest {
                                                        Mockito.any(Dictionary.class));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
     @Test
     public void testEmfWithProps() throws InvalidSyntaxException, ConfigurationException {
         PersistenceUnitInfo punit = mock(PersistenceUnitInfo.class);
@@ -78,15 +86,18 @@ public class PropsConfigurationTest {
             .thenReturn("org.eclipse.persistence.jpa.PersistenceProvider");
         when(punit.getTransactionType()).thenReturn(PersistenceUnitTransactionType.JTA);
         BundleContext context = mock(BundleContext.class);
+        ServiceRegistration reg = mock(ServiceRegistration.class);
+        when(context.registerService(Mockito.eq(ManagedService.class.getName()), Mockito.any(), Mockito.any(Dictionary.class)))
+            .thenReturn(reg);
         Bundle bundle = mock(Bundle.class);
         when(bundle.getBundleContext()).thenReturn(context);
         when(bundle.getVersion()).thenReturn(new Version("4.3.1"));
         PersistenceProvider provider = mock(PersistenceProvider.class);
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put("hibernate.hbm2ddl.auto", "create-drop");
-        ManagedEMF emf = new ManagedEMF(context, bundle, provider, punit);
-        emf.updated(null);
-        emf.close();
+        ManagedEMF mEMF = new ManagedEMF(context, bundle, provider, punit);
+        mEMF.updated(null);
+        mEMF.close();
 
         verify(provider, atLeastOnce()).createContainerEntityManagerFactory(Mockito.eq(punit),
                                                                             Mockito.anyMap());
