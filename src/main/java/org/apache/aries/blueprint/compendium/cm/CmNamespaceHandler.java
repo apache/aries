@@ -320,7 +320,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
       } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_1, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
         ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_1, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
       } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_2, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
-        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_1, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
+        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_2, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
       }
       return ignoreMissingLocations;
     }
