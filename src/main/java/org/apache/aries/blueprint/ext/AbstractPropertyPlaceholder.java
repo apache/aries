@@ -413,7 +413,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     private void printWarning(Object immutable, String processingType) {
         StringBuilder sb = new StringBuilder("The property placeholder processor for ");
         sb.append(placeholderPrefix).append(',').append(" ").append(placeholderSuffix)
-        .append(" in bundle ").append(blueprintBundle.getSymbolicName()).append("_")
+        .append(" in bundle ").append(blueprintBundle.getSymbolicName()).append("/")
         .append(blueprintBundle.getVersion()).append(" found an immutable ").append(processingType)
         .append(" at location ");
         

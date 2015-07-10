@@ -133,7 +133,7 @@ class BlueprintEventDispatcher implements BlueprintListener {
 
     public void blueprintEvent(final BlueprintEvent event) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Sending blueprint container event {} for bundle {}", toString(event), event.getBundle().getSymbolicName());
+            LOGGER.debug("Sending blueprint container event {} for bundle {}/{}", toString(event), event.getBundle().getSymbolicName(), event.getBundle().getVersion());
         }
 
         synchronized (listeners) {
