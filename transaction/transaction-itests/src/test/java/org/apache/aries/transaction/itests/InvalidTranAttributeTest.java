@@ -22,11 +22,17 @@ import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
 public class InvalidTranAttributeTest extends AbstractIntegrationTest {
-    @Inject @Filter("(tranAttribute=MandatoryJtaAnnotated)") 
+    @Inject
+    @Filter("(tranAttribute=MandatoryJtaAnnotated)")
     TestBean bean;
-    
-  @Test(expected=IllegalStateException.class)
-  public void testInvalid() throws Exception {
-      bean.insertRow("testWithoutClientTran", 1);
-  }
+
+    @Test(expected = IllegalStateException.class)
+    public void testInvalid() throws Exception {
+        bean.insertRow("testWithoutClientTran", 1);
+    }
+
+    @Override
+    protected TestBean getBean() {
+        return bean;
+    }
 }

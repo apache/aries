@@ -15,83 +15,29 @@
  */
 package org.apache.aries.transaction.itests;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.sql.SQLException;
-
 import javax.inject.Inject;
-import javax.transaction.RollbackException;
-
-import junit.framework.Assert;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
 public class MandatoryTranAttributeTest extends AbstractIntegrationTest {
-    @Inject @Filter("(tranAttribute=Mandatory)") 
+    @Inject
+    @Filter("(tranAttribute=Mandatory)")
     TestBean bean;
-  
-  @Test
-  public void testMandatory() throws Exception {
-      String prefix = "MTAT";
-      
-      //Test with client transaction - the user transaction is used to insert a row
-      int initialRows = bean.countRows();
-      
-      tran.begin();
-      bean.insertRow(prefix + "testWithClientTran", 1);
-      tran.commit();
-      
-      int finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-  
-      //Test with client transaction and application exception - the user transaction is not rolled back
-      initialRows = bean.countRows();
-      
-      tran.begin();
-      bean.insertRow(prefix + "testWithClientTranAndWithAppException", 1);
-      
-      try {
-        bean.insertRow(prefix + "testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
-      } catch (SQLException e) {
-        Assert.assertEquals("Dummy exception", e.getMessage());
-      }
-      
-      tran.commit();
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 2);
-      
-      //Test with client transaction and runtime exception - the user transaction is rolled back
-      initialRows = bean.countRows();
-      
-      tran.begin();
-      bean.insertRow(prefix + "testWithClientTranAndWithRuntimeException", 1);
-      
-      try {
-          bean.insertRow(prefix + "testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
-      } catch (RuntimeException e) {
-          Assert.assertEquals("Dummy exception", e.getMessage());
-        }
-      
-      try {
-          tran.commit();
-          fail("RollbackException not thrown");
-      } catch (RollbackException e) {
-          // Ignore expected
-      }
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
-      
-      //Test without client transaction - an exception is thrown because a transaction is mandatory
-      try {
-          bean.insertRow(prefix + "testWithoutClientTran", 1);
-          fail("IllegalStateException not thrown");
-      } catch (IllegalStateException e) {
-          e.printStackTrace();
-      }
-  }
+
+    @Test
+    public void testMandatory() throws Exception {
+        assertInsertSuccesful();
+        assertInsertWithAppExceptionCommitted();
+        assertInsertWithRuntimeExceptionRolledBack();
+        assertMandatoryTransaction();
+    }
+
+    @Override
+    protected TestBean getBean() {
+        return bean;
+    }
+
+
 }

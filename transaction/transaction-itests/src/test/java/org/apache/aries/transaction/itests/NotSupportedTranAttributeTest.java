@@ -47,7 +47,7 @@ public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
           nsBean.insertRow("testWithClientTran", 1, true);
           fail("IllegalStateException not thrown");
       } catch (IllegalStateException e) {
-          e.printStackTrace();
+          // Ignore expected
       }
       
       tran.commit();
@@ -65,7 +65,7 @@ public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
       try {
           nsBean.throwApplicationException();
       } catch (SQLException e) {
-          e.printStackTrace();
+          // Ignore expected
       }
       
       tran.commit();
@@ -83,7 +83,7 @@ public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
       try {
           nsBean.throwRuntimeException();
       } catch (RuntimeException e) {
-          e.printStackTrace();
+          // Ignore expected
       }
       
       tran.commit();
@@ -99,10 +99,16 @@ public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
           nsBean.insertRow("testWithoutClientTran", 1, true);
           fail("IllegalStateException not thrown");
       } catch (IllegalStateException e) {
-          e.printStackTrace();
+          // Ignore expected
       }
       
       finalRows = nsBean.countRows();
       assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
   }
+
+    @Override
+    protected TestBean getBean() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

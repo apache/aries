@@ -15,103 +15,27 @@
  */
 package org.apache.aries.transaction.itests;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.sql.SQLException;
-
 import javax.inject.Inject;
-import javax.transaction.RollbackException;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
 public class RequiredTranAttributeTest extends AbstractIntegrationTest {
-    @Inject @Filter("(tranAttribute=Required)") 
+    @Inject
+    @Filter("(tranAttribute=Required)")
     TestBean bean;
-  
-  @Test
-  public void testRequired() throws Exception {
-      //Test with client transaction - the user transaction is used to insert a row
-      int initialRows = bean.countRows();
-      
-      tran.begin();
-      bean.insertRow("testWithClientTran", 1);
-      tran.commit();
-      
-      int finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-      
-      //Test with client transaction and application exception - the user transaction is not rolled back
-      initialRows = bean.countRows();
-      
-      tran.begin();
-      bean.insertRow("testWithClientTranAndWithAppException", 1);
-      
-      try {
-          bean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException());
-      } catch (SQLException e) {
-          e.printStackTrace();
-      }
-      
-      tran.commit();
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 2);
-       
-      //Test with client transaction and runtime exception - the user transaction is rolled back
-      initialRows = bean.countRows();
-      
-      tran.begin();
-      bean.insertRow("testWithClientTranAndWithRuntimeException", 1);
-      
-      try {
-          bean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException());
-      } catch (RuntimeException e) {
-          e.printStackTrace();
-      }
-      
-      try {
-          tran.commit();
-          fail("RollbackException not thrown");
-      } catch (RollbackException e) {
-          e.printStackTrace();
-      }
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
-      
-      //Test without client exception - a container transaction is used to insert the row
-      initialRows = bean.countRows();
-      
-      bean.insertRow("testWithoutClientTran", 1);
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-      
-      //Test without client exception and with application exception - the container transaction is not rolled back
-      initialRows = bean.countRows();
-      
-      try {
-          bean.insertRow("testWithoutClientTranAndWithAppException", 1, new SQLException("Dummy exception"));
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-      
-      //Test without client transaction and with runtime exception - the container transaction is rolled back
-      initialRows = bean.countRows();
-      
-      try {
-          bean.insertRow("testWithoutClientTranAndWithRuntimeException", 1, new RuntimeException("Dummy exception"));
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
-  }
+
+    @Test
+    public void testRequired() throws Exception {
+        clientTransaction = false;
+        assertInsertSuccesful();
+        assertInsertWithAppExceptionCommitted();
+        assertInsertWithRuntimeExceptionRolledBack();
+    }
+
+    @Override
+    protected TestBean getBean() {
+        return bean;
+    }
 }
