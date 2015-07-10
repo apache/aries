@@ -28,7 +28,6 @@ import javax.persistence.MappedSuperclass;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
 
-@SuppressWarnings("deprecation")
 class JPAAnnotationScanner {
     public static Collection<String> findJPAAnnotatedClasses(Bundle b) {
         BundleWiring bw = b.adapt(BundleWiring.class);
