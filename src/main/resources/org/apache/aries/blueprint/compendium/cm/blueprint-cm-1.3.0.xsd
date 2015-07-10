@@ -22,6 +22,8 @@
             xmlns:ext100="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
             xmlns:ext110="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
             xmlns:ext120="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0"
+            xmlns:ext130="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0"
+            xmlns:ext140="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             targetNamespace="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
@@ -33,6 +35,8 @@
     <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0" />
     <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0" />
     <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0" />
+    <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0" />
+    <xsd:import namespace="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0" />
 
     <!-- property placeholder -->
 
@@ -48,6 +52,8 @@
                         <xsd:element ref="ext100:location" />
                         <xsd:element ref="ext110:location" />
                         <xsd:element ref="ext120:location" />
+                        <xsd:element ref="ext130:location" />
+                        <xsd:element ref="ext140:location" />
                     </xsd:choice>
                 </xsd:sequence>
 
@@ -57,12 +63,7 @@
                 <xsd:attribute name="placeholder-suffix" type="xsd:string" use="optional" default="}"/>
                 <xsd:attribute name="defaults-ref" type="bp:Tidref" use="optional"/>
                 <xsd:attribute name="update-strategy" type="TplaceholderUpdateStrategyType" use="optional" default="none"/>
-                <xsd:attribute ref="ext100:ignore-missing-locations" use="optional" />
-                <xsd:attribute ref="ext110:ignore-missing-locations" use="optional" />
-                <xsd:attribute ref="ext120:ignore-missing-locations" use="optional" />
-                <xsd:attribute ref="ext100:system-properties" use="optional" />
-                <xsd:attribute ref="ext110:system-properties" use="optional" />
-                <xsd:attribute ref="ext120:system-properties" use="optional" />
+                <xsd:attributeGroup ref="extAttributes" />
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -83,6 +84,18 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:attributeGroup name="extAttributes">
+        <xsd:attribute ref="ext100:ignore-missing-locations" use="optional" />
+        <xsd:attribute ref="ext110:ignore-missing-locations" use="optional" />
+        <xsd:attribute ref="ext120:ignore-missing-locations" use="optional" />
+        <xsd:attribute ref="ext130:ignore-missing-locations" use="optional" />
+        <xsd:attribute ref="ext140:ignore-missing-locations" use="optional" />
+        <xsd:attribute ref="ext100:system-properties" use="optional" />
+        <xsd:attribute ref="ext110:system-properties" use="optional" />
+        <xsd:attribute ref="ext120:system-properties" use="optional" />
+        <xsd:attribute ref="ext130:system-properties" use="optional" />
+        <xsd:attribute ref="ext140:system-properties" use="optional" />
+    </xsd:attributeGroup>
 
     <!--  managed-properties  -->
 
