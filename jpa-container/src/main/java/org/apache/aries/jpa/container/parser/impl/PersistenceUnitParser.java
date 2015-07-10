@@ -101,9 +101,9 @@ public class PersistenceUnitParser {
             JPAHandler handler = new JPAHandler(bundle);
             parser.parse(is, handler);
             punits.addAll(handler.getPersistenceUnits());
-//            for (PersistenceUnit punit : punits) {
-                //validate(punit);
-//            }
+            for (PersistenceUnit punit : punits) {
+                validate(punit);
+            }
         } catch (Exception e) {
             throw new RuntimeException("persistence.description.parse.error", e);
         } finally {
@@ -114,16 +114,6 @@ public class PersistenceUnitParser {
     private static void validate(PersistenceUnit punit) {
         if (punit.getTransactionType() == null) {
             throw new IllegalArgumentException("No transaction type specified for persistence unit " + punit.getName());
-        }
-        if (punit.getTransactionType() == PersistenceUnitTransactionType.JTA) {
-            if (punit.getJtaDataSourceName() == null) {
-                throw new IllegalArgumentException("Must specify jta-data-source for persistence unit " + punit.getName());
-            }
-        }
-        if (punit.getTransactionType() == PersistenceUnitTransactionType.RESOURCE_LOCAL) {
-            if (punit.getNonJtaDataSourceName() == null) {
-                throw new IllegalArgumentException("Must specify non-jta-data-source for persistence unit " + punit.getName());
-            }
         }
     }
 
