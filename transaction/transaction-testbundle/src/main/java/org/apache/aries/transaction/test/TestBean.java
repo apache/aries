@@ -27,7 +27,7 @@ import java.sql.SQLException;
 public interface TestBean {
     public void insertRow(String name, int value) throws SQLException;
     
-    public void insertRow(String name, int value, boolean delegate) throws SQLException;
+    public void delegateInsertRow(String name, int value) throws SQLException;
     
     public void insertRow(String name, int value, Exception e) throws SQLException;
 

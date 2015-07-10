@@ -25,13 +25,17 @@
 
    <tx:enable-annotations/>
 
-   <bean id="notSupportedBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
-       <tx:transaction method="*" value="NotSupported"/>
-       <property name="enlistingDataSource" ref="enlistingDataSource"/>
-       <property name="dataSource" ref="dataSource"/>
+   <bean id="connector" class="org.apache.aries.transaction.test.impl.Connector" init-method="initialize">
+       <property name="xads" ref="enlistingDataSource"/>
+       <property name="ds" ref="dataSource"/>
        <property name="user" value="user"/>
        <property name="password" value="password"/>
+   </bean>
+
+   <bean id="notSupportedBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
+       <tx:transaction method="*" value="NotSupported"/>
        <property name="testBean" ref="mandatoryBeanImpl"/>
+       <property name="connector" ref="connector"/>
    </bean>
    
    <service id="notSupportedBean" ref="notSupportedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
@@ -40,13 +44,10 @@
        </service-properties>
    </service>
 
-   <bean id="requiredBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
+   <bean id="requiredBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
        <tx:transaction method="insertRow throw*" value="Required"/>
        <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="enlistingDataSource" ref="enlistingDataSource"/>
-       <property name="dataSource" ref="dataSource"/>
-       <property name="user" value="user"/>
-       <property name="password" value="password"/>
+       <property name="connector" ref="connector"/>
    </bean>
    
    <service id="requiredBean" ref="requiredBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
@@ -55,14 +56,11 @@
        </service-properties>
    </service>
 
-   <bean id="supportsBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
+   <bean id="supportsBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
        <tx:transaction method="*" value="Supports"/>
        <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="enlistingDataSource" ref="enlistingDataSource"/>
-       <property name="dataSource" ref="dataSource"/>
-       <property name="user" value="user"/>
-       <property name="password" value="password"/>
        <property name="testBean" ref="mandatoryBeanImpl"/>
+       <property name="connector" ref="connector"/>
    </bean>
    
    <service id="supportsBean" ref="supportsBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
@@ -75,23 +73,17 @@
        <service-properties>
            <entry key="tranAttribute" value="RequiresNew"/>
        </service-properties>
-       <bean class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
+       <bean class="org.apache.aries.transaction.test.impl.TestBeanImpl">
            <tx:transaction method="insertRow throw*" value="RequiresNew"/>
            <tx:transaction method="countRows" value="NotSupported"/>
-           <property name="enlistingDataSource" ref="enlistingDataSource"/>
-           <property name="dataSource" ref="dataSource"/>
-           <property name="user" value="user"/>
-           <property name="password" value="password"/>
+           <property name="connector" ref="connector"/>
        </bean>
    </service>
 
-   <bean id="mandatoryBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
+   <bean id="mandatoryBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
        <tx:transaction method="insertRow throw*" value="Mandatory"/>
        <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="enlistingDataSource" ref="enlistingDataSource"/>
-       <property name="dataSource" ref="dataSource"/>
-       <property name="user" value="user"/>
-       <property name="password" value="password"/>
+       <property name="connector" ref="connector"/>
    </bean>
 
    <service id="mandatoryBean" ref="mandatoryBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
@@ -100,14 +92,11 @@
        </service-properties>
    </service>
 
-   <bean id="neverBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
+   <bean id="neverBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
        <tx:transaction method="insertRow" value="Never"/>
        <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="enlistingDataSource" ref="enlistingDataSource"/>
-       <property name="dataSource" ref="dataSource"/>
-       <property name="user" value="user"/>
-       <property name="password" value="password"/>
        <property name="testBean" ref="mandatoryBeanImpl"/>
+       <property name="connector" ref="connector"/>
    </bean>
    
    <service id="neverBean" ref="neverBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
@@ -116,13 +105,10 @@
        </service-properties>
    </service>
 
-   <bean id="invalidBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl" init-method="initialize">
+   <bean id="invalidBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
        <tx:transaction method="ins*" value="Never"/>
        <tx:transaction method="*Row" value="NotSupported"/>
-       <property name="enlistingDataSource" ref="enlistingDataSource"/>
-       <property name="dataSource" ref="dataSource"/>
-       <property name="user" value="user"/>
-       <property name="password" value="password"/>
+       <property name="connector" ref="connector"/>
    </bean>
 
    <service id="invalidBean" ref="invalidBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
@@ -131,11 +117,8 @@
        </service-properties>
    </service>
 
-    <bean id="mandatoryAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.AnnotatedTestBeanImpl" init-method="initialize">
-        <property name="enlistingDataSource" ref="enlistingDataSource"/>
-        <property name="dataSource" ref="dataSource"/>
-        <property name="user" value="user"/>
-        <property name="password" value="password"/>
+    <bean id="mandatoryAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.AnnotatedTestBeanImpl">
+        <property name="connector" ref="connector"/>
     </bean>
 
     <service id="mandatoryAnnotatedBean" ref="mandatoryAnnotatedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
@@ -144,11 +127,8 @@
         </service-properties>
     </service>
 
-    <bean id="mandatoryJtaAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.JtaAnnotatedTestBeanImpl" init-method="initialize">
-        <property name="enlistingDataSource" ref="enlistingDataSource"/>
-        <property name="dataSource" ref="dataSource"/>
-        <property name="user" value="user"/>
-        <property name="password" value="password"/>
+    <bean id="mandatoryJtaAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.JtaAnnotatedTestBeanImpl">
+        <property name="connector" ref="connector"/>
     </bean>
 
     <service id="mandatoryJtaAnnotatedBean" ref="mandatoryJtaAnnotatedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">

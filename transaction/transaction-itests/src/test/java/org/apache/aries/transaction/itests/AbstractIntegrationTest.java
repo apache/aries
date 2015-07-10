@@ -178,35 +178,43 @@ public abstract class AbstractIntegrationTest {
         assertEquals("Added rows", 1, finalRows - initialRows);
     }
 
-    // Test with client transaction - an exception is thrown because transactions are not allowed
-    protected void assertInsertWithTranFails() throws Exception {
+    protected void assertInsertFails() throws Exception {
         TestBean bean = getBean();
         int initialRows = bean.countRows();
-        tran.begin();
+        if (clientTransaction ) {
+            tran.begin();
+        }
         try {
             bean.insertRow("testWithClientTran", 1);
             fail("IllegalStateException not thrown");
         } catch (IllegalStateException e) {
             // Ignore Expected
         }
-        tran.commit();
+        if (clientTransaction ) {
+            tran.commit();
+        }
         int finalRows = bean.countRows();
         assertEquals("Added rows", 0, finalRows - initialRows);
     }
     
     // Test without client transaction - the insert fails because the bean delegates to another
     // bean with a transaction strategy of Mandatory, and no transaction is available
-    protected void assertDelegatedInsertWithoutTranFails() throws SQLException {
+    protected void assertDelegateInsertFails() throws Exception {
         TestBean bean = getBean();
         int initialRows = bean.countRows();
 
+        if (clientTransaction ) {
+            tran.begin();
+        }
         try {
-            bean.insertRow("testWithoutClientTran", 1, true);
+            bean.delegateInsertRow("testWithoutClientTran", 1);
             fail("IllegalStateException not thrown");
         } catch (IllegalStateException e) {
             // Ignore expected
         }
-
+        if (clientTransaction ) {
+            tran.commit();
+        }
         int finalRows = bean.countRows();
         assertEquals("Added rows", 0, finalRows - initialRows);
     }
@@ -222,4 +230,16 @@ public abstract class AbstractIntegrationTest {
     }
     
     protected abstract TestBean getBean();
+
+    protected void assertDelegateInsert() throws Exception {
+        TestBean bean = getBean();
+        int initialRows = bean.countRows();
+    
+        tran.begin();
+        bean.delegateInsertRow("testWithClientTran", 1);
+        tran.commit();
+    
+        int finalRows = bean.countRows();
+        assertEquals("Added rows", 1, finalRows - initialRows);
+    }
 }

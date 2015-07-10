@@ -38,6 +38,7 @@ import org.apache.aries.transaction.parsing.AnnotationParser;
 import org.apache.aries.transaction.pojo.AnnotatedPojo;
 import org.apache.aries.transaction.pojo.BadlyAnnotatedPojo1;
 import org.apache.aries.transaction.pojo.BadlyAnnotatedPojo2;
+import org.apache.aries.transaction.pojo.JtaAnnotatedPojo;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.Before;
@@ -76,6 +77,24 @@ public class AnnotationParserTest {
         expectLastCall().times(1);
         c.replay();
         parser.beforeInit(new AnnotatedPojo(), "testPojo", null, mbm);
+        c.verify();
+    }
+    
+    @Test
+    public void testFindAnnotationJta() {
+        MutableBeanMetadata mbm = createMetaData(JtaAnnotatedPojo.class);
+        expect(helper.getComponentMethodTxAttribute(anyObject(ComponentMetadata.class), anyString())).andReturn(null).atLeastOnce();
+        expect(cdr.getInterceptors(mbm)).andReturn(new ArrayList<Interceptor>());
+        helper.setComponentTransactionData(cdr, mbm, Required, "*");
+        expectLastCall().times(1);
+        helper.setComponentTransactionData(cdr, mbm, Supports, "checkValue");
+        expectLastCall().times(1);
+        helper.setComponentTransactionData(cdr, mbm, Mandatory, "getRealObject");
+        expectLastCall().times(1);
+        cdr.registerInterceptorWithComponent(mbm , interceptor);
+        expectLastCall().times(1);
+        c.replay();
+        parser.beforeInit(new JtaAnnotatedPojo(), "testPojo", null, mbm);
         c.verify();
     }
 

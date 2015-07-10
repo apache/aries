@@ -15,8 +15,7 @@
  */
 package org.apache.aries.transaction.itests;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static junit.framework.Assert.assertEquals;
 
 import java.sql.SQLException;
 
@@ -36,28 +35,11 @@ public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
   
   @Test
   public void testNotSupported() throws Exception {
-      //Test with client transaction - the insert fails because the bean delegates to another
-      //bean with a transaction strategy of Mandatory, and no transaction is available, i.e.
-      //the user transaction is not propagated, and there is no container transaction.
-      int initialRows = nsBean.countRows();
-      
-      tran.begin();
-      
-      try {
-          nsBean.insertRow("testWithClientTran", 1, true);
-          fail("IllegalStateException not thrown");
-      } catch (IllegalStateException e) {
-          // Ignore expected
-      }
-      
-      tran.commit();
-      
-      int finalRows = nsBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
+      assertDelegateInsertFails();
       
       //Test with client transaction and with application exception - the user transaction is not
       //marked for rollback and can still be committed
-      initialRows = nsBean.countRows();
+      int initialRows = nsBean.countRows();
       
       tran.begin();
       rBean.insertRow("testWithClientTranAndWithAppException", 1);
@@ -70,8 +52,8 @@ public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
       
       tran.commit();
       
-      finalRows = nsBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
+      int finalRows = nsBean.countRows();
+      assertEquals("Added rows", 1, finalRows - initialRows);
       
       //Test with client transaction and with runtime exception - the user transaction is not
       //marked for rollback and can still be committed
@@ -89,26 +71,14 @@ public class NotSupportedTranAttributeTest extends AbstractIntegrationTest {
       tran.commit();
       
       finalRows = nsBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
+      assertEquals("Added rows", 1, finalRows - initialRows);
       
-      //Test without client transaction - the insert fails because the bean delegates to another
-      //bean with a transaction strategy of Mandatory, and no transaction is available
-      initialRows = nsBean.countRows();
-      
-      try {
-          nsBean.insertRow("testWithoutClientTran", 1, true);
-          fail("IllegalStateException not thrown");
-      } catch (IllegalStateException e) {
-          // Ignore expected
-      }
-      
-      finalRows = nsBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
+      clientTransaction = false;
+      assertDelegateInsertFails();
   }
 
     @Override
     protected TestBean getBean() {
-        // TODO Auto-generated method stub
-        return null;
+        return nsBean;
     }
 }
