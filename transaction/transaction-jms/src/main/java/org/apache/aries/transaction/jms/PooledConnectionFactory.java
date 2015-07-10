@@ -16,11 +16,8 @@
  */
 package org.apache.aries.transaction.jms;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -34,9 +31,6 @@ import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.pool.ObjectPoolFactory;
-import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPoolFactory;
 
 /**
  * A JMS provider which pools Connection, Session and MessageProducer instances

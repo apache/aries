@@ -198,9 +198,9 @@ public class TxNamespaceHandler implements NamespaceHandler {
         this.interceptor = (Interceptor) container.getComponentInstance(id);
     }
     
+    @SuppressWarnings("rawtypes")
     public Set<Class> getManagedClasses()
     {
-        // TODO Auto-generated method stub
         return null;
     }
     

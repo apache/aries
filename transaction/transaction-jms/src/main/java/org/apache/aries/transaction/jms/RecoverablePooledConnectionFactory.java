@@ -16,9 +16,7 @@
  */
 package org.apache.aries.transaction.jms;
 
-import javax.jms.JMSException;
 import javax.jms.Connection;
-import javax.jms.XAConnection;
 
 import org.apache.aries.transaction.jms.internal.ConnectionPool;
 import org.apache.aries.transaction.jms.internal.GenericResourceManager;
@@ -32,6 +30,7 @@ import org.apache.aries.transaction.jms.internal.XaPooledConnectionFactory;
  *
  * @org.apache.xbean.XBean element="xaPooledConnectionFactory"
  */
+@SuppressWarnings("serial")
 public class RecoverablePooledConnectionFactory extends XaPooledConnectionFactory {
 
     private String name;
