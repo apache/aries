@@ -98,9 +98,9 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     private final SchemaFactory schemaFactory =
                         SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-    // Access to this variable is not synchronized.  The list itself is concurrent
-    private final CopyOnWriteArrayList<NamespaceHandlerSetImpl> sets =
-                        new CopyOnWriteArrayList<NamespaceHandlerSetImpl>();
+    // Access to this variable is must be synchronized on itself
+    private final ArrayList<NamespaceHandlerSetImpl> sets =
+                        new ArrayList<NamespaceHandlerSetImpl>();
 
     public NamespaceHandlerRegistryImpl(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
@@ -155,6 +155,10 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 h = handlers.get(uri);
             }
             if (h.add(handler)) {
+                List<NamespaceHandlerSetImpl> sets;
+                synchronized (this.sets) {
+                    sets = new ArrayList<NamespaceHandlerSetImpl>(this.sets);
+                }
                 for (NamespaceHandlerSetImpl s : sets) {
                     s.registerHandler(uri, handler);
                 }
@@ -168,6 +172,10 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             CopyOnWriteArraySet<NamespaceHandler> h = handlers.get(uri);
             if (!h.remove(handler)) {
                 continue;
+            }
+            List<NamespaceHandlerSetImpl> sets;
+            synchronized (this.sets) {
+                sets = new ArrayList<NamespaceHandlerSetImpl>(this.sets);
             }
             for (NamespaceHandlerSetImpl s : sets) {
                 s.unregisterHandler(uri, handler);
@@ -226,8 +234,11 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     }
     
     public NamespaceHandlerSet getNamespaceHandlers(Set<URI> uris, Bundle bundle) {
-        NamespaceHandlerSetImpl s = new NamespaceHandlerSetImpl(uris, bundle);
-        sets.add(s);
+        NamespaceHandlerSetImpl s;
+        synchronized (sets) {
+            s = new NamespaceHandlerSetImpl(uris, bundle);
+            sets.add(s);
+        }
         return s;
     }
 
@@ -557,7 +568,9 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
 
         public void destroy() {
-            NamespaceHandlerRegistryImpl.this.sets.remove(this);
+            synchronized (NamespaceHandlerRegistryImpl.this.sets) {
+                NamespaceHandlerRegistryImpl.this.sets.remove(this);
+            }
         }
 
         public void registerHandler(URI uri, NamespaceHandler handler) {
