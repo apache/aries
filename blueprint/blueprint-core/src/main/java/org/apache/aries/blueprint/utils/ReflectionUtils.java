@@ -24,7 +24,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -625,14 +627,57 @@ public class ReflectionUtils {
             Method setterMethod = findSetter(container, value);
 
             if (setterMethod != null) {
-                setterMethod.invoke(instance, convert(value, setterMethod.getGenericParameterTypes()[0]));
+                setterMethod.invoke(instance, convert(value, resolveParameterType(instance.getClass(), setterMethod)));
             } else {
                 throw new ComponentDefinitionException(
                         "No converter available to convert value "+value+" into a form applicable for the " + 
                         "setters of property "+getName());
             }
         }
-        
+
+        private Type resolveParameterType(Class<?> impl, Method setterMethod) {
+            Type type = setterMethod.getGenericParameterTypes()[0];
+            Class<?> declaringClass = setterMethod.getDeclaringClass();
+            TypeVariable<?>[] declaredVariables = declaringClass.getTypeParameters();
+
+            if (TypeVariable.class.isInstance(type)) {
+                // e.g.: "T extends Serializable"
+                TypeVariable variable = TypeVariable.class.cast(type);
+
+                int index = 0;
+                for (; index < declaredVariables.length; index++) {
+                    // find the class declaration index...
+                    if (variable == declaredVariables[index]) {
+                        break;
+                    }
+                }
+
+                if (index >= declaredVariables.length) {
+                    // not found - now what...
+                    return type;
+                }
+
+                // navigate from the implementation type up to the declaring super
+                // class to find the real generic type...
+                Class<?> c = impl;
+                while (c != null && c != declaringClass) {
+                    Type sup = c.getGenericSuperclass();
+                    if (sup != null && ParameterizedType.class.isInstance(sup)) {
+                        ParameterizedType pt = ParameterizedType.class.cast(sup);
+                        if (declaringClass == pt.getRawType()) {
+                            Type t = pt.getActualTypeArguments()[index];
+                            return t;
+                        }
+                    }
+                    c = c.getSuperclass();
+                }
+                return type;
+            } else {
+                // not a generic type...
+                return type;
+            }
+        }
+
         private Method findSetter(ExtendedBlueprintContainer container, Object value) throws Exception {
             Class<?> valueType = (value == null) ? null : value.getClass();
             
