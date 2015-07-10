@@ -24,6 +24,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -223,6 +225,34 @@ public class AggregateConverterTest extends TestCase {
         }
 
         assertNotNull(s.convert(Arrays.asList(new EuRegion() {}), new GenericType(List.class, new GenericType(Region.class))));
+    }
+
+    public void testConvertCompatibleCollections() throws Exception {
+        Object org = Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4));
+        Object obj = service.convert(org,
+                GenericType.parse("java.util.List<java.util.List<java.lang.Integer>>", getClass().getClassLoader()));
+        assertSame(org, obj);
+
+        org = Collections.singletonMap("foo", 1);
+        obj = service.convert(org,
+                GenericType.parse("java.util.Map<java.lang.String,java.lang.Integer>", getClass().getClassLoader()));
+        assertSame(org, obj);
+
+        org = new int[] { 1, 2 };
+        obj = service.convert(org,
+                GenericType.parse("int[]", getClass().getClassLoader()));
+        assertSame(org, obj);
+
+        org = new Object[] { 1, 2 };
+        obj = service.convert(org,
+                GenericType.parse("int[]", getClass().getClassLoader()));
+        assertNotSame(org, obj);
+
+        Hashtable<String, Integer> ht = new Hashtable<String, Integer>();
+        ht.put("foo", 1);
+        org = ht;
+        obj = service.convert(org, GenericType.parse("java.util.Dictionary<java.lang.String,java.lang.Integer>", getClass().getClassLoader()));
+        assertSame(org, obj);;
     }
     
     private interface Region {} 
