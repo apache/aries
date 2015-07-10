@@ -87,22 +87,29 @@ public class AnnotationParser implements BeanProcessor {
 
     private Transaction tryGetTransaction(Method m) {
         Transaction t = m.getAnnotation(Transaction.class);
-        if (t == null) {
-            final Transactional jtaT = m.getAnnotation(Transactional.class);
-            if (jtaT != null) {
-                t = new Transaction() {
-                    @Override
-                    public Class<? extends Annotation> annotationType() {
-                        return Transactional.class;
-                    }
-
-                    @Override
-                    public TransactionPropagationType value() {
-                        return convert(jtaT.value());
-                    }
-                };
-            }
+        if (t != null) {
+            return t;
         }
+        final Transactional jtaT = m.getAnnotation(Transactional.class);
+        if (jtaT != null) {
+            return toTransaction(jtaT);
+        }
+        return null;
+    }
+
+    private Transaction toTransaction(final Transactional jtaT) {
+        Transaction t;
+        t = new Transaction() {
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return Transactional.class;
+            }
+
+            @Override
+            public TransactionPropagationType value() {
+                return convert(jtaT.value());
+            }
+        };
         return t;
     }
 

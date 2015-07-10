@@ -18,6 +18,8 @@
  */
 package org.apache.aries.transaction.itests;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
@@ -26,26 +28,35 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
+import java.sql.SQLException;
+
 import javax.inject.Inject;
+import javax.transaction.RollbackException;
 import javax.transaction.UserTransaction;
 
+import junit.framework.Assert;
+
+import org.apache.aries.transaction.test.TestBean;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.exam.spi.reactors.PerSuite;
 import org.osgi.framework.BundleContext;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerSuite.class)
+@ExamReactorStrategy(PerClass.class)
 public abstract class AbstractIntegrationTest {
     @Inject
     BundleContext bundleContext;
     
     @Inject
     UserTransaction tran;
+
+    protected boolean clientTransaction = true;
 
     public Option baseOptions() {
         String localRepo = System.getProperty("maven.repo.local");
@@ -104,4 +115,112 @@ public abstract class AbstractIntegrationTest {
             );
     }
 
+    // Test with client transaction and runtime exception - the user transaction is rolled back
+    protected void assertInsertWithRuntimeExceptionRolledBack() throws Exception {
+        TestBean bean = getBean();
+        int initialRows = bean.countRows();
+
+        if (clientTransaction) {
+            tran.begin();
+        }
+        bean.insertRow("testWithClientTranAndWithRuntimeException", 1);
+        try {
+            bean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
+        } catch (RuntimeException e) {
+            Assert.assertEquals("Dummy exception", e.getMessage());
+        }
+        if (clientTransaction) {
+            try {
+                tran.commit();
+                fail("RollbackException not thrown");
+            } catch (RollbackException e) {
+                // Ignore expected
+            }
+        }
+
+        int finalRows = bean.countRows();
+        // In case of client transaction both are rolled back
+        // In case of container transaction only second insert is rolled back
+        assertEquals("Added rows", clientTransaction ? 0 : 1, finalRows - initialRows);
+    }
+
+    protected void assertInsertWithAppExceptionCommitted() throws Exception {
+        TestBean bean = getBean();
+        int initialRows = bean.countRows();
+        if (clientTransaction) {
+            tran.begin();
+        }
+        bean.insertRow("testWithClientTranAndWithAppException", 1);
+        try {
+            bean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
+        } catch (SQLException e) {
+            Assert.assertEquals("Dummy exception", e.getMessage());
+        }
+        if (clientTransaction) {
+            tran.commit();
+        }
+
+        int finalRows = bean.countRows();
+        assertEquals("Added rows", 2, finalRows - initialRows);
+    }
+
+    protected void assertInsertSuccesful() throws Exception {
+        TestBean bean = getBean();
+        int initialRows = bean.countRows();
+
+        if (clientTransaction ) {
+            tran.begin();
+        }
+        bean.insertRow("testWithClientTran", 1);
+        if (clientTransaction ) {
+            tran.commit();
+        }
+        int finalRows = bean.countRows();
+        assertEquals("Added rows", 1, finalRows - initialRows);
+    }
+
+    // Test with client transaction - an exception is thrown because transactions are not allowed
+    protected void assertInsertWithTranFails() throws Exception {
+        TestBean bean = getBean();
+        int initialRows = bean.countRows();
+        tran.begin();
+        try {
+            bean.insertRow("testWithClientTran", 1);
+            fail("IllegalStateException not thrown");
+        } catch (IllegalStateException e) {
+            // Ignore Expected
+        }
+        tran.commit();
+        int finalRows = bean.countRows();
+        assertEquals("Added rows", 0, finalRows - initialRows);
+    }
+    
+    // Test without client transaction - the insert fails because the bean delegates to another
+    // bean with a transaction strategy of Mandatory, and no transaction is available
+    protected void assertDelegatedInsertWithoutTranFails() throws SQLException {
+        TestBean bean = getBean();
+        int initialRows = bean.countRows();
+
+        try {
+            bean.insertRow("testWithoutClientTran", 1, true);
+            fail("IllegalStateException not thrown");
+        } catch (IllegalStateException e) {
+            // Ignore expected
+        }
+
+        int finalRows = bean.countRows();
+        assertEquals("Added rows", 0, finalRows - initialRows);
+    }
+
+    // Test without client transaction - an exception is thrown because a transaction is mandatory
+    protected void assertMandatoryTransaction() throws SQLException {
+          try {
+              getBean().insertRow("testWithoutClientTran", 1);
+              fail("IllegalStateException not thrown");
+          } catch (IllegalStateException e) {
+              // Ignore expected
+          }
+    }
+    
+    protected abstract TestBean getBean();
 }

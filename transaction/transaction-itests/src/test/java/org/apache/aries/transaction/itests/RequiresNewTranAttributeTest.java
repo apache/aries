@@ -15,7 +15,7 @@
  */
 package org.apache.aries.transaction.itests;
 
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
 
 import java.sql.SQLException;
 
@@ -26,91 +26,84 @@ import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
 public class RequiresNewTranAttributeTest extends AbstractIntegrationTest {
-    @Inject @Filter("(tranAttribute=RequiresNew)") 
+    @Inject
+    @Filter("(tranAttribute=RequiresNew)")
     TestBean rnBean;
-    
-    @Inject @Filter("(tranAttribute=Required)") 
+
+    @Inject
+    @Filter("(tranAttribute=Required)")
     TestBean rBean;
 
+    /**
+     * Test with client transaction - a container transaction is used to insert the row,
+     * user transaction roll back has no influence
+     * @throws Exception
+     */
+    @Test
+    public void testClientTransactionRollback() throws Exception {
+        int initialRows = rnBean.countRows();
+        tran.begin();
+        rnBean.insertRow("testWithClientTran", 1);
+        tran.rollback();
+        int finalRows = rnBean.countRows();
+        assertEquals("Added rows", 1, finalRows - initialRows);
+    }
     
-  @Test
-  public void testRequiresNew() throws Exception {
-      //Test with client transaction - a container transaction is used to insert the row
-      int initialRows = rnBean.countRows();
-      
-      tran.begin();
-      rnBean.insertRow("testWithClientTran", 1);
-      tran.rollback();
-      
-      int finalRows = rnBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-      
-      //Test with client transaction and application exception - the container transaction is committed,
-      //the user transaction is not affected.
-      initialRows = rnBean.countRows();
-      
-      tran.begin();
-      rBean.insertRow("testWithClientTranAndWithAppException", 1);
-      
-      try {
-          rnBean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
-      } catch (SQLException e) {
-          e.printStackTrace();
-      }
-      
-      tran.commit();
-      
-      finalRows = rnBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 2);
-      
-      //Test with client transaction and runtime exception - the container transaction is rolled back,
-      //the user transaction is not affected
-      initialRows = rnBean.countRows();
-      
-      tran.begin();
-      rBean.insertRow("testWithClientTranAndWithRuntimeException", 1);
-      
-      try {
-          rnBean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
-      } catch (RuntimeException e) {
-          e.printStackTrace();
-      }
-      
-      tran.commit();
-      
-      finalRows = rnBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-      
-      //Test without client transaction - a container transaction is used to insert the row
-      initialRows = rnBean.countRows();
-      
-      rnBean.insertRow("testWithoutClientTran", 1);
-      
-      finalRows = rnBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-      
-      //Test without client transaction and with application exception - the container transaction is committed
-      initialRows = rnBean.countRows();
-      
-      try {
-          rnBean.insertRow("testWithoutClientTranAndWithAppException", 1, new SQLException("Dummy exception"));
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-      
-      finalRows = rnBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 1);
-      
-      //Test without client transaction and with runtime exception - the container transaction is rolled back
-      initialRows = rnBean.countRows();
-      
-      try {
-          rnBean.insertRow("testWithoutClientTranAndWithRuntimeException", 1, new RuntimeException("Dummy exception"));
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-      
-      finalRows = rnBean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
-  }
+    /**
+     * Test with client transaction and application exception - the container transaction is committed,
+     * the user transaction is not affected.
+     * @throws Exception
+     */
+    @Test
+    public void testClientTransactionAndApplicationException() throws Exception {
+        int initialRows = rnBean.countRows();
+        tran.begin();
+        rBean.insertRow("testWithClientTranAndWithAppException", 1);
+        try {
+            rnBean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
+        } catch (SQLException e) {
+            // Ignore expected
+        }
+        tran.commit();
+        int finalRows = rnBean.countRows();
+        assertEquals("Added rows", 2, finalRows - initialRows);
+
+    }
+
+    /**
+     * Test with client transaction and runtime exception - the container transaction is rolled back,
+     * the user transaction is not affected
+     * @throws Exception
+     */
+    @Test
+    public void testClientTransactionAndRuntimeException() throws Exception {
+        int initialRows = rnBean.countRows();
+        tran.begin();
+        rBean.insertRow("testWithClientTranAndWithRuntimeException", 1);
+        try {
+            rnBean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
+        } catch (RuntimeException e) {
+         // Ignore expected
+        }
+        tran.commit();
+        int finalRows = rnBean.countRows();
+        assertEquals("Added rows", 1, finalRows - initialRows);
+    }
+    
+    /**
+     * Test without client transaction - a container transaction is used to insert the row
+     * @throws Exception
+     */
+    //@Test
+    public void testNoClientTransaction() throws Exception {
+        clientTransaction = false;
+        assertInsertSuccesful();
+        testClientTransactionAndApplicationException();
+        testClientTransactionAndRuntimeException();
+    }
+
+    @Override
+    protected TestBean getBean() {
+        return rnBean;
+    }
 }

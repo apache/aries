@@ -30,13 +30,9 @@ import org.apache.aries.transaction.test.TestBean;
 
 public class TestBeanImpl implements TestBean {
     private DataSource xads;
-
     private DataSource ds;
-
     private String user;
-
     private String password;
-    
     private TestBean bean;
 
     public TestBeanImpl() {
@@ -53,24 +49,11 @@ public class TestBeanImpl implements TestBean {
             stmt.executeUpdate("DROP TABLE TESTTABLE");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            // Ignore
         }
         finally {
-            try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            safeClose(stmt);
+            safeClose(conn);
         }
 
         try {
@@ -80,26 +63,15 @@ public class TestBeanImpl implements TestBean {
             stmt.executeUpdate("CREATE TABLE TESTTABLE (NAME VARCHAR(64), VALUE INTEGER, PRIMARY KEY(NAME, VALUE))");
         }
         catch (Exception e) {
-            e.printStackTrace();
+            // Ignore
         }
         finally {
-            try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            safeClose(stmt);
+            safeClose(conn);
         }
     }
+
+
 
     public void insertRow(String name, int value) throws SQLException {
         insertRow(name, value, false);
@@ -130,11 +102,8 @@ public class TestBeanImpl implements TestBean {
                 stmt.executeUpdate();
             }
             finally {
-                if (stmt != null)
-                    stmt.close();
-
-                if (conn != null)
-                    conn.close();
+                safeClose(stmt);
+                safeClose(conn);
             }
         }
     }
@@ -155,12 +124,8 @@ public class TestBeanImpl implements TestBean {
         finally {
             if (rs != null)
                 rs.close();
-
-            if (stmt != null)
-                stmt.close();
-
-            if (conn != null)
-                conn.close();
+            safeClose(stmt);
+            safeClose(conn);
         }
 
         return count;
@@ -192,5 +157,27 @@ public class TestBeanImpl implements TestBean {
     
     public void setTestBean(TestBean bean) {
         this.bean = bean;
+    }
+    
+    private void safeClose(Connection conn) {
+        if (conn == null) {
+            return;
+        }
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            // Ignore
+        }
+    }
+
+    private void safeClose(Statement stmt) {
+        if (stmt == null) {
+            return;
+        }
+        try {
+            stmt.close();
+        } catch (SQLException e) {
+            // Ignore
+        }
     }
 }

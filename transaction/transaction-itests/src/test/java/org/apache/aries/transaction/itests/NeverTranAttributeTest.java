@@ -15,9 +15,6 @@
  */
 package org.apache.aries.transaction.itests;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import javax.inject.Inject;
 
 import org.apache.aries.transaction.test.TestBean;
@@ -25,41 +22,19 @@ import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
 public class NeverTranAttributeTest extends AbstractIntegrationTest {
-    @Inject @Filter("(tranAttribute=Never)") 
+    @Inject
+    @Filter("(tranAttribute=Never)")
     TestBean bean;
-  
-  @Test
-  public void testNever() throws Exception {
-      //Test with client transaction - an exception is thrown because transactions are not allowed
-      int initialRows = bean.countRows();
-      
-      tran.begin();
-      
-      try {
-          bean.insertRow("testWithClientTran", 1);
-          fail("IllegalStateException not thrown");
-      } catch (IllegalStateException e) {
-          e.printStackTrace();
-      }
-      
-      tran.commit();
-      
-      int finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
-      
-      //Test without client transaction - the insert fails because the bean delegates to another
-      //bean with a transaction strategy of Mandatory, and no transaction is available
-      initialRows = bean.countRows();
 
-      try {
-          bean.insertRow("testWithoutClientTran", 1, true);
-          fail("IllegalStateException not thrown");
-      } catch (IllegalStateException e) {
-          e.printStackTrace();
-      }
-      
-      finalRows = bean.countRows();
-      assertTrue("Initial rows: " + initialRows + ", Final rows: " + finalRows, finalRows - initialRows == 0);
-  }
-  
+    @Test
+    public void testNever() throws Exception {
+        assertInsertWithTranFails();
+        assertDelegatedInsertWithoutTranFails();
+    }
+
+    @Override
+    protected TestBean getBean() {
+        return bean;
+    }
+
 }
