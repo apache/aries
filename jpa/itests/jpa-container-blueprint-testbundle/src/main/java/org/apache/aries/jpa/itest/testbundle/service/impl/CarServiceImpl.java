@@ -21,45 +21,38 @@ package org.apache.aries.jpa.itest.testbundle.service.impl;
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.apache.aries.jpa.itest.testbundle.entities.Car;
-import org.apache.aries.jpa.itest.testbundle.service.CarService;
 
+public class CarServiceImpl extends AbstractCarServiceImpl {
 
-public class CarServiceImpl implements CarService {
+    @Override
+    public Car getCar(String id) {
+        return em.find(Car.class, id);
+    }
 
-	@PersistenceContext(unitName="test_unit_blueprint")
-	EntityManager em;
-	
-	@Override
-	public Car getCar(String id) {
-		return em.find(Car.class, id);
-	}
+    @Override
+    public void addCar(Car car) {
+        em.persist(car);
+        em.flush();
+    }
 
-	@Override
-	public void addCar(Car car) {
-		em.persist(car);
-		em.flush();
-	}
+    public Collection<Car> getCars() {
+        return em.createQuery("select c from Car c", Car.class).getResultList();
+    }
 
-	public Collection<Car> getCars() {
-		return em.createQuery("select c from Car c", Car.class)
-			.getResultList();
-	}
+    @Override
+    public void updateCar(Car car) {
+        em.persist(car);
+    }
 
-	@Override
-	public void updateCar(Car car) {
-		em.persist(car);
-	}
+    @Override
+    public void deleteCar(String id) {
+        em.remove(getCar(id));
+    }
 
-	@Override
-	public void deleteCar(String id) {
-		em.remove(getCar(id));
-	}
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
 
-	public void setEm(EntityManager em) {
-		this.em = em;
-	}
-	
 }

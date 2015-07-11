@@ -25,11 +25,11 @@ import org.ops4j.pax.exam.Option;
 
 public class BlueprintWithSingleAnnotationTest extends AbstractJPAItest {
 
-	@Test
+    @Test
     public void testEmfAddQuery() throws Exception {
-		CarService carService = getService(CarService.class, "(type=emf)");
-		
-		resolveBundles();
+        CarService carService = getService(CarService.class, "(type=emf)");
+
+        resolveBundles();
         Car c = new Car();
         c.setColour("Blue");
         c.setNumberPlate("AB11EMF");
@@ -42,11 +42,11 @@ public class BlueprintWithSingleAnnotationTest extends AbstractJPAItest {
         Assert.assertEquals(c.getNumberPlate(), car2.getNumberPlate());
     }
 
-	@Test
+    @Test
     public void testEmAddQuery() throws Exception {
-		CarService carService = getService(CarService.class, "(type=em)");
-		
-		resolveBundles();
+        CarService carService = getService(CarService.class, "(type=em)");
+
+        resolveBundles();
         Car c = new Car();
         c.setColour("Blue");
         c.setNumberPlate("AB11EM");
@@ -58,12 +58,12 @@ public class BlueprintWithSingleAnnotationTest extends AbstractJPAItest {
         Car car2 = carService.getCar("AB11EM");
         Assert.assertEquals(c.getNumberPlate(), car2.getNumberPlate());
     }
-	
-	@Test
+
+    @Test
     public void testSupplierAddQuery() throws Exception {
-		CarService carService = getService(CarService.class, "(type=supplier)");
-		
-		resolveBundles();
+        CarService carService = getService(CarService.class, "(type=supplier)");
+
+        resolveBundles();
         Car c = new Car();
         c.setColour("Blue");
         c.setNumberPlate("AB11SUPPLIER");
@@ -76,8 +76,7 @@ public class BlueprintWithSingleAnnotationTest extends AbstractJPAItest {
         Assert.assertEquals(c.getNumberPlate(), car2.getNumberPlate());
     }
 
-
-	@Configuration
+    @Configuration
     public Option[] configuration() {
         return new Option[] {
             baseOptions(), //
@@ -85,7 +84,7 @@ public class BlueprintWithSingleAnnotationTest extends AbstractJPAItest {
             hibernate(), //
             derbyDSF(), //
             testBundleBlueprint(),
-            //debug()
+        // debug()
         };
     }
 }
