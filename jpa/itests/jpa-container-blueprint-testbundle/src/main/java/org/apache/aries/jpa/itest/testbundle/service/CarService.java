@@ -23,9 +23,13 @@ import java.util.Collection;
 import org.apache.aries.jpa.itest.testbundle.entities.Car;
 
 public interface CarService {
-	Car getCar(String id);
-	void addCar(Car car);
-	Collection<Car> getCars();
-	void updateCar(Car car);
-	void deleteCar(String id);
+    Car getCar(String id);
+
+    void addCar(Car car);
+
+    Collection<Car> getCars();
+
+    void updateCar(Car car);
+
+    void deleteCar(String id);
 }

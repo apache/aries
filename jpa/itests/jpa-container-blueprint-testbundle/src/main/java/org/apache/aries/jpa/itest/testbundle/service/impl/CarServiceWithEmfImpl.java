@@ -27,45 +27,43 @@ import javax.persistence.PersistenceUnit;
 import org.apache.aries.jpa.itest.testbundle.entities.Car;
 import org.apache.aries.jpa.itest.testbundle.service.CarService;
 
-
 public class CarServiceWithEmfImpl implements CarService {
 
-	@PersistenceUnit(unitName="test_unit_blueprint")
-	EntityManagerFactory emf;
-	
-	@Override
-	public Car getCar(String id) {
-		EntityManager em = emf.createEntityManager();
-		return em.find(Car.class, id);
-	}
+    @PersistenceUnit(unitName = "test_unit_blueprint")
+    EntityManagerFactory emf;
 
-	@Override
-	public void addCar(Car car) {
-		EntityManager em = emf.createEntityManager();
-		em.persist(car);
-		em.flush();
-	}
+    @Override
+    public Car getCar(String id) {
+        EntityManager em = emf.createEntityManager();
+        return em.find(Car.class, id);
+    }
 
-	public Collection<Car> getCars() {
-		EntityManager em = emf.createEntityManager();
-		return em.createQuery("select c from Car c", Car.class)
-			.getResultList();
-	}
+    @Override
+    public void addCar(Car car) {
+        EntityManager em = emf.createEntityManager();
+        em.persist(car);
+        em.flush();
+    }
 
-	@Override
-	public void updateCar(Car car) {
-		EntityManager em = emf.createEntityManager();
-		em.persist(car);
-	}
+    public Collection<Car> getCars() {
+        EntityManager em = emf.createEntityManager();
+        return em.createQuery("select c from Car c", Car.class).getResultList();
+    }
 
-	@Override
-	public void deleteCar(String id) {
-		EntityManager em = emf.createEntityManager();
-		em.remove(getCar(id));
-	}
+    @Override
+    public void updateCar(Car car) {
+        EntityManager em = emf.createEntityManager();
+        em.persist(car);
+    }
 
-	public void setEmf(EntityManagerFactory emf) {
-		this.emf = emf;
-	}
-	
+    @Override
+    public void deleteCar(String id) {
+        EntityManager em = emf.createEntityManager();
+        em.remove(getCar(id));
+    }
+
+    public void setEmf(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
 }
