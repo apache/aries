@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.BlueprintConstants;
@@ -41,9 +42,8 @@ import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
-import org.apache.aries.blueprint.proxy.Collaborator;
+import org.apache.aries.blueprint.proxy.CollaboratorFactory;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ServiceListener;
@@ -86,12 +86,13 @@ public class ServiceRecipe extends AbstractRecipe {
     private Map registrationProperties;
     private List<ServiceListener> listeners;
     private volatile Object service;
+
     private final Object monitor = new Object();
+    private final AtomicInteger activeCalls = new AtomicInteger(0);
+    private volatile boolean quiesce;
     /** Only ever access when holding a lock on <code>monitor</code> */
-    private int activeCalls;
-    /** Only ever access when holding a lock on <code>monitor</code> */
-    private boolean quiesce;
     private Collection<DestroyCallback> destroyCallbacks = new ArrayList<DestroyCallback>();
+
     private boolean initialServiceRegistration = true;
     
     public ServiceRecipe(String name,
@@ -461,42 +462,65 @@ public class ServiceRecipe extends AbstractRecipe {
 
     protected void incrementActiveCalls()
     {
-    	  synchronized(monitor)
-    	  {
-    		    activeCalls++;	
-		    }
+        // can be improved with LongAdder but Java 8 or backport (like guava) is needed
+        activeCalls.incrementAndGet();
     }
     
   	protected void decrementActiveCalls() 
   	{
-  	    List<DestroyCallback> callbacksToCall = new ArrayList<DestroyCallback>();
-      	synchronized(monitor)
-      	{
-      	    activeCalls--;
-  			    if(quiesce && activeCalls == 0) {
-  			        callbacksToCall.addAll(destroyCallbacks);
-  			        destroyCallbacks.clear();
-  			    }
-      	}
-      	if(!!!callbacksToCall.isEmpty()) {
-      	    for(DestroyCallback cbk : callbacksToCall)
-      	        cbk.callback();
-      	}
+        int currentCount = activeCalls.decrementAndGet();
+
+        if (currentCount == 0 && quiesce) {
+            List<DestroyCallback> callbacksToCall;
+            synchronized (monitor) {
+                callbacksToCall = new ArrayList<DestroyCallback>(destroyCallbacks);
+                destroyCallbacks.clear();
+            }
+            for(DestroyCallback cbk : callbacksToCall) {
+                cbk.callback();
+            }
+        }
   	}
-	
+
+    /*
+      The following problem is possible sometimes:
+        some threads already got a service and start to call it but incrementActiveCalls have not called yet
+        as a result activeCalls after service unregistration is not strongly decreasing and can be 0 but then not 0
+    */
     public void quiesce(DestroyCallback destroyCallback)
     {
-    	  unregister();
-    	  int calls;
-    	  synchronized (monitor) {
-            if(activeCalls != 0)
-              destroyCallbacks.add(destroyCallback);
-    	      quiesce = true;
-            calls = activeCalls;
+        unregister();
+        quiesce = true;
+
+        DestroyCallback safeDestroyCallback = new DestroyOnceCallback(destroyCallback);
+
+        synchronized (monitor) {
+            destroyCallbacks.add(safeDestroyCallback);
         }
-    	  if(calls == 0) {
-    	      destroyCallback.callback();
-    	  }
+
+        if (activeCalls.get() == 0) {
+            safeDestroyCallback.callback();
+            synchronized (monitor) {
+                destroyCallbacks.remove(safeDestroyCallback);
+            }
+        }
+    }
+
+    private static class DestroyOnceCallback implements DestroyCallback {
+        private final DestroyCallback destroyCallback;
+        private final AtomicBoolean isDestroyed = new AtomicBoolean(false);
+
+        public DestroyOnceCallback(DestroyCallback destroyCallback) {
+            this.destroyCallback = destroyCallback;
+        }
+
+
+        @Override
+        public void callback() {
+            if (isDestroyed.compareAndSet(false, true)) {
+                destroyCallback.callback();
+            }
+        }
     }
      
     private class TriggerServiceFactory implements ServiceFactory 
@@ -540,7 +564,7 @@ public class ServiceRecipe extends AbstractRecipe {
                   // we have a class from the framework parent, so use our bundle for proxying.
                   b = blueprintContainer.getBundleContext().getBundle();
                 }
-                InvocationListener collaborator = new Collaborator(cm, interceptors);
+                InvocationListener collaborator = CollaboratorFactory.create(cm, interceptors);
 
                 intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
                         getClassesForProxying(original), original, collaborator);
