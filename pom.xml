@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.apache.aries.versioning</groupId>
             <artifactId>org.apache.aries.versioning.checker</artifactId>
-            <version>0.3.1-SNAPSHOT</version>
+            <version>0.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
