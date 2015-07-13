@@ -31,13 +31,15 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.aries.jpa.support.impl.EMSupplierImpl;
 import org.junit.Assert;
 import org.junit.Test;
+import org.osgi.service.coordinator.Coordinator;
 
 public class EmSupplierTest {
 
     @Test
     public void lifeCycleTest() {
         EntityManagerFactory emf = mockEmf();
-        EMSupplierImpl emSupplier = new EMSupplierImpl(emf);
+        Coordinator coordinator = new DummyCoordinator();
+        EMSupplierImpl emSupplier = new EMSupplierImpl(emf, coordinator );
         
         Assert.assertNull("No EM may be present at start", emSupplier.get());
 
@@ -57,19 +59,15 @@ public class EmSupplierTest {
         Assert.assertTrue("Shutdown should be clean", clean);
     }
 
-    private EntityManagerFactory mockEmf() {
-        EntityManagerFactory emf = mock(EntityManagerFactory.class);
-        EntityManager em = mock(EntityManager.class);
-        when(emf.createEntityManager()).thenReturn(em);
-        return emf;
-    }
     
     @Test
     public void uncleanLifeCycleTest() {
         EntityManagerFactory emf = mockEmf();
-        EMSupplierImpl emSupplier = new EMSupplierImpl(emf);
+        Coordinator coordinator = new DummyCoordinator();
+        EMSupplierImpl emSupplier = new EMSupplierImpl(emf, coordinator);
         emSupplier.setShutdownWait(100, MILLISECONDS);
         emSupplier.preCall();
+        emSupplier.get();
         boolean clean = emSupplier.close();
         Assert.assertFalse("Shutdown should be unclean", clean);
     }
@@ -77,7 +75,8 @@ public class EmSupplierTest {
     @Test
     public void asyncCleanLifeCycleTest() throws InterruptedException {
         EntityManagerFactory emf = mockEmf();
-        final EMSupplierImpl emSupplier = new EMSupplierImpl(emf);
+        Coordinator coordinator = new DummyCoordinator();
+        final EMSupplierImpl emSupplier = new EMSupplierImpl(emf,coordinator);
         final Semaphore preCallSem = new Semaphore(0);
         Runnable command = new Runnable() {
             
@@ -95,4 +94,10 @@ public class EmSupplierTest {
         Assert.assertTrue("Shutdown should be clean", clean);
     }
 
+    private EntityManagerFactory mockEmf() {
+        EntityManagerFactory emf = mock(EntityManagerFactory.class);
+        EntityManager em = mock(EntityManager.class);
+        when(emf.createEntityManager()).thenReturn(em);
+        return emf;
+    }
 }

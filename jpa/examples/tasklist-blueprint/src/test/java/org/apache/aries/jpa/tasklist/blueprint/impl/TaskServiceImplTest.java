@@ -21,14 +21,13 @@ package org.apache.aries.jpa.tasklist.blueprint.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.apache.aries.jpa.example.tasklist.blueprint.impl.TaskServiceImpl;
 import org.apache.aries.jpa.example.tasklist.model.Task;
 import org.apache.aries.jpa.example.tasklist.model.TaskService;
-import org.apache.aries.jpa.supplier.EmSupplier;
-import org.apache.aries.jpa.support.impl.EMSupplierImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,10 +36,9 @@ public class TaskServiceImplTest {
     public void testPersistence() {
         TaskServiceImpl taskServiceImpl = new TaskServiceImpl();
         EntityManagerFactory emf = createTestEMF();
-        EmSupplier emSupplier = new EMSupplierImpl(emf);
-        emSupplier.preCall();
-        emSupplier.get().getTransaction().begin();
-        taskServiceImpl.setEm(emSupplier.get());
+        final EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        taskServiceImpl.setEm(em);
 
         TaskService taskService = taskServiceImpl;
 
@@ -51,8 +49,8 @@ public class TaskServiceImplTest {
 
         Task task2 = taskService.getTask(1);
         Assert.assertEquals(task.getTitle(), task2.getTitle());
-        emSupplier.get().getTransaction().commit();
-        emSupplier.postCall();
+        em.getTransaction().commit();
+        em.close();
     }
 
     private EntityManagerFactory createTestEMF() {

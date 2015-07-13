@@ -24,12 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.aries.jpa.supplier.EmSupplier;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Coordinator;
+import org.osgi.service.coordinator.Participant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,25 +49,15 @@ public class EMSupplierImpl implements EmSupplier {
     private long shutdownWaitTime = DEFAULT_SHUTDOWN_WAIT_SECS;
     private TimeUnit shutdownWaitTimeUnit = TimeUnit.SECONDS;
 
-    private final ThreadLocal<EntityManager> localEm;
-
-    // Counts how deeply nested the calls on this EM are
-    private final ThreadLocal<AtomicInteger> usageCount;
     private Set<EntityManager> emSet;
     private CountDownLatch emsToShutDown;
-    
+    private Coordinator coordinator;
 
-    public EMSupplierImpl(final EntityManagerFactory emf) {
+    public EMSupplierImpl(final EntityManagerFactory emf, Coordinator coordinator) {
         this.emf = emf;
+        this.coordinator = coordinator;
         this.shutdown = new AtomicBoolean(false);
-        this.localEm = new ThreadLocal<EntityManager>();
         this.emSet = Collections.newSetFromMap(new ConcurrentHashMap<EntityManager, Boolean>());
-        this.usageCount = new ThreadLocal<AtomicInteger>() {
-            @Override
-            protected AtomicInteger initialValue() {
-                return new AtomicInteger(0);
-            }
-        };
     }
 
     private EntityManager createEm(EntityManagerFactory emf) {
@@ -81,46 +73,62 @@ public class EMSupplierImpl implements EmSupplier {
      */
     @Override
     public EntityManager get() {
-        EntityManager em = this.localEm.get();
-        if (em == null) {
-            LOG.warn("No EntityManager present on this thread. Remember to call preCall() first");
+        Coordination coordination = getTopCoordination();
+        EntityManager em = getEm(coordination);
+        if (coordination != null && em == null) {
+            em = createEm(emf);
+            emSet.add(em);
+            coordination.getVariables().put(EntityManager.class, em);
+            coordination.addParticipant(new Participant() {
+                
+                @Override
+                public void failed(Coordination coordination) throws Exception {
+                    ended(coordination);
+                }
+                
+                @Override
+                public void ended(Coordination coordination) throws Exception {
+                    EntityManager em = getEm(coordination);
+                    em.close();
+                    emSet.remove(em);
+                    if (shutdown.get()) {
+                        emsToShutDown.countDown();
+                    }
+                }
+            });
         }
         return em;
     }
+    
+    Coordination getTopCoordination() {
+        Coordination coordination = coordinator.peek();
+        while (coordination != null && coordination.getEnclosingCoordination() != null) {
+            coordination = coordination.getEnclosingCoordination();
+        }
+        return coordination;
+    }
 
+    /**
+     * Get EntityManager from outer most Coordination that holds an EM
+     * @param coordination
+     * @return
+     */
+    private EntityManager getEm(Coordination coordination) {
+        if (coordination == null) {
+            return null;
+        } else {
+            return (EntityManager)coordination.getVariables().get(EntityManager.class);
+        }
+    }
 
     @Override
     public void preCall() {
-        if (shutdown.get()) {
-            throw new IllegalStateException("This EntityManagerFactory is being shut down. Can not enter a new EM enabled method");
-        }
-        int count = this.usageCount.get().incrementAndGet();
-        if (count == 1) {
-            EntityManager em = createEm(emf);
-            emSet.add(em);
-            localEm.set(em);
-        }
+        coordinator.begin("jpa", 0);
     }
 
     @Override
     public void postCall() {
-        int count = this.usageCount.get().decrementAndGet();
-        if (count == 0) {
-            // Outermost call finished
-            closeAndRemoveLocalEm();
-        } else if (count < 0) {
-            throw new IllegalStateException("postCall() called without corresponding preCall()");
-        }
-    }
-
-    private synchronized void closeAndRemoveLocalEm() {
-        EntityManager em = localEm.get();
-        em.close();
-        emSet.remove(em);
-        localEm.remove();
-        if (shutdown.get()) {
-            emsToShutDown.countDown();
-        }
+        coordinator.pop().end();
     }
 
     /**
@@ -167,4 +175,5 @@ public class EMSupplierImpl implements EmSupplier {
         this.shutdownWaitTime = shutdownWaitTime;
         this.shutdownWaitTimeUnit = shutdownWaitTimeUnit;
     }
+
 }

@@ -21,12 +21,13 @@ package org.apache.aries.jpa.tasklist.closure.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.apache.aries.jpa.example.tasklist.ds.impl.TaskServiceImpl;
 import org.apache.aries.jpa.example.tasklist.model.Task;
-import org.apache.aries.jpa.support.impl.EMSupplierImpl;
+import org.apache.aries.jpa.supplier.EmSupplier;
 import org.apache.aries.jpa.support.impl.ResourceLocalJpaTemplate;
 import org.apache.aries.jpa.template.JpaTemplate;
 import org.junit.Assert;
@@ -37,7 +38,7 @@ public class TaskServiceImplTest {
     public void testPersistence() {
         TaskServiceImpl taskService = new TaskServiceImpl();
         EntityManagerFactory emf = createTestEMF();
-        EMSupplierImpl emSupplier = new EMSupplierImpl(emf);
+        EmSupplier emSupplier = createEmSupplier(emf);
         JpaTemplate txManager = new ResourceLocalJpaTemplate(emSupplier);
         taskService.setJpaTemplate(txManager);
 
@@ -48,6 +49,22 @@ public class TaskServiceImplTest {
 
         Task task2 = taskService.getTask(1);
         Assert.assertEquals(task.getTitle(), task2.getTitle());
+    }
+
+    private EmSupplier createEmSupplier(EntityManagerFactory emf) {
+        final EntityManager em = emf.createEntityManager();
+        EmSupplier emSupplier = new EmSupplier() {
+            public void preCall() {
+            }
+
+            public EntityManager get() {
+                return em;
+            }
+
+            public void postCall() {
+            }
+        };
+        return emSupplier;
     }
 
     private EntityManagerFactory createTestEMF() {
