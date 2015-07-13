@@ -109,14 +109,12 @@ public class SemanticVersioningUtils {
     /**
      * Transform ASM method desc to a human readable form
      * Method declaration in source file Method descriptor
-     * void m(int i, float f) <= (IF)V
-     * int m(Object o) <= (Ljava/lang/Object;)I
-     * int[] m(int i, String s) <= (ILjava/lang/String;)[I
-     * Object m(int[] i) <= ([I)Ljava/lang/Object;
-     *
-     * @param methodName
-     * @param methodDesc
-     * @return
+     * <pre>
+     * void m(int i, float f) &lt;= (IF)V
+     * int m(Object o) &lt;= (Ljava/lang/Object;)I
+     * int[] m(int i, String s) &lt;= (ILjava/lang/String;)[I
+     * Object m(int[] i) &lt;= ([I)Ljava/lang/Object;
+     * </pre>
      */
     public static String getReadableMethodSignature(String methodName, String methodDesc) {
         // need to find the return type first, which is outside the ()
