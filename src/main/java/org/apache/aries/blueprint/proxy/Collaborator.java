@@ -85,14 +85,6 @@ public class Collaborator implements InvocationListener, Serializable {
 
     /**
      * Called when the method is called and returned normally
-     * 
-     * @param cm
-     *            : component metadata
-     * @param method
-     *            : method
-     * @param returnType
-     *            : return type
-     * @throws Throwable
      */
     public void postInvoke(Object token, Object o, Method method, 
          Object returnType) throws Throwable {
@@ -117,13 +109,6 @@ public class Collaborator implements InvocationListener, Serializable {
 
     /**
      * Called when the method is called and returned with an exception
-     * 
-     * @param cm
-     *            : component metadata
-     * @param method
-     *            : method
-     * @param exception
-     *            : exception thrown
      */
     public void postInvokeExceptionalReturn(Object token, Object o, Method method,
                  Throwable exception) throws Throwable {
