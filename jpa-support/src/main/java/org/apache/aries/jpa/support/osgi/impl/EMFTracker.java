@@ -33,6 +33,7 @@ import org.apache.aries.jpa.template.JpaTemplate;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.coordinator.Coordinator;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -43,9 +44,12 @@ import org.osgi.util.tracker.ServiceTracker;
 @SuppressWarnings("rawtypes")
 public class EMFTracker extends ServiceTracker {
 
+    private Coordinator coordinator;
+
     @SuppressWarnings("unchecked")
-    public EMFTracker(BundleContext context) {
+    public EMFTracker(BundleContext context, Coordinator coordinator) {
         super(context, EntityManagerFactory.class, null);
+        this.coordinator = coordinator;
     }
 
     @SuppressWarnings("unchecked")
@@ -58,7 +62,7 @@ public class EMFTracker extends ServiceTracker {
         BundleContext bContext = reference.getBundle().getBundleContext();
         TrackedEmf tracked = new TrackedEmf();
         tracked.emf = (EntityManagerFactory)bContext.getService(reference);
-        tracked.emSupplier = new EMSupplierImpl(tracked.emf);
+        tracked.emSupplier = new EMSupplierImpl(tracked.emf, coordinator);
         tracked.emSupplierReg = bContext.registerService(EmSupplier.class, tracked.emSupplier,
                                                          getEmSupplierProps(unitName));
 

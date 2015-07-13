@@ -33,12 +33,12 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class EmSupplierProxy implements EmSupplier, Closeable {
     private ServiceTracker<EmSupplier, EmSupplier> tracker;
+    private Filter filter;
 
     public EmSupplierProxy(BundleContext context, String unitName) {
         String filterS = String.format("(&(objectClass=%s)(%s=%s))", EmSupplier.class.getName(),
                                        JPA_UNIT_NAME,
                                        unitName);
-        Filter filter;
         try {
             filter = FrameworkUtil.createFilter(filterS);
         } catch (InvalidSyntaxException e) {
@@ -70,7 +70,11 @@ public class EmSupplierProxy implements EmSupplier, Closeable {
 
     private EmSupplier getEmSupplier() {
         try {
-            return tracker.waitForService(10000);
+            EmSupplier emSupplier = tracker.waitForService(10000);
+            if (emSupplier == null) {
+                throw new IllegalStateException("EmSupplier service not available with filter " + filter);
+            }
+            return emSupplier;
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }

@@ -18,22 +18,29 @@
  */
 package org.apache.aries.jpa.support.osgi.impl;
 
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.coordinator.Coordinator;
+import org.osgi.util.tracker.ServiceTracker;
 
-public class Activator implements BundleActivator {
+public class CoordinatorTracker extends ServiceTracker<Coordinator, EMFTracker> {
 
-    private CoordinatorTracker coordinatorTracker;
-
-    @Override
-    public void start(BundleContext context) throws Exception {
-        coordinatorTracker = new CoordinatorTracker(context);
-        coordinatorTracker.open();
+    public CoordinatorTracker(BundleContext context) {
+        super(context, Coordinator.class, null);
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
-        coordinatorTracker.close();
+    public EMFTracker addingService(ServiceReference<Coordinator> ref) {
+        Coordinator coordinator = context.getService(ref);
+        EMFTracker emfTracker = new EMFTracker(context, coordinator);
+        emfTracker.open();
+        return emfTracker;
+    }
+
+    @Override
+    public void removedService(ServiceReference<Coordinator> ref, EMFTracker emfTracker) {
+        emfTracker.close();
+        super.removedService(ref, emfTracker);
     }
 
 }
