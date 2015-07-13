@@ -60,15 +60,6 @@
         <lastReleaseVersion>0.2.0</lastReleaseVersion>
     </properties>
 	
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5.2</version>
-			</plugin>
-		</plugins>
-	</build>
-
     <dependencies>
         <!-- Dependency on other Aries module bundles -->
         <dependency>
@@ -111,5 +102,14 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.2</version>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
