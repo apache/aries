@@ -40,7 +40,7 @@ import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
 import org.apache.aries.blueprint.di.Recipe;
-import org.apache.aries.blueprint.proxy.Collaborator;
+import org.apache.aries.blueprint.proxy.CollaboratorFactory;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
@@ -765,7 +765,7 @@ public class BeanRecipe extends AbstractRecipe {
                     b = blueprintContainer.getBundleContext().getBundle();
                 }
                 intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
-                requiredInterfaces, original, new Collaborator(interceptorLookupKey, interceptors));
+                requiredInterfaces, original, CollaboratorFactory.create(interceptorLookupKey, interceptors));
             } catch (org.apache.aries.proxy.UnableToProxyException e) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
                 throw new ComponentDefinitionException("Unable to create proxy for bean " + name + " in bundle " + b.getSymbolicName() + "/" + b.getVersion(), e);
