@@ -30,14 +30,14 @@
 
     <groupId>org.apache.aries.versioning</groupId>
     <artifactId>org.apache.aries.versioning.plugin</artifactId>
-    <version>0.3.1-SNAPSHOT</version>
+    <version>0.3.1</version>
     <packaging>maven-plugin</packaging>
     <name>org.apache.aries.versioning.plugin Maven Mojo</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-plugin</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-plugin</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/versioning/versioning-plugin</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.versioning.plugin-0.3.1</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.versioning.plugin-0.3.1</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.versioning.plugin-0.3.1</url>
     </scm>
 
     <dependencies>
