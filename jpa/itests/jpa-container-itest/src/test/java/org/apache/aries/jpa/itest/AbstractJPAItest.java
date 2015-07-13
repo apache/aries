@@ -77,26 +77,26 @@ public abstract class AbstractJPAItest {
         }
     }
 
-	public String sanitizeFilter(String filter) {
-		return filter.startsWith("(") ? filter : "(" + filter + ")";
-	}	
-		
-    
-	/**
-	 * Helps to diagnose bundles that are not resolved as it will throw a detailed exception
-	 * 
-	 * @throws BundleException
-	 */
-	public void resolveBundles() throws BundleException {
-		Bundle[] bundles = bundleContext.getBundles();
-		for (Bundle bundle : bundles) {
-			if (bundle.getState() == Bundle.INSTALLED) {
-				System.out.println("Found non resolved bundle " + bundle.getBundleId() + ":" + bundle.getSymbolicName() + ":" + bundle.getVersion());
-				bundle.start();
-			}
-		}
-	}
-	
+    public String sanitizeFilter(String filter) {
+        return filter.startsWith("(") ? filter : "(" + filter + ")";
+    }
+
+    /**
+     * Helps to diagnose bundles that are not resolved as it will throw a detailed exception
+     * 
+     * @throws BundleException
+     */
+    public void resolveBundles() throws BundleException {
+        Bundle[] bundles = bundleContext.getBundles();
+        for (Bundle bundle : bundles) {
+            if (bundle.getState() == Bundle.INSTALLED) {
+                System.out.println("Found non resolved bundle " + bundle.getBundleId() + ":"
+                                   + bundle.getSymbolicName() + ":" + bundle.getVersion());
+                bundle.start();
+            }
+        }
+    }
+
     public Bundle getBundleByName(String symbolicName) {
         for (Bundle b : bundleContext.getBundles()) {
             if (b.getSymbolicName().equals(symbolicName)) {
@@ -145,6 +145,7 @@ public abstract class AbstractJPAItest {
                 
                 mvnBundle("org.ow2.asm", "asm-all"),
                 mvnBundle("org.apache.felix", "org.apache.felix.configadmin"),
+                mvnBundle("org.apache.felix", "org.apache.felix.coordinator"),
 
                 mvnBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
                 mvnBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
