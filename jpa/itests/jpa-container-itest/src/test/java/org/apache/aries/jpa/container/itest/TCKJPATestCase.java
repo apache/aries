@@ -27,34 +27,32 @@ import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
 /**
- * Simulates some tests from the tck
+ * Simulates the invalid bundle test from TCK
  */
 public class TCKJPATestCase extends AbstractJPAItest {
 
     @Test
-	public void testEntityManagerFactoryWithIncompletePersistenceUnit() throws Exception {
-		EntityManagerFactory emf = getService(EntityManagerFactory.class, "(osgi.unit.name=incompleteTestUnit)", false); 
-		Assert.assertNull("There should be no EntityManagerFactory registered since this persistence unit is incomplete", emf);
-		Bundle testBundle = getBundleByName("incompleteTestUnit");
-		testBundle.uninstall();
-	}
+    public void testEntityManagerFactoryWithIncompletePersistenceUnit() throws Exception {
+        EntityManagerFactory emf = getService(EntityManagerFactory.class, "(osgi.unit.name=incompleteTestUnit)", false);
+        Assert.assertNull("There should be no EntityManagerFactory registered since this persistence unit is incomplete", emf);
+    }
 
     @Configuration
     public Option[] configuration() {
-    	InputStream testBundle = TinyBundles.bundle()
-    			.set(Constants.BUNDLE_SYMBOLICNAME, "incompleteTestUnit")
-    			.set("Meta-Persistence", " ")
-    			.add("META-INF/persistence.xml", this.getClass().getResourceAsStream("persistence.xml"))
-    			.build(TinyBundles.withBnd());
+        InputStream testBundle = TinyBundles.bundle()
+            .set(Constants.BUNDLE_SYMBOLICNAME, "incompleteTestUnit") //
+            .set("Meta-Persistence", " ") //
+            .add("META-INF/persistence.xml", this.getClass().getResourceAsStream("persistence.xml"))
+            .build(TinyBundles.withBnd());
         return new Option[] {
             baseOptions(), //
             ariesJpa20(), //
             derbyDSF(), //
             hibernate(), //
+            testBundle(), // Just for Car class
             streamBundle(testBundle)
         };
     }

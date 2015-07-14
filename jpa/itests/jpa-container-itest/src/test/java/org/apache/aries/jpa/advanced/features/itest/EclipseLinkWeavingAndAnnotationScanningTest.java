@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import org.apache.aries.jpa.container.advanced.itest.bundle.entities.Car;
+import org.apache.aries.jpa.container.itest.entities.Car;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
@@ -33,7 +33,7 @@ public class EclipseLinkWeavingAndAnnotationScanningTest extends JPAWeavingAndAn
             ariesJpa21(), //
             eclipseLink(), //
             derbyDSF(), //
-            testBundleAdvanced()
+            testBundle()
         };
     }
 

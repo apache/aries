@@ -16,15 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.itest.testbundle.service.impl;
+package org.apache.aries.jpa.container.itest.bundle.blueprint.impl;
 
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 
-import org.apache.aries.jpa.itest.testbundle.entities.Car;
+import org.apache.aries.jpa.container.itest.entities.Car;
+import org.apache.aries.jpa.container.itest.entities.CarService;
+import org.apache.aries.jpa.supplier.EmSupplier;
 
-public class CarServiceImpl extends AbstractCarServiceImpl {
+public class CarServiceWithMultiAnnotationImpl implements CarService {
+
+    @PersistenceContext(unitName = "test_unit_blueprint")
+    EntityManager em;
+
+    @PersistenceUnit(unitName = "test_unit_blueprint")
+    EntityManagerFactory emf;
+
+    @PersistenceContext(unitName = "test_unit_blueprint")
+    EmSupplier ems;
 
     @Override
     public Car getCar(String id) {
@@ -33,8 +47,10 @@ public class CarServiceImpl extends AbstractCarServiceImpl {
 
     @Override
     public void addCar(Car car) {
-        em.persist(car);
-        em.flush();
+        EntityManager localEm = emf.createEntityManager();
+        localEm.persist(car);
+        localEm.flush();
+        localEm.close();
     }
 
     public Collection<Car> getCars() {
@@ -48,11 +64,18 @@ public class CarServiceImpl extends AbstractCarServiceImpl {
 
     @Override
     public void deleteCar(String id) {
-        em.remove(getCar(id));
+        ems.get().remove(getCar(id));
     }
 
     public void setEm(EntityManager em) {
         this.em = em;
     }
 
+    public void setEmf(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
+    public void setEms(EmSupplier ems) {
+        this.ems = ems;
+    }
 }

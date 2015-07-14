@@ -37,10 +37,8 @@ public class OpenJPAContainerTest extends AbstractJPAItest {
         return new Option[] {
             baseOptions(), //
             ariesJpa20(), //
-            // Needed for the BP_TEST_UNIT
-            transactionWrapper(), //
             openJpa(), //
-            testDs(), //
+            derbyDSF(), //
             testBundle()
         };
 

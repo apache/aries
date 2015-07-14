@@ -7,62 +7,62 @@
     <jpa:enable />
 
     <service ref="carServiceEmf"
-        interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+        interface="org.apache.aries.jpa.container.itest.entities.CarService">
         <service-properties>
             <entry key="type" value="emf" />
         </service-properties>
     </service>
 
     <bean id="carServiceEmf"
-        class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithEmfImpl">
+        class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceWithEmfImpl">
         <tx:transaction method="*" value="Required" />
     </bean>
 
     <service ref="carServiceEm"
-        interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+        interface="org.apache.aries.jpa.container.itest.entities.CarService">
         <service-properties>
             <entry key="type" value="em" />
         </service-properties>
     </service>
 
     <bean id="carServiceEm"
-        class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceImpl">
+        class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceImpl">
         <tx:transaction method="*" value="Required" />
     </bean>
 
     <service ref="carServiceEmSupplier"
-        interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+        interface="org.apache.aries.jpa.container.itest.entities.CarService">
         <service-properties>
             <entry key="type" value="supplier" />
         </service-properties>
     </service>
 
     <bean id="carServiceEmSupplier"
-        class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithSupplierImpl">
+        class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceWithSupplierImpl">
         <tx:transaction method="*" value="Required" />
     </bean>
 
     <service ref="carServiceMulti"
-        interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+        interface="org.apache.aries.jpa.container.itest.entities.CarService">
         <service-properties>
             <entry key="type" value="multiannotation" />
         </service-properties>
     </service>
 
     <bean id="carServiceMulti"
-        class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithMultiAnnotationImpl">
+        class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceWithMultiAnnotationImpl">
         <tx:transaction method="*" value="Required" />
     </bean>
 
     <service ref="carServiceMethod"
-        interface="org.apache.aries.jpa.itest.testbundle.service.CarService">
+        interface="org.apache.aries.jpa.container.itest.entities.CarService">
         <service-properties>
             <entry key="type" value="method" />
         </service-properties>
     </service>
 
     <bean id="carServiceMethod"
-        class="org.apache.aries.jpa.itest.testbundle.service.impl.CarServiceWithMethodImpl">
+        class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceWithMethodImpl">
         <tx:transaction method="*" value="Required" />
     </bean>
 

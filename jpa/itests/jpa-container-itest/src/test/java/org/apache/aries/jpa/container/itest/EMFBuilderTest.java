@@ -31,10 +31,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.util.Filter;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 
 public class EMFBuilderTest extends AbstractJPAItest {
     @Inject
+    @Filter("(osgi.unit.name=dsf-test-unit)")
     EntityManagerFactoryBuilder emfBuilder;
     
     @Test
@@ -49,7 +51,6 @@ public class EMFBuilderTest extends AbstractJPAItest {
         c.setNumberOfSeats(7);
         c.setEngineSize(1900);
         em.persist(c);
-        em.flush();
         em.getTransaction().commit();
         Car c2 = em.find(Car.class, "AB11CDE");
         Assert.assertEquals(7, c2.getNumberOfSeats());
@@ -62,10 +63,9 @@ public class EMFBuilderTest extends AbstractJPAItest {
         return new Option[] {
             baseOptions(), //
             ariesJpa20(), //
-            transactionWrapper(), //
             hibernate(), //
-            testDs(),
-            testBundle()
+            derbyDSF(), //
+            testBundle() //
         };
     }
 

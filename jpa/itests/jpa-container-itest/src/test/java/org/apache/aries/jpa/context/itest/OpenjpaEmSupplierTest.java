@@ -18,7 +18,7 @@ package org.apache.aries.jpa.context.itest;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-public class OpenjpaContextTest extends JPAContextTest {
+public class OpenjpaEmSupplierTest extends EmSupplierTest {
 
     @Configuration
     public Option[] configuration() {
@@ -27,7 +27,7 @@ public class OpenjpaContextTest extends JPAContextTest {
             ariesJpa20(), //
             openJpa(), //
             derbyDSF(), //
-            testBundleAdvanced()
+            testBundle()
         };
     }
 

@@ -16,48 +16,66 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.itest.testbundle.service.impl;
+package org.apache.aries.jpa.container.itest.bundle.blueprint.impl;
 
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 
-import org.apache.aries.jpa.itest.testbundle.entities.Car;
-import org.apache.aries.jpa.itest.testbundle.service.CarService;
+import org.apache.aries.jpa.container.itest.entities.Car;
+import org.apache.aries.jpa.container.itest.entities.CarService;
 
-public class CarServiceWithMethodImpl implements CarService {
+public class CarServiceWithEmfImpl implements CarService {
 
-    EntityManager em;
+    @PersistenceUnit(unitName = "test_unit_blueprint")
+    EntityManagerFactory emf;
 
     @Override
     public Car getCar(String id) {
-        return em.find(Car.class, id);
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.find(Car.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public void addCar(Car car) {
+        EntityManager em = emf.createEntityManager();
         em.persist(car);
         em.flush();
+        em.close();
     }
 
     public Collection<Car> getCars() {
-        return em.createQuery("select c from Car c", Car.class).getResultList();
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            return em.createQuery("select c from Car c", Car.class).getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public void updateCar(Car car) {
+        EntityManager em = emf.createEntityManager();
         em.persist(car);
+        em.close();
     }
 
     @Override
     public void deleteCar(String id) {
-        em.remove(getCar(id));
+        EntityManager em = emf.createEntityManager();
+        em.remove(em.find(Car.class, id));
+        em.close();
     }
 
-    @PersistenceContext(unitName = "test_unit_blueprint")
-    public void setEm(EntityManager em) {
-        this.em = em;
+    public void setEmf(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 
 }
