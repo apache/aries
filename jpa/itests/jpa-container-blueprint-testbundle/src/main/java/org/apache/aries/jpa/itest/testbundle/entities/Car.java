@@ -23,46 +23,45 @@ import javax.persistence.Id;
 
 @Entity
 public class Car {
-  @Id
-  private String numberPlate;
-  
-  private String colour;
-  
-  private int engineSize;
-  
-  private int numberOfSeats;
+    @Id
+    private String numberPlate;
 
-  public String getNumberPlate() {
-    return numberPlate;
-  }
+    private String colour;
 
-  public void setNumberPlate(String numberPlate) {
-    this.numberPlate = numberPlate;
-  }
+    private int engineSize;
 
-  public String getColour() {
-    return colour;
-  }
+    private int numberOfSeats;
 
-  public void setColour(String colour) {
-    this.colour = colour;
-  }
+    public String getNumberPlate() {
+        return numberPlate;
+    }
 
-  public int getEngineSize() {
-    return engineSize;
-  }
+    public void setNumberPlate(String numberPlate) {
+        this.numberPlate = numberPlate;
+    }
 
-  public void setEngineSize(int engineSize) {
-    this.engineSize = engineSize;
-  }
+    public String getColour() {
+        return colour;
+    }
 
-  public int getNumberOfSeats() {
-    return numberOfSeats;
-  }
+    public void setColour(String colour) {
+        this.colour = colour;
+    }
 
-  public void setNumberOfSeats(int numberOfSeats) {
-    this.numberOfSeats = numberOfSeats;
-  }
-  
-  
+    public int getEngineSize() {
+        return engineSize;
+    }
+
+    public void setEngineSize(int engineSize) {
+        this.engineSize = engineSize;
+    }
+
+    public int getNumberOfSeats() {
+        return numberOfSeats;
+    }
+
+    public void setNumberOfSeats(int numberOfSeats) {
+        this.numberOfSeats = numberOfSeats;
+    }
+
 }
