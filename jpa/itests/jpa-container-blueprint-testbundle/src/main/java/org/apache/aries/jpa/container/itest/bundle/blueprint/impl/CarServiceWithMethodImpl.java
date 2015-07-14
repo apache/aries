@@ -16,49 +16,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.itest.testbundle.service.impl;
+package org.apache.aries.jpa.container.itest.bundle.blueprint.impl;
 
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.apache.aries.jpa.itest.testbundle.entities.Car;
-import org.apache.aries.jpa.itest.testbundle.service.CarService;
-import org.apache.aries.jpa.supplier.EmSupplier;
+import org.apache.aries.jpa.container.itest.entities.Car;
+import org.apache.aries.jpa.container.itest.entities.CarService;
 
-public class CarServiceWithSupplierImpl implements CarService {
+public class CarServiceWithMethodImpl implements CarService {
 
-    Collection<String> colours;
-
-    @PersistenceContext(unitName = "test_unit_blueprint")
-    EmSupplier em;
+    EntityManager em;
 
     @Override
     public Car getCar(String id) {
-        return em.get().find(Car.class, id);
+        return em.find(Car.class, id);
     }
 
     @Override
     public void addCar(Car car) {
-        em.get().persist(car);
-        em.get().flush();
+        em.persist(car);
+        em.flush();
     }
 
     public Collection<Car> getCars() {
-        return em.get().createQuery("select c from Car c", Car.class).getResultList();
+        return em.createQuery("select c from Car c", Car.class).getResultList();
     }
 
     @Override
     public void updateCar(Car car) {
-        em.get().persist(car);
+        em.persist(car);
     }
 
     @Override
     public void deleteCar(String id) {
-        em.get().remove(getCar(id));
+        em.remove(getCar(id));
     }
 
-    public void setEm(EmSupplier em) {
+    @PersistenceContext(unitName = "test_unit_blueprint")
+    public void setEm(EntityManager em) {
         this.em = em;
     }
 

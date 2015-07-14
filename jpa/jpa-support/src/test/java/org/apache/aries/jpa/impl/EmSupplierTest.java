@@ -40,8 +40,7 @@ public class EmSupplierTest {
         EntityManagerFactory emf = mockEmf();
         Coordinator coordinator = new DummyCoordinator();
         EMSupplierImpl emSupplier = new EMSupplierImpl(emf, coordinator );
-        
-        Assert.assertNull("No EM may be present at start", emSupplier.get());
+        assertIllegalState(emSupplier);
 
         emSupplier.preCall();
         EntityManager em = emSupplier.get();
@@ -53,10 +52,20 @@ public class EmSupplierTest {
         Assert.assertSame("EM must still be the same after inner postCall", em, emSupplier.get());
         
         emSupplier.postCall();
-        Assert.assertNull("EM must be null after outer postCall", emSupplier.get());
+        assertIllegalState(emSupplier);
         
         boolean clean = emSupplier.close();
         Assert.assertTrue("Shutdown should be clean", clean);
+    }
+
+
+    private void assertIllegalState(EMSupplierImpl emSupplier) {
+        try {
+            emSupplier.get();
+            Assert.fail(IllegalStateException.class + " expected");
+        } catch (IllegalStateException e) {
+            // Expected
+        }
     }
 
     

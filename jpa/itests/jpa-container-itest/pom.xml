@@ -51,7 +51,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.coordinator</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -288,13 +288,13 @@
         <!-- Test bundles -->
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
+            <artifactId>org.apache.aries.jpa.container.itest.testds</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.container.advanced.itest.bundle</artifactId>
+            <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -313,7 +313,7 @@
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -324,9 +324,14 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
-            <artifactId>org.apache.aries.transaction.wrappers</artifactId>
-            <version>1.0.0</version>
+            <artifactId>org.apache.aries.transaction.jdbc</artifactId>
+            <version>2.1.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.transaction</groupId>
+            <artifactId>org.apache.aries.transaction.blueprint</artifactId>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
@@ -366,12 +371,23 @@
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.jdbc</groupId>
+            <artifactId>pax-jdbc-spec</artifactId>
+            <version>${paxjdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.jdbc</groupId>
             <artifactId>pax-jdbc-derby</artifactId>
             <version>${paxjdbc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.jdbc</groupId>
             <artifactId>pax-jdbc-pool-dbcp2</artifactId>
+            <version>${paxjdbc.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.jdbc</groupId>
+            <artifactId>pax-jdbc-config</artifactId>
             <version>${paxjdbc.version}</version>
             <scope>provided</scope>
         </dependency>

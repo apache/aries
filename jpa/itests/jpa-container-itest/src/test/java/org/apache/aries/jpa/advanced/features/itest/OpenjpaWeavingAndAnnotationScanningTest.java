@@ -19,13 +19,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import org.apache.aries.jpa.container.advanced.itest.bundle.entities.Car;
+import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-// TODO The Test persistence unit does not seem to be created. Reenable when this works 
 public class OpenjpaWeavingAndAnnotationScanningTest extends JPAWeavingAndAnnotationScanningTest {
 
     @Configuration
@@ -33,10 +32,9 @@ public class OpenjpaWeavingAndAnnotationScanningTest extends JPAWeavingAndAnnota
         return new Option[] {
             baseOptions(), //
             openJpa(), //
-            derbyDSF(), //
             ariesJpa20(), //
-            transactionWrapper(), //
-            testBundleAdvanced(), //
+            derbyDSF(), //
+            testBundle(), //
         };
     }
 

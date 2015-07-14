@@ -18,7 +18,7 @@ package org.apache.aries.jpa.context.itest;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-public class EclipseLinkContextTest extends JPAContextTest {
+public class EclipseLinkEmSupplierTest extends EmSupplierTest {
 
     @Configuration
     public Option[] eclipseLinkConfig() {
@@ -27,7 +27,7 @@ public class EclipseLinkContextTest extends JPAContextTest {
             ariesJpa21(), //
             eclipseLink(), //
             derbyDSF(), //
-            testBundleAdvanced()
+            testBundle()
         };
     }
 
