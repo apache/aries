@@ -15,41 +15,28 @@
  */
 package org.apache.aries.jpa.advanced.features.itest;
 
-import static org.junit.Assert.assertEquals;
-
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.transaction.UserTransaction;
 
-import org.apache.aries.jpa.container.advanced.itest.bundle.entities.Car;
+import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.itest.AbstractJPAItest;
 import org.junit.Test;
-import org.ops4j.pax.exam.util.Filter;
 
 public abstract class JPAWeavingAndAnnotationScanningTest extends AbstractJPAItest {
     @Inject
     UserTransaction transaction;
 
-    @Inject
-    @Filter("(osgi.unit.name=" + TEST_UNIT + ")")
-    EntityManagerFactory emf;
-
     @Test
     public void testAnnotatedClassFound() throws Exception {
+        EntityManagerFactory emf = getEMF(XA_TEST_UNIT);
         EntityManager em = emf.createEntityManager();
         transaction.begin();
-
-        Car c = new Car();
-        c.setColour("Blue");
-        c.setNumberPlate("AB11CDE");
-        c.setNumberOfSeats(7);
-        c.setEngineSize(1900);
-        em.persist(c);
-
+        em.persist(createBlueCar());
         transaction.commit();
 
-        assertEquals(7, em.find(Car.class, "AB11CDE").getNumberOfSeats());
+        assertBlueCar(em.find(Car.class, BLUE_CAR_PLATE));
         em.close();
     }
 

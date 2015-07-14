@@ -26,8 +26,11 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.jpa.supplier.EmSupplier;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JpaInterceptor implements Interceptor {
+    private static Logger LOG = LoggerFactory.getLogger(JpaInterceptor.class);
     private EmSupplier emSupplier;
     private Boolean cachedIsResourceLocal;
 
@@ -50,21 +53,25 @@ public class JpaInterceptor implements Interceptor {
             return weControlTx;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
-        boolean weControlTx = (Boolean)preCallToken;
+        boolean weControlTx = preCallToken == null ? false : (Boolean)preCallToken;
         if (weControlTx) {
             safeRollback(emSupplier.get(), ex);
         }
-        emSupplier.postCall();
+        try {
+            emSupplier.postCall();
+        } catch (Exception e) {
+            LOG.warn("Exception from EmSupplier.postCall", e);
+        }
     }
 
     public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken)
         throws Exception {
-        boolean weControlTx = (Boolean)preCallToken;
+        boolean weControlTx = preCallToken == null ? false : (Boolean)preCallToken;
         if (weControlTx) {
             emSupplier.get().getTransaction().commit();
         }

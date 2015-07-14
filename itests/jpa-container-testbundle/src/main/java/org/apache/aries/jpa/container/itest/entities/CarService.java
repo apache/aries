@@ -16,11 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.itest.testbundle.service;
+package org.apache.aries.jpa.container.itest.entities;
 
 import java.util.Collection;
-
-import org.apache.aries.jpa.itest.testbundle.entities.Car;
 
 public interface CarService {
     Car getCar(String id);

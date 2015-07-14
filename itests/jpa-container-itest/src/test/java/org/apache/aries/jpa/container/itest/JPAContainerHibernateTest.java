@@ -27,27 +27,21 @@ import org.ops4j.pax.exam.Option;
 public class JPAContainerHibernateTest extends AbstractJPAItest {
     @Test
     public void testCarCreateDelete() throws Exception {
-        resolveBundles();
         EntityManagerFactory emf = getEMF(TEST_UNIT);
+        resolveBundles();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        Car c = new Car();
-        c.setNumberPlate("123456");
-        c.setColour("blue");
-        em.persist(c);
+        Car car = createBlueCar();
+        em.persist(car);
         em.getTransaction().commit();
         em.close();
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        deleteCar(em, c);
+        car = em.merge(car);
+        em.remove(car);
         em.getTransaction().commit();
         em.close();
-    }
-
-    private void deleteCar(EntityManager em, Car c) {
-        c = em.merge(c);
-        em.remove(c);
     }
 
     @Configuration
@@ -55,10 +49,9 @@ public class JPAContainerHibernateTest extends AbstractJPAItest {
         return new Option[] {
             baseOptions(), //
             ariesJpa20(), //
+            derbyDSF(), //
+            hibernate(), //
             testBundle(), //
-            transactionWrapper(), //
-            testDs(), //
-            hibernate()
         };
     }
 }

@@ -16,54 +16,50 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.itest.testbundle.service.impl;
+package org.apache.aries.jpa.container.itest.bundle.blueprint.impl;
 
 import java.util.Collection;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.PersistenceContext;
 
-import org.apache.aries.jpa.itest.testbundle.entities.Car;
-import org.apache.aries.jpa.itest.testbundle.service.CarService;
+import org.apache.aries.jpa.container.itest.entities.Car;
+import org.apache.aries.jpa.container.itest.entities.CarService;
+import org.apache.aries.jpa.supplier.EmSupplier;
 
-public class CarServiceWithEmfImpl implements CarService {
+public class CarServiceWithSupplierImpl implements CarService {
 
-    @PersistenceUnit(unitName = "test_unit_blueprint")
-    EntityManagerFactory emf;
+    Collection<String> colours;
+
+    @PersistenceContext(unitName = "test_unit_blueprint")
+    EmSupplier em;
 
     @Override
     public Car getCar(String id) {
-        EntityManager em = emf.createEntityManager();
-        return em.find(Car.class, id);
+        return em.get().find(Car.class, id);
     }
 
     @Override
     public void addCar(Car car) {
-        EntityManager em = emf.createEntityManager();
-        em.persist(car);
-        em.flush();
+        em.get().persist(car);
+        em.get().flush();
     }
 
     public Collection<Car> getCars() {
-        EntityManager em = emf.createEntityManager();
-        return em.createQuery("select c from Car c", Car.class).getResultList();
+        return em.get().createQuery("select c from Car c", Car.class).getResultList();
     }
 
     @Override
     public void updateCar(Car car) {
-        EntityManager em = emf.createEntityManager();
-        em.persist(car);
+        em.get().persist(car);
     }
 
     @Override
     public void deleteCar(String id) {
-        EntityManager em = emf.createEntityManager();
-        em.remove(getCar(id));
+        em.get().remove(getCar(id));
     }
 
-    public void setEmf(EntityManagerFactory emf) {
-        this.emf = emf;
+    public void setEm(EmSupplier em) {
+        this.em = em;
     }
 
 }

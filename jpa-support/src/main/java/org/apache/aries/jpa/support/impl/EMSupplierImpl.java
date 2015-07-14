@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
  * sure all EMs are closed.
  */
 public class EMSupplierImpl implements EmSupplier {
+
+
     private static final long DEFAULT_SHUTDOWN_WAIT_SECS = 10;
     private static Logger LOG = LoggerFactory.getLogger(EMSupplierImpl.class);
     private EntityManagerFactory emf;
@@ -74,28 +76,15 @@ public class EMSupplierImpl implements EmSupplier {
     @Override
     public EntityManager get() {
         Coordination coordination = getTopCoordination();
+        if (coordination == null) {
+            throw new IllegalStateException("Need active coordination");
+        }
         EntityManager em = getEm(coordination);
-        if (coordination != null && em == null) {
+        if (em == null) {
             em = createEm(emf);
             emSet.add(em);
             coordination.getVariables().put(EntityManager.class, em);
-            coordination.addParticipant(new Participant() {
-                
-                @Override
-                public void failed(Coordination coordination) throws Exception {
-                    ended(coordination);
-                }
-                
-                @Override
-                public void ended(Coordination coordination) throws Exception {
-                    EntityManager em = getEm(coordination);
-                    em.close();
-                    emSet.remove(em);
-                    if (shutdown.get()) {
-                        emsToShutDown.countDown();
-                    }
-                }
-            });
+            coordination.addParticipant(new EmShutDownParticipant());
         }
         return em;
     }
@@ -114,21 +103,20 @@ public class EMSupplierImpl implements EmSupplier {
      * @return
      */
     private EntityManager getEm(Coordination coordination) {
-        if (coordination == null) {
-            return null;
-        } else {
-            return (EntityManager)coordination.getVariables().get(EntityManager.class);
-        }
+        return (EntityManager)coordination.getVariables().get(EntityManager.class);
     }
 
     @Override
     public void preCall() {
+        LOG.info("preCall");
         coordinator.begin("jpa", 0);
     }
 
     @Override
     public void postCall() {
-        coordinator.pop().end();
+        LOG.info("postCall");
+        Coordination coord = coordinator.pop();
+        coord.end();
     }
 
     /**
@@ -176,4 +164,20 @@ public class EMSupplierImpl implements EmSupplier {
         this.shutdownWaitTimeUnit = shutdownWaitTimeUnit;
     }
 
+    private final class EmShutDownParticipant implements Participant {
+        @Override
+        public void failed(Coordination coordination) throws Exception {
+            ended(coordination);
+        }
+
+        @Override
+        public void ended(Coordination coordination) throws Exception {
+            EntityManager em = getEm(coordination);
+            emSet.remove(em);
+            em.close();
+            if (shutdown.get()) {
+                emsToShutDown.countDown();
+            }
+        }
+    }
 }
