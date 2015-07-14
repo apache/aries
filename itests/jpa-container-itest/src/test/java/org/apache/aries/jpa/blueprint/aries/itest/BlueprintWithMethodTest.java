@@ -25,11 +25,11 @@ import org.ops4j.pax.exam.Option;
 
 public class BlueprintWithMethodTest extends AbstractJPAItest {
 
-	@Test
+    @Test
     public void testEmfAddQuery() throws Exception {
-		CarService carService = getService(CarService.class, "(type=method)");
-		
-		resolveBundles();
+        CarService carService = getService(CarService.class, "(type=method)");
+
+        resolveBundles();
         Car c = new Car();
         c.setColour("Blue");
         c.setNumberPlate("AB11EMF");
@@ -42,7 +42,7 @@ public class BlueprintWithMethodTest extends AbstractJPAItest {
         Assert.assertEquals(c.getNumberPlate(), car2.getNumberPlate());
     }
 
-	@Configuration
+    @Configuration
     public Option[] configuration() {
         return new Option[] {
             baseOptions(), //
@@ -50,7 +50,7 @@ public class BlueprintWithMethodTest extends AbstractJPAItest {
             hibernate(), //
             derbyDSF(), //
             testBundleBlueprint(),
-            //debug()
+        // debug()
         };
     }
 }
