@@ -29,55 +29,53 @@ import org.apache.aries.jpa.itest.testbundle.entities.Car;
 import org.apache.aries.jpa.itest.testbundle.service.CarService;
 import org.apache.aries.jpa.supplier.EmSupplier;
 
-
 public class CarServiceWithMultiAnnotationImpl implements CarService {
 
-	@PersistenceContext(unitName="test_unit_blueprint")
-	EntityManager em;
-	
-	@PersistenceUnit(unitName="test_unit_blueprint")
-	EntityManagerFactory emf;
-	
-	@PersistenceContext(unitName="test_unit_blueprint")
-	EmSupplier ems;
-	
-	@Override
-	public Car getCar(String id) {
-		return em.find(Car.class, id);
-	}
+    @PersistenceContext(unitName = "test_unit_blueprint")
+    EntityManager em;
 
-	@Override
-	public void addCar(Car car) {
-		EntityManager localEm = emf.createEntityManager();
-		localEm.persist(car);
-		localEm.flush();
-		localEm.close();
-	}
+    @PersistenceUnit(unitName = "test_unit_blueprint")
+    EntityManagerFactory emf;
 
-	public Collection<Car> getCars() {
-		return em.createQuery("select c from Car c", Car.class)
-			.getResultList();
-	}
+    @PersistenceContext(unitName = "test_unit_blueprint")
+    EmSupplier ems;
 
-	@Override
-	public void updateCar(Car car) {
-		em.persist(car);
-	}
+    @Override
+    public Car getCar(String id) {
+        return em.find(Car.class, id);
+    }
 
-	@Override
-	public void deleteCar(String id) {
-		ems.get().remove(getCar(id));
-	}
+    @Override
+    public void addCar(Car car) {
+        EntityManager localEm = emf.createEntityManager();
+        localEm.persist(car);
+        localEm.flush();
+        localEm.close();
+    }
 
-	public void setEm(EntityManager em) {
-		this.em = em;
-	}
-	
-	public void setEmf(EntityManagerFactory emf) {
-		this.emf = emf;
-	}
-	
-	public void setEms(EmSupplier ems) {
-		this.ems = ems;
-	}
+    public Collection<Car> getCars() {
+        return em.createQuery("select c from Car c", Car.class).getResultList();
+    }
+
+    @Override
+    public void updateCar(Car car) {
+        em.persist(car);
+    }
+
+    @Override
+    public void deleteCar(String id) {
+        ems.get().remove(getCar(id));
+    }
+
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
+
+    public void setEmf(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
+    public void setEms(EmSupplier ems) {
+        this.ems = ems;
+    }
 }

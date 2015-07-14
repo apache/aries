@@ -26,40 +26,38 @@ import javax.persistence.PersistenceContext;
 import org.apache.aries.jpa.itest.testbundle.entities.Car;
 import org.apache.aries.jpa.itest.testbundle.service.CarService;
 
-
 public class CarServiceWithMethodImpl implements CarService {
 
-	EntityManager em;
-	
-	@Override
-	public Car getCar(String id) {
-		return em.find(Car.class, id);
-	}
+    EntityManager em;
 
-	@Override
-	public void addCar(Car car) {
-		em.persist(car);
-		em.flush();
-	}
+    @Override
+    public Car getCar(String id) {
+        return em.find(Car.class, id);
+    }
 
-	public Collection<Car> getCars() {
-		return em.createQuery("select c from Car c", Car.class)
-			.getResultList();
-	}
+    @Override
+    public void addCar(Car car) {
+        em.persist(car);
+        em.flush();
+    }
 
-	@Override
-	public void updateCar(Car car) {
-		em.persist(car);
-	}
+    public Collection<Car> getCars() {
+        return em.createQuery("select c from Car c", Car.class).getResultList();
+    }
 
-	@Override
-	public void deleteCar(String id) {
-		em.remove(getCar(id));
-	}
+    @Override
+    public void updateCar(Car car) {
+        em.persist(car);
+    }
 
-	@PersistenceContext(unitName="test_unit_blueprint")
-	public void setEm(EntityManager em) {
-		this.em = em;
-	}
-	
+    @Override
+    public void deleteCar(String id) {
+        em.remove(getCar(id));
+    }
+
+    @PersistenceContext(unitName = "test_unit_blueprint")
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
+
 }

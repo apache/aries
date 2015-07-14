@@ -28,39 +28,38 @@ import org.apache.aries.jpa.supplier.EmSupplier;
 
 public class CarServiceWithSupplierImpl implements CarService {
 
-	Collection<String> colours;
+    Collection<String> colours;
 
-	@PersistenceContext(unitName = "test_unit_blueprint")
-	EmSupplier em;
+    @PersistenceContext(unitName = "test_unit_blueprint")
+    EmSupplier em;
 
-	@Override
-	public Car getCar(String id) {
-		return em.get().find(Car.class, id);
-	}
+    @Override
+    public Car getCar(String id) {
+        return em.get().find(Car.class, id);
+    }
 
-	@Override
-	public void addCar(Car car) {
-		em.get().persist(car);
-		em.get().flush();
-	}
+    @Override
+    public void addCar(Car car) {
+        em.get().persist(car);
+        em.get().flush();
+    }
 
-	public Collection<Car> getCars() {
-		return em.get().createQuery("select c from Car c", Car.class)
-				.getResultList();
-	}
+    public Collection<Car> getCars() {
+        return em.get().createQuery("select c from Car c", Car.class).getResultList();
+    }
 
-	@Override
-	public void updateCar(Car car) {
-		em.get().persist(car);
-	}
+    @Override
+    public void updateCar(Car car) {
+        em.get().persist(car);
+    }
 
-	@Override
-	public void deleteCar(String id) {
-		em.get().remove(getCar(id));
-	}
+    @Override
+    public void deleteCar(String id) {
+        em.get().remove(getCar(id));
+    }
 
-	public void setEm(EmSupplier em) {
-		this.em = em;
-	}
+    public void setEm(EmSupplier em) {
+        this.em = em;
+    }
 
 }
