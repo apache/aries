@@ -14,7 +14,9 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.transaction.UserTransaction;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.junit.Before;
@@ -43,15 +45,22 @@ import org.slf4j.LoggerFactory;
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractJPAItest {
     private static Logger LOG = LoggerFactory.getLogger(AbstractJPAItest.class);
-    protected static final String BLUE_CAR_PLATE = "A1AAA";
+
     protected static final String TEST_UNIT = "test-unit";
     protected static final String XA_TEST_UNIT = "xa-test-unit";
-    protected static final String BP_TEST_UNIT = "bp-test-unit";
-    protected static final String BP_XA_TEST_UNIT = "bp-xa-test-unit";
+    protected static final String DSF_TEST_UNIT = "dsf-test-unit";
+    protected static final String DSF_XA_TEST_UNIT = "dsf-xa-test-unit";
+
     protected static final String TEST_BUNDLE_NAME = "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle";
+    
+    protected static final String BLUE_CAR_PLATE = "A1AAA";
+    protected static final String GREEN_CAR_PLATE = "B2BBB";
 
     @Inject
     protected BundleContext bundleContext;
+    
+    @Inject
+    protected UserTransaction ut;
 
     @Inject
     protected ConfigurationAdmin configAdmin;
@@ -305,7 +314,7 @@ public abstract class AbstractJPAItest {
         car.setNumberOfSeats(7);
         car.setEngineSize(1800);
         car.setColour("green");
-        car.setNumberPlate("B2BBB");
+        car.setNumberPlate(GREEN_CAR_PLATE);
         return car;
     }
 
@@ -320,6 +329,55 @@ public abstract class AbstractJPAItest {
         assertEquals(7, car.getNumberOfSeats());
         assertEquals(1800, car.getEngineSize());
         assertEquals("green", car.getColour());
-        assertEquals("B2BBB", car.getNumberPlate());
+        assertEquals(GREEN_CAR_PLATE, car.getNumberPlate());
     }
+    
+    /**
+     * Create, find and delete car using resource local transactions
+     * @param emf
+     * @throws BundleException
+     */
+    protected void carLifecycleRL(EntityManager em) throws BundleException {
+        em.getTransaction().begin();
+        Car car = createBlueCar();
+        em.persist(car);
+        em.getTransaction().commit();
+
+        Car car2 = em.find(Car.class, BLUE_CAR_PLATE);
+        assertBlueCar(car2);
+        em.getTransaction().begin();
+        em.remove(car2);
+        em.getTransaction().commit();
+        em.close();
+    }
+
+    /**
+     * Create, find and delete car using XA Transactions
+     * @param ut
+     * @param em
+     * @throws Exception
+     */
+    protected void carLifecycleXA(UserTransaction ut, EntityManager em) throws Exception {
+        ut.begin();
+        em.joinTransaction();
+        delete(em, BLUE_CAR_PLATE);
+        em.persist(createBlueCar());
+        ut.commit();
+
+        Car c = em.find(Car.class, BLUE_CAR_PLATE);
+        assertBlueCar(c);
+
+        ut.begin();
+        em.joinTransaction();
+        delete(em, BLUE_CAR_PLATE);
+        ut.commit();
+    }
+
+    protected void delete(EntityManager em, String plateId) {
+        Car car = em.find(Car.class, plateId);
+        if (car != null) {
+            em.remove(car);
+        }
+    }
+
 }

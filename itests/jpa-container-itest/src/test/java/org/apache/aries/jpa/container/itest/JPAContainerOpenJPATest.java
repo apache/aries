@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.jpa.advanced.features.itest;
+package org.apache.aries.jpa.container.itest;
 
 import static org.junit.Assert.assertTrue;
 
@@ -25,23 +25,24 @@ import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-public class OpenjpaWeavingAndAnnotationScanningTest extends JPAWeavingAndAnnotationScanningTest {
-
-    @Configuration
-    public Option[] openjpaConfig() {
-        return new Option[] {
-            baseOptions(), //
-            openJpa(), //
-            ariesJpa20(), //
-            derbyDSF(), //
-            testBundle(), //
-        };
-    }
-
+public class JPAContainerOpenJPATest extends JPAContainerTest {
+    
     @Test
     public void testClassIsWoven() throws Exception {
         assertTrue("Not PersistenceCapable",
                    Arrays.asList(Car.class.getInterfaces()).contains(PersistenceCapable.class));
+    }
+
+    @Configuration
+    public Option[] configuration() {
+        return new Option[] {
+            baseOptions(), //
+            ariesJpa20(), //
+            openJpa(), //
+            derbyDSF(), //
+            testBundle()
+        };
+
     }
 
 }
