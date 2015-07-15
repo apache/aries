@@ -288,12 +288,6 @@
         <!-- Test bundles -->
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.container.itest.testds</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.container.itest.bundle</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -304,22 +298,11 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jpa.itest</groupId>
-            <artifactId>org.apache.aries.jpa.container.itest.bundle.blueprint</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
             <version>1.1.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.transaction</groupId>
-            <artifactId>org.apache.aries.transaction.testds</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
