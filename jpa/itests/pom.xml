@@ -33,7 +33,6 @@
 
     <modules>
         <module>jpa-container-blueprint-testbundle</module>
-        <module>jpa-container-advancedtestbundle</module>
         <module>jpa-container-itest</module>
         <module>jpa-container-testbundle</module>
         <module>jpa-container-testbundle-eclipselink</module>
