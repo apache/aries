@@ -13,12 +13,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.jpa.context.itest;
+package org.apache.aries.jpa.container.itest;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+
+import org.apache.aries.jpa.container.itest.entities.Car;
+import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
+import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 
-public class EclipseLinkEmSupplierTest extends EmSupplierTest {
+public class JPAContainerEclipseLinkTest extends JPAContainerTest {
 
     @Configuration
     public Option[] eclipseLinkConfig() {
@@ -31,4 +38,9 @@ public class EclipseLinkEmSupplierTest extends EmSupplierTest {
         };
     }
 
+    @Test
+    public void testClassIsWoven() throws Exception {
+        assertTrue("Not PersistenceCapable",
+                   Arrays.asList(Car.class.getInterfaces()).contains(PersistenceWeaved.class));
+    }
 }
