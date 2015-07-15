@@ -40,18 +40,11 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/versioning/versioning-plugin</url>
     </scm>
     
-    <repositories>
-    	<repository>
-            <id>orgapachearies-1032</id>
-            <url>https://repository.apache.org/content/repositories/orgapachearies-1032/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.versioning</groupId>
             <artifactId>org.apache.aries.versioning.checker</artifactId>
-            <version>0.3.1</version>
+            <version>0.3.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
