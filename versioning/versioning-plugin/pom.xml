@@ -39,6 +39,13 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-plugin</developerConnection>
         <url>http://svn.apache.org/viewvc/aries/trunk/versioning/versioning-plugin</url>
     </scm>
+    
+    <repositories>
+    	<repository>
+            <id>orgapachearies-1032</id>
+            <url>https://repository.apache.org/content/repositories/orgapachearies-1032/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
