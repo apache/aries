@@ -23,7 +23,6 @@ import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.container.itest.entities.CarService;
 import org.apache.aries.jpa.itest.AbstractJPAItest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -42,7 +41,6 @@ public class BlueprintTest extends AbstractJPAItest {
     }
 
     @Test
-    @Ignore
     public void testCoordination() {
         CarService carService = getCarService("em");
         coordinator.begin("jpa", 0);
@@ -51,7 +49,6 @@ public class BlueprintTest extends AbstractJPAItest {
         carService.updateCar(cars.iterator().next());
         carService.deleteCar(BLUE_CAR_PLATE);
         coordinator.pop().end();
-        
     }
     
     @Test
