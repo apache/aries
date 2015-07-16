@@ -75,6 +75,12 @@ public class BlueprintTest extends AbstractJPAItest {
     public void testSupplierAddQuery() throws Exception {
         carLifecycle(getCarService("supplier"));
     }
+    
+    @Test
+    public void testCoordinationLifecycle() {
+        Runnable carLifeCycle = getService(Runnable.class, "(type=carCoordinated)");
+        carLifeCycle.run();
+    }
 
     private CarService getCarService(String type) {
         return getService(CarService.class, "(type=" + type + ")");
