@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-    xmlns:jpa="http://aries.apache.org/xmlns/jpan/v1.0.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.2.0"
+    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
+    xmlns:jpa="http://aries.apache.org/xmlns/jpan/v1.0.0"
+    xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.2.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    xsi:schemaLocation="
+    http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+    http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext.xsd
+    ">
 
     <jpa:enable />
 
@@ -66,5 +71,17 @@
         <tx:transaction method="*" value="Required" />
     </bean>
 
+    <bean id="carLifeCycle" class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarLifeCycle" >
+        <property name="coordinator" ref="coordinator"/>
+        <property name="carService" ref="carServiceEm"/>
+    </bean>
+    
+    <reference id="coordinator" interface="org.osgi.service.coordinator.Coordinator" />
+    
+    <service ref="carLifeCycle" interface="java.lang.Runnable" >
+        <service-properties>
+            <entry key="type" value="carCoordinated"/>
+        </service-properties>
+    </service>
 </blueprint>
 
