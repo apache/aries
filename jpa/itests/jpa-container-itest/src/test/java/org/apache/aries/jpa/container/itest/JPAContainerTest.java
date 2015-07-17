@@ -1,3 +1,18 @@
+/*  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package org.apache.aries.jpa.container.itest;
 
 import static org.junit.Assert.assertEquals;
@@ -12,12 +27,12 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
-import org.apache.aries.jpa.itest.AbstractJPAItest;
+import org.apache.aries.jpa.itest.AbstractCarJPAITest;
 import org.apache.aries.jpa.supplier.EmSupplier;
 import org.junit.Test;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 
-public abstract class JPAContainerTest extends AbstractJPAItest {
+public abstract class JPAContainerTest extends AbstractCarJPAITest {
 
     @Test
     public void testCarEMFBuilder() throws Exception {
@@ -80,44 +95,41 @@ public abstract class JPAContainerTest extends AbstractJPAItest {
 
         ut.begin();
         em.joinTransaction();
-        Car car = em.find(Car.class, BLUE_CAR_PLATE);
-        car.setNumberOfSeats(2);
-        car.setEngineSize(2000);
-        car.setColour("red");
+        changeToRed(em.find(Car.class, BLUE_CAR_PLATE));
         em.remove(em.find(Car.class, GREEN_CAR_PLATE));
         em.persist(createBlackCar());
         ut.commit();
 
         assertEquals(2l, countQuery.getSingleResult());
-
         list = carQuery.getResultList();
         assertEquals(2, list.size());
 
-        assertEquals(2, list.get(0).getNumberOfSeats());
-        assertEquals(800, list.get(0).getEngineSize());
-        assertEquals("black", list.get(0).getColour());
-        assertEquals("C3CCC", list.get(0).getNumberPlate());
+        assertBlackCar(list.get(0));
+        assertChangedBlueCar(list.get(1));
 
-        assertEquals(2, list.get(1).getNumberOfSeats());
-        assertEquals(2000, list.get(1).getEngineSize());
-        assertEquals("red", list.get(1).getColour());
-        assertEquals("A1AAA", list.get(1).getNumberPlate());
-        
-        ut.begin();
-        em.joinTransaction();
-        delete(em, "C3CCC");
-        delete(em, "A1AAA");
-        ut.commit();
+        cleanup(em);
         emSupplier.postCall();
     }
 
-    private Car createBlackCar() {
-        Car car;
-        car = new Car();
+    private void changeToRed(Car car) {
         car.setNumberOfSeats(2);
-        car.setEngineSize(800);
-        car.setColour("black");
-        car.setNumberPlate("C3CCC");
-        return car;
+        car.setEngineSize(2000);
+        car.setColour("red");
     }
+
+    private void cleanup(EntityManager em) throws Exception {
+        ut.begin();
+        em.joinTransaction();
+        delete(em, BLACK_CAR_PLATE);
+        delete(em, BLUE_CAR_PLATE);
+        ut.commit();
+    }
+
+    private void assertChangedBlueCar(Car car) {
+        assertEquals(2, car.getNumberOfSeats());
+        assertEquals(2000, car.getEngineSize());
+        assertEquals("red", car.getColour());
+        assertEquals(BLUE_CAR_PLATE, car.getNumberPlate());
+    }
+
 }

@@ -21,14 +21,14 @@ import javax.inject.Inject;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.container.itest.entities.CarService;
-import org.apache.aries.jpa.itest.AbstractJPAItest;
+import org.apache.aries.jpa.itest.AbstractCarJPAITest;
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.osgi.service.coordinator.Coordinator;
 
-public class BlueprintTest extends AbstractJPAItest {
+public class BlueprintTest extends AbstractCarJPAITest {
     @Inject
     Coordinator coordinator;
     
