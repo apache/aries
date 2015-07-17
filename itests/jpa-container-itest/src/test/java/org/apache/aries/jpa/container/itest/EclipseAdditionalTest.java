@@ -54,7 +54,7 @@ public class EclipseAdditionalTest extends AbstractJPAItest {
         InputStream testBundle = TinyBundles.bundle()
             .set(Constants.BUNDLE_SYMBOLICNAME, "incompleteTestUnit") //
             .set("Meta-Persistence", " ") //
-            .add("META-INF/persistence.xml", this.getClass().getResourceAsStream("persistence.xml")) //
+            .add("META-INF/persistence.xml", this.getClass().getResourceAsStream("/persistence.xml")) //
             .build(TinyBundles.withBnd());
         return new Option[] {//
             baseOptions(),//

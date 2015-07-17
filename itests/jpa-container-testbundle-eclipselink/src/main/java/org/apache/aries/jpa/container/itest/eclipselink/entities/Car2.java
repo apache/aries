@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.container.itest.entities;
+package org.apache.aries.jpa.container.itest.eclipselink.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class Car {
+public class Car2 {
   @Id
   private String numberPlate;
   
