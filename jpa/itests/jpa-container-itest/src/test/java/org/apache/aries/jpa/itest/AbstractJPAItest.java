@@ -78,11 +78,11 @@ public abstract class AbstractJPAItest {
     }
 
     public <T> T getService(Class<T> type, String filter) {
-        return getService(type, filter, true);
+        return getService(type, filter, 10000);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> T getService(Class<T> type, String filter, boolean mandatory) {
+    public <T> T getService(Class<T> type, String filter, int timeout) {
         ServiceTracker tracker = null;
         try {
             String objClassFilter = "(" + Constants.OBJECTCLASS + "=" + type.getName() + ")";
@@ -91,9 +91,9 @@ public abstract class AbstractJPAItest {
             tracker = new ServiceTracker(bundleContext, osgiFilter, null);
             tracker.open();
 
-            Object svc = type.cast(tracker.waitForService(10000));
-            if (svc == null && mandatory) {
-                throw new RuntimeException("Gave up waiting for service " + flt);
+            Object svc = type.cast(tracker.waitForService(timeout));
+            if (svc == null) {
+                throw new IllegalStateException("Gave up waiting for service " + flt);
             }
             return type.cast(svc);
         } catch (InvalidSyntaxException e) {
