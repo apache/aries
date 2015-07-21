@@ -16,20 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.blueprint.supplier.impl;
+package org.apache.aries.jpa.support.osgi.impl;
 
-import java.lang.reflect.Proxy;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
-import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
 
-import org.osgi.framework.BundleContext;
+import org.apache.aries.jpa.supplier.EmSupplier;
 
-public class EmfProxyFactory {
+public class EmProxy implements InvocationHandler {
+    EmSupplier emSupplier;
 
-    public static EntityManagerFactory create(BundleContext context, String unitName) {
-    	ClassLoader cl = EntityManagerFactory.class.getClassLoader();
-        Class<?>[] ifAr = new Class[] { EntityManagerFactory.class };
-        
-        return  (EntityManagerFactory) Proxy.newProxyInstance(cl, ifAr, new EmfProxy(context, unitName));
+    public EmProxy(EmSupplier emSupplier) {
+        this.emSupplier = emSupplier;
     }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        EntityManager em = emSupplier.get();
+        if (em == null) {
+            throw new IllegalStateException("EntityManager not available. Make sure you run in an @Transactional method");
+        }
+        return method.invoke(em, args);
+    }
+
 }

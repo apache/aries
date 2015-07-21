@@ -55,7 +55,7 @@ public class CarServiceWithMethodImpl implements CarService {
         em.remove(getCar(id));
     }
 
-    @PersistenceContext(unitName = "test_unit_blueprint")
+    @PersistenceContext(unitName = "xa-test-unit")
     public void setEm(EntityManager em) {
         this.em = em;
     }

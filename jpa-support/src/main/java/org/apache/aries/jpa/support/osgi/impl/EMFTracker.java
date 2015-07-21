@@ -20,9 +20,11 @@ package org.apache.aries.jpa.support.osgi.impl;
 
 import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
 
+import java.lang.reflect.Proxy;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
@@ -62,16 +64,20 @@ public class EMFTracker extends ServiceTracker {
         BundleContext bContext = reference.getBundle().getBundleContext();
         TrackedEmf tracked = new TrackedEmf();
         tracked.emf = (EntityManagerFactory)bContext.getService(reference);
-        tracked.emSupplier = new EMSupplierImpl(tracked.emf, coordinator);
+        tracked.emSupplier = new EMSupplierImpl(unitName, tracked.emf, coordinator);
         tracked.emSupplierReg = bContext.registerService(EmSupplier.class, tracked.emSupplier,
                                                          getEmSupplierProps(unitName));
 
+        EntityManager emProxy = createProxy(tracked.emSupplier);
+        tracked.emSupplierReg = bContext.registerService(EntityManager.class, emProxy,
+                                                         getEmSupplierProps(unitName));
+        
         if (getTransactionType(tracked.emf) == PersistenceUnitTransactionType.RESOURCE_LOCAL) {
-            JpaTemplate txManager = new ResourceLocalJpaTemplate(tracked.emSupplier);
+            JpaTemplate txManager = new ResourceLocalJpaTemplate(tracked.emSupplier, coordinator);
             tracked.rlTxManagerReg = bContext.registerService(JpaTemplate.class, txManager,
                                                           rlTxManProps(unitName));
         } else {
-            tracked.tmTracker = new TMTracker(bContext, tracked.emSupplier, unitName);
+            tracked.tmTracker = new TMTracker(bContext, tracked.emSupplier, unitName, coordinator);
             tracked.tmTracker.open();
         }
         return tracked;
@@ -119,8 +125,17 @@ public class EMFTracker extends ServiceTracker {
         tracked.emSupplierReg.unregister();
         super.removedService(reference, tracked.emf);
     }
+    
+    public static EntityManager createProxy(final EmSupplier emSupplier) {
+        ClassLoader loader = EntityManager.class.getClassLoader();
+        Class<?>[] ifAr = {
+            EntityManager.class
+        };
+        return (EntityManager)Proxy.newProxyInstance(loader, ifAr, new EmProxy(emSupplier));
+    }
 
     static class TrackedEmf {
+        ServiceRegistration emProxyReg;
         ServiceRegistration emSupplierReg;
         EMSupplierImpl emSupplier;
         ServiceRegistration rlTxManagerReg;

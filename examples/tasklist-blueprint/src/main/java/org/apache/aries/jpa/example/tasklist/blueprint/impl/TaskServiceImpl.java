@@ -27,42 +27,40 @@ import org.apache.aries.jpa.example.tasklist.model.Task;
 import org.apache.aries.jpa.example.tasklist.model.TaskService;
 import org.apache.aries.transaction.annotations.Transaction;
 
-
 public class TaskServiceImpl implements TaskService {
 
-	@PersistenceContext(unitName="tasklist")
-	EntityManager em;
-	
-	@Override
-	public Task getTask(Integer id) {
-		return em.find(Task.class, id);
-	}
+    @PersistenceContext(unitName = "tasklist")
+    EntityManager em;
 
-	@Transaction
-	@Override
-	public void addTask(Task task) {
-		em.persist(task);
-		em.flush();
-	}
+    @Override
+    public Task getTask(Integer id) {
+        return em.find(Task.class, id);
+    }
 
-	public Collection<Task> getTasks() {
-		return em.createQuery("select t from Task t", Task.class)
-			.getResultList();
-	}
+    @Transaction
+    @Override
+    public void addTask(Task task) {
+        em.persist(task);
+        em.flush();
+    }
 
-	@Transaction
-	@Override
-	public void updateTask(Task task) {
-		em.persist(task);
-	}
+    public Collection<Task> getTasks() {
+        return em.createQuery("select t from Task t", Task.class).getResultList();
+    }
 
-	@Transaction
-	@Override
-	public void deleteTask(Integer id) {
-		em.remove(getTask(id));
-	}
+    @Transaction
+    @Override
+    public void updateTask(Task task) {
+        em.persist(task);
+    }
 
-	public void setEm(EntityManager em) {
-		this.em = em;
-	}
+    @Transaction
+    @Override
+    public void deleteTask(Integer id) {
+        em.remove(getTask(id));
+    }
+
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
 }

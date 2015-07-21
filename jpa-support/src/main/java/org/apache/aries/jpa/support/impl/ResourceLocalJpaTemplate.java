@@ -23,12 +23,16 @@ import javax.persistence.EntityManager;
 import org.apache.aries.jpa.supplier.EmSupplier;
 import org.apache.aries.jpa.template.EmFunction;
 import org.apache.aries.jpa.template.TransactionType;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Coordinator;
 
 public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
     private EmSupplier emSupplier;
+    private Coordinator coordinator;
 
-    public ResourceLocalJpaTemplate(EmSupplier emSupplier) {
+    public ResourceLocalJpaTemplate(EmSupplier emSupplier, Coordinator coordinator) {
         this.emSupplier = emSupplier;
+        this.coordinator = coordinator;
     }
 
     @Override
@@ -38,8 +42,9 @@ public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
         if (type != TransactionType.Required) {
             throw new IllegalStateException("Only transation propagation type REQUIRED is supported");
         }
+        Coordination coord = null;
         try {
-            emSupplier.preCall();
+            coord = coordinator.begin(this.getClass().getName(), 0);
             em = emSupplier.get();
             weControlTx = !em.getTransaction().isActive();
             if (weControlTx) {
@@ -56,7 +61,7 @@ public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
             }
             throw new RuntimeException(e);
         } finally {
-            emSupplier.postCall();
+            coord.end();
         }
     }
 

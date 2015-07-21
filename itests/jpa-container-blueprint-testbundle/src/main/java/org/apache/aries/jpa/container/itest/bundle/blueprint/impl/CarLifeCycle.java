@@ -15,7 +15,7 @@
  */
 package org.apache.aries.jpa.container.itest.bundle.blueprint.impl;
 
-import java.util.Collection;
+import java.util.UUID;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.container.itest.entities.CarService;
@@ -32,30 +32,38 @@ public class CarLifeCycle implements Runnable {
     @Override
     public void run() {
         Car car = new Car();
-        car.setNumberPlate("blue");
+        UUID uuid = UUID.randomUUID();
+        String id = "blue " + uuid.toString();
+        car.setNumberPlate(id);
         carService.addCar(car);
        
-        try {
-            readAndUpdate();
-            throw new IllegalStateException("This should not work with an active coordination");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            readAndUpdate(id);
+//            throw new IllegalStateException("This should not work with an active coordination");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         
         coordinator.begin("jpa", 0);
-        readAndUpdate();
+        readAndUpdate(id);
         coordinator.pop().end();
         
-        carService.deleteCar("blue");
+        carService.deleteCar(id);
+        Car car2 = carService.getCar(id);
+        if (car2 != null) {
+            throw new RuntimeException("Car witgh id " + id + " should be deleted");
+        }
     }
 
     /**
      * These operations only work if the EntityManager stays open
+     * @param id 
      */
-    private void readAndUpdate() {
-        Collection<Car> cars = carService.getCars();
-        carService.updateCar(cars.iterator().next());
+    private void readAndUpdate(String id) {
+        Car car = carService.getCar(id);
+        car.setEngineSize(100);
+        carService.updateCar(car);
     }
     
     public void setCarService(CarService carService) {

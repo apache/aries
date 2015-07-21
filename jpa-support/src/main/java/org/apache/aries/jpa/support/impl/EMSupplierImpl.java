@@ -19,6 +19,8 @@
 package org.apache.aries.jpa.support.impl;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -54,8 +56,10 @@ public class EMSupplierImpl implements EmSupplier {
     private Set<EntityManager> emSet;
     private CountDownLatch emsToShutDown;
     private Coordinator coordinator;
+    private String unitName;
 
-    public EMSupplierImpl(final EntityManagerFactory emf, Coordinator coordinator) {
+    public EMSupplierImpl(String unitName, final EntityManagerFactory emf, Coordinator coordinator) {
+        this.unitName = unitName;
         this.emf = emf;
         this.coordinator = coordinator;
         this.shutdown = new AtomicBoolean(false);
@@ -63,7 +67,6 @@ public class EMSupplierImpl implements EmSupplier {
     }
 
     private EntityManager createEm(EntityManagerFactory emf) {
-        LOG.debug("Creating EntityManager");
         EntityManager em = emf.createEntityManager();
         emSet.add(em);
         return em;
@@ -81,9 +84,10 @@ public class EMSupplierImpl implements EmSupplier {
         }
         EntityManager em = getEm(coordination);
         if (em == null) {
+            LOG.debug("Creating EntityManager for persistence unit " + unitName + ", coordination " + coordination.getName());
             em = createEm(emf);
             emSet.add(em);
-            coordination.getVariables().put(EntityManager.class, em);
+            setEm(coordination, em);
             coordination.addParticipant(new EmShutDownParticipant());
         }
         return em;
@@ -96,6 +100,14 @@ public class EMSupplierImpl implements EmSupplier {
         }
         return coordination;
     }
+    
+    private void setEm(Coordination coordination, EntityManager em) {
+        Map<Class<?>, Object> vars = coordination.getVariables();
+        synchronized (vars) {
+            Map<String, EntityManager> emMap = getEmMap(coordination);
+            emMap.put(unitName, em);
+        }
+    }
 
     /**
      * Get EntityManager from outer most Coordination that holds an EM
@@ -103,20 +115,35 @@ public class EMSupplierImpl implements EmSupplier {
      * @return
      */
     private EntityManager getEm(Coordination coordination) {
-        return (EntityManager)coordination.getVariables().get(EntityManager.class);
+        Map<Class<?>, Object> vars = coordination.getVariables();
+        synchronized (vars) {
+            return getEmMap(coordination).get(unitName);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, EntityManager> getEmMap(Coordination coordination) {
+        Map<String, EntityManager> emMap = (Map<String, EntityManager>)coordination.getVariables().get(EntityManager.class);
+        if (emMap == null) {
+            emMap = new HashMap<String, EntityManager>();
+            coordination.getVariables().put(EntityManager.class, emMap);
+        }
+        return emMap;
     }
 
     @Override
     public void preCall() {
-        LOG.info("preCall");
-        coordinator.begin("jpa", 0);
+        coordinator.begin("jpa." + unitName, 0);
     }
 
     @Override
     public void postCall() {
-        LOG.info("postCall");
-        Coordination coord = coordinator.pop();
-        coord.end();
+        try {
+            Coordination coord = coordinator.pop();
+            coord.end();
+        } catch (Throwable t) {
+            LOG.warn("Error ending coord", t);
+        }
     }
 
     /**
@@ -167,11 +194,13 @@ public class EMSupplierImpl implements EmSupplier {
     private final class EmShutDownParticipant implements Participant {
         @Override
         public void failed(Coordination coordination) throws Exception {
+            LOG.warn("Coordination failed " + coordination.getName(), coordination.getFailure());
             ended(coordination);
         }
 
         @Override
         public void ended(Coordination coordination) throws Exception {
+            LOG.debug("Closing EntityManager for persistence unit " + unitName + " as coordination " + coordination.getName() + " ended.");
             EntityManager em = getEm(coordination);
             emSet.remove(em);
             em.close();
