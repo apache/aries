@@ -6,6 +6,6 @@ import javax.persistence.PersistenceContext;
 import org.apache.aries.jpa.container.itest.entities.CarService;
 
 public abstract class AbstractCarServiceImpl implements CarService {
-    @PersistenceContext(unitName = "test_unit_blueprint")
+    @PersistenceContext(unitName = "xa-test-unit")
     protected EntityManager em;
 }

@@ -7,69 +7,57 @@ import java.lang.reflect.Method;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.aries.jpa.blueprint.supplier.impl.EmProxyFactory;
-import org.apache.aries.jpa.blueprint.supplier.impl.EmSupplierProxy;
-import org.apache.aries.jpa.blueprint.supplier.impl.EmfProxyFactory;
+import org.apache.aries.jpa.blueprint.supplier.impl.EmProxy;
 import org.apache.aries.jpa.supplier.EmSupplier;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 public class JpaAnnotatedMemberHandler {
     private Object bean;
 
-    private BundleContext context;
-
     public JpaAnnotatedMemberHandler(Object bean) {
         this.bean = bean;
-        context = FrameworkUtil.getBundle(bean.getClass()).getBundleContext();
     }
 
-    public EmSupplierProxy handleSupplierMember(AccessibleObject member, String unitName) {
-        EmSupplierProxy supplierProxy = new EmSupplierProxy(context, unitName);
+    public void handleSupplierMember(AccessibleObject member, String unitName, EmSupplier emSupplier) {
         if (member instanceof Field) {
             Field field = (Field)member;
             try {
-                field.set(bean, getEmProxy(field.getType(), supplierProxy));
+                field.set(bean, getEmProxy(field.getType(), emSupplier));
             } catch (Exception e) {
                 throw new IllegalStateException("Error setting field " + field, e);
             }
         } else {
             Method method = (Method)member;
             try {
-                method.invoke(bean, getEmProxy(method.getParameterTypes()[0], supplierProxy));
+                method.invoke(bean, getEmProxy(method.getParameterTypes()[0], emSupplier));
             } catch (Exception e) {
                 throw new IllegalStateException("Error invoking method " + method, e);
             }
         }
-        return supplierProxy;
     }
 
-    public EntityManagerFactory handleEmFactoryMethod(AccessibleObject member, String unitName) {
-        EntityManagerFactory emfProxy = EmfProxyFactory.create(context, unitName);
-
+    public void handleEmFactoryMethod(AccessibleObject member, String unitName, EntityManagerFactory emf) {
         if (member instanceof Field) {
             Field field = (Field)member;
             try {
-                field.set(bean, getEmfProxy(field.getType(), emfProxy));
+                field.set(bean, getEmfProxy(field.getType(), emf));
             } catch (Exception e) {
                 throw new IllegalStateException("Error setting field " + field, e);
             }
         } else {
             Method method = (Method)member;
             try {
-                method.invoke(bean, getEmfProxy(method.getParameterTypes()[0], emfProxy));
+                method.invoke(bean, getEmfProxy(method.getParameterTypes()[0], emf));
             } catch (Exception e) {
                 throw new IllegalStateException("Error invoking method " + method, e);
             }
         }
-        return emfProxy;
     }
 
-    private Object getEmProxy(Class<?> clazz, EmSupplierProxy supplierProxy) {
+    private Object getEmProxy(Class<?> clazz, EmSupplier emSupplier) {
         if (clazz == EmSupplier.class) {
-            return supplierProxy;
+            return emSupplier;
         } else if (clazz == EntityManager.class) {
-            return EmProxyFactory.create(supplierProxy);
+            return EmProxy.create(emSupplier);
         } else {
             throw new IllegalStateException(
                                             "Field or setter Method with @PersistenceContext has class not supported "
@@ -82,7 +70,7 @@ public class JpaAnnotatedMemberHandler {
             return supplierProxy;
         } else {
             throw new IllegalStateException(
-                                            "Field or setter Mthod with @PersistenceUnit has class not supported "
+                                            "Field or setter Method with @PersistenceUnit has class not supported "
                                                 + clazz);
         }
     }

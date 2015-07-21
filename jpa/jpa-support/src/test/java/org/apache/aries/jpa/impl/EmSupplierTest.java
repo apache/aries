@@ -39,19 +39,17 @@ public class EmSupplierTest {
     public void lifeCycleTest() {
         EntityManagerFactory emf = mockEmf();
         Coordinator coordinator = new DummyCoordinator();
-        EMSupplierImpl emSupplier = new EMSupplierImpl(emf, coordinator );
-        assertIllegalState(emSupplier);
 
-        emSupplier.preCall();
+        EMSupplierImpl emSupplier = new EMSupplierImpl("myunit", emf, coordinator);
+        assertIllegalState(emSupplier);
+        coordinator.begin("test", 0);
         EntityManager em = emSupplier.get();
         Assert.assertNotNull("EM should be present after preCall", em);
-        emSupplier.preCall();
+        coordinator.begin("testinner", 0);
         Assert.assertSame("Same EM for inner preCall", em, emSupplier.get());
-        
-        emSupplier.postCall();
+        coordinator.pop().end();
         Assert.assertSame("EM must still be the same after inner postCall", em, emSupplier.get());
-        
-        emSupplier.postCall();
+        coordinator.pop().end();
         assertIllegalState(emSupplier);
         
         boolean clean = emSupplier.close();
@@ -73,9 +71,9 @@ public class EmSupplierTest {
     public void uncleanLifeCycleTest() {
         EntityManagerFactory emf = mockEmf();
         Coordinator coordinator = new DummyCoordinator();
-        EMSupplierImpl emSupplier = new EMSupplierImpl(emf, coordinator);
+        EMSupplierImpl emSupplier = new EMSupplierImpl("myunit", emf, coordinator);
         emSupplier.setShutdownWait(100, MILLISECONDS);
-        emSupplier.preCall();
+        coordinator.begin("test", 0);
         emSupplier.get();
         boolean clean = emSupplier.close();
         Assert.assertFalse("Shutdown should be unclean", clean);
@@ -84,16 +82,16 @@ public class EmSupplierTest {
     @Test
     public void asyncCleanLifeCycleTest() throws InterruptedException {
         EntityManagerFactory emf = mockEmf();
-        Coordinator coordinator = new DummyCoordinator();
-        final EMSupplierImpl emSupplier = new EMSupplierImpl(emf,coordinator);
+        final Coordinator coordinator = new DummyCoordinator();
+        final EMSupplierImpl emSupplier = new EMSupplierImpl("myunit", emf,coordinator);
         final Semaphore preCallSem = new Semaphore(0);
         Runnable command = new Runnable() {
             
             @Override
             public void run() {
-                emSupplier.preCall();
+                coordinator.begin("test", 0);
                 preCallSem.release();
-                emSupplier.postCall();
+                coordinator.pop().end();
             }
         };
         Executors.newSingleThreadExecutor().execute(command);

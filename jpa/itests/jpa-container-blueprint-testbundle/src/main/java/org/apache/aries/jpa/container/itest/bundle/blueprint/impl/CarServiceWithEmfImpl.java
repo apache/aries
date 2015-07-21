@@ -29,7 +29,7 @@ import org.apache.aries.jpa.container.itest.entities.CarService;
 
 public class CarServiceWithEmfImpl implements CarService {
 
-    @PersistenceUnit(unitName = "test_unit_blueprint")
+    @PersistenceUnit(unitName = "xa-test-unit")
     EntityManagerFactory emf;
 
     @Override

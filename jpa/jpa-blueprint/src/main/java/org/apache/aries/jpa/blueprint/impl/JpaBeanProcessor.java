@@ -18,10 +18,15 @@
  */
 package org.apache.aries.jpa.blueprint.impl;
 
+import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
+
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,8 +39,10 @@ import javax.persistence.PersistenceUnit;
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.jpa.blueprint.supplier.impl.EmSupplierProxy;
+import org.apache.aries.jpa.blueprint.supplier.impl.ServiceProxy;
 import org.apache.aries.jpa.supplier.EmSupplier;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,14 +50,12 @@ import org.slf4j.LoggerFactory;
 public class JpaBeanProcessor implements BeanProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(JpaInterceptor.class);
     public static final String JPA_PROCESSOR_BEAN_NAME = "org_apache_aries_jpan";
-    private Map<Object, EmSupplierProxy> emProxies;
-    private Map<Object, EntityManagerFactory> emfProxies;
+    private Map<Object, Collection<Closeable>> serviceProxies;
     private ComponentDefinitionRegistry cdr;
     private final List<Class<?>> managedJpaClasses;
 
     public JpaBeanProcessor() {
-        emProxies = new ConcurrentHashMap<Object, EmSupplierProxy>();
-        emfProxies = new ConcurrentHashMap<Object, EntityManagerFactory>();
+        serviceProxies = new ConcurrentHashMap<Object, Collection<Closeable>>();
         managedJpaClasses = new ArrayList<Class<?>>();
 
         managedJpaClasses.add(EntityManagerFactory.class);
@@ -63,13 +68,23 @@ public class JpaBeanProcessor implements BeanProcessor {
     }
 
     public void afterDestroy(Object bean, String beanName) {
-        EmSupplierProxy emProxy = emProxies.get(bean);
-        if (emProxy != null) {
-            emProxy.close();
+        Collection<Closeable> proxies = serviceProxies.remove(bean);
+        if (proxies == null) {
+            return;
         }
-        EntityManagerFactory emfProxy = emfProxies.get(bean);
-        if (emfProxy != null) {
-            emfProxy.close();
+        for (Closeable closeable : proxies) {
+            safeClose(closeable);
+        }
+        proxies.clear();
+    }
+
+    private void safeClose(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage());
+            }
         }
     }
 
@@ -88,18 +103,19 @@ public class JpaBeanProcessor implements BeanProcessor {
 
     private void managePersistenceMembers(List<AccessibleObject> jpaAnnotated, Object bean, String beanName,
                                           BeanMetadata beanData) {
-
+        Collection<Closeable> beanProxies = getBeanProxies(bean);
+        BundleContext context = FrameworkUtil.getBundle(bean.getClass()).getBundleContext();
+        LOGGER.info("context bundle " + context.getBundle());
         JpaAnnotatedMemberHandler jpaAnnotatedMember = new JpaAnnotatedMemberHandler(bean);
         for (AccessibleObject member : jpaAnnotated) {
             member.setAccessible(true);
             PersistenceContext pcAnn = member.getAnnotation(PersistenceContext.class);
             if (pcAnn != null) {
-                LOGGER.debug("Adding jpa/jta interceptor bean {} with class {}", beanName, bean.getClass());
-
-                EmSupplierProxy supplierProxy = jpaAnnotatedMember.handleSupplierMember(member,
-                                                                                        pcAnn.unitName());
-
-                emProxies.put(bean, supplierProxy);
+                LOGGER.info("Adding jpa/jta interceptor bean {} with class {}", beanName, bean.getClass());
+                String filter = getFilter(EmSupplier.class, pcAnn.unitName());
+                EmSupplier supplierProxy = ServiceProxy.create(context, EmSupplier.class, filter);
+                jpaAnnotatedMember.handleSupplierMember(member, pcAnn.unitName(), supplierProxy);
+                beanProxies.add((Closeable)supplierProxy);
 
                 Interceptor interceptor = new JpaInterceptor(supplierProxy);
                 cdr.registerInterceptorWithComponent(beanData, interceptor);
@@ -107,16 +123,29 @@ public class JpaBeanProcessor implements BeanProcessor {
                 PersistenceUnit puAnn = member.getAnnotation(PersistenceUnit.class);
                 if (puAnn != null) {
                     LOGGER.debug("Adding emf proxy");
-
-                    EntityManagerFactory emfProxy = jpaAnnotatedMember
-                        .handleEmFactoryMethod(member, puAnn.unitName());
-                    emfProxies.put(bean, emfProxy);
+                    String filter = getFilter(EntityManagerFactory.class, puAnn.unitName());
+                    EntityManagerFactory emfProxy = ServiceProxy.create(context, EntityManagerFactory.class, filter);
+                    jpaAnnotatedMember.handleEmFactoryMethod(member, puAnn.unitName(), emfProxy);
+                    beanProxies.add((Closeable)emfProxy);
 
                 }
             }
         }
     }
 
+    private Collection<Closeable> getBeanProxies(Object bean) {
+        Collection<Closeable> beanProxies = serviceProxies.get(bean);
+        if (beanProxies == null) {
+            beanProxies = new ArrayList<>();
+            serviceProxies.put(bean, beanProxies);
+        }
+        return beanProxies;
+    }
+
+    private String getFilter(Class<?> clazz, String unitName) {
+        return String.format("(&(objectClass=%s)(%s=%s))", clazz.getName(), JPA_UNIT_NAME, unitName);
+    }
+    
     private List<AccessibleObject> getJpaAnnotatedMembers(Class<?> c) {
         final List<AccessibleObject> jpaAnnotated = new ArrayList<AccessibleObject>();
 

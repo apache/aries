@@ -47,7 +47,7 @@ public class CarServiceImpl extends AbstractCarServiceImpl {
 
     @Override
     public void deleteCar(String id) {
-        em.remove(getCar(id));
+        em.remove(em.find(Car.class, id));
     }
 
     public void setEm(EntityManager em) {

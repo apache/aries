@@ -52,7 +52,7 @@ public class JpaInterceptor implements Interceptor {
             }
             return weControlTx;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.warn("Exception from EmSupplier.preCall", e);
             throw new RuntimeException(e);
         }
     }

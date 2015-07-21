@@ -70,45 +70,48 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
 
     @Test
     public void testEmSupplier() throws Exception {
-        EmSupplier emSupplier = getService(EmSupplier.class, "(osgi.unit.name=xa-test-unit)");
-        emSupplier.preCall();
-        EntityManager em = emSupplier.get();
-        carLifecycleXA(ut, em);
+        EmSupplier emSupplier = getService(EmSupplier.class, "(osgi.unit.name=" + XA_TEST_UNIT + ")");
+        try {
+            emSupplier.preCall();
+            EntityManager em = emSupplier.get();
+            carLifecycleXA(ut, em);
 
-        Query countQuery = em.createQuery("SELECT Count(c) from Car c");
-        assertEquals(0l, countQuery.getSingleResult());
+            Query countQuery = em.createQuery("SELECT Count(c) from Car c");
+            assertEquals(0l, countQuery.getSingleResult());
 
-        ut.begin();
-        em.joinTransaction();
-        em.persist(createBlueCar());
-        em.persist(createGreenCar());
-        ut.commit();
+            ut.begin();
+            em.joinTransaction();
+            em.persist(createBlueCar());
+            em.persist(createGreenCar());
+            ut.commit();
 
-        assertEquals(2l, countQuery.getSingleResult());
+            assertEquals(2l, countQuery.getSingleResult());
 
-        TypedQuery<Car> carQuery = em.createQuery("Select c from Car c ORDER by c.engineSize", Car.class);
-        List<Car> list = carQuery.getResultList();
-        assertEquals(2, list.size());
+            TypedQuery<Car> carQuery = em.createQuery("Select c from Car c ORDER by c.engineSize", Car.class);
+            List<Car> list = carQuery.getResultList();
+            assertEquals(2, list.size());
 
-        assertBlueCar(list.get(0));
-        assertGreenCar(list.get(1));
+            assertBlueCar(list.get(0));
+            assertGreenCar(list.get(1));
 
-        ut.begin();
-        em.joinTransaction();
-        changeToRed(em.find(Car.class, BLUE_CAR_PLATE));
-        em.remove(em.find(Car.class, GREEN_CAR_PLATE));
-        em.persist(createBlackCar());
-        ut.commit();
+            ut.begin();
+            em.joinTransaction();
+            changeToRed(em.find(Car.class, BLUE_CAR_PLATE));
+            em.remove(em.find(Car.class, GREEN_CAR_PLATE));
+            em.persist(createBlackCar());
+            ut.commit();
 
-        assertEquals(2l, countQuery.getSingleResult());
-        list = carQuery.getResultList();
-        assertEquals(2, list.size());
+            assertEquals(2l, countQuery.getSingleResult());
+            list = carQuery.getResultList();
+            assertEquals(2, list.size());
 
-        assertBlackCar(list.get(0));
-        assertChangedBlueCar(list.get(1));
+            assertBlackCar(list.get(0));
+            assertChangedBlueCar(list.get(1));
 
-        cleanup(em);
-        emSupplier.postCall();
+            cleanup(em);
+        } finally {
+            emSupplier.postCall();
+        }
     }
 
     private void changeToRed(Car car) {

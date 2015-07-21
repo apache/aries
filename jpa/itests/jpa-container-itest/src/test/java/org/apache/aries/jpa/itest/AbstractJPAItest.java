@@ -76,7 +76,7 @@ public abstract class AbstractJPAItest {
 
     @Inject
     protected ConfigurationAdmin configAdmin;
-    private Configuration config;
+    private static Configuration config;
 
     /**
      * TODO check calls to this. Eventually switch to EmSupplier 
@@ -287,11 +287,7 @@ public abstract class AbstractJPAItest {
     }
 
     protected Option testBundleBlueprint() {
-        return composite(
-                         testBundle(),
-                         mvnBundle("org.apache.aries.jpa.itest", "org.apache.aries.jpa.container.itest.bundle.blueprint")
-            );
-
+        return mvnBundle("org.apache.aries.jpa.itest", "org.apache.aries.jpa.container.itest.bundle.blueprint");
     }
 
     protected MavenArtifactProvisionOption testBundleEclipseLink() {

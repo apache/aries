@@ -86,20 +86,4 @@
       <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
     </properties>
   </persistence-unit>
-  
-  <persistence-unit name="test_unit_blueprint" transaction-type="JTA">
-    <description>Test persistence unit for the Blueprint test</description>
-
-    <properties>
-      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver-pool-xa" />
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:BLUEPRINTTEST;create=true" />
-
-      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having to create a database -->
-      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
-      <property name="openjpa.jdbc.DBDictionary" value="derby" />
-      <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect" />
-      <property name="hibernate.hbm2ddl.auto" value="create-drop" />
-    </properties>
-  </persistence-unit>
 </persistence>

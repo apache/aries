@@ -58,9 +58,9 @@ public class JpaNsHandler implements NamespaceHandler {
     }
 
     private MutablePassThroughMetadata passThrough(ParserContext pc, Object obj) {
-        MutablePassThroughMetadata cdrMeta = pc.createMetadata(MutablePassThroughMetadata.class);
-        cdrMeta.setObject(obj);
-        return cdrMeta;
+        MutablePassThroughMetadata meta = pc.createMetadata(MutablePassThroughMetadata.class);
+        meta.setObject(obj);
+        return meta;
     }
 
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc) {
