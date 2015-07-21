@@ -63,17 +63,18 @@ import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
  *
  * @version $Rev$, $Date$
  */
+@SuppressWarnings("rawtypes")
 public class BeanRecipe extends AbstractRecipe {
-	
-	static class UnwrapperedBeanHolder {
-		final Object unwrapperedBean;
-		final BeanRecipe recipe;
-		
-		public UnwrapperedBeanHolder(Object unwrapperedBean, BeanRecipe recipe) {
-			this.unwrapperedBean = unwrapperedBean;
-			this.recipe = recipe;
-		}
-	}
+
+    static class UnwrapperedBeanHolder {
+        final Object unwrapperedBean;
+        final BeanRecipe recipe;
+
+        public UnwrapperedBeanHolder(Object unwrapperedBean, BeanRecipe recipe) {
+            this.unwrapperedBean = unwrapperedBean;
+            this.recipe = recipe;
+        }
+    }
 
     public class VoidableCallable implements Callable<Object>, Voidable {
 
@@ -274,7 +275,7 @@ public class BeanRecipe extends AbstractRecipe {
                 }
             }
         }
-
+        
         if (factory != null) {
             // look for instance method on factory object
             Object factoryObj = factory.create();
@@ -284,7 +285,7 @@ public class BeanRecipe extends AbstractRecipe {
                 try {
                     factoryObj = ((ReferenceRecipe.ServiceProxyWrapper) factoryObj).convert(new ReifiedType(Object.class));
                 } catch (Exception e) {
-                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType().getName(), getRealCause(e));
+                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
                 }
             } else if (factoryObj instanceof UnwrapperedBeanHolder) {
             	factoryObj = wrap((UnwrapperedBeanHolder) factoryObj, Object.class);
@@ -297,7 +298,7 @@ public class BeanRecipe extends AbstractRecipe {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
                     instance = invoke(match.getKey(), factoryObj, match.getValue().toArray());
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType().getName(), getRealCause(e));
+                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
                 throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass().getName() + " for arguments " + args + " when instanciating bean " + getName());
@@ -312,12 +313,12 @@ public class BeanRecipe extends AbstractRecipe {
                     Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
                     instance = invoke(match.getKey(), null, match.getValue().toArray());
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType().getName(), getRealCause(e));
+                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
-                throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getType().getName() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName());
             } else {
-                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getType().getName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
+                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
             }
         } else {
             if (getType() == null) {
@@ -330,16 +331,21 @@ public class BeanRecipe extends AbstractRecipe {
                     Map.Entry<Constructor, List<Object>> match = matches.entrySet().iterator().next();
                     instance = newInstance(match.getKey(), match.getValue().toArray());
                 } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getType().getName(), getRealCause(e));
+                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
                 }
             } else if (matches.size() == 0) {
-                throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getType().getName() + " for arguments " + args + " when instanciating bean " + getName());
+                throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName());
             } else {
-                throw new ComponentDefinitionException("Multiple matching constructors found on class " + getType().getName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
+                throw new ComponentDefinitionException("Multiple matching constructors found on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
             }
         }
         
         return instance;
+    }
+
+    private String getTypeName() {
+        Class<?> type = getType();
+        return type == null ? null : type.getName();
     }
 
     private Map<Method, List<Object>> findMatchingMethods(Class type, String name, boolean instance, List<Object> args, List<ReifiedType> types) {
