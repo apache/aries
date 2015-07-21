@@ -31,13 +31,13 @@ import org.apache.aries.jpa.supplier.EmSupplier;
 
 public class CarServiceWithMultiAnnotationImpl implements CarService {
 
-    @PersistenceContext(unitName = "test_unit_blueprint")
+    @PersistenceContext(unitName = "xa-test-unit")
     EntityManager em;
 
-    @PersistenceUnit(unitName = "test_unit_blueprint")
+    @PersistenceUnit(unitName = "xa-test-unit")
     EntityManagerFactory emf;
 
-    @PersistenceContext(unitName = "test_unit_blueprint")
+    @PersistenceContext(unitName = "xa-test-unit")
     EmSupplier ems;
 
     @Override

@@ -99,8 +99,8 @@ public class ManagedEMF implements Closeable, ManagedService {
     }
     
     public void close() {
-        closeEMF();
         closed = true;
+        closeEMF();
         if (configReg != null) {
             configReg.unregister();
         }
@@ -114,7 +114,7 @@ public class ManagedEMF implements Closeable, ManagedService {
         if (emf != null) {
             closeEMF();
         }
-        if (bundle.getState() == Bundle.UNINSTALLED || bundle.getState() == Bundle.INSTALLED) {
+        if (bundle.getState() == Bundle.UNINSTALLED || bundle.getState() == Bundle.INSTALLED || bundle.getState() == Bundle.STOPPING) {
             // Not sure why but during the TCK tests updated sometimes was called
             // for uninstalled bundles
             return;

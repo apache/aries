@@ -30,7 +30,7 @@ public class CarServiceWithSupplierImpl implements CarService {
 
     Collection<String> colours;
 
-    @PersistenceContext(unitName = "test_unit_blueprint")
+    @PersistenceContext(unitName = "xa-test-unit")
     EmSupplier em;
 
     @Override

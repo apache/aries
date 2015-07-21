@@ -18,26 +18,24 @@
  */
 package org.apache.aries.jpa.blueprint.supplier.impl;
 
-import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
-
+import java.io.Closeable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import javax.persistence.EntityManagerFactory;
+import java.lang.reflect.Proxy;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class EmfProxy implements InvocationHandler {
-    private ServiceTracker<EntityManagerFactory, EntityManagerFactory> tracker;
+public class ServiceProxy implements InvocationHandler {
+    @SuppressWarnings("rawtypes")
+    private ServiceTracker tracker;
 
-    public EmfProxy(BundleContext context, String unitName) {
-        String filterS = String.format("(&(objectClass=%s)(%s=%s))", EntityManagerFactory.class.getName(),
-                                       JPA_UNIT_NAME, unitName);
+    public ServiceProxy(BundleContext context, String filterS) {
         Filter filter;
         try {
             filter = FrameworkUtil.createFilter(filterS);
@@ -48,7 +46,7 @@ public class EmfProxy implements InvocationHandler {
         tracker.open();
     }
 
-    private EntityManagerFactory getEntityManagerFactory() {
+    private Object getService() {
         try {
             return tracker.waitForService(10000);
         } catch (InterruptedException e) {
@@ -63,11 +61,18 @@ public class EmfProxy implements InvocationHandler {
             return null;
         }
         try {
-            return method.invoke(getEntityManagerFactory(), args);
+            return method.invoke(getService(), args);
         } catch (IllegalArgumentException e) {
             throw new IllegalStateException(e);
         } catch (InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T create(BundleContext context, Class<T> iface, String filter) {
+    	ClassLoader cl = iface.getClassLoader();
+        Class<?>[] ifAr = new Class[] { Closeable.class, iface };
+        return  (T) Proxy.newProxyInstance(cl, ifAr, new ServiceProxy(context, filter));
     }
 }

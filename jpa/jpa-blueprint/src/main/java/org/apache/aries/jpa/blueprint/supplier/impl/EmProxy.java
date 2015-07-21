@@ -20,6 +20,7 @@ package org.apache.aries.jpa.blueprint.supplier.impl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import javax.persistence.EntityManager;
 
@@ -39,6 +40,14 @@ public class EmProxy implements InvocationHandler {
             throw new IllegalStateException("EntityManager not available. Make sure you run in an @Transactional method");
         }
         return method.invoke(em, args);
+    }
+
+    public static EntityManager create(final EmSupplier emSupplier) {
+        ClassLoader loader = EntityManager.class.getClassLoader();
+        Class<?>[] ifAr = {
+            EntityManager.class
+        };
+        return (EntityManager)Proxy.newProxyInstance(loader, ifAr, new EmProxy(emSupplier));
     }
 
 }

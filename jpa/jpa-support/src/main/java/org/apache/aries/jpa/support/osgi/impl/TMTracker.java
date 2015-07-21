@@ -29,6 +29,7 @@ import org.apache.aries.jpa.template.JpaTemplate;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -43,16 +44,19 @@ public class TMTracker extends ServiceTracker<TransactionManager, ServiceRegistr
     private final EmSupplier emSupplier;
     private final String unitName;
 
-    public TMTracker(BundleContext context, EmSupplier emSupplier, String unitName) {
+    private Coordinator coordinator;
+
+    public TMTracker(BundleContext context, EmSupplier emSupplier, String unitName, Coordinator coordinator) {
         super(context, TransactionManager.class, null);
         this.emSupplier = emSupplier;
         this.unitName = unitName;
+        this.coordinator = coordinator;
     }
 
     @Override
     public ServiceRegistration addingService(ServiceReference<TransactionManager> ref) {
         TransactionManager tm = context.getService(ref);
-        XAJpaTemplate txManager = new XAJpaTemplate(emSupplier, tm);
+        XAJpaTemplate txManager = new XAJpaTemplate(emSupplier, tm, coordinator);
         return context.registerService(JpaTemplate.class, txManager, xaTxManProps(unitName));
     }
 

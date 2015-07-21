@@ -27,6 +27,8 @@ import org.apache.aries.jpa.support.xa.impl.TransactionAttribute;
 import org.apache.aries.jpa.support.xa.impl.TransactionToken;
 import org.apache.aries.jpa.template.EmFunction;
 import org.apache.aries.jpa.template.TransactionType;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +36,12 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
     private static final Logger LOGGER = LoggerFactory.getLogger(XAJpaTemplate.class);
     protected EmSupplier emSupplier;
     protected TransactionManager tm;
+    private Coordinator coordinator;
 
-    public XAJpaTemplate(EmSupplier emSupplier, TransactionManager tm) {
+    public XAJpaTemplate(EmSupplier emSupplier, TransactionManager tm, Coordinator coordinator) {
         this.emSupplier = emSupplier;
         this.tm = tm;
+        this.coordinator = coordinator;
     }
 
     @Override
@@ -45,8 +49,10 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
         EntityManager em = null;
         TransactionToken tranToken = null;
         TransactionAttribute ta = TransactionAttribute.fromType(type);
+        Coordination coord = null;
         try {
             tranToken = ta.begin(tm);
+            coord = coordinator.begin(this.getClass().getName(), 0);
             emSupplier.preCall();
             em = emSupplier.get();
             em.joinTransaction();
@@ -58,7 +64,7 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
         } finally {
             try {
                 ta.finish(tm, tranToken);
-                emSupplier.postCall();
+                coord.end();
             } catch (Exception e) {
                 // We are throwing an exception, so we don't error it out
                 LOGGER.debug("exception.during.tx.finish", e);
