@@ -115,6 +115,11 @@ public class BlueprintTest extends AbstractCarJPAITest {
     }
 
     private void carLifecycle(CarService carService) {
+        Coordination coord = coordinator.peek();
+        Assert.assertNull("There should not be a coordination on this thread", coord);
+        if (carService.getCar(BLACK_CAR_PLATE) != null) {
+            carService.deleteCar(BLUE_CAR_PLATE);
+        }
         carService.addCar(createBlueCar());
         assertBlueCar(carService.getCar(BLUE_CAR_PLATE));
         carService.deleteCar(BLUE_CAR_PLATE);
