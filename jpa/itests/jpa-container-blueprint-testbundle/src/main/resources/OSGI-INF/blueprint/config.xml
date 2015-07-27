@@ -10,6 +10,7 @@
     ">
 
     <jpa:enable />
+    <tx:enable-annotations/>
 
     <service ref="carServiceEmf"
         interface="org.apache.aries.jpa.container.itest.entities.CarService">
@@ -33,6 +34,17 @@
     <bean id="carServiceEm"
         class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceImpl">
         <tx:transaction method="*" value="Required" />
+    </bean>
+
+    <service ref="carServiceEmJtaAnn"
+        interface="org.apache.aries.jpa.container.itest.entities.CarService">
+        <service-properties>
+            <entry key="type" value="emJtaAnn" />
+        </service-properties>
+    </service>
+
+    <bean id="carServiceEmJtaAnn"
+        class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceEmJtaAnn">
     </bean>
 
     <service ref="carServiceEmSupplier"
