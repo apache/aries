@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JpaBeanProcessor implements BeanProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JpaInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaBeanProcessor.class);
     public static final String JPA_PROCESSOR_BEAN_NAME = "org_apache_aries_jpan";
     private Map<Object, Collection<Closeable>> serviceProxies;
     private ComponentDefinitionRegistry cdr;
@@ -105,13 +105,12 @@ public class JpaBeanProcessor implements BeanProcessor {
                                           BeanMetadata beanData) {
         Collection<Closeable> beanProxies = getBeanProxies(bean);
         BundleContext context = FrameworkUtil.getBundle(bean.getClass()).getBundleContext();
-        LOGGER.info("context bundle " + context.getBundle());
         JpaAnnotatedMemberHandler jpaAnnotatedMember = new JpaAnnotatedMemberHandler(bean);
         for (AccessibleObject member : jpaAnnotated) {
             member.setAccessible(true);
             PersistenceContext pcAnn = member.getAnnotation(PersistenceContext.class);
             if (pcAnn != null) {
-                LOGGER.info("Adding jpa/jta interceptor bean {} with class {}", beanName, bean.getClass());
+                LOGGER.debug("Adding jpa interceptor for bean {} with class {}", beanName, bean.getClass());
                 String filter = getFilter(EmSupplier.class, pcAnn.unitName());
                 EmSupplier supplierProxy = ServiceProxy.create(context, EmSupplier.class, filter);
                 jpaAnnotatedMember.handleSupplierMember(member, pcAnn.unitName(), supplierProxy);
