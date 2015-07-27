@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.UserTransaction;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
+import org.junit.Assert;
 import org.osgi.framework.BundleException;
 
 public abstract class AbstractCarJPAITest extends AbstractJPAItest {
@@ -59,6 +60,7 @@ public abstract class AbstractCarJPAITest extends AbstractJPAItest {
     }
 
     protected void assertBlueCar(Car car) {
+        Assert.assertNotNull("Blue car not found (null)", car);
         assertEquals(5, car.getNumberOfSeats());
         assertEquals(1200, car.getEngineSize());
         assertEquals("blue", car.getColour());

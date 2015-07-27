@@ -15,9 +15,13 @@
  */
 package org.apache.aries.jpa.blueprint.aries.itest;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -27,6 +31,7 @@ import org.apache.aries.jpa.container.itest.entities.CarService;
 import org.apache.aries.jpa.itest.AbstractCarJPAITest;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
@@ -91,6 +96,12 @@ public class BlueprintTest extends AbstractCarJPAITest {
     public void testEmAddQuery() throws Exception {
         carLifecycle(getCarService("em"));
     }
+    
+    @Ignore
+    @Test
+    public void testEmJtaAnn() throws Exception {
+        carLifecycle(getCarService("emJtaAnn"));
+    }
 
     @Test
     public void testSupplierAddQuery() throws Exception {
@@ -98,14 +109,18 @@ public class BlueprintTest extends AbstractCarJPAITest {
     }
     
     @Test
-    public void testCoordinationLifecycle() throws InterruptedException {
+    public void testCoordinationLifecycle() throws InterruptedException, ExecutionException {
         Runnable carLifeCycle = getService(Runnable.class, "(type=carCoordinated)");
         ExecutorService exec = Executors.newFixedThreadPool(20);
+        List<Future<?>> futures = new ArrayList<>();
         for (int c=0; c<100; c++) {
-            exec.execute(carLifeCycle);
+            futures.add(exec.submit(carLifeCycle));
         }
         exec.shutdown();
         exec.awaitTermination(30, TimeUnit.SECONDS);
+        for (Future<?> future : futures) {
+            future.get();
+        }
     }
 
     private CarService getCarService(String type) {
@@ -121,6 +136,7 @@ public class BlueprintTest extends AbstractCarJPAITest {
     public Option[] configuration() {
         return new Option[] {
             baseOptions(), //
+            jta12Bundles(), //
             ariesJpa20(), //
             hibernate(), //
             derbyDSF(), //
