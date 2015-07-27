@@ -27,6 +27,8 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.exception.TransactionRollbackException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,7 @@ public class TxInterceptorImpl implements Interceptor {
         LoggerFactory.getLogger(TxInterceptorImpl.class);
 
     private TransactionManager tm;
+    private Coordinator coordinator;
     private TxComponentMetaDataHelper metaDataHelper;
 
     public int getRank()
@@ -56,7 +59,9 @@ public class TxInterceptorImpl implements Interceptor {
       if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("Calling begin for method {} with tx strategy {}.", m, txAttribute);
       }
-      return txAttribute.begin(tm);
+      TransactionToken token = txAttribute.begin(tm);
+      coordinator.begin("txInterceptor", 0);
+      return token;
     }
     
     public void postCallWithException(ComponentMetadata cm, Method m,
@@ -64,15 +69,15 @@ public class TxInterceptorImpl implements Interceptor {
      {
        if (!(preCallToken instanceof TransactionToken))
        {
-           return;
+         return;
        }
+       endCoordination();
        final TransactionToken token = (TransactionToken)preCallToken;
        try { 
          Transaction tran = token.getActiveTransaction();
          if (tran != null && isRollBackException(ex)) {
              tran.setRollbackOnly();
          }
-
          token.getTransactionAttribute().finish(tm, token);
        }
        catch (Exception e)
@@ -82,10 +87,6 @@ public class TxInterceptorImpl implements Interceptor {
        }
     }
 
-    private boolean isRollBackException(Throwable ex) {
-        return ex instanceof RuntimeException || ex instanceof Error;
-    }
-
     public void postCallWithReturn(ComponentMetadata cm, Method m,
         Object returnType, Object preCallToken) throws Exception
     {
@@ -93,7 +94,7 @@ public class TxInterceptorImpl implements Interceptor {
         if (preCallToken == null) {
             return;          
         }
-        
+        endCoordination();
       if (preCallToken instanceof TransactionToken)
       {
         final TransactionToken token = (TransactionToken)preCallToken;
@@ -112,10 +113,27 @@ public class TxInterceptorImpl implements Interceptor {
       }
     }
 
+    private void endCoordination() {
+        try {
+             Coordination coord = coordinator.pop();
+             coord.end();
+           } catch (Exception e) {
+             LOGGER.warn("Error ending coordination ", e);
+           }
+    }
+
+    private boolean isRollBackException(Throwable ex) {
+        return ex instanceof RuntimeException || ex instanceof Error;
+    }
 
     public final void setTransactionManager(TransactionManager manager)
     {
       tm = manager;
+    }
+    
+    public void setCoordinator(Coordinator coordinator)
+    {
+        this.coordinator = coordinator;
     }
 
     public final void setTxMetaDataHelper(TxComponentMetaDataHelper transactionEnhancer)
