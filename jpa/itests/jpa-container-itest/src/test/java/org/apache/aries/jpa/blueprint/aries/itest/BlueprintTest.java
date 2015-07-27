@@ -30,12 +30,9 @@ import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.container.itest.entities.CarService;
 import org.apache.aries.jpa.itest.AbstractCarJPAITest;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import org.osgi.framework.BundleException;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Coordinator;
 
@@ -43,15 +40,6 @@ public class BlueprintTest extends AbstractCarJPAITest {
     @Inject
     Coordinator coordinator;
     
-    @Before
-    public void deleteCars() throws BundleException {
-        resolveBundles();
-        CarService carService = getCarService("emf");
-        if (carService.getCar(BLUE_CAR_PLATE)!=null) {
-            carService.deleteCar(BLUE_CAR_PLATE);
-        }
-    }
-
     @Test
     public void testCoordination() {
         CarService carService = getCarService("em");
@@ -88,23 +76,22 @@ public class BlueprintTest extends AbstractCarJPAITest {
     }
 
     @Test
-    public void testEmfAddQuery() throws Exception {
+    public void testEmf() throws Exception {
         carLifecycle(getCarService("emf"));
     }
 
     @Test
-    public void testEmAddQuery() throws Exception {
+    public void testEm() throws Exception {
         carLifecycle(getCarService("em"));
     }
     
-    @Ignore
     @Test
     public void testEmJtaAnn() throws Exception {
         carLifecycle(getCarService("emJtaAnn"));
     }
 
     @Test
-    public void testSupplierAddQuery() throws Exception {
+    public void testSupplier() throws Exception {
         carLifecycle(getCarService("supplier"));
     }
     
@@ -130,6 +117,7 @@ public class BlueprintTest extends AbstractCarJPAITest {
     private void carLifecycle(CarService carService) {
         carService.addCar(createBlueCar());
         assertBlueCar(carService.getCar(BLUE_CAR_PLATE));
+        carService.deleteCar(BLUE_CAR_PLATE);
     }
 
     @Configuration

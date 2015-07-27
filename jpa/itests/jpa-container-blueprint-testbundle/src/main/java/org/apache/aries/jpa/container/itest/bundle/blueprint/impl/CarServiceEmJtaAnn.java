@@ -31,6 +31,7 @@ public class CarServiceEmJtaAnn implements CarService {
     @PersistenceContext(unitName = "xa-test-unit")
     protected EntityManager em;
 
+    @Transactional(Transactional.TxType.SUPPORTS)
     @Override
     public Car getCar(String id) {
         return em.find(Car.class, id);
@@ -42,6 +43,7 @@ public class CarServiceEmJtaAnn implements CarService {
         em.persist(car);
     }
 
+    @Transactional(Transactional.TxType.SUPPORTS)
     public Collection<Car> getCars() {
         return em.createQuery("select c from Car c", Car.class).getResultList();
     }
