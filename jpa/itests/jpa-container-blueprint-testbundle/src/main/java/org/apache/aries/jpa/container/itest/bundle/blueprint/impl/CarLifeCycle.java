@@ -62,6 +62,9 @@ public class CarLifeCycle implements Runnable {
      */
     private void readAndUpdate(String id) {
         Car car = carService.getCar(id);
+        if (car == null) {
+            throw new IllegalStateException("Expected a car with id " + id);
+        }
         car.setEngineSize(100);
         carService.updateCar(car);
     }
