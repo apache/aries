@@ -15,10 +15,15 @@
  */
 package org.apache.aries.jpa.container.itest.bundle.blueprint.impl;
 
+import java.util.Map;
 import java.util.UUID;
+
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.container.itest.entities.CarService;
+import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Coordinator;
 
 /**
@@ -29,26 +34,24 @@ public class CarLifeCycle implements Runnable {
     CarService carService;
     Coordinator coordinator;
     
+    @Transactional(Transactional.TxType.REQUIRED)
     @Override
     public void run() {
         Car car = new Car();
         UUID uuid = UUID.randomUUID();
         String id = "blue " + uuid.toString();
+        car.setEngineSize(1);
         car.setNumberPlate(id);
         carService.addCar(car);
-       
-//        try {
-//            readAndUpdate(id);
-//            throw new IllegalStateException("This should not work with an active coordination");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        
-        coordinator.begin("jpa", 0);
+        EntityManager em = getEmFromCoord();
+        if (!em.contains(car)) {
+            throw new IllegalStateException("Transaction should case EntityManager to be kept open");
+        }
         readAndUpdate(id);
-        coordinator.pop().end();
-        
+        Car car3 = carService.getCar(id);
+        if (car3.getEngineSize() != 100) {
+            throw new IllegalStateException("Engine size should have been changed to 100");
+        }
         carService.deleteCar(id);
         Car car2 = carService.getCar(id);
         if (car2 != null) {
@@ -56,19 +59,30 @@ public class CarLifeCycle implements Runnable {
         }
     }
 
-    /**
-     * These operations only work if the EntityManager stays open
-     * @param id 
-     */
-    private void readAndUpdate(String id) {
+    public void readAndUpdate(String id) {
         Car car = carService.getCar(id);
         if (car == null) {
             throw new IllegalStateException("Expected a car with id " + id);
         }
         car.setEngineSize(100);
-        carService.updateCar(car);
     }
     
+    @SuppressWarnings("unchecked")
+    private EntityManager getEmFromCoord() {
+        Coordination coord = coordinator.peek();
+        if (coord == null) {
+            throw new IllegalStateException("No coordination found");
+        }
+        while (coord != null) {
+            Map<String, EntityManager> emMap = (Map<String, EntityManager>)coord.getVariables().get(EntityManager.class);
+            if (emMap != null) {
+                return emMap.values().iterator().next();
+            }
+            coord = coord.getEnclosingCoordination();
+        }
+        throw new IllegalStateException("No EntityManager found in coordinations");
+    }
+
     public void setCarService(CarService carService) {
         this.carService = carService;
     }
