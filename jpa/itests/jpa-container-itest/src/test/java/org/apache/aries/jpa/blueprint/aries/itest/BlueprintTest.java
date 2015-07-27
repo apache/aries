@@ -42,7 +42,9 @@ public class BlueprintTest extends AbstractCarJPAITest {
     
     @Test
     public void testCoordination() {
+        assertNoCoordination();
         CarService carService = getCarService("em");
+        assertNoCars(carService);
         for (int c=0; c<100; c++) {
             System.out.println(c);
             Coordination coord = null;
@@ -97,7 +99,10 @@ public class BlueprintTest extends AbstractCarJPAITest {
     
     @Test
     public void testCoordinationLifecycle() throws InterruptedException, ExecutionException {
+        CarService carService = getCarService("em");
+        assertNoCars(carService);
         Runnable carLifeCycle = getService(Runnable.class, "(type=carCoordinated)");
+        carLifeCycle.run();
         ExecutorService exec = Executors.newFixedThreadPool(20);
         List<Future<?>> futures = new ArrayList<>();
         for (int c=0; c<100; c++) {
@@ -108,6 +113,7 @@ public class BlueprintTest extends AbstractCarJPAITest {
         for (Future<?> future : futures) {
             future.get();
         }
+        assertNoCars(carService);
     }
 
     private CarService getCarService(String type) {
@@ -115,14 +121,22 @@ public class BlueprintTest extends AbstractCarJPAITest {
     }
 
     private void carLifecycle(CarService carService) {
-        Coordination coord = coordinator.peek();
-        Assert.assertNull("There should not be a coordination on this thread", coord);
+        assertNoCoordination();
         if (carService.getCar(BLACK_CAR_PLATE) != null) {
             carService.deleteCar(BLUE_CAR_PLATE);
         }
         carService.addCar(createBlueCar());
         assertBlueCar(carService.getCar(BLUE_CAR_PLATE));
         carService.deleteCar(BLUE_CAR_PLATE);
+    }
+
+    private void assertNoCoordination() {
+        Coordination coord = coordinator.peek();
+        Assert.assertNull("There should not be a coordination on this thread", coord);
+    }
+    
+    private void assertNoCars(CarService carService) {
+        Assert.assertEquals("Invalid number of cars", 0, carService.getCars().size());
     }
 
     @Configuration

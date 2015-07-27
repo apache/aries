@@ -42,7 +42,7 @@ public class CarServiceImpl extends AbstractCarServiceImpl {
 
     @Override
     public void updateCar(Car car) {
-        em.persist(car);
+        em.merge(car);
     }
 
     @Override
