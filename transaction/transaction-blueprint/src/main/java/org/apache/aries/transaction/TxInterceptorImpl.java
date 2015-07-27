@@ -39,7 +39,7 @@ public class TxInterceptorImpl implements Interceptor {
 
     public int getRank()
     {
-      return 0;
+      return 1; // Higher rank than jpa interceptor to make sure transaction is started first
     }
 
     public Object preCall(ComponentMetadata cm, Method m,
@@ -53,37 +53,37 @@ public class TxInterceptorImpl implements Interceptor {
       }
       TransactionAttribute txAttribute = TransactionAttribute.fromValue(type);
       
-      if (LOGGER.isDebugEnabled())
-          LOGGER.debug("Method: " + m + ", has transaction strategy: " + txAttribute);
+      if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Calling begin for method {} with tx strategy {}.", m, txAttribute);
+      }
       return txAttribute.begin(tm);
     }
     
     public void postCallWithException(ComponentMetadata cm, Method m,
         Throwable ex, Object preCallToken)
      {
-       if (preCallToken instanceof TransactionToken)
+       if (!(preCallToken instanceof TransactionToken))
        {
-         final TransactionToken token = (TransactionToken)preCallToken;
-         try { 
-             Transaction tran = token.getActiveTransaction();
-             if (tran != null) {
-                 if (ex instanceof RuntimeException || ex instanceof Error) {
-                     tran.setRollbackOnly();
-                 } else {
-                     //declared exception, we don't set rollback
-                 }
-             }
-
-             token.getTransactionAttribute().finish(tm, token);
-         }
-         catch (Exception e)
-         {
-           // we do not throw the exception since there already is one, but we need to log it
-           LOGGER.warn(Constants.MESSAGES.getMessage("exception.during.tx.cleanup"), e);
-         }
-       } else {
-         // TODO: what now?
+           return;
        }
+       final TransactionToken token = (TransactionToken)preCallToken;
+       try { 
+         Transaction tran = token.getActiveTransaction();
+         if (tran != null && isRollBackException(ex)) {
+             tran.setRollbackOnly();
+         }
+
+         token.getTransactionAttribute().finish(tm, token);
+       }
+       catch (Exception e)
+       {
+         // we do not throw the exception since there already is one, but we need to log it
+         LOGGER.warn(Constants.MESSAGES.getMessage("exception.during.tx.cleanup"), e);
+       }
+    }
+
+    private boolean isRollBackException(Throwable ex) {
+        return ex instanceof RuntimeException || ex instanceof Error;
     }
 
     public void postCallWithReturn(ComponentMetadata cm, Method m,
