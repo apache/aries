@@ -39,10 +39,25 @@ public class TxInterceptorImpl implements Interceptor {
 
     public int getRank()
     {
-      // TODO Auto-generated method stub
       return 0;
     }
 
+    public Object preCall(ComponentMetadata cm, Method m,
+        Object... parameters) throws Throwable  {
+      final String methodName = m.getName();
+      final TransactionPropagationType type = metaDataHelper.getComponentMethodTxAttribute(cm, methodName);
+      
+      // attribute could be null here which means no transaction
+      if (type == null) {
+          return null;
+      }
+      TransactionAttribute txAttribute = TransactionAttribute.fromValue(type);
+      
+      if (LOGGER.isDebugEnabled())
+          LOGGER.debug("Method: " + m + ", has transaction strategy: " + txAttribute);
+      return txAttribute.begin(tm);
+    }
+    
     public void postCallWithException(ComponentMetadata cm, Method m,
         Throwable ex, Object preCallToken)
      {
@@ -97,22 +112,6 @@ public class TxInterceptorImpl implements Interceptor {
       }
     }
 
-    public Object preCall(ComponentMetadata cm, Method m,
-        Object... parameters) throws Throwable  {
-      final String methodName = m.getName();
-      final TransactionPropagationType type = metaDataHelper.getComponentMethodTxAttribute(cm, methodName);
-      
-      // attribute could be null here which means no transaction
-      if (type == null) {
-          return null;
-      }
-      TransactionAttribute txAttribute = TransactionAttribute.fromValue(type);
-      
-      if (LOGGER.isDebugEnabled())
-          LOGGER.debug("Method: " + m + ", has transaction strategy: " + txAttribute);
-
-      return txAttribute.begin(tm);
-    }
 
     public final void setTransactionManager(TransactionManager manager)
     {
