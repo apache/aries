@@ -85,6 +85,7 @@ public abstract class AbstractIntegrationTest {
                 mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
                 mavenBundle("org.apache.geronimo.specs", "geronimo-j2ee-connector_1.6_spec"),
                 mavenBundle("org.apache.geronimo.specs", "geronimo-validation_1.0_spec"),
+                mavenBundle("org.apache.felix", "org.apache.felix.coordinator"),
                 mavenBundle("org.apache.geronimo.components", "geronimo-connector"),
                 mavenBundle("org.apache.derby", "derby"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util"),

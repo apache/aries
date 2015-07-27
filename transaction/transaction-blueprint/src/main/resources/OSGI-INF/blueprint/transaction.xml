@@ -47,10 +47,13 @@
   
   <bean id="txinterceptor" class="org.apache.aries.transaction.TxInterceptorImpl">
     <property name="transactionManager" ref="tm"/>
+    <property name="coordinator" ref="coordinator"/>
     <property ref="txenhancer" name="txMetaDataHelper"/>
   </bean>
   
   <reference id="tm" interface="javax.transaction.TransactionManager"/>
+  <reference id="coordinator" interface="org.osgi.service.coordinator.Coordinator"/>
+  
   
   <service interface="org.osgi.service.blueprint.container.BlueprintListener">
   	<bean class="org.apache.aries.transaction.parsing.TxBlueprintListener">
