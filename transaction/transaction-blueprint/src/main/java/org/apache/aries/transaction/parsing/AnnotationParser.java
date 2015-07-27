@@ -30,12 +30,15 @@ import org.apache.aries.transaction.TxComponentMetaDataHelper;
 import org.apache.aries.transaction.annotations.Transaction;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adds the transactional interceptor if Transaction annotation is present
  * on bean class or superclasses.
  */
 public class AnnotationParser implements BeanProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationParser.class);
 
     private final ComponentDefinitionRegistry cdr;
     private final Interceptor interceptor;
@@ -67,6 +70,7 @@ public class AnnotationParser implements BeanProcessor {
         }
         
         if (shouldAssignInterceptor && !isInterceptorAssigned(beanData)) {
+            LOGGER.debug("Adding transaction interceptor to {} with class {}.", beanName, bean.getClass());
             cdr.registerInterceptorWithComponent(beanData, interceptor);
         }
 
