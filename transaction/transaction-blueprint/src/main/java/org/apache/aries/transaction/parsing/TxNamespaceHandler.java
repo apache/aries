@@ -18,6 +18,7 @@
  */
 package org.apache.aries.transaction.parsing;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -76,39 +77,28 @@ public class TxNamespaceHandler implements NamespaceHandler {
 
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
     {
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("parser asked to parse .. " + elt);
+        LOGGER.debug("parser asked to parse .. " + elt);
 
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
         if ("transaction".equals(elt.getLocalName())) {
-            if (LOGGER.isDebugEnabled())
-                LOGGER.debug("parser adding interceptor for " + elt);
-
-            ComponentMetadata meta = cdr.getComponentDefinition("blueprintBundle");
-            Bundle blueprintBundle = null;
-            if (meta instanceof PassThroughMetadata) {
-                blueprintBundle = (Bundle) ((PassThroughMetadata) meta).getObject();
-            }
+            LOGGER.debug("parser adding interceptor for " + elt);
+            Bundle blueprintBundle = getBlueprintBundle(cdr);
 
             // don't register components if we have no bundle (= dry parse)
             if (blueprintBundle != null) {
               registered.put(cdr, blueprintBundle);
-              TransactionPropagationType value = getType(elt.getAttribute(VALUE));
+              TransactionPropagationType txType = getType(elt.getAttribute(VALUE));
               String method = elt.getAttribute(METHOD);
               if (cm == null) {
-                  // if the enclosing component is null, then we assume this is the top element                 
+                  // if the enclosing component is null, then we assume this is the top element
                   
                   String bean = elt.getAttribute(BEAN);
                   registerComponentsWithInterceptor(cdr, bean);
-  
-                  metaDataHelper.populateBundleWideTransactionData(pc.getComponentDefinitionRegistry(), 
-                          value, method, bean);
+                  metaDataHelper.populateBundleWideTransactionData(cdr, txType, method, bean);
               } else {
                   cdr.registerInterceptorWithComponent(cm, interceptor);
-                  if (LOGGER.isDebugEnabled())
-                      LOGGER.debug("parser setting comp trans data for " + value + "  " + method);
-      
-                  metaDataHelper.setComponentTransactionData(cdr, cm, value, method);
+                  LOGGER.debug("parser setting comp trans data for " + txType + "  " + method);
+                  metaDataHelper.setComponentTransactionData(cdr, cm, txType, method);
               }
             }
         } else if ("enable-annotations".equals(elt.getLocalName())) {
@@ -116,30 +106,43 @@ public class TxNamespaceHandler implements NamespaceHandler {
             if(n == null || Boolean.parseBoolean(n.getNodeValue())) {
                 //We need to register a bean processor to add annotation-based config
                 if (!cdr.containsComponentDefinition(ANNOTATION_PARSER_BEAN_NAME)) {
-                    MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
-                    meta.setId(ANNOTATION_PARSER_BEAN_NAME);
-                    meta.setRuntimeClass(AnnotationParser.class);
-                    meta.setProcessor(true);
-
-                	MutablePassThroughMetadata cdrMeta = pc.createMetadata(MutablePassThroughMetadata.class);
-                    cdrMeta.setObject(cdr);
-                    meta.addArgument(cdrMeta, ComponentDefinitionRegistry.class.getName(), 0);
-
-                    MutablePassThroughMetadata interceptorMeta = pc.createMetadata(MutablePassThroughMetadata.class);
-                    interceptorMeta.setObject(interceptor);
-                    meta.addArgument(interceptorMeta, Interceptor.class.getName(), 1);
-
-                    MutablePassThroughMetadata helperMeta = pc.createMetadata(MutablePassThroughMetadata.class);
-                    helperMeta.setObject(metaDataHelper);
-                    meta.addArgument(helperMeta, TxComponentMetaDataHelper.class.getName(), 2);
-
+                    LOGGER.debug("Enabling annotation based transactions");
+                    MutableBeanMetadata meta = createAnnotationParserBean(pc, cdr);
                     cdr.registerComponentDefinition(meta);
                 }
             }
         }
         
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("parser done with " + elt);
+        LOGGER.debug("parser done with " + elt);
+    }
+
+    private Bundle getBlueprintBundle(ComponentDefinitionRegistry cdr) {
+        ComponentMetadata meta = cdr.getComponentDefinition("blueprintBundle");
+        Bundle blueprintBundle = null;
+        if (meta instanceof PassThroughMetadata) {
+            blueprintBundle = (Bundle) ((PassThroughMetadata) meta).getObject();
+        }
+        return blueprintBundle;
+    }
+
+    private MutableBeanMetadata createAnnotationParserBean(ParserContext pc, ComponentDefinitionRegistry cdr) {
+        MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
+        meta.setId(ANNOTATION_PARSER_BEAN_NAME);
+        meta.setRuntimeClass(AnnotationParser.class);
+        meta.setProcessor(true);
+
+        MutablePassThroughMetadata cdrMeta = pc.createMetadata(MutablePassThroughMetadata.class);
+        cdrMeta.setObject(cdr);
+        meta.addArgument(cdrMeta, ComponentDefinitionRegistry.class.getName(), 0);
+
+        MutablePassThroughMetadata interceptorMeta = pc.createMetadata(MutablePassThroughMetadata.class);
+        interceptorMeta.setObject(interceptor);
+        meta.addArgument(interceptorMeta, Interceptor.class.getName(), 1);
+
+        MutablePassThroughMetadata helperMeta = pc.createMetadata(MutablePassThroughMetadata.class);
+        helperMeta.setObject(metaDataHelper);
+        meta.addArgument(helperMeta, TxComponentMetaDataHelper.class.getName(), 2);
+        return meta;
     }
 
     private TransactionPropagationType getType(String typeSt) {
@@ -174,30 +177,30 @@ public class TxNamespaceHandler implements NamespaceHandler {
 
     public final void setBlueprintContainer(BlueprintContainer container) 
     {
-        String id = DEFAULT_INTERCEPTOR_ID;
-        InputStream is = TxNamespaceHandler.class.getResourceAsStream("/provider.properties");
-        
-        if (is != null) {
-            try {
-                Properties props = new Properties();
-                props.load(is);
-                if (props.containsKey(INTERCEPTOR_BLUEPRINT_ID)) {
-                    id = props.getProperty(INTERCEPTOR_BLUEPRINT_ID);
-                }
-            } catch (IOException e) {
-                LOGGER.error(Constants.MESSAGES.getMessage("unable.to.load.provider.props"), e);
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException e2) {
-                    LOGGER.error(Constants.MESSAGES.getMessage("exception.closing.stream"), e2);
-                }
-            }
-        }
-        
+        String id = getTxInterceptorId();
         this.interceptor = (Interceptor) container.getComponentInstance(id);
     }
-    
+
+    private String getTxInterceptorId() {
+        String id = DEFAULT_INTERCEPTOR_ID;
+        InputStream is = TxNamespaceHandler.class.getResourceAsStream("/provider.properties");
+        if (is == null) {
+            return id;
+        }
+        try {
+            Properties props = new Properties();
+            props.load(is);
+            if (props.containsKey(INTERCEPTOR_BLUEPRINT_ID)) {
+                id = props.getProperty(INTERCEPTOR_BLUEPRINT_ID);
+            }
+        } catch (IOException e) {
+            LOGGER.error(Constants.MESSAGES.getMessage("unable.to.load.provider.props"), e);
+        } finally {
+            safeClose(is);
+        }
+        return id;
+    }
+
     @SuppressWarnings("rawtypes")
     public Set<Class> getManagedClasses()
     {
@@ -219,7 +222,7 @@ public class TxNamespaceHandler implements NamespaceHandler {
         }
     }
     
-    private void registerComponentsWithInterceptor(ComponentDefinitionRegistry cdr, String bean) {        
+    private void registerComponentsWithInterceptor(ComponentDefinitionRegistry cdr, String bean) {
         Set<String> ids = cdr.getComponentDefinitionNames();
 
         if (bean == null || bean.length() == 0) {
@@ -243,5 +246,16 @@ public class TxNamespaceHandler implements NamespaceHandler {
               }
             }
         }
+    }
+    
+    private void safeClose(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException e) {
+                // Ignore
+            }
+        }
+        
     }
 }
