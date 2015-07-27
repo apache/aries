@@ -66,7 +66,7 @@
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.manager</artifactId>
             <scope>test</scope>
-            <version>1.1.2-SNAPSHOT</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
