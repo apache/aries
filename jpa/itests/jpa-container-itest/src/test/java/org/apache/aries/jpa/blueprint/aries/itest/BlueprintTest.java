@@ -47,22 +47,21 @@ public class BlueprintTest extends AbstractCarJPAITest {
         assertNoCars(carService);
         for (int c=0; c<100; c++) {
             System.out.println(c);
-            Coordination coord = null;
             try {
-                coord = coordinator.begin("testCoordination", 0);
+                coordinator.begin("testCoordination", 0);
                 carService.addCar(createBlueCar());
                 Collection<Car> cars = carService.getCars();
                 carService.updateCar(cars.iterator().next());
             } finally {
-                coord.end();
+                coordinator.pop().end();
             }
             // TODO For some reason I need a second coordination here
             try {
-                coord = coordinator.begin("testCoordination", 0);
+                coordinator.begin("testCoordination", 0);
                 carService.deleteCar(BLUE_CAR_PLATE);
                 Assert.assertEquals(0, carService.getCars().size());
             } finally {
-                coord.end();
+                coordinator.pop().end();
             }
         }
     }
