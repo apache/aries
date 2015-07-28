@@ -55,14 +55,8 @@ public class BlueprintTest extends AbstractCarJPAITest {
             } finally {
                 coordinator.pop().end();
             }
-            // TODO For some reason I need a second coordination here
-            try {
-                coordinator.begin("testCoordination", 0);
-                carService.deleteCar(BLUE_CAR_PLATE);
-                Assert.assertEquals(0, carService.getCars().size());
-            } finally {
-                coordinator.pop().end();
-            }
+            carService.deleteCar(BLUE_CAR_PLATE);
+            Assert.assertEquals(0, carService.getCars().size());
         }
     }
     
