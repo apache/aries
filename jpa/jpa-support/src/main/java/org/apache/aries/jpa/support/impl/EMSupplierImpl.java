@@ -120,6 +120,14 @@ public class EMSupplierImpl implements EmSupplier {
             return getEmMap(coordination).get(unitName);
         }
     }
+
+    private EntityManager removeEm(Coordination coordination) {
+        Map<Class<?>, Object> vars = coordination.getVariables();
+        synchronized (vars) {
+            return getEmMap(coordination).remove(unitName);
+        }
+    }
+
     
     @SuppressWarnings("unchecked")
     private Map<String, EntityManager> getEmMap(Coordination coordination) {
@@ -201,9 +209,10 @@ public class EMSupplierImpl implements EmSupplier {
         @Override
         public void ended(Coordination coordination) throws Exception {
             LOG.debug("Closing EntityManager for persistence unit " + unitName + " as coordination " + coordination.getName() + " ended.");
-            EntityManager em = getEm(coordination);
+            EntityManager em = removeEm(coordination);
             emSet.remove(em);
             em.close();
+            
             if (shutdown.get()) {
                 emsToShutDown.countDown();
             }
