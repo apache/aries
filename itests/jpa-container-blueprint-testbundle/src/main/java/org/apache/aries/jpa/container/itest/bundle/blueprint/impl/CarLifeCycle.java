@@ -45,7 +45,7 @@ public class CarLifeCycle implements Runnable {
         carService.addCar(car);
         EntityManager em = getEmFromCoord();
         if (!em.contains(car)) {
-            throw new IllegalStateException("Transaction should case EntityManager to be kept open");
+            throw new IllegalStateException("Transaction should cause EntityManager to be kept open");
         }
         readAndUpdate(id);
         Car car3 = carService.getCar(id);
@@ -55,7 +55,7 @@ public class CarLifeCycle implements Runnable {
         carService.deleteCar(id);
         Car car2 = carService.getCar(id);
         if (car2 != null) {
-            throw new RuntimeException("Car witgh id " + id + " should be deleted");
+            throw new RuntimeException("Car with id " + id + " should be deleted");
         }
     }
 
