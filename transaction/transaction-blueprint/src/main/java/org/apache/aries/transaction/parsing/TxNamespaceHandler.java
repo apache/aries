@@ -77,11 +77,10 @@ public class TxNamespaceHandler implements NamespaceHandler {
 
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
     {
-        LOGGER.debug("parser asked to parse .. " + elt);
+        LOGGER.debug("parser asked to parse element {} ", elt);
 
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
         if ("transaction".equals(elt.getLocalName())) {
-            LOGGER.debug("parser adding interceptor for " + elt);
             Bundle blueprintBundle = getBlueprintBundle(cdr);
 
             // don't register components if we have no bundle (= dry parse)
@@ -89,15 +88,14 @@ public class TxNamespaceHandler implements NamespaceHandler {
               registered.put(cdr, blueprintBundle);
               TransactionPropagationType txType = getType(elt.getAttribute(VALUE));
               String method = elt.getAttribute(METHOD);
+              String beanAttr = elt.getAttribute(BEAN);
               if (cm == null) {
                   // if the enclosing component is null, then we assume this is the top element
-                  
-                  String bean = elt.getAttribute(BEAN);
-                  registerComponentsWithInterceptor(cdr, bean);
-                  metaDataHelper.populateBundleWideTransactionData(cdr, txType, method, bean);
+                  registerComponentsWithInterceptor(cdr, beanAttr);
+                  metaDataHelper.populateBundleWideTransactionData(cdr, txType, method, beanAttr);
               } else {
                   cdr.registerInterceptorWithComponent(cm, interceptor);
-                  LOGGER.debug("parser setting comp trans data for " + txType + "  " + method);
+                  
                   metaDataHelper.setComponentTransactionData(cdr, cm, txType, method);
               }
             }
@@ -112,8 +110,6 @@ public class TxNamespaceHandler implements NamespaceHandler {
                 }
             }
         }
-        
-        LOGGER.debug("parser done with " + elt);
     }
 
     private Bundle getBlueprintBundle(ComponentDefinitionRegistry cdr) {

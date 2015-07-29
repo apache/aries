@@ -70,7 +70,7 @@ public class AnnotationParser implements BeanProcessor {
         }
         
         if (shouldAssignInterceptor && !isInterceptorAssigned(beanData)) {
-            LOGGER.debug("Adding transaction interceptor to {} with class {}.", beanName, bean.getClass());
+            LOGGER.debug("Adding transaction interceptor to bean {} with class {}.", beanName, bean.getClass());
             cdr.registerInterceptorWithComponent(beanData, interceptor);
         }
 
