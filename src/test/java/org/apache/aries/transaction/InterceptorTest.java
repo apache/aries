@@ -50,7 +50,7 @@ public class InterceptorTest {
         
         c.replay();
         TransactionToken tt = new TransactionToken(tran, null, TransactionAttribute.REQUIRED);
-        sut.postCallWithException(null, null, th, tt);
+        sut.postCallWithException(null, this.getClass().getMethods()[0], th, tt);
         c.verify();
     }
     

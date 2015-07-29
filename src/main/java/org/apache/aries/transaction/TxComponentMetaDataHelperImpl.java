@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper {
 
-    private static final Logger LOGGER =
-        LoggerFactory.getLogger(TxComponentMetaDataHelperImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TxComponentMetaDataHelperImpl.class);
 
     private static class TranData
     {
@@ -178,8 +177,9 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
         }
     }
     
-    public synchronized void setComponentTransactionData(ComponentDefinitionRegistry registry, ComponentMetadata component, TransactionPropagationType value, String method)
+    public synchronized void setComponentTransactionData(ComponentDefinitionRegistry registry, ComponentMetadata component, TransactionPropagationType txType, String method)
     {
+      LOGGER.debug("Parser setting comp trans data for bean {}, method {} to {} ", component.getId(), method, txType);
       TranData td = data.get(component);
           
       if (td == null) {
@@ -193,76 +193,56 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
       if (method == null || method.length() == 0) {
     	  method = "*";
       }
-      if(value == null) {
-        value = TransactionPropagationType.Required;
+      if(txType == null) {
+          txType = TransactionPropagationType.Required;
       }
       
       String[] names = method.split("[, \t]");
       
       for (int i = 0; i < names.length; i++) {
           Pattern pattern = Pattern.compile(names[i].replaceAll("\\*", ".*"));
-          td.add(pattern, value);
+          td.add(pattern, txType);
       }
     }
 
-    public TransactionPropagationType getComponentMethodTxAttribute(ComponentMetadata component, String methodName)
-    {
-    	if (LOGGER.isDebugEnabled()) {
-    	    LOGGER.debug("Getting the txAttribute for the component {0} and method {1}", component.getId(), methodName);
-    	}
+    public TransactionPropagationType getComponentMethodTxAttribute(ComponentMetadata component, String methodName) {
         TranData td = data.get(component);
         TransactionPropagationType result = null;
 
         if (td != null) {
-            // bean level transaction always overwrite bundle wide transaction 
+            // bean level transaction always overwrite bundle wide transaction
             result = td.getAttribute(methodName);
-        } 
-        
-        if (result != null) {
-        	if (LOGGER.isDebugEnabled()) {
-        	    LOGGER.debug("Return the txAttribute {0} for the component and method", result);
-        	}
-            return result;
-        } else {
-            /* check the bundle wide transaction configuration in the following priority order from (high to low)
-             * 1. top level tx w/ method + bean
-             * 2. top level tx w/ bean
-             * 3. top level tx w/ method
-             * 4. top level tx w/ no other attribute
+        }
+
+        if (result == null) {
+            /*
+             * check the bundle wide transaction configuration in the following priority order from (high to
+             * low) 1. top level tx w/ method + bean 2. top level tx w/ bean 3. top level tx w/ method 4. top
+             * level tx w/ no other attribute
              */
-            //result = calculateBundleWideTransaction(component, methodName);
+            // result = calculateBundleWideTransaction(component, methodName);
             ComponentDefinitionRegistry cdr = getComponentDefinitionRegistry(component);
             if (cdr == null) {
                 // no bundle wide transaction configuration avail
-            	result = null;
+                result = null;
             } else {
                 List<BundleWideTxData> bundleData = bundleTransactionMap.get(cdr);
                 result = BundleWideTxDataUtil.getAttribute(component.getId(), methodName, bundleData);
             }
         }
-
-    	if (LOGGER.isDebugEnabled()) {
-    	    LOGGER.debug("Return the txAttribute {0} for the component and method", result);
-    	}
+        LOGGER.debug("Component {}.{} is txType {}.", component.getId(), methodName, result);
         return result;
     }
     
-    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, TransactionPropagationType value,
+    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, TransactionPropagationType txType,
             String method, String bean) {
-    	if (LOGGER.isDebugEnabled()) {
-    	    LOGGER.debug("Start populating bundle wide transaction data value {0} method {1} bean {2} per component definition registry", new Object[]{value, method, bean});
-    	}
-
-        BundleWideTxData bundleWideTxData = new BundleWideTxData(value, method, bean);
+        LOGGER.debug("Setting bundle wide tx data for bean {}, method {} to {}", bean, method, txType);
+        BundleWideTxData bundleWideTxData = new BundleWideTxData(txType, method, bean);
         List<BundleWideTxData> bundleData = bundleTransactionMap.get(cdr);
         if (bundleData == null) {
             bundleData = new ArrayList<BundleWideTxData>();
             bundleData.add(bundleWideTxData);
-            if (LOGGER.isDebugEnabled()) {
-        	    LOGGER.debug("Adding component definition registry and bundleData to the bundleTransactionMap", new Object[]{cdr, bundleData});
-            }
             bundleTransactionMap.put(cdr, bundleData);
-
         } else {
             bundleData.add(bundleWideTxData);
         }
