@@ -70,8 +70,6 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
 
     @Test
     public void testEmSupplier() throws Exception {
-        // This test seems to fail sometimes on the build server. Checking if it is a timing issue at startup
-        Thread.sleep(2000);
         EmSupplier emSupplier = getService(EmSupplier.class, "(osgi.unit.name=" + XA_TEST_UNIT + ")");
         try {
             emSupplier.preCall();

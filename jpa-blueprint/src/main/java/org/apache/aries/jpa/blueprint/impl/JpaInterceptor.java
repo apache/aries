@@ -44,6 +44,7 @@ public class JpaInterceptor implements Interceptor {
 
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
         try {
+            LOG.debug("PreCall for bean {}, method {}", cm.getId(), m.getName());
             emSupplier.preCall();
             EntityManager em = emSupplier.get();
             boolean weControlTx = isResourceLocal(em) && !em.getTransaction().isActive();
@@ -58,6 +59,7 @@ public class JpaInterceptor implements Interceptor {
     }
 
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
+        LOG.debug("PostCallWithException for bean {}, method {}", cm.getId(), m.getName(), ex);
         boolean weControlTx = preCallToken == null ? false : (Boolean)preCallToken;
         if (weControlTx) {
             safeRollback(emSupplier.get(), ex);
@@ -71,6 +73,7 @@ public class JpaInterceptor implements Interceptor {
 
     public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken)
         throws Exception {
+        LOG.debug("PostCallWithReturn for bean {}, method {}", cm.getId(), m.getName());
         boolean weControlTx = preCallToken == null ? false : (Boolean)preCallToken;
         if (weControlTx) {
             emSupplier.get().getTransaction().commit();

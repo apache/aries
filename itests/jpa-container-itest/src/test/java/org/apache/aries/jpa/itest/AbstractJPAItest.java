@@ -306,8 +306,9 @@ public abstract class AbstractJPAItest {
     }
 
     @Before
-    public void createConfigForDataSource() throws IOException {
+    public void createConfigForDataSource() throws Exception {
         if (config == null) {
+            createConfigForLogging();
             config = configAdmin.createFactoryConfiguration("org.ops4j.datasource", null);
             Dictionary<String, String> props = new Hashtable<String, String>();
             props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.apache.derby.jdbc.EmbeddedDriver-pool-xa");
@@ -316,6 +317,19 @@ public abstract class AbstractJPAItest {
             config.update(props);
             LOG.info("Created DataSource config testds");
         }
+    }
+    
+    public void createConfigForLogging() throws IOException {
+        Configuration logConfig = configAdmin.getConfiguration("org.ops4j.pax.logging", null);
+        Dictionary<String, String> props = new Hashtable<String, String>();
+        props.put("log4j.rootLogger", "INFO, stdout");
+        props.put("log4j.logger.org.apache.aries.transaction", "DEBUG");
+        props.put("log4j.logger.org.apache.aries.transaction.parsing", "DEBUG");
+        props.put("log4j.logger.org.apache.aries.jpa.blueprint.impl", "DEBUG");
+        props.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
+        props.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
+        props.put("log4j.appender.stdout.layout.ConversionPattern", "%d{ISO8601} | %-5.5p | %-16.16t | %c | %m%n");
+        logConfig.update(props);
     }
 
 }
