@@ -39,6 +39,8 @@ public class TxInterceptorImpl implements Interceptor {
     private Coordinator coordinator;
     private TxComponentMetaDataHelper metaDataHelper;
 
+    // Workaround for bug in coordinator 1.0.0 where coordinations are considered orhpaned sometimes
+    private ThreadLocal<Coordination> localCoordination = new ThreadLocal<Coordination>();
 
     public int getRank() {
         return 1; // Higher rank than jpa interceptor to make sure transaction is started first
@@ -56,7 +58,7 @@ public class TxInterceptorImpl implements Interceptor {
 
         LOGGER.debug("PreCall for bean {}, method {} with tx strategy {}.", getCmId(cm), m.getName(), txAttribute);
         TransactionToken token = txAttribute.begin(tm);
-        coordinator.begin("txInterceptor", 0);
+        localCoordination.set(coordinator.begin("txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName() , 0));
         return token;
     }
 
@@ -109,6 +111,7 @@ public class TxInterceptorImpl implements Interceptor {
         try {
             Coordination coord = coordinator.pop();
             coord.end();
+            localCoordination.set(null);
         } catch (Exception e) {
             LOGGER.warn("Error ending coordination ", e);
         }
