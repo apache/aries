@@ -27,7 +27,6 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.exception.TransactionRollbackException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +37,6 @@ public class TxInterceptorImpl implements Interceptor {
     private TransactionManager tm;
     private Coordinator coordinator;
     private TxComponentMetaDataHelper metaDataHelper;
-
-    // Workaround for bug in coordinator 1.0.0 where coordinations are considered orhpaned sometimes
-    private ThreadLocal<Coordination> localCoordination = new ThreadLocal<Coordination>();
 
     public int getRank() {
         return 1; // Higher rank than jpa interceptor to make sure transaction is started first
@@ -58,7 +54,7 @@ public class TxInterceptorImpl implements Interceptor {
 
         LOGGER.debug("PreCall for bean {}, method {} with tx strategy {}.", getCmId(cm), m.getName(), txAttribute);
         TransactionToken token = txAttribute.begin(tm);
-        localCoordination.set(coordinator.begin("txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName() , 0));
+        coordinator.begin("txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName() , 0);
         return token;
     }
 
@@ -109,9 +105,7 @@ public class TxInterceptorImpl implements Interceptor {
 
     private void endCoordination() {
         try {
-            Coordination coord = coordinator.pop();
-            coord.end();
-            localCoordination.set(null);
+            coordinator.pop().end();
         } catch (Exception e) {
             LOGGER.warn("Error ending coordination ", e);
         }
