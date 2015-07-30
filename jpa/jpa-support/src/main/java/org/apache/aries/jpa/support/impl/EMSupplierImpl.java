@@ -57,7 +57,6 @@ public class EMSupplierImpl implements EmSupplier {
     private CountDownLatch emsToShutDown;
     private Coordinator coordinator;
     private String unitName;
-    private ThreadLocal<Coordination> localCoordination = new ThreadLocal<>();
 
     public EMSupplierImpl(String unitName, final EntityManagerFactory emf, Coordinator coordinator) {
         this.unitName = unitName;
@@ -142,7 +141,7 @@ public class EMSupplierImpl implements EmSupplier {
 
     @Override
     public void preCall() {
-        localCoordination.set(coordinator.begin("jpa." + unitName, 0));
+        coordinator.begin("jpa." + unitName, 0);
     }
 
     @Override
@@ -150,7 +149,6 @@ public class EMSupplierImpl implements EmSupplier {
         try {
             Coordination coord = coordinator.pop();
             coord.end();
-            localCoordination.set(null);
         } catch (Throwable t) {
             LOG.warn("Error ending coord", t);
         }
