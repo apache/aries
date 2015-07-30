@@ -49,9 +49,9 @@
             <version>5.0.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.coordinator</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.eclipse.equinox</groupId>
+            <artifactId>org.eclipse.equinox.coordinator</artifactId>
+            <version>1.1.0.v20120522-1841</version>
             <scope>test</scope>
         </dependency>
         <dependency>

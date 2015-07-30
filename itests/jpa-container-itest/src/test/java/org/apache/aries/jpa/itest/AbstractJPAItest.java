@@ -186,7 +186,7 @@ public abstract class AbstractJPAItest {
 
                              mvnBundle("org.ow2.asm", "asm-all"),
                              mvnBundle("org.apache.felix", "org.apache.felix.configadmin"),
-                             mvnBundle("org.apache.felix", "org.apache.felix.coordinator"),
+                             mvnBundle("org.eclipse.equinox", "org.eclipse.equinox.coordinator"),
 
                              mvnBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
                              mvnBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
