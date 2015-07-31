@@ -68,18 +68,15 @@ public class AuthorizationInterceptor implements Interceptor {
         }
         Set<Principal> principals = subject.getPrincipals();
 
-
         for (Principal principal : principals) {
             if (roles.contains(principal.getName())) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Granting access to Method: " + m + " for " + principal);
-                }
+                LOGGER.debug("Granting access to Method: {} for {}.", m, principal);
                 return null;
             }
         }
-
-        throw new AccessControlException("Method call " + m.getDeclaringClass() + "." + m.getName() + " denied. Roles allowed are " + roles + ". " 
-                                         + "Your principals are " + getNames(principals) +".");
+        String msg = String.format("Method call %s.%s denied. Roles allowed are %s. Your principals are %s.",
+                                   m.getDeclaringClass(), m.getName(), roles, getNames(principals));
+        throw new AccessControlException(msg);
     }
 
     private String getNames(Set<Principal> principals) {

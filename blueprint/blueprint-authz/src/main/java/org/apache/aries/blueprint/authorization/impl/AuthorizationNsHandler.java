@@ -39,16 +39,24 @@ public class AuthorizationNsHandler implements NamespaceHandler {
         
         if ("enable".equals(elt.getLocalName())) {
             if (!cdr.containsComponentDefinition(AuthorizationBeanProcessor.AUTH_PROCESSOR_BEAN_NAME)) {
-                MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
-                meta.setId(AuthorizationBeanProcessor.AUTH_PROCESSOR_BEAN_NAME);
-                meta.setRuntimeClass(AuthorizationBeanProcessor.class);
-                meta.setProcessor(true);
-                MutablePassThroughMetadata cdrMeta = pc.createMetadata(MutablePassThroughMetadata.class);
-                cdrMeta.setObject(cdr);
-                meta.addProperty("cdr", cdrMeta);
-                cdr.registerComponentDefinition(meta);
+                cdr.registerComponentDefinition(authBeanProcessor(pc, cdr));
             }
         }
+    }
+
+    private MutableBeanMetadata authBeanProcessor(ParserContext pc, ComponentDefinitionRegistry cdr) {
+        MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
+        meta.setId(AuthorizationBeanProcessor.AUTH_PROCESSOR_BEAN_NAME);
+        meta.setRuntimeClass(AuthorizationBeanProcessor.class);
+        meta.setProcessor(true);
+        meta.addProperty("cdr", passThrough(pc, cdr));
+        return meta;
+    }
+
+    private MutablePassThroughMetadata passThrough(ParserContext pc, Object o) {
+        MutablePassThroughMetadata meta = pc.createMetadata(MutablePassThroughMetadata.class);
+        meta.setObject(o);
+        return meta;
     }
 
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc) {

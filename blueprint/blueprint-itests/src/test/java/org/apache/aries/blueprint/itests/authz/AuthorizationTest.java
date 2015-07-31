@@ -93,6 +93,16 @@ public class AuthorizationTest extends AbstractBlueprintIntegrationTest {
 
     @org.ops4j.pax.exam.Configuration
     public Option[] configuration() throws IOException, LoginException, BundleException {
+        return new Option[] {
+            baseOptions(),
+            CoreOptions.keepCaches(),
+            Helper.blueprintBundles(),
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.authz"),
+            streamBundle(testBundle()),
+        };
+    }
+
+    private InputStream testBundle() {
         InputStream testBundle = TinyBundles.bundle()
                 .set(Constants.BUNDLE_SYMBOLICNAME, "authz")
                 .add(SecuredServiceImpl.class)
@@ -101,14 +111,7 @@ public class AuthorizationTest extends AbstractBlueprintIntegrationTest {
                 .set(Constants.EXPORT_PACKAGE, SecuredService.class.getPackage().getName())
                 .set(Constants.IMPORT_PACKAGE, SecuredService.class.getPackage().getName())
                 .build(TinyBundles.withBnd());
-
-        return new Option[] {
-            baseOptions(),
-            CoreOptions.keepCaches(),
-            Helper.blueprintBundles(),
-            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.authz"),
-            streamBundle(testBundle),
-        };
+        return testBundle;
     }
     
     private final class CallUserAndAdmin implements PrivilegedAction<Void> {
