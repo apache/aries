@@ -39,6 +39,11 @@ import org.slf4j.LoggerFactory;
 
 public class AuthorizationInterceptor implements Interceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationInterceptor.class);
+    private Class<?> beanClass;
+
+    public AuthorizationInterceptor(Class<?> beanClass) {
+        this.beanClass = beanClass;
+    }
 
     public int getRank() {
         return 0;
@@ -52,7 +57,7 @@ public class AuthorizationInterceptor implements Interceptor {
     }
 
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
-        Annotation ann = new SecurityAnotationParser().getEffectiveAnnotation(m);
+        Annotation ann = new SecurityAnotationParser().getEffectiveAnnotation(beanClass, m);
         if (ann instanceof PermitAll) {
             return null;
         }
