@@ -58,7 +58,7 @@ public class SecurityAnnoationParserTest {
     }
 
     private Annotation getEffective(String methodName) throws NoSuchMethodException {
-        return annParser.getEffectiveAnnotation(SecuredClass.class.getMethod(methodName));
+        return annParser.getEffectiveAnnotation(SecuredClass.class, SecuredClass.class.getMethod(methodName));
     }
     
     private String[] getRoles(String methodName) throws NoSuchMethodException {

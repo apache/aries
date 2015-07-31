@@ -42,10 +42,15 @@ class SecurityAnotationParser {
      * @param m Method to check
      * @return effective annotation (either DenyAll, PermitAll or RolesAllowed)
      */
-    Annotation getEffectiveAnnotation(Method m) {
-        Annotation classLevel = getAuthAnnotation(m.getDeclaringClass());
-        Annotation methodLevel = getAuthAnnotation(m);
-        return (methodLevel != null) ? methodLevel : classLevel;
+    Annotation getEffectiveAnnotation(Class<?> beanClass, Method m) {
+        Annotation classLevel = getAuthAnnotation(beanClass);
+        try {
+            Method beanMethod = beanClass.getMethod(m.getName(), m.getParameterTypes());
+            Annotation methodLevel = getAuthAnnotation(beanMethod);
+            return (methodLevel != null) ? methodLevel : classLevel;
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private Annotation getAuthAnnotation(AnnotatedElement element) {
@@ -86,4 +91,5 @@ class SecurityAnotationParser {
     private boolean isSecuredEl(AnnotatedElement element) {
         return element.isAnnotationPresent(RolesAllowed.class) || element.isAnnotationPresent(DenyAll.class); 
     }
+
 }
