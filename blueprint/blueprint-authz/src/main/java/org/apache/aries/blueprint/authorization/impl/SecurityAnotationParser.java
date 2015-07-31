@@ -37,7 +37,7 @@ class SecurityAnotationParser {
     /**
      * Get the effective annotation regarding method annotations override class annotations.
      * DenyAll has highest priority then RolesAllowed and in the end PermitAll. 
-     * So the most restrictive annotation is pereferred.
+     * So the most restrictive annotation is preferred.
      * 
      * @param m Method to check
      * @return effective annotation (either DenyAll, PermitAll or RolesAllowed)
