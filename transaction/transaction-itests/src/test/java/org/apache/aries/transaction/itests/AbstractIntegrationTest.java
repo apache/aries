@@ -107,11 +107,11 @@ public abstract class AbstractIntegrationTest {
 
     private Option jta12Bundles() {
             return CoreOptions.composite(
-                mavenBundle("javax.interceptor", "javax.interceptor-api", "1.2"),
-                mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject", "1_2"),
-                mavenBundle("javax.el", "javax.el-api", "3.0.0"),
-                mavenBundle("javax.enterprise", "cdi-api", "1.2"),
-                mavenBundle("javax.transaction", "javax.transaction-api", "1.2")
+                mavenBundle("javax.interceptor", "javax.interceptor-api").versionAsInProject(),
+                mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject").versionAsInProject(),
+                mavenBundle("javax.el", "javax.el-api").versionAsInProject(),
+                mavenBundle("javax.enterprise", "cdi-api").versionAsInProject(),
+                mavenBundle("javax.transaction", "javax.transaction-api").versionAsInProject()
             );
     }
 
