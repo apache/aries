@@ -33,7 +33,6 @@ import javax.transaction.UserTransaction;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
@@ -284,12 +283,12 @@ public abstract class AbstractJPAItest {
     }
     
     protected Option jta12Bundles() {
-        return CoreOptions.composite(
-            mavenBundle("javax.interceptor", "javax.interceptor-api", "1.2"),
-            mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject", "1_2"),
-            mavenBundle("javax.el", "javax.el-api", "3.0.0"),
-            mavenBundle("javax.enterprise", "cdi-api", "1.2"),
-            mavenBundle("javax.transaction", "javax.transaction-api", "1.2")
+        return composite(
+            mavenBundle("javax.interceptor", "javax.interceptor-api").versionAsInProject(),
+            mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject").versionAsInProject(),
+            mavenBundle("javax.el", "javax.el-api").versionAsInProject(),
+            mavenBundle("javax.enterprise", "cdi-api").versionAsInProject(),
+            mavenBundle("javax.transaction", "javax.transaction-api").versionAsInProject()
         );
     }
 
