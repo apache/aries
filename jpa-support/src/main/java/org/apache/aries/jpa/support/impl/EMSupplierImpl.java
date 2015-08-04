@@ -141,17 +141,10 @@ public class EMSupplierImpl implements EmSupplier {
 
     @Override
     public void preCall() {
-        coordinator.begin("jpa." + unitName, 0);
     }
 
     @Override
     public void postCall() {
-        try {
-            Coordination coord = coordinator.pop();
-            coord.end();
-        } catch (Throwable t) {
-            LOG.warn("Error ending coord", t);
-        }
     }
 
     /**

@@ -30,13 +30,17 @@ public interface EmSupplier {
 
     /**
      * Is called before first access to get() in a method
+     * @deprecated Use a Coordination instead
      */
+    @Deprecated
     void preCall();
     
     EntityManager get();
 
     /**
      * Is called after last access to get() in a method
+     * @deprecated Use a Coordination instead
      */
+    @Deprecated
     void postCall();
 }

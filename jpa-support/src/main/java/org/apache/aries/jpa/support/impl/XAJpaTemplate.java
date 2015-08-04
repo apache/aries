@@ -53,7 +53,6 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
         try {
             tranToken = ta.begin(tm);
             coord = coordinator.begin(this.getClass().getName(), 0);
-            emSupplier.preCall();
             em = emSupplier.get();
             em.joinTransaction();
             R result = (R)code.apply(em);

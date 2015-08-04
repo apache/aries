@@ -26,16 +26,20 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.jpa.supplier.EmSupplier;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JpaInterceptor implements Interceptor {
     private static Logger LOG = LoggerFactory.getLogger(JpaInterceptor.class);
-    private EmSupplier emSupplier;
+    EmSupplier emSupplier;
     private Boolean cachedIsResourceLocal;
+    private Coordinator coordinator;
 
-    public JpaInterceptor(EmSupplier emSupplier) {
+    public JpaInterceptor(EmSupplier emSupplier, Coordinator coordinator) {
         this.emSupplier = emSupplier;
+        this.coordinator = coordinator;
     }
 
     public int getRank() {
@@ -45,13 +49,14 @@ public class JpaInterceptor implements Interceptor {
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
         try {
             LOG.debug("PreCall for bean {}, method {}", cm.getId(), m.getName());
-            emSupplier.preCall();
-            EntityManager em = emSupplier.get();
+            Coordination coordination = coordinator.begin("jpa", 0);
+            final EntityManager em = emSupplier.get();
             boolean weControlTx = isResourceLocal(em) && !em.getTransaction().isActive();
             if (weControlTx) {
                 em.getTransaction().begin();
+                coordination.addParticipant(new JPAParticipant(em));
             }
-            return weControlTx;
+            return coordination;
         } catch (Exception e) {
             LOG.warn("Exception from EmSupplier.preCall", e);
             throw new RuntimeException(e);
@@ -60,35 +65,16 @@ public class JpaInterceptor implements Interceptor {
 
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
         LOG.debug("PostCallWithException for bean {}, method {}", cm.getId(), m.getName(), ex);
-        boolean weControlTx = preCallToken == null ? false : (Boolean)preCallToken;
-        if (weControlTx) {
-            safeRollback(emSupplier.get(), ex);
-        }
-        try {
-            emSupplier.postCall();
-        } catch (Exception e) {
-            LOG.warn("Exception from EmSupplier.postCall", e);
-        }
+        ((Coordination) preCallToken).fail(ex);
     }
 
     public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken)
         throws Exception {
         LOG.debug("PostCallWithReturn for bean {}, method {}", cm.getId(), m.getName());
-        boolean weControlTx = preCallToken == null ? false : (Boolean)preCallToken;
-        if (weControlTx) {
-            emSupplier.get().getTransaction().commit();
-        }
-        emSupplier.postCall();
+        ((Coordination) preCallToken).end();
     }
 
-    private void safeRollback(EntityManager em, Throwable e) {
-        if (em != null) {
-            try {
-                em.getTransaction().rollback();
-            } catch (Exception e1) {
-            }
-        }
-    }
+
 
     private boolean isResourceLocal(EntityManager em) {
         if (cachedIsResourceLocal == null) {
