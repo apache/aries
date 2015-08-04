@@ -27,6 +27,7 @@ import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.exception.TransactionRollbackException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,9 @@ public class TxInterceptorImpl implements Interceptor {
 
         LOGGER.debug("PreCall for bean {}, method {} with tx strategy {}.", getCmId(cm), m.getName(), txAttribute);
         TransactionToken token = txAttribute.begin(tm);
-        coordinator.begin("txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName() , 0);
+        String coordName = "txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName();
+        Coordination coord = coordinator.begin(coordName , 0);
+        token.setCoordination(coord);
         return token;
     }
 
@@ -63,8 +66,8 @@ public class TxInterceptorImpl implements Interceptor {
         if (!(preCallToken instanceof TransactionToken)) {
             return;
         }
-        endCoordination();
         final TransactionToken token = (TransactionToken)preCallToken;
+        token.getCoordination().end();
         try {
             Transaction tran = token.getActiveTransaction();
             if (tran != null && isRollBackException(ex)) {
@@ -88,9 +91,9 @@ public class TxInterceptorImpl implements Interceptor {
         if (preCallToken == null) {
             return;
         }
-        endCoordination();
         if (preCallToken instanceof TransactionToken) {
             final TransactionToken token = (TransactionToken)preCallToken;
+            token.getCoordination().end();
             try {
                 token.getTransactionAttribute().finish(tm, token);
             } catch (Exception e) {
@@ -100,14 +103,6 @@ public class TxInterceptorImpl implements Interceptor {
             }
         } else {
             // TODO: what now?
-        }
-    }
-
-    private void endCoordination() {
-        try {
-            coordinator.pop().end();
-        } catch (Exception e) {
-            LOGGER.warn("Error ending coordination ", e);
         }
     }
 

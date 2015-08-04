@@ -26,6 +26,7 @@ import javax.transaction.TransactionManager;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.Test;
+import org.osgi.service.coordinator.Coordination;
 
 public class InterceptorTest {
 
@@ -47,9 +48,14 @@ public class InterceptorTest {
             tran.setRollbackOnly();
             EasyMock.expectLastCall();
         }
+        Coordination coordination = c.createMock(Coordination.class);
+        coordination.end();
+        EasyMock.expectLastCall();
         
         c.replay();
         TransactionToken tt = new TransactionToken(tran, null, TransactionAttribute.REQUIRED);
+        
+        tt.setCoordination(coordination );
         sut.postCallWithException(null, this.getClass().getMethods()[0], th, tt);
         c.verify();
     }
