@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -30,9 +31,13 @@ import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.itest.AbstractCarJPAITest;
 import org.apache.aries.jpa.supplier.EmSupplier;
 import org.junit.Test;
+import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 
 public abstract class JPAContainerTest extends AbstractCarJPAITest {
+    @Inject
+    Coordinator coordinator;
 
     @Test
     public void testCarEMFBuilder() throws Exception {
@@ -71,8 +76,8 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
     @Test
     public void testEmSupplier() throws Exception {
         EmSupplier emSupplier = getService(EmSupplier.class, "(osgi.unit.name=" + XA_TEST_UNIT + ")");
+        Coordination coordination = coordinator.begin("test", 0);
         try {
-            emSupplier.preCall();
             EntityManager em = emSupplier.get();
             carLifecycleXA(ut, em);
 
@@ -110,7 +115,7 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
 
             cleanup(em);
         } finally {
-            emSupplier.postCall();
+            coordination.end();
         }
     }
 
