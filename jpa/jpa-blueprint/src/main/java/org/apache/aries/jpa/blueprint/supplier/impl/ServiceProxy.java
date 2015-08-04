@@ -35,14 +35,16 @@ public class ServiceProxy implements InvocationHandler {
     private ServiceTracker tracker;
 
     public ServiceProxy(BundleContext context, String filterS) {
-        Filter filter;
+        tracker = new ServiceTracker<>(context, createFilter(filterS), null);
+        tracker.open();
+    }
+
+    private Filter createFilter(String filterS) {
         try {
-            filter = FrameworkUtil.createFilter(filterS);
+            return filterS == null ? null : FrameworkUtil.createFilter(filterS);
         } catch (InvalidSyntaxException e) {
             throw new IllegalStateException(e);
         }
-        tracker = new ServiceTracker<>(context, filter, null);
-        tracker.open();
     }
 
     private Object getService() {
@@ -66,6 +68,14 @@ public class ServiceProxy implements InvocationHandler {
         } catch (InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
+    }
+    
+    public static <T> T create(BundleContext context, Class<T> iface) {
+        return  (T) create(context, iface, getFilter(iface));
+    }
+    
+    private static String getFilter(Class<?> clazz) {
+        return String.format("(objectClass=%s)", clazz.getName());
     }
 
     @SuppressWarnings("unchecked")

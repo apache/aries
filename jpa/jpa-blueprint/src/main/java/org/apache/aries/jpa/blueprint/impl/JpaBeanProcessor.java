@@ -44,6 +44,7 @@ import org.apache.aries.jpa.supplier.EmSupplier;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,8 +116,8 @@ public class JpaBeanProcessor implements BeanProcessor {
                 EmSupplier supplierProxy = ServiceProxy.create(context, EmSupplier.class, filter);
                 jpaAnnotatedMember.handleSupplierMember(member, pcAnn.unitName(), supplierProxy);
                 beanProxies.add((Closeable)supplierProxy);
-
-                Interceptor interceptor = new JpaInterceptor(supplierProxy);
+                Coordinator coordinator = ServiceProxy.create(context, Coordinator.class);
+                Interceptor interceptor = new JpaInterceptor(supplierProxy, coordinator);
                 cdr.registerInterceptorWithComponent(beanData, interceptor);
             } else {
                 PersistenceUnit puAnn = member.getAnnotation(PersistenceUnit.class);
