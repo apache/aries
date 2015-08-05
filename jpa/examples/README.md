@@ -35,18 +35,18 @@ install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.eclipselink.adapter/1.0
 
 
 # Our JPA service implementation
-install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.api/2.0.0-SNAPSHOT
-install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.container/2.0.0-SNAPSHOT
-install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.support/2.0.0-SNAPSHOT
+install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.api/2.1.0
+install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.container/2.1.0
+install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.support/2.1.0
 
 # Closure based example. (Make sure to start karaf with JDK 8)
-install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.model/2.0.0-SNAPSHOT
-install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.ds/2.0.0-SNAPSHOT
+install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.model/2.1.0
+install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.ds/2.1.0
 
 # Blueprint based example
-install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.blueprint/2.0.0-SNAPSHOT
-install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.model/2.0.0-SNAPSHOT
-install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.blueprint/2.0.0-SNAPSHOT
+install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.blueprint/2.1.0
+install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.model/2.1.0
+install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.blueprint/2.1.0
 
 
 After installing the examples you can check for the services.
