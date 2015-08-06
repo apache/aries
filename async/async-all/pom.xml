@@ -32,15 +32,15 @@
     <artifactId>org.apache.aries.async</artifactId>
     <packaging>bundle</packaging>
     <name>Aries Async Service Bundle (all in one)</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <description>
         This bundle contains the Aries Async Service implementation and all of its dependencies
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/async-all</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/async-all</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/async/async-all</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/async-1.0.1/async-all</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/async-1.0.1/async-all</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/async-1.0.1/async-all</url>
     </scm>
 
     <properties>
@@ -76,17 +76,17 @@
         <dependency>
             <groupId>org.apache.aries.async</groupId>
             <artifactId>org.apache.aries.async.promise.api</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.async</groupId>
             <artifactId>org.apache.aries.async.api</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.async</groupId>
             <artifactId>org.apache.aries.async.impl</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
 	        <groupId>cglib</groupId>

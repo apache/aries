@@ -32,15 +32,15 @@
     <artifactId>org.apache.aries.async.api</artifactId>
     <packaging>bundle</packaging>
     <name>OSGI Async API</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <description>
         This bundle contains the OSGi Async Service API.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/async-api</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/async-api</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/async/async-api</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/async-1.0.1/async-api</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/async-1.0.1/async-api</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/async-1.0.1/async-api</url>
     </scm>
 
     <properties>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>org.apache.aries.async</groupId>
             <artifactId>org.apache.aries.async.promise.api</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
