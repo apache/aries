@@ -52,9 +52,9 @@
             *
         </aries.osgi.import>
         <aries.osgi.export.pkg>
-            org.apache.aries.subsystem;version="1.1",
-            org.osgi.service.repository;version="1.0",
-            org.osgi.service.subsystem;version="1.1"
+            org.apache.aries.subsystem,
+            org.osgi.service.repository,
+            org.osgi.service.subsystem
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.subsystem.*
