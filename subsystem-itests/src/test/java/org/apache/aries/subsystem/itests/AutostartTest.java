@@ -511,4 +511,30 @@ public class AutostartTest extends SubsystemTest {
 			stopAndUninstallSubsystemSilently(compositeA);
 		}
 	}
+
+	@Test
+	/* Start a composite with a dependency on an installed, but unresolved subsystem.
+	 * The unresolved dependency should be auto-resolved and started (test fix to
+	 *  bug ARIES-1348).
+	 *
+	 * composite b imports package exported by a bundle in composite.a.  
+	 *  - install composite a
+	 *  - install composite b
+	 *  - start composite b
+	 */  
+	public void testStartCompositeWithUnresolvedDependency() throws Exception {
+		Subsystem compositeA = installSubsystemFromFile(COMPOSITE_A);
+		Subsystem compositeB = installSubsystemFromFile(COMPOSITE_B);
+		try {
+			startSubsystem(compositeB);
+			// A should be automatically resolved and started.
+			assertState(Subsystem.State.ACTIVE, compositeA);
+		}
+		finally {
+			stopSubsystemSilently(compositeB);
+			stopSubsystemSilently(compositeA);
+			uninstallSubsystemSilently(compositeB);			
+			uninstallSubsystemSilently(compositeA);
+		}
+	}
 }
