@@ -96,7 +96,7 @@ public class StartAction extends AbstractAction {
 			return null;
 		// Always start if target is content of requestor.
 		if (!Utils.isContent(requestor, target)) {
-			// Aways start if target is a dependency of requestor.
+			// Always start if target is a dependency of requestor.
 			if (!Utils.isDependency(requestor, target)) {
 				// Always start if instigator equals target (explicit start).
 				if (!instigator.equals(target)) {
@@ -170,8 +170,19 @@ public class StartAction extends AbstractAction {
 			// root subsystem should have no effect, so there's no point in
 			// actually doing the resolution work.
 			if (!subsystem.isRoot()) {
-				for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(subsystem))
+				//resolve dependencies to ensure framework resolution succeeds
+				for (Resource dep : Activator.getInstance().getSubsystems().getResourcesReferencedBy(subsystem)) {
+					if (dep instanceof BasicSubsystem &&
+						!Activator.getInstance().getSubsystems().getChildren(subsystem).contains(dep)) {
+						if (State.INSTALLED == (((BasicSubsystem) dep).getState())) {
+						    resolve((BasicSubsystem) dep);
+						}
+					}
+				}
+				
+				for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(subsystem)) {
 					resolve((BasicSubsystem)child);
+				}
 
 				FrameworkWiring frameworkWiring = Activator.getInstance().getBundleContext().getBundle(0)
 						.adapt(FrameworkWiring.class);
