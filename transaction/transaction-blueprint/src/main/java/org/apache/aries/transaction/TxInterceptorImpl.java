@@ -28,6 +28,7 @@ import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.apache.aries.transaction.exception.TransactionRollbackException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,11 @@ public class TxInterceptorImpl implements Interceptor {
             return;
         }
         final TransactionToken token = (TransactionToken)preCallToken;
-        token.getCoordination().end();
+        try {
+            token.getCoordination().end();
+        } catch (CoordinationException e){
+            LOGGER.debug(e.getMessage(), e);
+        }
         try {
             Transaction tran = token.getActiveTransaction();
             if (tran != null && isRollBackException(ex)) {
