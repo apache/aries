@@ -18,6 +18,9 @@
  */
 package org.apache.aries.transaction;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+
 import java.io.IOException;
 
 import javax.transaction.Transaction;
@@ -27,18 +30,36 @@ import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.Test;
 import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.CoordinationException;
 
 public class InterceptorTest {
 
     @Test
     public void testRollbackOnException() throws Throwable {
-        postCallWithTransaction(new IllegalStateException(), true);
-        postCallWithTransaction(new Error(), true);
-        postCallWithTransaction(new Exception(), false);
-        postCallWithTransaction(new IOException(), false);
+        runPostCall(false);
+        runPostCall(true);
+    }
+
+    private void runPostCall(boolean failCoordination) throws Throwable {
+        postCallWithTransaction(new IllegalStateException(), true, failCoordination);
+        postCallWithTransaction(new Error(), true, failCoordination);
+        postCallWithTransaction(new Exception(), false, failCoordination);
+        postCallWithTransaction(new IOException(), false, failCoordination);
     }
     
-    private void postCallWithTransaction(Throwable th, boolean expectRollback) throws Throwable {
+    private CoordinationException coordinationException(Throwable th) {
+        Coordination coordination = EasyMock.createMock(Coordination.class);
+        expect(coordination.getId()).andReturn(1l);
+        expect(coordination.getName()).andReturn("Test");
+        replay(coordination);
+        CoordinationException cex = new CoordinationException("Simulating exception", 
+                                                              coordination , 
+                                                              CoordinationException.FAILED,
+                                                              th);
+        return cex;
+    }
+    
+    private void postCallWithTransaction(Throwable th, boolean expectRollback, boolean failCoordination) throws Throwable {
         IMocksControl c = EasyMock.createControl();
         TxInterceptorImpl sut = new TxInterceptorImpl();
         sut.setTransactionManager(c.createMock(TransactionManager.class));
@@ -50,7 +71,11 @@ public class InterceptorTest {
         }
         Coordination coordination = c.createMock(Coordination.class);
         coordination.end();
-        EasyMock.expectLastCall();
+        if (failCoordination) {
+            EasyMock.expectLastCall().andThrow(coordinationException(th));
+        } else {
+            EasyMock.expectLastCall();
+        }
         
         c.replay();
         TransactionToken tt = new TransactionToken(tran, null, TransactionAttribute.REQUIRED);

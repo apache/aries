@@ -50,7 +50,7 @@
             org.apache.aries.transaction,
             org.apache.aries.transaction.parsing
         </aries.osgi.private.pkg>
-        <lastReleaseVersion>1.0.1</lastReleaseVersion>
+        <lastReleaseVersion>1.1.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
