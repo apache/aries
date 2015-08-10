@@ -61,23 +61,23 @@ public class EMFTracker extends ServiceTracker {
         if (unitName == null) {
             return null;
         }
-        BundleContext bContext = reference.getBundle().getBundleContext();
+        BundleContext puContext = reference.getBundle().getBundleContext();
         TrackedEmf tracked = new TrackedEmf();
-        tracked.emf = (EntityManagerFactory)bContext.getService(reference);
+        tracked.emf = (EntityManagerFactory)puContext.getService(reference);
         tracked.emSupplier = new EMSupplierImpl(unitName, tracked.emf, coordinator);
-        tracked.emSupplierReg = bContext.registerService(EmSupplier.class, tracked.emSupplier,
+        tracked.emSupplierReg = puContext.registerService(EmSupplier.class, tracked.emSupplier,
                                                          getEmSupplierProps(unitName));
 
         EntityManager emProxy = createProxy(tracked.emSupplier);
-        tracked.emSupplierReg = bContext.registerService(EntityManager.class, emProxy,
+        tracked.emProxyReg = puContext.registerService(EntityManager.class, emProxy,
                                                          getEmSupplierProps(unitName));
         
         if (getTransactionType(tracked.emf) == PersistenceUnitTransactionType.RESOURCE_LOCAL) {
             JpaTemplate txManager = new ResourceLocalJpaTemplate(tracked.emSupplier, coordinator);
-            tracked.rlTxManagerReg = bContext.registerService(JpaTemplate.class, txManager,
+            tracked.rlTxManagerReg = puContext.registerService(JpaTemplate.class, txManager,
                                                           rlTxManProps(unitName));
         } else {
-            tracked.tmTracker = new TMTracker(bContext, tracked.emSupplier, unitName, coordinator);
+            tracked.tmTracker = new TMTracker(puContext, tracked.emSupplier, unitName, coordinator);
             tracked.tmTracker.open();
         }
         return tracked;
@@ -111,7 +111,6 @@ public class EMFTracker extends ServiceTracker {
         return props;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void removedService(ServiceReference reference, Object trackedO) {
         TrackedEmf tracked = (TrackedEmf)trackedO;
@@ -121,9 +120,10 @@ public class EMFTracker extends ServiceTracker {
         if (tracked.rlTxManagerReg != null) {
             tracked.rlTxManagerReg.unregister();
         }
-        tracked.emSupplier.close();
         tracked.emSupplierReg.unregister();
-        super.removedService(reference, tracked.emf);
+        tracked.emProxyReg.unregister();
+        tracked.emSupplier.close();
+        reference.getBundle().getBundleContext().ungetService(reference);
     }
     
     public static EntityManager createProxy(final EmSupplier emSupplier) {
