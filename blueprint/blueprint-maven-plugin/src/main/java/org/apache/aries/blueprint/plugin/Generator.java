@@ -39,13 +39,16 @@ public class Generator implements PropertyWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
     private static final String NS_JPA = "http://aries.apache.org/xmlns/jpa/v1.1.0";
-    private static final String NS_TX = "http://aries.apache.org/xmlns/transactions/v1.1.0";
+    private static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpan/v1.0.0";
+    private static final String NS_TX = "http://aries.apache.org/xmlns/transactions/v1.2.0";
 
     private Context context;
     private XMLStreamWriter writer;
+    private boolean persistenceAnnotated;
 
-    public Generator(Context context, OutputStream os) throws XMLStreamException {
+    public Generator(Context context, OutputStream os, boolean persistenceAnnotated) throws XMLStreamException {
         this.context = context;
+        this.persistenceAnnotated = persistenceAnnotated;
         
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         writer = factory.createXMLStreamWriter(os);
@@ -56,6 +59,18 @@ public class Generator implements PropertyWriter {
             writer.writeStartDocument();
             writer.writeCharacters("\n");
             writeBlueprint();
+            
+            if (persistenceAnnotated) {
+                if (isJpaUsed()) {
+                    writer.writeEmptyElement(NS_JPA2, "enable");
+                    writer.writeCharacters("\n");
+                }
+                writer.writeEmptyElement(NS_TX, "enable-annotations");
+                writer.writeCharacters("\n");
+                //if (isJtaUsed()) {
+//                    writer.writeEmptyElement(NS_TX, "enable-annotations");
+                //}
+            }
             for (Bean bean : context.getBeans()) {
                 writeBeanStart(bean);
                 bean.writeProperties(this);
@@ -76,13 +91,37 @@ public class Generator implements PropertyWriter {
         }
     }
 
+    private boolean isJpaUsed() {
+        boolean jpaUsed = false;
+        for (Bean bean : context.getBeans()) {
+        if (bean.persistenceFields.length > 0) {
+            jpaUsed = true;
+        }
+        }
+        return jpaUsed;
+    }
+
+    private boolean isJtaUsed() {
+        boolean jtaUsed = false;
+        for (Bean bean : context.getBeans()) {
+            if (bean.transactionDef != null) {
+                jtaUsed = true;
+            }
+
+        }
+        return jtaUsed;
+    }
+
     private void writeBlueprint() throws XMLStreamException {
         writer.writeStartElement("blueprint");
         writer.writeDefaultNamespace(NS_BLUEPRINT);
         writer.writeNamespace("ext", NS_EXT);
-        writer.writeNamespace("jpa", NS_JPA);
+        if (persistenceAnnotated) {
+            writer.writeNamespace("jpa", NS_JPA2);
+        } else {
+            writer.writeNamespace("jpa", NS_JPA);
+        }
         writer.writeNamespace("tx", NS_TX);
-        writer.writeCharacters("\n");
     }
     
     public void writeBeanStart(Bean bean) throws XMLStreamException {
@@ -100,9 +139,11 @@ public class Generator implements PropertyWriter {
             writer.writeAttribute("destroy-method", bean.destroyMethod);
         }
         writer.writeCharacters("\n");
-        writeTransactional(bean.transactionDef);
-
-        writePersistenceFields(bean.persistenceFields);
+        
+        if (!persistenceAnnotated) {
+            writeTransactional(bean.transactionDef);
+            writePersistenceFields(bean.persistenceFields);
+        }
     }
     
     private void writeFactory(ProducedBean bean) throws XMLStreamException {
