@@ -56,7 +56,7 @@ public class GeneratorTest {
         Context context = new Context(beanClasses);
         context.resolve();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        new Generator(context, os).generate();
+        new Generator(context, os, false).generate();
         System.out.println(os.toString("UTF-8"));
 
         document = readToDocument(os);
