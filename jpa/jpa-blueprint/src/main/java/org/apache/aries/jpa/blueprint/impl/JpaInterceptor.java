@@ -65,13 +65,17 @@ public class JpaInterceptor implements Interceptor {
 
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
         LOG.debug("PostCallWithException for bean {}, method {}", cm.getId(), m.getName(), ex);
-        ((Coordination) preCallToken).fail(ex);
+        if (preCallToken != null) {
+            ((Coordination) preCallToken).fail(ex);
+        }
     }
 
     public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken)
         throws Exception {
         LOG.debug("PostCallWithReturn for bean {}, method {}", cm.getId(), m.getName());
-        ((Coordination) preCallToken).end();
+        if (preCallToken != null) {
+            ((Coordination) preCallToken).end();
+        }
     }
 
 
