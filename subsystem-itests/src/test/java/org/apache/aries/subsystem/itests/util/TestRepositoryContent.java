@@ -1,15 +1,20 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.aries.subsystem.itests.util;
 
@@ -18,13 +23,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osgi.resource.Requirement;
 import org.osgi.service.repository.RepositoryContent;
 
 public class TestRepositoryContent extends TestResource implements RepositoryContent {
 	public static class Builder {
 		private final List<TestCapability.Builder> capabilities = new ArrayList<TestCapability.Builder>();
-		private final List<Requirement> requirements = new ArrayList<Requirement>();
+		private final List<TestRequirement.Builder> requirements = new ArrayList<TestRequirement.Builder>();
 		
 		private byte[] content;
 		
@@ -42,7 +46,7 @@ public class TestRepositoryContent extends TestResource implements RepositoryCon
 			return this;
 		}
 		
-		public Builder requirement(Requirement value) {
+		public Builder requirement(TestRequirement.Builder value) {
 			requirements.add(value);
 			return this;
 		}
@@ -52,7 +56,7 @@ public class TestRepositoryContent extends TestResource implements RepositoryCon
 	
 	public TestRepositoryContent(
 			List<TestCapability.Builder> capabilities, 
-			List<Requirement> requirements,
+			List<TestRequirement.Builder> requirements,
 			byte[] content) {
 		super(capabilities, requirements);
 		this.content = content;
