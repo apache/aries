@@ -55,7 +55,7 @@
             org.osgi.service.async.delegate,
             *
         </aries.osgi.import.pkg>
-        <lastReleaseVersion>1.0.1-SNAPSHOT</lastReleaseVersion>
+        <lastReleaseVersion>1.0.1</lastReleaseVersion>
     </properties>
 
     <dependencies>
