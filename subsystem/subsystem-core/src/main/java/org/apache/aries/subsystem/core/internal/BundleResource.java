@@ -1,15 +1,20 @@
 /*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.aries.subsystem.core.internal;
 
@@ -29,6 +34,9 @@ import org.apache.aries.subsystem.core.archive.BundleRequiredExecutionEnvironmen
 import org.apache.aries.subsystem.core.archive.BundleSymbolicNameHeader;
 import org.apache.aries.subsystem.core.archive.BundleVersionHeader;
 import org.apache.aries.subsystem.core.archive.ExportPackageHeader;
+import org.apache.aries.subsystem.core.archive.FragmentHostCapability;
+import org.apache.aries.subsystem.core.archive.FragmentHostHeader;
+import org.apache.aries.subsystem.core.archive.FragmentHostRequirement;
 import org.apache.aries.subsystem.core.archive.ImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.ProvideBundleCapability;
 import org.apache.aries.subsystem.core.archive.ProvideCapabilityCapability;
@@ -157,7 +165,10 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 	}
 	
 	private void computeOsgiWiringBundleCapability() {
-		// TODO The osgi.wiring.bundle capability should not be provided for fragments. Nor should the host capability.
+		if (manifest.getHeader(org.osgi.framework.Constants.FRAGMENT_HOST) != null) {
+	        // The osgi.wiring.bundle capability is not provided by fragments.
+	        return;
+	    }
 		BundleSymbolicNameHeader bsnh = (BundleSymbolicNameHeader)manifest.getHeader(BundleSymbolicNameHeader.NAME);
 		BundleVersionHeader bvh = (BundleVersionHeader)manifest.getHeader(BundleVersionHeader.NAME);
 		capabilities.add(new ProvideBundleCapability(bsnh, bvh, this));
@@ -169,6 +180,23 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 			for (RequireBundleHeader.Clause clause : rbh.getClauses())
 				requirements.add(new RequireBundleRequirement(clause, this));
 	}
+	
+	private void computeOsgiWiringHostCapability() {
+	    if (manifest.getHeader(org.osgi.framework.Constants.FRAGMENT_HOST) != null) {
+            // The osgi.wiring.host capability is not provided by fragments.
+            return;
+        }
+        BundleSymbolicNameHeader bsnh = (BundleSymbolicNameHeader)manifest.getHeader(BundleSymbolicNameHeader.NAME);
+        BundleVersionHeader bvh = (BundleVersionHeader)manifest.getHeader(BundleVersionHeader.NAME);
+        capabilities.add(new FragmentHostCapability(bsnh, bvh, this));
+    }
+	
+	private void computeOsgiWiringHostRequirement() {
+        FragmentHostHeader fhh = (FragmentHostHeader)manifest.getHeader(FragmentHostHeader.NAME);
+        if (fhh != null) {
+            requirements.add(new FragmentHostRequirement(fhh.getClauses().iterator().next(), this));
+        }
+    }
 	
 	private void computeOsgiWiringPackageCapabilities() {
 		ExportPackageHeader eph = (ExportPackageHeader)manifest.getHeader(ExportPackageHeader.NAME);
@@ -213,6 +241,8 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 		computeGenericRequirements();
 		computeOsgiWiringBundleRequirements();
 		computeOsgiExecutionEnvironmentRequirement();
+		computeOsgiWiringHostRequirement();
+		computeOsgiWiringHostCapability();
 	}
 	
 	private String getFileName(IFile file) {
