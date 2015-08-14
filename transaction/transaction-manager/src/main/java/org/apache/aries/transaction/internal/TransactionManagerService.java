@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
-import java.util.Properties;
 
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
@@ -73,7 +72,7 @@ public class TransactionManagerService {
     private boolean useSpring;
     private AriesTransactionManagerImpl transactionManager;
     private TransactionLog transactionLog;
-    private ServiceRegistration serviceRegistration;
+    private ServiceRegistration<?> serviceRegistration;
 
     public TransactionManagerService(String pid, @SuppressWarnings("rawtypes") Dictionary properties, BundleContext bundleContext) throws ConfigurationException {
         this.pid = pid;
@@ -164,7 +163,8 @@ public class TransactionManagerService {
         if (useSpring) {
             clazzes.add(PLATFORM_TRANSACTION_MANAGER_CLASS);
         }
-        serviceRegistration = bundleContext.registerService(clazzes.toArray(new String[clazzes.size()]), transactionManager, new Properties());
+        String[] ifar = clazzes.toArray(new String[clazzes.size()]);
+        serviceRegistration = bundleContext.registerService(ifar, transactionManager, null);
     }
 
     public void close() throws Exception {
