@@ -28,8 +28,6 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
-import org.apache.commons.pool.ObjectPoolFactory;
-
 /**
  * An XA-aware connection pool.  When a session is created and an xa transaction is active,
  * the session will automatically be enlisted in the current transaction.

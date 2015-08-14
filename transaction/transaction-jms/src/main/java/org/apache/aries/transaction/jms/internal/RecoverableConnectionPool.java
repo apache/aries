@@ -18,12 +18,10 @@ package org.apache.aries.transaction.jms.internal;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.jms.XAConnection;
 import javax.jms.XASession;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
-import org.apache.commons.pool.ObjectPoolFactory;
 import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
 
 public class RecoverableConnectionPool extends XaConnectionPool {
