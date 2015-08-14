@@ -18,6 +18,8 @@
  */
 package org.apache.aries.transaction;
 
+import static java.lang.String.format;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -26,6 +28,7 @@ import java.util.regex.Pattern;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 
 public class BundleWideTxDataUtil {
+    public static final Pattern WILDCARD = Pattern.compile("\\Q.*\\E");
     
     
     /**
@@ -171,7 +174,10 @@ public class BundleWideTxDataUtil {
             return bundleDataNoRestriction.get(0).getValue();
         } else {
             // cannot have more than 1 transaction element that has no method or bean attribute
-            throw new IllegalStateException(Constants.MESSAGES.getMessage("bundle.wide.tx", bundleDataNoRestriction));
+            String msg = format("There are more than one bundle wide transaction elements " 
+                                + "that have no method or bean attribute specified %s.",
+                                bundleDataNoRestriction);
+            throw new IllegalStateException(msg);
         }
         
     }
@@ -200,8 +206,7 @@ public class BundleWideTxDataUtil {
                         if (matchesMethod2.size() == 1) {
                             return matchesMethod2.get(0).getValue();
                         } else {
-                            // unable to find the best match!!
-                            throw new IllegalStateException(Constants.MESSAGES.getMessage("unable.to.apply.patterns", matchedTxData));
+                            throw unableToApply(matchedTxData);
                         }
                     }
                 }
@@ -225,8 +230,7 @@ public class BundleWideTxDataUtil {
                 if (matchesBean2.size() == 1) {
                     return matchesBean2.get(0).getValue();
                 } else {
-                    // unable to find the best match!!
-                    throw new IllegalStateException(Constants.MESSAGES.getMessage("unable.to.apply.patterns", matchedTxData));                  
+                    throw unableToApply(matchedTxData);
                 }
             }
         }
@@ -248,12 +252,15 @@ public class BundleWideTxDataUtil {
                 if (matchesMethod2.size() == 1) {
                     return matchesMethod2.get(0).getValue();
                 } else {
-                    // unable to find the best match!!
-                    throw new IllegalStateException(Constants.MESSAGES.getMessage("unable.to.apply.patterns", matchedTxData));                  
+                    throw unableToApply(matchedTxData);
                 }
             }
         }
 
+    }
+    
+    static IllegalStateException unableToApply(List<?> matchedTxData) {
+        return new IllegalStateException("Unable to apply patterns " + matchedTxData);
     }
     
     private static List<MatchedTxData> selectPatternsWithFewestWildcards(List<MatchedTxData> matchedTxData, boolean isBean) {
@@ -269,7 +276,7 @@ public class BundleWideTxDataUtil {
             }
             String pattern = p.pattern();
             
-            Matcher m = Constants.WILDCARD.matcher(pattern);
+            Matcher m = WILDCARD.matcher(pattern);
             int count = 0;
             
             while (m.find()) {
