@@ -102,18 +102,6 @@
             <version>1.1.0.v20120522-1841</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <version>3.0</version>
