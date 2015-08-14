@@ -27,7 +27,6 @@
 
    <bean id="connector" class="org.apache.aries.transaction.test.impl.Connector" init-method="initialize">
        <property name="xads" ref="enlistingDataSource"/>
-       <property name="ds" ref="dataSource"/>
        <property name="user" value="user"/>
        <property name="password" value="password"/>
    </bean>
@@ -136,8 +135,6 @@
             <entry key="tranAttribute" value="MandatoryJtaAnnotated"/>
         </service-properties>
     </service>
-   
-   <reference id="enlistingDataSource" interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=jdbc/xads)"/>
-   
-   <reference id="dataSource" interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=jdbc/nonxads)"/>
+    
+    <reference id="enlistingDataSource" interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=jdbc/xads)"/>
 </blueprint>
