@@ -59,6 +59,7 @@ public class EclipseAdditionalTest extends AbstractJPAItest {
         return new Option[] {//
             baseOptions(),//
             ariesJpa21(),//
+            jta12Bundles(), //
             eclipseLink(),//
             derbyDSF(), //
             testBundleEclipseLink().noStart(),//
