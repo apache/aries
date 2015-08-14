@@ -26,15 +26,11 @@ import javax.sql.DataSource;
 
 public class Connector {
     private DataSource xads;
-    private DataSource ds;
     private String user;
     private String password;
 
     public void setXads(DataSource xads) {
         this.xads = xads;
-    }
-    public void setDs(DataSource ds) {
-        this.ds = ds;
     }
     public void setUser(String user) {
         this.user = user;
