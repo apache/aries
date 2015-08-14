@@ -18,7 +18,7 @@
  */
 package org.apache.aries.transaction.itests;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
@@ -34,9 +34,8 @@ import javax.inject.Inject;
 import javax.transaction.RollbackException;
 import javax.transaction.UserTransaction;
 
-import junit.framework.Assert;
-
 import org.apache.aries.transaction.test.TestBean;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
@@ -44,7 +43,9 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
@@ -80,19 +81,21 @@ public abstract class AbstractIntegrationTest {
                 systemProperty("org.apache.aries.proxy.weaving.enabled").value("none"),
 
                 // Bundles
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
-                mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
-                mavenBundle("org.apache.geronimo.specs", "geronimo-j2ee-connector_1.6_spec"),
-                mavenBundle("org.apache.geronimo.specs", "geronimo-validation_1.0_spec"),
-                mavenBundle("org.apache.felix", "org.apache.felix.coordinator"),
-                mavenBundle("org.apache.geronimo.components", "geronimo-connector"),
-                mavenBundle("org.apache.derby", "derby"),
-                mavenBundle("org.apache.aries", "org.apache.aries.util"),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api"),
-                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api"),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
+                mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
+                mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
+                
+                mavenBundle("org.apache.geronimo.specs", "geronimo-j2ee-connector_1.6_spec").versionAsInProject(),
+                mavenBundle("org.apache.geronimo.specs", "geronimo-validation_1.0_spec").versionAsInProject(),
+                mavenBundle("org.apache.geronimo.components", "geronimo-connector").versionAsInProject(),
+
+                mavenBundle("org.apache.derby", "derby").versionAsInProject(),
+                mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").versionAsInProject(),
+                mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core").versionAsInProject(),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl").versionAsInProject(),
                 jta12Bundles(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager").versionAsInProject(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint").versionAsInProject(),
@@ -113,6 +116,23 @@ public abstract class AbstractIntegrationTest {
                 mavenBundle("javax.enterprise", "cdi-api").versionAsInProject(),
                 mavenBundle("javax.transaction", "javax.transaction-api").versionAsInProject()
             );
+    }
+    
+    /**
+     * Helps to diagnose bundles that are not resolved as it will throw a detailed exception
+     * 
+     * @throws BundleException
+     */
+    public void resolveBundles() throws BundleException {
+        System.out.println("Checking for bundles");
+        Bundle[] bundles = bundleContext.getBundles();
+        for (Bundle bundle : bundles) {
+            if (bundle.getState() == Bundle.INSTALLED) {
+                System.out.println("Found non resolved bundle " + bundle.getBundleId() + ":"
+                    + bundle.getSymbolicName() + ":" + bundle.getVersion());
+                bundle.start();
+            }
+        }
     }
 
     // Test with client transaction and runtime exception - the user transaction is rolled back
