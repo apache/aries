@@ -37,6 +37,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.coordinator.Coordinator;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tracks EntityManagerFactory services and publishes a Supplier<EntityManager> for each.
@@ -45,6 +47,7 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 @SuppressWarnings("rawtypes")
 public class EMFTracker extends ServiceTracker {
+    private static Logger LOG = LoggerFactory.getLogger(EMFTracker.class);
 
     private Coordinator coordinator;
 
@@ -89,13 +92,15 @@ public class EMFTracker extends ServiceTracker {
      * @return
      */
     private PersistenceUnitTransactionType getTransactionType(EntityManagerFactory emf) {
-        PersistenceUnitTransactionType transactionType = (PersistenceUnitTransactionType) emf.getProperties()
-        		.get(PersistenceUnitTransactionType.class.getName());
-        if(transactionType == PersistenceUnitTransactionType.RESOURCE_LOCAL) {
-        	return PersistenceUnitTransactionType.RESOURCE_LOCAL;
-        } else {
-        	return PersistenceUnitTransactionType.JTA;
+        try {
+            PersistenceUnitTransactionType transactionType = (PersistenceUnitTransactionType) emf.getProperties().get(PersistenceUnitTransactionType.class.getName());
+            if (transactionType == PersistenceUnitTransactionType.RESOURCE_LOCAL) {
+                return PersistenceUnitTransactionType.RESOURCE_LOCAL;
+            }
+        } catch (Exception e) {
+            LOG.warn("Error while determining the transaction type. Falling back to JTA.", e);
         }
+        return PersistenceUnitTransactionType.JTA;
     }
 
     private Dictionary<String, String> getEmSupplierProps(String unitName) {
