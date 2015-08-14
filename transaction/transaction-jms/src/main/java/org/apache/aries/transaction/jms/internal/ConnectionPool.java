@@ -16,22 +16,18 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.jms.*;
+import javax.jms.Connection;
 import javax.jms.IllegalStateException;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
-import org.apache.commons.pool.ObjectPoolFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Holds a real JMS connection along with the session pools associated with it.
@@ -42,9 +38,6 @@ import org.slf4j.LoggerFactory;
  * to this ConnectionPool are released.
  */
 public class ConnectionPool {
-
-    private static final transient Logger LOG = LoggerFactory.getLogger(ConnectionPool.class);
-
     protected Connection connection;
     private int referenceCount;
     private long lastUsed = System.currentTimeMillis();

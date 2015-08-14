@@ -20,14 +20,11 @@ import java.io.Serializable;
 import java.util.Hashtable;
 
 import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
-import javax.jms.XAConnection;
-import javax.jms.XAConnectionFactory;
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -47,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class XaPooledConnectionFactory extends PooledConnectionFactory implements ObjectFactory,
         Serializable, QueueConnectionFactory, TopicConnectionFactory {
 
+    private static final long serialVersionUID = -6538152448204064932L;
     private static final transient Logger LOG = LoggerFactory.getLogger(XaPooledConnectionFactory.class);
     private TransactionManager transactionManager;
     private boolean tmFromJndi = false;
@@ -90,10 +88,10 @@ public class XaPooledConnectionFactory extends PooledConnectionFactory implement
             name = name.substring(0, name.lastIndexOf('/')) + "/conf" + name.substring(name.lastIndexOf('/'));
             try {
                 InitialContext ctx = new InitialContext();
-                NamingEnumeration bindings = ctx.listBindings(name);
+                NamingEnumeration<Binding> bindings = ctx.listBindings(name);
 
                 while (bindings.hasMore()) {
-                    Binding bd = (Binding)bindings.next();
+                    Binding bd = bindings.next();
                     IntrospectionSupport.setProperty(this, bd.getName(), bd.getObject());
                 }
 

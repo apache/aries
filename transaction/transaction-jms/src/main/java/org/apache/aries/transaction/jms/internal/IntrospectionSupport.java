@@ -33,6 +33,7 @@ public final class IntrospectionSupport {
     private IntrospectionSupport() {
     }
 
+    @SuppressWarnings("rawtypes")
     public static boolean setProperties(Object target, Map props) {
         boolean rc = false;
 
@@ -81,6 +82,9 @@ public final class IntrospectionSupport {
         }
     }
 
+    @SuppressWarnings({
+        "rawtypes", "unchecked"
+    })
     private static Object convert(Object value, Class to) {
         if (value == null) {
             // lets avoid NullPointerException when converting to boolean for null values
@@ -104,7 +108,7 @@ public final class IntrospectionSupport {
                     + " to " + to + " with value " + value);
     }
 
-    private static Method findSetterMethod(Class clazz, String name) {
+    private static Method findSetterMethod(Class<?> clazz, String name) {
         // Build the method name.
         name = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
         Method[] methods = clazz.getMethods();
