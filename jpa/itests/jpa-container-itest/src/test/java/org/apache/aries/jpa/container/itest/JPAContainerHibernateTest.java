@@ -26,6 +26,7 @@ public class JPAContainerHibernateTest extends JPAContainerTest {
             baseOptions(), //
             ariesJpa20(), //
             derbyDSF(), //
+            jta12Bundles(), //
             hibernate(), //
             testBundle(), //
         };

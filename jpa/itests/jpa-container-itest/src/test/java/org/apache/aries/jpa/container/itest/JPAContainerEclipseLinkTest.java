@@ -32,6 +32,7 @@ public class JPAContainerEclipseLinkTest extends JPAContainerTest {
         return new Option[] {
             baseOptions(), //
             ariesJpa21(), //
+            jta12Bundles(), //
             eclipseLink(), //
             derbyDSF(), //
             testBundle()

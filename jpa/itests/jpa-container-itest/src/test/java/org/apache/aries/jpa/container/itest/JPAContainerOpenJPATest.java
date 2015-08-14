@@ -38,6 +38,7 @@ public class JPAContainerOpenJPATest extends JPAContainerTest {
         return new Option[] {
             baseOptions(), //
             ariesJpa20(), //
+            jta11Bundles(), // Openjpa currently does not work with jta 1.2. See https://issues.apache.org/jira/browse/OPENJPA-2607
             openJpa(), //
             derbyDSF(), //
             testBundle()
