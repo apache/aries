@@ -19,13 +19,13 @@
 package org.apache.aries.transaction.parsing;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import javax.transaction.Transactional;
 
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
 import org.apache.aries.transaction.annotations.Transaction;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * on bean class or superclasses.
  */
 public class AnnotationParser implements BeanProcessor {
+    private static final int BANNED_MODIFIERS = Modifier.PRIVATE | Modifier.STATIC;
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationParser.class);
 
     private final ComponentDefinitionRegistry cdr;
@@ -137,9 +138,9 @@ public class AnnotationParser implements BeanProcessor {
     }
 
     private void assertAllowedModifier(Method m) {
-        int modifiers = m.getModifiers();
-        if ((modifiers & Constants.BANNED_MODIFIERS) != 0)
-            throw new IllegalArgumentException(Constants.MESSAGES.getMessage("private.or.static.method", m));
+        if ((m.getModifiers() & BANNED_MODIFIERS) != 0) {
+            throw new IllegalArgumentException("Transaction annotation is not allowed on private or static method " + m);
+        }
     }
 
 }

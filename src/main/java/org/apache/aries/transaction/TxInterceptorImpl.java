@@ -103,7 +103,7 @@ public class TxInterceptorImpl implements Interceptor {
                 token.getTransactionAttribute().finish(tm, token);
             } catch (Exception e) {
                 // We are throwing an exception, so we don't error it out
-                LOGGER.debug(Constants.MESSAGES.getMessage("exception.during.tx.finish"), e);
+                LOGGER.debug("Exception while completing transaction.", e);
                 throw new TransactionRollbackException(e);
             }
         } else {

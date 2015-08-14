@@ -40,7 +40,6 @@ import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutablePassThroughMetadata;
 import org.apache.aries.transaction.BundleWideTxData;
-import org.apache.aries.transaction.Constants;
 import org.apache.aries.transaction.TxComponentMetaDataHelper;
 import org.apache.aries.transaction.annotations.TransactionPropagationType;
 import org.osgi.framework.Bundle;
@@ -190,7 +189,8 @@ public class TxNamespaceHandler implements NamespaceHandler {
                 id = props.getProperty(INTERCEPTOR_BLUEPRINT_ID);
             }
         } catch (IOException e) {
-            LOGGER.error(Constants.MESSAGES.getMessage("unable.to.load.provider.props"), e);
+            LOGGER.error("An IOException occurred while loading the provider "
+                         + "properties. Using the default provider.", e);
         } finally {
             safeClose(is);
         }
