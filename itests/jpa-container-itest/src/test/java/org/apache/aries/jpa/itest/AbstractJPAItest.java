@@ -203,7 +203,6 @@ public abstract class AbstractJPAItest {
                              mvnBundle("org.apache.aries.jpa", "org.apache.aries.jpa.support"),
                              mvnBundle("org.apache.aries.jpa", "org.apache.aries.jpa.blueprint"),
 
-                             mvnBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
                              mvnBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager"),
                              mvnBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint"),
 
@@ -282,13 +281,19 @@ public abstract class AbstractJPAItest {
             );
     }
     
+    protected Option jta11Bundles() {
+        return composite(
+            mvnBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec")
+        );
+    }
+    
     protected Option jta12Bundles() {
         return composite(
-            mavenBundle("javax.interceptor", "javax.interceptor-api").versionAsInProject(),
-            mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject").versionAsInProject(),
-            mavenBundle("javax.el", "javax.el-api").versionAsInProject(),
-            mavenBundle("javax.enterprise", "cdi-api").versionAsInProject(),
-            mavenBundle("javax.transaction", "javax.transaction-api").versionAsInProject()
+            mvnBundle("javax.interceptor", "javax.interceptor-api"),
+            mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject"),
+            mvnBundle("javax.el", "javax.el-api"),
+            mvnBundle("javax.enterprise", "cdi-api"),
+            mvnBundle("javax.transaction", "javax.transaction-api")
         );
     }
 
