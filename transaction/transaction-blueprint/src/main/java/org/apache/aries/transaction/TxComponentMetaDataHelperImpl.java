@@ -82,9 +82,7 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
                 if (size == 1) {
                     txAttribute = map.get(matches.get(0));
                 } else {
-                    throw new IllegalStateException(
-                                                    Constants.MESSAGES
-                                                        .getMessage("unable.to.apply.patterns", matches));
+                    throw BundleWideTxDataUtil.unableToApply(matches);
                 }
             }
         }
@@ -117,7 +115,7 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
           
           for (Pattern p : matches) {
               String pattern = p.pattern();
-              Matcher m = Constants.WILDCARD.matcher(pattern);
+              Matcher m = BundleWideTxDataUtil.WILDCARD.matcher(pattern);
               int count = 0;
               
               while (m.find()) {
