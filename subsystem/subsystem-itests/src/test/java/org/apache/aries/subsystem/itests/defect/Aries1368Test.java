@@ -51,6 +51,9 @@ import org.osgi.service.subsystem.SubsystemConstants;
 
 /*
  * https://issues.apache.org/jira/browse/ARIES-1368
+ * 
+ * Fragment resources receive the osgi.identity capability type of osgi.bundle but should receive osgi.fragment. 
+ * Also, osgi.wiring.host capabilities and requirements are not computed for bundle or fragment resources.
  */
 public class Aries1368Test extends SubsystemTest {
     /*
