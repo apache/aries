@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>org.apache.aries.transaction.blueprint</artifactId>
     <packaging>bundle</packaging>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>Apache Aries Transaction Blueprint</name>
 
     <scm>
@@ -43,8 +43,6 @@
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
-            org.apache.aries.transaction.exception,
-            org.apache.aries.transaction.annotations
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.transaction,

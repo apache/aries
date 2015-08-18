@@ -26,11 +26,13 @@ import java.io.IOException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import org.apache.aries.transaction.pojo.AnnotatedPojo;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.Test;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
+import org.osgi.service.coordinator.Coordinator;
 
 public class InterceptorTest {
 
@@ -61,8 +63,10 @@ public class InterceptorTest {
     
     private void postCallWithTransaction(Throwable th, boolean expectRollback, boolean failCoordination) throws Throwable {
         IMocksControl c = EasyMock.createControl();
-        TxInterceptorImpl sut = new TxInterceptorImpl();
-        sut.setTransactionManager(c.createMock(TransactionManager.class));
+        TransactionManager tm = c.createMock(TransactionManager.class);
+        Coordinator coordinator = c.createMock(Coordinator.class);
+        ComponentTxData txData = new ComponentTxData(AnnotatedPojo.class);
+        TxInterceptorImpl sut = new TxInterceptorImpl(tm, coordinator, txData );
         Transaction tran = c.createMock(Transaction.class);
         
         if (expectRollback) {

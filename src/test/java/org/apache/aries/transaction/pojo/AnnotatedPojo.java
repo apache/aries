@@ -18,21 +18,22 @@
  */
 package org.apache.aries.transaction.pojo;
 
-import org.apache.aries.transaction.annotations.Transaction;
-import org.apache.aries.transaction.annotations.TransactionPropagationType;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
+@Transactional(TxType.REQUIRED)
 public class AnnotatedPojo {
-	
-	@Transaction
-	public void increment(String key) {}
 
-	@Transaction(TransactionPropagationType.Supports)
-	protected int checkValue(String key) {
-		return 0;
-	}
-	
-	@Transaction(TransactionPropagationType.Mandatory)
-	Object getRealObject(String key) {
-		return null;
-	}
+    public void increment(String key) {
+    }
+
+    @Transactional(TxType.SUPPORTS)
+    protected int checkValue(String key) {
+        return 0;
+    }
+
+    @Transactional(TxType.MANDATORY)
+    Object getRealObject(String key) {
+        return null;
+    }
 }

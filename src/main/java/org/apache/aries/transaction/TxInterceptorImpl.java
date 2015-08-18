@@ -20,12 +20,12 @@ package org.apache.aries.transaction;
 
 import java.lang.reflect.Method;
 
+import javax.transaction.RollbackException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.transaction.annotations.TransactionPropagationType;
-import org.apache.aries.transaction.exception.TransactionRollbackException;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
@@ -38,18 +38,22 @@ public class TxInterceptorImpl implements Interceptor {
 
     private TransactionManager tm;
     private Coordinator coordinator;
-    private TxComponentMetaDataHelper metaDataHelper;
+    private ComponentTxData txData;
+
+    public TxInterceptorImpl(TransactionManager tm, Coordinator coordinator, ComponentTxData txData) {
+        this.tm = tm;
+        this.coordinator = coordinator;
+        this.txData = txData;
+    }
 
     public int getRank() {
         return 1; // Higher rank than jpa interceptor to make sure transaction is started first
     }
 
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
-        final String methodName = m.getName();
-        final TransactionPropagationType type = metaDataHelper.getComponentMethodTxAttribute(cm, methodName);
-
-        // attribute could be null here which means no transaction
+        final TxType type = txData.getEffectiveType(m);
         if (type == null) {
+            // No transaction
             return null;
         }
         TransactionAttribute txAttribute = TransactionAttribute.fromValue(type);
@@ -63,10 +67,10 @@ public class TxInterceptorImpl implements Interceptor {
     }
 
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
-        LOGGER.debug("PostCallWithException for bean {}, method {}.", getCmId(cm), m.getName(), ex);
         if (!(preCallToken instanceof TransactionToken)) {
             return;
         }
+        LOGGER.debug("PostCallWithException for bean {}, method {}.", getCmId(cm), m.getName(), ex);
         final TransactionToken token = (TransactionToken)preCallToken;
         try {
             token.getCoordination().end();
@@ -77,6 +81,7 @@ public class TxInterceptorImpl implements Interceptor {
             Transaction tran = token.getActiveTransaction();
             if (tran != null && isRollBackException(ex)) {
                 tran.setRollbackOnly();
+                LOGGER.info("Setting transaction to rollback only because of exception ", ex);
             }
             token.getTransactionAttribute().finish(tm, token);
         } catch (Exception e) {
@@ -104,7 +109,9 @@ public class TxInterceptorImpl implements Interceptor {
             } catch (Exception e) {
                 // We are throwing an exception, so we don't error it out
                 LOGGER.debug("Exception while completing transaction.", e);
-                throw new TransactionRollbackException(e);
+                RollbackException rbe = new javax.transaction.RollbackException();
+                rbe.addSuppressed(e);
+                throw rbe;
             }
         } else {
             // TODO: what now?
@@ -115,15 +122,4 @@ public class TxInterceptorImpl implements Interceptor {
         return ex instanceof RuntimeException || ex instanceof Error;
     }
 
-    public final void setTransactionManager(TransactionManager manager) {
-        tm = manager;
-    }
-
-    public void setCoordinator(Coordinator coordinator) {
-        this.coordinator = coordinator;
-    }
-
-    public final void setTxMetaDataHelper(TxComponentMetaDataHelper transactionEnhancer) {
-        this.metaDataHelper = transactionEnhancer;
-    }
 }

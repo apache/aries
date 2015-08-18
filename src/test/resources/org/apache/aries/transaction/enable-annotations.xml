@@ -22,5 +22,5 @@
 
     <tx:enable-annotations/>
 	
-	<bean id="top" class="org.apache.aries.transaction.pojo.AnnotatedPojo"/>
+	<bean id="top" class="org.apache.aries.transaction.pojo.JtaAnnotatedPojo"/>
 </blueprint>
