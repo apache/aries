@@ -16,22 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.transaction;
+package org.apache.aries.transaction.test.impl;
 
-import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.transaction.annotations.TransactionPropagationType;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
-public interface TxComponentMetaDataHelper {
+import java.sql.SQLException;
 
-    public void setComponentTransactionData(ComponentDefinitionRegistry registry, 
-            ComponentMetadata component, TransactionPropagationType type, String method);
+public class SupportsTestBeanImpl extends TestBeanImpl {
 
-    public TransactionPropagationType getComponentMethodTxAttribute(
-            ComponentMetadata component, String methodName);
-    
-    public void populateBundleWideTransactionData(ComponentDefinitionRegistry cdr, TransactionPropagationType value,
-        String method, String bean);
+    @Override
+    @Transactional(value=TxType.SUPPORTS)
+    public void insertRow(String name, int value, Exception e) throws SQLException {
+        super.insertRow(name, value, e);
+    }
 
-    public void unregister(ComponentDefinitionRegistry registry);
+    @Override
+    @Transactional(value=TxType.SUPPORTS)
+    public void delegateInsertRow(String name, int value) throws SQLException {
+        super.delegateInsertRow(name, value);
+    }
+
 }

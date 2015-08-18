@@ -16,38 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.transaction;
+package org.apache.aries.transaction.test.impl;
 
-import java.util.regex.Pattern;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
-import org.apache.aries.transaction.annotations.TransactionPropagationType;
+import java.sql.SQLException;
 
-public final class MatchedTxData
-{
-  private TransactionPropagationType value;
-  private Pattern method;
-  private Pattern bean;
-  
-  public MatchedTxData(TransactionPropagationType value,
-          Pattern method, Pattern bean) {
-      this.value = value;
-      this.method = method;
-      this.bean = bean;
-  }
+public class NeverTestBeanImpl extends TestBeanImpl {
 
-  public TransactionPropagationType getValue() {
-      return this.value;
-  }
-  
-  public Pattern getMethod() {
-      return this.method;
-  }
-  
-  public Pattern getBean() {
-      return this.bean;
-  }
-  
-  public String toString() {
-      return "bean element: " + this.bean + ",method element: " + this.method + ",transaction value: " + this.value;
-  }
+    @Override
+    @Transactional(value=TxType.NEVER)
+    public void insertRow(String name, int value, Exception e) throws SQLException {
+        super.insertRow(name, value, e);
+    }
+
+    @Override
+    @Transactional(value=TxType.NEVER)
+    public void delegateInsertRow(String name, int value) throws SQLException {
+        super.delegateInsertRow(name, value);
+    }
+
 }

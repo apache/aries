@@ -25,7 +25,7 @@ import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
-public class RequiresNewTranAttributeTest extends AbstractIntegrationTest {
+public class RequiresNewTest extends AbstractIntegrationTest {
     @Inject
     @Filter("(tranAttribute=RequiresNew)")
     TestBean rnBean;
@@ -41,11 +41,11 @@ public class RequiresNewTranAttributeTest extends AbstractIntegrationTest {
      */
     @Test
     public void testClientTransactionRollback() throws Exception {
-        int initialRows = rnBean.countRows();
+        int initialRows = counter.countRows();
         tran.begin();
-        rnBean.insertRow("testWithClientTran", 1);
+        rnBean.insertRow("testWithClientTran", 1, null);
         tran.rollback();
-        int finalRows = rnBean.countRows();
+        int finalRows = counter.countRows();
         assertEquals("Added rows", 1, finalRows - initialRows);
     }
     
@@ -56,16 +56,16 @@ public class RequiresNewTranAttributeTest extends AbstractIntegrationTest {
      */
     @Test
     public void testClientTransactionAndApplicationException() throws Exception {
-        int initialRows = rnBean.countRows();
+        int initialRows = counter.countRows();
         tran.begin();
-        rBean.insertRow("testWithClientTranAndWithAppException", 1);
+        rBean.insertRow("testWithClientTranAndWithAppException", 1, null);
         try {
             rnBean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
         } catch (SQLException e) {
             // Ignore expected
         }
         tran.commit();
-        int finalRows = rnBean.countRows();
+        int finalRows = counter.countRows();
         assertEquals("Added rows", 2, finalRows - initialRows);
 
     }
@@ -77,16 +77,16 @@ public class RequiresNewTranAttributeTest extends AbstractIntegrationTest {
      */
     @Test
     public void testClientTransactionAndRuntimeException() throws Exception {
-        int initialRows = rnBean.countRows();
+        int initialRows = counter.countRows();
         tran.begin();
-        rBean.insertRow("testWithClientTranAndWithRuntimeException", 1);
+        rBean.insertRow("testWithClientTranAndWithRuntimeException", 1, null);
         try {
             rnBean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
         } catch (RuntimeException e) {
          // Ignore expected
         }
         tran.commit();
-        int finalRows = rnBean.countRows();
+        int finalRows = counter.countRows();
         assertEquals("Added rows", 1, finalRows - initialRows);
     }
     

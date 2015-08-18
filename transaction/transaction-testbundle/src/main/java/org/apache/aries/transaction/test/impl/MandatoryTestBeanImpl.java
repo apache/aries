@@ -21,13 +21,7 @@ package org.apache.aries.transaction.test.impl;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
 
-public class JtaAnnotatedTestBeanImpl extends TestBeanImpl {
-
-    @Override
-    @Transactional(Transactional.TxType.MANDATORY)
-    public void insertRow(String name, int value) throws SQLException {
-        super.insertRow(name, value);
-    }
+public class MandatoryTestBeanImpl extends TestBeanImpl {
 
     @Override
     @Transactional(Transactional.TxType.MANDATORY)
@@ -41,9 +35,4 @@ public class JtaAnnotatedTestBeanImpl extends TestBeanImpl {
         super.delegateInsertRow(name, value);
     }
 
-    @Override
-    @Transactional(Transactional.TxType.NOT_SUPPORTED)
-    public int countRows() throws SQLException {
-        return super.countRows();
-    }
 }

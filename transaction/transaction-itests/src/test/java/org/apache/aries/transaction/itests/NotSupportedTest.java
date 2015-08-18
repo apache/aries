@@ -15,36 +15,62 @@
  */
 package org.apache.aries.transaction.itests;
 
+import static junit.framework.Assert.assertEquals;
+
+import java.sql.SQLException;
+
 import javax.inject.Inject;
 
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
-public class NeverTranAttributeTest extends AbstractIntegrationTest {
+public class NotSupportedTest extends AbstractIntegrationTest {
     @Inject
-    @Filter("(tranAttribute=Never)")
-    TestBean bean;
+    @Filter("(tranAttribute=NotSupported)")
+    TestBean nsBean;
+
+    @Inject
+    @Filter("(tranAttribute=Required)")
+    TestBean rBean;
 
     /**
-     * Test with client transaction - an exception is thrown because transactions are not allowed
+     * The client transaction is suspended. So the delegate bean that mandates a transaction
+     * fails.
      * @throws Exception
      */
     @Test
-    public void testInsertFails() throws Exception {
-        clientTransaction = true;
-        assertInsertFails();
-    }
-    
-    @Test
-    public void testDelegateInsertFails() throws Exception {
+    public void testNotSupported() throws Exception {
+        assertDelegateInsertFails();
         clientTransaction = false;
         assertDelegateInsertFails();
     }
 
-    @Override
-    protected TestBean getBean() {
-        return bean;
+    @Test
+    public void testExceptionsDoNotAffectTransaction() throws Exception {
+        int initialRows = counter.countRows();
+
+        tran.begin();
+        rBean.insertRow("testWithClientTranAndWithRuntimeException", 1, null);
+        try {
+            nsBean.throwApplicationException();
+        } catch (SQLException e) {
+            // Ignore expected
+        }
+        try {
+            nsBean.throwRuntimeException();
+        } catch (RuntimeException e) {
+            // Ignore expected
+        }
+        tran.commit();
+
+        int finalRows = counter.countRows();
+        assertEquals("Added rows", 1, finalRows - initialRows);
+
     }
 
+    @Override
+    protected TestBean getBean() {
+        return nsBean;
+    }
 }

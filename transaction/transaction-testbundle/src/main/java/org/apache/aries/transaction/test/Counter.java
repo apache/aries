@@ -16,27 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.transaction.parsing;
-
-import org.osgi.service.blueprint.container.BlueprintEvent;
-import org.osgi.service.blueprint.container.BlueprintListener;
+package org.apache.aries.transaction.test;
 
 /**
- * A blueprint listener that tracks DESTROYED events to clean up any stored metadata for that blueprint.
- * (So that we don't leak memory).
+ * Allows to count the rows in the test table
  */
-public class TxBlueprintListener implements BlueprintListener {
-    
-    private final TxNamespaceHandler handler;
-    
-    public TxBlueprintListener(TxNamespaceHandler handler) {
-        this.handler = handler;
-    }
-    
-    public void blueprintEvent(BlueprintEvent event) {
-        if (event.getType() == BlueprintEvent.DESTROYED) {
-            handler.unregister(event.getBundle());
-        }
-    }
-
+public interface Counter {
+    int countRows();
 }

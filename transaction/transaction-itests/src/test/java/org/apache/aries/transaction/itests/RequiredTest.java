@@ -21,17 +21,25 @@ import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
-public class MandatoryAnnotatedTranAttributeTest extends AbstractIntegrationTest {
+public class RequiredTest extends AbstractIntegrationTest {
     @Inject
-    @Filter("(tranAttribute=MandatoryAnnotated)")
+    @Filter(timeout=120000, value="(tranAttribute=Required)")
     TestBean bean;
 
     @Test
-    public void testMandatory() throws Exception {
+    public void testInsertSuccesful() throws Exception {
+        clientTransaction = false;
         assertInsertSuccesful();
+    }
+    
+    @Test
+    public void testInsertWithAppExceptionCommitted() throws Exception {
         assertInsertWithAppExceptionCommitted();
+    }
+    
+    @Test
+    public void testInsertWithRuntimeExceptionRolledBack() throws Exception {
         assertInsertWithRuntimeExceptionRolledBack();
-        assertMandatoryTransaction();
     }
 
     @Override

@@ -18,8 +18,6 @@
  */
 package org.apache.aries.transaction;
 
-import static org.easymock.EasyMock.expect;
-
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
@@ -39,12 +37,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.coordinator.Coordinator;
 
 public class BaseNameSpaceHandlerSetup {
     protected Bundle b;
     protected DummyNamespaceHandlerRegistry nhri;
-    protected TxComponentMetaDataHelperImpl txenhancer;
     protected TxNamespaceHandler namespaceHandler;
     protected IMocksControl control;
 
@@ -53,17 +50,12 @@ public class BaseNameSpaceHandlerSetup {
         control = EasyMock.createControl();
         b = control.createMock(Bundle.class);
         TransactionManager tm = control.createMock(TransactionManager.class);
-        txenhancer = new TxComponentMetaDataHelperImpl();
-        TxInterceptorImpl txinterceptor = new TxInterceptorImpl();
-        txinterceptor.setTransactionManager(tm);
-        txinterceptor.setTxMetaDataHelper(txenhancer);
-        namespaceHandler = new TxNamespaceHandler();
-
-        BlueprintContainer container = control.createMock(BlueprintContainer.class);
-        expect(container.getComponentInstance(EasyMock.eq(TxNamespaceHandler.DEFAULT_INTERCEPTOR_ID))).andReturn(txinterceptor);
+        Coordinator coordinator = control.createMock(Coordinator.class);
         control.replay();
-        namespaceHandler.setBlueprintContainer(container);
-        namespaceHandler.setTxMetaDataHelper(txenhancer);
+
+        namespaceHandler = new TxNamespaceHandler();
+        namespaceHandler.setTm(tm);
+        namespaceHandler.setCoordinator(coordinator);
 
         String[] namespaces = new String[]
             {"http://aries.apache.org/xmlns/transactions/v1.0.0", 
@@ -79,7 +71,6 @@ public class BaseNameSpaceHandlerSetup {
         control.verify();
         b = null;
         nhri = null;
-        txenhancer = null;
     }
 
     protected ComponentDefinitionRegistry parseCDR(String name) throws Exception {
