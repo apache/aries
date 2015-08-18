@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>org.apache.aries.transaction.testds</artifactId>
-    <name>Apache Aries Transaction Test Datasource Configuration</name>
+    <name>Apache Aries Transaction Test Datasource</name>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
