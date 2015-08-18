@@ -18,34 +18,22 @@
  */
 package org.apache.aries.transaction.test.impl;
 
-import org.apache.aries.transaction.annotations.Transaction;
-import org.apache.aries.transaction.annotations.TransactionPropagationType;
-
 import java.sql.SQLException;
 
-public class AnnotatedTestBeanImpl extends TestBeanImpl {
+import javax.transaction.Transactional;
+
+public class RequiredTestBeanImpl extends TestBeanImpl {
 
     @Override
-    @Transaction(TransactionPropagationType.Mandatory)
-    public void insertRow(String name, int value) throws SQLException {
-        super.insertRow(name, value);
-    }
-
-    @Override
-    @Transaction(TransactionPropagationType.Mandatory)
+    @Transactional(Transactional.TxType.REQUIRED)
     public void insertRow(String name, int value, Exception e) throws SQLException {
         super.insertRow(name, value, e);
     }
 
     @Override
-    @Transaction(TransactionPropagationType.Mandatory)
+    @Transactional(Transactional.TxType.REQUIRED)
     public void delegateInsertRow(String name, int value) throws SQLException {
         super.delegateInsertRow(name, value);
     }
 
-    @Override
-    @Transaction(TransactionPropagationType.NotSupported)
-    public int countRows() throws SQLException {
-        return super.countRows();
-    }
 }

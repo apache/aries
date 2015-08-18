@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.transaction.RollbackException;
 import javax.transaction.UserTransaction;
 
+import org.apache.aries.transaction.test.Counter;
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -55,6 +56,9 @@ public abstract class AbstractIntegrationTest {
     
     @Inject
     UserTransaction tran;
+    
+    @Inject
+    Counter counter;
 
     protected boolean clientTransaction = true;
 
@@ -103,9 +107,13 @@ public abstract class AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.testbundle").versionAsInProject(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.testds").versionAsInProject(),
 
-                //new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
+                //debug(),
                 //new TimeoutOption( 0 ),
         };
+    }
+
+    protected Option debug() {
+        return vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
     }
 
     private Option jta12Bundles() {
@@ -138,12 +146,12 @@ public abstract class AbstractIntegrationTest {
     // Test with client transaction and runtime exception - the user transaction is rolled back
     protected void assertInsertWithRuntimeExceptionRolledBack() throws Exception {
         TestBean bean = getBean();
-        int initialRows = bean.countRows();
+        int initialRows = counter.countRows();
 
         if (clientTransaction) {
             tran.begin();
         }
-        bean.insertRow("testWithClientTranAndWithRuntimeException", 1);
+        bean.insertRow("testWithClientTranAndWithRuntimeException", 1, null);
         try {
             bean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
         } catch (RuntimeException e) {
@@ -158,7 +166,7 @@ public abstract class AbstractIntegrationTest {
             }
         }
 
-        int finalRows = bean.countRows();
+        int finalRows = counter.countRows();
         // In case of client transaction both are rolled back
         // In case of container transaction only second insert is rolled back
         assertEquals("Added rows", clientTransaction ? 0 : 1, finalRows - initialRows);
@@ -166,11 +174,11 @@ public abstract class AbstractIntegrationTest {
 
     protected void assertInsertWithAppExceptionCommitted() throws Exception {
         TestBean bean = getBean();
-        int initialRows = bean.countRows();
+        int initialRows = counter.countRows();
         if (clientTransaction) {
             tran.begin();
         }
-        bean.insertRow("testWithClientTranAndWithAppException", 1);
+        bean.insertRow("testWithClientTranAndWithAppException", 1, null);
         try {
             bean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
         } catch (SQLException e) {
@@ -180,33 +188,33 @@ public abstract class AbstractIntegrationTest {
             tran.commit();
         }
 
-        int finalRows = bean.countRows();
+        int finalRows = counter.countRows();
         assertEquals("Added rows", 2, finalRows - initialRows);
     }
 
     protected void assertInsertSuccesful() throws Exception {
         TestBean bean = getBean();
-        int initialRows = bean.countRows();
+        int initialRows = counter.countRows();
 
         if (clientTransaction ) {
             tran.begin();
         }
-        bean.insertRow("testWithClientTran", 1);
+        bean.insertRow("testWithClientTran", 1, null);
         if (clientTransaction ) {
             tran.commit();
         }
-        int finalRows = bean.countRows();
+        int finalRows = counter.countRows();
         assertEquals("Added rows", 1, finalRows - initialRows);
     }
 
     protected void assertInsertFails() throws Exception {
         TestBean bean = getBean();
-        int initialRows = bean.countRows();
+        int initialRows = counter.countRows();
         if (clientTransaction ) {
             tran.begin();
         }
         try {
-            bean.insertRow("testWithClientTran", 1);
+            bean.insertRow("testWithClientTran", 1, null);
             fail("IllegalStateException not thrown");
         } catch (IllegalStateException e) {
             // Ignore Expected
@@ -214,7 +222,7 @@ public abstract class AbstractIntegrationTest {
         if (clientTransaction ) {
             tran.commit();
         }
-        int finalRows = bean.countRows();
+        int finalRows = counter.countRows();
         assertEquals("Added rows", 0, finalRows - initialRows);
     }
     
@@ -222,7 +230,7 @@ public abstract class AbstractIntegrationTest {
     // bean with a transaction strategy of Mandatory, and no transaction is available
     protected void assertDelegateInsertFails() throws Exception {
         TestBean bean = getBean();
-        int initialRows = bean.countRows();
+        int initialRows = counter.countRows();
 
         if (clientTransaction ) {
             tran.begin();
@@ -236,14 +244,14 @@ public abstract class AbstractIntegrationTest {
         if (clientTransaction ) {
             tran.commit();
         }
-        int finalRows = bean.countRows();
+        int finalRows = counter.countRows();
         assertEquals("Added rows", 0, finalRows - initialRows);
     }
 
     // Test without client transaction - an exception is thrown because a transaction is mandatory
     protected void assertMandatoryTransaction() throws SQLException {
           try {
-              getBean().insertRow("testWithoutClientTran", 1);
+              getBean().insertRow("testWithoutClientTran", 1, null);
               fail("IllegalStateException not thrown");
           } catch (IllegalStateException e) {
               // Ignore expected
@@ -254,13 +262,13 @@ public abstract class AbstractIntegrationTest {
 
     protected void assertDelegateInsert() throws Exception {
         TestBean bean = getBean();
-        int initialRows = bean.countRows();
+        int initialRows = counter.countRows();
     
         tran.begin();
         bean.delegateInsertRow("testWithClientTran", 1);
         tran.commit();
     
-        int finalRows = bean.countRows();
+        int finalRows = counter.countRows();
         assertEquals("Added rows", 1, finalRows - initialRows);
     }
 }

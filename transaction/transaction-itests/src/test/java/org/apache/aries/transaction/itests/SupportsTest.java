@@ -21,7 +21,7 @@ import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
-public class SupportsTranAttributeTest extends AbstractIntegrationTest {
+public class SupportsTest extends AbstractIntegrationTest {
     @Inject
     @Filter("(tranAttribute=Supports)")
     TestBean bean;

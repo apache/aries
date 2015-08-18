@@ -27,8 +27,7 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-
-import org.apache.aries.transaction.annotations.TransactionPropagationType;
+import javax.transaction.Transactional.TxType;
 
 public enum TransactionAttribute {
     MANDATORY
@@ -53,7 +52,7 @@ public enum TransactionAttribute {
         return new TransactionToken(null, null, NEVER);
       }
     },
-    NOTSUPPORTED
+    NOT_SUPPORTED
     {
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
@@ -61,7 +60,7 @@ public enum TransactionAttribute {
           return new TransactionToken(null, man.suspend(), this);
         }
 
-        return new TransactionToken(null, null, NOTSUPPORTED);
+        return new TransactionToken(null, null, NOT_SUPPORTED);
       }
 
       public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
@@ -98,7 +97,7 @@ public enum TransactionAttribute {
         }
       }
     },
-    REQUIRESNEW
+    REQUIRES_NEW
     {
       public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
           InvalidTransactionException, IllegalStateException
@@ -114,7 +113,7 @@ public enum TransactionAttribute {
           man.resume(suspendedTransaction);
           throw e;
         }
-        return new TransactionToken(man.getTransaction(), suspendedTransaction, REQUIRESNEW, true);
+        return new TransactionToken(man.getTransaction(), suspendedTransaction, REQUIRES_NEW, true);
       }
 
       public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
@@ -148,9 +147,9 @@ public enum TransactionAttribute {
       }
     };
 
-    public static TransactionAttribute fromValue(TransactionPropagationType type)
+    public static TransactionAttribute fromValue(TxType type)
     {
-      return valueOf(type.name().toUpperCase());
+      return valueOf(type.name());
     }
 
     public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,

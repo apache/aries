@@ -20,42 +20,30 @@ package org.apache.aries.transaction.test.impl;
 
 import java.sql.SQLException;
 
-import org.apache.aries.transaction.test.TestBean;
+import javax.transaction.Transactional;
 
-public class TestBeanImpl implements TestBean {
-    private Connector connector;
-    private TestBean bean;
+@Transactional(Transactional.TxType.NOT_SUPPORTED)
+public class NotSupportedTestBeanImpl extends TestBeanImpl {
 
-    public TestBeanImpl() {
-    }
-
-    public void insertRow(String name, int value, Exception e) throws SQLException {
-        connector.insertRow(name, value);
-        if (e instanceof SQLException) { 
-            throw (SQLException) e;
-        } else if (e instanceof RuntimeException) {
-            throw (RuntimeException) e;
-        }
-    }
-
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+    @Override
     public void delegateInsertRow(String name, int value) throws SQLException {
-        bean.insertRow(name, value, null);
+        // TODO Auto-generated method stub
+        super.delegateInsertRow(name, value);
     }
 
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+    @Override
     public void throwApplicationException() throws SQLException {
-        throw new SQLException("Test exception");
+        // TODO Auto-generated method stub
+        super.throwApplicationException();
     }
 
+    @Transactional(Transactional.TxType.NOT_SUPPORTED)
+    @Override
     public void throwRuntimeException() {
-        throw new RuntimeException("Test exception");
-    }
-
-    public void setTestBean(TestBean bean) {
-        this.bean = bean;
-    }
-    
-    public void setConnector(Connector connector) {
-        this.connector = connector;
+        // TODO Auto-generated method stub
+        super.throwRuntimeException();
     }
 
 }

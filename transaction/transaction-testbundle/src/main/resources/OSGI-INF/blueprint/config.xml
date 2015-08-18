@@ -1,140 +1,82 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
- Licensed to the Apache Software Foundation (ASF) under one
- or more contributor license agreements.  See the NOTICE file
- distributed with this work for additional information
- regarding copyright ownership.  The ASF licenses this file
- to you under the Apache License, Version 2.0 (the
- "License"); you may not use this file except in compliance
- with the License.  You may obtain a copy of the License at
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file distributed 
+    with this work for additional information regarding copyright ownership. The ASF licenses this file to you under the Apache License, 
+    Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License 
+    at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under 
+    the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License 
+    for the specific language governing permissions and limitations under the License. -->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.2.0"
+    default-activation="lazy">
 
-    http://www.apache.org/licenses/LICENSE-2.0
+    <tx:enable-annotations />
 
- Unless required by applicable law or agreed to in writing,
- software distributed under the License is distributed on an
- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- KIND, either express or implied.  See the License for the
- specific language governing permissions and limitations
- under the License.
--->
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.2.0"
-           default-activation="lazy">
+    <reference id="enlistingDataSource" interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=jdbc/xads)" />
 
-   <tx:enable-annotations/>
-
-   <bean id="connector" class="org.apache.aries.transaction.test.impl.Connector" init-method="initialize">
-       <property name="xads" ref="enlistingDataSource"/>
-       <property name="user" value="user"/>
-       <property name="password" value="password"/>
-   </bean>
-
-   <bean id="notSupportedBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
-       <tx:transaction method="*" value="NotSupported"/>
-       <property name="testBean" ref="mandatoryBeanImpl"/>
-       <property name="connector" ref="connector"/>
-   </bean>
-   
-   <service id="notSupportedBean" ref="notSupportedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
-       <service-properties>
-           <entry key="tranAttribute" value="NotSupported"/>
-       </service-properties>
-   </service>
-
-   <bean id="requiredBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
-       <tx:transaction method="insertRow throw*" value="Required"/>
-       <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="connector" ref="connector"/>
-   </bean>
-   
-   <service id="requiredBean" ref="requiredBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
-       <service-properties>
-           <entry key="tranAttribute" value="Required"/>
-       </service-properties>
-   </service>
-
-   <bean id="supportsBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
-       <tx:transaction method="*" value="Supports"/>
-       <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="testBean" ref="mandatoryBeanImpl"/>
-       <property name="connector" ref="connector"/>
-   </bean>
-   
-   <service id="supportsBean" ref="supportsBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
-       <service-properties>
-           <entry key="tranAttribute" value="Supports"/>
-       </service-properties>
-   </service>
-
-   <service id="requiresNewBean" interface="org.apache.aries.transaction.test.TestBean">
-       <service-properties>
-           <entry key="tranAttribute" value="RequiresNew"/>
-       </service-properties>
-       <bean class="org.apache.aries.transaction.test.impl.TestBeanImpl">
-           <tx:transaction method="insertRow throw*" value="RequiresNew"/>
-           <tx:transaction method="countRows" value="NotSupported"/>
-           <property name="connector" ref="connector"/>
-       </bean>
-   </service>
-
-   <bean id="mandatoryBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
-       <tx:transaction method="insertRow throw*" value="Mandatory"/>
-       <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="connector" ref="connector"/>
-   </bean>
-
-   <service id="mandatoryBean" ref="mandatoryBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
-       <service-properties>
-           <entry key="tranAttribute" value="Mandatory"/>
-       </service-properties>
-   </service>
-
-   <bean id="neverBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
-       <tx:transaction method="insertRow" value="Never"/>
-       <tx:transaction method="countRows" value="NotSupported"/>
-       <property name="testBean" ref="mandatoryBeanImpl"/>
-       <property name="connector" ref="connector"/>
-   </bean>
-   
-   <service id="neverBean" ref="neverBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
-       <service-properties>
-           <entry key="tranAttribute" value="Never"/>
-       </service-properties>
-   </service>
-
-   <bean id="invalidBeanImpl" class="org.apache.aries.transaction.test.impl.TestBeanImpl">
-       <tx:transaction method="ins*" value="Never"/>
-       <tx:transaction method="*Row" value="NotSupported"/>
-       <property name="connector" ref="connector"/>
-   </bean>
-
-   <service id="invalidBean" ref="invalidBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
-       <service-properties>
-           <entry key="tranAttribute" value="Invalid"/>
-       </service-properties>
-   </service>
-
-    <bean id="mandatoryAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.AnnotatedTestBeanImpl">
-        <property name="connector" ref="connector"/>
+    <bean id="connector" class="org.apache.aries.transaction.test.impl.Connector" init-method="initialize" destroy-method="close">
+        <property name="xads" ref="enlistingDataSource" />
+        <property name="user" value="" />
+        <property name="password" value="" />
     </bean>
 
-    <service id="mandatoryAnnotatedBean" ref="mandatoryAnnotatedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+    <service id="counter" ref="connector" interface="org.apache.aries.transaction.test.Counter">
+    </service>
+
+    <bean id="mandatoryBeanImpl" class="org.apache.aries.transaction.test.impl.MandatoryTestBeanImpl">
+        <property name="connector" ref="connector" />
+    </bean>
+    <service id="mandatoryBean" ref="mandatoryBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
         <service-properties>
-            <entry key="tranAttribute" value="MandatoryAnnotated"/>
+            <entry key="tranAttribute" value="Mandatory" />
         </service-properties>
     </service>
 
-    <bean id="mandatoryJtaAnnotatedBeanImpl" class="org.apache.aries.transaction.test.impl.JtaAnnotatedTestBeanImpl">
-        <property name="connector" ref="connector"/>
+    <bean id="notSupportedBeanImpl" class="org.apache.aries.transaction.test.impl.NotSupportedTestBeanImpl">
+        <property name="testBean" ref="mandatoryBeanImpl" />
+        <property name="connector" ref="connector" />
     </bean>
-
-    <service id="mandatoryJtaAnnotatedBean" ref="mandatoryJtaAnnotatedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+    <service id="notSupportedBean" ref="notSupportedBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
         <service-properties>
-            <entry key="tranAttribute" value="MandatoryJtaAnnotated"/>
+            <entry key="tranAttribute" value="NotSupported" />
         </service-properties>
     </service>
-    
-    <reference id="enlistingDataSource" interface="javax.sql.DataSource" filter="(osgi.jndi.service.name=jdbc/xads)"/>
+
+    <bean id="requiredBeanImpl" class="org.apache.aries.transaction.test.impl.RequiredTestBeanImpl">
+        <property name="connector" ref="connector" />
+    </bean>
+    <service id="requiredBean" ref="requiredBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+        <service-properties>
+            <entry key="tranAttribute" value="Required" />
+        </service-properties>
+    </service>
+
+    <bean id="supportsBeanImpl" class="org.apache.aries.transaction.test.impl.SupportsTestBeanImpl">
+        <property name="testBean" ref="mandatoryBeanImpl" />
+        <property name="connector" ref="connector" />
+    </bean>
+    <service id="supportsBean" ref="supportsBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+        <service-properties>
+            <entry key="tranAttribute" value="Supports" />
+        </service-properties>
+    </service>
+
+    <bean id="requiresNewBeanImpl" class="org.apache.aries.transaction.test.impl.RequiresNewTestBeanImpl">
+        <property name="connector" ref="connector" />
+    </bean>
+    <service id="requiresNewBean" ref="requiresNewBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+        <service-properties>
+            <entry key="tranAttribute" value="RequiresNew" />
+        </service-properties>
+    </service>
+
+    <bean id="neverBeanImpl" class="org.apache.aries.transaction.test.impl.NeverTestBeanImpl">
+        <property name="testBean" ref="mandatoryBeanImpl" />
+        <property name="connector" ref="connector" />
+    </bean>
+    <service id="neverBean" ref="neverBeanImpl" interface="org.apache.aries.transaction.test.TestBean">
+        <service-properties>
+            <entry key="tranAttribute" value="Never" />
+        </service-properties>
+    </service>
+
 </blueprint>

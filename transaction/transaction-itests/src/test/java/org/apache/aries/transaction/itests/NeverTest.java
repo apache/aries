@@ -21,18 +21,30 @@ import org.apache.aries.transaction.test.TestBean;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
 
-public class InvalidTranAttributeTest extends AbstractIntegrationTest {
+public class NeverTest extends AbstractIntegrationTest {
     @Inject
-    @Filter("(tranAttribute=MandatoryJtaAnnotated)")
+    @Filter("(tranAttribute=Never)")
     TestBean bean;
 
-    @Test(expected = IllegalStateException.class)
-    public void testInvalid() throws Exception {
-        bean.insertRow("testWithoutClientTran", 1);
+    /**
+     * Test with client transaction - an exception is thrown because transactions are not allowed
+     * @throws Exception
+     */
+    @Test
+    public void testInsertFails() throws Exception {
+        clientTransaction = true;
+        assertInsertFails();
+    }
+    
+    @Test
+    public void testDelegateInsertFails() throws Exception {
+        clientTransaction = false;
+        assertDelegateInsertFails();
     }
 
     @Override
     protected TestBean getBean() {
         return bean;
     }
+
 }

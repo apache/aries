@@ -16,12 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.transaction.exception;
+package org.apache.aries.transaction.test.impl;
 
-public class TransactionRollbackException extends RuntimeException {
-    private static final long serialVersionUID = 6156165262745617113L;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
-    public TransactionRollbackException(Throwable cause) {
-      super(cause);
+import java.sql.SQLException;
+
+public class RequiresNewTestBeanImpl extends TestBeanImpl {
+
+    @Override
+    @Transactional(value=TxType.REQUIRES_NEW)
+    public void insertRow(String name, int value, Exception e) throws SQLException {
+        super.insertRow(name, value, e);
     }
+
+    @Override
+    @Transactional(value=TxType.REQUIRES_NEW)
+    public void delegateInsertRow(String name, int value) throws SQLException {
+        super.delegateInsertRow(name, value);
+    }
+
 }
