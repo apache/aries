@@ -56,7 +56,7 @@ public class TaskServiceImplTest {
     private EntityManagerFactory createTestEMF() {
         Map<String, String> properties = new HashMap<>();
         properties.put("javax.persistence.jdbc.driver", "org.apache.derby.jdbc.EmbeddedDriver");
-        properties.put("javax.persistence.jdbc.url", "jdbc:derby:target/test;create=true");
+        properties.put("javax.persistence.jdbc.url", "jdbc:derby:memory:TEST;create=true");
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("tasklist", properties);
         return emf;
     }

@@ -32,21 +32,7 @@
     <artifactId>org.apache.aries.jpa.container.itest.bundle.eclipselink</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JPA test bundle Eclipselink</name>
-
-    <properties>
-        <!-- Export package versions are maintained in packageinfo files -->
-        <aries.osgi.export.pkg>
-            org.apache.aries.jpa.container.itest*
-        </aries.osgi.export.pkg>
-        <aries.osgi.import>
-            javax.persistence*;version="[1.1,3.0)",
-            *
-        </aries.osgi.import>
-        <aries.osgi.private.pkg />
-        <aries.osgi.symbolic.name>${project.artifactId}</aries.osgi.symbolic.name>
-        <!-- Only test bundle -->
-        <aries.skip.version.check>true</aries.skip.version.check>
-    </properties>
+    <description>For testing static weaving and scripts for database setup with EclipseLink</description>
 
     <dependencies>
         <dependency>
@@ -57,21 +43,11 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>2.1.0</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
-                    </instructions>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -93,5 +69,4 @@
         </plugins>
     </build>
 
-    <description>For testing static weaving and scripts for database setup with EclipseLink</description>
 </project>

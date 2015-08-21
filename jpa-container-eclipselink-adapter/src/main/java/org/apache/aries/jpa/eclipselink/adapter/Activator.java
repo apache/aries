@@ -32,6 +32,7 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -109,16 +110,16 @@ public class Activator implements BundleActivator, BundleListener {
             if (!!!registeredProviders.containsKey(b)) {
                 logger.debug("Adding new EclipseLink provider for bundle {}", b);
                 
-                ServiceFactory<?> factory = new EclipseLinkProviderService(b);
+                ServiceFactory<PersistenceProvider> factory = new EclipseLinkProviderService(b);
                 
-                Hashtable<String, Object> props = new Hashtable<String, Object>();
+                Dictionary<String, Object> props = new Hashtable<String, Object>();
                 props.put("org.apache.aries.jpa.container.weaving.packages", getJPAPackages(b));
                 props.put("javax.persistence.provider", ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
                             
-                ServiceRegistration reg = context.registerService(
+                ServiceRegistration<?> reg = context.registerService(
                         PersistenceProvider.class.getName(), factory, props);
                 
-                ServiceRegistration old = registeredProviders.putIfAbsent(b, reg);
+                ServiceRegistration<?> old = registeredProviders.putIfAbsent(b, reg);
                 if (old != null) {
                     reg.unregister();
                 }
