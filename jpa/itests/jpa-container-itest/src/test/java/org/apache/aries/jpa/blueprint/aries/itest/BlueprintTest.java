@@ -47,13 +47,13 @@ public class BlueprintTest extends AbstractCarJPAITest {
         assertNoCars(carService);
         for (int c=0; c<100; c++) {
             System.out.println(c);
+            Coordination coordination = coordinator.begin("testCoordination", 0);
             try {
-                coordinator.begin("testCoordination", 0);
                 carService.addCar(createBlueCar());
                 Collection<Car> cars = carService.getCars();
                 carService.updateCar(cars.iterator().next());
             } finally {
-                coordinator.pop().end();
+                coordination.end();
             }
             carService.deleteCar(BLUE_CAR_PLATE);
             Assert.assertEquals(0, carService.getCars().size());
