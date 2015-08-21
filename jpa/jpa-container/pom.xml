@@ -30,31 +30,21 @@
     <description>Implements the OSGi JPA Container from the enterprise spec. Provider a EntityManagerFactory and EntityManagerFactoryBuilder service</description>
     <packaging>bundle</packaging>
     
-    <properties>
-        <aries.skip.version.check>true</aries.skip.version.check>
-        <aries.osgi.export>
-            org.osgi.service.jdbc,
-            org.osgi.service.jpa
-        </aries.osgi.export>
-        <aries.osgi.activator>
-            org.apache.aries.jpa.container.impl.Activator
-        </aries.osgi.activator>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <version>1.0.1.Final</version>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
-
 </project>

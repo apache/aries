@@ -38,7 +38,7 @@ import javax.persistence.spi.ProviderUtil;
  * we can go in at entity manager creation time and set the eclipselink target-server to be {@link OSGiTSServer}.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class EclipseLinkProviderService implements ServiceFactory {
+public class EclipseLinkProviderService implements ServiceFactory<PersistenceProvider> {
   private static final Logger logger = LoggerFactory.getLogger(Activator.class);
   
   private final Bundle eclipseLinkJpaBundle;
@@ -48,7 +48,7 @@ public class EclipseLinkProviderService implements ServiceFactory {
   }
   
   @Override
-  public Object getService(Bundle bundle, ServiceRegistration registration) {
+  public PersistenceProvider getService(Bundle bundle, ServiceRegistration registration) {
     logger.debug("Requested EclipseLink Provider service");
     
     try {
@@ -88,5 +88,5 @@ public class EclipseLinkProviderService implements ServiceFactory {
     }
   }
 
-  public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {}
+  public void ungetService(Bundle bundle, ServiceRegistration registration, PersistenceProvider service) {}
 }
