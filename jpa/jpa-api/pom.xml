@@ -32,16 +32,6 @@
     <packaging>bundle</packaging>
     <name>Apache Aries JPA Container API</name>
 
-    <properties>
-        <!-- Export package versions are maintained in packageinfo files -->
-        <aries.osgi.export.pkg>
-            org.apache.aries.jpa.supplier,
-            org.apache.aries.jpa.template
-        </aries.osgi.export.pkg>
-        <aries.osgi.private.pkg />
-        <lastReleaseVersion>1.0.0</lastReleaseVersion>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -49,28 +39,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
-            <version>1.0.1.Final</version>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>version-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

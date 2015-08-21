@@ -33,50 +33,13 @@
     <packaging>bundle</packaging>
     <name>Apache Aries JPA test bundle container</name>
 
-    <properties>
-        <!-- As this is only a test bundle we skip the check -->
-        <aries.skip.version.check>true</aries.skip.version.check>
-    
-        <!-- Export package versions are maintained in packageinfo files -->
-        <aries.osgi.export.pkg>
-            org.apache.aries.jpa.container.itest.entities
-        </aries.osgi.export.pkg>
-        <aries.osgi.import>
-            javax.persistence;version="[1.0.0,3.0.0)",
-            org.hibernate.proxy;resolution:=optional,
-            javassist.util.proxy;resolution:=optional,
-            *
-        </aries.osgi.import>
-        <aries.osgi.private.pkg />
-        <aries.osgi.symbolic.name>${project.groupId}.${project.artifactId}</aries.osgi.symbolic.name>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
-            <version>1.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <!-- Dynamic import to for hibernate enhancement 
-                            to make sure it also works in eclipselink -->
-                        <DynamicImport-Package>org.hibernate.proxy,
-                            javassist.util.proxy</DynamicImport-Package>
-                        <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <description>For simple tests with DataSource, DataSourceFactory</description>
 </project>
