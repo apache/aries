@@ -51,7 +51,7 @@ public class ServiceStateMBeanHandlerTest {
         JMXAgent agent = mock(JMXAgent.class);
         JMXAgentContext agentContext = new JMXAgentContext(context, agent, logger);
 
-        ServiceStateMBeanHandler handler = new ServiceStateMBeanHandler(agentContext);
+        ServiceStateMBeanHandler handler = new ServiceStateMBeanHandler(agentContext, new StateConfig());
         handler.open();
 
         assertNotNull(handler.getMbean());

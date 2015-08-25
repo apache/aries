@@ -53,16 +53,15 @@ import org.osgi.service.startlevel.StartLevel;
 
 public class BundleStateTest {
 
-    @Test
-    public void testNotificationsForBundleEvents() throws Exception {
-
+    private void createBundle(StateConfig stateConfig, final List<Notification> received,
+                              final List<AttributeChangeNotification> attributeChanges) throws Exception {
         BundleContext context = mock(BundleContext.class);
         when(context.getBundles()).thenReturn(new Bundle [] {});
         PackageAdmin admin = mock(PackageAdmin.class);
         StartLevel startLevel = mock(StartLevel.class);
         Logger logger = mock(Logger.class);
 
-        BundleState bundleState = new BundleState(context, admin, startLevel, logger);
+        BundleState bundleState = new BundleState(context, admin, startLevel, stateConfig, logger);
 
         Bundle b1 = mock(Bundle.class);
         when(b1.getBundleId()).thenReturn(new Long(9));
@@ -83,10 +82,6 @@ public class BundleStateTest {
         ObjectName objectName = new ObjectName(OBJECTNAME);
         bundleState.preRegister(server, objectName);
         bundleState.postRegister(true);
-
-        //holders for Notifications captured
-        final List<Notification> received = new LinkedList<Notification>();
-        final List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
 
         //add NotificationListener to receive the events
         bundleState.addNotificationListener(new NotificationListener() {
@@ -117,6 +112,17 @@ public class BundleStateTest {
         assertTrue(dispatcher.isShutdown());
         dispatcher.awaitTermination(2, TimeUnit.SECONDS);
         assertTrue(dispatcher.isTerminated());
+    }
+
+    @Test
+    public void testNotificationsForBundleEvents() throws Exception {
+        StateConfig stateConfig = new StateConfig();
+
+        //holders for Notifications captured
+        List<Notification> received = new LinkedList<Notification>();
+        List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
+
+        createBundle(stateConfig, received, attributeChanges);
 
         assertEquals(2, received.size());
         Notification installed = received.get(0);
@@ -153,7 +159,7 @@ public class BundleStateTest {
         StartLevel startLevel = mock(StartLevel.class);
         Logger logger = mock(Logger.class);
 
-        BundleState bundleState = new BundleState(context, admin, startLevel, logger);
+        BundleState bundleState = new BundleState(context, admin, startLevel, new StateConfig(), logger);
 
         MBeanServer server1 = mock(MBeanServer.class);
         MBeanServer server2 = mock(MBeanServer.class);
@@ -198,4 +204,17 @@ public class BundleStateTest {
 
 
     }
+
+    @Test
+    public void testAttributeNotificationDisabled() throws Exception {
+        StateConfig stateConfig = new StateConfig(false);
+
+        //holders for Notifications captured
+        List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
+        createBundle(stateConfig, new LinkedList<Notification>(), attributeChanges);
+
+        assertEquals(0, attributeChanges.size());
+    }
+
+
 }
