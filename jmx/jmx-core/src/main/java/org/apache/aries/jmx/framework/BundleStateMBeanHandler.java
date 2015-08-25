@@ -45,6 +45,7 @@ import org.osgi.service.startlevel.StartLevel;
 public class BundleStateMBeanHandler implements MBeanHandler {
 
     private JMXAgentContext agentContext;
+    private StateConfig stateConfig;
     private Logger logger;
     private String name;
     private StandardMBean mbean;
@@ -54,8 +55,9 @@ public class BundleStateMBeanHandler implements MBeanHandler {
     private ServiceReference startLevelRef;
 
 
-    public BundleStateMBeanHandler(JMXAgentContext agentContext) {
+    public BundleStateMBeanHandler(JMXAgentContext agentContext, StateConfig stateConfig) {
         this.agentContext = agentContext;
+        this.stateConfig = stateConfig;
         this.bundleContext = agentContext.getBundleContext();
         this.logger = agentContext.getLogger();
         this.name = ObjectNameUtils.createFullObjectName(bundleContext, OBJECTNAME);
@@ -69,7 +71,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
         PackageAdmin packageAdmin = (PackageAdmin) bundleContext.getService(packageAdminRef);
         startLevelRef = bundleContext.getServiceReference(StartLevel.class.getName());
         StartLevel startLevel = (StartLevel) bundleContext.getService(startLevelRef);
-        bundleStateMBean = new BundleState(bundleContext, packageAdmin, startLevel, logger);
+        bundleStateMBean = new BundleState(bundleContext, packageAdmin, startLevel, stateConfig, logger);
         try {
             mbean = new RegistrableStandardEmitterMBean(bundleStateMBean, BundleStateMBean.class);
         } catch (NotCompliantMBeanException e) {
