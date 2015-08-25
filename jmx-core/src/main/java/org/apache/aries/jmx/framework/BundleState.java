@@ -81,6 +81,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     protected BundleContext bundleContext;
     protected PackageAdmin packageAdmin;
     protected StartLevel startLevel;
+    protected StateConfig stateConfig;
 
     protected ExecutorService eventDispatcher;
     protected BundleListener bundleListener;
@@ -92,10 +93,11 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     // notification type description
     public static String BUNDLE_EVENT = "org.osgi.bundle.event";
 
-    public BundleState(BundleContext bundleContext, PackageAdmin packageAdmin, StartLevel startLevel, Logger logger) {
+    public BundleState(BundleContext bundleContext, PackageAdmin packageAdmin, StartLevel startLevel, StateConfig stateConfig, Logger logger) {
         this.bundleContext = bundleContext;
         this.packageAdmin = packageAdmin;
         this.startLevel = startLevel;
+        this.stateConfig = stateConfig;
         this.logger = logger;
     }
 
@@ -433,6 +435,10 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     }
 
     protected AttributeChangeNotification getAttributeChangeNotification(BundleEvent event) throws IOException {
+        if (stateConfig != null && !stateConfig.isAttributeChangeNotificationEnabled()) {
+            return null;
+        }
+
         int eventType = event.getType();
         switch (eventType) {
         case BundleEvent.INSTALLED:

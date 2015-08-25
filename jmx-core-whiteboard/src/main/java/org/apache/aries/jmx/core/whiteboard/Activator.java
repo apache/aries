@@ -28,6 +28,7 @@ import org.apache.aries.jmx.framework.BundleState;
 import org.apache.aries.jmx.framework.Framework;
 import org.apache.aries.jmx.framework.PackageState;
 import org.apache.aries.jmx.framework.ServiceState;
+import org.apache.aries.jmx.framework.StateConfig;
 import org.apache.aries.jmx.util.ObjectNameUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -80,6 +81,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
   private static final String PROVISIONING_SERVICE = "org.osgi.service.provisioning.ProvisioningService";
 
   private Logger logger;
+  private StateConfig stateConfig;
 
   private class MBeanServiceProxy<T> implements ServiceFactory
   {
@@ -150,10 +152,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
     tracker = new ServiceTracker(context, filter, this);
     tracker.open();
 
+    stateConfig = StateConfig.register(context);
+
     registerMBean(ServiceStateMBean.class.getName(), new Factory<ServiceStateMBean>() {
       public ServiceStateMBean create()
       {
-        return new ServiceState(ctx, logger);
+        return new ServiceState(ctx, stateConfig, logger);
       }
     }, ServiceStateMBean.OBJECTNAME, _serviceStateMbean );
   }
@@ -176,6 +180,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
 
   public void stop(BundleContext context) throws Exception
   {
+    stateConfig = null;
     tracker.close();
   }
 
@@ -339,7 +344,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
           @Override
           public BundleStateMBean create(PackageAdmin pa, StartLevel sl)
           {
-            return new BundleState(ctx, pa, sl, logger);
+            return new BundleState(ctx, pa, sl, stateConfig, logger);
           }
         }, BundleStateMBean.OBJECTNAME, _bundleState);
       }

@@ -42,6 +42,7 @@ import org.osgi.service.log.LogService;
 public class ServiceStateMBeanHandler implements MBeanHandler {
 
     private JMXAgentContext agentContext;
+    private StateConfig stateConfig;
     private String name;
     private StandardMBean mbean;
     private ServiceState serviceStateMBean;
@@ -49,8 +50,9 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
     private Logger logger;
 
 
-    public ServiceStateMBeanHandler(JMXAgentContext agentContext) {
+    public ServiceStateMBeanHandler(JMXAgentContext agentContext, StateConfig stateConfig) {
         this.agentContext = agentContext;
+        this.stateConfig = stateConfig;
         this.bundleContext = agentContext.getBundleContext();
         this.logger = agentContext.getLogger();
         this.name = ObjectNameUtils.createFullObjectName(bundleContext, OBJECTNAME);
@@ -60,7 +62,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#open()
      */
     public void open() {
-        serviceStateMBean = new ServiceState(bundleContext, logger);
+        serviceStateMBean = new ServiceState(bundleContext, stateConfig, logger);
         try {
             mbean = new RegistrableStandardEmitterMBean(serviceStateMBean, ServiceStateMBean.class);
         } catch (NotCompliantMBeanException e) {

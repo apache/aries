@@ -64,7 +64,7 @@ public class BundleStateMBeanHandlerTest {
         JMXAgent agent = mock(JMXAgent.class);
         JMXAgentContext agentContext = new JMXAgentContext(context, agent, logger);
 
-        BundleStateMBeanHandler handler = new BundleStateMBeanHandler(agentContext);
+        BundleStateMBeanHandler handler = new BundleStateMBeanHandler(agentContext, new StateConfig());
         handler.open();
 
         assertNotNull(handler.getMbean());

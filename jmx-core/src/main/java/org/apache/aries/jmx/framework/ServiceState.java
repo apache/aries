@@ -69,6 +69,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
 
     protected Logger logger;
     private BundleContext bundleContext;
+    private StateConfig stateConfig;
 
     protected ExecutorService eventDispatcher;
     protected AllServiceListener serviceListener;
@@ -80,11 +81,12 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     // notification type description
     public static String SERVICE_EVENT = "org.osgi.service.event";
 
-    public ServiceState(BundleContext bundleContext, Logger logger) {
+    public ServiceState(BundleContext bundleContext, StateConfig stateConfig, Logger logger) {
         if (bundleContext == null) {
             throw new IllegalArgumentException("Argument bundleContext cannot be null");
         }
         this.bundleContext = bundleContext;
+        this.stateConfig = stateConfig;
         this.logger = logger;
     }
 
@@ -287,6 +289,10 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     protected AttributeChangeNotification getAttributeChangeNotification(ServiceEvent serviceevent) throws IOException {
+        if (stateConfig != null && !stateConfig.isAttributeChangeNotificationEnabled()) {
+            return null;
+        }
+
         int eventType = serviceevent.getType();
         switch (eventType) {
         case ServiceEvent.REGISTERED:
