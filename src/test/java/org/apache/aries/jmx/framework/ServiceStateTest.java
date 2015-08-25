@@ -64,13 +64,12 @@ import org.osgi.framework.ServiceReference;
 public class ServiceStateTest {
 
 
-    @Test
-    public void testNotificationsForServiceEvents() throws Exception {
-
+    private void createService(StateConfig stateConfig, final List<Notification> received,
+                               final List<AttributeChangeNotification> attributeChanges) throws Exception {
         BundleContext context = mock(BundleContext.class);
         Logger logger = mock(Logger.class);
 
-        ServiceState serviceState = new ServiceState(context, logger);
+        ServiceState serviceState = new ServiceState(context, stateConfig, logger);
 
         ServiceReference reference = mock(ServiceReference.class);
         Bundle b1 = mock(Bundle.class);
@@ -99,9 +98,6 @@ public class ServiceStateTest {
         serviceState.preRegister(server, objectName);
         serviceState.postRegister(true);
 
-        //holders for Notifications captured
-        final List<Notification> received = new LinkedList<Notification>();
-        final List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
 
         //add NotificationListener to receive the events
         serviceState.addNotificationListener(new NotificationListener() {
@@ -132,6 +128,17 @@ public class ServiceStateTest {
         assertTrue(dispatcher.isShutdown());
         dispatcher.awaitTermination(2, TimeUnit.SECONDS);
         assertTrue(dispatcher.isTerminated());
+    }
+
+    @Test
+    public void testNotificationsForServiceEvents() throws Exception {
+        StateConfig stateConfig = new StateConfig();
+
+        //holders for Notifications captured
+        List<Notification> received = new LinkedList<Notification>();
+        List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
+
+        createService(stateConfig, received, attributeChanges);
 
         assertEquals(2, received.size());
         Notification registered = received.get(0);
@@ -168,7 +175,7 @@ public class ServiceStateTest {
         BundleContext context = mock(BundleContext.class);
         Logger logger = mock(Logger.class);
 
-        ServiceState serviceState = new ServiceState(context, logger);
+        ServiceState serviceState = new ServiceState(context, new StateConfig(), logger);
 
         MBeanServer server1 = mock(MBeanServer.class);
         MBeanServer server2 = mock(MBeanServer.class);
@@ -211,6 +218,17 @@ public class ServiceStateTest {
 
 
 
+    }
+
+    @Test
+    public void testAttributeNotificationDisabled() throws Exception {
+        StateConfig stateConfig = new StateConfig(false);
+
+        //holders for Notifications captured
+        List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
+        createService(stateConfig, new LinkedList<Notification>(), attributeChanges);
+
+        assertEquals(0, attributeChanges.size());
     }
 
 }

@@ -40,6 +40,7 @@ import org.apache.aries.jmx.framework.BundleStateMBeanHandler;
 import org.apache.aries.jmx.framework.FrameworkMBeanHandler;
 import org.apache.aries.jmx.framework.PackageStateMBeanHandler;
 import org.apache.aries.jmx.framework.ServiceStateMBeanHandler;
+import org.apache.aries.jmx.framework.StateConfig;
 import org.apache.aries.jmx.framework.wiring.BundleWiringStateMBeanHandler;
 import org.apache.aries.jmx.permissionadmin.PermissionAdminMBeanHandler;
 import org.apache.aries.jmx.provisioning.ProvisioningServiceMBeanHandler;
@@ -66,16 +67,19 @@ public class JMXAgentImpl implements JMXAgent {
      */
     private Map<MBeanServer, Boolean> mbeanServers;
     private Map<MBeanHandler, Boolean> mbeansHandlers;
+    private StateConfig stateConfig;
     private BundleContext context;
     private Logger logger;
 
     /**
      * Constructs new JMXAgent.
      *
+     * @param stateConfig
      * @param logger @see org.apache.aries.jmx.Logger
      */
-    public JMXAgentImpl(BundleContext context, Logger logger) {
+    public JMXAgentImpl(BundleContext context, StateConfig stateConfig, Logger logger) {
         this.context = context;
+        this.stateConfig = stateConfig;
         this.logger = logger;
         this.mbeanServers = new IdentityHashMap<MBeanServer, Boolean>();
         this.mbeansHandlers = new IdentityHashMap<MBeanHandler, Boolean>();
@@ -92,13 +96,13 @@ public class JMXAgentImpl implements JMXAgent {
         MBeanHandler frameworkHandler = new FrameworkMBeanHandler(agentContext);
         mbeansHandlers.put(frameworkHandler, Boolean.FALSE);
         frameworkHandler.open();
-        MBeanHandler bundleStateHandler = new BundleStateMBeanHandler(agentContext);
+        MBeanHandler bundleStateHandler = new BundleStateMBeanHandler(agentContext, stateConfig);
         mbeansHandlers.put(bundleStateHandler, Boolean.FALSE);
         bundleStateHandler.open();
         MBeanHandler revisionsStateHandler = new BundleWiringStateMBeanHandler(agentContext);
         mbeansHandlers.put(revisionsStateHandler, Boolean.FALSE);
         revisionsStateHandler.open();
-        MBeanHandler serviceStateHandler = new ServiceStateMBeanHandler(agentContext);
+        MBeanHandler serviceStateHandler = new ServiceStateMBeanHandler(agentContext, stateConfig);
         mbeansHandlers.put(serviceStateHandler, Boolean.FALSE);
         serviceStateHandler.open();
         MBeanHandler packageStateHandler = new PackageStateMBeanHandler(agentContext);
