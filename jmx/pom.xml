@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries.jmx</groupId>
         <artifactId>org.apache.aries.jmx.parent</artifactId>
-        <version>1.1.5-SNAPSHOT</version>
+        <version>1.1.5</version>
         <relativePath>jmx-parent</relativePath>
     </parent>  
 
@@ -35,9 +35,9 @@
     <description>Implementation of the JMX Management Model Specification - reactor pom</description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jmx</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/jmx-1.1.5</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/jmx-1.1.5</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/jmx-1.1.5</url>
     </scm>
 
     <modules>
