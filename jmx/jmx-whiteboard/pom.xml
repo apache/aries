@@ -39,12 +39,6 @@
         services registered in the OSGi service registry.
     </description>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/jmx-whiteboard</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/trunk/jmx-whiteboard</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/trunk/jmx-whiteboard</url>
-    </scm>
-
     <!-- A Note on Testing ================= This project contains two kinds 
         of tests: regular unit tests running in the test phase and integration tests 
         based on PAX Exam running in the integration-test phase. Basically the complete 
