@@ -22,20 +22,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>parent</artifactId>
-        <version>2.0.0</version>
-        <relativePath>../parent/pom.xml</relativePath>
+        <groupId>org.apache.aries.jmx</groupId>
+        <artifactId>org.apache.aries.jmx.parent</artifactId>
+        <version>1.1.4-SNAPSHOT</version>
+        <relativePath>jmx-parent</relativePath>
     </parent>  
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>jmx</artifactId>
     <name>Apache Aries JMX</name>
     <packaging>pom</packaging>
-    <version>1.1.0-SNAPSHOT</version>
     <description>Implementation of the JMX Management Model Specification - reactor pom</description>
 
     <modules>
+        <module>jmx-parent</module>
         <module>jmx-api</module>
         <module>jmx-blueprint-api</module>
         <module>jmx-core</module>
