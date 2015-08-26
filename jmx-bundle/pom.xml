@@ -36,12 +36,6 @@
        This bundle contains the standalone implementation of the along with the API.
     </description>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/jmx-bundle</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/trunk/jmx-bundle</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/trunk/jmx-bundle</url>
-    </scm>
-
     <properties>
         <aries.osgi.activator>
             org.apache.aries.jmx.Activator

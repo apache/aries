@@ -38,12 +38,6 @@
         used to register the MBeans.
     </description>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/jmx-core-whiteboard</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/trunk/jmx-core-whiteboard</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/trunk/jmx-core-whiteboard</url>
-    </scm>
-
     <properties>
         <aries.osgi.activator>
             org.apache.aries.jmx.core.whiteboard.Activator

@@ -37,12 +37,6 @@
 		of the JMX Control specification
     </description>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/jmx-core</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/trunk/jmx-core</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/trunk/jmx-core</url>
-    </scm>
-
     <properties>
         <aries.osgi.activator>
             org.apache.aries.jmx.Activator

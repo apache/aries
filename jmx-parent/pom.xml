@@ -32,10 +32,4 @@
 
     <name>Apache Aries JMX parent</name>
     <packaging>pom</packaging>
-
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/org.apache.aries.jmx.parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/trunk/org.apache.aries.jmx.parent</developerConnection>
-    <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/org.apache.aries.jmx.parent</url>
-  </scm>
 </project>

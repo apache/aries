@@ -36,12 +36,6 @@
         This bundle contains the core implementation of the JMX Blueprint API
     </description>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/jmx-blueprint-core</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/trunk/jmx-blueprint-core</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/trunk/jmx-blueprint-core</url>
-    </scm>
-
     <properties>
         <aries.osgi.activator>
             org.apache.aries.jmx.blueprint.impl.Activator
