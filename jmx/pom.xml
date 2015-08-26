@@ -50,9 +50,7 @@
         <module>jmx-blueprint-core</module>
         <module>jmx-bundle</module>
         <module>jmx-blueprint-bundle</module>
-        <!-- Temporary disable itests for release as they contain snapshot dependencies
         <module>jmx-itests</module>
-        -->
     </modules>
 
 </project>
