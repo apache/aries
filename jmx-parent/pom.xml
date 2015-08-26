@@ -28,8 +28,14 @@
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.parent</artifactId>
-    <version>1.1.5-SNAPSHOT</version>
+    <version>1.1.5</version>
 
     <name>Apache Aries JMX parent</name>
     <packaging>pom</packaging>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/jmx-1.1.5/org.apache.aries.jmx.parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/jmx-1.1.5/org.apache.aries.jmx.parent</developerConnection>
+    <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/jmx-1.1.5/org.apache.aries.jmx.parent</url>
+  </scm>
 </project>
