@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries.jmx</groupId>
         <artifactId>org.apache.aries.jmx.parent</artifactId>
-        <version>1.1.4-SNAPSHOT</version>
+        <version>1.1.4</version>
         <relativePath>../jmx-parent</relativePath>
     </parent>  
 
@@ -37,9 +37,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-api</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-api</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-blueprint-api</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/jmx-1.1.4/jmx-blueprint-api</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/jmx-1.1.4/jmx-blueprint-api</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/jmx-1.1.4/jmx-blueprint-api</url>
     </scm>
 
     <properties>
