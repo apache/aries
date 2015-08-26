@@ -34,6 +34,12 @@
     <packaging>pom</packaging>
     <description>Implementation of the JMX Management Model Specification - reactor pom</description>
 
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jmx</url>
+    </scm>
+
     <modules>
         <module>jmx-parent</module>
         <module>jmx-api</module>

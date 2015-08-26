@@ -36,12 +36,6 @@
         This bundle contains the JMX 1.1.0 API
     </description>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/jmx-api</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/trunk/jmx-api</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/trunk/jmx-api</url>
-    </scm>
-
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
