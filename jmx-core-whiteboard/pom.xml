@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries.jmx</groupId>
         <artifactId>org.apache.aries.jmx.parent</artifactId>
-        <version>1.1.4</version>
+        <version>1.1.5-SNAPSHOT</version>
         <relativePath>../jmx-parent</relativePath>
     </parent>  
 
@@ -39,9 +39,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/jmx-1.1.4/jmx-core-whiteboard</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/jmx-1.1.4/jmx-core-whiteboard</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/jmx-1.1.4/jmx-core-whiteboard</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/trunk/jmx-core-whiteboard</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/trunk/jmx-core-whiteboard</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/trunk/jmx-core-whiteboard</url>
     </scm>
 
     <properties>
