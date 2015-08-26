@@ -22,17 +22,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>parent</artifactId>
-        <version>2.0.0</version>
-        <relativePath>../../parent/pom.xml</relativePath>
-    </parent>
+        <groupId>org.apache.aries.jmx</groupId>
+        <artifactId>org.apache.aries.jmx.parent</artifactId>
+        <version>1.1.4-SNAPSHOT</version>
+        <relativePath>../jmx-parent</relativePath>
+    </parent>  
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.blueprint</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint Bundle</name>
-    <version>1.1.2-SNAPSHOT</version>
     <description>
        This bundle contains the standalone implementation of the along with the API.
     </description>
@@ -75,12 +74,12 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
-            <version>1.1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
-            <version>1.1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
