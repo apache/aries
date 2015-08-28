@@ -17,8 +17,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.osgi.framework.Filter;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.util.tracker.ServiceTracker;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class ConfigAdminPropsFileContentHandlerTest extends SubsystemTest {
     public ConfigAdminPropsFileContentHandlerTest() {
@@ -75,5 +80,57 @@ public class ConfigAdminPropsFileContentHandlerTest extends SubsystemTest {
         } finally {
             blahTracker.close();
         }
+
+        stopAndUninstallSubsystemSilently(subsystem);
+    }
+
+    @Test
+    public void testAries1352() throws Exception {
+        // Same test than testConfigurationContentHandler, but an existing
+        // configuration exists before the subsystem is installed.
+        // The configuration should not be overwritten by the subsystem
+        // installation.
+
+        ConfigurationAdmin cm = bundleContext.getService(
+                bundleContext.getServiceReference(ConfigurationAdmin.class));
+
+        Configuration blahConf = cm.getConfiguration("com.blah.Blah", "?");
+        Dictionary<String, Object> blahProps = new Hashtable<String, Object>(1);
+        blahProps.put("configVal", "Hello");
+        blahConf.update(blahProps);
+
+        Subsystem subsystem = installSubsystemFromFile("cmContent.esa");
+        subsystem.start();
+
+        // No configuration exists for the service Bar: configuration
+        // values are loaded by the subsystem.
+        Filter f = bundleContext.createFilter(
+                "(&(objectClass=java.lang.String)(test.pid=org.foo.Bar))");
+        ServiceTracker<String, String> barTracker =
+                new ServiceTracker<String, String>(bundleContext, f, null);
+        try {
+            barTracker.open();
+            String blahSvc = barTracker.waitForService(2000);
+            assertEquals("Bar!", blahSvc);
+        } finally {
+            barTracker.close();
+        }
+
+        // A configuration exists for Blah: the subsystem installation should
+        // not overwrite it.
+        Filter f2 = bundleContext.createFilter(
+                "(&(objectClass=java.lang.String)(test.pid=com.blah.Blah))");
+        ServiceTracker<String, String> blahTracker =
+                new ServiceTracker<String, String>(bundleContext, f2, null);
+        try {
+            blahTracker.open();
+            String blahSvc = blahTracker.waitForService(2000);
+            assertEquals("Hello", blahSvc);
+        } finally {
+            blahTracker.close();
+        }
+
+        stopAndUninstallSubsystemSilently(subsystem);
+        blahConf.delete();
     }
 }
