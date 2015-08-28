@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.subsystem.ContentHandler;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.coordinator.Coordination;
@@ -34,9 +35,11 @@ public class ConfigAdminContentHandler implements ContentHandler {
     public static final String[] CONTENT_TYPES = {PROPERTIES_CONTENT_TYPE, FELIXCM_CONTENT_TYPE};
 
     private final ServiceTracker<ConfigurationAdmin,ConfigurationAdmin> cmTracker;
+    private final BundleContext ctx;
     private Map<String, Dictionary<String, Object>> configurations = new ConcurrentHashMap<String, Dictionary<String, Object>>();
 
     public ConfigAdminContentHandler(BundleContext ctx) {
+        this.ctx = ctx;
         cmTracker = new ServiceTracker<ConfigurationAdmin, ConfigurationAdmin>(
                 ctx, ConfigurationAdmin.class, null);
         cmTracker.open();
@@ -86,11 +89,20 @@ public class ConfigAdminContentHandler implements ContentHandler {
                         symbolicName + " to subsystem " + subsystem.getSymbolicName()));
                 return;
             }
-            Configuration conf = cm.getConfiguration(symbolicName, null);
-            conf.update(configuration);
+            Configuration[] matchingConfs = cm.listConfigurations(
+                    ctx.createFilter("(service.pid=" + symbolicName + ")").toString());
+            if(matchingConfs == null || matchingConfs.length == 0) {
+                // No configuration exists: create a new one.
+                Configuration conf = cm.getConfiguration(symbolicName, "?");
+                conf.update(configuration);
+            }
 
             // Update has happened, we can forget the configuration data now
             configurations.remove(symbolicName);
+        } catch(InvalidSyntaxException e) {
+            // Unlikely to happen.
+            coordination.fail(new Exception("Failed to list existing configurations for " + symbolicName + " in subsystem " +
+                    subsystem.getSymbolicName(), e));
         } catch (IOException e) {
             coordination.fail(new Exception("Problem applying configuration " + symbolicName + " in subsystem " +
                     subsystem.getSymbolicName(), e));
