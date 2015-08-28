@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
@@ -30,8 +31,7 @@ public class SystemRepository implements org.apache.aries.subsystem.core.reposit
 	}
 
 	@Override
-	public Map<Requirement, Collection<Capability>> findProviders(
-			Collection<? extends Requirement> requirements) {
+	public Map<Requirement, Collection<Capability>> findProviders(Collection<? extends Requirement> requirements) {
 		Map<Requirement, Collection<Capability>> result = new HashMap<Requirement, Collection<Capability>>();
 		for (Requirement requirement : requirements)
 			result.put(requirement, findProviders(requirement));
@@ -40,24 +40,39 @@ public class SystemRepository implements org.apache.aries.subsystem.core.reposit
 	
 	public Collection<Capability> findProviders(Requirement requirement) {
 		Collection<Capability> result = new HashSet<Capability>();
-		findProviders(requirement, result, root);
+		findProviders(requirement, result, root, new HashSet<Resource>());
 		return result;
 	}
 	
-	private void findProviders(Requirement requirement, Collection<Capability> capabilities, BasicSubsystem subsystem) {
+	private void findProviders(
+	        Requirement requirement, 
+	        Collection<Capability> capabilities, 
+	        BasicSubsystem subsystem,
+	        Set<Resource> processedResources) {
 		// Need to examine capabilities offered by the subsystem itself.
 		// For example, the requirement might be an osgi.identity
 		// requirement for a preferred provider that's a subsystem.
-		for (Capability capability : subsystem.getCapabilities(requirement.getNamespace()))
-			if (ResourceHelper.matches(requirement, capability))
+		for (Capability capability : subsystem.getCapabilities(requirement.getNamespace())) {
+			if (ResourceHelper.matches(requirement, capability)) {
 				capabilities.add(capability);
+			}
+		}
 		for (Resource constituent : subsystem.getConstituents()) {
-			if (constituent instanceof BasicSubsystem)
-				findProviders(requirement, capabilities, (BasicSubsystem)constituent);
-			else
-				for (Capability capability : constituent.getCapabilities(requirement.getNamespace()))
-					if (ResourceHelper.matches(requirement, capability))
+		    if (processedResources.contains(constituent)) {
+		        continue;
+		    }
+		    processedResources.add(constituent);
+			if (constituent instanceof BasicSubsystem) {
+				findProviders(requirement, capabilities, (BasicSubsystem)constituent, processedResources);
+			}
+			else {
+				for (Capability capability : constituent.getCapabilities(requirement.getNamespace())) {
+					if (ResourceHelper.matches(requirement, capability)) {
 						capabilities.add(capability);
+					}
+				}
+				processedResources.add(constituent);
+			}
 		}
 	}
 }
