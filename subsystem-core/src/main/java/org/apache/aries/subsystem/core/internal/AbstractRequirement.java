@@ -13,6 +13,10 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.resource.Requirement;
 
 public abstract class AbstractRequirement implements Requirement {
@@ -28,6 +32,20 @@ public abstract class AbstractRequirement implements Requirement {
 				&& c.getDirectives().equals(getDirectives())
 				&& c.getResource() != null ? c.getResource().equals(
 				getResource()) : getResource() == null;
+	}
+	
+	private Filter filter;
+	public Filter getFilter() throws InvalidSyntaxException {
+	    String filterStr = getDirectives().get(Constants.FILTER_DIRECTIVE);
+	    if (filterStr == null) {
+	        return null;
+	    }
+	    synchronized (this) {
+	        if (filter == null) {
+	            filter = FrameworkUtil.createFilter(filterStr);
+	        }
+	        return filter;
+	    }	    
 	}
 	
 	@Override
