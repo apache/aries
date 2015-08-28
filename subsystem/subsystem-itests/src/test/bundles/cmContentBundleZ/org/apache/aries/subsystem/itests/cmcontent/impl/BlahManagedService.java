@@ -23,5 +23,10 @@ public class BlahManagedService implements ManagedService {
             props.put("test.pid", p.get(Constants.SERVICE_PID));
             bundleContext.registerService(String.class, "Blah!", props);
         }
+        if ("Hello".equals(p.get("configVal"))) {
+            Dictionary<String, Object> props = new Hashtable<String, Object>();
+            props.put("test.pid", p.get(Constants.SERVICE_PID));
+            bundleContext.registerService(String.class, "Hello", props);
+        }
     }
 }
