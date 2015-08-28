@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.core.archive.TypeAttribute;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
@@ -115,17 +116,25 @@ public class ResourceHelper {
 		else if (!capability.getNamespace().equals(requirement.getNamespace())) 
 			return false;
 		else {
-			String filterStr = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
-			if (filterStr != null) {
-				try {
-					if (!FrameworkUtil.createFilter(filterStr).matches(capability.getAttributes()))
-						return false;
-				}
-				catch (InvalidSyntaxException e) {
-					logger.debug("Requirement had invalid filter string: " + requirement, e);
-					return false;
-				}
-			}
+		    Filter filter = null;
+		    try {
+    		    if (requirement instanceof AbstractRequirement) {
+    		        filter = ((AbstractRequirement)requirement).getFilter();
+    		    }
+    		    else {
+    		        String filterStr = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
+    	            if (filterStr != null) {
+    	                filter = FrameworkUtil.createFilter(filterStr);
+    	            }
+    		    }
+		    }
+		    catch (InvalidSyntaxException e) {
+                logger.debug("Requirement had invalid filter string: " + requirement, e);
+                return false;
+            }
+		    if (filter != null && !filter.matches(capability.getAttributes())) {
+                return false;
+		    }
 		}
 		return matchMandatoryDirective(requirement, capability);
 	}
