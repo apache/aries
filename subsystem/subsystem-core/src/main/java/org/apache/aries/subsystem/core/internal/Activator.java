@@ -50,20 +50,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
     public static final String LOG_ENTRY = "Method entry: {}, args {}";
     public static final String LOG_EXIT = "Method exit: {}, returning {}";
 
-    private static Activator instance;
-
-	public static synchronized Activator getInstance() {
-		logger.debug(LOG_ENTRY, "getInstance");
-		checkInstance();
-		logger.debug(LOG_EXIT, "getInstance", instance);
-		return instance;
-	}
-
-	private static synchronized void checkInstance() {
-		logger.debug(LOG_ENTRY, "checkInstance");
-		if (instance == null)
-			throw new IllegalStateException("The activator has not been initialized or has been shutdown");
-		logger.debug(LOG_EXIT, "checkInstance");
+    private static volatile Activator instance;
+	public static Activator getInstance() {
+	    Activator result = instance;
+	    if (result == null)
+            throw new IllegalStateException("The activator has not been initialized or has been shutdown");
+		return result;
 	}
 
 	// @GuardedBy("this")
