@@ -68,7 +68,13 @@ public class BasicCapability extends AbstractCapability {
 	private final String namespace;
 	
 	public BasicCapability(Capability capability, Resource resource) {
-		this(capability.getNamespace(), capability.getAttributes(), capability.getDirectives(), resource);
+	    if (resource == null) {
+	        throw new NullPointerException();
+	    }
+		attributes = capability.getAttributes();
+		directives = capability.getDirectives();
+		this.resource = resource;
+		namespace = capability.getNamespace();
 	}
 	
 	public BasicCapability(String namespace, Map<String, Object> attributes, Map<String, String> directives, Resource resource) {
