@@ -15,8 +15,6 @@ package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +27,9 @@ import org.osgi.framework.VersionRange;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class PreferredProviderHeader implements RequirementHeader<PreferredProviderHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+public class PreferredProviderHeader extends AbstractClauseBasedHeader<PreferredProviderHeader.Clause> implements RequirementHeader<PreferredProviderHeader.Clause> {
+
+    public static class Clause extends AbstractClause {
 		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
 		public static final String ATTRIBUTE_VERSION = VersionAttribute.NAME;
 		
@@ -46,22 +45,8 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 				parameters.put(ATTRIBUTE_TYPE, TypeAttribute.newInstance(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE));
 		}
 		
-		private final String path;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clause);
-			if (!matcher.find())
-				throw new IllegalArgumentException("Missing resource path: " + clause);
-			path = matcher.group();
-			matcher.usePattern(PATTERN_PARAMETER);
-			while (matcher.find()) {
-				Parameter parameter = ParameterFactory.create(matcher.group());
-				if (parameter instanceof VersionAttribute)
-					parameter = new VersionRangeAttribute(new VersionRange(String.valueOf(parameter.getValue())));
-				parameters.put(parameter.getName(), parameter);
-			}
-			fillInDefaults(parameters);
+            super(clause);
 		}
 		
 		public boolean contains(Resource resource) {
@@ -71,63 +56,6 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 							ResourceHelper.getVersionAttribute(resource))
 					&& getType().equals(
 							ResourceHelper.getTypeAttribute(resource));
-		}
-		
-		@Override
-		public Attribute getAttribute(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Attribute) {
-				return (Attribute)result;
-			}
-			return null;
-		}
-
-		@Override
-		public Collection<Attribute> getAttributes() {
-			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Attribute) {
-					attributes.add((Attribute)parameter);
-				}
-			}
-			attributes.trimToSize();
-			return attributes;
-		}
-
-		@Override
-		public Directive getDirective(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Directive) {
-				return (Directive)result;
-			}
-			return null;
-		}
-
-		@Override
-		public Collection<Directive> getDirectives() {
-			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Directive) {
-					directives.add((Directive)parameter);
-				}
-			}
-			directives.trimToSize();
-			return directives;
-		}
-
-		@Override
-		public Parameter getParameter(String name) {
-			return parameters.get(name);
-		}
-
-		@Override
-		public Collection<Parameter> getParameters() {
-			return Collections.unmodifiableCollection(parameters.values());
-		}
-
-		@Override
-		public String getPath() {
-			return path;
 		}
 		
 		public String getSymbolicName() {
@@ -145,6 +73,23 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 			return new VersionRange(attribute.getValue().toString());
 		}
 		
+        @Override
+        protected void processClauseString(String clauseString)
+                throws IllegalArgumentException {
+            Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clauseString);
+            if (!matcher.find())
+                throw new IllegalArgumentException("Missing resource path: " + clauseString);
+            path = matcher.group();
+            matcher.usePattern(PATTERN_PARAMETER);
+            while (matcher.find()) {
+                Parameter parameter = ParameterFactory.create(matcher.group());
+                if (parameter instanceof VersionAttribute)
+                    parameter = new VersionRangeAttribute(new VersionRange(String.valueOf(parameter.getValue())));
+                parameters.put(parameter.getName(), parameter);
+            }
+            fillInDefaults(parameters);
+        }
+        
 		public PreferredProviderRequirement toRequirement(Resource resource) {
 			return new PreferredProviderRequirement(this, resource);
 		}
@@ -164,24 +109,21 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 
 	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.RESOURCE + ")(?=,|\\z)");
 	
-	private static Collection<Clause> processHeader(String header) {
+    @Override
+    protected Collection<Clause> processHeader(String header) {
 		Matcher matcher = PATTERN.matcher(header);
-		Set<Clause> clauses = new HashSet<Clause>();
+		Set<Clause> lclauses = new HashSet<Clause>();
 		while (matcher.find())
-			clauses.add(new Clause(matcher.group()));
-		return clauses;
+			lclauses.add(new Clause(matcher.group()));
+		return lclauses;
 	}
 	
-	private final Set<Clause> clauses;
-	
 	public PreferredProviderHeader(Collection<Clause> clauses) {
-		if (clauses.isEmpty())
-			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
-		this.clauses = new HashSet<Clause>(clauses);
+		super(clauses);
 	}
 	
 	public PreferredProviderHeader(String value) {
-		this(processHeader(value));
+		super(value);
 	}
 	
 	public boolean contains(Resource resource) {
@@ -191,11 +133,6 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 		return false;
 	}
 	
-	@Override
-	public Collection<PreferredProviderHeader.Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
-	}
-
 	@Override
 	public String getName() {
 		return NAME;
@@ -212,16 +149,5 @@ public class PreferredProviderHeader implements RequirementHeader<PreferredProvi
 		for (Clause clause : clauses)
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Clause clause : getClauses()) {
-			builder.append(clause).append(',');
-		}
-		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
-		builder.deleteCharAt(builder.length() - 1);
-		return builder.toString();
 	}
 }

@@ -15,8 +15,6 @@ package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +26,9 @@ import org.osgi.framework.Constants;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
-public class RequireBundleHeader implements RequirementHeader<RequireBundleHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+public class RequireBundleHeader extends AbstractClauseBasedHeader<RequireBundleHeader.Clause>implements RequirementHeader<RequireBundleHeader.Clause> {
+
+    public static class Clause extends AbstractClause {
 		public static final String ATTRIBUTE_BUNDLEVERSION = Constants.BUNDLE_VERSION_ATTRIBUTE;
 		public static final String DIRECTIVE_RESOLUTION = Constants.RESOLUTION_DIRECTIVE;
 		public static final String DIRECTIVE_VISIBILITY = Constants.VISIBILITY_DIRECTIVE;
@@ -46,20 +45,8 @@ public class RequireBundleHeader implements RequirementHeader<RequireBundleHeade
 				parameters.put(DIRECTIVE_RESOLUTION, ResolutionDirective.MANDATORY);
 		}
 		
-		private final String path;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clause);
-			if (!matcher.find())
-				throw new IllegalArgumentException("Missing bundle description path: " + clause);
-			path = matcher.group();
-			matcher.usePattern(PATTERN_PARAMETER);
-			while (matcher.find()) {
-				Parameter parameter = ParameterFactory.create(matcher.group());
-				parameters.put(parameter.getName(), parameter);
-			}
-			fillInDefaults(parameters);
+            super(clause);
 		}
 		
 		private static final String REGEX = "\\((" + RequireBundleRequirement.NAMESPACE + ")(=)([^\\)]+)\\)";
@@ -69,84 +56,42 @@ public class RequireBundleHeader implements RequirementHeader<RequireBundleHeade
 			if (!RequireBundleRequirement.NAMESPACE.equals(requirement.getNamespace()))
 				throw new IllegalArgumentException("Requirement must be in the '" + RequireBundleRequirement.NAMESPACE + "' namespace");
 			String filter = requirement.getDirectives().get(RequireBundleRequirement.DIRECTIVE_FILTER);
-			String path = null;
+			String lpath = null;
 			Matcher matcher = PATTERN.matcher(filter);
 			while (matcher.find()) {
 				String name = matcher.group(1);
 				String operator = matcher.group(2);
 				String value = matcher.group(3);
 				if (RequireBundleRequirement.NAMESPACE.equals(name)) {
-					path = value;
+					lpath = value;
 				}
 				else if (ATTRIBUTE_BUNDLEVERSION.equals(name)) {
 					// TODO Parse the version range from the filter.
 				}
 			}
-			if (path == null)
+			if (lpath == null)
 				throw new IllegalArgumentException("Missing filter key: " + RequireBundleRequirement.NAMESPACE);
-			this.path = path;
-		}
-		
-		@Override
-		public Attribute getAttribute(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Attribute) {
-				return (Attribute)result;
-			}
-			return null;
+			this.path = lpath;
 		}
 
-		@Override
-		public Collection<Attribute> getAttributes() {
-			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Attribute) {
-					attributes.add((Attribute)parameter);
-				}
-			}
-			attributes.trimToSize();
-			return attributes;
-		}
-
-		@Override
-		public Directive getDirective(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Directive) {
-				return (Directive)result;
-			}
-			return null;
-		}
-
-		@Override
-		public Collection<Directive> getDirectives() {
-			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Directive) {
-					directives.add((Directive)parameter);
-				}
-			}
-			directives.trimToSize();
-			return directives;
-		}
-
-		@Override
-		public Parameter getParameter(String name) {
-			return parameters.get(name);
-		}
-
-		@Override
-		public Collection<Parameter> getParameters() {
-			return Collections.unmodifiableCollection(parameters.values());
-		}
-
-		@Override
-		public String getPath() {
-			return path;
-		}
-		
 		public String getSymbolicName() {
 			return path;
 		}
+        
+        @Override
+        protected void processClauseString(String clauseString)
+                throws IllegalArgumentException {
+            Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clauseString);
+            if (!matcher.find())
+                throw new IllegalArgumentException("Missing bundle description path: " + clauseString);
+            path = matcher.group();
+            matcher.usePattern(PATTERN_PARAMETER);
+            while (matcher.find()) {
+                Parameter parameter = ParameterFactory.create(matcher.group());
+                parameters.put(parameter.getName(), parameter);
+            }
+            fillInDefaults(parameters);
+        }
 		
 		public RequireBundleRequirement toRequirement(Resource resource) {
 			return new RequireBundleRequirement(this, resource);
@@ -165,30 +110,23 @@ public class RequireBundleHeader implements RequirementHeader<RequireBundleHeade
 	
 	public static final String NAME = Constants.REQUIRE_BUNDLE;
 	
-	private static Collection<Clause> processHeader(String header) {
-		Set<Clause> clauses = new HashSet<Clause>();
-		for (String clause : new ClauseTokenizer(header).getClauses())
-			clauses.add(new Clause(clause));
-		return clauses;
+	@Override
+    protected Collection<Clause> processHeader(String header) {
+	    Collection<String> clauseStrs = new ClauseTokenizer(header).getClauses();
+	    Set<Clause> lclauses = new HashSet<Clause>(clauseStrs.size());
+        for (String clause : clauseStrs)
+            lclauses.add(new Clause(clause));
+        return lclauses;
 	}
 	
-	private final Set<Clause> clauses;
-	
 	public RequireBundleHeader(Collection<Clause> clauses) {
-		if (clauses.isEmpty())
-			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
-		this.clauses = new HashSet<Clause>(clauses);
+		super(clauses);
 	}
 	
 	public RequireBundleHeader(String value) {
-		this(processHeader(value));
+		super(value);
 	}
 	
-	@Override
-	public Collection<RequireBundleHeader.Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
-	}
-
 	@Override
 	public String getName() {
 		return NAME;
@@ -205,16 +143,5 @@ public class RequireBundleHeader implements RequirementHeader<RequireBundleHeade
 		for (Clause clause : clauses)
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Clause clause : getClauses()) {
-			builder.append(clause).append(',');
-		}
-		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
-		builder.deleteCharAt(builder.length() - 1);
-		return builder.toString();
 	}
 }

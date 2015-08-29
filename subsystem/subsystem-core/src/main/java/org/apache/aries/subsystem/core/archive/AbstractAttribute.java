@@ -18,11 +18,13 @@ public abstract class AbstractAttribute extends AbstractParameter implements Att
 		super(name, value);
 	}
 	
-	public StringBuilder appendToFilter(StringBuilder builder) {
+	@Override
+    public StringBuilder appendToFilter(StringBuilder builder) {
 		return builder.append('(').append(getName()).append('=').append(getValue()).append(')');
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return new StringBuilder()
 				.append(getName())
 				.append('=')

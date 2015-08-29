@@ -30,7 +30,8 @@ public class FilterDirective extends AbstractDirective {
 		}
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return new StringBuilder()
 		.append(getName())
 		.append(":=\"")

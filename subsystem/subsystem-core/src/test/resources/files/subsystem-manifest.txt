@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Subsystem-SymbolicName: subsystem.maven.plugin
+Subsystem-Type: osgi.subsystem.composite
+Subsystem-ImportService: com.acme.service.Logging
+Subsystem-Content: org.aries.bundle;start-order:=0;type=osgi.bundle;version="1.8.4";resolution:=mandatory
+Subsystem-Version: 1.0.0
+Preferred-Provider: org.aries.kernel;version="1.0.4";type=osgi.subsystem.composite
+Require-Bundle: com.example.acme,com.acme.logging;version="[1.0, 1.1)"
+Subsystem-Name: Subsystem Archive Generator
+Import-Package: javax.servlet;version="2.6.0", javax.servlet.resources;version="2.6.0"
+Require-Capability: osgi.ee; filter:="(osgi.ee=*)",screen.size; filter:="(&(width>=800)(height>=600))"
+Subsystem-ExportService: com.acme.service.Logging
+Subsystem-ManifestVersion: 1.0.0
+Provision-Resource: com.acme.logging;type=osgi.bundle;deployed-version=1.0.0
+Provide-Capability: osgi.contract;osgi.contract=JavaServlet;version:Version=2.5;uses:="javax.servlet,javax.servlet.http"
+Export-Package: javax.servlet;version="2.5",javax.servlet.http; version="2.5"
+DynamicImport-Package: *;JavaServlet=contract,org.eclipse.jetty.*;version="[9.0,10.0)"

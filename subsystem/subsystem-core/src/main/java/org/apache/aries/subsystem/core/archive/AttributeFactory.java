@@ -20,8 +20,7 @@ public class AttributeFactory {
 		if (Constants.VERSION_ATTRIBUTE.equals(name)) {
 			if (Character.isDigit(value.charAt(0)))
 				return new VersionAttribute(value);
-			else
-				return new VersionRangeAttribute(value);
+            return new VersionRangeAttribute(value);
 		}
 		if (TypeAttribute.NAME.equals(name))
 			return new TypeAttribute(value);

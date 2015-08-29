@@ -28,4 +28,27 @@ public class StartOrderDirective extends AbstractDirective {
 	public int getStartOrder() {
 		return startOrder;
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + startOrder;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        StartOrderDirective other = (StartOrderDirective) obj;
+        if (startOrder != other.startOrder)
+            return false;
+        return true;
+    }
+	
 }

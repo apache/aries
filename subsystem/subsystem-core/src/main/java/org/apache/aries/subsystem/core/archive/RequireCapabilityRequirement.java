@@ -55,4 +55,48 @@ public class RequireCapabilityRequirement extends AbstractRequirement {
 	public Resource getResource() {
 		return resource;
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result
+                + ((directives == null) ? 0 : directives.hashCode());
+        result = prime * result
+                + ((namespace == null) ? 0 : namespace.hashCode());
+        result = prime * result
+                + ((resource == null) ? 0 : resource.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RequireCapabilityRequirement other = (RequireCapabilityRequirement) obj;
+        if (directives == null) {
+            if (other.directives != null)
+                return false;
+        } else
+            if (!directives.equals(other.directives))
+                return false;
+        if (namespace == null) {
+            if (other.namespace != null)
+                return false;
+        } else
+            if (!namespace.equals(other.namespace))
+                return false;
+        if (resource == null) {
+            if (other.resource != null)
+                return false;
+        } else
+            if (!resource.equals(other.resource))
+                return false;
+        return true;
+    }
+	
 }

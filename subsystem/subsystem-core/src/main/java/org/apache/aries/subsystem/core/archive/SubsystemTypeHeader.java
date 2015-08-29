@@ -13,10 +13,8 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +22,8 @@ import java.util.regex.Pattern;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemTypeHeader implements Header<SubsystemTypeHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+
+    public static class Clause extends AbstractClause {
 		private static final Pattern PATTERN_TYPE = Pattern.compile('(' + TYPE_APPLICATION + '|' + TYPE_COMPOSITE + '|' + TYPE_FEATURE + ")(?=;|\\z)");
 		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
 		private static final Pattern PATTERN_PROVISION_POLICY = Pattern.compile(PROVISION_POLICY_ACCEPT_DEPENDENCIES + '|' + PROVISION_POLICY_REJECT_DEPENDENCIES);
@@ -39,79 +38,10 @@ public class SubsystemTypeHeader implements Header<SubsystemTypeHeader.Clause> {
 			parameters.put(DIRECTIVE_PROVISION_POLICY, parameter);
 		}
 		
-		private final String path;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_TYPE.matcher(clause);
-			if (!matcher.find())
-				throw new IllegalArgumentException("Invalid subsystem type: " + clause);
-			path = matcher.group();
-			matcher.usePattern(PATTERN_PARAMETER);
-			while (matcher.find()) {
-				Parameter parameter = ParameterFactory.create(matcher.group());
-				parameters.put(parameter.getName(), parameter);
-			}
-			fillInDefaults(parameters);
+		    super(clause);
 		}
-		
-		@Override
-		public Attribute getAttribute(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Attribute) {
-				return (Attribute)result;
-			}
-			return null;
-		}
-
-		@Override
-		public Collection<Attribute> getAttributes() {
-			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Attribute) {
-					attributes.add((Attribute)parameter);
-				}
-			}
-			attributes.trimToSize();
-			return attributes;
-		}
-
-		@Override
-		public Directive getDirective(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Directive) {
-				return (Directive)result;
-			}
-			return null;
-		}
-
-		@Override
-		public Collection<Directive> getDirectives() {
-			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Directive) {
-					directives.add((Directive)parameter);
-				}
-			}
-			directives.trimToSize();
-			return directives;
-		}
-
-		@Override
-		public Parameter getParameter(String name) {
-			return parameters.get(name);
-		}
-
-		@Override
-		public Collection<Parameter> getParameters() {
-			return Collections.unmodifiableCollection(parameters.values());
-		}
-
-		@Override
-		public String getPath() {
-			return path;
-		}
-		
+				
 		public ProvisionPolicyDirective getProvisionPolicyDirective() {
 			return (ProvisionPolicyDirective)getDirective(DIRECTIVE_PROVISION_POLICY);
 		}
@@ -120,15 +50,21 @@ public class SubsystemTypeHeader implements Header<SubsystemTypeHeader.Clause> {
 			return path;
 		}
 		
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder()
-					.append(getPath());
-			for (Parameter parameter : getParameters()) {
-				builder.append(';').append(parameter);
-			}
-			return builder.toString();
-		}
+        @Override
+        protected void processClauseString(String clauseString)
+                throws IllegalArgumentException {
+
+            Matcher matcher = PATTERN_TYPE.matcher(clauseString);
+            if (!matcher.find())
+                throw new IllegalArgumentException("Invalid subsystem type: " + clauseString);
+            path = matcher.group();
+            matcher.usePattern(PATTERN_PARAMETER);
+            while (matcher.find()) {
+                Parameter parameter = ParameterFactory.create(matcher.group());
+                parameters.put(parameter.getName(), parameter);
+            }
+            fillInDefaults(parameters);
+        }
 	}
 	
 	public static final String DIRECTIVE_PROVISION_POLICY = SubsystemConstants.PROVISION_POLICY_DIRECTIVE;
@@ -152,7 +88,25 @@ public class SubsystemTypeHeader implements Header<SubsystemTypeHeader.Clause> {
 	public SubsystemTypeHeader(String value) {
 		this(new Clause(value));
 	}
-	
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SubsystemTypeHeader other = (SubsystemTypeHeader) obj;
+        if (clause == null) {
+            if (other.clause != null)
+                return false;
+        } else
+            if (!clause.equals(other.clause))
+                return false;
+        return true;
+    }
+
 	public Clause getClause() {
 		return clause;
 	}
@@ -193,6 +147,14 @@ public class SubsystemTypeHeader implements Header<SubsystemTypeHeader.Clause> {
 	}
 	
 	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((clause == null) ? 0 : clause.hashCode());
+        return result;
+    }
+
+    @Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		for (Clause clause : getClauses()) {

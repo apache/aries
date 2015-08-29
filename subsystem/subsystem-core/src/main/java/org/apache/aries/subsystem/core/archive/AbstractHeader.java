@@ -24,7 +24,7 @@ import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 
-public abstract class AbstractHeader implements Header {
+public abstract class AbstractHeader implements Header<Clause> {
 	protected static final String REGEX = Grammar.CLAUSE + "(?=,|\\z)";
 	protected static final Pattern PATTERN = Pattern.compile(REGEX);
 	
@@ -45,7 +45,8 @@ public abstract class AbstractHeader implements Header {
 			.append(namespace);
 	}
 	
-	protected final List<Clause> clauses = new ArrayList<Clause>();
+
+    protected final List<Clause> clauses = new ArrayList<Clause>();
 	protected final String name;
 	protected final String value;
 	
@@ -53,25 +54,70 @@ public abstract class AbstractHeader implements Header {
 		this.name = name;
 		this.value = value;
 		Matcher matcher = PATTERN.matcher(value);
-		while (matcher.find())
+		while (matcher.find()){
 			clauses.add(new GenericClause(matcher.group()));
+		}
 		if (clauses.isEmpty())
 			throw new IllegalArgumentException("Invalid header syntax -> " + name + ": " + value);
 	}
 	
-	public List<Clause> getClauses() {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AbstractHeader other = (AbstractHeader) obj;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else
+            if (!name.equals(other.name))
+                return false;
+        if (value == null) {
+            if (other.value != null)
+                return false;
+        } else
+            if (!value.equals(other.value))
+                return false;
+        if (clauses == null) {
+            if (other.clauses != null)
+                return false;
+        } else
+            if (!clauses.equals(other.clauses))
+                return false;
+        return true;
+    }
+
+	@Override
+    public List<Clause> getClauses() {
 		return Collections.unmodifiableList(clauses);
 	}
 
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 	
-	public String getValue() {
+	@Override
+    public String getValue() {
 		return value;
 	}
 	
-	public String toString() {
+	@Override
+	public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ((name == null) ? 0 : name.hashCode());
+	    result = prime * result + ((value == null) ? 0 : value.hashCode());
+	    result = prime * result + ((clauses == null) ? 0 : clauses.hashCode());
+	    return result;
+	}
+
+	@Override
+    public String toString() {
 		return new StringBuilder(getClass().getName())
 		.append(": name=")
 		.append(name)
