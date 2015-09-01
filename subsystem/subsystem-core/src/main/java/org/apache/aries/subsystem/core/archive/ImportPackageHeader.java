@@ -81,7 +81,7 @@ public class ImportPackageHeader extends AbstractClauseBasedHeader<ImportPackage
 		
 		
 		public VersionRangeAttribute getVersionRangeAttribute() {
-			return (VersionRangeAttribute)parameters.get(Constants.VERSION_ATTRIBUTE);
+			return (VersionRangeAttribute)getAttribute(Constants.VERSION_ATTRIBUTE);
 		}
         
         @Override
