@@ -71,6 +71,12 @@ public class SubsystemResolverHook implements ResolverHook {
 					// Don't want to filter out the region context bundle.
 					continue;
 				Collection<BasicSubsystem> subsystems = this.subsystems.getSubsystemsReferencing(revision);
+				if (subsystems.isEmpty()) {
+				    // This is the revision of a bundle being installed as part of a subsystem installation
+				    // before it has been added as a reference or constituent.
+				    iterator.remove();
+				    continue;
+				}
 				for (BasicSubsystem subsystem : subsystems) {
 					if (subsystem.isFeature()) {
 						// Feature subsystems require no isolation.

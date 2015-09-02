@@ -170,8 +170,12 @@ public class BundleResourceInstaller extends ResourceInstaller {
 	
 	public Resource install() {
 		BundleRevision revision;
-		if (resource instanceof BundleRevision)
+		if (resource instanceof BundleRevision) {
 			revision = (BundleRevision)resource;
+		}
+		else if (resource instanceof BundleRevisionResource) {
+		    revision = ((BundleRevisionResource)resource).getRevision();
+		}
 		else {
 			ThreadLocalSubsystem.set(provisionTo);
 			try {

@@ -57,24 +57,24 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
             throw new IllegalStateException("The activator has not been initialized or has been shutdown");
 		return result;
 	}
-
-	// @GuardedBy("this")
-	private BundleEventHook bundleEventHook;
+	
 	private volatile BundleContext bundleContext;
     private volatile ConfigAdminContentHandler configAdminHandler;
 	private volatile Coordinator coordinator;
     private volatile Object modelledResourceManager;
-    private volatile ServiceModeller serviceModeller;
+    private volatile RegionDigraph regionDigraph;
 	private volatile SubsystemServiceRegistrar registrar;
-	private volatile RegionDigraph regionDigraph;
 	private volatile Resolver resolver;
+	private volatile ServiceModeller serviceModeller;
+	private volatile Subsystems subsystems;
+	private volatile SystemRepositoryManager systemRepositoryManager;
+	
+	private BundleEventHook bundleEventHook;
 	private ServiceTracker<?,?> serviceTracker;
 
-	private volatile Subsystems subsystems;
-
-	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
 	private final Collection<IDirectoryFinder> finders = Collections.synchronizedSet(new HashSet<IDirectoryFinder>());
-
+	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
+	
 	public BundleContext getBundleContext() {
 		return bundleContext;
 	}
@@ -110,8 +110,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		return result;
 	}
 
-	public org.apache.aries.subsystem.core.repository.Repository getSystemRepository() {
-		return new SystemRepository(getSubsystems().getRootSubsystem());
+	public SystemRepository getSystemRepository() {
+		return systemRepositoryManager.getSystemRepository();
 	}
 
 	@Override
@@ -146,6 +146,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
         configAdminHandler = new ConfigAdminContentHandler(bundleContext);
         registrations.add(bundleContext.registerService(ContentHandler.class, configAdminHandler, handlerProps));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
+		systemRepositoryManager = new SystemRepositoryManager(bundleContext.getBundle(0).getBundleContext());
+        systemRepositoryManager.open();
 		BasicSubsystem root = subsystems.getRootSubsystem();
 		bundleEventHook.activate();
 		root.start();
@@ -156,6 +158,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		if (!isActive())
 			return;
 		bundleEventHook.deactivate();
+		systemRepositoryManager.close();
 		new StopAction(subsystems.getRootSubsystem(), subsystems.getRootSubsystem(), true).run();
 		for (ServiceRegistration<?> registration : registrations) {
 			try {

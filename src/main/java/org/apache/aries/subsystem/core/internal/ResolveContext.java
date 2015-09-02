@@ -211,11 +211,13 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		}
 		else {
 			// This is an already installed resource from the system repository.
-			if (Utils.isBundle(resource))
+			if (Utils.isBundle(resource)) {
+			    BundleRevision revision = resource instanceof BundleRevision ? (BundleRevision)resource : ((BundleRevisionResource)resource).getRevision();
 				// If it's a bundle, use region digraph to get the region in order
 				// to account for bundles in isolated regions outside of the
 				// subsystems API.
-				return Activator.getInstance().getRegionDigraph().getRegion(((BundleRevision)resource).getBundle());
+				return Activator.getInstance().getRegionDigraph().getRegion(revision.getBundle());
+			}
 			else
 				// If it's anything else, get the region from one of the
 				// subsystems referencing it.
