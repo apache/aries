@@ -91,6 +91,10 @@ public class BundleRevisionResource implements Resource {
 	    return revisionRequirements;
 	}
 	
+	public BundleRevision getRevision() {
+	    return revision;
+	}
+	
 	private ServiceModeller.ServiceModel getModel() {
 	    Activator activator = Activator.getInstance();
 	    ServiceModeller modeller = activator.getServiceModeller();
