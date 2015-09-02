@@ -14,6 +14,7 @@
 package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -73,7 +74,7 @@ public class RootSubsystemTest extends SubsystemTest {
 		getSubsystemCoreBundle().stop();
 		getSubsystemCoreBundle().start();
 		Bundle bundleA = context().getBundleByName(BUNDLE_A);
-		assertEquals("Extraneous root region bundle should not be started", Bundle.INSTALLED, bundleA.getState());
+		assertTrue("Extraneous root region bundle should not be started", (bundleA.getState() & (Bundle.INSTALLED | Bundle.RESOLVED)) != 0);
 	}
 	
 	@Test
