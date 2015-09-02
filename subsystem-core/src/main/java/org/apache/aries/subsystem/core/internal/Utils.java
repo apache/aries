@@ -137,7 +137,7 @@ public class Utils {
 	}
 	
 	public static boolean isSharedResource(Resource resource) {
-		return resource instanceof BasicSubsystem || resource instanceof BundleRevision;
+		return resource instanceof BasicSubsystem || resource instanceof BundleRevision || resource instanceof BundleRevisionResource;
 	}
 	
 	public static boolean isSubsystem(Resource resource) {
