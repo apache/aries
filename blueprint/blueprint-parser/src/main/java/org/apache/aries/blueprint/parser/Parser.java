@@ -88,6 +88,7 @@ import org.w3c.dom.EntityReference;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 
 /**
@@ -308,8 +309,15 @@ public class Parser {
     }
 
     public void validate(Schema schema) {
+        validate(schema, null);
+    }
+
+    public void validate(Schema schema, ErrorHandler errorHandler) {
         try {
             Validator validator = schema.newValidator();
+            if (errorHandler != null) {
+                validator.setErrorHandler(errorHandler);
+            }
             for (Document doc : this.documents) {
                 validator.validate(new DOMSource(doc));
             }
@@ -1411,5 +1419,4 @@ public class Parser {
         }
         return documentBuilderFactory;
     }
-
 }
