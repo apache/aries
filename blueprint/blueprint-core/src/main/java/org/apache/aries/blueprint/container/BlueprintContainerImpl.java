@@ -94,6 +94,9 @@ import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
 import org.osgi.service.blueprint.reflect.Target;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * TODO: javadoc
@@ -147,7 +150,7 @@ public class BlueprintContainerImpl
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private long timeout = 5 * 60 * 1000;
     private boolean waitForDependencies = true;
-    private boolean xmlValidation = true;
+    private String xmlValidation;
     private ScheduledFuture timeoutFuture;
     private final AtomicBoolean scheduled = new AtomicBoolean();
     private List<ServiceRecipe> services;
@@ -220,11 +223,9 @@ public class BlueprintContainerImpl
             waitForDependencies = Boolean.parseBoolean(graceperiod);
         }
 
-        String xmlValidationDirective = paths.get(0).getDirective(BlueprintConstants.XML_VALIDATION);
-        if (xmlValidationDirective != null) {
-            LOGGER.debug("Xml-validation directive: {}", xmlValidationDirective);
-            xmlValidation = Boolean.parseBoolean(xmlValidationDirective);
-        }
+        xmlValidation = paths.get(0).getDirective(BlueprintConstants.XML_VALIDATION);
+        // enabled if null or "true"; structure-only if "structure"; disabled otherwise
+        LOGGER.debug("Xml-validation directive: {}", xmlValidation);
     }
 
     public void schedule() {
@@ -244,7 +245,7 @@ public class BlueprintContainerImpl
             this.processors = new ArrayList<Processor>();
             timeout = 5 * 60 * 1000;
             waitForDependencies = true;
-            xmlValidation = true;
+            xmlValidation = null;
             if (handlerSet != null) {
                 handlerSet.removeListener(this);
                 handlerSet.destroy();
@@ -317,8 +318,10 @@ public class BlueprintContainerImpl
                             return;
                         }
                         resetComponentDefinitionRegistry();
-                        if (xmlValidation) {
+                        if (xmlValidation == null || "true".equals(xmlValidation)) {
                             parser.validate(handlerSet.getSchema());
+                        } else if ("structure".equals(xmlValidation)) {
+                            parser.validate(handlerSet.getSchema(), new ValidationHandler());
                         }
                         parser.populate(handlerSet, componentDefinitionRegistry);
                         state = State.Populated;
@@ -940,6 +943,28 @@ public class BlueprintContainerImpl
             }
         } finally {
             ExecutionContext.Holder.setContext(origContext);
+        }
+    }
+
+    // this could be parameterized/customized, but for now, hard-coded for ignoring datatype validation
+    private static class ValidationHandler implements ErrorHandler {
+        @Override
+        public void warning(SAXParseException exception) throws SAXException {
+            // ignore
+        }
+        @Override
+        public void error(SAXParseException exception) throws SAXException {
+            final String cvctext = exception.getMessage(); 
+            if (cvctext != null && 
+                (cvctext.startsWith("cvc-datatype-valid.1") || cvctext.startsWith("cvc-attribute.3"))) {
+                return;
+            }
+            throw exception;
+        }
+
+        @Override
+        public void fatalError(SAXParseException exception) throws SAXException {
+            throw exception;
         }
     }
 }
