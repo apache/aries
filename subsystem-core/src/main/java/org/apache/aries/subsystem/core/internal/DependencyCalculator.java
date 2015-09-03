@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.aries.subsystem.core.capabilityset.CapabilitySetRepository;
 import org.osgi.framework.Constants;
 import org.osgi.framework.namespace.ExecutionEnvironmentNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
@@ -38,28 +39,30 @@ import org.osgi.service.resolver.Resolver;
 public class DependencyCalculator {
 	private static class ResolveContext extends
 			org.osgi.service.resolver.ResolveContext {
+	    private final CapabilitySetRepository repository = new CapabilitySetRepository();
 		private final Collection<Resource> resources;
 
 		public ResolveContext(Collection<Resource> resources) {
-			this.resources = resources;
+		    this.resources = resources;
+			for (Resource resource : resources) {
+			    repository.addResource(resource);
+			}
 		}
 
 		@Override
 		public List<Capability> findProviders(Requirement requirement) {
-			ArrayList<Capability> capabilities = new ArrayList<Capability>();
-			// never check local resources for osgi.ee or osgi.native capabilities
-			if (!(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE.equals(requirement.getNamespace()) 
-					|| NativeNamespace.NATIVE_NAMESPACE.equals(requirement.getNamespace()))) {
-				for (Resource resource : resources)
-					for (Capability capability : resource
-							.getCapabilities(requirement.getNamespace()))
-						if (ResourceHelper.matches(requirement, capability))
-							capabilities.add(capability);
+		    String namespace = requirement.getNamespace();
+		    // never check local resources for osgi.ee or osgi.native capabilities
+		    if (ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE.equals(namespace) 
+                    || NativeNamespace.NATIVE_NAMESPACE.equals(namespace)) {
+		        return Collections.<Capability>singletonList(new MissingCapability(requirement));
+		    }
+			Map<Requirement, Collection<Capability>> map = repository.findProviders(Collections.singleton(requirement));
+			Collection<Capability> capabilities = map.get(requirement);
+			if (!capabilities.isEmpty()) {
+			    return new ArrayList<Capability>(capabilities);
 			}
-			if (capabilities.isEmpty())
-				capabilities.add(new MissingCapability(requirement));
-			capabilities.trimToSize();
-			return capabilities;
+			return Collections.<Capability>singletonList(new MissingCapability(requirement));
 		}
 
 		@Override
