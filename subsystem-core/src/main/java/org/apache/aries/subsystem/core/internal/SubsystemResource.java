@@ -551,6 +551,10 @@ public class SubsystemResource implements Resource {
 		return SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type);
 	}
 	
+	boolean isContent(Resource resource) {
+	   return installableContent.contains(resource) || sharedContent.contains(resource); 
+	}
+	
 	private boolean isInstallable(Resource resource) {
 		return !isShared(resource);
 	}

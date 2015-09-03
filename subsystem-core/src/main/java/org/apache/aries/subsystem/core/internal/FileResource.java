@@ -29,7 +29,7 @@ import org.osgi.service.repository.RepositoryContent;
 
 public class FileResource implements Resource, RepositoryContent {
     private final IFile file;
-    private volatile Map<String, List<Capability>> capabilities;
+    private volatile Map<String, List<Capability>> capabilities       ;
 
     public FileResource(IFile file) {
         this.file = file;
@@ -37,9 +37,21 @@ public class FileResource implements Resource, RepositoryContent {
 
     @Override
     public List<Capability> getCapabilities(String namespace) {
-        List<Capability> caps = capabilities.get(namespace);
+        Map<String, List<Capability>> namespace2capabilities = capabilities;
+        if (namespace2capabilities == null) {
+            return Collections.emptyList();
+        }
+        List<Capability> caps;
+        if (namespace == null) {
+            caps = new ArrayList<Capability>();
+            for (List<Capability> l : capabilities.values()) {
+                caps.addAll(l);
+            }
+            return Collections.unmodifiableList(caps);
+        }
+        caps = namespace2capabilities.get(namespace);
         if (caps != null)
-            return caps;
+            return Collections.unmodifiableList(caps);
         else
             return Collections.emptyList();
     }

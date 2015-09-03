@@ -43,6 +43,8 @@ import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.io.IOUtils;
+import org.eclipse.equinox.region.Region;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -70,7 +72,9 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 			+ ROOT_SYMBOLIC_NAME + '&' + SubsystemConstants.SUBSYSTEM_VERSION
 			+ '=' + ROOT_VERSION;
 	
-	private DeploymentManifest deploymentManifest;
+	private volatile Bundle regionContextBundle;
+	
+	private DeploymentManifest deploymentManifest;    
 	private SubsystemResource resource;
 	private SubsystemManifest subsystemManifest;
 	
@@ -356,8 +360,15 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		}
 	}
 	
-	org.eclipse.equinox.region.Region getRegion() {
-		return Activator.getInstance().getRegionDigraph().getRegion(getRegionName());
+	Region getRegion() {
+	    Bundle bundle = regionContextBundle; // volatile variable
+	    if (bundle == null) {
+	        // At best, RegionDigraph.getRegion(String) is linear time.
+	        // Continue to call this when necessary, however, as a fail safe.
+	        return Activator.getInstance().getRegionDigraph().getRegion(getRegionName());
+	    }
+	    // RegionDigraph.getRegion(Bundle) is constant time.
+	    return Activator.getInstance().getRegionDigraph().getRegion(bundle);
 	}
 	
 	String getRegionName() {
@@ -566,6 +577,10 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 				logger.debug("Notifying all waiting for state change of subsystem {}", getSymbolicName());
 			notifyAll();
 		}
+	}
+	
+	void setRegionContextBundle(Bundle value) {
+	    regionContextBundle = value; // volatile variable
 	}
 	
 	synchronized void setSubsystemManifest(SubsystemManifest value) throws URISyntaxException, IOException {
