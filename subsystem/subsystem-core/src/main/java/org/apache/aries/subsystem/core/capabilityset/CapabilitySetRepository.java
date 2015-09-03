@@ -104,6 +104,9 @@ public class CapabilitySetRepository implements Repository {
                                 || HostNamespace.HOST_NAMESPACE.equals(namespace));
                 result.put(requirement, capabilities);
             }
+            else {
+                result.put(requirement, Collections.<Capability>emptyList());
+            }
         }
         return result;
     }
