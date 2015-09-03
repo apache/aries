@@ -13,38 +13,27 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.capabilityset.CapabilitySetRepository;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
 public class LocalRepository implements org.apache.aries.subsystem.core.repository.Repository {
-	private final Collection<Resource> resources;
+	private final CapabilitySetRepository repository;
 	
 	public LocalRepository(Collection<Resource> resources) {
-		this.resources = resources;
-	}
-	
-	public Collection<Capability> findProviders(Requirement requirement) {
-		ArrayList<Capability> result = new ArrayList<Capability>();
-		for (Resource resource : resources)
-			for (Capability capability : resource.getCapabilities(requirement.getNamespace()))
-				if (ResourceHelper.matches(requirement, capability))
-					result.add(capability);
-		result.trimToSize();
-		return result;
+		repository = new CapabilitySetRepository();
+		for (Resource resource : resources) {
+		    repository.addResource(resource);
+		}
 	}
 	
 	@Override
 	public Map<Requirement, Collection<Capability>> findProviders(
 			Collection<? extends Requirement> requirements) {
-		Map<Requirement, Collection<Capability>> result = new HashMap<Requirement, Collection<Capability>>();
-		for (Requirement requirement : requirements)
-			result.put(requirement, findProviders(requirement));
-		return result;
+		return repository.findProviders(requirements);
 	}
 }

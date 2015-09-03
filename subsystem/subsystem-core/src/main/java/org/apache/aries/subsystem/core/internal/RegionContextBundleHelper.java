@@ -46,6 +46,7 @@ public class RegionContextBundleHelper {
 		ResourceInstaller.newInstance(coordination, b.adapt(BundleRevision.class), subsystem).install();
 		// The region context bundle must be started persistently.
 		b.start();
+		subsystem.setRegionContextBundle(b);
 	}
 	
 	public static void uninstallRegionContextBundle(BasicSubsystem subsystem) {
@@ -62,6 +63,7 @@ public class RegionContextBundleHelper {
 			// TODO Should we really eat this? At least log it?
 		}
 		ResourceUninstaller.newInstance(revision, subsystem).uninstall();
+		subsystem.setRegionContextBundle(null);
 	}
 	
 	private static Manifest createManifest(String symbolicName) {

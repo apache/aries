@@ -226,7 +226,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	}
 
 	private boolean isContent(Resource resource) {
-		return this.resource.getSubsystemManifest().getSubsystemContentHeader().contains(resource);
+		return this.resource.isContent(resource);
 	}
 
 	private boolean isInstallable(Resource resource) {
