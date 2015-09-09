@@ -25,13 +25,65 @@ import org.osgi.resource.Resource;
 
 public class BundleRevisionResource implements Resource {
 	private final BundleRevision revision;
-	private final List<Capability> serviceCapabilities;
-	private final List<Requirement> serviceRequirements;
 
 	public BundleRevisionResource(BundleRevision revision) {
 		if (revision == null)
 			throw new NullPointerException();
 		this.revision = revision;
+	}
+
+	@Override
+	public List<Capability> getCapabilities(String namespace) {
+	    if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace)) {
+	        return Collections.unmodifiableList(getServiceCapabilities());
+	    }
+	    List<Capability> revisionCapabilities = revision.getCapabilities(namespace);
+	    if (namespace == null) {
+	    	List<Capability> serviceCapabilities = getServiceCapabilities();
+	        List<Capability> result = new ArrayList<Capability>(revisionCapabilities.size() + serviceCapabilities.size());
+	        result.addAll(revisionCapabilities);
+	        result.addAll(serviceCapabilities);
+	        return Collections.unmodifiableList(result);
+	    }
+	    return revisionCapabilities;
+	}
+
+	@Override
+	public List<Requirement> getRequirements(String namespace) {
+	    if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace)) {
+	        return Collections.unmodifiableList(getServiceRequirements());
+	    }
+	    List<Requirement> revisionRequirements = revision.getRequirements(namespace);
+	    if (namespace == null) {
+	    	List<Requirement> serviceRequirements = getServiceRequirements();
+	        List<Requirement> result = new ArrayList<Requirement>(revisionRequirements.size() + serviceRequirements.size());
+            result.addAll(revisionRequirements);
+            result.addAll(serviceRequirements);
+            return Collections.unmodifiableList(result);
+	    }
+	    return revisionRequirements;
+	}
+	
+	public BundleRevision getRevision() {
+	    return revision;
+	}
+	
+	private ServiceModeller.ServiceModel getModel() {
+	    Activator activator = Activator.getInstance();
+	    ServiceModeller modeller = activator.getServiceModeller();
+	    if (modeller == null) {
+            return null;
+        }
+	    ServiceModeller.ServiceModel model = modeller.computeRequirementsAndCapabilities(this,
+                new BundleDirectory(revision.getBundle()));
+	    return model;
+	}
+	
+	private boolean initialized;
+	private List<Capability> serviceCapabilities;
+	private List<Requirement> serviceRequirements;
+	
+	private synchronized void computeServiceCapabilitiesAndRequirements() {
 		ServiceModeller.ServiceModel model = null;
 		boolean gotModel = false;
         List<Capability> capabilities = revision.getCapabilities(ServiceNamespace.SERVICE_NAMESPACE);
@@ -59,50 +111,20 @@ public class BundleRevisionResource implements Resource {
             }
         }
         serviceRequirements = requirements;
-	}
-
-	@Override
-	public List<Capability> getCapabilities(String namespace) {
-	    if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace)) {
-	        return Collections.unmodifiableList(serviceCapabilities);
-	    }
-	    List<Capability> revisionCapabilities = revision.getCapabilities(namespace);
-	    if (namespace == null) {
-	        List<Capability> result = new ArrayList<Capability>(revisionCapabilities.size() + serviceCapabilities.size());
-	        result.addAll(revisionCapabilities);
-	        result.addAll(serviceCapabilities);
-	        return Collections.unmodifiableList(result);
-	    }
-	    return revisionCapabilities;
-	}
-
-	@Override
-	public List<Requirement> getRequirements(String namespace) {
-	    if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace)) {
-	        return Collections.unmodifiableList(serviceRequirements);
-	    }
-	    List<Requirement> revisionRequirements = revision.getRequirements(namespace);
-	    if (namespace == null) {
-	        List<Requirement> result = new ArrayList<Requirement>(revisionRequirements.size() + serviceRequirements.size());
-            result.addAll(revisionRequirements);
-            result.addAll(serviceRequirements);
-            return Collections.unmodifiableList(result);
-	    }
-	    return revisionRequirements;
+		initialized = true;
 	}
 	
-	public BundleRevision getRevision() {
-	    return revision;
+	private synchronized List<Capability> getServiceCapabilities() {
+		if (!initialized) {
+			computeServiceCapabilitiesAndRequirements();
+		}
+		return serviceCapabilities;
 	}
 	
-	private ServiceModeller.ServiceModel getModel() {
-	    Activator activator = Activator.getInstance();
-	    ServiceModeller modeller = activator.getServiceModeller();
-	    if (modeller == null) {
-            return null;
-        }
-	    ServiceModeller.ServiceModel model = modeller.computeRequirementsAndCapabilities(this,
-                new BundleDirectory(revision.getBundle()));
-	    return model;
+	private synchronized List<Requirement> getServiceRequirements() {
+		if (!initialized) {
+			computeServiceCapabilitiesAndRequirements();
+		}
+		return serviceRequirements;
 	}
 }
