@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.support.impl;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Status;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
@@ -54,7 +55,9 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
             tranToken = ta.begin(tm);
             coord = coordinator.begin(this.getClass().getName(), 0);
             em = emSupplier.get();
-            em.joinTransaction();
+            if (tm.getStatus() != Status.STATUS_NO_TRANSACTION) {
+                em.joinTransaction();
+            }
             R result = (R)code.apply(em);
             return result;
         } catch (Throwable ex) {
