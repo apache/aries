@@ -25,6 +25,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.container.itest.entities.CarService;
@@ -39,6 +42,9 @@ import org.osgi.service.coordinator.Coordinator;
 public class BlueprintTest extends AbstractCarJPAITest {
     @Inject
     Coordinator coordinator;
+    
+    @Inject
+    UserTransaction ut;
     
     @Test
     public void testCoordination() {
@@ -91,6 +97,11 @@ public class BlueprintTest extends AbstractCarJPAITest {
     }
     
     @Test
+    public void testRealTransactional() throws Exception {
+        carRealTransactionalLifecycle(getCarService("emJtaAnn"));
+    }
+    
+    @Test
     public void testCoordinationLifecycle() throws InterruptedException, ExecutionException {
         CarService carService = getCarService("em");
         assertNoCars(carService);
@@ -121,6 +132,17 @@ public class BlueprintTest extends AbstractCarJPAITest {
         carService.addCar(createBlueCar());
         assertBlueCar(carService.getCar(BLUE_CAR_PLATE));
         carService.deleteCar(BLUE_CAR_PLATE);
+    }
+    
+    private void carRealTransactionalLifecycle(CarService carService) throws IllegalStateException, SystemException, NotSupportedException {
+        assertNoCoordination();
+        if (carService.getCar(BLACK_CAR_PLATE) != null) {
+            carService.deleteCar(BLUE_CAR_PLATE);
+        }
+        ut.begin();
+        carService.addCar(createBlueCar());
+        ut.rollback();
+        Assert.assertNull(carService.getCar(BLUE_CAR_PLATE));
     }
 
     private void assertNoCoordination() {
