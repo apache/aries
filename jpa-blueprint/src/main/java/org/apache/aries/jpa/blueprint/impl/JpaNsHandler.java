@@ -18,43 +18,34 @@
  */
 package org.apache.aries.jpa.blueprint.impl;
 
-import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
-
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
-
-import javax.transaction.TransactionManager;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutablePassThroughMetadata;
-import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
-import org.apache.aries.jpa.supplier.EmSupplier;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class JpaNsHandler implements NamespaceHandler {
 
-    public static final String NAMESPACE_JPA_20 = "http://aries.apache.org/xmlns/jpan/v2.0.0";
+    public static final String NAMESPACE_JPA_20 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
     public static final String NAMESPACE_JPAN_10 = "http://aries.apache.org/xmlns/jpan/v1.0.0";
 
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc) {
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
 
         if ("enable".equals(elt.getLocalName())) {
-            if (!cdr.containsComponentDefinition(JpaBeanProcessor.JPA_PROCESSOR_BEAN_NAME)) {
+            if (!cdr.containsComponentDefinition(JpaComponentProcessor.class.getSimpleName())) {
                 MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
-                meta.setId(JpaBeanProcessor.JPA_PROCESSOR_BEAN_NAME);
-                meta.setRuntimeClass(JpaBeanProcessor.class);
+                meta.setId(JpaComponentProcessor.class.getSimpleName());
+                meta.setRuntimeClass(JpaComponentProcessor.class);
                 meta.setProcessor(true);
-                meta.addProperty("cdr", passThrough(pc, cdr));
+                meta.addProperty("pc", passThrough(pc, pc));
                 cdr.registerComponentDefinition(meta);
             }
         }
@@ -67,7 +58,6 @@ public class JpaNsHandler implements NamespaceHandler {
     }
 
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc) {
-        System.out.println(cm.getId());
         if (node instanceof Element) {
             Element elt = (Element)node;
             parseElement(elt, cm, pc);
@@ -96,35 +86,4 @@ public class JpaNsHandler implements NamespaceHandler {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    ComponentMetadata createEmSupplierRef(ParserContext pc, String unitName) {
-        final MutableReferenceMetadata refMetadata = pc.createMetadata(MutableReferenceMetadata.class);
-        refMetadata.setActivation(getDefaultActivation(pc));
-        refMetadata.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
-        refMetadata.setRuntimeInterface(EmSupplier.class);
-        refMetadata.setInterface(EmSupplier.class.getName());
-        refMetadata.setFilter(String.format("(%s=%s)", JPA_UNIT_NAME, unitName));
-        refMetadata.setTimeout(Integer.parseInt(pc.getDefaultTimeout()));
-        refMetadata.setDependsOn((List<String>)Collections.EMPTY_LIST);
-        refMetadata.setId(pc.generateId());
-        return refMetadata;
-    }
-    
-    @SuppressWarnings("unchecked")
-    ComponentMetadata createTransactionManagerRef(ParserContext pc) {
-        final MutableReferenceMetadata refMetadata = pc.createMetadata(MutableReferenceMetadata.class);
-        refMetadata.setActivation(getDefaultActivation(pc));
-        refMetadata.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
-        refMetadata.setRuntimeInterface(TransactionManager.class);
-        refMetadata.setInterface(TransactionManager.class.getName());
-        refMetadata.setTimeout(Integer.parseInt(pc.getDefaultTimeout()));
-        refMetadata.setDependsOn((List<String>)Collections.EMPTY_LIST);
-        refMetadata.setId(pc.generateId());
-        return refMetadata;
-    }
-
-    private int getDefaultActivation(ParserContext ctx) {
-        return "ACTIVATION_EAGER".equalsIgnoreCase(ctx.getDefaultActivation())
-            ? ReferenceMetadata.ACTIVATION_EAGER : ReferenceMetadata.ACTIVATION_LAZY;
-    }
 }
