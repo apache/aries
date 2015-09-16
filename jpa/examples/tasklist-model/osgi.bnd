@@ -1,5 +1,6 @@
 Meta-Persistence: \
     META-INF/persistence.xml
-Dynamic-Import-Package: \
+Import-Package: \
     org.hibernate.proxy, \
-    javassist.util.proxy
+    javassist.util.proxy, \
+    *
