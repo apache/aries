@@ -53,8 +53,7 @@ public class JpaInterceptor implements Interceptor {
             final EntityManager em = emSupplier.get();
             boolean weControlTx = isResourceLocal(em) && !em.getTransaction().isActive();
             if (weControlTx) {
-                em.getTransaction().begin();
-                coordination.addParticipant(new JPAParticipant(em));
+                coordination.addParticipant(new ResourceLocalTransactionParticipant(em));
             }
             return coordination;
         } catch (Exception e) {
