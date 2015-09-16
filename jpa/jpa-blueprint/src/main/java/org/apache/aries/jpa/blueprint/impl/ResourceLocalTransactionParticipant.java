@@ -23,11 +23,12 @@ import javax.persistence.EntityManager;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
 
-final class JPAParticipant implements Participant {
+final class ResourceLocalTransactionParticipant implements Participant {
     private final EntityManager em;
 
-    JPAParticipant(EntityManager em) {
+    ResourceLocalTransactionParticipant(EntityManager em) {
         this.em = em;
+        em.getTransaction().begin();
     }
 
     @Override
