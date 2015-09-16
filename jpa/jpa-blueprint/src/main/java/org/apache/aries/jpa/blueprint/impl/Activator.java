@@ -30,9 +30,14 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
         JpaNsHandler handler = new JpaNsHandler();
+        context.registerService(NamespaceHandler.class, handler, createProps(JpaNsHandler.NAMESPACE_JPAN_10));
+        context.registerService(NamespaceHandler.class, handler, createProps(JpaNsHandler.NAMESPACE_JPA_20));
+    }
+
+    private Dictionary<String, String> createProps(String namespace) {
         Dictionary<String, String> props = new Hashtable<String, String>();
-        props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/jpan/v1.0.0");
-        context.registerService(NamespaceHandler.class, handler, props);
+        props.put("osgi.service.blueprint.namespace", namespace);
+        return props;
     }
 
     @Override
