@@ -28,13 +28,19 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class ServiceProxy implements InvocationHandler {
+    private static final int SERVICE_TIMEOUT = 120000;
+
     @SuppressWarnings("rawtypes")
     private ServiceTracker tracker;
 
+    private String filterS;
+
     public ServiceProxy(BundleContext context, String filterS) {
+        this.filterS = filterS;
         tracker = new ServiceTracker<>(context, createFilter(filterS), null);
         tracker.open();
     }
@@ -49,7 +55,11 @@ public class ServiceProxy implements InvocationHandler {
 
     private Object getService() {
         try {
-            return tracker.waitForService(10000);
+            Object serviceO = tracker.waitForService(SERVICE_TIMEOUT);
+            if (serviceO == null) {
+                throw new ServiceUnavailableException("No matching service found after timeout of " + SERVICE_TIMEOUT + " ms", filterS);
+            }
+            return serviceO;
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }
