@@ -28,10 +28,9 @@
 
 	<service ref="taskService" interface="org.apache.aries.jpa.example.tasklist.model.TaskService">
 	</service>
-	<bean id="taskService" class="org.apache.aries.jpa.example.tasklist.blueprint.impl.TaskServiceWithSupplier">
+	<bean id="taskService" class="org.apache.aries.jpa.example.tasklist.blueprint.impl.TaskServiceImpl">
 		<tx:transaction method="*"/>
 	</bean>
-	<!-- <bean class="org.apache.aries.jpa.example.tasklist.blueprint.impl.TaskServiceImpl"/> -->
     
     <!-- 
         We use the task service directly here to make the example smaller.
