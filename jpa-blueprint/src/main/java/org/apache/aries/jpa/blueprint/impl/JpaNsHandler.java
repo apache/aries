@@ -42,6 +42,9 @@ import org.w3c.dom.Node;
 
 public class JpaNsHandler implements NamespaceHandler {
 
+    public static final String NAMESPACE_JPA_20 = "http://aries.apache.org/xmlns/jpan/v2.0.0";
+    public static final String NAMESPACE_JPAN_10 = "http://aries.apache.org/xmlns/jpan/v1.0.0";
+
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc) {
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
 
@@ -78,7 +81,14 @@ public class JpaNsHandler implements NamespaceHandler {
     }
 
     public URL getSchemaLocation(String namespace) {
-        return this.getClass().getResource("/jpa10.xsd");
+        if (NAMESPACE_JPAN_10.equals(namespace)) {
+            // deprecated (remove in jpa 3)
+            return this.getClass().getResource("/jpan10.xsd");
+        } else if (NAMESPACE_JPA_20.equals(namespace)) {
+            return this.getClass().getResource("/jpa20.xsd");
+        } else {
+            throw new IllegalArgumentException("Unknown namespace for jpa: " + namespace);
+        }
     }
 
     @SuppressWarnings("rawtypes")
