@@ -24,7 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.apache.aries.blueprint.Interceptor;
-import org.apache.aries.jpa.supplier.EmSupplier;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Coordinator;
@@ -33,13 +33,17 @@ import org.slf4j.LoggerFactory;
 
 public class JpaInterceptor implements Interceptor {
     private static Logger LOG = LoggerFactory.getLogger(JpaInterceptor.class);
-    EmSupplier emSupplier;
+    EntityManager em;
     private Boolean cachedIsResourceLocal;
     private Coordinator coordinator;
+    private BlueprintContainer container;
+    private String coordinatorId;
+    private String emId;
 
-    public JpaInterceptor(EmSupplier emSupplier, Coordinator coordinator) {
-        this.emSupplier = emSupplier;
-        this.coordinator = coordinator;
+    public JpaInterceptor(BlueprintContainer container, String coordinatorId, String emId) {
+        this.container = container;
+        this.coordinatorId = coordinatorId;
+        this.emId = emId;
     }
 
     public int getRank() {
@@ -47,10 +51,12 @@ public class JpaInterceptor implements Interceptor {
     }
 
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
+        if (coordinator == null) {
+            initServices();
+        }
         try {
             LOG.debug("PreCall for bean {}, method {}", cm.getId(), m.getName());
             Coordination coordination = coordinator.begin("jpa", 0);
-            final EntityManager em = emSupplier.get();
             boolean weControlTx = isResourceLocal(em) && !em.getTransaction().isActive();
             if (weControlTx) {
                 coordination.addParticipant(new ResourceLocalTransactionParticipant(em));
@@ -60,6 +66,11 @@ public class JpaInterceptor implements Interceptor {
             LOG.warn("Exception from EmSupplier.preCall", e);
             throw new RuntimeException(e);
         }
+    }
+
+    private void initServices() {
+        coordinator = (Coordinator)container.getComponentInstance(coordinatorId);
+        em = (EntityManager)container.getComponentInstance(emId);
     }
 
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
