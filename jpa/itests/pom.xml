@@ -35,7 +35,7 @@
     
     <properties>
         <paxlogging.version>1.7.3</paxlogging.version>
-        <exam.version>4.5.0</exam.version>
+        <exam.version>4.6.0</exam.version>
         <url.version>1.6.0</url.version>
         <hibernate42.version>4.2.15.Final</hibernate42.version>
         <hibernate43.version>4.2.15.Final</hibernate43.version>
@@ -51,6 +51,7 @@
     <modules>
         <module>jpa-container-blueprint-testbundle</module>
         <module>jpa-container-itest</module>
+        <module>jpa-container-itest-karaf</module>
         <module>jpa-container-testbundle</module>
         <module>jpa-container-testbundle-eclipselink</module>
     </modules>
