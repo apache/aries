@@ -32,8 +32,7 @@ public class ResolutionDirective extends AbstractDirective {
 			return MANDATORY;
 		if (VALUE_OPTIONAL.equals(value))
 			return OPTIONAL;
-		else
-			throw new IllegalArgumentException("Invalid " + Constants.RESOLUTION_DIRECTIVE + " directive: " + value);
+        throw new IllegalArgumentException("Invalid " + Constants.RESOLUTION_DIRECTIVE + " directive: " + value);
 	}
 	
 	private ResolutionDirective(String value) {

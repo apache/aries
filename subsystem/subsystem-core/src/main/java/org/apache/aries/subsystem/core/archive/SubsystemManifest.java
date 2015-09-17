@@ -157,13 +157,13 @@ public class SubsystemManifest {
 	public SubsystemManifest(InputStream in) throws IOException {
 		Manifest manifest = ManifestProcessor.parseManifest(in);
 		Attributes attributes = manifest.getMainAttributes();
-		Map<String, Header<?>> headers = new HashMap<String, Header<?>>(attributes.size() + 4); // Plus the # of potentially derived headers.
+		Map<String, Header<?>> lheaders = new HashMap<String, Header<?>>(attributes.size() + 4); // Plus the # of potentially derived headers.
 		for (Entry<Object, Object> entry : attributes.entrySet()) {
 			String key = String.valueOf(entry.getKey());
-			headers.put(key, HeaderFactory.createHeader(key, String.valueOf(entry.getValue())));
+			lheaders.put(key, HeaderFactory.createHeader(key, String.valueOf(entry.getValue())));
 		}
-		fillInDefaults(headers);
-		this.headers = Collections.unmodifiableMap(headers);
+		fillInDefaults(lheaders);
+		this.headers = Collections.unmodifiableMap(lheaders);
 	}
 	
 	public SubsystemManifest(String symbolicName, Version version, Collection<Resource> content) {
@@ -282,4 +282,30 @@ public class SubsystemManifest {
 		}
 		manifest.write(out);
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((headers == null) ? 0 : headers.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SubsystemManifest other = (SubsystemManifest) obj;
+        if (headers == null) {
+            if (other.headers != null)
+                return false;
+        } else
+            if (!headers.equals(other.headers))
+                return false;
+        return true;
+    }
 }

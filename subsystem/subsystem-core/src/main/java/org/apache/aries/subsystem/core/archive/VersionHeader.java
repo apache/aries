@@ -16,7 +16,9 @@ package org.apache.aries.subsystem.core.archive;
 import org.osgi.framework.Version;
 
 public abstract class VersionHeader extends AbstractHeader {
-	protected final Version version;
+    
+
+    protected final Version version;
 	
 	public VersionHeader(String name, String value) {
 		this(name, Version.parseVersion(value));
@@ -30,4 +32,30 @@ public abstract class VersionHeader extends AbstractHeader {
 	public Version getVersion() {
 		return version;
 	}
+
+	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((version == null) ? 0 : version.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        VersionHeader other = (VersionHeader) obj;
+        if (version == null) {
+            if (other.version != null)
+                return false;
+        } else
+            if (!version.equals(other.version))
+                return false;
+        return true;
+    }
 }

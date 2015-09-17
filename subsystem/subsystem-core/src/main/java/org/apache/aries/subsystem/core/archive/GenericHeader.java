@@ -18,68 +18,68 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GenericHeader implements Header<GenericHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
-		private final String path;
+public class GenericHeader extends AbstractClauseBasedHeader<GenericHeader.Clause> implements Header<GenericHeader.Clause> {
+	public static class Clause extends AbstractClause {
 		
 		public Clause(String clause) {
-			path = clause;
+			super(clause);
 		}
+
+        @Override
+        protected void processClauseString(String clauseString)
+                throws IllegalArgumentException {
+            path = clauseString;
+        }
 		
-		public Attribute getAttribute(String name) {
-			return null;
-		}
+//		public Attribute getAttribute(String name) {
+//			return null;
+//		}
+//		
+//		public Collection<Attribute> getAttributes() {
+//			return Collections.emptyList();
+//		}
+//		
+//		public Directive getDirective(String name) {
+//			return null;
+//		}
+//		
+//		public Collection<Directive> getDirectives() {
+//			return Collections.emptyList();
+//		}
+//		
+//		public Parameter getParameter(String name) {
+//			return null;
+//		}
+//		
+//		public Collection<Parameter> getParameters() {
+//			return Collections.emptyList();
+//		}
+//		
+//		public String getPath() {
+//			return path;
+//		}
 		
-		public Collection<Attribute> getAttributes() {
-			return Collections.emptyList();
-		}
-		
-		public Directive getDirective(String name) {
-			return null;
-		}
-		
-		public Collection<Directive> getDirectives() {
-			return Collections.emptyList();
-		}
-		
-		public Parameter getParameter(String name) {
-			return null;
-		}
-		
-		public Collection<Parameter> getParameters() {
-			return Collections.emptyList();
-		}
-		
-		public String getPath() {
-			return path;
-		}
-		
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder()
-					.append(getPath());
-			for (Parameter parameter : getParameters()) {
-				builder.append(';').append(parameter);
-			}
-			return builder.toString();
-		}
+//		@Override
+//		public String toString() {
+//			StringBuilder builder = new StringBuilder()
+//					.append(getPath());
+//			for (Parameter parameter : getParameters()) {
+//				builder.append(';').append(parameter);
+//			}
+//			return builder.toString();
+//		}
 	}
 	
-	private final Set<Clause> clauses;
 	private final String name;
 	
 	public GenericHeader(String name, Collection<Clause> clauses) {
+	    super(clauses);
 		this.name = name;
-		this.clauses = new HashSet<Clause>(clauses);
 	}
 	
 	public GenericHeader(String name, String value) {
-		this(name, Collections.singletonList(new Clause(value)));
-	}
-
-	@Override
-	public Collection<Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
+		super(value);
+		this.name = name;
 	}
 
 	@Override
@@ -91,15 +91,9 @@ public class GenericHeader implements Header<GenericHeader.Clause> {
 	public String getValue() {
 		return toString();
 	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Clause clause : getClauses()) {
-			builder.append(clause).append(',');
-		}
-		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
-		builder.deleteCharAt(builder.length() - 1);
-		return builder.toString();
-	}
+
+    @Override
+    protected Collection<Clause> processHeader(String header) {
+        return Collections.singletonList(new Clause(header));
+    }
 }

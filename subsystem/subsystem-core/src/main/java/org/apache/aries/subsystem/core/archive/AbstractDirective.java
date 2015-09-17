@@ -18,11 +18,13 @@ public abstract class AbstractDirective extends AbstractParameter implements Dir
 		super(name, value);
 	}
 	
-	public String getValue() {
+	@Override
+    public String getValue() {
 		return (String)super.getValue();
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return new StringBuilder()
 				.append(getName())
 				.append(":=")

@@ -49,4 +49,31 @@ public class ClauseTokenizer {
 			return;
 		clauses.add(clause);
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((clauses == null) ? 0 : clauses.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ClauseTokenizer other = (ClauseTokenizer) obj;
+        if (clauses == null) {
+            if (other.clauses != null)
+                return false;
+        } else
+            if (!clauses.equals(other.clauses))
+                return false;
+        return true;
+    }
+	
 }

@@ -40,4 +40,32 @@ public class DeployedVersionAttribute extends AbstractAttribute {
 	public Version getVersion() {
 		return deployedVersion;
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result
+                + ((deployedVersion == null) ? 0 : deployedVersion.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DeployedVersionAttribute other = (DeployedVersionAttribute) obj;
+        if (deployedVersion == null) {
+            if (other.deployedVersion != null)
+                return false;
+        } else
+            if (!deployedVersion.equals(other.deployedVersion))
+                return false;
+        return true;
+    }
+	
 }

@@ -28,8 +28,8 @@ public class SubsystemLocalizationHeader extends AbstractHeader {
 		this(DEFAULT_VALUE);
 	}
 
-	public SubsystemLocalizationHeader(String value) {
-		super(NAME, value);
+	public SubsystemLocalizationHeader(String localization) {
+		super(NAME, localization);
 		int index = value.lastIndexOf('/');
 		baseFileName = index == -1 ? value : value.substring(index + 1);
 		directoryName = index == -1 ? null : value.substring(0, index + 1);
@@ -42,4 +42,40 @@ public class SubsystemLocalizationHeader extends AbstractHeader {
 	public String getDirectoryName() {
 		return directoryName;
 	}
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SubsystemLocalizationHeader other = (SubsystemLocalizationHeader) obj;
+        if (baseFileName == null) {
+            if (other.baseFileName != null)
+                return false;
+        } else
+            if (!baseFileName.equals(other.baseFileName))
+                return false;
+        if (directoryName == null) {
+            if (other.directoryName != null)
+                return false;
+        } else
+            if (!directoryName.equals(other.directoryName))
+                return false;
+        return true;
+    }
+	
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result
+                + ((baseFileName == null) ? 0 : baseFileName.hashCode());
+        result = prime * result
+                + ((directoryName == null) ? 0 : directoryName.hashCode());
+        return result;
+    }
+	
 }

@@ -16,7 +16,6 @@ package org.apache.aries.subsystem.core.archive;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +26,9 @@ import java.util.regex.Pattern;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Resource;
 
-public class ExportPackageHeader implements CapabilityHeader<ExportPackageHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+public class ExportPackageHeader extends AbstractClauseBasedHeader<ExportPackageHeader.Clause> implements CapabilityHeader<ExportPackageHeader.Clause> {
+
+    public static class Clause extends AbstractClause {
 		public static final String ATTRIBUTE_VERSION = Constants.VERSION_ATTRIBUTE;
 		public static final String DIRECTIVE_EXCLUDE = Constants.EXCLUDE_DIRECTIVE;
 		public static final String DIRECTIVE_INCLUDE = Constants.INCLUDE_DIRECTIVE;
@@ -45,24 +45,10 @@ public class ExportPackageHeader implements CapabilityHeader<ExportPackageHeader
 				parameters.put(ATTRIBUTE_VERSION, VersionAttribute.DEFAULT);
 		}
 		
-		private final Collection<String> packageNames = new HashSet<String>();
-		private final String path;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		private Collection<String> packageNames;
 		
 		public Clause(String clause) {
-			Matcher main = PATTERN_PACKAGENAMES.matcher(clause);
-			if (!main.find())
-				throw new IllegalArgumentException("Missing package names path: " + clause);
-			path = main.group();
-			Matcher path = PATTERN_PACKAGENAME.matcher(this.path);
-			while (path.find())
-				packageNames.add(main.group());
-			main.usePattern(PATTERN_PARAMETER);
-			while (main.find()) {
-				Parameter parameter = ParameterFactory.create(main.group());
-				parameters.put(parameter.getName(), parameter);
-			}
-			fillInDefaults(parameters);
+            super(clause);
 		}
 		
 		@Override
@@ -126,40 +112,49 @@ public class ExportPackageHeader implements CapabilityHeader<ExportPackageHeader
 			return path;
 		}
 		
+        @Override
+        protected void processClauseString(String clauseString)
+                throws IllegalArgumentException {
+            packageNames = new HashSet<String>();
+            Matcher main = PATTERN_PACKAGENAMES.matcher(clauseString);
+            if (!main.find())
+                throw new IllegalArgumentException("Missing package names path: " + clauseString);
+            path = main.group();
+            Matcher lpath = PATTERN_PACKAGENAME.matcher(this.path);
+            while (lpath.find()){
+                packageNames.add(main.group());
+            }
+            main.usePattern(PATTERN_PARAMETER);
+            while (main.find()) {
+                Parameter parameter = ParameterFactory.create(main.group());
+                parameters.put(parameter.getName(), parameter);
+            }
+            fillInDefaults(parameters);
+        }
+        
 		public Collection<ExportPackageCapability> toCapabilities(Resource resource) {
 			Collection<ExportPackageCapability> result = new ArrayList<ExportPackageCapability>(packageNames.size());
 			for (String packageName : packageNames)
 				result.add(new ExportPackageCapability(packageName, parameters.values(), resource));
 			return result;
 		}
-		
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder()
-					.append(getPath());
-			for (Parameter parameter : getParameters()) {
-				builder.append(';').append(parameter);
-			}
-			return builder.toString();
-		}
 	}
 	
 	public static final String NAME = Constants.EXPORT_PACKAGE;
 	
-	private final Set<Clause> clauses = new HashSet<Clause>();
-	
 	public ExportPackageHeader(String value) {
-		for (String clause : new ClauseTokenizer(value).getClauses())
-			clauses.add(new Clause(clause));
-		if (clauses.isEmpty())
-			throw new IllegalArgumentException("An " + NAME + " header must have at least one clause");
+		super(value);
 	}
 	
-	@Override
-	public Collection<ExportPackageHeader.Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
-	}
-
+    @Override
+    protected Collection<Clause> processHeader(String value) {
+        Collection<String> clauseStrs = new ClauseTokenizer(value).getClauses();
+        Set<Clause> lclauses = new HashSet<Clause>(clauseStrs.size());
+        for (String clause : new ClauseTokenizer(value).getClauses())
+            lclauses.add(new Clause(clause));
+        return lclauses;
+    }	
+	
 	@Override
 	public String getName() {
 		return NAME;

@@ -20,8 +20,6 @@ package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +32,8 @@ import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
 import org.osgi.resource.Resource;
 
-public class FragmentHostHeader implements RequirementHeader<FragmentHostHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+public class FragmentHostHeader extends AbstractClauseBasedHeader<FragmentHostHeader.Clause> implements RequirementHeader<FragmentHostHeader.Clause> {
+	public static class Clause extends AbstractClause {
 		public static final String ATTRIBUTE_BUNDLEVERSION = Constants.BUNDLE_VERSION_ATTRIBUTE;
 		
 		private static final Pattern PATTERN_SYMBOLICNAME = Pattern.compile('(' + Grammar.SYMBOLICNAME + ")(?=;|\\z)");
@@ -54,79 +52,11 @@ public class FragmentHostHeader implements RequirementHeader<FragmentHostHeader.
             }
 		}
 		
-		private final String path;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clause);
-			if (!matcher.find())
-				throw new IllegalArgumentException("Missing symbolic-name: " + clause);
-			path = matcher.group();
-			matcher.usePattern(PATTERN_PARAMETER);
-			while (matcher.find()) {
-				Parameter parameter = ParameterFactory.create(matcher.group());
-				parameters.put(parameter.getName(), parameter);
-			}
-			fillInDefaults(parameters);
+		    super(clause);
 		}
 		
-		@Override
-		public Attribute getAttribute(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Attribute) {
-				return (Attribute)result;
-			}
-			return null;
-		}
 
-		@Override
-		public Collection<Attribute> getAttributes() {
-			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Attribute) {
-					attributes.add((Attribute)parameter);
-				}
-			}
-			attributes.trimToSize();
-			return attributes;
-		}
-
-		@Override
-		public Directive getDirective(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Directive) {
-				return (Directive)result;
-			}
-			return null;
-		}
-
-		@Override
-		public Collection<Directive> getDirectives() {
-			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Directive) {
-					directives.add((Directive)parameter);
-				}
-			}
-			directives.trimToSize();
-			return directives;
-		}
-
-		@Override
-		public Parameter getParameter(String name) {
-			return parameters.get(name);
-		}
-
-		@Override
-		public Collection<Parameter> getParameters() {
-			return Collections.unmodifiableCollection(parameters.values());
-		}
-
-		@Override
-		public String getPath() {
-			return path;
-		}
-		
 		public String getSymbolicName() {
 			return path;
 		}
@@ -135,44 +65,36 @@ public class FragmentHostHeader implements RequirementHeader<FragmentHostHeader.
 			return new FragmentHostRequirement(this, resource);
 		}
 		
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder()
-					.append(getPath());
-			for (Parameter parameter : getParameters()) {
-				builder.append(';').append(parameter);
-			}
-			return builder.toString();
-		}
+        @Override
+        protected void processClauseString(String clauseString)
+                throws IllegalArgumentException {
+
+            Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clauseString);
+            if (!matcher.find())
+                throw new IllegalArgumentException("Missing symbolic-name: " + clauseString);
+            path = matcher.group();
+            matcher.usePattern(PATTERN_PARAMETER);
+            while (matcher.find()) {
+                Parameter parameter = ParameterFactory.create(matcher.group());
+                parameters.put(parameter.getName(), parameter);
+            }
+            fillInDefaults(parameters);
+        }
 	}
 	
 	public static final String NAME = Constants.FRAGMENT_HOST;
 	
-	private static Collection<Clause> processHeader(String header) {
-		Set<Clause> clauses = new HashSet<Clause>();
-		for (String clause : new ClauseTokenizer(header).getClauses())
-			clauses.add(new Clause(clause));
-		return clauses;
-	}
-	
-	private final Set<Clause> clauses;
-	
 	public FragmentHostHeader(Collection<Clause> clauses) {
-		if (clauses.size() != 1) {
-		    throw new IllegalArgumentException("A " + NAME + " header must have one and only one clause");
-		}
-		this.clauses = new HashSet<Clause>(clauses);
+	    super(clauses);
+        if (clauses.size() != 1) {
+            throw new IllegalArgumentException("A " + NAME + " header must have one and only one clause");
+        }
 	}
 	
 	public FragmentHostHeader(String value) {
-		this(processHeader(value));
+		super(value);
 	}
 	
-	@Override
-	public Collection<FragmentHostHeader.Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
-	}
-
 	@Override
 	public String getName() {
 		return NAME;
@@ -184,21 +106,23 @@ public class FragmentHostHeader implements RequirementHeader<FragmentHostHeader.
 	}
 	
 	@Override
+	protected Collection<Clause> processHeader(String header) {
+	    
+	    Set<Clause> lclauses = new HashSet<Clause>();
+	    for (String clause : new ClauseTokenizer(header).getClauses())
+	        lclauses.add(new Clause(clause));
+        if (lclauses.size() != 1) {
+            throw new IllegalArgumentException("A " + NAME + " header must have one and only one clause");
+        }
+	    return lclauses;
+	}
+	
+	@Override
 	public List<FragmentHostRequirement> toRequirements(Resource resource) {
 		List<FragmentHostRequirement> requirements = new ArrayList<FragmentHostRequirement>(clauses.size());
 		for (Clause clause : clauses)
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Clause clause : getClauses()) {
-			builder.append(clause).append(',');
-		}
-		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
-		builder.deleteCharAt(builder.length() - 1);
-		return builder.toString();
-	}
+
 }

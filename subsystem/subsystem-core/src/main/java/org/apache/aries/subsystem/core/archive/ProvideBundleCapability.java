@@ -87,4 +87,48 @@ public class ProvideBundleCapability extends AbstractCapability {
 	public Resource getResource() {
 		return resource;
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result
+                + ((attributes == null) ? 0 : attributes.hashCode());
+        result = prime * result
+                + ((directives == null) ? 0 : directives.hashCode());
+        result = prime * result
+                + ((resource == null) ? 0 : resource.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ProvideBundleCapability other = (ProvideBundleCapability) obj;
+        if (attributes == null) {
+            if (other.attributes != null)
+                return false;
+        } else
+            if (!attributes.equals(other.attributes))
+                return false;
+        if (directives == null) {
+            if (other.directives != null)
+                return false;
+        } else
+            if (!directives.equals(other.directives))
+                return false;
+        if (resource == null) {
+            if (other.resource != null)
+                return false;
+        } else
+            if (!resource.equals(other.resource))
+                return false;
+        return true;
+    }
+	
 }
