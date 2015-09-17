@@ -15,160 +15,84 @@ package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import org.apache.aries.subsystem.core.capabilityset.SimpleFilter;
 import org.osgi.framework.Constants;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class SubsystemImportServiceHeader implements RequirementHeader<SubsystemImportServiceHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+public class SubsystemImportServiceHeader extends AbstractClauseBasedHeader<SubsystemImportServiceHeader.Clause> implements RequirementHeader<SubsystemImportServiceHeader.Clause> {
+    public static class Clause extends AbstractClause {
 		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
 		public static final String DIRECTIVE_RESOLUTION = Constants.RESOLUTION_DIRECTIVE;
 
-		private static final Pattern PATTERN_OBJECTCLASS_OR_STAR = Pattern.compile("((" + Grammar.OBJECTCLASS + ")|[*])(?=;|\\z)");
-		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
-
-		private static void fillInDefaults(Map<String, Parameter> parameters) {
-			Parameter parameter = parameters.get(DIRECTIVE_EFFECTIVE);
-			if (parameter == null)
-				parameters.put(DIRECTIVE_EFFECTIVE, EffectiveDirective.ACTIVE);
-			parameter = parameters.get(DIRECTIVE_RESOLUTION);
-			if (parameter == null)
-				parameters.put(DIRECTIVE_RESOLUTION, ResolutionDirective.MANDATORY);
-		}
-
-		private final String path;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		private static final Collection<Parameter> defaultParameters = generateDefaultParameters(
+				EffectiveDirective.ACTIVE,
+				ResolutionDirective.MANDATORY);
 
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_OBJECTCLASS_OR_STAR.matcher(clause);
-			if (!matcher.find())
-				throw new IllegalArgumentException("Missing namespace path: " + clause);
-			path = matcher.group();
-			matcher.usePattern(PATTERN_PARAMETER);
-			while (matcher.find()) {
-				Parameter parameter = ParameterFactory.create(matcher.group());
-				parameters.put(parameter.getName(), parameter);
+			super(
+            		parsePath(clause, Patterns.OBJECTCLASS_OR_STAR, false), 
+            		parseParameters(clause, false), 
+            		defaultParameters);
+		}
+		
+		public Clause(String path, Map<String, Parameter> parameters, Collection<Parameter> defaultParameters) {
+			super(path, parameters, defaultParameters);
+		}
+
+		public static Clause valueOf(Requirement requirement) {
+			String namespace = requirement.getNamespace();
+			if (!SubsystemImportServiceRequirement.NAMESPACE.equals(namespace)) {
+				throw new IllegalArgumentException("Invalid namespace:" + namespace);
 			}
-			fillInDefaults(parameters);
-		}
-
-		public Clause(Requirement requirement) {
-			path = requirement.getNamespace();
-			for (Entry<String, String> directive : requirement.getDirectives().entrySet())
-				parameters.put(directive.getKey(), DirectiveFactory.createDirective(directive.getKey(), directive.getValue()));
-		}
-
-		@Override
-		public Attribute getAttribute(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Attribute) {
-				return (Attribute)result;
-			}
-			return null;
-		}
-
-		@Override
-		public Collection<Attribute> getAttributes() {
-			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Attribute) {
-					attributes.add((Attribute)parameter);
+			Map<String, String> directives = requirement.getDirectives();
+			Map<String, Parameter> parameters = new HashMap<String, Parameter>(directives.size());
+			for (Map.Entry<String, String> entry : directives.entrySet()) {
+				String key = entry.getKey();
+				if (SubsystemImportServiceRequirement.DIRECTIVE_FILTER.equals(key)) {
+					continue;
 				}
+				parameters.put(key, DirectiveFactory.createDirective(key, entry.getValue()));
 			}
-			attributes.trimToSize();
-			return attributes;
-		}
-
-		@Override
-		public Directive getDirective(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Directive) {
-				return (Directive)result;
+			String filter = directives.get(SubsystemImportServiceRequirement.DIRECTIVE_FILTER);
+			Map<String, Object> attributes = SimpleFilter.attributes(filter);
+			String path = String.valueOf(attributes.remove(Constants.OBJECTCLASS));
+			if (!attributes.isEmpty()) {
+				parameters.put(
+						SubsystemImportServiceRequirement.DIRECTIVE_FILTER, 
+						DirectiveFactory.createDirective(
+								SubsystemImportServiceRequirement.DIRECTIVE_FILTER,
+								SimpleFilter.convert(attributes).toString()));
 			}
-			return null;
-		}
-
-		@Override
-		public Collection<Directive> getDirectives() {
-			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Directive) {
-					directives.add((Directive)parameter);
-				}
-			}
-			directives.trimToSize();
-			return directives;
-		}
-
-		@Override
-		public Parameter getParameter(String name) {
-			return parameters.get(name);
-		}
-
-		@Override
-		public Collection<Parameter> getParameters() {
-			return Collections.unmodifiableCollection(parameters.values());
-		}
-
-		@Override
-		public String getPath() {
-			return path;
+			return new Clause(path, parameters, defaultParameters);
 		}
 
 		public SubsystemImportServiceRequirement toRequirement(Resource resource) {
 			return new SubsystemImportServiceRequirement(this, resource);
 		}
-
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder()
-					.append(getPath());
-			for (Parameter parameter : getParameters()) {
-				builder.append(';').append(parameter);
-			}
-			return builder.toString();
-		}
 	}
 
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_IMPORTSERVICE;
 
-    private static final Pattern PATTERN = Pattern.compile("(" + Grammar.SERVICE_OR_WILDCARD + ")(?=,|\\z)");
-
-	private static Collection<Clause> processHeader(String header) {
-		Matcher matcher = PATTERN.matcher(header);
-		Set<Clause> clauses = new HashSet<Clause>();
-		while (matcher.find())
-			clauses.add(new Clause(matcher.group()));
-		return clauses;
-	}
-
-	private final Set<Clause> clauses;
-
 	public SubsystemImportServiceHeader(String value) {
-		this(processHeader(value));
+		super(
+				value, 
+				new ClauseFactory<Clause>() {
+					@Override
+					public Clause newInstance(String clause) {
+						return new Clause(clause);
+					}
+				});
 	}
 
 	public SubsystemImportServiceHeader(Collection<Clause> clauses) {
-		if (clauses.isEmpty())
-			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
-		this.clauses = new HashSet<Clause>(clauses);
-	}
-
-	@Override
-	public Collection<SubsystemImportServiceHeader.Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
+		super(clauses);
 	}
 
 	@Override
@@ -187,16 +111,5 @@ public class SubsystemImportServiceHeader implements RequirementHeader<Subsystem
 		for (Clause clause : clauses)
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Clause clause : getClauses()) {
-			builder.append(clause).append(',');
-		}
-		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
-		builder.deleteCharAt(builder.length() - 1);
-		return builder.toString();
 	}
 }

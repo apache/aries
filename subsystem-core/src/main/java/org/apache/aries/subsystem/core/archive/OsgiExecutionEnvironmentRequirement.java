@@ -37,18 +37,32 @@ public class OsgiExecutionEnvironmentRequirement extends AbstractRequirement {
 	}
 	
 	public OsgiExecutionEnvironmentRequirement(Collection<BundleRequiredExecutionEnvironmentHeader.Clause> clauses, Resource resource) {
-		StringBuilder filter = new StringBuilder("(|");
+		if (clauses.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
+		if (resource == null) {
+			throw new NullPointerException();
+		}
+		StringBuilder filter = new StringBuilder();
+		if (clauses.size() > 1) {
+			filter.append("(|");
+		}
 		for (BundleRequiredExecutionEnvironmentHeader.Clause clause : clauses) {
 			ExecutionEnvironment ee = clause.getExecutionEnvironment();
-			filter.append("(&(").append(NAMESPACE).append('=').append(ee.getName()).append(')');
 			Version version = ee.getVersion();
-			if (version != null)
-				filter.append('(').append(ATTRIBUTE_VERSION).append('=')
-						.append(version).append(')');
+			if (version != null) {
+				filter.append("(&");
+			}
+			filter.append("(").append(NAMESPACE).append('=').append(ee.getName()).append(')');
+			if (version != null) {
+				filter.append('(').append(ATTRIBUTE_VERSION).append('=').append(version).append("))");
+			}
+		}
+		if (clauses.size() > 1) {
 			filter.append(')');
 		}
 		directives = new HashMap<String, String>(1);
-		directives.put(DIRECTIVE_FILTER, filter.append(')').toString());
+		directives.put(DIRECTIVE_FILTER, filter.toString());
 		this.resource = resource;
 	}
 	

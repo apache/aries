@@ -15,119 +15,58 @@ package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.osgi.framework.Constants;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 
-public class RequireCapabilityHeader implements RequirementHeader<RequireCapabilityHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+public class RequireCapabilityHeader extends AbstractClauseBasedHeader<RequireCapabilityHeader.Clause> implements RequirementHeader<RequireCapabilityHeader.Clause> {
+    public static class Clause extends AbstractClause {
 		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
 		public static final String DIRECTIVE_RESOLUTION = Constants.RESOLUTION_DIRECTIVE;
 		
-		private static final Pattern PATTERN_NAMESPACE = Pattern.compile('(' + Grammar.NAMESPACE + ")(?=;|\\z)");
-		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
-		
-		private static void fillInDefaults(Map<String, Parameter> parameters) {
-			Parameter parameter = parameters.get(DIRECTIVE_EFFECTIVE);
-			if (parameter == null)
-				parameters.put(DIRECTIVE_EFFECTIVE, EffectiveDirective.RESOLVE);
-			parameter = parameters.get(DIRECTIVE_RESOLUTION);
-			if (parameter == null)
-				parameters.put(DIRECTIVE_RESOLUTION, ResolutionDirective.MANDATORY);
-		}
-		
-		private final String namespace;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		private static final Collection<Parameter> defaultParameters = generateDefaultParameters(
+				EffectiveDirective.RESOLVE,
+				ResolutionDirective.MANDATORY);
 		
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_NAMESPACE.matcher(clause);
-			if (!matcher.find())
-				throw new IllegalArgumentException("Missing namespace path: " + clause);
-			namespace = matcher.group();
-			matcher.usePattern(PATTERN_PARAMETER);
-			while (matcher.find()) {
-				Parameter parameter = ParameterFactory.create(matcher.group());
-				parameters.put(parameter.getName(), parameter);
-			}
-			fillInDefaults(parameters);
+			super(
+            		parsePath(clause, Patterns.NAMESPACE, false), 
+            		parseParameters(clause, false), 
+            		defaultParameters);
 		}
 		
-		public Clause(Requirement requirement) {
-			namespace = requirement.getNamespace();
-			for (Entry<String, String> directive : requirement.getDirectives().entrySet())
-				parameters.put(directive.getKey(), DirectiveFactory.createDirective(directive.getKey(), directive.getValue()));
+		public Clause(String path, Map<String, Parameter> parameters, Collection<Parameter> defaultParameters) {
+			super(path, parameters, defaultParameters);
 		}
 		
-		@Override
-		public Attribute getAttribute(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Attribute) {
-				return (Attribute)result;
+		public static Clause valueOf(Requirement requirement) {
+			if (!(requirement instanceof RequireCapabilityRequirement 
+					|| requirement instanceof OsgiExecutionEnvironmentRequirement)) {
+				throw new IllegalArgumentException();
 			}
-			return null;
+			String namespace = requirement.getNamespace();
+			Map<String, Object> attributes = requirement.getAttributes();
+			Map<String, String> directives = requirement.getDirectives();
+			Map<String, Parameter> parameters = new HashMap<String, Parameter>(attributes.size() + directives.size());
+			for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+				String key = entry.getKey();
+				parameters.put(key, AttributeFactory.createAttribute(key, String.valueOf(entry.getValue())));
+			}
+			for (Map.Entry<String, String> entry : directives.entrySet()) {
+				String key = entry.getKey();
+				parameters.put(key, DirectiveFactory.createDirective(key, entry.getValue()));
+			}
+			String path = namespace;
+			return new Clause(path, parameters, defaultParameters);
 		}
 
-		@Override
-		public Collection<Attribute> getAttributes() {
-			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Attribute) {
-					attributes.add((Attribute)parameter);
-				}
-			}
-			attributes.trimToSize();
-			return attributes;
-		}
-
-		@Override
-		public Directive getDirective(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Directive) {
-				return (Directive)result;
-			}
-			return null;
-		}
-
-		@Override
-		public Collection<Directive> getDirectives() {
-			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
-			for (Parameter parameter : parameters.values()) {
-				if (parameter instanceof Directive) {
-					directives.add((Directive)parameter);
-				}
-			}
-			directives.trimToSize();
-			return directives;
-		}
-		
 		public String getNamespace() {
-			return namespace;
-		}
-
-		@Override
-		public Parameter getParameter(String name) {
-			return parameters.get(name);
-		}
-
-		@Override
-		public Collection<Parameter> getParameters() {
-			return Collections.unmodifiableCollection(parameters.values());
-		}
-
-		@Override
-		public String getPath() {
-			return getNamespace();
+			return path;
 		}
 		
 		public RequireCapabilityRequirement toRequirement(Resource resource) {
@@ -147,31 +86,19 @@ public class RequireCapabilityHeader implements RequirementHeader<RequireCapabil
 	
 	public static final String NAME = Constants.REQUIRE_CAPABILITY;
 	
-	private static final Pattern PATTERN = Pattern.compile('(' + Grammar.REQUIREMENT + ")(?=,|\\z)");
-	
-	private static Collection<Clause> processHeader(String header) {
-		Matcher matcher = PATTERN.matcher(header);
-		Set<Clause> clauses = new HashSet<Clause>();
-		while (matcher.find())
-			clauses.add(new Clause(matcher.group()));
-		return clauses;
-	}
-	
-	private final Set<Clause> clauses;
-	
 	public RequireCapabilityHeader(String value) {
-		this(processHeader(value));
+		super(
+				value, 
+				new ClauseFactory<Clause>() {
+					@Override
+					public Clause newInstance(String clause) {
+						return new Clause(clause);
+					}
+				});
 	}
 	
 	public RequireCapabilityHeader(Collection<Clause> clauses) {
-		if (clauses.isEmpty())
-			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
-		this.clauses = new HashSet<Clause>(clauses);
-	}
-
-	@Override
-	public Collection<RequireCapabilityHeader.Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
+		super(clauses);
 	}
 
 	@Override
@@ -192,14 +119,4 @@ public class RequireCapabilityHeader implements RequirementHeader<RequireCapabil
 		return requirements;
 	}
 	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Clause clause : getClauses()) {
-			builder.append(clause).append(',');
-		}
-		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
-		builder.deleteCharAt(builder.length() - 1);
-		return builder.toString();
-	}
 }

@@ -1,0 +1,11 @@
+Export-Package: a.b.c;version="1.0",x.y.z;uses:="m.n"; version="1.1.1",		m.n;version="0"
+Subsystem-Type: osgi.subsystem.composite; provision-policy:=rejectDependencies
+Subsystem-SymbolicName: com.acme.rocket;a=b;apachearies-provision-dependencies:=start
+Import-Package: c.b.a, z.y.x;version=9;resolution:=optional,	n.m;version="[3.1,4.0)";resolution:=mandatory
+Preferred-Provider: foo, org.bar;version="[1,2)";type=osg.bundle
+Provide-Capability: x;a=b, osgi.service;objectClass=o.p.Quick;b=a;effective:=active
+Require-Bundle: com.example.acme,com.acme.logging;bundle-version="[1.0, 1.1)";resolution:=optional
+Require-Capability: osgi.ee; filter:="(osgi.ee=*)",	screen.size; filter:="(&(width>=800)(height>=600))"
+Subsystem-Content: bundle.a,feature.a;start-order:=2;type=osgi.subsystem.feature;version="[1.8,1.8.4)";resolution:=optional
+Subsystem-ExportService: service.a.b.c;filter:="(&(x=y)(y=z)(foo=bar))"
+Subsystem-ImportService: service.x.y.z;filter:="(|(&(a=b)(c=d)(foo=bar))(&(d=c)(bar=foo)(b=a)))"

@@ -290,6 +290,7 @@ public class ResolutionTest extends SubsystemTest {
 			fail("Missing BREE should result in installation failure");
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			assertTrue("Installation failure should be due to resolution error", e.getCause() instanceof ResolutionException);
 		}
 		finally {
