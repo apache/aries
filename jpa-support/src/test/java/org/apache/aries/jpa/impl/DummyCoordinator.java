@@ -27,7 +27,7 @@ import org.osgi.service.coordinator.Participant;
 
 public class DummyCoordinator implements Coordinator {
 
-    private java.util.Deque<Coordination> coordinations = new ArrayDeque<>();
+    private java.util.Deque<Coordination> coordinations = new ArrayDeque<Coordination>();
 
     @Override
     public Coordination create(String name, long timeMillis) {

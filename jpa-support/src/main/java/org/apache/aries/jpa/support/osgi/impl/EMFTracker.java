@@ -104,13 +104,13 @@ public class EMFTracker extends ServiceTracker {
     }
 
     private Dictionary<String, String> getEmSupplierProps(String unitName) {
-        Dictionary<String, String> props = new Hashtable<>();
+        Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(JPA_UNIT_NAME, unitName);
         return props;
     }
 
     private Dictionary<String, String> rlTxManProps(String unitName) {
-        Dictionary<String, String> props = new Hashtable<>();
+        Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(JPA_UNIT_NAME, unitName);
         props.put(TMTracker.TRANSACTION_TYPE, "RESOURCE_LOCAL");
         return props;

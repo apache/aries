@@ -108,7 +108,7 @@ public class BlueprintTest extends AbstractCarJPAITest {
         Runnable carLifeCycle = getService(Runnable.class, "(type=carCoordinated)");
         carLifeCycle.run();
         ExecutorService exec = Executors.newFixedThreadPool(20);
-        List<Future<?>> futures = new ArrayList<>();
+        List<Future<?>> futures = new ArrayList<Future<?>>();
         for (int c=0; c<100; c++) {
             futures.add(exec.submit(carLifeCycle));
         }
