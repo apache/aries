@@ -18,9 +18,12 @@ import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
 
 public class VersionRangeAttribute extends AbstractAttribute {
-	public static final String NAME = Constants.VERSION_ATTRIBUTE;
+	public static final String NAME_BUNDLEVERSION = Constants.BUNDLE_VERSION_ATTRIBUTE;
+	public static final String NAME_VERSION = Constants.VERSION_ATTRIBUTE;
 	
-	public static final VersionRangeAttribute DEFAULT = new VersionRangeAttribute();
+	public static final VersionRangeAttribute DEFAULT_BUNDLEVERSION = new VersionRangeAttribute(
+			NAME_BUNDLEVERSION, new VersionRange(Version.emptyVersion.toString()));
+	public static final VersionRangeAttribute DEFAULT_VERSION = new VersionRangeAttribute();
 	
 	private final VersionRange range;
 	
@@ -33,13 +36,17 @@ public class VersionRangeAttribute extends AbstractAttribute {
 	}
 	
 	public VersionRangeAttribute(VersionRange range) {
-		super(Constants.VERSION_ATTRIBUTE, range.toString());
+		this(Constants.VERSION_ATTRIBUTE, range);
+	}
+	
+	public VersionRangeAttribute(String name, VersionRange range) {
+		super(name, range.toString());
 		this.range = range;
 	}
 	
 	@Override
 	public StringBuilder appendToFilter(StringBuilder builder) {
-		return builder.append(range.toFilterString(Constants.VERSION_ATTRIBUTE));
+		return builder.append(range.toFilterString(name));
 	}
 	
 	@Override

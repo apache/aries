@@ -19,6 +19,9 @@
 package org.apache.aries.subsystem.core.capabilityset;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -647,5 +650,87 @@ loop:   for (int i = 0; i < len; i++)
         }
 
         return sf;
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + (m_name == null ? 0 : m_name.hashCode());
+        result = 31 * result + m_op;
+        if (m_value == null) {
+        	result = 31 * result + 0;
+        }
+        else if (m_name == null && m_value instanceof Collection) {
+        	Iterator iterator = ((Collection)m_value).iterator();
+        	int sum = 0;
+        	while (iterator.hasNext()) {
+        		sum += iterator.next().hashCode();
+        	}
+        	result = 31 * result + sum;
+        }
+        else {
+        	result = 31 * result + m_value.hashCode();
+        }
+        return result;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+    	if (o == this) {
+    		return true;
+    	}
+    	if (!(o instanceof SimpleFilter)) {
+    		return false;
+    	}
+    	SimpleFilter that = (SimpleFilter)o;
+    	if (!(that.m_name == null ? this.m_name == null : that.m_name.equals(this.m_name))) {
+    		return false;
+    	}
+    	if (that.m_op != this.m_op) {
+    		return false;
+    	}
+    	if (that.m_value == null) {
+    		return this.m_value == null;
+    	}
+    	if (this.m_value == null) {
+    		return false;
+    	}
+    	if (that.m_name == null && that.m_value instanceof Collection) {
+    		if (!(this.m_name == null && this.m_value instanceof Collection)) {
+    			return false;
+    		}
+    		return ((Collection)that.m_value).containsAll((Collection)this.m_value);
+    	}
+    	return that.m_value.equals(this.m_value);
+    }
+    
+    /**
+     * Extracts attributes from the provided filter. If an attribute appears 
+     * more than once, the last value seen will be the value in the map. The 
+     * returned map is the property of the caller.
+     * 
+     * @param filter The filter containing attributes to extract.
+     * @return The map of extracted attributes. The key is the attribute name, 
+     *         and the value is the attribute value.
+     * @throws NullPointerException If the filter is <code>null</code>.
+     * @throws IllegalArgumentException If the filter contains invalid syntax.
+     */
+    public static Map<String, Object> attributes(String filter) {
+    	Map<String, Object> attributes = new HashMap<String, Object>();
+    	attributes(parse(filter), attributes);
+    	return attributes;
+    }
+    
+    private static void attributes(SimpleFilter filter, Map<String, Object> attributes) {
+    	Object value = filter.m_value;
+    	if (value instanceof Collection) {
+    		Collection<SimpleFilter> filters = (Collection<SimpleFilter>)value;
+    		for (SimpleFilter f : filters) {
+        		attributes(f, attributes);
+        	}
+    	}
+    	else {
+    		attributes.put(filter.m_name, value);
+    	}
     }
 }

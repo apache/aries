@@ -17,17 +17,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 
-public abstract class AbstractHeader implements Header {
-	protected static final String REGEX = Grammar.CLAUSE + "(?=,|\\z)";
-	protected static final Pattern PATTERN = Pattern.compile(REGEX);
-	
+public abstract class AbstractHeader implements Header<Clause> {
 	// TODO This is specific to deployment manifests and shouldn't be at this level.
 	protected static void appendResource(Resource resource, StringBuilder builder) {
 		Map<String, Object> attributes = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0).getAttributes();
@@ -45,33 +40,65 @@ public abstract class AbstractHeader implements Header {
 			.append(namespace);
 	}
 	
-	protected final List<Clause> clauses = new ArrayList<Clause>();
+	protected final List<Clause> clauses;
 	protected final String name;
 	protected final String value;
 	
 	public AbstractHeader(String name, String value) {
+		if (name == null) {
+			throw new NullPointerException();
+		}
+		ClauseTokenizer tokenizer = new ClauseTokenizer(value);
+		List<Clause> clauses = new ArrayList<Clause>(tokenizer.getClauses().size());
+		for (String clause : tokenizer.getClauses()) {
+			clauses.add(new GenericClause(clause));
+		}
+		if (clauses.isEmpty()) {
+			throw new IllegalArgumentException("Invalid header syntax -> " + name + ": " + value);
+		}
 		this.name = name;
 		this.value = value;
-		Matcher matcher = PATTERN.matcher(value);
-		while (matcher.find())
-			clauses.add(new GenericClause(matcher.group()));
-		if (clauses.isEmpty())
-			throw new IllegalArgumentException("Invalid header syntax -> " + name + ": " + value);
+		this.clauses = Collections.synchronizedList(clauses);
 	}
-	
-	public List<Clause> getClauses() {
+
+	@Override
+    public List<Clause> getClauses() {
 		return Collections.unmodifiableList(clauses);
 	}
 
-	public String getName() {
+	@Override
+    public String getName() {
 		return name;
 	}
 	
-	public String getValue() {
+	@Override
+    public String getValue() {
 		return value;
 	}
 	
-	public String toString() {
+	@Override
+    public boolean equals(Object o) {
+    	if (o == this) {
+    		return true;
+    	}
+    	if (!(o instanceof AbstractHeader)) {
+    		return false;
+    	}
+    	AbstractHeader that = (AbstractHeader)o;
+    	return that.name.equals(this.name)
+    			&& that.clauses.equals(this.clauses);
+    }
+	
+	@Override
+	public int hashCode() {
+	    int result = 17;
+	    result = 31 * result + name.hashCode();
+	    result = 31 * result + clauses.hashCode();
+	    return result;
+	}
+
+	@Override
+    public String toString() {
 		return new StringBuilder(getClass().getName())
 		.append(": name=")
 		.append(name)

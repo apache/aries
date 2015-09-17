@@ -31,8 +31,7 @@ public class ReferenceDirective extends AbstractDirective {
 			return TRUE;
 		if (VALUE_FALSE.equals(value))
 			return FALSE;
-		else
-			throw new IllegalArgumentException("Invalid " + NAME + " directive: " + value);
+        throw new IllegalArgumentException("Invalid " + NAME + " directive: " + value);
 	}
 	
 	private ReferenceDirective(String value) {

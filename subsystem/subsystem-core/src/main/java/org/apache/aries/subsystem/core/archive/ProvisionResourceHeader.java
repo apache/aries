@@ -15,14 +15,7 @@ package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.apache.aries.subsystem.core.internal.Utils;
@@ -31,35 +24,18 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class ProvisionResourceHeader implements RequirementHeader<ProvisionResourceHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
+public class ProvisionResourceHeader extends AbstractClauseBasedHeader<ProvisionResourceHeader.Clause> implements RequirementHeader<ProvisionResourceHeader.Clause> {
+    public static class Clause extends AbstractClause {
 		public static final String ATTRIBUTE_DEPLOYEDVERSION = DeployedVersionAttribute.NAME;
 		public static final String ATTRIBUTE_RESOURCEID = "resourceId";
 		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
 		
-		private static final Pattern PATTERN_SYMBOLICNAME = Pattern.compile('(' + Grammar.SYMBOLICNAME + ")(?=;|\\z)");
-		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
-		
-		private static void fillInDefaults(Map<String, Parameter> parameters) {
-			Parameter parameter = parameters.get(ATTRIBUTE_TYPE);
-			if (parameter == null)
-				parameters.put(ATTRIBUTE_TYPE, TypeAttribute.DEFAULT);
-		}
-		
-		private final String path;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clause);
-			if (!matcher.find())
-				throw new IllegalArgumentException("Missing symbolic name path: " + clause);
-			path = matcher.group();
-			matcher.usePattern(PATTERN_PARAMETER);
-			while (matcher.find()) {
-				Parameter parameter = ParameterFactory.create(matcher.group());
-				parameters.put(parameter.getName(), parameter);
-			}
-			fillInDefaults(parameters);
+			super(
+            		parsePath(clause, Patterns.SYMBOLIC_NAME, false), 
+            		parseParameters(clause, false), 
+            		generateDefaultParameters(
+            				TypeAttribute.DEFAULT));
 		}
 		
 		public Clause(Resource resource) {
@@ -75,65 +51,13 @@ public class ProvisionResourceHeader implements RequirementHeader<ProvisionResou
 							ResourceHelper.getTypeAttribute(resource));
 		}
 		
-		@Override
-		public Attribute getAttribute(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Attribute)
-				return (Attribute)result;
-			return null;
-		}
-
-		@Override
-		public Collection<Attribute> getAttributes() {
-			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
-			for (Parameter parameter : parameters.values())
-				if (parameter instanceof Attribute)
-					attributes.add((Attribute)parameter);
-			attributes.trimToSize();
-			return attributes;
-		}
-		
 		public Version getDeployedVersion() {
 			return ((DeployedVersionAttribute)getAttribute(ATTRIBUTE_DEPLOYEDVERSION)).getVersion();
 		}
 
-		@Override
-		public Directive getDirective(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Directive)
-				return (Directive)result;
-			return null;
-		}
-
-		@Override
-		public Collection<Directive> getDirectives() {
-			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
-			for (Parameter parameter : parameters.values())
-				if (parameter instanceof Directive)
-					directives.add((Directive)parameter);
-			directives.trimToSize();
-			return directives;
-		}
-
-		@Override
-		public Parameter getParameter(String name) {
-			return parameters.get(name);
-		}
-
-		@Override
-		public Collection<Parameter> getParameters() {
-			return Collections.unmodifiableCollection(parameters.values());
-		}
-
-		@Override
-		public String getPath() {
-			return path;
-		}
-		
 		public String getSymbolicName() {
 			return path;
 		}
-
 		
 		public String getType() {
 			return ((TypeAttribute)getAttribute(ATTRIBUTE_TYPE)).getType();
@@ -141,16 +65,6 @@ public class ProvisionResourceHeader implements RequirementHeader<ProvisionResou
 		
 		public ProvisionResourceRequirement toRequirement(Resource resource) {
 			return new ProvisionResourceRequirement(this, resource);
-		}
-		
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder()
-					.append(getPath());
-			for (Parameter parameter : getParameters()) {
-				builder.append(';').append(parameter);
-			}
-			return builder.toString();
 		}
 	}
 	
@@ -187,25 +101,20 @@ public class ProvisionResourceHeader implements RequirementHeader<ProvisionResou
 			.append(Utils.getId(resource));
 		return builder;
 	}
-	
-	private static Collection<Clause> processHeader(String value) {
-		Collection<String> clauseStrs = new ClauseTokenizer(value).getClauses();
-		Set<Clause> clauses = new HashSet<Clause>(clauseStrs.size());
-		for (String clause : new ClauseTokenizer(value).getClauses())
-			clauses.add(new Clause(clause));
-		return clauses;
-	}
-	
-	private final Set<Clause> clauses;
-	
+		
 	public ProvisionResourceHeader(Collection<Clause> clauses) {
-		if (clauses.isEmpty())
-			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
-		this.clauses = new HashSet<Clause>(clauses);
+		super(clauses);
 	}
 	
 	public ProvisionResourceHeader(String value) {
-		this(processHeader(value));
+		super(
+				value, 
+				new ClauseFactory<Clause>() {
+					@Override
+					public Clause newInstance(String clause) {
+						return new Clause(clause);
+					}
+				});
 	}
 	
 	public boolean contains(Resource resource) {
@@ -229,11 +138,6 @@ public class ProvisionResourceHeader implements RequirementHeader<ProvisionResou
 	}
 
 	@Override
-	public Collection<ProvisionResourceHeader.Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
-	}
-
-	@Override
 	public String getName() {
 		return NAME;
 	}
@@ -249,16 +153,5 @@ public class ProvisionResourceHeader implements RequirementHeader<ProvisionResou
 		for (Clause clause : clauses)
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Clause clause : getClauses()) {
-			builder.append(clause).append(',');
-		}
-		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
-		builder.deleteCharAt(builder.length() - 1);
-		return builder.toString();
 	}
 }

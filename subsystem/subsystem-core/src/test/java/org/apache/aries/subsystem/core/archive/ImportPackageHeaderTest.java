@@ -24,8 +24,10 @@ public class ImportPackageHeaderTest {
 	public void testVersionAttributeWithMultiplePackages() {
 		String headerStr = "org.foo;org.bar;org.foo.bar;version=1.3";
 		ImportPackageHeader header = new ImportPackageHeader(headerStr);
+		ImportPackageHeader header2 = new ImportPackageHeader(headerStr);
 		assertClauses(header, 1);
 		assertVersionAttribute(header, "org.foo;org.bar;org.foo.bar", "1.3");
+		assertEquals(header, header2);
 	}
 	
 	@Test
