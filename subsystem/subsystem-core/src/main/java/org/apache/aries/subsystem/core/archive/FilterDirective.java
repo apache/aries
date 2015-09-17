@@ -13,24 +13,21 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import org.apache.aries.subsystem.core.capabilityset.SimpleFilter;
 import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
 
 public class FilterDirective extends AbstractDirective {
 	public static final String NAME = Constants.FILTER_DIRECTIVE;
 	
+	private final SimpleFilter filter;
+	
 	public FilterDirective(String value) {
 		super(NAME, value);
-		try {
-			FrameworkUtil.createFilter(value);
-		}
-		catch (InvalidSyntaxException e) {
-			throw new IllegalArgumentException("Invalid filter: " + value, e);
-		}
+		filter = SimpleFilter.parse(value);
 	}
 
-	public String toString() {
+	@Override
+    public String toString() {
 		return new StringBuilder()
 		.append(getName())
 		.append(":=\"")
@@ -38,4 +35,21 @@ public class FilterDirective extends AbstractDirective {
 		.append('\"')
 		.toString();
 	}
+	
+	@Override
+    public int hashCode() {
+        return 31 * 17 + filter.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+    	if (o == this) {
+    		return true;
+    	}
+    	if (!(o instanceof FilterDirective)) {
+    		return false;
+    	}
+    	FilterDirective that = (FilterDirective)o;
+    	return that.filter.equals(this.filter);
+    }
 }

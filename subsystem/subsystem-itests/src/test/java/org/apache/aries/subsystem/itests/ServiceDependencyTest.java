@@ -64,8 +64,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 	 * Bundle-Blueprint: OSGI-INF/blueprint/*.xml
 	 * 
 	 * <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-	 * 		<reference interface="bundle.b"/>
-	 * 		<reference interface="bundle.b1" filter="(active=true)"/>
+	 * 		<reference interface="bundle.b" filter="(&(active=true)(mode=shared))"/>
 	 * 		<service interface="bundle.a" ref="bundle.a"/>
 	 * </blueprint>
 	 */
@@ -152,7 +151,8 @@ public class ServiceDependencyTest extends SubsystemTest {
 					.append("<blueprint ")
 					.append("xmlns=\"http://www.osgi.org/xmlns/blueprint/v1.0.0\">")
 					.append("<reference ")
-					.append("interface=\"bundle.b\"")
+					.append("interface=\"bundle.b\" ")
+					.append("filter=\"(active=true)(mode=shared)\"")
 					.append("/>")
 					.append("<service ")
 					.append("interface=\"bundle.a\" ")
@@ -263,7 +263,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 			try {
 				Subsystem child = installSubsystemFromFile(parent, APPLICATION_A);
 				try {
-					assertSubsystemImportServiceHeader(child, "osgi.service;filter:=\"(objectClass=bundle.b)\";resolution:=mandatory;cardinality:=single");
+					assertSubsystemImportServiceHeader(child, "bundle.b;filter:=\"(&(active=true)(mode=shared))\";resolution:=mandatory;cardinality:=single;effective:=active");
 				}
 				finally {
 					uninstallSubsystemSilently(child);
@@ -300,7 +300,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 		try {
 			Subsystem subsystem = installSubsystemFromFile(APPLICATION_B);
 			try {
-				assertSubsystemImportServiceHeader(subsystem, "osgi.service;filter:=\"(objectClass=bundle.a)\";resolution:=optional;cardinality:=single");
+				assertSubsystemImportServiceHeader(subsystem, "bundle.a;resolution:=optional;cardinality:=single;effective:=active");
 			}
 			finally {
 				uninstallSubsystemSilently(subsystem);

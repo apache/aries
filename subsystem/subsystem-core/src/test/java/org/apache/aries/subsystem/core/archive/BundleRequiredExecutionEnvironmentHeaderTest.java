@@ -36,7 +36,7 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 	public void testClause() {
 		String clauseStr = "CDC-1.0/Foundation-1.0";
 		BundleRequiredExecutionEnvironmentHeader.Clause clause = new BundleRequiredExecutionEnvironmentHeader.Clause(clauseStr);
-		assertClause(clause, clauseStr, "CDC/Foundation", "1.0", "(|(&(osgi.ee=CDC/Foundation)(version=1.0.0)))");
+		assertClause(clause, clauseStr, "CDC/Foundation", "1.0", "(&(osgi.ee=CDC/Foundation)(version=1.0.0))");
 	}
 	
 	@Test
@@ -60,7 +60,7 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 	@Test
 	public void testHeaderWithOneClause() {
 		String value = "OSGi/Minimum-1.2";
-		String filter = "(|(&(osgi.ee=OSGi/Minimum)(version=1.2.0)))";
+		String filter = "(&(osgi.ee=OSGi/Minimum)(version=1.2.0))";
 		BundleRequiredExecutionEnvironmentHeader header = new BundleRequiredExecutionEnvironmentHeader(value);
 		assertEquals("Wrong number of clauses", 1, header.getClauses().size());
 		assertClause(header.getClauses().iterator().next(), value, "OSGi/Minimum", "1.2", filter);
@@ -82,11 +82,11 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 				"(&(osgi.ee=JavaSE)(version=1.4.0))" +
 				"(&(osgi.ee=JavaSE)(version=1.6.0))" +
 				"(&(osgi.ee=AA/BB)(version=1.7.0))" +
-				"(&(osgi.ee=V1-1.5/V2-1.6))" +
-				"(&(osgi.ee=MyEE-badVersion)))";
+				"(osgi.ee=V1-1.5/V2-1.6)" +
+				"(osgi.ee=MyEE-badVersion))";
 		BundleRequiredExecutionEnvironmentHeader header = new BundleRequiredExecutionEnvironmentHeader(value);
 		assertEquals("Wrong number of clauses", 7, header.getClauses().size());
-		assertClause(header.getClauses().iterator().next(), "CDC-1.0/Foundation-1.0", "CDC/Foundation", "1.0", "(|(&(osgi.ee=CDC/Foundation)(version=1.0.0)))");
+		assertClause(header.getClauses().iterator().next(), "CDC-1.0/Foundation-1.0", "CDC/Foundation", "1.0", "(&(osgi.ee=CDC/Foundation)(version=1.0.0))");
 		assertEquals("Wrong name", Constants.BUNDLE_REQUIREDEXECUTIONENVIRONMENT, header.getName());
 		assertEquals("Wrong value", value, header.getValue());
 		Resource resource = EasyMock.createNiceMock(Resource.class);
