@@ -135,7 +135,7 @@ public class ManagedEMF implements Closeable, ManagedService {
     }
 
     public static Dictionary<String, String> createProperties(PersistenceUnitInfo persistenceUnit, Bundle puBundle) {
-        Dictionary<String, String> props = new Hashtable<>();
+        Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(JPA_UNIT_NAME, persistenceUnit.getPersistenceUnitName());
         if (persistenceUnit.getPersistenceProviderClassName() != null) {
             props.put(JPA_UNIT_PROVIDER, persistenceUnit.getPersistenceProviderClassName());
