@@ -18,10 +18,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.itests.util.GenericMetadataWrapper;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
@@ -323,10 +326,15 @@ public class ServiceDependencyTest extends SubsystemTest {
 	
 	private void assertSubsystemImportServiceHeader(Subsystem subsystem, String value) throws InvalidSyntaxException {
 		String header = assertHeaderExists(subsystem, SubsystemConstants.SUBSYSTEM_IMPORTSERVICE);
-		List<GenericMetadata> actual = ManifestHeaderProcessor.parseRequirementString(header);
-		List<GenericMetadata> expected = ManifestHeaderProcessor.parseRequirementString(value);
-		Assert.assertEquals("Wrong number of clauses", expected.size(), actual.size());
-		for (int i = 0; i < expected.size(); i++)
-			assertEquals("Wrong clause", new GenericMetadataWrapper(expected.get(i)), new GenericMetadataWrapper(actual.get(i)));
+		SubsystemImportServiceHeader actual = new SubsystemImportServiceHeader(header);
+		SubsystemImportServiceHeader expected = new SubsystemImportServiceHeader(value);
+		Collection<SubsystemImportServiceHeader.Clause> actualClauses = actual.getClauses();
+		Collection<SubsystemImportServiceHeader.Clause> expectedClauses = expected.getClauses();
+		Assert.assertEquals("Wrong number of clauses", expectedClauses.size(), actualClauses.size());
+		Iterator<SubsystemImportServiceHeader.Clause> actualItr = actualClauses.iterator();
+		Iterator<SubsystemImportServiceHeader.Clause>  expectedItr = expectedClauses.iterator();
+		while (expectedItr.hasNext()) {
+			assertEquals("Wrong clause", expectedItr.next(), actualItr.next());
+		}
 	}
 }
