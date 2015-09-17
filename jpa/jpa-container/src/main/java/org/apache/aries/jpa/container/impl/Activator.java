@@ -39,7 +39,7 @@ public class Activator implements BundleActivator {
         registerWeavingHook(context, TransformerRegistrySingleton.get());
 
         PersistenceBundleTracker customizer = new PersistenceBundleTracker(context);
-        persistenceBundleManager = new BundleTracker<>(context, Bundle.STARTING | Bundle.ACTIVE, customizer);
+        persistenceBundleManager = new BundleTracker<Bundle>(context, Bundle.STARTING | Bundle.ACTIVE, customizer);
         persistenceBundleManager.open();
     }
 

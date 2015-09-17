@@ -119,7 +119,7 @@ public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle>
     private Collection<PersistenceProviderTracker> getTrackers(Bundle bundle) {
         Collection<PersistenceProviderTracker> providerTrackers = trackers.get(bundle);
         if (providerTrackers == null) {
-            providerTrackers = new ArrayList<>();
+            providerTrackers = new ArrayList<PersistenceProviderTracker>();
             trackers.put(bundle, providerTrackers);
         }
         return providerTrackers;

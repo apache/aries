@@ -61,7 +61,7 @@ public class TMTracker extends ServiceTracker<TransactionManager, ServiceRegistr
     }
 
     private Dictionary<String, String> xaTxManProps(String unitName) {
-        Dictionary<String, String> txmanProperties = new Hashtable<>();
+        Dictionary<String, String> txmanProperties = new Hashtable<String, String>();
         txmanProperties.put(EntityManagerFactoryBuilder.JPA_UNIT_NAME, unitName);
         txmanProperties.put(TRANSACTION_TYPE, "JTA");
         return txmanProperties;

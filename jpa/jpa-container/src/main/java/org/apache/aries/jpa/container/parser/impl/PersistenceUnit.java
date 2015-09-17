@@ -64,7 +64,7 @@ public class PersistenceUnit implements PersistenceUnitInfo {
         this.transactionType = transactionType;
         this.props = new Properties();
         this.classLoader = bundle.adapt(BundleWiring.class).getClassLoader();
-        this.classNames = new HashSet<>();
+        this.classNames = new HashSet<String>();
     }
 
     public void addClassName(String className) {
@@ -112,7 +112,7 @@ public class PersistenceUnit implements PersistenceUnitInfo {
 
     @Override
     public List<String> getManagedClassNames() {
-        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> names = new ArrayList<String>();
         names.addAll(classNames);
         return names;
     }

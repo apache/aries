@@ -30,7 +30,7 @@ import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
 
 public class DummyCoordination implements Coordination {
-    private Set<Participant> participants = new HashSet<>();
+    private Set<Participant> participants = new HashSet<Participant>();
     private Map<Class<?>, Object> vars = new HashMap<Class<?>, Object>();
     private Coordination enclosing;
 

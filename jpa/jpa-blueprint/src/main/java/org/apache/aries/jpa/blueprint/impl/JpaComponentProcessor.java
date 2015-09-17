@@ -66,7 +66,7 @@ public class JpaComponentProcessor implements ComponentDefinitionRegistryProcess
         Bundle bundle = getComponent(cdr, "blueprintBundle");
         cdr.registerComponentDefinition(createServiceRef(JPA_COORDINATOR, Coordinator.class));
 
-        Set<String> components = new HashSet<>(cdr.getComponentDefinitionNames());
+        Set<String> components = new HashSet<String>(cdr.getComponentDefinitionNames());
         for (String component : components) {
             ComponentMetadata compDef = cdr.getComponentDefinition(component);
             if (compDef instanceof MutableBeanMetadata && !((MutableBeanMetadata)compDef).isProcessor()) {
