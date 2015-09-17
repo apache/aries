@@ -122,9 +122,20 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		this(FileSystem.getFSRoot(file));
 	}
 	
-	public BasicSubsystem(IDirectory directory) throws IOException, URISyntaxException, ResolutionException {
+	public BasicSubsystem(IDirectory directory) throws IOException,
+			URISyntaxException, ResolutionException {
 		this.directory = directory;
-		setDeploymentManifest(new DeploymentManifest.Builder().manifest(getDeploymentManifest()).build());
+		State state = State
+				.valueOf(getDeploymentManifestHeaderValue(DeploymentManifest.ARIESSUBSYSTEM_STATE));
+		if (EnumSet.of(State.STARTING, State.ACTIVE, State.STOPPING).contains(
+				state)) {
+			state = State.RESOLVED;
+		}
+		else if (State.RESOLVING.equals(state)) {
+			state = State.INSTALLED;
+		}
+		setDeploymentManifest(new DeploymentManifest.Builder()
+				.manifest(getDeploymentManifest()).state(state).build());
 	}
 	
 	/* BEGIN Resource interface methods. */
