@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -272,6 +273,21 @@ public class SubsystemManifest {
 		return requirements;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("[Subsystem Manifest: ");
+		Iterator<Header<?>> iterator = headers.values().iterator();
+		if (iterator.hasNext()) {
+			Header<?> header = iterator.next();
+			builder.append(header.getName()).append('=').append(header.getValue());
+			while (iterator.hasNext()) {
+				header = iterator.next();
+				builder.append(", ").append(header.getName()).append('=').append(header.getValue());
+			}
+		}
+		return builder.append(']').toString();
+	}
+	
 	public void write(OutputStream out) throws IOException {
 		Manifest manifest = new Manifest();
 		Attributes attributes = manifest.getMainAttributes();
@@ -282,4 +298,21 @@ public class SubsystemManifest {
 		}
 		manifest.write(out);
 	}
+
+    @Override
+    public int hashCode() {
+        return 31 * 17 + headers.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+    	if (o == this) {
+    		return true;
+    	}
+    	if (!(o instanceof SubsystemManifest)) {
+    		return false;
+    	}
+    	SubsystemManifest that = (SubsystemManifest)o;
+    	return that.headers.equals(this.headers);
+    }
 }

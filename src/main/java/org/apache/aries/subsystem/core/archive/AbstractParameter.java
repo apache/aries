@@ -14,19 +14,45 @@
 package org.apache.aries.subsystem.core.archive;
 
 public abstract class AbstractParameter implements Parameter {
-	private final String myName;
-	private final Object myValue;
+	protected final String name;
+	protected final Object value;
 	
 	public AbstractParameter(String name, Object value) {
-		myName = name;
-		myValue = value;
+		if (name == null || value == null) {
+			throw new NullPointerException();
+		}
+		this.name = name;
+		this.value = value;
 	}
 	
-	public String getName() {
-		return myName;
+	@Override
+    public String getName() {
+		return name;
 	}
 	
-	public Object getValue() {
-		return myValue;
+	@Override
+    public Object getValue() {
+		return value;
+	}
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
+    }
+
+    @Override
+	public boolean equals(Object o) {
+		if (o == this) {
+    		return true;
+    	}
+    	if (!(o instanceof AbstractParameter)) {
+    		return false;
+    	}
+    	AbstractParameter that = (AbstractParameter)o;
+    	return that.name.equals(this.name)
+    			&& that.value.equals(this.value);
 	}
 }

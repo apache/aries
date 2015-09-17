@@ -288,4 +288,21 @@ public class DeploymentManifest {
 	private Map<String, Header<?>> computeHeaders(SubsystemManifest manifest) {
 		return new HashMap<String, Header<?>>(manifest.getHeaders());
 	}
+
+    @Override
+    public int hashCode() {
+    	return 31 * 17 + headers.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+    	if (o == this) {
+    		return true;
+    	}
+    	if (!(o instanceof SubsystemManifest)) {
+    		return false;
+    	}
+    	DeploymentManifest that = (DeploymentManifest)o;
+    	return that.headers.equals(this.headers);
+    }
 }

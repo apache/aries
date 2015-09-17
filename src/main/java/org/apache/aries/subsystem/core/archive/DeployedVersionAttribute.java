@@ -30,7 +30,7 @@ public class DeployedVersionAttribute extends AbstractAttribute {
 	@Override
 	public StringBuilder appendToFilter(StringBuilder builder) {
 		VersionRange versionRange = new VersionRange(VersionRange.LEFT_CLOSED, getVersion(), getVersion(), VersionRange.RIGHT_CLOSED);
-		return builder.append(versionRange.toFilterString(VersionRangeAttribute.NAME));
+		return builder.append(versionRange.toFilterString(VersionRangeAttribute.NAME_VERSION));
 	}
 
 	public Version getDeployedVersion() {

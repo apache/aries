@@ -15,14 +15,7 @@ package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.Version;
@@ -31,49 +24,24 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
-public class SubsystemContentHeader implements RequirementHeader<SubsystemContentHeader.Clause> {
-	public static class Clause implements org.apache.aries.subsystem.core.archive.Clause {
-		public static final String ATTRIBUTE_VERSION = VersionRangeAttribute.NAME;
+public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemContentHeader.Clause> implements RequirementHeader<SubsystemContentHeader.Clause> {
+    public static class Clause extends AbstractClause {
+		public static final String ATTRIBUTE_VERSION = VersionRangeAttribute.NAME_VERSION;
 		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
 		public static final String DIRECTIVE_RESOLUTION = ResolutionDirective.NAME;
 		public static final String DIRECTIVE_STARTORDER = StartOrderDirective.NAME;
 		
-		private static final Pattern PATTERN_SYMBOLICNAME = Pattern.compile('(' + Grammar.SYMBOLICNAME + ")(?=;|\\z)");
-		private static final Pattern PATTERN_PARAMETER = Pattern.compile('(' + Grammar.PARAMETER + ")(?=;|\\z)");
-		
-		private static void fillInDefaults(Map<String, Parameter> parameters) {
-			Parameter parameter = parameters.get(ATTRIBUTE_TYPE);
-			if (parameter == null)
-				parameters.put(ATTRIBUTE_TYPE, TypeAttribute.DEFAULT);
-			parameter = parameters.get(ATTRIBUTE_VERSION);
-			if (parameter == null)
-				parameters.put(ATTRIBUTE_VERSION, VersionRangeAttribute.DEFAULT);
-			parameter = parameters.get(DIRECTIVE_RESOLUTION);
-			if (parameter == null)
-				parameters.put(DIRECTIVE_RESOLUTION, ResolutionDirective.MANDATORY);
-			parameter = parameters.get(DIRECTIVE_STARTORDER);
-			if (parameter == null)
-				// This is an implementation specific start-order directive
-				// value. The specification states there is no default value.
-				parameters.put(DIRECTIVE_STARTORDER, new StartOrderDirective("0"));
-		}
-		
-		private final String path;
-		private final Map<String, Parameter> parameters = new HashMap<String, Parameter>();
-		
 		public Clause(String clause) {
-			Matcher matcher = PATTERN_SYMBOLICNAME.matcher(clause);
-			if (!matcher.find())
-				throw new IllegalArgumentException("Missing symbolic name path: " + clause);
-			path = matcher.group();
-			matcher.usePattern(PATTERN_PARAMETER);
-			while (matcher.find()) {
-				Parameter parameter = ParameterFactory.create(matcher.group());
-				if (parameter instanceof VersionAttribute)
-					parameter = new VersionRangeAttribute(new VersionRange(String.valueOf(parameter.getValue())));
-				parameters.put(parameter.getName(), parameter);
-			}
-			fillInDefaults(parameters);
+			super(
+					parsePath(clause, Patterns.SYMBOLIC_NAME, false), 
+					parseParameters(clause, true),
+					generateDefaultParameters(
+							TypeAttribute.DEFAULT,
+							VersionRangeAttribute.DEFAULT_VERSION,
+							ResolutionDirective.MANDATORY,
+							// This is an implementation specific start-order directive
+							// value. The specification states there is no default value.
+							new StartOrderDirective("0")));
 		}
 		
 		public Clause(Resource resource) {
@@ -87,57 +55,6 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 							ResourceHelper.getVersionAttribute(resource))
 					&& getType().equals(
 							ResourceHelper.getTypeAttribute(resource));
-		}
-		
-		@Override
-		public Attribute getAttribute(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Attribute)
-				return (Attribute)result;
-			return null;
-		}
-
-		@Override
-		public Collection<Attribute> getAttributes() {
-			ArrayList<Attribute> attributes = new ArrayList<Attribute>(parameters.size());
-			for (Parameter parameter : parameters.values())
-				if (parameter instanceof Attribute)
-					attributes.add((Attribute)parameter);
-			attributes.trimToSize();
-			return attributes;
-		}
-
-		@Override
-		public Directive getDirective(String name) {
-			Parameter result = parameters.get(name);
-			if (result instanceof Directive)
-				return (Directive)result;
-			return null;
-		}
-
-		@Override
-		public Collection<Directive> getDirectives() {
-			ArrayList<Directive> directives = new ArrayList<Directive>(parameters.size());
-			for (Parameter parameter : parameters.values())
-				if (parameter instanceof Directive)
-					directives.add((Directive)parameter);
-			directives.trimToSize();
-			return directives;
-		}
-
-		@Override
-		public Parameter getParameter(String name) {
-			return parameters.get(name);
-		}
-
-		@Override
-		public Collection<Parameter> getParameters() {
-			return Collections.unmodifiableCollection(parameters.values());
-		}
-
-		@Override
-		public String getPath() {
-			return path;
 		}
 		
 		public String getSymbolicName() {
@@ -162,16 +79,6 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 		
 		public SubsystemContentRequirement toRequirement(Resource resource) {
 			return new SubsystemContentRequirement(this, resource);
-		}
-		
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder()
-					.append(getPath());
-			for (Parameter parameter : getParameters()) {
-				builder.append(';').append(parameter);
-			}
-			return builder.toString();
 		}
 	}
 	
@@ -205,24 +112,19 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 		return builder;
 	}
 	
-	private static Collection<Clause> processHeader(String value) {
-		Collection<String> clauseStrs = new ClauseTokenizer(value).getClauses();
-		Set<Clause> clauses = new HashSet<Clause>(clauseStrs.size());
-		for (String clause : clauseStrs)
-			clauses.add(new Clause(clause));
-		return clauses;
-	}
-	
-	private final Set<Clause> clauses;
-	
 	public SubsystemContentHeader(Collection<Clause> clauses) {
-		if (clauses.isEmpty())
-			throw new IllegalArgumentException("A " + NAME + " header must have at least one clause");
-		this.clauses = new HashSet<Clause>(clauses);
+		super(clauses);
 	}
 	
 	public SubsystemContentHeader(String value) {
-		this(processHeader(value));
+		super(
+				value, 
+				new ClauseFactory<Clause>() {
+					@Override
+					public Clause newInstance(String clause) {
+						return new Clause(clause);
+					}
+				});
 	}
 	
 	public boolean contains(Resource resource) {
@@ -240,11 +142,6 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 				return clause;
 		}
 		return null;
-	}
-	
-	@Override
-	public Collection<SubsystemContentHeader.Clause> getClauses() {
-		return Collections.unmodifiableSet(clauses);
 	}
 	
 	public boolean isMandatory(Resource resource) {
@@ -270,16 +167,5 @@ public class SubsystemContentHeader implements RequirementHeader<SubsystemConten
 		for (Clause clause : clauses)
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (Clause clause : getClauses()) {
-			builder.append(clause).append(',');
-		}
-		// Remove the trailing comma. Note at least one clause is guaranteed to exist.
-		builder.deleteCharAt(builder.length() - 1);
-		return builder.toString();
 	}
 }
