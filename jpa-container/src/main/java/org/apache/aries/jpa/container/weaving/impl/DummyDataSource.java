@@ -84,7 +84,6 @@ public final class DummyDataSource implements DataSource {
     public void setLogWriter(PrintWriter out) throws SQLException {
     }
 
-    @Override
     public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return null;
     }
