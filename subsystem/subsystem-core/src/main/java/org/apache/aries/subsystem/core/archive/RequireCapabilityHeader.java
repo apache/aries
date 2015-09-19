@@ -45,11 +45,10 @@ public class RequireCapabilityHeader extends AbstractClauseBasedHeader<RequireCa
 		}
 		
 		public static Clause valueOf(Requirement requirement) {
-			if (!(requirement instanceof RequireCapabilityRequirement 
-					|| requirement instanceof OsgiExecutionEnvironmentRequirement)) {
+			String namespace = requirement.getNamespace();
+			if (namespace.startsWith("osgi.wiring.")) {
 				throw new IllegalArgumentException();
 			}
-			String namespace = requirement.getNamespace();
 			Map<String, Object> attributes = requirement.getAttributes();
 			Map<String, String> directives = requirement.getDirectives();
 			Map<String, Parameter> parameters = new HashMap<String, Parameter>(attributes.size() + directives.size());
