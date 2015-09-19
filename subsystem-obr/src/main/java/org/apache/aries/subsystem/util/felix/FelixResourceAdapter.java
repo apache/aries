@@ -59,24 +59,31 @@ public class FelixResourceAdapter implements Resource, RepositoryContent {
 	}
 	
 	public List<Capability> getCapabilities(String namespace) {
+	    ArrayList<Capability> result = new ArrayList<Capability>();
 		namespace = NamespaceTranslator.translate(namespace);
 		if (namespace == null || namespace.equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
-			Capability c = new OsgiIdentityCapability(this, resource.getSymbolicName(), resource.getVersion());
-			return Collections.singletonList(c);
+			result.add(new OsgiIdentityCapability(this, resource.getSymbolicName(), resource.getVersion()));
+			if (namespace != null)  {
+				result.trimToSize();
+			    return Collections.unmodifiableList(result);
+			}
 		}
 		// TODO Add to constants.
-		if (namespace.equals("osgi.content")) {
-			Capability c = new OsgiContentCapability(this, resource.getURI());
-			return Collections.singletonList(c);
+		if (namespace == null || namespace.equals("osgi.content")) {
+			result.add(new OsgiContentCapability(this, resource.getURI()));
+			if (namespace != null) {
+				result.trimToSize();
+			    return Collections.unmodifiableList(result);
+			}
 		}
 		org.apache.felix.bundlerepository.Capability[] capabilities = resource.getCapabilities();
-		ArrayList<Capability> result = new ArrayList<Capability>(capabilities.length);
 		for (org.apache.felix.bundlerepository.Capability capability : capabilities) {
-			if (namespace != null && !capability.getName().equals(namespace)) continue;
-			result.add(new FelixCapabilityAdapter(capability, this));
+			if (namespace == null || capability.getName().equals(namespace)) {
+			    result.add(new FelixCapabilityAdapter(capability, this));
+			}
 		}
 		result.trimToSize();
-		return result;
+		return Collections.unmodifiableList(result);
 	}
 	
 	@Override
