@@ -39,7 +39,7 @@ public class Generator implements PropertyWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
     private static final String NS_JPA = "http://aries.apache.org/xmlns/jpa/v1.1.0";
-    private static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpan/v1.0.0";
+    private static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
     private static final String NS_TX = "http://aries.apache.org/xmlns/transactions/v1.2.0";
 
     private Context context;
@@ -59,6 +59,7 @@ public class Generator implements PropertyWriter {
             writer.writeStartDocument();
             writer.writeCharacters("\n");
             writeBlueprint();
+            writer.writeCharacters("\n");
             
             if (persistenceAnnotated) {
                 if (isJpaUsed()) {
@@ -78,7 +79,7 @@ public class Generator implements PropertyWriter {
                 writer.writeCharacters("\n");
             }
             
-            writeServiceRefs();
+            new OsgiServiceRefWriter(writer).write(context.getServiceRefs());
             new OsgiServiceProviderWriter(writer).write(context.getBeans());
             
             writer.writeEndElement();
@@ -186,22 +187,6 @@ public class Generator implements PropertyWriter {
             writer.writeAttribute("property", field.getName());
             writer.writeCharacters("\n");
         }
-    }
-
-    private void writeServiceRefs() throws XMLStreamException {
-        for (OsgiServiceRef serviceBean : context.getServiceRefs()) {
-            writeServiceRef(serviceBean);
-        }
-    }
-
-    private void writeServiceRef(OsgiServiceRef serviceBean) throws XMLStreamException {
-        writer.writeEmptyElement("reference");
-        writer.writeAttribute("id", serviceBean.id);
-        writer.writeAttribute("interface", serviceBean.clazz.getName());
-        if (serviceBean.filter != null && !"".equals(serviceBean.filter)) {
-            writer.writeAttribute("filter", serviceBean.filter);
-        }
-        writer.writeCharacters("\n");
     }
 
     @Override
