@@ -148,7 +148,7 @@ public class Generator implements PropertyWriter {
     }
     
     private void writeFactory(ProducedBean bean) throws XMLStreamException {
-        writer.writeAttribute("factory-ref", bean.factoryBeanId);
+        writer.writeAttribute("factory-ref", bean.factoryBean.id);
         writer.writeAttribute("factory-method", bean.factoryMethod);
     }
 

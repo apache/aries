@@ -45,16 +45,16 @@ public class ContextTest {
     public void testLists2()  {
         Context context = new Context(ServiceReferences.class);
         Assert.assertEquals(1, context.getBeans().size());
-        Assert.assertEquals(2, context.getServiceRefs().size());
+        Assert.assertEquals(3, context.getServiceRefs().size());
     }
     
     @Test
     public void testMatching() throws NoSuchFieldException, SecurityException  {
         Context context = new Context(ServiceReferences.class);
-        BeanRef matching = context.getMatching(new BeanRef(ServiceB.class));
+        BeanRef matching = context.getMatching(new BeanRef(ServiceReferences.class.getDeclaredField("serviceB")));
         Assert.assertEquals(OsgiServiceRef.class, matching.getClass());
         Assert.assertEquals(ServiceB.class, matching.clazz);
-        Assert.assertEquals("serviceB", matching.id);
+        Assert.assertEquals("serviceB-typeB1", matching.id);
     }
     
     private void assertSpecialRef(String expectedId, Class<?> clazz) {
@@ -74,10 +74,10 @@ public class ContextTest {
     @Test
     public void testProduced() throws NoSuchFieldException, SecurityException  {
         Context context = new Context(MyFactoryBean.class);
-        
+        context.resolve();
         ProducedBean matching = (ProducedBean)context.getMatching(new BeanRef(MyProduced.class));
         Assert.assertEquals(MyProduced.class, matching.clazz);
-        Assert.assertEquals("myFactoryBean", matching.factoryBeanId);
+        Assert.assertEquals("myFactoryBean", matching.factoryBean.id);
         Assert.assertEquals("create", matching.factoryMethod);
     }
     
