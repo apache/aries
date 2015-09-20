@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ServiceReferences {
-    @Inject @OsgiService ServiceB serviceB;
+    @Inject @OsgiService(filter="(type=B1)") ServiceB serviceB;
     
-    @Named("serviceB2Id") @Inject @OsgiService ServiceB serviceB2;
+    @Named("serviceB2Id") @Inject @OsgiService(filter="(type=B2)") ServiceB serviceB2;
 }
