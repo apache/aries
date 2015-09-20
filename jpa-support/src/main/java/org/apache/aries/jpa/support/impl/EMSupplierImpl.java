@@ -195,7 +195,7 @@ public class EMSupplierImpl implements EmSupplier {
     private final class EmShutDownParticipant implements Participant {
         @Override
         public void failed(Coordination coordination) throws Exception {
-            LOG.warn("Coordination failed " + coordination.getName(), coordination.getFailure());
+            LOG.debug("Coordination failed " + coordination.getName(), coordination.getFailure());
             ended(coordination);
         }
 
