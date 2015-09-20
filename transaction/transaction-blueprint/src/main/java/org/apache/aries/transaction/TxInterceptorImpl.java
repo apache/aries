@@ -81,7 +81,7 @@ public class TxInterceptorImpl implements Interceptor {
             Transaction tran = token.getActiveTransaction();
             if (tran != null && isRollBackException(ex)) {
                 tran.setRollbackOnly();
-                LOGGER.info("Setting transaction to rollback only because of exception ", ex);
+                LOGGER.debug("Setting transaction to rollback only because of exception ", ex);
             }
             token.getTransactionAttribute().finish(tm, token);
         } catch (Exception e) {
