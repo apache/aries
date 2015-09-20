@@ -23,12 +23,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
 
 import java.util.Dictionary;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
+import org.apache.aries.jpa.supplier.EmSupplier;
 import org.apache.aries.jpa.support.osgi.impl.EMFTracker;
 import org.apache.aries.jpa.support.osgi.impl.EMFTracker.TrackedEmf;
 import org.junit.Assert;
@@ -75,5 +79,16 @@ public class EmfTrackerTest {
         verify(emSupplierReg, times(1)).unregister();
         verify(emProxyReg, times(1)).unregister();
         verify(puContext, times(1)).ungetService(ref);
+    }
+    
+    @Test(expected=PersistenceException.class)
+    public void testOriginalExceptionThrown() {
+        EmSupplier emSupplier = mock(EmSupplier.class);
+        EntityManager em = mock(EntityManager.class);
+        when(emSupplier.get()).thenReturn(em);
+        doThrow(new PersistenceException("Message")).when(em).flush();
+
+        EntityManager emProxy = EMFTracker.createProxy(emSupplier);
+        emProxy.flush();
     }
 }
