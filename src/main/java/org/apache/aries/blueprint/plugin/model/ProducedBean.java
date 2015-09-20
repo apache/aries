@@ -3,11 +3,11 @@ package org.apache.aries.blueprint.plugin.model;
 
 public class ProducedBean extends Bean {
     public String factoryMethod;
-    public String factoryBeanId;
+    public BeanRef factoryBean;
     
-    public ProducedBean(Class<?> clazz, String factoryBeanId, String factoryMethod) {
+    public ProducedBean(Class<?> clazz, BeanRef factoryBean, String factoryMethod) {
         super(clazz);
-        this.factoryBeanId = factoryBeanId;
+        this.factoryBean = factoryBean;
         this.factoryMethod = factoryMethod;
     }
 

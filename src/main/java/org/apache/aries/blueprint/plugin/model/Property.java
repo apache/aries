@@ -60,11 +60,11 @@ public class Property implements Comparable<Property> {
     private static String getRefName(Field field) {
         Named named = field.getAnnotation(Named.class);
         if (named != null) {
-        	return named.value();
+            return named.value();
         }
     	Qualifier qualifier = field.getAnnotation(Qualifier.class);
         if (qualifier != null) {
-        	return qualifier.value();
+            return qualifier.value();
         }
         return Bean.getBeanName(field.getType());
     }

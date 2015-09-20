@@ -1,15 +1,18 @@
 package org.apache.aries.blueprint.plugin.model;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Named;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 public class BeanRef implements Comparable<BeanRef> {
     public String id;
     public Class<?> clazz;
+    public Map<Class<? extends Annotation>, Annotation> qualifiers;
     
     /**
      * 
@@ -17,27 +20,25 @@ public class BeanRef implements Comparable<BeanRef> {
      */
     public BeanRef(Class<?> clazz) {
         this.clazz = clazz;
+        this.qualifiers = new HashMap<Class<? extends Annotation>, Annotation>();
     }
     
-    public BeanRef(Class<?> type, String id) {
-        this.clazz = type;
+    public BeanRef(Class<?> clazz, String id) {
+        this(clazz);
         this.id = id;
     }
 
     public BeanRef(Field field) {
-        this(field.getType(), getDestinationId(field));
+        this(field.getType());
+        for (Annotation ann : field.getAnnotations()) {
+            if (isQualifier(ann) != null) {
+                this.qualifiers.put(ann.annotationType(), ann);
+            }
+        }
     }
 
-    private static String getDestinationId(Field field) {
-        Named named = field.getAnnotation(Named.class);
-        if (named != null) {
-            return named.value();
-        }
-        Qualifier qualifier = field.getAnnotation(Qualifier.class);
-        if (qualifier != null) {
-            return qualifier.value();
-        }
-        return null;
+    private javax.inject.Qualifier isQualifier(Annotation ann) {
+        return ann.annotationType().getAnnotation(javax.inject.Qualifier.class);
     }
 
     public static String getBeanName(Class<?> clazz) {
@@ -59,7 +60,7 @@ public class BeanRef implements Comparable<BeanRef> {
     
     public boolean matches(BeanRef template) {
         boolean assignable = template.clazz.isAssignableFrom(this.clazz);
-        return assignable && ((template.id == null) || id.equals(template.id));
+        return assignable && qualifiers.values().containsAll(template.qualifiers.values());
     }
 
     @Override
