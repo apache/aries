@@ -64,15 +64,15 @@ public class Context implements Matcher {
         Bean bean = new Bean(clazz);
         reg.add(bean);
         addServiceRefs(clazz);
-        addProducedBeans(clazz, bean.id);
+        addProducedBeans(clazz, bean);
     }
 
-    private void addProducedBeans(Class<?> clazz, String factoryBeanId) {
+    private void addProducedBeans(Class<?> clazz, BeanRef factoryBean) {
         for (Method method : clazz.getMethods()) {
             Produces produces = method.getAnnotation(Produces.class);
             if (produces != null) {
                 Class<?> producedClass = method.getReturnType();
-                ProducedBean producedBean = new ProducedBean(producedClass, factoryBeanId, method.getName());
+                ProducedBean producedBean = new ProducedBean(producedClass, factoryBean, method.getName());
                 reg.add(producedBean);
             }
         }

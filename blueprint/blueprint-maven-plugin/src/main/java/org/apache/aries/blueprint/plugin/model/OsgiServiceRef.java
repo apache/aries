@@ -31,11 +31,23 @@ public class OsgiServiceRef extends BeanRef {
 
     public OsgiServiceRef(Field field) {
         super(field);
-        if (id == null) {
-            id = getBeanName(clazz);
-        }
         OsgiService osgiService = field.getAnnotation(OsgiService.class);
         filter = osgiService.filter();
+        id = getBeanName(clazz);
+        if (filter != null) {
+            id = id + "-" + getId(filter);
+        }
+    }
+
+    private String getId(String raw) {
+        StringBuilder builder = new StringBuilder();
+        for (int c = 0; c < raw.length(); c++) {
+            char ch = raw.charAt(c);
+            if (ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch >= '0' && ch <= '9') {
+                builder.append(ch);
+            }
+        }
+        return builder.toString();
     }
 
 }
