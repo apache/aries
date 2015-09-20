@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.support.osgi.impl;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.persistence.EntityManager;
@@ -38,7 +39,12 @@ public class EmProxy implements InvocationHandler {
         if (em == null) {
             throw new IllegalStateException("EntityManager not available. Make sure you run in an @Transactional method");
         }
-        return method.invoke(em, args);
+        try {
+            return method.invoke(em, args);
+        } catch (InvocationTargetException ex) {
+            InvocationTargetException iex = (InvocationTargetException)ex;
+            throw iex.getTargetException();
+        }
     }
 
 }
