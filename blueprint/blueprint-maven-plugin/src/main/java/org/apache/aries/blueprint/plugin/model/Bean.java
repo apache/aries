@@ -39,7 +39,7 @@ public class Bean extends BeanRef {
     public TransactionalDef transactionDef;
 
     public Bean(Class<?> clazz) {
-        super(clazz);
+        super(clazz, BeanRef.getBeanName(clazz));
 
         for (Method method : clazz.getDeclaredMethods()) {
             PostConstruct postConstruct = getEffectiveAnnotation(method, PostConstruct.class);
