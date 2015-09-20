@@ -17,7 +17,6 @@ public class BeanRef implements Comparable<BeanRef> {
      */
     public BeanRef(Class<?> clazz) {
         this.clazz = clazz;
-        this.id = getBeanName(clazz);
     }
     
     public BeanRef(Class<?> type, String id) {
@@ -66,5 +65,10 @@ public class BeanRef implements Comparable<BeanRef> {
     @Override
     public int compareTo(BeanRef other) {
         return this.id.compareTo(other.id);
+    }
+    
+    @Override
+    public String toString() {
+        return this.clazz.getSimpleName() + "(" + this.id + ")";
     }
 }
