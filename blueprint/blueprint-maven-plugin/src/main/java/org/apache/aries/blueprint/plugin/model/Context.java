@@ -50,11 +50,15 @@ public class Context implements Matcher {
 
     private void addBeans(Collection<Class<?>> beanClasses) {
         for (Class<?> clazz : beanClasses) {
-            Bean bean = new Bean(clazz);
-            beans.add(bean);
-            addServiceRefs(clazz);
-            addProducedBeans(clazz, bean.id);
+            addBean(clazz);
         }
+    }
+
+    private void addBean(Class<?> clazz) {
+        Bean bean = new Bean(clazz);
+        beans.add(bean);
+        addServiceRefs(clazz);
+        addProducedBeans(clazz, bean.id);
     }
 
     private void addProducedBeans(Class<?> clazz, String factoryBeanId) {
