@@ -374,12 +374,18 @@ public class SubsystemResource implements Resource {
 			setImportIsolationPolicy(resolution);
 			for (Map.Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
 				Resource key = entry.getKey();
-				if (!contentHeader.contains(key)) {
+				String type = ResourceHelper.getTypeAttribute(key);
+				// Do not include synthetic resources in the dependencies.
+				if (!Constants.ResourceTypeSynthesized.equals(type)
+						&& !contentHeader.contains(key)) {
 					addDependency(key);
 				}
 				for (Wire wire : entry.getValue()) {
 					Resource provider = wire.getProvider();
-					if (!contentHeader.contains(provider)) {
+					type = ResourceHelper.getTypeAttribute(provider);
+					// Do not include synthetic resources in the dependencies.
+					if (!Constants.ResourceTypeSynthesized.equals(type)
+							&& !contentHeader.contains(provider)) {
 						addDependency(provider);
 					}
 				}
