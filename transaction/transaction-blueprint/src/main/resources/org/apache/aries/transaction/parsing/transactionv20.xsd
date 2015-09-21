@@ -17,10 +17,19 @@
     limitations under the License.
 
 -->
-<blueprint  xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-            xmlns:tx="http://aries.apache.org/xmlns/transactions/v2.0.0">
+<xsd:schema xmlns="http://aries.apache.org/xmlns/transactions/v2.0.0"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://aries.apache.org/xmlns/transactions/v2.0.0"
+    elementFormDefault="qualified" attributeFormDefault="unqualified"
+    version="2.0.0">
 
-	<tx:enable>false</tx:enable>
-	
-	<bean id="top" class="org.apache.aries.transaction.TestBean"/>
-</blueprint>
+    <xsd:element name="enable" type="xsd:boolean" default="true">
+        <xsd:annotation>
+            <xsd:documentation>
+        <![CDATA[
+          The <enable-annotations> element is used to enable annotation scanning for @Transactional annotations
+        ]]>
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+</xsd:schema>

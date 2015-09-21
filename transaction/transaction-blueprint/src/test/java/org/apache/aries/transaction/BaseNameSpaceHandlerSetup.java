@@ -57,11 +57,7 @@ public class BaseNameSpaceHandlerSetup {
         namespaceHandler.setTm(tm);
         namespaceHandler.setCoordinator(coordinator);
 
-        String[] namespaces = new String[]
-            {"http://aries.apache.org/xmlns/transactions/v1.0.0", 
-             "http://aries.apache.org/xmlns/transactions/v1.1.0", 
-             "http://aries.apache.org/xmlns/transactions/v1.2.0"
-            };
+        String[] namespaces = new String[] { "http://aries.apache.org/xmlns/transactions/v2.0.0" };
         nhri = new DummyNamespaceHandlerRegistry();
         nhri.addNamespaceHandlers(namespaces, namespaceHandler);
     }
