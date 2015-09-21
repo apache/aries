@@ -39,6 +39,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class TxNamespaceHandler implements NamespaceHandler {
+    public static final String TX_NAMESPACE_URI = "http://aries.apache.org/xmlns/transactions/v2.0.0";
     public static final String ANNOTATION_PARSER_BEAN_NAME = ".org_apache_aries_transaction_annotations";
     private static final Logger LOGGER = LoggerFactory.getLogger(TxNamespaceHandler.class);
     private TransactionManager tm;
@@ -48,9 +49,7 @@ public class TxNamespaceHandler implements NamespaceHandler {
     
     public TxNamespaceHandler() {
         schemaMap = new HashMap<String, String>();
-        schemaMap.put("http://aries.apache.org/xmlns/transactions/v1.0.0", "transactionv10.xsd");
-        schemaMap.put("http://aries.apache.org/xmlns/transactions/v1.1.0", "transactionv11.xsd");
-        schemaMap.put("http://aries.apache.org/xmlns/transactions/v1.2.0", "transactionv12.xsd");
+        schemaMap.put(TX_NAMESPACE_URI, "transactionv20.xsd");
     }
 
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
@@ -58,7 +57,7 @@ public class TxNamespaceHandler implements NamespaceHandler {
         LOGGER.debug("parser asked to parse element {} ", elt.getNodeName());
 
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
-        if ("enable-annotations".equals(elt.getLocalName())) {
+        if ("enable".equals(elt.getLocalName())) {
             Node n = elt.getChildNodes().item(0);
             if (n == null || Boolean.parseBoolean(n.getNodeValue())) {
                 //We need to register a bean processor to add annotation-based config
