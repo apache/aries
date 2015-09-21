@@ -24,6 +24,8 @@ import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -56,7 +58,8 @@ public class GeneratorTest {
         Context context = new Context(beanClasses);
         context.resolve();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        new Generator(context, os, false).generate();
+        Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, Generator.NS_TX));
+        new Generator(context, os, namespaces).generate();
         System.out.println(os.toString("UTF-8"));
 
         document = readToDocument(os);
@@ -84,7 +87,6 @@ public class GeneratorTest {
         
         // @Autowired
         Assert.assertEquals("my1", xpath.evaluate("property[@name='bean2']/@ref", bean1));
-
 
     }
 

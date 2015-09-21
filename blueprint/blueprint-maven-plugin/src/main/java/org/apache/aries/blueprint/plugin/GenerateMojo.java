@@ -61,12 +61,11 @@ public class GenerateMojo extends AbstractMojo {
     protected List<String> scanPaths;
     
     /**
-     * true: Purely annotated mode (needs jpa 2.1.0 and transaction-blueprint 1.1.0)
-     * false: XML based mode for JPA 1.x and transaction-blueprint < 1.1.0
-     * @parameter default-value="true"
-     * @required
+     * Which extension namespaces should the plugin support
+     * 
+     * @parameter 
      */
-    protected boolean persistenceAnnotated;
+    protected Set<String> namespaces;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -83,7 +82,7 @@ public class GenerateMojo extends AbstractMojo {
             Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, scanPaths);
             Context context = new Context(classes);
             context.resolve();
-            new Generator(context, new FileOutputStream(file), persistenceAnnotated).generate();
+            new Generator(context, new FileOutputStream(file), namespaces).generate();
         } catch (Exception e) {
             throw new MojoExecutionException("Error building commands help", e);
         }
