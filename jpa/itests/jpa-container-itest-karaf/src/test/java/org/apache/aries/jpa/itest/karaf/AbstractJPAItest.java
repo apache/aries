@@ -150,7 +150,7 @@ public abstract class AbstractJPAItest {
             when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
             features(paxJdbcFeatureUrl, "pax-jdbc-config", "pax-jdbc-h2", "pax-jdbc-pool-dbcp2"),
             features(enterpriseFeatureUrl, "transaction", "http-whiteboard", "hibernate/4.3.6.Final", "scr"),
-            features(jpaFeatureUrl, "jpa/2.2.0-SNAPSHOT"),
+            features(jpaFeatureUrl, "jpa"),
             mavenBundle("org.apache.aries.jpa.example", "org.apache.aries.jpa.example.tasklist.model").versionAsInProject()
 //            replaceConfigurationFile("etc/org.ops4j.pax.logging.cfg", getConfigFile("/etc/org.ops4j.pax.logging.cfg")),
         );
