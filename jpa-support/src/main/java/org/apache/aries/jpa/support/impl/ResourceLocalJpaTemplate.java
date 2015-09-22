@@ -25,8 +25,11 @@ import org.apache.aries.jpa.template.EmFunction;
 import org.apache.aries.jpa.template.TransactionType;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Coordinator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLocalJpaTemplate.class);
     private EmSupplier emSupplier;
     private Coordinator coordinator;
 
@@ -70,6 +73,7 @@ public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
             try {
                 em.getTransaction().rollback();
             } catch (Exception e1) {
+                LOGGER.warn("Exception during transaction rollback", e1);
             }
         }
     }
