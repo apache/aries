@@ -66,11 +66,12 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
         } finally {
             try {
                 ta.finish(tm, tranToken);
-                coord.end();
             } catch (Exception e) {
                 // We are throwing an exception, so we don't error it out
-                LOGGER.debug("exception.during.tx.finish", e);
+                LOGGER.debug("Exception during finish of transaction", e);
                 throw new RuntimeException("Exception during finish of transaction", e);
+            } finally {
+                coord.end();
             }
         }
     }
@@ -88,7 +89,7 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
         } catch (Exception e) {
             // we do not throw the exception since there already is one, but we
             // need to log it
-            LOGGER.warn("exception.during.tx.cleanup", e);
+            LOGGER.warn("Exception during transaction rollback", e);
         }
     }
 
