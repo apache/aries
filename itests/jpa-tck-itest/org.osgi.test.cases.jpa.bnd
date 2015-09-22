@@ -27,8 +27,8 @@
 lib/pax-logging-api-1.7.3.jar;version=file, \
 lib/pax-logging-service-1.7.3.jar;version=file, \
 lib/derbyclient-10.11.1.1.jar;version=file, \
-lib/pax-jdbc-spec-0.6.0.jar;version=file, \
-lib/pax-jdbc-derbyclient-0.6.0.jar;version=file, \
+lib/org.osgi.service.jdbc-1.0.0.jar;version=file, \
+lib/pax-jdbc-derbyclient-0.7.0.jar;version=file, \
 lib/javax.persistence-2.1.0.jar;version=file, \
 lib/geronimo-jta_1.1_spec-1.1.1.jar;version=file, \
 lib/geronimo-servlet_2.5_spec-1.2.jar;version=file, \
