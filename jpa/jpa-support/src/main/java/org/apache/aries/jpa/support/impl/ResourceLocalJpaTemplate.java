@@ -62,7 +62,7 @@ public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
             if (weControlTx) {
                 safeRollback(em, e);
             }
-            throw wrapThrowable(e);
+            throw wrapThrowable(e, "Exception occured in transactional code");
         } finally {
             coord.end();
         }

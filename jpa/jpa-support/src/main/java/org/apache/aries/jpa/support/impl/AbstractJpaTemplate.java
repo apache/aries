@@ -48,10 +48,10 @@ public abstract class AbstractJpaTemplate implements JpaTemplate {
     }
 
 
-    protected RuntimeException wrapThrowable(Throwable ex) {
+    protected RuntimeException wrapThrowable(Throwable ex, String message) {
         if (ex instanceof RuntimeException) {
             return (RuntimeException) ex;
         }
-        return new RuntimeException(ex);
+        return new RuntimeException(message, ex);
     }
 }
