@@ -59,7 +59,7 @@ public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
             if (weControlTx) {
                 safeRollback(em, e);
             }
-            throw new RuntimeException(e);
+            throw wrapThrowable(e);
         } finally {
             coord.end();
         }
