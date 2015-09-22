@@ -62,14 +62,17 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
             return result;
         } catch (Throwable ex) {
             safeRollback(tranToken, ex);
-            throw wrapThrowable(ex);
+            if (ex instanceof Error) {
+                throw (Error)ex;
+            }
+            throw wrapThrowable(ex, "Exception occured in transactional code");
         } finally {
             try {
                 ta.finish(tm, tranToken);
             } catch (Exception e) {
                 // We are throwing an exception, so we don't error it out
                 LOGGER.debug("Exception during finish of transaction", e);
-                throw new RuntimeException("Exception during finish of transaction", e);
+                throw wrapThrowable(e, "Exception during finish of transaction");
             } finally {
                 coord.end();
             }
