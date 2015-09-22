@@ -366,9 +366,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.ops4j.pax.jdbc</groupId>
-            <artifactId>pax-jdbc-spec</artifactId>
-            <version>${paxjdbc.version}</version>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.jdbc</groupId>
