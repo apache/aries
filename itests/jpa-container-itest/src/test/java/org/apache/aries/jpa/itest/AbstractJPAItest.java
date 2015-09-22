@@ -269,7 +269,7 @@ public abstract class AbstractJPAItest {
 
     protected Option derbyDSF() {
         return composite(
-                         mvnBundle("org.ops4j.pax.jdbc", "pax-jdbc-spec"), //
+                         mvnBundle("org.osgi", "org.osgi.service.jdbc"), //
                          mvnBundle("org.ops4j.pax.jdbc", "pax-jdbc-derby"), //
                          mvnBundle("org.apache.commons", "commons-pool2"), //
                          mvnBundle("commons-logging", "commons-logging"), //
