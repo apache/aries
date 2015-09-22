@@ -47,4 +47,11 @@ public abstract class AbstractJpaTemplate implements JpaTemplate {
         tx(TransactionType.Required, code);
     }
 
+
+    protected RuntimeException wrapThrowable(Throwable ex) {
+        if (ex instanceof RuntimeException) {
+            return (RuntimeException) ex;
+        }
+        return new RuntimeException(ex);
+    }
 }

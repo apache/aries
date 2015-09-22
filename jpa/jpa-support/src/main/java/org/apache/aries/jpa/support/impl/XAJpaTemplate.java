@@ -62,7 +62,7 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
             return result;
         } catch (Throwable ex) {
             safeRollback(tranToken, ex);
-            throw new RuntimeException(ex);
+            throw wrapThrowable(ex);
         } finally {
             try {
                 ta.finish(tm, tranToken);
