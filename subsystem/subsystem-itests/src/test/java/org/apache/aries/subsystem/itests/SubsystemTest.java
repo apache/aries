@@ -34,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -788,6 +789,10 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 
 	private Subsystem installSubsystemFromFile(File file) throws Exception {
 		return installSubsystem(getRootSubsystem(), file.toURI().toURL().toExternalForm());
+	}
+	
+	protected Subsystem installSubsystemFromFile(Subsystem parent, File file, String location) throws Exception {
+		return installSubsystem(parent, location, new URL(file.toURI().toURL().toExternalForm()).openStream());
 	}
 
 	protected Subsystem installSubsystem(String location) throws Exception {

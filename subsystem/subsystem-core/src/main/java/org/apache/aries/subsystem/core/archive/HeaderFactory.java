@@ -124,6 +124,8 @@ public class HeaderFactory {
 			return new SubsystemLocalizationHeader(value);
 		if (FragmentHostHeader.NAME.equals(name))
 		    return new FragmentHostHeader(value);
+		if (AriesSubsystemLocationHeader.NAME.equals(value))
+			return new AriesSubsystemLocationHeader(value);
 		return new GenericHeader(name, value);
 			
 	}
