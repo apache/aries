@@ -51,10 +51,6 @@ public class DeploymentManifest {
 			return this;
 		}
 		
-//		public Builder content(Resource resource) {
-//			return content(resource, true);
-//		}
-		
 		public Builder content(Resource resource, boolean referenced) {
 			DeployedContentHeader header = (DeployedContentHeader)headers.get(DeploymentManifest.DEPLOYED_CONTENT);
 			if (header == null) {
@@ -101,7 +97,7 @@ public class DeploymentManifest {
 		
 		public Builder location(String value) {
 			if (value != null)
-				header(new GenericHeader(ARIESSUBSYSTEM_LOCATION, value));
+				header(new AriesSubsystemLocationHeader(value));
 			return this;
 		}
 		
@@ -168,7 +164,7 @@ public class DeploymentManifest {
 	public static final String ARIESSUBSYSTEM_AUTOSTART = "AriesSubsystem-Autostart";
 	public static final String ARIESSUBSYSTEM_ID = "AriesSubsystem-Id";
 	public static final String ARIESSUBSYSTEM_LASTID = "AriesSubsystem-LastId";
-	public static final String ARIESSUBSYSTEM_LOCATION = "AriesSubsystem-Location";
+	public static final String ARIESSUBSYSTEM_LOCATION = AriesSubsystemLocationHeader.NAME;
 	public static final String ARIESSUBSYSTEM_PARENTS = "AriesSubsystem-Parents";
 	public static final String ARIESSUBSYSTEM_REGION = "AriesSubsystem-Region";
 	public static final String ARIESSUBSYSTEM_STATE = "AriesSubsystem-State";
@@ -220,7 +216,7 @@ public class DeploymentManifest {
 		// TODO DEPLOYMENT_MANIFESTVERSION
 		headers.put(ARIESSUBSYSTEM_AUTOSTART, new GenericHeader(ARIESSUBSYSTEM_AUTOSTART, Boolean.toString(autostart)));
 		headers.put(ARIESSUBSYSTEM_ID, new GenericHeader(ARIESSUBSYSTEM_ID, Long.toString(id)));
-		headers.put(ARIESSUBSYSTEM_LOCATION, new GenericHeader(ARIESSUBSYSTEM_LOCATION, location));
+		headers.put(ARIESSUBSYSTEM_LOCATION, new AriesSubsystemLocationHeader(location));
 		headers.put(ARIESSUBSYSTEM_LASTID, new GenericHeader(ARIESSUBSYSTEM_LASTID, Long.toString(lastId)));
 		this.headers = Collections.unmodifiableMap(headers);
 	}
