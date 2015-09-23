@@ -19,6 +19,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class AbstractClauseBasedHeader<C extends Clause> implements Header<C> {
+	private static <C> Collection<C> computeClauses(String header, ClauseFactory<C> factory) {
+		Collection<String> clauseStrs = new ClauseTokenizer(header).getClauses();
+		Set<C> clauses = new HashSet<C>(clauseStrs.size());
+		for (String clause : clauseStrs) {
+			clauses.add(factory.newInstance(clause));
+		}
+		return clauses;
+	}
+	
 	public interface ClauseFactory<C> {
 		public C newInstance(String clause);
 	}
@@ -27,19 +36,13 @@ public abstract class AbstractClauseBasedHeader<C extends Clause> implements Hea
     
     public AbstractClauseBasedHeader(Collection<C> clauses) {
         if (clauses.isEmpty()) {
-            throw new IllegalArgumentException(String.format(
-                    "The header %s must have at least one clause.", getName()));
+            throw new IllegalArgumentException("No clauses");
         }
         this.clauses = Collections.synchronizedSet(new HashSet<C>(clauses));
     }
 
     public AbstractClauseBasedHeader(String header, ClauseFactory<C> factory) {
-    	Collection<String> clauseStrs = new ClauseTokenizer(header).getClauses();
-		Set<C> clauses = new HashSet<C>(clauseStrs.size());
-		for (String clause : new ClauseTokenizer(header).getClauses()) {
-			clauses.add(factory.newInstance(clause));
-		}
-		this.clauses = Collections.synchronizedSet(clauses);
+    	this(computeClauses(header, factory));
     }
 
     @Override

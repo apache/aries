@@ -18,6 +18,7 @@
  */
 package org.apache.aries.subsystem.itests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -30,6 +31,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.archive.DeploymentManifest;
+import org.apache.aries.subsystem.core.internal.BasicSubsystem;
 import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
 import org.apache.aries.unittest.fixture.ArchiveFixture.ZipFixture;
@@ -43,6 +46,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
+import org.osgi.service.subsystem.SubsystemException;
 
 @ExamReactorStrategy(PerMethod.class)
 public class InstallTest extends SubsystemTest {
@@ -278,4 +282,23 @@ public class InstallTest extends SubsystemTest {
 			uninstallSubsystemSilently(featureA);
 		}
 	}
+	
+	@Test
+    public void testLocationAsEmptyString() throws Exception {
+    	try {
+    		Subsystem a = installSubsystemFromFile(getRootSubsystem(), new File(APPLICATION_A), "");
+    		try {
+    			BasicSubsystem basic = (BasicSubsystem)a;
+    			String location = basic.getLocation();
+    			assertEquals("Location value should be an empty string", "", location);
+    		}
+    		finally {
+    			uninstallSubsystemSilently(a);
+    		}
+    	}
+    	catch (SubsystemException e) {
+    		e.printStackTrace();
+    		fail("Subsystem should have installed");
+    	}
+    }
 }
