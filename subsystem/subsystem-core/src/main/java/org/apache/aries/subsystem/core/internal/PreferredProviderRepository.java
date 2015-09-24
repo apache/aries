@@ -20,9 +20,12 @@ import java.util.Map;
 import org.apache.aries.subsystem.core.archive.PreferredProviderHeader;
 import org.apache.aries.subsystem.core.archive.PreferredProviderRequirement;
 import org.apache.aries.subsystem.core.capabilityset.CapabilitySetRepository;
+import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.apache.aries.subsystem.core.repository.Repository;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
+import org.osgi.resource.Resource;
 
 public class PreferredProviderRepository implements org.apache.aries.subsystem.core.repository.Repository {
     private final CapabilitySetRepository repository;
@@ -62,9 +65,22 @@ public class PreferredProviderRepository implements org.apache.aries.subsystem.c
 		return result;
 	}
 	
+	/*
+	 * This check is only done on capabilities provided by resources in the
+	 * system repository. This currently includes only BasicSubsystem and
+	 * BundleRevision.
+	 */
 	private boolean isValid(Capability capability) {
 		for (BasicSubsystem parent : resource.getParents()) {
-		    if (parent.getConstituents().contains(resource)) {
+			Resource provider = capability.getResource();
+			if (provider instanceof BundleRevision) {
+				// To keep the optimization below, wrap bundle revisions with
+				// a bundle constituent so that the comparison works.
+				provider = new BundleConstituent(null, (BundleRevision)provider);
+			}
+			// Optimization from ARIES-1397. Perform a contains operation on the
+			// parent constituents rather than use ResourceHelper.
+		    if (parent.getConstituents().contains(provider)) {
 		        return true;
 		    }
 		}
