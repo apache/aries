@@ -19,7 +19,7 @@
 package org.apache.aries.blueprint.plugin;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -35,6 +35,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.xbean.finder.ClassFinder;
+import org.sonatype.plexus.build.incremental.BuildContext;
 
 /**
  * Generates blueprint from spring annotations
@@ -66,8 +67,17 @@ public class GenerateMojo extends AbstractMojo {
      * @parameter 
      */
     protected Set<String> namespaces;
+    
+    /**
+     * @component
+     */
+    private BuildContext buildContext;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (!buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()))) {
+            return;
+        }
+        
         try {
             String buildDir = project.getBuild().getDirectory();
             String generatedDir = buildDir + "/generated-resources";
@@ -82,7 +92,9 @@ public class GenerateMojo extends AbstractMojo {
             Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, scanPaths);
             Context context = new Context(classes);
             context.resolve();
-            new Generator(context, new FileOutputStream(file), namespaces).generate();
+            OutputStream fos = buildContext.newFileOutputStream(file);
+            new Generator(context, fos, namespaces).generate();
+            fos.close();
         } catch (Exception e) {
             throw new MojoExecutionException("Error building commands help", e);
         }
