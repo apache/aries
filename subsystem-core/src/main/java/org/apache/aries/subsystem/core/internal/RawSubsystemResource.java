@@ -367,9 +367,11 @@ public class RawSubsystemResource implements Resource {
 		ArrayList<RequireCapabilityHeader.Clause> clauses = new ArrayList<RequireCapabilityHeader.Clause>();
 		for (Requirement requirement : requirements) {
 			String namespace = requirement.getNamespace();
-			if (namespace.startsWith("osgi.") &&
-					// Don't filter out the osgi.ee namespace.
-					!namespace.equals(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE))
+			if (namespace.startsWith("osgi.") && !(
+					// Don't filter out the osgi.ee namespace...
+					namespace.equals(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE) ||
+					// ...or the osgi.service namespace.
+					namespace.equals(ServiceNamespace.SERVICE_NAMESPACE)))
 				continue;
 			clauses.add(RequireCapabilityHeader.Clause.valueOf(requirement));
 		}

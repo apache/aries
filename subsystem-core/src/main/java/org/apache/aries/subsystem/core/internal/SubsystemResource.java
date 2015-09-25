@@ -613,18 +613,20 @@ public class SubsystemResource implements Resource {
 				// The provider is not content, so the requirement must
 				// be added to the sharing policy.
 				Requirement requirement = wire.getRequirement();
-				String namespace = requirement.getNamespace();
-				if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace)) {
-					// The osgi.service namespace must be translated to one
-					// that region digraph understands.
-					namespace = RegionFilter.VISIBLE_SERVICE_NAMESPACE;
+				List<String> namespaces = new ArrayList<String>(2);
+				namespaces.add(requirement.getNamespace());
+				if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespaces.get(0))) {
+					// Both service capabilities and services must be visible.
+					namespaces.add(RegionFilter.VISIBLE_SERVICE_NAMESPACE);
 				}
 				String filter = requirement.getDirectives().get(Namespace.REQUIREMENT_FILTER_DIRECTIVE);
 				if (filter == null) {
-					builder.allowAll(namespace);
+					for (String namespace : namespaces)
+						builder.allowAll(namespace);
 				}
 				else {
-					builder.allow(namespace, filter);
+					for (String namespace : namespaces)
+						builder.allow(namespace, filter);
 				}
 			}
 		}
