@@ -13,18 +13,20 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
-public class ThreadLocalSubsystem {
-	private static ThreadLocal<BasicSubsystem> subsystem = new ThreadLocal<BasicSubsystem>();
-	
-	public static BasicSubsystem get() {
-		return subsystem.get();
+import org.osgi.framework.wiring.BundleRevision;
+
+public class ThreadLocalBundleRevision {
+	private static ThreadLocal<BundleRevision> bundleRevision = new ThreadLocal<BundleRevision>();
+
+	public static BundleRevision get() {
+		return bundleRevision.get();
 	}
 	
 	public static void remove() {
-		subsystem.remove();
+		bundleRevision.remove();
 	}
-	
-	public static void set(BasicSubsystem value) {
-		subsystem.set(value);
+
+	public static void set(BundleRevision value) {
+		bundleRevision.set(value);
 	}
 }
