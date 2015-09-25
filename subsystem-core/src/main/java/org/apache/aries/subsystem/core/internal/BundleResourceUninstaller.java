@@ -65,5 +65,8 @@ public class BundleResourceUninstaller extends ResourceUninstaller {
 		catch (BundleException e) {
 			throw new SubsystemException(e);
 		}
+		finally {
+			ThreadLocalSubsystem.remove();
+		}
 	}
 }

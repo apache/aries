@@ -37,7 +37,6 @@ public class RegionContextBundleHelper {
 		String location = subsystem.getLocation() + '/' + subsystem.getSubsystemId();
 		Bundle b = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (b == null) {
-			ThreadLocalSubsystem.set(subsystem);
 			b = subsystem.getRegion().installBundleAtLocation(location, createRegionContextBundle(symbolicName));
 			// The start level of all managed bundles, including the region
 			// context bundle, should be 1.
@@ -54,7 +53,6 @@ public class RegionContextBundleHelper {
 		Bundle bundle = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (bundle == null)
 			return;
-		ThreadLocalSubsystem.set(subsystem);
 		BundleRevision revision = bundle.adapt(BundleRevision.class);
 		try {
 			bundle.uninstall();

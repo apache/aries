@@ -54,7 +54,25 @@ public class SystemRepository
         // The state mask must guarantee this will only be called when the bundle is in the INSTALLED state.
         BundleRevision revision = bundle.adapt(BundleRevision.class);
         BundleRevisionResource resource = new BundleRevisionResource(revision);
-        repository.addResource(resource);
+        if (ThreadLocalSubsystem.get() == null) {
+        	// This is an explicitly installed bundle. It must be prevented
+        	// from resolving as part of adding it to the repository. Searching
+        	// for service requirements and capabilities will result in a call
+        	// to findEntries which will cause the framework to attempt a
+        	// resolution.
+        	ThreadLocalBundleRevision.set(revision);
+        	try {
+        		repository.addResource(resource);
+        	}
+        	finally {
+        		ThreadLocalBundleRevision.remove();
+        	}
+        }
+        else {
+        	// If this is a bundle being installed as part of a subsystem
+        	// installation, it is already protected.
+        	repository.addResource(resource);
+        }
         return new AtomicReference<BundleRevisionResource>(resource);
     }
 
