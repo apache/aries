@@ -177,7 +177,6 @@ public class BundleResourceInstaller extends ResourceInstaller {
 		    revision = ((BundleRevisionResource)resource).getRevision();
 		}
 		else {
-			ThreadLocalSubsystem.set(provisionTo);
 			try {
 				revision = installBundle();
 			}
@@ -193,6 +192,7 @@ public class BundleResourceInstaller extends ResourceInstaller {
 	private BundleRevision installBundle() throws Exception {
 		final Bundle bundle;
 		InputStream is = (InputStream)resource.getClass().getMethod("getContent").invoke(resource);
+		ThreadLocalSubsystem.set(provisionTo);
 		try {
 			bundle = provisionTo.getRegion().installBundleAtLocation(getLocation(), is);
 		}
@@ -200,6 +200,7 @@ public class BundleResourceInstaller extends ResourceInstaller {
 			throw new SubsystemException(e);
 		}
 		finally {
+			ThreadLocalSubsystem.remove();
 			// Although Region.installBundle ultimately calls BundleContext.install,
 			// which closes the input stream, an exception may occur before this
 			// happens. Also, the Region API does not guarantee the stream will
