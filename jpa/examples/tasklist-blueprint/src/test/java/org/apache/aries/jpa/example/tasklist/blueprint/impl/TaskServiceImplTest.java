@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.jpa.tasklist.blueprint.impl;
+package org.apache.aries.jpa.example.tasklist.blueprint.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class TaskServiceImplTest {
         EntityManagerFactory emf = createTestEMF();
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        taskServiceImpl.setEm(em);
+        taskServiceImpl.em = em;
 
         TaskService taskService = taskServiceImpl;
 

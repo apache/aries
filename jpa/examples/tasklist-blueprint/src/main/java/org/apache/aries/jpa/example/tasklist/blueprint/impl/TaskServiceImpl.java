@@ -22,45 +22,40 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
 
 import org.apache.aries.jpa.example.tasklist.model.Task;
 import org.apache.aries.jpa.example.tasklist.model.TaskService;
-import org.apache.aries.transaction.annotations.Transaction;
 
+@Transactional
 public class TaskServiceImpl implements TaskService {
 
     @PersistenceContext(unitName = "tasklist")
     EntityManager em;
 
-    @Override
+    @Transactional(TxType.SUPPORTS)
     public Task getTask(Integer id) {
         return em.find(Task.class, id);
     }
 
-    @Transaction
-    @Override
+    
     public void addTask(Task task) {
         em.persist(task);
         em.flush();
     }
 
+    @Transactional(TxType.SUPPORTS)
     public Collection<Task> getTasks() {
         return em.createQuery("select t from Task t", Task.class).getResultList();
     }
 
-    @Transaction
-    @Override
     public void updateTask(Task task) {
         em.persist(task);
     }
 
-    @Transaction
-    @Override
     public void deleteTask(Integer id) {
         em.remove(getTask(id));
     }
 
-    public void setEm(EntityManager em) {
-        this.em = em;
-    }
 }
