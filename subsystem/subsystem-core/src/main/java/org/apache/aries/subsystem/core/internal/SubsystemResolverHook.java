@@ -67,6 +67,12 @@ public class SubsystemResolverHook implements ResolverHook {
 		try {
 			for (Iterator<BundleRevision> iterator = candidates.iterator(); iterator.hasNext();) {
 				BundleRevision revision = iterator.next();
+				if (revision.equals(ThreadLocalBundleRevision.get())) {
+					// The candidate is a bundle whose INSTALLED event is
+					// currently being processed on this thread.
+					iterator.remove();
+					continue;
+				}
 				if (revision.getSymbolicName().startsWith(Constants.RegionContextBundleSymbolicNamePrefix))
 					// Don't want to filter out the region context bundle.
 					continue;
