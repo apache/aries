@@ -51,24 +51,30 @@ public class SubsystemImportServiceHeader extends AbstractClauseBasedHeader<Subs
 			if (!SubsystemImportServiceRequirement.NAMESPACE.equals(namespace)) {
 				throw new IllegalArgumentException("Invalid namespace:" + namespace);
 			}
+			Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+			String filter = null;
 			Map<String, String> directives = requirement.getDirectives();
-			Map<String, Parameter> parameters = new HashMap<String, Parameter>(directives.size());
 			for (Map.Entry<String, String> entry : directives.entrySet()) {
 				String key = entry.getKey();
 				if (SubsystemImportServiceRequirement.DIRECTIVE_FILTER.equals(key)) {
-					continue;
+					filter = entry.getValue();
 				}
-				parameters.put(key, DirectiveFactory.createDirective(key, entry.getValue()));
+				else { 
+					parameters.put(key, DirectiveFactory.createDirective(key, entry.getValue()));
+				}
 			}
-			String filter = directives.get(SubsystemImportServiceRequirement.DIRECTIVE_FILTER);
-			Map<String, Object> attributes = SimpleFilter.attributes(filter);
-			String path = String.valueOf(attributes.remove(Constants.OBJECTCLASS));
-			if (!attributes.isEmpty()) {
+			Map<String, List<SimpleFilter>> attributes = SimpleFilter.attributes(filter);
+			String path = String.valueOf(attributes.remove(Constants.OBJECTCLASS).get(0).getValue());
+			Map<String, Object> map = new HashMap<String, Object>(attributes.size());
+			for (Map.Entry<String, List<SimpleFilter>> entry : attributes.entrySet()) {
+				map.put(entry.getKey(), entry.getValue().get(0).getValue());
+			}
+			if (!map.isEmpty()) {
 				parameters.put(
 						SubsystemImportServiceRequirement.DIRECTIVE_FILTER, 
 						DirectiveFactory.createDirective(
 								SubsystemImportServiceRequirement.DIRECTIVE_FILTER,
-								SimpleFilter.convert(attributes).toString()));
+								SimpleFilter.convert(map).toString()));
 			}
 			return new Clause(path, parameters, defaultParameters);
 		}
