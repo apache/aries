@@ -16,9 +16,58 @@ package org.apache.aries.subsystem.core.archive;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.aries.subsystem.core.capabilityset.SimpleFilter;
+import org.osgi.framework.VersionRange;
+
 public abstract class AbstractClauseBasedHeader<C extends Clause> implements Header<C> {
+	protected static VersionRange parseVersionRange(List<SimpleFilter> filters) {
+		SimpleFilter floor = null;
+		SimpleFilter ceiling = null;
+		for (SimpleFilter filter : filters) {
+			switch (filter.getOperation()) {
+				case SimpleFilter.EQ:
+				case SimpleFilter.GTE:
+					floor = filter;
+					break;
+				case SimpleFilter.LTE:
+					ceiling = filter;
+					break;
+				case SimpleFilter.NOT:
+					SimpleFilter negated = ((List<SimpleFilter>)filter.getValue()).get(0);
+					switch (negated.getOperation()) {
+						case SimpleFilter.EQ:
+						case SimpleFilter.GTE:
+							ceiling = filter;
+							break;
+						case SimpleFilter.LTE:
+							floor = filter;
+							break;
+						default:
+							throw new IllegalArgumentException("Invalid filter: " + filter);
+					}
+					break;
+				default:
+					throw new IllegalArgumentException("Invalid filter: " + filter);
+			}
+		}
+		if (ceiling == null) {
+			return new VersionRange(String.valueOf(floor.getValue()));
+		}
+		String range = new StringBuilder()
+			.append(floor.getOperation() == SimpleFilter.NOT ? '(' : '[')
+			.append(floor.getOperation() == SimpleFilter.NOT ? 
+					((List<SimpleFilter>)floor.getValue()).get(0).getValue() : floor.getValue())
+			.append(',')
+			.append(ceiling.getOperation() == SimpleFilter.NOT ? 
+					((List<SimpleFilter>)ceiling.getValue()).get(0).getValue() : ceiling.getValue())
+			.append(ceiling.getOperation() == SimpleFilter.NOT ? ')' : ']')
+			.toString();
+		return new VersionRange(range);
+	}
+	
 	private static <C> Collection<C> computeClauses(String header, ClauseFactory<C> factory) {
 		Collection<String> clauseStrs = new ClauseTokenizer(header).getClauses();
 		Set<C> clauses = new HashSet<C>(clauseStrs.size());

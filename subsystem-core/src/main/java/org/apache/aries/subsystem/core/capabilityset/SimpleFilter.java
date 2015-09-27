@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.aries.subsystem.core.archive.AttributeFactory;
+import org.apache.aries.subsystem.core.archive.Parameter;
+import org.apache.aries.subsystem.core.archive.VersionRangeAttribute;
 import org.osgi.framework.VersionRange;
 
 public class SimpleFilter
@@ -704,33 +707,35 @@ loop:   for (int i = 0; i < len; i++)
     	return that.m_value.equals(this.m_value);
     }
     
-    /**
-     * Extracts attributes from the provided filter. If an attribute appears 
-     * more than once, the last value seen will be the value in the map. The 
-     * returned map is the property of the caller.
-     * 
-     * @param filter The filter containing attributes to extract.
-     * @return The map of extracted attributes. The key is the attribute name, 
-     *         and the value is the attribute value.
-     * @throws NullPointerException If the filter is <code>null</code>.
-     * @throws IllegalArgumentException If the filter contains invalid syntax.
-     */
-    public static Map<String, Object> attributes(String filter) {
-    	Map<String, Object> attributes = new HashMap<String, Object>();
+    public static Map<String, List<SimpleFilter>> attributes(String filter) {
+    	Map<String, List<SimpleFilter>> attributes = new HashMap<String, List<SimpleFilter>>();
     	attributes(parse(filter), attributes);
     	return attributes;
     }
     
-    private static void attributes(SimpleFilter filter, Map<String, Object> attributes) {
-    	Object value = filter.m_value;
-    	if (value instanceof Collection) {
-    		Collection<SimpleFilter> filters = (Collection<SimpleFilter>)value;
+    private static void attributes(SimpleFilter filter, Map<String, List<SimpleFilter>> attributes) {
+    	if (filter.m_op == NOT && ((List<SimpleFilter>)filter.m_value).size() == 1) {
+    		SimpleFilter sf = ((List<SimpleFilter>)filter.m_value).get(0);
+    		List<SimpleFilter> sfs = attributes.get(sf.m_name);
+    		if (sfs == null) {
+    			sfs = new ArrayList<SimpleFilter>();
+    			attributes.put(sf.m_name, sfs);
+    		}
+    		sfs.add(filter);
+    	}
+    	else if (filter.m_value instanceof Collection) {
+    		Collection<SimpleFilter> filters = (Collection<SimpleFilter>)filter.m_value;
     		for (SimpleFilter f : filters) {
         		attributes(f, attributes);
         	}
     	}
     	else {
-    		attributes.put(filter.m_name, value);
+    		List<SimpleFilter> sfs = attributes.get(filter.m_name);
+    		if (sfs == null) {
+    			sfs = new ArrayList<SimpleFilter>();
+    			attributes.put(filter.m_name, sfs);
+    		}
+    		sfs.add(filter);
     	}
     }
 }

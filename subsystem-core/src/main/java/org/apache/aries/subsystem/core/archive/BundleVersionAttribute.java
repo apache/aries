@@ -42,4 +42,9 @@ public class BundleVersionAttribute extends AbstractAttribute {
 	public VersionRange getVersionRange() {
 		return range;
 	}
+	
+	@Override
+	public Object getValue() {
+		return new StringBuilder().append('"').append(range.toString()).append('"').toString();
+	}
 }
