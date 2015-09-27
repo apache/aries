@@ -41,25 +41,34 @@ public class ImportPackageHeader extends AbstractClauseBasedHeader<ImportPackage
 			if (!ImportPackageRequirement.NAMESPACE.equals(namespace)) {
 				throw new IllegalArgumentException("Invalid namespace:" + namespace);
 			}
+			Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+			String filter = null;
 			Map<String, String> directives = requirement.getDirectives();
-			String filter = directives.get(ImportPackageRequirement.DIRECTIVE_FILTER);
-			Map<String, Object> attributes = SimpleFilter.attributes(filter);
-			Map<String, Parameter> parameters = new HashMap<String, Parameter>(directives.size() + attributes.size());
 			for (Map.Entry<String, String> entry : directives.entrySet()) {
 				String key = entry.getKey();
 				if (ImportPackageRequirement.DIRECTIVE_FILTER.equals(key)) {
-					continue;
+					filter = entry.getValue();
 				}
-				parameters.put(key, DirectiveFactory.createDirective(key, entry.getValue()));
+				else { 
+					parameters.put(key, DirectiveFactory.createDirective(key, entry.getValue()));
+				}
 			}
-			for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+			Map<String, List<SimpleFilter>> attributes = SimpleFilter.attributes(filter);
+			String path = null;
+			for (Map.Entry<String, List<SimpleFilter>> entry : attributes.entrySet()) {
 				String key = entry.getKey();
+				List<SimpleFilter> value = entry.getValue();
 				if (ImportPackageRequirement.NAMESPACE.equals(key)) {
-					continue;
+					path = String.valueOf(value.get(0).getValue());
 				}
-				parameters.put(key, AttributeFactory.createAttribute(key, String.valueOf(entry.getValue())));
+				else if (ATTRIBUTE_VERSION.equals(key) || ATTRIBUTE_BUNDLE_VERSION.equals(key)) {
+					parameters.put(key, new VersionRangeAttribute(key, parseVersionRange(value)));
+				}
+				else {
+					parameters.put(key, AttributeFactory.createAttribute(key,
+							String.valueOf(value.get(0).getValue())));
+				}
 			}
-			String path = String.valueOf(attributes.get(ImportPackageRequirement.NAMESPACE));
 			return new Clause(path, parameters, defaultParameters);
 		}
 		
