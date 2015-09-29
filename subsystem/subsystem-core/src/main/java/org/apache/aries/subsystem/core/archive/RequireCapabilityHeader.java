@@ -25,19 +25,22 @@ import org.osgi.resource.Resource;
 
 public class RequireCapabilityHeader extends AbstractClauseBasedHeader<RequireCapabilityHeader.Clause> implements RequirementHeader<RequireCapabilityHeader.Clause> {
     public static class Clause extends AbstractClause {
-		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
-		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
-		public static final String DIRECTIVE_RESOLUTION = Constants.RESOLUTION_DIRECTIVE;
+    	public static final String DIRECTIVE_CARDINALITY = CardinalityDirective.NAME;
+		public static final String DIRECTIVE_EFFECTIVE = EffectiveDirective.NAME;
+		public static final String DIRECTIVE_FILTER = FilterDirective.NAME;
+		public static final String DIRECTIVE_RESOLUTION = ResolutionDirective.NAME;
 		
 		private static final Collection<Parameter> defaultParameters = generateDefaultParameters(
-				EffectiveDirective.RESOLVE,
-				ResolutionDirective.MANDATORY);
+				EffectiveDirective.DEFAULT,
+				ResolutionDirective.MANDATORY,
+				CardinalityDirective.DEFAULT);
 		
 		public Clause(String clause) {
 			super(
             		parsePath(clause, Patterns.NAMESPACE, false), 
-            		parseParameters(clause, false), 
+            		parseTypedParameters(clause), 
             		defaultParameters);
+			
 		}
 		
 		public Clause(String path, Map<String, Parameter> parameters, Collection<Parameter> defaultParameters) {
@@ -54,7 +57,7 @@ public class RequireCapabilityHeader extends AbstractClauseBasedHeader<RequireCa
 			Map<String, Parameter> parameters = new HashMap<String, Parameter>(attributes.size() + directives.size());
 			for (Map.Entry<String, Object> entry : attributes.entrySet()) {
 				String key = entry.getKey();
-				parameters.put(key, AttributeFactory.createAttribute(key, String.valueOf(entry.getValue())));
+				parameters.put(key, new TypedAttribute(key, entry.getValue()));
 			}
 			for (Map.Entry<String, String> entry : directives.entrySet()) {
 				String key = entry.getKey();

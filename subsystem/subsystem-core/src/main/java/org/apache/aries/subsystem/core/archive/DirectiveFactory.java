@@ -29,6 +29,8 @@ public class DirectiveFactory {
 			return ProvisionPolicyDirective.getInstance(value);
 		if (ReferenceDirective.NAME.equals(name))
 			return ReferenceDirective.getInstance(value);
+		if (CardinalityDirective.NAME.equals(name))
+			return CardinalityDirective.getInstance(value);
 		return new GenericDirective(name, value);
 	}
 }

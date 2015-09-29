@@ -24,21 +24,27 @@ import org.osgi.resource.Resource;
 public class RequireCapabilityRequirement extends AbstractRequirement {
 	public static final String DIRECTIVE_FILTER = Namespace.REQUIREMENT_FILTER_DIRECTIVE;
 	
+	private final Map<String, Object> attributes;
 	private final Map<String, String> directives;
 	private final String namespace;
 	private final Resource resource;
 	
 	public RequireCapabilityRequirement(RequireCapabilityHeader.Clause clause, Resource resource) {
 		namespace = clause.getNamespace();
+		attributes = new HashMap<String, Object>(clause.getAttributes().size());
+		for (Attribute attribute : clause.getAttributes()) {
+			attributes.put(attribute.getName(), attribute.getValue());
+		}
 		directives = new HashMap<String, String>(clause.getDirectives().size());
-		for (Directive directive : clause.getDirectives())
+		for (Directive directive : clause.getDirectives()) {
 			directives.put(directive.getName(), directive.getValue());
+		}
 		this.resource = resource;
 	}
 
 	@Override
 	public Map<String, Object> getAttributes() {
-		return Collections.emptyMap();
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	@Override
