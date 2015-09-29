@@ -18,4 +18,6 @@ public class Patterns {
 	private static final String DIRECTIVE = '(' + Grammar.EXTENDED + ")(:=)(" + Grammar.ARGUMENT + ')';
 	private static final String TYPED_ATTR = '(' + Grammar.EXTENDED + ")(?:(\\:)(" + Grammar.TYPE + "))?=(" + Grammar.ARGUMENT + ')';
 	public static final Pattern TYPED_PARAMETER = Pattern.compile("(?:(?:" + DIRECTIVE + ")|(?:" + TYPED_ATTR + "))(?=;|\\z)");
+	
+	public static final Pattern SCALAR_LIST = Pattern.compile("List(?:<(String|Long|Double|Version)>)?");
 }

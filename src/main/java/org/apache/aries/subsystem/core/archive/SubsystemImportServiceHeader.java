@@ -27,13 +27,15 @@ import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemImportServiceHeader extends AbstractClauseBasedHeader<SubsystemImportServiceHeader.Clause> implements RequirementHeader<SubsystemImportServiceHeader.Clause> {
     public static class Clause extends AbstractClause {
-		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
-		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
-		public static final String DIRECTIVE_RESOLUTION = Constants.RESOLUTION_DIRECTIVE;
+    	public static final String DIRECTIVE_CARDINALITY = CardinalityDirective.NAME;
+		public static final String DIRECTIVE_EFFECTIVE = EffectiveDirective.NAME;
+		public static final String DIRECTIVE_FILTER = FilterDirective.NAME;
+		public static final String DIRECTIVE_RESOLUTION = ResolutionDirective.NAME;
 
 		private static final Collection<Parameter> defaultParameters = generateDefaultParameters(
 				EffectiveDirective.ACTIVE,
-				ResolutionDirective.MANDATORY);
+				ResolutionDirective.MANDATORY,
+				CardinalityDirective.SINGLE);
 
 		public Clause(String clause) {
 			super(

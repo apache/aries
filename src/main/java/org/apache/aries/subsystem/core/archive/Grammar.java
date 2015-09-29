@@ -116,8 +116,6 @@ public interface Grammar {
 	public static final String IMPORTPACKAGE = IMPORT + "(?:\\,\\s*" + IMPORT + ")*";
 
 	public static final String NAMESPACE = SYMBOLICNAME;
-	public static final String REQUIREMENT = NAMESPACE + "(?:;\\s*(?:" + PARAMETER + "))*";
-	public static final String REQUIRE_CAPABILITY = REQUIREMENT + "(?:,\\s*(?:" + REQUIREMENT + "))*";
 
 	public static final String BUNDLE_DESCRIPTION = SYMBOLICNAME + "(?:;\\s*(?:" + PARAMETER + "))*";
 	public static final String REQUIRE_BUNDLE = BUNDLE_DESCRIPTION + "(?:,\\s*(?:" + BUNDLE_DESCRIPTION + "))*";
@@ -129,6 +127,8 @@ public interface Grammar {
 	public static final String LIST = "List<(?:" + SCALAR + ")>";
 	public static final String TYPE = "(?:" + SCALAR + ")|" + LIST;
 	public static final String TYPED_ATTR = EXTENDED + "(?:\\:" + TYPE + ")?=(?:" + ARGUMENT + ')';
+	public static final String REQUIREMENT = NAMESPACE + "(?:;\\s*(?:(?:" + DIRECTIVE + ")|(?:" + TYPED_ATTR + ")))*";
+	public static final String REQUIRE_CAPABILITY = REQUIREMENT + "(?:,\\s*(?:" + REQUIREMENT + "))*";
 	public static final String CAPABILITY = NAMESPACE + "(?:;\\s*(?:(?:" + DIRECTIVE + ")|(?:" + TYPED_ATTR + ")))*";
 	public static final String PROVIDE_CAPABILITY = CAPABILITY + "(?:,\\s*(?:" + CAPABILITY + "))*";
 
