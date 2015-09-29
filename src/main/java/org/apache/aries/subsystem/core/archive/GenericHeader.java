@@ -35,7 +35,7 @@ public class GenericHeader extends AbstractClauseBasedHeader<GenericHeader.Claus
 	
 	public GenericHeader(String name, String value) {
 		super(
-				value, 
+				value.isEmpty() ? "\"\"" : value, 
 				new ClauseFactory<Clause>() {
 					@Override
 					public Clause newInstance(String clause) {
