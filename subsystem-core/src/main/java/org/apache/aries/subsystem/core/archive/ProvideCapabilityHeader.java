@@ -14,47 +14,25 @@
 package org.apache.aries.subsystem.core.archive;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import org.osgi.framework.Constants;
 import org.osgi.resource.Resource;
 
 public class ProvideCapabilityHeader extends AbstractClauseBasedHeader<ProvideCapabilityHeader.Clause> implements CapabilityHeader<ProvideCapabilityHeader.Clause> {	
     public static class Clause extends AbstractClause {
-		public static final String DIRECTIVE_EFFECTIVE = Constants.EFFECTIVE_DIRECTIVE;
+		public static final String DIRECTIVE_EFFECTIVE = EffectiveDirective.NAME;
 		public static final String DIRECTIVE_USES = Constants.USES_DIRECTIVE;
 		
-		private static String removeQuotes(String value) {
-			if (value == null)
-				return null;
-			if (value.startsWith("\"") && value.endsWith("\""))
-				return value.substring(1, value.length() - 1);
-			return value;
-		}
+		private static final Collection<Parameter> defaultParameters = generateDefaultParameters(
+				EffectiveDirective.DEFAULT);
 		
 		public Clause(String clause) {
             super(
             		parsePath(clause, Patterns.NAMESPACE, false),
-            		new HashMap<String, Parameter>(),
-            		generateDefaultParameters(
-            				EffectiveDirective.DEFAULT));
-            Matcher matcher = Patterns.TYPED_PARAMETER.matcher(clause);
-            while (matcher.find()) {
-            	if (":=".equals(matcher.group(2))) {
-            		// This is a directive.
-            		parameters.put(matcher.group(1), DirectiveFactory.createDirective(matcher.group(1), removeQuotes(matcher.group(3))));
-            	}
-            	else if (":".equals(matcher.group(5))) {
-            		// This is a typed attribute with a declared version.
-            		parameters.put(matcher.group(4), new TypedAttribute(matcher.group(4), removeQuotes(matcher.group(7)), matcher.group(6)));
-            	}
-            	else {
-            		// This is a typed attribute without a declared version.
-            		parameters.put(matcher.group(4), new TypedAttribute(matcher.group(4), removeQuotes(matcher.group(7)), TypedAttribute.Type.String));
-            	}
-            }
+            		parseTypedParameters(clause),
+            		defaultParameters);
 		}
 
         public String getNamespace() {

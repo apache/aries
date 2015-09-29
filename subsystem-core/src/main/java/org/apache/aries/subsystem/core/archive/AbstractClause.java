@@ -47,6 +47,34 @@ public abstract class AbstractClause implements Clause {
         }
 		return parameters;
     }
+	
+	protected static Map<String, Parameter> parseTypedParameters(String clause) {
+    	Map<String, Parameter> parameters = new HashMap<String, Parameter>();
+		Matcher matcher = Patterns.TYPED_PARAMETER.matcher(clause);
+		while (matcher.find()) {
+        	if (":=".equals(matcher.group(2))) {
+        		// This is a directive.
+        		parameters.put(matcher.group(1), DirectiveFactory.createDirective(matcher.group(1), removeQuotes(matcher.group(3))));
+        	}
+        	else if (":".equals(matcher.group(5))) {
+        		// This is a typed attribute with a declared version.
+        		parameters.put(matcher.group(4), new TypedAttribute(matcher.group(4), removeQuotes(matcher.group(7)), matcher.group(6)));
+        	}
+        	else {
+        		// This is a typed attribute without a declared version.
+        		parameters.put(matcher.group(4), new TypedAttribute(matcher.group(4), removeQuotes(matcher.group(7)), "String"));
+        	}
+        }
+		return parameters;
+    }
+	
+	protected static String removeQuotes(String value) {
+		if (value == null)
+			return null;
+		if (value.startsWith("\"") && value.endsWith("\""))
+			return value.substring(1, value.length() - 1);
+		return value;
+	}
     
     protected static String parsePath(String clause, Pattern pattern, boolean replaceAllWhitespace) {
     	Matcher matcher = pattern.matcher(clause);
