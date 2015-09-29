@@ -23,7 +23,11 @@ import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
+import org.osgi.service.repository.ExpressionCombiner;
 import org.osgi.service.repository.Repository;
+import org.osgi.service.repository.RequirementBuilder;
+import org.osgi.service.repository.RequirementExpression;
+import org.osgi.util.promise.Promise;
 
 public class TestRepository implements Repository {
 	public static class Builder {
@@ -63,5 +67,20 @@ public class TestRepository implements Repository {
 			}
 		}
 		return result;
+	}
+	
+	@Override
+	public Promise<Collection<Resource>> findProviders(RequirementExpression expression) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public ExpressionCombiner getExpressionCombiner() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public RequirementBuilder newRequirementBuilder(String namespace) {
+		throw new UnsupportedOperationException();
 	}
 }

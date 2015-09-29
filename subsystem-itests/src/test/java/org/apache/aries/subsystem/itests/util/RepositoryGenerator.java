@@ -28,8 +28,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.aries.application.Content;
 import org.apache.aries.application.management.BundleInfo;
-import org.apache.aries.subsystem.itests.obr.felix.FelixResourceAdapter;
-import org.apache.aries.subsystem.itests.obr.felix.OsgiResourceAdapter;
+import org.apache.aries.subsystem.util.felix.FelixResourceAdapter;
+import org.apache.aries.subsystem.util.felix.OsgiResourceAdapter;
 import org.apache.felix.bundlerepository.Reason;
 import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
