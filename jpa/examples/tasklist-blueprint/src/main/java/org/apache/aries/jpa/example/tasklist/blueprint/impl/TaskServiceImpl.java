@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
@@ -47,7 +48,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional(TxType.SUPPORTS)
     public Collection<Task> getTasks() {
-        return em.createQuery("select t from Task t", Task.class).getResultList();
+        CriteriaQuery<Task> query = em.getCriteriaBuilder().createQuery(Task.class);
+        return em.createQuery(query.select(query.from(Task.class))).getResultList();
     }
 
     public void updateTask(Task task) {
