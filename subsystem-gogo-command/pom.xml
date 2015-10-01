@@ -28,14 +28,14 @@
 
   <groupId>org.apache.aries.subsystem</groupId>
   <artifactId>org.apache.aries.subsystem.gogo-command</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>Apache Aries Subsystem Gogo command</name>
   <packaging>bundle</packaging>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-gogo-command</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-gogo-command</developerConnection>
-    <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-gogo-command</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.subsystem.gogo-command-1.0.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.subsystem.gogo-command-1.0.0</developerConnection>
+    <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.subsystem.gogo-command-1.0.0</url>
   </scm>
 
   <properties>
