@@ -129,7 +129,7 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.api</artifactId>
             <scope>test</scope>
-            <version>2.0.3-SNAPSHOT</version>
+            <version>2.0.5-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -141,7 +141,7 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.core</artifactId>
             <scope>test</scope>
-            <version>2.0.3-SNAPSHOT</version>
+            <version>2.0.5-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -153,7 +153,7 @@
             <groupId>org.apache.aries.subsystem</groupId>
             <artifactId>org.apache.aries.subsystem.obr</artifactId>
             <scope>test</scope>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.0.5-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
