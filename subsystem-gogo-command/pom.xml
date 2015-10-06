@@ -49,8 +49,7 @@
     <aries.osgi.private.pkg>
       org.apache.aries.subsystem.gogo.*
     </aries.osgi.private.pkg>
-    <!-- Move this item to 1.0.0 once released -->
-    <lastReleaseVersion>1.0.0-SNAPSHOT</lastReleaseVersion>
+    <lastReleaseVersion>1.0.0</lastReleaseVersion>
   </properties>
 
   <dependencies>
