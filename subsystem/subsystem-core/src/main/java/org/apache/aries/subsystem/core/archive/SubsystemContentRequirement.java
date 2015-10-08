@@ -33,8 +33,21 @@ public class SubsystemContentRequirement extends AbstractRequirement {
 		StringBuilder builder = new StringBuilder("(&(")
 				.append(NAMESPACE).append('=')
 				.append(clause.getSymbolicName()).append(')');
-		for (Attribute attribute : clause.getAttributes())
-			attribute.appendToFilter(builder);
+		for (Attribute attribute : clause.getAttributes()) {
+			if (!clause.isTypeSpecified()
+					&& TypeAttribute.NAME.equals(attribute.getName())) {
+				// If the type attribute was not specified as part of the
+				// original clause, match against both bundles and fragments.
+				// See ARIES-1425.
+				builder.append("(|(").append(TypeAttribute.NAME).append('=')
+				.append(IdentityNamespace.TYPE_BUNDLE).append(")(")
+				.append(TypeAttribute.NAME).append('=').append(IdentityNamespace.TYPE_FRAGMENT)
+				.append("))");
+			}
+			else {
+				attribute.appendToFilter(builder);
+			}
+		}
 		directives.put(DIRECTIVE_FILTER, builder.append(')').toString());
 		this.resource = resource;
 	}

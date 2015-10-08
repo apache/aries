@@ -20,6 +20,8 @@ import java.util.List;
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.osgi.framework.Version;
 import org.osgi.framework.VersionRange;
+import org.osgi.framework.namespace.IdentityNamespace;
+import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -31,30 +33,37 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 		public static final String DIRECTIVE_RESOLUTION = ResolutionDirective.NAME;
 		public static final String DIRECTIVE_STARTORDER = StartOrderDirective.NAME;
 		
+		private static final Collection<Parameter> defaultParameters = generateDefaultParameters(
+				// A default value for the type attribute is not included here
+				// because we need to determine in the constructor whether or 
+				// not it was specified as part of the original value.
+				// See ARIES-1425.
+				VersionRangeAttribute.DEFAULT_VERSION,
+				ResolutionDirective.MANDATORY,
+				// This is an implementation specific start-order directive
+				// value. The specification states there is no default value.
+				new StartOrderDirective("0"));
+		
+		// Was the type attribute specified as part of the original value?
+		private final boolean isTypeSpecified;
+		private final String originalValue;
+		
 		public Clause(String clause) {
 			super(
 					parsePath(clause, Patterns.SYMBOLIC_NAME, false), 
 					parseParameters(clause, true),
-					generateDefaultParameters(
-							TypeAttribute.DEFAULT,
-							VersionRangeAttribute.DEFAULT_VERSION,
-							ResolutionDirective.MANDATORY,
-							// This is an implementation specific start-order directive
-							// value. The specification states there is no default value.
-							new StartOrderDirective("0")));
-		}
-		
-		public Clause(Resource resource) {
-			this(appendResource(resource, new StringBuilder()).toString());
-		}
-		
-		public boolean contains(Resource resource) {
-			return getSymbolicName().equals(
-					ResourceHelper.getSymbolicNameAttribute(resource))
-					&& getVersionRange().includes(
-							ResourceHelper.getVersionAttribute(resource))
-					&& getType().equals(
-							ResourceHelper.getTypeAttribute(resource));
+					defaultParameters);
+			if (parameters.get(TypeAttribute.NAME) == null) {
+				// The resource type was not specified.
+				isTypeSpecified = false;
+				// Add the default type.
+				parameters.put(TypeAttribute.NAME, TypeAttribute.DEFAULT);
+			}
+			else {
+				// The resource type was specified.
+				isTypeSpecified = true;
+			}
+			originalValue = clause;
 		}
 		
 		public String getSymbolicName() {
@@ -77,9 +86,18 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 			return ((ResolutionDirective)getDirective(DIRECTIVE_RESOLUTION)).isMandatory();
 		}
 		
+		public boolean isTypeSpecified() {
+			return isTypeSpecified;
+		}
+		
 		public SubsystemContentRequirement toRequirement(Resource resource) {
 			return new SubsystemContentRequirement(this, resource);
 		}
+		
+		@Override
+	    public String toString() {
+	        return originalValue;
+	    }
 	}
 	
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_CONTENT;
@@ -112,9 +130,7 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 		return builder;
 	}
 	
-	public SubsystemContentHeader(Collection<Clause> clauses) {
-		super(clauses);
-	}
+	private final String originalValue;
 	
 	public SubsystemContentHeader(String value) {
 		super(
@@ -125,6 +141,7 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 						return new Clause(clause);
 					}
 				});
+		originalValue = value;
 	}
 	
 	public boolean contains(Resource resource) {
@@ -132,16 +149,14 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 	}
 	
 	public Clause getClause(Resource resource) {
-		String symbolicName = ResourceHelper.getSymbolicNameAttribute(resource);
-		Version version = ResourceHelper.getVersionAttribute(resource);
-		String type = ResourceHelper.getTypeAttribute(resource);
+		Capability capability = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0);
 		for (Clause clause : clauses) {
-			if (symbolicName.equals(clause.getPath())
-					&& clause.getVersionRange().includes(version)
-					&& type.equals(clause.getType()))
+			Requirement requirement = clause.toRequirement(resource);
+			if (ResourceHelper.matches(requirement, capability)) {
 				return clause;
+			}
 		}
-		return null;
+		return null;		
 	}
 	
 	public boolean isMandatory(Resource resource) {
@@ -158,7 +173,7 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 
 	@Override
 	public String getValue() {
-		return toString();
+		return originalValue;
 	}
 
 	@Override
@@ -168,4 +183,9 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}
+	
+	@Override
+    public String toString() {
+        return originalValue;
+    }
 }
