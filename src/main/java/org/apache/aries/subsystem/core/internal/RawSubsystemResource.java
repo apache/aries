@@ -408,6 +408,12 @@ public class RawSubsystemResource implements Resource {
 				resources.add(capabilities.iterator().next().getResource());
 			}
 		}
+		if (fakeImportServiceResource != null) {
+			// Add the fake resource so the dependency calculator knows not to
+			// return service requirements that are included in 
+			// Application-ImportService.
+			resources.add(fakeImportServiceResource);
+		}
 		// Now compute the dependencies of the content resources. These are
 		// dependencies not satisfied by the content resources themselves.
 		return new DependencyCalculator(resources).calculateDependencies();
