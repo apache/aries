@@ -271,7 +271,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertConstituent(subsystem, symbolicName, version, IdentityNamespace.TYPE_BUNDLE);
 	}
 
-	protected void assertContituent(Subsystem subsystem, String symbolicName, String type) {
+	protected void assertConstituent(Subsystem subsystem, String symbolicName, String type) {
 		assertConstituent(subsystem, symbolicName, Version.emptyVersion, type);
 	}
 
@@ -557,10 +557,13 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		createBundle(emptyFiles, headerMap);
 	}
+	
+	protected static void createBundle(List<String> emptyFiles, Map<String, String> headers) throws IOException {
+		createBundle(headers.get(Constants.BUNDLE_SYMBOLICNAME), emptyFiles, headers);
+	}
 
-	private static void createBundle(List<String> emptyFiles, Map<String, String> headers) throws IOException
+	protected static void createBundle(String fileName, List<String> emptyFiles, Map<String, String> headers) throws IOException
 	{
-		String symbolicName = headers.get(Constants.BUNDLE_SYMBOLICNAME);
 		JarFixture bundle = ArchiveFixture.newJar();
 		ManifestFixture manifest = bundle.manifest();
 		for (Entry<String, String> header : headers.entrySet()) {
@@ -569,7 +572,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		for (String path : emptyFiles) {
 			bundle.file(path).end();
 		}
-		write(symbolicName, bundle);
+		write(fileName, bundle);
 	}
 
 	protected static void createBlueprintBundle(String symbolicName, String blueprintXml)
