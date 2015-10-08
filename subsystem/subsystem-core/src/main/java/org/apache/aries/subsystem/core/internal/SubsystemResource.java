@@ -616,13 +616,26 @@ public class SubsystemResource implements Resource {
 			List<Wire> wires = resolution.get(resource);
 			for (Wire wire : wires) {
 				Resource provider = wire.getProvider();
+				// First check: If the provider is content there is no need to
+				// update the sharing policy because the capability is already
+				// visible.
 				if (contentHeader.contains(provider)) {
-					// The provider is content so the requirement does
-					// not need to become part of the sharing policy.
 					continue;
 				}
-				// The provider is not content, so the requirement must
-				// be added to the sharing policy.
+				// Second check: If the provider is synthesized but not offering
+				// a MissingCapability, then the resource is acting as a
+				// placeholder as part of the Application-ImportService header
+				// functionality, and the sharing policy does not need to be
+				// updated.
+				// Do not exclude resources providing a MissingCapability
+				// even though they are synthesized. These are added by the
+				// resolve context to ensure that unsatisfied optional
+				// requirements become part of the sharing policy.
+				if (!(wire.getCapability() instanceof DependencyCalculator.MissingCapability)
+						&& Constants.ResourceTypeSynthesized.equals(ResourceHelper.getTypeAttribute(provider))) {
+					continue;
+				}
+				// The requirement must be added to the sharing policy.
 				Requirement requirement = wire.getRequirement();
 				List<String> namespaces = new ArrayList<String>(2);
 				namespaces.add(requirement.getNamespace());
