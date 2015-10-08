@@ -427,7 +427,7 @@ public class SubsystemResource implements Resource {
 	}
 
 	private ProvisionResourceHeader computeProvisionResourceHeader() {
-		Collection<Resource> dependencies = getDepedencies();
+		Collection<Resource> dependencies = getDependencies();
 		if (dependencies.isEmpty())
 			return null;
 		return ProvisionResourceHeader.newInstance(dependencies);
@@ -485,16 +485,27 @@ public class SubsystemResource implements Resource {
 				}
 			}
 		}
+		// First search the local repository.
 		map = resource.getLocalRepository().findProviders(Collections.singleton(requirement));
-		if (map.containsKey(requirement)) {
-			Collection<Capability> capabilities = map.get(requirement);
-			if (!capabilities.isEmpty())
-				return capabilities.iterator().next().getResource();
+		Collection<Capability> capabilities = map.get(requirement);
+		if (capabilities.isEmpty()) {
+			// Nothing found in the local repository so search the repository services.
+			capabilities = new RepositoryServiceRepository().findProviders(requirement);
 		}
-		Collection<Capability> capabilities = new RepositoryServiceRepository().findProviders(requirement);
-		if (!capabilities.isEmpty())
-			return capabilities.iterator().next().getResource();
-		return null;
+		if (capabilities.isEmpty()) {
+			// Nothing found period.
+			return null;
+		}
+		for (Capability capability : capabilities) {
+			if (!IdentityNamespace.TYPE_FRAGMENT.equals(
+					capability.getAttributes().get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE))) {
+				// Favor the first resource that is not a fragment bundle.
+				// See ARIES-1425.
+				return capability.getResource();
+			}
+		}
+		// Nothing here but fragment bundles. Return the first one.
+		return capabilities.iterator().next().getResource();
 	}
 
 	private Resource findContent(DeployedContentHeader.Clause clause) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
@@ -540,7 +551,7 @@ public class SubsystemResource implements Resource {
 		return result;
 	}
 
-	private Collection<Resource> getDepedencies() {
+	private Collection<Resource> getDependencies() {
 		Collection<Resource> result = new ArrayList<Resource>(installableDependencies.size() + sharedDependencies.size());
 		result.addAll(installableDependencies);
 		result.addAll(sharedDependencies);
