@@ -49,6 +49,16 @@ public abstract class AbstractClauseBasedHeader<C extends Clause> implements Hea
 							throw new IllegalArgumentException("Invalid filter: " + filter);
 					}
 					break;
+				case SimpleFilter.PRESENT:
+					/* This can happen with version ranges of the form 
+					 * (1.5.0,2.0.0). The filter form will be
+					 * (&(version=*)(!(version<=1.5.0))(!(version>=2.0.0)). The
+					 * presence operator is required because an absent version
+					 * attribute would otherwise match. These should simply be
+					 * ignored for the purposes of converting back into a
+					 * version range.
+					 */
+					break;
 				default:
 					throw new IllegalArgumentException("Invalid filter: " + filter);
 			}
