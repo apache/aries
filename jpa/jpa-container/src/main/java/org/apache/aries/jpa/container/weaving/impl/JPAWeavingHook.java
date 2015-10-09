@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import javax.persistence.Entity;
 import javax.persistence.spi.ClassTransformer;
 
 import org.osgi.framework.Bundle;
@@ -59,18 +60,15 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
         Bundle bundle = wiring.getBundle();
         ClassLoader cl = wiring.getClassLoader();
         Collection<ClassTransformer> transformersToTry = getTransformers(bundle);
-        if (transformersToTry.size() == 0 && wovenClass.getClassName().endsWith("Car")) {
-            LOGGER.error("Loading " + wovenClass.getClassName() + " before transformer is present");
-            //for (StackTraceElement el : Thread.currentThread().getStackTrace()) {
-//                LOGGER.info(el.toString());
-//            }
-        }
         for (ClassTransformer transformer : transformersToTry) {
-
             if (transformClass(wovenClass, cl, transformer)) {
                 LOGGER.info("Weaving " + wovenClass.getClassName() + " using " + transformer.getClass().getName());
                 break;
             };
+        }
+        Class<?> dClass = wovenClass.getDefinedClass();
+        if (transformersToTry.size() == 0 && dClass != null && dClass.getAnnotation(Entity.class) != null) {
+            LOGGER.warn("Loading " + wovenClass.getClassName() + " before transformer is present");
         }
     }
 
