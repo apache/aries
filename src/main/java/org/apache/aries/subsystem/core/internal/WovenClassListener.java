@@ -121,6 +121,12 @@ public class WovenClassListener implements org.osgi.framework.hooks.weaving.Wove
 		try {
 			updater.addRequirements(requirements);
 		}
+		catch (IllegalStateException e) {
+			// Something outside of the subsystems implementation has
+			// deleted the edge between the parent and child subsystems.
+			// Assume the dynamic import sharing policy is being handled
+			// elsewhere. See ARIES-1429.
+		}
 		catch (Exception e) {
 			throw new SubsystemException(e);
 		}
