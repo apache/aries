@@ -61,9 +61,12 @@ public class RegionUpdater {
 			if (builder == null) {
 				// Something outside of the subsystems implementation has
 				// deleted the edge between the parent and child subsystems.
-				// Assume the dynamic import sharing policy is being handled
-				// elsewhere. See ARIES-1429.
-				return;
+				// See ARIES-1429.
+				throw new IllegalStateException(
+						new StringBuilder(tail.getName())
+								.append(" not connected to ")
+								.append(head.getName())
+								.toString());
 			}
 			addRequirements(requirements, builder);
 			addHeadRegions(heads, tail, copy);
