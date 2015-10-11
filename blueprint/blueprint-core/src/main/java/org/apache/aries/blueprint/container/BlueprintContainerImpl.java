@@ -336,9 +336,12 @@ public class BlueprintContainerImpl
                                     if (destroyed.get()) {
                                         return;
                                     }
+                                    String[] missingDependecies = getMissingDependencies();
+                                    if (missingDependecies.length == 0) {
+                                        return;
+                                    }
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
-                                    String[] missingDependecies = getMissingDependencies();
                                     tidyupComponents();
                                     LOGGER.error("Unable to start blueprint container for bundle {}/{} due to unresolved dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependecies), t);
                                     eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundle(), getExtenderBundle(), missingDependecies, t));
