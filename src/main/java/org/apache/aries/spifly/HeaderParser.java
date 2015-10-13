@@ -26,11 +26,11 @@ import java.util.Map;
 /**
  * Utility class to parse a standard OSGi header with paths.
  *
- * Stolen from Aries Blueprint Core (blueprint.utils). Need to give it back! 
+ * Stolen from Aries Blueprint Core (blueprint.utils). Need to give it back!
  */
 public class HeaderParser  {
     private HeaderParser() {}
-    
+
     /**
      * Parse a given OSGi header into a list of paths
      *
@@ -42,7 +42,7 @@ public class HeaderParser  {
         if (header == null || header.trim().length() == 0) {
             return elements;
         }
-        String[] clauses = header.split(",");
+        String[] clauses = header.split(",(?![^\\(\\)]*(\\)))");
         for (String clause : clauses) {
             String[] tokens = clause.split(";");
             if (tokens.length < 1) {
@@ -72,44 +72,44 @@ public class HeaderParser  {
     }
 
     public static class PathElement {
-        
+
         private String path;
         private Map<String, String> attributes;
         private Map<String, String> directives;
-        
+
         public PathElement(String path) {
             this.path = path;
             this.attributes = new HashMap<String, String>();
             this.directives = new HashMap<String, String>();
         }
-        
+
         public String getName() {
             return this.path;
         }
-        
+
         public Map<String, String> getAttributes() {
             return attributes;
         }
-        
+
         public String getAttribute(String name) {
             return attributes.get(name);
         }
-        
+
         public void addAttribute(String name, String value) {
             attributes.put(name, value);
         }
-        
+
         public Map<String, String> getDirectives() {
             return directives;
         }
-        
+
         public String getDirective(String name) {
             return directives.get(name);
         }
-        
+
         public void addDirective(String name, String value) {
             directives.put(name, value);
-        }        
-        
+        }
+
     }
 }
