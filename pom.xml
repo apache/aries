@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>org.apache.aries.spifly.static.tool</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
     <name>Apache Aries SPI Fly Static Weaving Tool</name>
     <description>
@@ -38,9 +38,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-tool</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-tool</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-static-tool</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/spifly-1.0.4/spi-fly-static-tool</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/spifly-1.0.4/spi-fly-static-tool</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/spifly-1.0.4/spi-fly-static-tool</url>
     </scm>
 
     <dependencies>
@@ -53,13 +53,13 @@
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core-internal</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.weaver-internal</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4</version>
         </dependency>
 
         <dependency>
