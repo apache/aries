@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>spifly</artifactId>
     <name>Apache Aries SPI Fly</name>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>
         SPI support for OSGi
@@ -49,7 +49,9 @@
         <module>spi-fly-dynamic-bundle</module>
         <module>spi-fly-static-tool</module>
         <module>spi-fly-static-bundle</module>
+        <!-- 
         <module>spi-fly-examples</module>
+         -->
     </modules>
 
 </project>
