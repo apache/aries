@@ -181,7 +181,9 @@ public class StartAction extends AbstractAction {
 				}
 				
 				for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(subsystem)) {
-					resolve((BasicSubsystem)child);
+					if (State.INSTALLED.equals(child.getState())) {
+						resolve((BasicSubsystem)child);
+					}
 				}
 
 				FrameworkWiring frameworkWiring = Activator.getInstance().getBundleContext().getBundle(0)
