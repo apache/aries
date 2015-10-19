@@ -76,9 +76,9 @@ public class RegionNameTest extends SubsystemTest {
 	public void createTestFiles() throws Exception {
 		if (createdTestFiles)
 			return;
+		createFeatureA();
 		createApplicationA();
 		createCompositeA();
-		createFeatureA();
 		createdTestFiles = true;
 	}
 	
