@@ -42,6 +42,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -847,6 +848,20 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			resources[i++] = (Resource)createBundleRepositoryContent(file);
 		}
 		registerRepositoryService(resources);
+	}
+	
+	protected void removeConnectionWithParent(Subsystem subsystem) throws BundleException {
+		Region tail = getRegion(subsystem);
+		RegionDigraph digraph = tail.getRegionDigraph();
+		RegionDigraph copy = digraph.copy();
+		Region tailCopy = copy.getRegion(tail.getName());
+		Set<Long> ids = tail.getBundleIds();
+		copy.removeRegion(tailCopy);
+		tailCopy= copy.createRegion(tailCopy.getName());
+		for (long id : ids) {
+			tailCopy.addBundle(id);
+		}
+		digraph.replace(copy);
 	}
 
 	protected void restartSubsystemsImplBundle() throws BundleException {

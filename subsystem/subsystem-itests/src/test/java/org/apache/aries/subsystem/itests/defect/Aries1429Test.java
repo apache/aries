@@ -28,26 +28,21 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.itests.SubsystemTest;
 import org.apache.aries.subsystem.itests.util.TestRequirement;
-import org.eclipse.equinox.region.Region;
-import org.eclipse.equinox.region.RegionDigraph;
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.tinybundles.core.InnerClassStrategy;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.framework.namespace.PackageNamespace;
@@ -143,19 +138,6 @@ public class Aries1429Test extends SubsystemTest {
     		uninstallSubsystemSilently(applicationA);
     	}
     }
-	
-	private void removeConnectionWithParent(Subsystem subsystem) throws BundleException {
-		Region tail = getRegion(subsystem);
-		RegionDigraph copy = digraph.copy();
-		Region tailCopy = copy.getRegion(tail.getName());
-		Set<Long> ids = tail.getBundleIds();
-		copy.removeRegion(tailCopy);
-		tailCopy= copy.createRegion(tailCopy.getName());
-		for (long id : ids) {
-			tailCopy.addBundle(id);
-		}
-		digraph.replace(copy);
-	}
     
     @Test
     public void testMissingParentChildEdgeNotTolerated() throws Exception {
@@ -180,20 +162,5 @@ public class Aries1429Test extends SubsystemTest {
     	finally {
     		uninstallSubsystemSilently(applicationA);
     	}
-    }
-    
-    private RegionDigraph digraph;
-    private ServiceReference<RegionDigraph> reference;
-    
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        reference = bundleContext.getServiceReference(RegionDigraph.class);
-        digraph = bundleContext.getService(reference);
-    }
-    
-    @Override
-    public void tearDown() throws Exception {
-    	bundleContext.ungetService(reference);
     }
 }
