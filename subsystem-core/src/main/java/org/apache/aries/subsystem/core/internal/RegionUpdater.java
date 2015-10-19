@@ -37,10 +37,8 @@ public class RegionUpdater {
 	private final Region tail;
 	
 	public RegionUpdater(Region tail, Region head) {
-		if (tail == null)
-			throw new NullPointerException("Missing required parameter: tail");
 		if (head == null)
-			throw new NullPointerException("Missing required parameter: head");
+			throw new NullPointerException();
 		this.tail = tail;
 		this.head = head;
 		digraph = tail.getRegionDigraph();
