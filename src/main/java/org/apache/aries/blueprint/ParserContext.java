@@ -36,7 +36,7 @@ public interface ParserContext  {
      * namespace handler.
      * 
      * In case of top-level components this method will return <code>null</code>.
-     * @returns the enclosing component's metadata or null if there is no enclosing component
+     * @return the enclosing component's metadata or null if there is no enclosing component
      */
     ComponentMetadata getEnclosingComponent();
     
