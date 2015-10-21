@@ -257,8 +257,6 @@ public class BeanRecipe extends AbstractRecipe {
     }
 
     private Object getInstance() throws ComponentDefinitionException {
-        Object instance;
-        
         // Instanciate arguments
         List<Object> args = new ArrayList<Object>();
         List<ReifiedType> argTypes = new ArrayList<ReifiedType>();
@@ -277,70 +275,90 @@ public class BeanRecipe extends AbstractRecipe {
         }
         
         if (factory != null) {
-            // look for instance method on factory object
-            Object factoryObj = factory.create();
-            
-            // If the factory is a service reference, we need to get hold of the actual proxy for the service
-            if (factoryObj instanceof ReferenceRecipe.ServiceProxyWrapper) {
-                try {
-                    factoryObj = ((ReferenceRecipe.ServiceProxyWrapper) factoryObj).convert(new ReifiedType(Object.class));
-                } catch (Exception e) {
-                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
-                }
-            } else if (factoryObj instanceof UnwrapperedBeanHolder) {
-            	factoryObj = wrap((UnwrapperedBeanHolder) factoryObj, Object.class);
-            }
-            
-            // Map of matching methods
-            Map<Method, List<Object>> matches = findMatchingMethods(factoryObj.getClass(), factoryMethod, true, args, argTypes);
-            if (matches.size() == 1) {
-                try {
-                    Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
-                    instance = invoke(match.getKey(), factoryObj, match.getValue().toArray());
-                } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
-                }
-            } else if (matches.size() == 0) {
-                throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass().getName() + " for arguments " + args + " when instanciating bean " + getName());
-            } else {
-                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass().getName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
-            }
+            return getInstanceFromFactory(args, argTypes);
         } else if (factoryMethod != null) {
-            // Map of matching methods
-            Map<Method, List<Object>> matches = findMatchingMethods(getType(), factoryMethod, false, args, argTypes);
-            if (matches.size() == 1) {
-                try {
-                    Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
-                    instance = invoke(match.getKey(), null, match.getValue().toArray());
-                } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
-                }
-            } else if (matches.size() == 0) {
-                throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName());
-            } else {
-                throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
-            }
+            return getInstanceFromStaticFactory(args, argTypes);
         } else {
-            if (getType() == null) {
-                throw new ComponentDefinitionException("No factoryMethod nor class is defined for this bean");
-            }
-            // Map of matching constructors
-            Map<Constructor, List<Object>> matches = findMatchingConstructors(getType(), args, argTypes);
-            if (matches.size() == 1) {
-                try {
-                    Map.Entry<Constructor, List<Object>> match = matches.entrySet().iterator().next();
-                    instance = newInstance(match.getKey(), match.getValue().toArray());
-                } catch (Throwable e) {
-                    throw new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
-                }
-            } else if (matches.size() == 0) {
-                throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName());
-            } else {
-                throw new ComponentDefinitionException("Multiple matching constructors found on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
-            }
+            return getInstanceFromType(args, argTypes);
         }
         
-        return instance;
+    }
+    
+    private Object getInstanceFromFactory(List<Object> args, List<ReifiedType> argTypes) {
+        Object factoryObj = getFactoryObj();
+        
+        // Map of matching methods
+        Map<Method, List<Object>> matches = findMatchingMethods(factoryObj.getClass(), factoryMethod, true, args, argTypes);
+        if (matches.size() == 1) {
+            try {
+                Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
+                return invoke(match.getKey(), factoryObj, match.getValue().toArray());
+            } catch (Throwable e) {
+                throw wrapAsCompDefEx(e);
+            }
+        } else if (matches.size() == 0) {
+            throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass().getName() + " for arguments " + args + " when instanciating bean " + getName());
+        } else {
+            throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass().getName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
+        }
+    }
+
+    private Object getFactoryObj() {
+        // look for instance method on factory object
+        Object factoryObj = factory.create();
+        
+        // If the factory is a service reference, we need to get hold of the actual proxy for the service
+        if (factoryObj instanceof ReferenceRecipe.ServiceProxyWrapper) {
+            try {
+                factoryObj = ((ReferenceRecipe.ServiceProxyWrapper) factoryObj).convert(new ReifiedType(Object.class));
+            } catch (Exception e) {
+                throw wrapAsCompDefEx(e);
+            }
+        } else if (factoryObj instanceof UnwrapperedBeanHolder) {
+                factoryObj = wrap((UnwrapperedBeanHolder) factoryObj, Object.class);
+        }
+        return factoryObj;
+    }
+    
+    private Object getInstanceFromStaticFactory(List<Object> args, List<ReifiedType> argTypes) {
+        // Map of matching methods
+        Map<Method, List<Object>> matches = findMatchingMethods(getType(), factoryMethod, false, args, argTypes);
+        if (matches.size() == 1) {
+            try {
+                Map.Entry<Method, List<Object>> match = matches.entrySet().iterator().next();
+                return invoke(match.getKey(), null, match.getValue().toArray());
+            } catch (Throwable e) {
+                throw wrapAsCompDefEx(e);
+            }
+        } else if (matches.size() == 0) {
+            throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName());
+        } else {
+            throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
+        }
+    }
+
+    private Object getInstanceFromType(List<Object> args, List<ReifiedType> argTypes) {
+        if (getType() == null) {
+            throw new ComponentDefinitionException("No factoryMethod nor class is defined for this bean");
+        }
+        // Map of matching constructors
+        Map<Constructor, List<Object>> matches = findMatchingConstructors(getType(), args, argTypes);
+        if (matches.size() == 1) {
+            try {
+                Map.Entry<Constructor, List<Object>> match = matches.entrySet().iterator().next();
+                return newInstance(match.getKey(), match.getValue().toArray());
+            } catch (Throwable e) {
+                throw wrapAsCompDefEx(e);
+            }
+        } else if (matches.size() == 0) {
+            throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName());
+        } else {
+            throw new ComponentDefinitionException("Multiple matching constructors found on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
+        }
+    }
+
+    private ComponentDefinitionException wrapAsCompDefEx(Throwable e) {
+        return new ComponentDefinitionException("Error when instantiating bean " + getName() + " of class " + getTypeName(), getRealCause(e));
     }
 
     private String getTypeName() {
