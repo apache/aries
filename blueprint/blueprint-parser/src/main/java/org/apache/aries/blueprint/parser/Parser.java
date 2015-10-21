@@ -1361,14 +1361,7 @@ public class Parser {
 
     /**
      * Test if this namespace uri does not require a Namespace Handler.<p>
-     *      <li>    XMLConstants.RELAXNG_NS_URI
-     *      <li>    XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI
-     *      <li>    XMLConstants.W3C_XML_SCHEMA_NS_URI
-     *      <li>    XMLConstants.W3C_XPATH_DATATYPE_NS_URI
-     *      <li>    XMLConstants.W3C_XPATH_DATATYPE_NS_URI
-     *      <li>    XMLConstants.XML_DTD_NS_URI
-     *      <li>    XMLConstants.XML_NS_URI
-     *      <li>    XMLConstants.XMLNS_ATTRIBUTE_NS_URI
+     * 
      * @param ns URI to be tested.
      * @return true if the uri does not require a namespace handler.
      */
