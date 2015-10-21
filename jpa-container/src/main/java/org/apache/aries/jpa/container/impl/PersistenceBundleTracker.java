@@ -48,8 +48,13 @@ public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle>
     }
 
     public synchronized Bundle addingBundle(Bundle bundle, BundleEvent event) {
+        if (event != null && event.getType() == BundleEvent.STOPPED) {
+            // Avoid starting persistence units in state STOPPED.
+            // TODO No idea why we are called at all in this state
+            return bundle;
+        }
         if (getTrackers(bundle).size() == 0) {
-            findPersistenceUnits(bundle);
+            findPersistenceUnits(bundle, event);
         }
         return bundle;
     }
@@ -66,11 +71,18 @@ public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle>
         providerTrackers.clear();
     }
 
-    private void findPersistenceUnits(Bundle bundle) {
+    private void findPersistenceUnits(Bundle bundle, BundleEvent event) {
         for (PersistenceUnit punit : PersistenceUnitParser.getPersistenceUnits(bundle)) {
             punit.addAnnotated();
             trackProvider(bundle, punit);
         }
+        if (getTrackers(bundle).size() > 0) {
+            LOGGER.info("Persistence units added for bundle " + bundle.getSymbolicName() + " event " + getEventType(event));
+        }
+    }
+
+    private Integer getEventType(BundleEvent event) {
+        return (event != null) ? event.getType() : null;
     }
 
     private void trackProvider(Bundle bundle, PersistenceUnit punit) {
