@@ -18,15 +18,19 @@
  */
 package org.apache.aries.subsystem.itests.defect;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +49,7 @@ import org.junit.Test;
 import org.ops4j.pax.tinybundles.core.InnerClassStrategy;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.hooks.weaving.WeavingHook;
@@ -75,6 +80,7 @@ public class Aries1435Test extends SubsystemTest {
 	private static final String COMPOSITE_C = "composite.c.esa";
 	private static final String COMPOSITE_D = "composite.d.esa";
 	private static final String COMPOSITE_E = "composite.e.esa";
+	private static final String COMPOSITE_F = "composite.f.esa";
 	private static final String FEATURE_A = "feature.a.esa";
 	private static final String FEATURE_B = "feature.b.esa";
 	private static final String FEATURE_C = "feature.c.esa";
@@ -99,6 +105,7 @@ public class Aries1435Test extends SubsystemTest {
 		createFeatureD();
 		createApplicationE();
 		createCompositeE();
+		createCompositeF();
 		createdTestFiles = true;
 	}
 	
@@ -376,6 +383,63 @@ public class Aries1435Test extends SubsystemTest {
 		}
 	}
 	
+	@Test
+	public void testWovenSubsystemParentPolicyAllowsProvider() throws Exception {
+		registerWeavingHook("b");
+		Subsystem root = getRootSubsystem();
+		BundleContext context = root.getBundleContext();
+		Bundle bundleB = context.installBundle(BUNDLE_B, new ByteArrayInputStream(createBundleBContent()));
+		try {
+			Subsystem applicationB1 = installSubsystemFromFile(root, new File(APPLICATION_B), APPLICATION_B + "1");
+			try {
+				Subsystem compositeF = installSubsystemFromFile(applicationB1, COMPOSITE_F);
+				try {
+					assertPackageFiltersInParentConnection(compositeF, applicationB1, 2, 1);
+					Subsystem applicationB2 = installSubsystemFromFile(compositeF, new File(APPLICATION_B), APPLICATION_B + "2");
+					try {
+						testDynamicImport(applicationB2, "b.B");
+						testSharingPolicy(applicationB2, "b", true);
+						testSharingPolicy(compositeF, "b", true);
+						assertPackageFiltersInParentConnection(compositeF, applicationB1, 2, 1);
+						testSharingPolicy(applicationB1, "b", true);
+						testSharingPolicy(root, "b", false);
+					}
+					finally {
+						uninstallSubsystemSilently(applicationB2);
+					}
+				}
+				finally {
+					uninstallSubsystemSilently(compositeF);
+				}
+			}
+			finally {
+				uninstallSubsystemSilently(applicationB1);
+			}
+		}
+		finally {
+			uninstallSilently(bundleB);
+		}
+	}
+	
+	private void assertPackageFiltersInParentConnection(Subsystem subsystem, Subsystem parent, int expectedEdges, int expectedFilters) {
+		Region parentRegion = getRegion(parent);
+		Region region = getRegion(subsystem);
+		Set<FilteredRegion> edges = region.getEdges();
+		assertEquals("Wrong number of edges", expectedEdges, edges.size());
+		for (FilteredRegion edge : region.getEdges()) {
+			if (!edge.getRegion().equals(parentRegion)) {
+				continue;
+			}
+			RegionFilter filter = edge.getFilter();
+			Map<String, Collection<String>> policy = filter.getSharingPolicy();
+			Collection<String> packages = policy.get(PackageNamespace.PACKAGE_NAMESPACE);
+			assertNotNull("Wrong number of packages", packages);
+			assertEquals("Wrong number of packages", expectedFilters, packages.size());
+			return;
+		}
+		fail("No connection to parent found");
+	}
+	
 	private void createApplicationA() throws IOException {
 		createApplicationAManifest();
 		createSubsystem(APPLICATION_A, APPLICATION_B);
@@ -568,6 +632,19 @@ public class Aries1435Test extends SubsystemTest {
 				BUNDLE_B + ";version=\"[0,0]\"");
 		attributes.put(Constants.EXPORT_PACKAGE, "b");
 		createManifest(COMPOSITE_E + ".mf", attributes);
+	}
+	
+	private void createCompositeF() throws IOException {
+		createCompositeFManifest();
+		createSubsystem(COMPOSITE_F);
+	}
+	
+	private void createCompositeFManifest() throws IOException {
+		Map<String, String> attributes = new HashMap<String, String>();
+		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, COMPOSITE_F);
+		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
+		attributes.put(Constants.IMPORT_PACKAGE, "b;resolution:=optional");
+		createManifest(COMPOSITE_F + ".mf", attributes);
 	}
 	
 	private void createFeatureA() throws IOException {
