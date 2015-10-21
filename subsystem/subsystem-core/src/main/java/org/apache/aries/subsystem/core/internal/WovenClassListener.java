@@ -22,7 +22,6 @@ import java.security.AccessController;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -178,9 +177,15 @@ public class WovenClassListener implements org.osgi.framework.hooks.weaving.Wove
 					// Do nothing.
 					return;
 				}
+				BasicSubsystem subsystem = deque.pop();
+				if (filter.isAllowed(providers.iterator().next())) {
+					// The sharing policy already allows the dynamic import
+					// so no update is necessary.
+					return;
+				}
 				// Add the subsystem to the list indicating a sharing policy
 				// update is required.
-				subsystems.add(deque.pop());
+				subsystems.add(subsystem);
 			}
 
 			@Override
@@ -188,15 +193,6 @@ public class WovenClassListener implements org.osgi.framework.hooks.weaving.Wove
 				if (deque.isEmpty()) {
 					// The queue will be empty if the necessary sharing policy
 					// updates have already been detected.
-					// Do not visit the head region of this filter connection.
-					return false;
-				}
-				String dynamicImport = requirement.getPackageName();
-				if (!"*".equals(dynamicImport) 
-						&& !dynamicImport.endsWith(".*") 
-						&& filter.isAllowed(providers.iterator().next())) {
-					// The dynamic import does not contain a wildcard and the
-					// sharing policy already allows the import.
 					// Do not visit the head region of this filter connection.
 					return false;
 				}
@@ -230,31 +226,27 @@ public class WovenClassListener implements org.osgi.framework.hooks.weaving.Wove
 					BundleRevision br = provider.getResource();
 					if (region.contains(br.getBundle()) && !requirement.getPackageName().contains("*")) {
 						// The subsystem contains the provider so there is no
-						// need to update it's sharing policy. It must be added
-						// to the list, however, to serve as a head.
-						subsystems.add(deque.pop());
+						// need to update it's sharing policy. Remove it from
+						// the list.
+						deque.pop();
 						// Do not traverse the edges of this region.
 						return false;
 					}
 				}
 				if (region.getEdges().isEmpty()) {
 					// We want to traverse the edges but it has none. This means
-					// we will miss a call to postEdgeTraverse resulting in a
-					// needed subsystem not being added. Add it here.
-					subsystems.add(deque.pop());
+					// there is no sharing policy to update. Remove it from the
+					// list.
+					deque.pop();
 				}
 				// Traverse the edges of this region.
 				return true;
 			}
 		});
-		// The reversal is necessary because the postEdgeTraverse calls in the
-		// visitor act as a LIFO queue. We want the order to be tail, head/tail,
-		// head/tail, ..., head. In other words, index i is the tail and index
-		// i + 1 is the head.
-		Collections.reverse(subsystems);
-		for (int i = 0; i < subsystems.size()-1; i++) {
-			Region tail = subsystems.get(i).getRegion();
-			Region head = subsystems.get(i+1).getRegion();
+		// Collect the information for the necessary sharing policy updates.
+		for (BasicSubsystem subsystem : subsystems) {
+			Region tail = subsystem.getRegion();
+			Region head = scopedParent(subsystem).getRegion();
 			RegionUpdaterInfo info = updates.get(tail);
 			if (info == null) {
 				info = new RegionUpdaterInfo(tail, head);
