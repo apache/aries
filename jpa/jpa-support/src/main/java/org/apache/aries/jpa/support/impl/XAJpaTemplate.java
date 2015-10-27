@@ -74,7 +74,8 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
                 LOGGER.debug("Exception during finish of transaction", e);
                 throw wrapThrowable(e, "Exception during finish of transaction");
             } finally {
-                coord.end();
+                if (coord != null)
+                    coord.end();
             }
         }
     }
