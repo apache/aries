@@ -59,7 +59,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
     private boolean woven = false;
 
     public TCCLSetterVisitor(ClassVisitor cv, String className, Set<WeavingData> weavingData) {
-        super(Opcodes.ASM4, cv);
+        super(Opcodes.ASM5, cv);
         this.targetClass = Type.getType("L" + className.replace('.', '/') + ";");
         this.weavingData = weavingData;
     }
@@ -142,7 +142,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
         Type lastLDCType;
 
         public TCCLSetterMethodVisitor(MethodVisitor mv, int access, String name, String descriptor) {
-            super(Opcodes.ASM4, mv, access, name, descriptor);
+            super(Opcodes.ASM5, mv, access, name, descriptor);
         }
 
         /**
@@ -166,7 +166,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
          *  Util.restoreContextClassloader();
          */
         @Override
-        public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+        public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
             WeavingData wd = findWeavingData(owner, name, desc);
             if (opcode == INVOKESTATIC && wd != null) {
                 additionalImportRequired = true;
@@ -203,7 +203,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
                     Type.VOID_TYPE, new Type[] {CLASS_TYPE}));
 
                 //Call the original instruction
-                super.visitMethodInsn(opcode, owner, name, desc);
+                super.visitMethodInsn(opcode, owner, name, desc, itf);
 
                 //If no exception then go to the finally (finally blocks are a catch block with a jump)
                 Label afterCatch = newLabel();
@@ -221,7 +221,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
                 //Run the restore and continue
                 invokeStatic(UTIL_CLASS, new Method("restoreContextClassloader", Type.VOID_TYPE, new Type[0]));
             } else {
-                super.visitMethodInsn(opcode, owner, name, desc);
+                super.visitMethodInsn(opcode, owner, name, desc, itf);
             }
         }
 
