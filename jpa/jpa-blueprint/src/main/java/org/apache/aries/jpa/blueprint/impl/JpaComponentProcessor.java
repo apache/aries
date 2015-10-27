@@ -78,7 +78,7 @@ public class JpaComponentProcessor implements ComponentDefinitionRegistryProcess
     private void handleComponent(MutableBeanMetadata compDef, Bundle bundle, ComponentDefinitionRegistry cdr, BlueprintContainer container) {
         final String compName = compDef.getId();
         if (compDef.getClassName() == null) {
-            LOGGER.warn("No classname for " + compDef.getId());
+            LOGGER.debug("No classname for " + compDef.getId());
             return;
         }
         Class<?> compClass;
