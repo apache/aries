@@ -48,7 +48,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	private final SubsystemResource resource;
 	private final Repository systemRepository;
 	private final Map<Resource, Wiring> wirings = computeWirings();
-	
+
 	public ResolveContext(SubsystemResource resource) {
 		this.resource = resource;
 		contentRepository = new ContentRepository(resource.getInstallableContent(), resource.getSharedContent());
@@ -57,13 +57,13 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		repositoryServiceRepository = new RepositoryServiceRepository();
 		systemRepository = Activator.getInstance().getSystemRepository();
 	}
-	
+
 	@Override
 	public List<Capability> findProviders(Requirement requirement) {
 		ArrayList<Capability> result = new ArrayList<Capability>();
 		try {
 			// Only check the system repository for osgi.ee and osgi.native
-			if (ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE.equals(requirement.getNamespace()) 
+			if (ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE.equals(requirement.getNamespace())
 					|| NativeNamespace.NATIVE_NAMESPACE.equals(requirement.getNamespace())) {
 				addDependenciesFromSystemRepository(requirement, result);
 			} else {
@@ -98,21 +98,27 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 
 	@Override
 	public int insertHostedCapability(List<Capability> capabilities, HostedCapability hostedCapability) {
-		capabilities.add(hostedCapability);
-		return capabilities.size() - 1;
+	    // Must specify the location where the capability is to be added. From the ResoveContext javadoc:
+	    // "This method must insert the specified HostedCapability in a place that makes the list maintain
+	    // the preference order."
+	    // The Felix implementation provides a list that requires the index to be specified in the add() call,
+	    // otherwise it will throw an exception.
+        int sz = capabilities.size();
+		capabilities.add(sz, hostedCapability);
+        return sz;
 	}
 
 	@Override
 	public boolean isEffective(Requirement requirement) {
 		return true;
 	}
-	
+
 	@Override
 	public Collection<Resource> getMandatoryResources() {
 		return resource.getMandatoryResources();
 	}
-	
-	@Override 
+
+	@Override
 	public Collection<Resource> getOptionalResources() {
 		return resource.getOptionalResources();
 	}
@@ -121,7 +127,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	public Map<Resource, Wiring> getWirings() {
 		return wirings;
 	}
-	
+
 	private boolean addDependencies(Repository repository, Requirement requirement, List<Capability> capabilities, boolean validate) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (repository == null)
 			return false;
@@ -172,7 +178,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 			wirings.put(br, br.getWiring());
 		}
 	}
-	
+
 	private Map<Resource, Wiring> computeWirings() {
 		Map<Resource, Wiring> wirings = new HashMap<Resource, Wiring>();
 		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystems()) { // NEED
@@ -198,7 +204,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 				}
 				// For applications and features, we must ensure capabilities
 				// are visible to their scoped parent. Features import
-				// everything. Applications have their sharing policies 
+				// everything. Applications have their sharing policies
 				// computed, so if capabilities are visible to the parent, we
 				// know we can make them visible to the application.
 				return this.resource.getParents().iterator().next().getRegion();
