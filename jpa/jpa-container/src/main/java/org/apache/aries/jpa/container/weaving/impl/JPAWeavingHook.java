@@ -43,17 +43,17 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(JPAWeavingHook.class);
 
     /**
+     * With luck we will only have one persistence unit per bundle, but if we don't we'll need to call them
+     * until one of them does a transform or we run out.
+     */
+    private final Map<Bundle, LinkedHashSet<ClassTransformer>> registeredTransformers = new HashMap<Bundle, LinkedHashSet<ClassTransformer>>();
+
+    /**
      * This constructor should not be called directly, the {@link JPAWeavingHookFactory} should be used to
      * ensure that Weaving support is available.
      */
     JPAWeavingHook() {
     }
-
-    /**
-     * With luck we will only have one persistence unit per bundle, but if we don't we'll need to call them
-     * until one of them does a transform or we run out.
-     */
-    private final Map<Bundle, LinkedHashSet<ClassTransformer>> registeredTransformers = new HashMap<Bundle, LinkedHashSet<ClassTransformer>>();
 
     public void weave(WovenClass wovenClass) {
         BundleWiring wiring = wovenClass.getBundleWiring();
@@ -91,7 +91,6 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
                 wovenClass.setBytes(result);
                 wovenClass.getDynamicImports().add("org.eclipse.persistence.*");
                 wovenClass.getDynamicImports().add("org.apache.openjpa.*");
-                
                 return true;
             }
         } catch (Throwable t) {
