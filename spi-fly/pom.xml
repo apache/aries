@@ -31,16 +31,16 @@
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>spifly</artifactId>
     <name>Apache Aries SPI Fly</name>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6</version>
     <packaging>pom</packaging>
     <description>
         SPI support for OSGi
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/spifly-1.0.6</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/spifly-1.0.6</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/spifly-1.0.6</url>
     </scm>
 
     <modules>

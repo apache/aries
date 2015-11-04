@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6</version>
     <packaging>bundle</packaging>
     <name>Apache Aries SPI Fly Dynamic Weaving Bundle</name>
     <description>
@@ -40,9 +40,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-bundle</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-bundle</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-dynamic-bundle</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/spifly-1.0.6/spi-fly-dynamic-bundle</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/spifly-1.0.6/spi-fly-dynamic-bundle</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/spifly-1.0.6/spi-fly-dynamic-bundle</url>
     </scm>
     <properties>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core-internal</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.weaver-internal</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.6</version>
         </dependency>
 
         <dependency>
