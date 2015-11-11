@@ -1,5 +1,5 @@
 /*
-// * Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -47,58 +47,72 @@ public class PersistenceUnitProxyWithTargetServer implements PersistenceUnitInfo
             FrameworkUtil.getBundle(getClass()));
     }
 
+    @Override
     public void addTransformer(ClassTransformer arg0) {
         delegate.addTransformer(arg0);
     }
 
+    @Override
     public boolean excludeUnlistedClasses() {
         return delegate.excludeUnlistedClasses();
     }
 
+    @Override
     public ClassLoader getClassLoader() {
         return unionClassLoader;
     }
 
+    @Override
     public List<URL> getJarFileUrls() {
         return delegate.getJarFileUrls();
     }
 
+    @Override
     public DataSource getJtaDataSource() {
         return delegate.getJtaDataSource();
     }
 
+    @Override
     public List<String> getManagedClassNames() {
         return delegate.getManagedClassNames();
     }
 
+    @Override
     public List<String> getMappingFileNames() {
         return delegate.getMappingFileNames();
     }
 
+    @Override
     public ClassLoader getNewTempClassLoader() {
         return delegate.getNewTempClassLoader();
     }
 
+    @Override
     public DataSource getNonJtaDataSource() {
         return delegate.getNonJtaDataSource();
     }
 
+    @Override
     public String getPersistenceProviderClassName() {
         return delegate.getPersistenceProviderClassName();
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return delegate.getPersistenceUnitName();
     }
 
+    @Override
     public URL getPersistenceUnitRootUrl() {
         return delegate.getPersistenceUnitRootUrl();
     }
 
+    @Override
     public String getPersistenceXMLSchemaVersion() {
         return delegate.getPersistenceXMLSchemaVersion();
     }
 
+    @Override
     public Properties getProperties() {
         Properties props = delegate.getProperties();
         
@@ -106,7 +120,7 @@ public class PersistenceUnitProxyWithTargetServer implements PersistenceUnitInfo
             props = new Properties();
         }
         
-        if (!!!props.containsKey("eclipselink.target-server")) {
+        if (!props.containsKey("eclipselink.target-server")) {
             props.put("eclipselink.target-server", 
                 "org.apache.aries.jpa.eclipselink.adapter.platform.OSGiTSServer");
         }
@@ -114,14 +128,17 @@ public class PersistenceUnitProxyWithTargetServer implements PersistenceUnitInfo
         return props;
     }
 
+    @Override
     public SharedCacheMode getSharedCacheMode() {
         return delegate.getSharedCacheMode();
     }
 
+    @Override
     public PersistenceUnitTransactionType getTransactionType() {
         return delegate.getTransactionType();
     }
 
+    @Override
     public ValidationMode getValidationMode() {
         return delegate.getValidationMode();
     }

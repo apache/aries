@@ -21,5 +21,5 @@ package org.apache.aries.jpa.template;
 import javax.persistence.EntityManager;
 
 public interface EmConsumer {
-	void accept(EntityManager em);
+    void accept(EntityManager em);
 }

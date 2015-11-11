@@ -95,10 +95,9 @@ public class PersistenceUnit implements PersistenceUnitInfo {
         return this.classLoader;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<URL> getJarFileUrls() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
@@ -112,15 +111,12 @@ public class PersistenceUnit implements PersistenceUnitInfo {
 
     @Override
     public List<String> getManagedClassNames() {
-        ArrayList<String> names = new ArrayList<String>();
-        names.addAll(classNames);
-        return names;
+        return new ArrayList<String>(classNames);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<String> getMappingFileNames() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public String getName() {

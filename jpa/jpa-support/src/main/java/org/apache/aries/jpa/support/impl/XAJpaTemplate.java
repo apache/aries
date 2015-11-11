@@ -59,42 +59,50 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
                 em.joinTransaction();
             }
             R result = (R)code.apply(em);
+            safeFinish(tranToken, ta, coord);
             return result;
-        } catch (Throwable ex) {
-            safeRollback(tranToken, ex);
-            if (ex instanceof Error) {
-                throw (Error)ex;
-            }
+        } catch (Exception ex) {
+            safeRollback(tranToken, ta, coord, ex);
             throw wrapThrowable(ex, "Exception occured in transactional code");
-        } finally {
-            try {
-                ta.finish(tm, tranToken);
-            } catch (Exception e) {
-                // We are throwing an exception, so we don't error it out
-                LOGGER.debug("Exception during finish of transaction", e);
-                throw wrapThrowable(e, "Exception during finish of transaction");
-            } finally {
-                if (coord != null)
-                    coord.end();
-            }
+        } catch (Error ex) { // NOSONAR
+            safeRollback(tranToken, ta, coord, ex);
+            throw ex;
         }
     }
 
-    private void safeRollback(TransactionToken token, Throwable ex) {
+    private static void close(Coordination coord) {
+        if (coord != null) {
+            coord.end();
+        }
+    }
+
+    private void safeFinish(TransactionToken tranToken, TransactionAttribute ta, Coordination coord) {
+        try {
+            ta.finish(tm, tranToken);
+        } catch (Exception e) {
+            // We are throwing an exception, so we don't error it out
+            LOGGER.debug("Exception during finish of transaction", e);
+            throw wrapThrowable(e, "Exception during finish of transaction");
+        }
+        close(coord);
+    }
+
+    private void safeRollback(TransactionToken token, TransactionAttribute ta, Coordination coord, Throwable ex) {
         try {
             Transaction tran = token.getActiveTransaction();
-            if (tran != null) {
-                if (ex instanceof RuntimeException || ex instanceof Error) {
-                    tran.setRollbackOnly();
-                } else {
-                    // declared exception, we don't set rollback
-                }
+            if (tran != null && shouldRollback(ex)) {
+                tran.setRollbackOnly();
             }
         } catch (Exception e) {
             // we do not throw the exception since there already is one, but we
             // need to log it
             LOGGER.warn("Exception during transaction rollback", e);
         }
+        safeFinish(token, ta, coord);
+    }
+
+    private static boolean shouldRollback(Throwable ex) {
+        return ex instanceof RuntimeException || ex instanceof Error;
     }
 
 }

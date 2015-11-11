@@ -34,10 +34,9 @@ public class Task {
     Date dueDate;
     boolean finished;
     
-    
     public Task() {
+        // Allow JPA to create the instance
     }
-    
 
     public Task(Integer id, String title, String description) {
         super();

@@ -27,8 +27,15 @@ import javax.persistence.MappedSuperclass;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class JPAAnnotationScanner {
+    private static final Logger LOG = LoggerFactory.getLogger(JPAAnnotationScanner.class);
+    
+    private JPAAnnotationScanner() {
+    }
+    
     public static Collection<String> findJPAAnnotatedClasses(Bundle b) {
         BundleWiring bw = b.adapt(BundleWiring.class);
         Collection<String> resources = bw.listResources("/", "*.class", 
@@ -47,12 +54,16 @@ class JPAAnnotationScanner {
               classes.add(s);
             }
             
-          } catch (ClassNotFoundException cnfe) {
-            
-          } catch (NoClassDefFoundError ncdfe) {
-            
+          } catch (ClassNotFoundException e) {
+              logEx(e);
+          } catch (NoClassDefFoundError e) {
+              logEx(e);
           }
         }
         return classes;
       }
+
+    private static void logEx(Throwable e) {
+        LOG.debug("Exception while scanning for JPA annotations", e);
+    }
 }

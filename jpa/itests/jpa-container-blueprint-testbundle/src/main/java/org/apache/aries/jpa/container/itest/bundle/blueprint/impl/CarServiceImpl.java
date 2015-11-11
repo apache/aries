@@ -36,6 +36,7 @@ public class CarServiceImpl extends AbstractCarServiceImpl {
         em.persist(car);
     }
 
+    @Override
     public Collection<Car> getCars() {
         return em.createQuery("select c from Car c", Car.class).getResultList();
     }

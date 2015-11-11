@@ -18,20 +18,7 @@
  */
 package org.apache.aries.jpa.eclipselink.adapter;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceFactory;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.BundleWire;
-import org.osgi.framework.wiring.BundleWiring;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.lang.reflect.Constructor;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -42,6 +29,19 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Eclipselink adapter main class.
@@ -56,17 +56,15 @@ import javax.persistence.spi.PersistenceProvider;
 public class Activator implements BundleActivator, BundleListener {
     public static final String ECLIPSELINK_JPA_PROVIDER_BUNDLE_SYMBOLIC_NAME = "org.eclipse.persistence.jpa";
     public static final String ECLIPSELINK_JPA_PROVIDER_CLASS_NAME = "org.eclipse.persistence.jpa.PersistenceProvider";
+    private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
     private final ConcurrentMap<Bundle, ServiceRegistration<?>> registeredProviders = new ConcurrentHashMap<Bundle, ServiceRegistration<?>>();
-    
-    private static final Logger logger = LoggerFactory.getLogger(Activator.class);
     
     private BundleContext context;
     
+    @Override
     public void start(BundleContext ctx) {
-        logger.debug("Starting EclipseLink adapter");
-        
+        LOG.debug("Starting EclipseLink adapter");
         context = ctx;
-        
         ctx.addBundleListener(this);
         
         for (Bundle b : ctx.getBundles()) {
@@ -75,18 +73,20 @@ public class Activator implements BundleActivator, BundleListener {
         }
     }
     
+    @Override
     public void stop(BundleContext ctx) {
-        logger.debug("Stopping EclipseLink adapter");
+        LOG.debug("Stopping EclipseLink adapter");
 
         for (ServiceRegistration<?> reg : registeredProviders.values()) {
           reg.unregister();
         }
       }
     
+    @Override
     public void bundleChanged(BundleEvent event) {
         if ((event.getType() & (BundleEvent.RESOLVED)) != 0) {
             handlePotentialEclipseLink(event.getBundle());
-        } else if (event.getType() == BundleEvent.UNRESOLVED | event.getType() == BundleEvent.UNINSTALLED) {
+        } else if (event.getType() == BundleEvent.UNRESOLVED || event.getType() == BundleEvent.UNINSTALLED) {
             ServiceRegistration<?> reg = registeredProviders.remove(event.getBundle());
             if (reg != null) {
                 reg.unregister();
@@ -95,35 +95,41 @@ public class Activator implements BundleActivator, BundleListener {
     }
     
     private void handlePotentialEclipseLink(Bundle b) {
-        if (b.getSymbolicName().equals(ECLIPSELINK_JPA_PROVIDER_BUNDLE_SYMBOLIC_NAME)) {
-            logger.debug("Found EclipseLink bundle {}", b);
-            
-            // make sure we can actually find the JPA provider we expect to find
-            try {
-                b.loadClass(ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
-            } catch (ClassNotFoundException cnfe) {
-                logger.debug("Did not find provider class, exiting");
-                // not one we can handle
-                return;
-            }
-            
-            if (!!!registeredProviders.containsKey(b)) {
-                logger.debug("Adding new EclipseLink provider for bundle {}", b);
-                
-                ServiceFactory<PersistenceProvider> factory = new EclipseLinkProviderService(b);
-                
-                Dictionary<String, Object> props = new Hashtable<String, Object>();
-                props.put("org.apache.aries.jpa.container.weaving.packages", getJPAPackages(b));
-                props.put("javax.persistence.provider", ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
-                            
-                ServiceRegistration<?> reg = context.registerService(
-                        PersistenceProvider.class.getName(), factory, props);
-                
-                ServiceRegistration<?> old = registeredProviders.putIfAbsent(b, reg);
-                if (old != null) {
-                    reg.unregister();
-                }
-            }
+        if (!ECLIPSELINK_JPA_PROVIDER_BUNDLE_SYMBOLIC_NAME.equals(b.getSymbolicName())) {
+            return;
+        }
+        if (registeredProviders.containsKey(b)) {
+            return;
+        }
+        
+        PersistenceProvider provider = createEclipselinkProvider(b);
+        if (provider == null) {
+            return;
+        }
+
+        LOG.debug("Adding new EclipseLink provider for bundle {}", b);
+        PersistenceProvider proxiedProvider = new EclipseLinkPersistenceProvider(provider, b);
+        
+        Dictionary<String, Object> props = new Hashtable<String, Object>(); // NOSONAR
+        props.put("org.apache.aries.jpa.container.weaving.packages", getJPAPackages(b));
+        props.put("javax.persistence.provider", ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
+        ServiceRegistration<?> reg = context.registerService(PersistenceProvider.class, proxiedProvider, props);
+        
+        ServiceRegistration<?> old = registeredProviders.putIfAbsent(b, reg);
+        if (old != null) {
+            reg.unregister();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static PersistenceProvider createEclipselinkProvider(Bundle b) {
+        try {
+            Class<? extends PersistenceProvider> providerClass = (Class<? extends PersistenceProvider>)b.loadClass(Activator.ECLIPSELINK_JPA_PROVIDER_CLASS_NAME);
+            Constructor<? extends PersistenceProvider> con = providerClass.getConstructor();
+            return con.newInstance();
+        } catch (Exception e) {
+            LOG.debug("Unable to load EclipseLink provider class. Ignoring bundle " + b.getSymbolicName(), e);
+            return null;
         }
     }
     
@@ -139,36 +145,29 @@ public class Activator implements BundleActivator, BundleListener {
      */
     private String[] getJPAPackages(Bundle jpaBundle) {
         Set<String> result = new HashSet<String>();
-        
+
         for (Bundle b : context.getBundles()) {
             BundleWiring bw = b.adapt(BundleWiring.class);
-            if(bw != null) {
-	            List<BundleWire> wires = bw.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
-	
-	            for (BundleWire w : wires) {
-	                String pkgName = (String) w.getCapability().getAttributes().get(BundleRevision.PACKAGE_NAMESPACE);
-	
-	                boolean add = false;
-	                if (b.equals(jpaBundle)) {
-	                    add = true;
-	                } else if (pkgName.startsWith("org.eclipse.persistence")) {
-	                    add = true;
-	                }
-	                
-	                if (add) {
-	                    String suffix = ";" + Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE + "=" + b.getSymbolicName() + ";" + Constants.BUNDLE_VERSION_ATTRIBUTE  + "=" + b.getVersion();                    
-	                    result.add(pkgName + suffix);
-	                }
-	            }
+            if (bw == null) {
+                continue;
+            }
+            boolean isJpaBundle = b.equals(jpaBundle);
+            List<BundleWire> wires = bw.getProvidedWires(BundleRevision.PACKAGE_NAMESPACE);
+            for (BundleWire w : wires) {
+                String pkgName = (String)w.getCapability().getAttributes().get(BundleRevision.PACKAGE_NAMESPACE);
+                boolean add = isJpaBundle || pkgName.startsWith("org.eclipse.persistence");
+                if (add) {
+                    result.add(getPkg(b, pkgName));
+                }
             }
         }
         
-        result.add("org.apache.aries.jpa.eclipselink.adapter.platform;" + 
-                Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE + "=" + context.getBundle().getSymbolicName() + ";" + 
-                Constants.BUNDLE_VERSION_ATTRIBUTE  + "=" + context.getBundle().getVersion());        
-        
-        logger.debug("Found JPA packages {}", result);
-        
+        result.add(getPkg(context.getBundle(), "org.apache.aries.jpa.eclipselink.adapter.platform"));
+        LOG.debug("Found JPA packages {}", result);
         return result.toArray(new String[0]);
+    }
+
+    private static String getPkg(Bundle b, String pkgName) {
+        return String.format("%s;%s=%s; %s=%s", pkgName, Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, b.getSymbolicName(), Constants.BUNDLE_VERSION_ATTRIBUTE, b.getVersion());
     }
 }

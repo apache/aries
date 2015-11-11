@@ -44,6 +44,7 @@ public class CarServiceWithSupplierImpl implements CarService {
         em.get().flush();
     }
 
+    @Override
     public Collection<Car> getCars() {
         return em.get().createQuery("select c from Car c", Car.class).getResultList();
     }

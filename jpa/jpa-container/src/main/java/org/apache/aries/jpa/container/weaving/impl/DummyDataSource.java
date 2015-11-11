@@ -39,30 +39,35 @@ public final class DummyDataSource implements DataSource {
      * Simply tries to avoid that calling code runs into NPE
      */
     private final class DummyHandler implements InvocationHandler {
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             ClassLoader classLoader = this.getClass().getClassLoader();
-            if (method.getReturnType() == DatabaseMetaData.class) {
-                Class<?>[] ifAr = new Class[] {
-                    DatabaseMetaData.class
-                };
-                return Proxy.newProxyInstance(classLoader, ifAr, this);
-            }
-            if (method.getReturnType() == int.class) {
+            Class<?> type = method.getReturnType();
+            if (type == int.class) {
                 return new Integer(0);
             }
-            if (method.getReturnType() == boolean.class) {
+            if (type == boolean.class) {
                 return new Boolean(false);
             }
-            if (method.getReturnType() == String.class) {
+            if (type == String.class) {
                 return "";
             }
-            if (method.getReturnType() == ResultSet.class) {
-                Class<?>[] ifAr = new Class[] {
-                    ResultSet.class
-                };
-                return Proxy.newProxyInstance(classLoader, ifAr, this);
+            return proxyClasses(classLoader, type);
+        }
+
+        private Object proxyClasses(ClassLoader classLoader, Class<?> type) {
+            if (type == DatabaseMetaData.class) {
+                return createProxy(classLoader, DatabaseMetaData.class);
+            }
+            if (type == ResultSet.class) {
+                return createProxy(classLoader, ResultSet.class);
             }
             return null;
+        }
+
+        private Object createProxy(ClassLoader classLoader, Class<?> iface) {
+            Class<?>[] ifAr = new Class[] { iface };
+            return Proxy.newProxyInstance(classLoader, ifAr, this);
         }
     }
     
@@ -78,12 +83,15 @@ public final class DummyDataSource implements DataSource {
 
     @Override
     public void setLoginTimeout(int seconds) throws SQLException {
+        // Ignore
     }
 
     @Override
     public void setLogWriter(PrintWriter out) throws SQLException {
+        // Ignore
     }
 
+    @Override
     public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         return null;
     }

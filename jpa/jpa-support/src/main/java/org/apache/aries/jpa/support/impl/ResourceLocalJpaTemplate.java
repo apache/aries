@@ -45,9 +45,8 @@ public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
         if (type != TransactionType.Required) {
             throw new IllegalStateException("Only transation propagation type REQUIRED is supported");
         }
-        Coordination coord = null;
+        Coordination coord = coordinator.begin(this.getClass().getName(), 0);
         try {
-            coord = coordinator.begin(this.getClass().getName(), 0);
             em = emSupplier.get();
             weControlTx = !em.getTransaction().isActive();
             if (weControlTx) {
@@ -60,7 +59,7 @@ public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
             return result;
         } catch (Exception e) {
             if (weControlTx) {
-                safeRollback(em, e);
+                safeRollback(em);
             }
             throw wrapThrowable(e, "Exception occured in transactional code");
         } finally {
@@ -68,12 +67,12 @@ public class ResourceLocalJpaTemplate extends AbstractJpaTemplate {
         }
     }
 
-    private void safeRollback(EntityManager em, Exception e) {
+    private static void safeRollback(EntityManager em) {
         if (em != null) {
             try {
                 em.getTransaction().rollback();
-            } catch (Exception e1) {
-                LOGGER.warn("Exception during transaction rollback", e1);
+            } catch (Exception e) {
+                LOGGER.warn("Exception during transaction rollback", e);
             }
         }
     }

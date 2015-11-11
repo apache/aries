@@ -41,9 +41,8 @@ public class EmProxy implements InvocationHandler {
         }
         try {
             return method.invoke(em, args);
-        } catch (InvocationTargetException ex) {
-            InvocationTargetException iex = (InvocationTargetException)ex;
-            throw iex.getTargetException();
+        } catch (InvocationTargetException ex) { // NOSONAR
+            throw ex.getTargetException();
         }
     }
 

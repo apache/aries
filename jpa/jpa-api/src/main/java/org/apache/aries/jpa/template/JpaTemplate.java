@@ -20,9 +20,9 @@ package org.apache.aries.jpa.template;
 
 
 public interface JpaTemplate {
-	<R> R txExpr(TransactionType type, EmFunction<R> code);
-	void tx(TransactionType type, EmConsumer code);
-	
-	<R> R txExpr(EmFunction<R> code);
-	void tx(EmConsumer code);
+    <R> R txExpr(TransactionType type, EmFunction<R> code);
+    void tx(TransactionType type, EmConsumer code);
+
+    <R> R txExpr(EmFunction<R> code);
+    void tx(EmConsumer code);
 }

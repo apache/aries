@@ -49,9 +49,8 @@ import org.slf4j.LoggerFactory;
  * the JPA_CONFIGURATION_PREFIX.<persistence unit name>.
  */
 public class ManagedEMF implements Closeable, ManagedService {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ManagedEMF.class);
-
-    private static String JPA_CONFIGURATION_PREFIX = "org.apache.aries.jpa.";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManagedEMF.class);
+    private static final String JPA_CONFIGURATION_PREFIX = "org.apache.aries.jpa.";
 
     private EntityManagerFactory emf;
     private ServiceRegistration<EntityManagerFactory> reg;
@@ -67,12 +66,11 @@ public class ManagedEMF implements Closeable, ManagedService {
         this.persistenceUnit = persistenceUnit;
         this.bundle = bundle;
         registerManagedService(containerContext, persistenceUnit);
-        //createAndPublishEMF(null);
         closed = false;
     }
 
     private void registerManagedService(BundleContext containerContext, PersistenceUnitInfo persistenceUnit) {
-        Dictionary<String, Object> configuration = new Hashtable<String, Object>();
+        Dictionary<String, Object> configuration = new Hashtable<String, Object>(); // NOSONAR
         configuration.put(Constants.SERVICE_PID,
                           JPA_CONFIGURATION_PREFIX + persistenceUnit.getPersistenceUnitName());
         configReg = containerContext.registerService(ManagedService.class.getName(), this, configuration);
@@ -81,10 +79,9 @@ public class ManagedEMF implements Closeable, ManagedService {
     public void closeEMF() {
         if (reg != null) {
             try {
-
                 reg.unregister();
             } catch (Exception e) {
-                // Ignore. May happen if persistence unit bundle is unloaded/updated
+                LOGGER.debug("Exception on unregister", e);
             }
         }
         if (emf != null && emf.isOpen()) {
@@ -98,6 +95,7 @@ public class ManagedEMF implements Closeable, ManagedService {
         emf = null;
     }
     
+    @Override
     public void close() {
         closed = true;
         closeEMF();
@@ -135,7 +133,7 @@ public class ManagedEMF implements Closeable, ManagedService {
     }
 
     public static Dictionary<String, String> createProperties(PersistenceUnitInfo persistenceUnit, Bundle puBundle) {
-        Dictionary<String, String> props = new Hashtable<String, String>();
+        Dictionary<String, String> props = new Hashtable<String, String>(); // NOSONAR
         props.put(JPA_UNIT_NAME, persistenceUnit.getPersistenceUnitName());
         if (persistenceUnit.getPersistenceProviderClassName() != null) {
             props.put(JPA_UNIT_PROVIDER, persistenceUnit.getPersistenceProviderClassName());
@@ -145,7 +143,7 @@ public class ManagedEMF implements Closeable, ManagedService {
     }
 
     private Map<String, Object> asMap(Dictionary<String, ?> dict) {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>(); // NOSONAR
         map.put(PersistenceUnitTransactionType.class.getName(), persistenceUnit.getTransactionType());
         for (Enumeration<String> e = dict.keys(); e.hasMoreElements();) {
             String key = e.nextElement();

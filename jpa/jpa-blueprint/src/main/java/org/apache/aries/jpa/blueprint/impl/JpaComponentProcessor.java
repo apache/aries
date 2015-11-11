@@ -85,15 +85,15 @@ public class JpaComponentProcessor implements ComponentDefinitionRegistryProcess
         try {
             compClass = bundle.loadClass(compDef.getClassName());
         } catch (final ClassNotFoundException e) {
-            throw new IllegalArgumentException("Bean class not found " + compDef.getClassName());
+            throw new IllegalArgumentException("Bean class not found " + compDef.getClassName(), e);
         }
         compDef.setFieldInjection(true);
         List<AccessibleObject> pcMembers = annotationScanner.getJpaAnnotatedMembers(compClass, PersistenceContext.class);
         for (AccessibleObject member : pcMembers) {
             PersistenceContext pcAnn = member.getAnnotation(PersistenceContext.class);
             
-            String propName = annotationScanner.getName(member);
-            Class<?> iface = annotationScanner.getType(member);
+            String propName = AnnotationScanner.getName(member);
+            Class<?> iface = AnnotationScanner.getType(member);
             LOGGER.debug("Injecting {} into prop {} of bean {} with class {}", iface.getSimpleName(), propName, compName, compClass);
             MutableRefMetadata ref = getServiceRef(cdr, pcAnn.unitName(), iface);
             compDef.addProperty(propName, ref);
@@ -106,8 +106,8 @@ public class JpaComponentProcessor implements ComponentDefinitionRegistryProcess
         List<AccessibleObject> puMembers = annotationScanner.getJpaAnnotatedMembers(compClass, PersistenceUnit.class);
         for (AccessibleObject member : puMembers) {
             PersistenceUnit puAnn = member.getAnnotation(PersistenceUnit.class);
-            String propName = annotationScanner.getName(member);
-            Class<?> iface = annotationScanner.getType(member);
+            String propName = AnnotationScanner.getName(member);
+            Class<?> iface = AnnotationScanner.getType(member);
             LOGGER.debug("Injecting {} into prop {} of bean {} with class {}", iface.getSimpleName(), propName, compName, compClass);
             MutableRefMetadata ref = getServiceRef(cdr, puAnn.unitName(), iface);
             compDef.addProperty(propName, ref);
@@ -125,27 +125,27 @@ public class JpaComponentProcessor implements ComponentDefinitionRegistryProcess
         return ref;
     }
     
-    @SuppressWarnings("unchecked")
-    ComponentMetadata createServiceRef(String id, Class<?> iface) {
+    private ComponentMetadata createServiceRef(String id, Class<?> iface) {
         final MutableReferenceMetadata refMeta = pc.createMetadata(MutableReferenceMetadata.class);
         refMeta.setActivation(getDefaultActivation(pc));
         refMeta.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
         refMeta.setRuntimeInterface(iface);
         refMeta.setTimeout(Integer.parseInt(pc.getDefaultTimeout()));
-        refMeta.setDependsOn((List<String>)Collections.EMPTY_LIST);
+        List<String> emptyList = Collections.emptyList();
+        refMeta.setDependsOn(emptyList);
         refMeta.setId(id);
         return refMeta;
     }
 
-    @SuppressWarnings("unchecked")
-    ComponentMetadata createJPAServiceRef(String unitName, Class<?> iface) {
+    private ComponentMetadata createJPAServiceRef(String unitName, Class<?> iface) {
         final MutableReferenceMetadata refMeta = pc.createMetadata(MutableReferenceMetadata.class);
         refMeta.setActivation(getDefaultActivation(pc));
         refMeta.setAvailability(ReferenceMetadata.AVAILABILITY_MANDATORY);
         refMeta.setRuntimeInterface(iface);
         refMeta.setFilter(String.format("(%s=%s)", JPA_UNIT_NAME, unitName));
         refMeta.setTimeout(Integer.parseInt(pc.getDefaultTimeout()));
-        refMeta.setDependsOn((List<String>)Collections.EMPTY_LIST);
+        List<String> emptyList = Collections.emptyList();
+        refMeta.setDependsOn(emptyList);
         refMeta.setId(getId(unitName, iface));
         return refMeta;
     }
@@ -154,13 +154,13 @@ public class JpaComponentProcessor implements ComponentDefinitionRegistryProcess
         return unitName + "-" + iface.getSimpleName();
     }
     
-    private int getDefaultActivation(ParserContext ctx) {
+    private static int getDefaultActivation(ParserContext ctx) {
         return "ACTIVATION_EAGER".equalsIgnoreCase(ctx.getDefaultActivation())
             ? ReferenceMetadata.ACTIVATION_EAGER : ReferenceMetadata.ACTIVATION_LAZY;
     }
     
     @SuppressWarnings("unchecked")
-    private <T>T getComponent(ComponentDefinitionRegistry cdr, String id) {
+    private static <T>T getComponent(ComponentDefinitionRegistry cdr, String id) {
         return (T)((PassThroughMetadata) cdr.getComponentDefinition(id)).getObject();
     }
 

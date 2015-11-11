@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JpaInterceptor implements Interceptor {
-    private static Logger LOG = LoggerFactory.getLogger(JpaInterceptor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JpaInterceptor.class);
     EntityManager em;
     private Boolean cachedIsResourceLocal;
     private Coordinator coordinator;
@@ -46,10 +46,12 @@ public class JpaInterceptor implements Interceptor {
         this.emId = emId;
     }
 
+    @Override
     public int getRank() {
         return 0;
     }
 
+    @Override
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
         if (coordinator == null) {
             initServices();
@@ -64,7 +66,7 @@ public class JpaInterceptor implements Interceptor {
             return coordination;
         } catch (Exception e) {
             LOG.warn("Exception from EmSupplier.preCall", e);
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); // NOSONAR
         }
     }
 
@@ -73,6 +75,7 @@ public class JpaInterceptor implements Interceptor {
         em = (EntityManager)container.getComponentInstance(emId);
     }
 
+    @Override
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
         LOG.debug("PostCallWithException for bean {}, method {}", cm.getId(), m.getName(), ex);
         if (preCallToken != null) {
@@ -80,6 +83,7 @@ public class JpaInterceptor implements Interceptor {
         }
     }
 
+    @Override
     public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken)
         throws Exception {
         LOG.debug("PostCallWithReturn for bean {}, method {}", cm.getId(), m.getName());
@@ -87,8 +91,6 @@ public class JpaInterceptor implements Interceptor {
             ((Coordination) preCallToken).end();
         }
     }
-
-
 
     private boolean isResourceLocal(EntityManager em) {
         if (cachedIsResourceLocal == null) {
@@ -104,10 +106,6 @@ public class JpaInterceptor implements Interceptor {
     private boolean isResourceLocalInternal(EntityManager em) {
         PersistenceUnitTransactionType transactionType = (PersistenceUnitTransactionType)em.getProperties()
             .get(PersistenceUnitTransactionType.class.getName());
-        if (transactionType == PersistenceUnitTransactionType.RESOURCE_LOCAL) {
-            return true;
-        } else {
-            return false;
-        }
+        return transactionType == PersistenceUnitTransactionType.RESOURCE_LOCAL;
     }
 }

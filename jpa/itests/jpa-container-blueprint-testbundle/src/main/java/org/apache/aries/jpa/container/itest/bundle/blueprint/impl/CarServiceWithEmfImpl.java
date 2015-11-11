@@ -50,10 +50,10 @@ public class CarServiceWithEmfImpl implements CarService {
         em.close();
     }
 
+    @Override
     public Collection<Car> getCars() {
-        EntityManager em = null;
+        EntityManager em = emf.createEntityManager();
         try {
-            em = emf.createEntityManager();
             return em.createQuery("select c from Car c", Car.class).getResultList();
         } finally {
             em.close();

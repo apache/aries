@@ -40,7 +40,7 @@ public class DSFTracker extends ServiceTracker<DataSourceFactory, ManagedEMF>{
     private static final String JDBC_DRIVER = "javax.persistence.jdbc.driver";
     private static final String JDBC_URL = "javax.persistence.jdbc.url";
     private static final String JDBC_USER = "javax.persistence.jdbc.user";
-    private static final String JDBC_PASSWORD = "javax.persistence.jdbc.password";
+    private static final String JDBC_PASSWORD = "javax.persistence.jdbc.password"; // NOSONAR
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DSFTracker.class);
 
@@ -101,11 +101,10 @@ public class DSFTracker extends ServiceTracker<DataSourceFactory, ManagedEMF>{
             put(props, DataSourceFactory.JDBC_URL, punit, JDBC_URL);
             put(props, DataSourceFactory.JDBC_USER, punit, JDBC_USER);
             put(props, DataSourceFactory.JDBC_PASSWORD, punit, JDBC_PASSWORD);
-            DataSource ds = dsf.createDataSource(props);
-            return ds;
+            return dsf.createDataSource(props);
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating DataSource for persistence unit " + punit + "."
-                                       + e.getMessage(), e);
+            String msg = "Error creating DataSource for persistence unit " + punit + "." + e.getMessage();
+            throw new RuntimeException(msg, e); // NOSONAR
         }
     }
 
