@@ -36,16 +36,20 @@ public class TaskServiceImpl implements TaskService {
 
     private JpaTemplate jpa;
 
+    @Override
     public Task getTask(final Integer id) {
         return jpa.txExpr(TransactionType.Required, new EmFunction<Task>() {
+            @Override
             public Task apply(EntityManager em) {
                 return em.find(Task.class, id);
             }
         });
     }
 
+    @Override
     public void addTask(final Task task) {
         jpa.tx(new EmConsumer() {
+            @Override
             public void accept(EntityManager em) {
                     em.persist(task);
                     em.flush();
@@ -53,24 +57,30 @@ public class TaskServiceImpl implements TaskService {
         });
     }
 
+    @Override
     public Collection<Task> getTasks() {
         return jpa.txExpr(new EmFunction<Collection<Task>>() {
+            @Override
             public Collection<Task> apply(EntityManager em) {
                 return em.createQuery("select t from Task t", Task.class).getResultList();
             }
         });
     }
 
+    @Override
     public void updateTask(final Task task) {
         jpa.tx(new EmConsumer() {
+            @Override
             public void accept(EntityManager em) {
                 em.persist(task);
             }
         });
     }
 
+    @Override
     public void deleteTask(final Integer id) {
         jpa.tx(new EmConsumer() {
+            @Override
             public void accept(EntityManager em) {
                 em.remove(getTask(id));
             }

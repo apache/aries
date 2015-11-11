@@ -19,5 +19,5 @@
 package org.apache.aries.jpa.template;
 
 public enum TransactionType {
-	Mandatory, Never, NotSupported, Required, RequiresNew, Supports
+    Mandatory, Never, NotSupported, Required, RequiresNew, Supports // NOSONAR
 }

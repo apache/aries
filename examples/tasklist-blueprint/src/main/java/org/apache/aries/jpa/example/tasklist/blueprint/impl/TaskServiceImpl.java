@@ -36,26 +36,31 @@ public class TaskServiceImpl implements TaskService {
     EntityManager em;
 
     @Transactional(TxType.SUPPORTS)
+    @Override
     public Task getTask(Integer id) {
         return em.find(Task.class, id);
     }
 
     
+    @Override
     public void addTask(Task task) {
         em.persist(task);
         em.flush();
     }
 
     @Transactional(TxType.SUPPORTS)
+    @Override
     public Collection<Task> getTasks() {
         CriteriaQuery<Task> query = em.getCriteriaBuilder().createQuery(Task.class);
         return em.createQuery(query.select(query.from(Task.class))).getResultList();
     }
 
+    @Override
     public void updateTask(Task task) {
         em.persist(task);
     }
 
+    @Override
     public void deleteTask(Integer id) {
         em.remove(getTask(id));
     }

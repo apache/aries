@@ -44,10 +44,8 @@ import org.slf4j.LoggerFactory;
  * sure all EMs are closed.
  */
 public class EMSupplierImpl implements EmSupplier {
-
-
     private static final long DEFAULT_SHUTDOWN_WAIT_SECS = 10;
-    private static Logger LOG = LoggerFactory.getLogger(EMSupplierImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EMSupplierImpl.class);
     private EntityManagerFactory emf;
     private AtomicBoolean shutdown;
     private long shutdownWaitTime = DEFAULT_SHUTDOWN_WAIT_SECS;
@@ -141,10 +139,12 @@ public class EMSupplierImpl implements EmSupplier {
 
     @Override
     public void preCall() {
+        // Just for backward compatibility
     }
 
     @Override
     public void postCall() {
+        // Just for backward compatibility
     }
 
     /**
@@ -161,12 +161,13 @@ public class EMSupplierImpl implements EmSupplier {
         try {
             emsToShutDown.await(shutdownWaitTime, shutdownWaitTimeUnit);
         } catch (InterruptedException e) {
+            LOG.debug("Close was interrupted", e);
         }
         return shutdownRemaining();
     }
 
     private synchronized boolean shutdownRemaining() {
-        boolean clean = (emSet.size() == 0); 
+        boolean clean = emSet.isEmpty(); 
         if  (!clean) {
             LOG.warn("{} EntityManagers still open after timeout. Shutting them down now", emSet.size());
         }
@@ -177,7 +178,7 @@ public class EMSupplierImpl implements EmSupplier {
         return clean;
     }
 
-    private void closeEm(EntityManager em) {
+    private static void closeEm(EntityManager em) {
         try {
             if (em.isOpen()) {
                 em.close();

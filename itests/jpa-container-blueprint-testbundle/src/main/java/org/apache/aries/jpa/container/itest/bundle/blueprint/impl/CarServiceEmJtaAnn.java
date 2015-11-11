@@ -44,6 +44,7 @@ public class CarServiceEmJtaAnn implements CarService {
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
+    @Override
     public Collection<Car> getCars() {
         return em.createQuery("select c from Car c", Car.class).getResultList();
     }

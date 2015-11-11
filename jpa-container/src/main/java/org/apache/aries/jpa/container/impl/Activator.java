@@ -49,7 +49,7 @@ public class Activator implements BundleActivator {
      * weaving hooks that are not yet visible to the bundle class loader.
      */
     private void registerWeavingHook(BundleContext context, TransformerRegistry tr) {
-        Dictionary<String, Object> props = new Hashtable<String, Object>(1);
+        Dictionary<String, Object> props = new Hashtable<String, Object>(1); // NOSONAR
         props.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
         context.registerService(WeavingHook.class.getName(), tr, props);
     }

@@ -22,8 +22,11 @@ import javax.persistence.EntityManager;
 
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class ResourceLocalTransactionParticipant implements Participant {
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceLocalTransactionParticipant.class);
     private final EntityManager em;
 
     ResourceLocalTransactionParticipant(EntityManager em) {
@@ -41,8 +44,8 @@ final class ResourceLocalTransactionParticipant implements Participant {
         if (em.getTransaction().getRollbackOnly()) {
             try {
                 em.getTransaction().rollback();
-             } catch (Exception e1) {
-                 // Ignore
+             } catch (Exception e) {
+                LOG.debug("Exception on transaction rollback", e);
              }
         } else {
             em.getTransaction().commit();

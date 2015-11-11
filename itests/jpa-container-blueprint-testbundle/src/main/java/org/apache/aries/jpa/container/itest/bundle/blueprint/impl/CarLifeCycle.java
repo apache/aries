@@ -55,7 +55,7 @@ public class CarLifeCycle implements Runnable {
         carService.deleteCar(id);
         Car car2 = carService.getCar(id);
         if (car2 != null) {
-            throw new RuntimeException("Car with id " + id + " should be deleted");
+            throw new RuntimeException("Car with id " + id + " should be deleted"); // NOSONAR
         }
     }
 

@@ -55,6 +55,7 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
     JPAWeavingHook() {
     }
 
+    @Override
     public void weave(WovenClass wovenClass) {
         BundleWiring wiring = wovenClass.getBundleWiring();
         Bundle bundle = wiring.getBundle();
@@ -64,10 +65,10 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
             if (transformClass(wovenClass, cl, transformer)) {
                 LOGGER.info("Weaving " + wovenClass.getClassName() + " using " + transformer.getClass().getName());
                 break;
-            };
+            }
         }
         Class<?> dClass = wovenClass.getDefinedClass();
-        if (transformersToTry.size() == 0 && dClass != null && dClass.getAnnotation(Entity.class) != null) {
+        if (transformersToTry.isEmpty() && dClass != null && dClass.getAnnotation(Entity.class) != null) {
             LOGGER.warn("Loading " + wovenClass.getClassName() + " before transformer is present");
         }
     }
@@ -75,10 +76,10 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
     @SuppressWarnings("unchecked")
     private synchronized Collection<ClassTransformer> getTransformers(Bundle bundle) {
         LinkedHashSet<ClassTransformer> transformers = registeredTransformers.get(bundle);
-        return transformers != null ? new ArrayList<ClassTransformer>(transformers) : Collections.EMPTY_LIST;
+        return (Collection<ClassTransformer>)(transformers != null ? new ArrayList<ClassTransformer>(transformers) : Collections.emptyList());
     }
 
-    private boolean transformClass(WovenClass wovenClass, ClassLoader cl, ClassTransformer transformer)
+    private static boolean transformClass(WovenClass wovenClass, ClassLoader cl, ClassTransformer transformer)
         throws ThreadDeath, OutOfMemoryError {
         try {
             byte[] result = transformer
@@ -93,21 +94,16 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
                 wovenClass.getDynamicImports().add("org.apache.openjpa.*");
                 return true;
             }
-        } catch (Throwable t) {
-            if (t instanceof ThreadDeath)
-                throw (ThreadDeath)t;
-            else if (t instanceof OutOfMemoryError)
-                throw (OutOfMemoryError)t;
-            else {
-                Bundle b = wovenClass.getBundleWiring().getBundle();
-                String msg = String.format("Weaving failure", wovenClass.getClassName(),
-                                           b.getSymbolicName(), b.getVersion(), transformer);
-                throw new WeavingException(msg, t);
-            }
+        } catch (Exception t) {
+            Bundle b = wovenClass.getBundleWiring().getBundle();
+            String msg = String.format("Weaving failure on class %s in bundle %s/%s using transformer %s", wovenClass.getClassName(),
+                                       b.getSymbolicName(), b.getVersion(), transformer);
+            throw new WeavingException(msg, t);
         }
         return false;
     }
 
+    @Override
     public synchronized void addTransformer(Bundle pBundle, ClassTransformer transformer) {
         LOGGER.info("Adding transformer " + transformer.getClass().getName());
         LinkedHashSet<ClassTransformer> transformers = registeredTransformers.get(pBundle);
@@ -118,6 +114,7 @@ public class JPAWeavingHook implements WeavingHook, TransformerRegistry {
         transformers.add(transformer);
     }
 
+    @Override
     public synchronized void removeTransformer(Bundle pBundle, ClassTransformer transformer) {
         LinkedHashSet<ClassTransformer> set = registeredTransformers.get(pBundle);
         if (set == null || !set.remove(transformer)) {

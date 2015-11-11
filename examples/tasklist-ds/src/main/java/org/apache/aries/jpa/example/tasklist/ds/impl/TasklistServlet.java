@@ -39,10 +39,8 @@ import org.osgi.service.component.annotations.Reference;
     property = { "alias:String=/tasklist" }
 ) 
 public class TasklistServlet extends HttpServlet {
-    
-    TaskService taskService;
-
     private static final long serialVersionUID = 34992072289535683L;
+    private transient TaskService taskService; // NOSONAR
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
@@ -50,7 +48,7 @@ public class TasklistServlet extends HttpServlet {
         String add = req.getParameter("add");
         String taskId = req.getParameter("taskId");
         String title = req.getParameter("title");
-        PrintWriter writer = resp.getWriter();
+        PrintWriter writer = resp.getWriter(); // NOSONAR
         if (add != null) {
             addTask(taskId, title);
         } else if (taskId != null && taskId.length() > 0) {
