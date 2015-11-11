@@ -29,31 +29,28 @@ public class AnnotationScanner {
 
     public List<AccessibleObject> getJpaAnnotatedMembers(Class<?> c, Class<? extends Annotation> annotation) {
         final List<AccessibleObject> jpaAnnotated = new ArrayList<AccessibleObject>();
-
-        Class<?> cl = c;
-        if (c != Object.class) {
-            while (cl != Object.class) {
-                for (Field field : cl.getDeclaredFields()) {
-                    if (field.isAnnotationPresent(annotation)) {
-                        field.setAccessible(true);
-                        jpaAnnotated.add(field);
-                    }
-                }
-
-                for (Method method : cl.getDeclaredMethods()) {
-                    if ((method.isAnnotationPresent(annotation)) && method.getName().startsWith("set") && method.getParameterTypes().length == 1) {
-                        jpaAnnotated.add(method);
-                    }
-                }
-
-                cl = cl.getSuperclass();
-            }
+        for (Class<?> cl = c; cl != Object.class; cl = cl.getSuperclass()) {  
+            parseClass(annotation, jpaAnnotated, cl);
         }
-
         return jpaAnnotated;
     }
 
-    public String getName(AccessibleObject member) {
+    private static void parseClass(Class<? extends Annotation> annotation, final List<AccessibleObject> jpaAnnotated, Class<?> cl) {
+        for (Field field : cl.getDeclaredFields()) {
+            if (field.isAnnotationPresent(annotation)) {
+                field.setAccessible(true);
+                jpaAnnotated.add(field);
+            }
+        }
+
+        for (Method method : cl.getDeclaredMethods()) {
+            if ((method.isAnnotationPresent(annotation)) && method.getName().startsWith("set") && method.getParameterTypes().length == 1) {
+                jpaAnnotated.add(method);
+            }
+        }
+    }
+
+    public static String getName(AccessibleObject member) {
         if (member instanceof Field) {
             return ((Field)member).getName();
         } else if (member instanceof Method) {
@@ -67,7 +64,7 @@ public class AnnotationScanner {
         throw new IllegalArgumentException();
     }
     
-    public Class<?> getType(AccessibleObject member) {
+    public static Class<?> getType(AccessibleObject member) {
         if (member instanceof Field) {
             return ((Field)member).getType();
         } else if (member instanceof Method) {

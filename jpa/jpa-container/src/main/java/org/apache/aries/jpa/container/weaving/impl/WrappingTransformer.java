@@ -35,6 +35,10 @@ import org.osgi.framework.wiring.BundleWiring;
 class WrappingTransformer implements ClassTransformer {
     private final ClassTransformer delegate;
     private final Collection<String> packageImportsToAdd = new HashSet<String>();
+    
+    public WrappingTransformer(ClassTransformer transformer) {
+        delegate = transformer;
+    }
 
     public WrappingTransformer(ClassTransformer delegate, ServiceReference<?> persistenceProvider) {
         validate(delegate, persistenceProvider);
@@ -57,7 +61,7 @@ class WrappingTransformer implements ClassTransformer {
         }
     }
 
-    private void validate(ClassTransformer delegate, ServiceReference<?> persistenceProvider) {
+    private static void validate(ClassTransformer delegate, ServiceReference<?> persistenceProvider) {
         if (delegate == null) {
             throw new NullPointerException("Transformer delegate may not be null");
         }
@@ -66,10 +70,8 @@ class WrappingTransformer implements ClassTransformer {
         }
     }
 
-    public WrappingTransformer(ClassTransformer transformer) {
-        delegate = transformer;
-    }
  
+    @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer)
         throws IllegalClassFormatException {
         return delegate.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
@@ -79,10 +81,12 @@ class WrappingTransformer implements ClassTransformer {
         return packageImportsToAdd;
     }
 
+    @Override
     public int hashCode() {
         return delegate.hashCode();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o instanceof WrappingTransformer) {
             return delegate == ((WrappingTransformer)o).delegate;
@@ -90,6 +94,7 @@ class WrappingTransformer implements ClassTransformer {
         return false;
     }
 
+    @Override
     public String toString() {
         return "Transformer: " + delegate.toString() + " Packages to add: " + packageImportsToAdd;
     }

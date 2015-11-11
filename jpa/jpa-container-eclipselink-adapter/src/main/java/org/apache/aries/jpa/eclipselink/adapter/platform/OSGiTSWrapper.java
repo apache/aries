@@ -36,8 +36,7 @@ public class OSGiTSWrapper extends JTATransactionController {
             ServiceReference ref = ctx.getServiceReference(TransactionManager.class.getName());
             
             if (ref != null) {
-                TransactionManager manager = (TransactionManager) ctx.getService(ref);
-                return manager;
+                return (TransactionManager) ctx.getService(ref);
             }            
         }
         

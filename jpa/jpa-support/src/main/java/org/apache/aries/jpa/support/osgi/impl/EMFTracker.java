@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("rawtypes")
 public class EMFTracker extends ServiceTracker {
-    private static Logger LOG = LoggerFactory.getLogger(EMFTracker.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EMFTracker.class);
 
     private Coordinator coordinator;
 
@@ -103,14 +103,14 @@ public class EMFTracker extends ServiceTracker {
         return PersistenceUnitTransactionType.JTA;
     }
 
-    private Dictionary<String, String> getEmSupplierProps(String unitName) {
-        Dictionary<String, String> props = new Hashtable<String, String>();
+    private static Dictionary<String, String> getEmSupplierProps(String unitName) {
+        Dictionary<String, String> props = new Hashtable<String, String>(); // NOSONAR
         props.put(JPA_UNIT_NAME, unitName);
         return props;
     }
 
-    private Dictionary<String, String> rlTxManProps(String unitName) {
-        Dictionary<String, String> props = new Hashtable<String, String>();
+    private static Dictionary<String, String> rlTxManProps(String unitName) {
+        Dictionary<String, String> props = new Hashtable<String, String>(); // NOSONAR
         props.put(JPA_UNIT_NAME, unitName);
         props.put(TMTracker.TRANSACTION_TYPE, "RESOURCE_LOCAL");
         return props;

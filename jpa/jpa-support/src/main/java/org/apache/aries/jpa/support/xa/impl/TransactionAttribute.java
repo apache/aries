@@ -36,6 +36,7 @@ import org.apache.aries.jpa.template.TransactionType;
 public enum TransactionAttribute {
     MANDATORY
     {
+      @Override
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_NO_TRANSACTION) {
@@ -47,6 +48,7 @@ public enum TransactionAttribute {
     },
     NEVER
     {
+      @Override
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_ACTIVE) {
@@ -58,6 +60,7 @@ public enum TransactionAttribute {
     },
     NOTSUPPORTED
     {
+      @Override
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_ACTIVE) {
@@ -67,8 +70,9 @@ public enum TransactionAttribute {
         return new TransactionToken(null, null, NOTSUPPORTED);
       }
 
+      @Override
       public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
-          InvalidTransactionException, IllegalStateException
+          InvalidTransactionException
       {
         Transaction tran = tranToken.getSuspendedTransaction();
         if (tran != null) {
@@ -78,6 +82,7 @@ public enum TransactionAttribute {
     },
     REQUIRED
     {
+      @Override
       public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException
       {
         if (man.getStatus() == Status.STATUS_NO_TRANSACTION) {
@@ -88,8 +93,9 @@ public enum TransactionAttribute {
         return new TransactionToken(man.getTransaction(), null, REQUIRED);
       }
 
+      @Override
       public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
-          InvalidTransactionException, IllegalStateException, SecurityException, RollbackException,
+          InvalidTransactionException, RollbackException,
           HeuristicMixedException, HeuristicRollbackException
       {
         if (tranToken.isCompletionAllowed()) {
@@ -103,8 +109,9 @@ public enum TransactionAttribute {
     },
     REQUIRESNEW
     {
+      @Override
       public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
-          InvalidTransactionException, IllegalStateException
+          InvalidTransactionException
       {
         TransactionToken tranToken;
         if (man.getStatus() == Status.STATUS_ACTIVE) {
@@ -129,8 +136,9 @@ public enum TransactionAttribute {
         return tranToken;
       }
 
+      @Override
       public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
-          InvalidTransactionException, IllegalStateException, SecurityException, RollbackException,
+          InvalidTransactionException, RollbackException,
           HeuristicMixedException, HeuristicRollbackException
       {
         if (tranToken.isCompletionAllowed()) {
@@ -149,8 +157,9 @@ public enum TransactionAttribute {
     },
     SUPPORTS
     {
+      @Override
       public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
-          InvalidTransactionException, IllegalStateException
+          InvalidTransactionException
       {
           if (man.getStatus() == Status.STATUS_ACTIVE) {
               return new TransactionToken(man.getTransaction(), null, SUPPORTS);
@@ -170,16 +179,15 @@ public enum TransactionAttribute {
       return valueOf(type.name().toUpperCase());
     }
 
-    public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
-        InvalidTransactionException, IllegalStateException
+    public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException, InvalidTransactionException // NOSONAR
     {
       return null;
     }
 
-    public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
-        InvalidTransactionException, IllegalStateException, SecurityException, RollbackException,
+    public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException, // NOSONAR
+        InvalidTransactionException, RollbackException,
         HeuristicMixedException, HeuristicRollbackException
     {
-
+        throw new UnsupportedOperationException();
     }
 }

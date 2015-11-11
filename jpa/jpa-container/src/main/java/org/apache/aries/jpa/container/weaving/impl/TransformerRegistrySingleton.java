@@ -23,12 +23,15 @@ package org.apache.aries.jpa.container.weaving.impl;
  * This class is used to get hold of the active {@link TransformerRegistry} for this bundle.
  */
 public class TransformerRegistrySingleton {
-    private static TransformerRegistry _instance;
+    private static TransformerRegistry instance;
+    
+    private TransformerRegistrySingleton() {
+    }
 
     public static TransformerRegistry get() {
-        if (_instance == null) {
-            _instance = new JPAWeavingHook();
+        if (instance == null) {
+            instance = new JPAWeavingHook();
         }
-        return _instance;
+        return instance;
     }
 }

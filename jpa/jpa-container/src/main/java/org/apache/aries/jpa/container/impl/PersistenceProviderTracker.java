@@ -54,7 +54,7 @@ public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvid
     }
 
     private static Filter createFilter(BundleContext context, PersistenceUnit punit) {
-        String filter = null;
+        String filter;
         if (punit.getPersistenceProviderClassName() != null) {
             filter = String.format("(&(objectClass=%s)(%s=%s))",
                                    PersistenceProvider.class.getName(),
@@ -84,7 +84,7 @@ public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvid
 
         createAndCloseDummyEMF(provider);
 
-        stored.dsTracker = createDataSourceTracker(stored, provider, providerName);
+        stored.dsTracker = createDataSourceTracker(provider);
         EntityManagerFactoryBuilder emfBuilder = new AriesEntityManagerFactoryBuilder(provider, punit);
         Dictionary<String, ?> props = ManagedEMF.createProperties(punit, punit.getBundle());
         stored.reg = context.registerService(EntityManagerFactoryBuilder.class, emfBuilder , props);
@@ -111,7 +111,7 @@ public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvid
         punit.setNonJtaDataSource(null);
     }
 
-    private ServiceTracker<?, ?> createDataSourceTracker(StoredPerProvider stored, PersistenceProvider provider, String providerName) {
+    private ServiceTracker<?, ?> createDataSourceTracker(PersistenceProvider provider) {
         if (usesDataSource()) {
             if (!usesDataSourceService()) {
                 LOGGER.warn("Persistence unit " + punit.getPersistenceUnitName() + " refers to a non OSGi service DataSource");

@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.blueprint.impl;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
@@ -36,18 +37,17 @@ public class JpaNsHandler implements NamespaceHandler {
     public static final String NAMESPACE_JPA_20 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
     public static final String NAMESPACE_JPAN_10 = "http://aries.apache.org/xmlns/jpan/v1.0.0";
 
-    private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc) {
+    private void parseElement(Element elt, ParserContext pc) {
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
 
-        if ("enable".equals(elt.getLocalName())) {
-            if (!cdr.containsComponentDefinition(JpaComponentProcessor.class.getSimpleName())) {
-                MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
-                meta.setId(JpaComponentProcessor.class.getSimpleName());
-                meta.setRuntimeClass(JpaComponentProcessor.class);
-                meta.setProcessor(true);
-                meta.addProperty("pc", passThrough(pc, pc));
-                cdr.registerComponentDefinition(meta);
-            }
+        if ("enable".equals(elt.getLocalName()) &&
+            !cdr.containsComponentDefinition(JpaComponentProcessor.class.getSimpleName())) {
+            MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
+            meta.setId(JpaComponentProcessor.class.getSimpleName());
+            meta.setRuntimeClass(JpaComponentProcessor.class);
+            meta.setProcessor(true);
+            meta.addProperty("pc", passThrough(pc, pc));
+            cdr.registerComponentDefinition(meta);
         }
     }
 
@@ -57,19 +57,21 @@ public class JpaNsHandler implements NamespaceHandler {
         return meta;
     }
 
+    @Override
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc) {
         if (node instanceof Element) {
-            Element elt = (Element)node;
-            parseElement(elt, cm, pc);
+            parseElement((Element)node, pc);
         }
         return cm;
     }
 
+    @Override
     public Metadata parse(Element elt, ParserContext pc) {
-        parseElement(elt, pc.getEnclosingComponent(), pc);
+        parseElement(elt, pc);
         return null;
     }
 
+    @Override
     public URL getSchemaLocation(String namespace) {
         if (NAMESPACE_JPAN_10.equals(namespace)) {
             // deprecated (remove in jpa 3)
@@ -81,9 +83,10 @@ public class JpaNsHandler implements NamespaceHandler {
         }
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public Set<Class> getManagedClasses() {
-        return null;
+        return Collections.emptySet();
     }
 
 }

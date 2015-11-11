@@ -21,5 +21,5 @@ package org.apache.aries.jpa.template;
 import javax.persistence.EntityManager;
 
 public interface EmFunction<R> {
-	R apply(EntityManager em);
+    R apply(EntityManager em);
 }

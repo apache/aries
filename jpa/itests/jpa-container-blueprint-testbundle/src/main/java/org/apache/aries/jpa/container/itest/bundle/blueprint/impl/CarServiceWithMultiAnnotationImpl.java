@@ -53,6 +53,7 @@ public class CarServiceWithMultiAnnotationImpl implements CarService {
         localEm.close();
     }
 
+    @Override
     public Collection<Car> getCars() {
         return em.createQuery("select c from Car c", Car.class).getResultList();
     }

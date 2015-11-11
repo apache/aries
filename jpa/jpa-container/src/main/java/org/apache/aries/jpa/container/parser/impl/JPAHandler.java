@@ -18,8 +18,9 @@
  */
 package org.apache.aries.jpa.container.parser.impl;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
-import java.util.Stack;
+import java.util.Deque;
 
 import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
@@ -36,7 +37,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class JPAHandler extends DefaultHandler {
     /** The Persistence Units that we have parsed */
-    private final Stack<PersistenceUnit> persistenceUnits = new Stack<PersistenceUnit>();
+    private final Deque<PersistenceUnit> persistenceUnits = new ArrayDeque<PersistenceUnit>();
     /** The name of the current element */
     private String elementName;
     /** The version of the persistence.xml file */
@@ -106,7 +107,7 @@ public class JPAHandler extends DefaultHandler {
             pu.setExcludeUnlisted(Boolean.parseBoolean(s));
         else if ("shared-cache-mode".equals(elementName))
             pu.setSharedCacheMode(SharedCacheMode.valueOf(s));
-          else if ("validation-mode".equals(elementName))
+        else if ("validation-mode".equals(elementName))
             pu.setValidationMode(ValidationMode.valueOf(s));
     }
 

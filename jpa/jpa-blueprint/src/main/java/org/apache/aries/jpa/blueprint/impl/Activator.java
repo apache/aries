@@ -34,14 +34,15 @@ public class Activator implements BundleActivator {
         context.registerService(NamespaceHandler.class, handler, createProps(JpaNsHandler.NAMESPACE_JPA_20));
     }
 
-    private Dictionary<String, String> createProps(String namespace) {
-        Dictionary<String, String> props = new Hashtable<String, String>();
+    private static Dictionary<String, String> createProps(String namespace) {
+        Dictionary<String, String> props = new Hashtable<String, String>(); // NOSONAR
         props.put("osgi.service.blueprint.namespace", namespace);
         return props;
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        // Unregistering happens automatically
     }
 
 }
