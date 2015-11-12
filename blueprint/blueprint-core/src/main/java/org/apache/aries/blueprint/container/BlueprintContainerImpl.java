@@ -241,6 +241,7 @@ public class BlueprintContainerImpl
             }
             tidyupComponents();
             resetComponentDefinitionRegistry();
+            cancelFutureIfPresent();
             this.repository = null;
             this.processors = new ArrayList<Processor>();
             timeout = 5 * 60 * 1000;
@@ -910,6 +911,7 @@ public class BlueprintContainerImpl
                 }
                 tidyupComponents();
                 resetComponentDefinitionRegistry();
+                cancelFutureIfPresent();
                 this.repository = null;
                 state = State.WaitForNamespaceHandlers;
                 schedule();
