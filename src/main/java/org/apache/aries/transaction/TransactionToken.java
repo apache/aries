@@ -53,8 +53,16 @@ public class TransactionToken
        return suspendedTransaction;
    }
 
+   public void setSuspendedTransaction(Transaction suspendedTransaction) {
+       this.suspendedTransaction = suspendedTransaction;
+   }
+
    public TransactionAttribute getTransactionAttribute() {
        return transactionAttribute;
+   }
+
+   public void setTransactionStrategy(TransactionAttribute transactionAttribute) {
+       this.transactionAttribute = transactionAttribute;
    }
 
    public boolean isCompletionAllowed() {

@@ -19,6 +19,7 @@
 package org.apache.aries.transaction.parsing;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,20 +53,18 @@ public class TxNamespaceHandler implements NamespaceHandler {
         schemaMap.put(TX_NAMESPACE_URI, "transactionv20.xsd");
     }
 
-    private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc)
+    private void parseElement(Element elt, ParserContext pc)
     {
         LOGGER.debug("parser asked to parse element {} ", elt.getNodeName());
 
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
         if ("enable".equals(elt.getLocalName())) {
             Node n = elt.getChildNodes().item(0);
-            if (n == null || Boolean.parseBoolean(n.getNodeValue())) {
-                //We need to register a bean processor to add annotation-based config
-                if (!cdr.containsComponentDefinition(ANNOTATION_PARSER_BEAN_NAME)) {
-                    LOGGER.debug("Enabling annotation based transactions");
-                    MutableBeanMetadata meta = createAnnotationParserBean(pc, cdr);
-                    cdr.registerComponentDefinition(meta);
-                }
+            if ((n == null || Boolean.parseBoolean(n.getNodeValue())) &&
+                !cdr.containsComponentDefinition(ANNOTATION_PARSER_BEAN_NAME)) {
+                LOGGER.debug("Enabling annotation based transactions");
+                MutableBeanMetadata meta = createAnnotationParserBean(pc, cdr);
+                cdr.registerComponentDefinition(meta);
             }
         }
     }
@@ -87,21 +86,23 @@ public class TxNamespaceHandler implements NamespaceHandler {
         return meta;
     }
 
+    @Override
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc)
     {
         if (node instanceof Element) {
-            Element elt = (Element) node;
-            parseElement(elt, cm, pc);
+            parseElement((Element) node, pc);
         }
         return cm;
     }
 
+    @Override
     public Metadata parse(Element elt, ParserContext pc)
     {
-        parseElement(elt, pc.getEnclosingComponent(), pc);
+        parseElement(elt, pc);
         return null;
     }
 
+    @Override
     public URL getSchemaLocation(String namespaceUri)
     {
         String xsdPath = schemaMap.get(namespaceUri);
@@ -117,9 +118,10 @@ public class TxNamespaceHandler implements NamespaceHandler {
     }
 
     @SuppressWarnings("rawtypes")
+    @Override
     public Set<Class> getManagedClasses()
     {
-        return null;
+        return Collections.emptySet();
     }
     
 }
