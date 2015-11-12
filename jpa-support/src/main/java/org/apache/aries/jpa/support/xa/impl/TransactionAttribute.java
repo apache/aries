@@ -188,6 +188,6 @@ public enum TransactionAttribute {
         InvalidTransactionException, RollbackException,
         HeuristicMixedException, HeuristicRollbackException
     {
-        throw new UnsupportedOperationException();
+        // No operation by default
     }
 }
