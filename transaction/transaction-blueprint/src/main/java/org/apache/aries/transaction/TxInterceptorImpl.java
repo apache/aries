@@ -46,10 +46,12 @@ public class TxInterceptorImpl implements Interceptor {
         this.txData = txData;
     }
 
+    @Override
     public int getRank() {
         return 1; // Higher rank than jpa interceptor to make sure transaction is started first
     }
 
+    @Override
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
         final TxType type = txData.getEffectiveType(m);
         if (type == null) {
@@ -66,6 +68,7 @@ public class TxInterceptorImpl implements Interceptor {
         return token;
     }
 
+    @Override
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
         if (!(preCallToken instanceof TransactionToken)) {
             return;
@@ -90,10 +93,8 @@ public class TxInterceptorImpl implements Interceptor {
         }
     }
 
-    private String getCmId(ComponentMetadata cm) {
-        return cm == null ? null : cm.getId();
-    }
 
+    @Override
     public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken)
         throws Exception {
         LOGGER.debug("PostCallWithReturn for bean {}, method {}.", getCmId(cm), m);
@@ -101,24 +102,27 @@ public class TxInterceptorImpl implements Interceptor {
         if (preCallToken == null) {
             return;
         }
-        if (preCallToken instanceof TransactionToken) {
-            final TransactionToken token = (TransactionToken)preCallToken;
-            token.getCoordination().end();
-            try {
-                token.getTransactionAttribute().finish(tm, token);
-            } catch (Exception e) {
-                // We are throwing an exception, so we don't error it out
-                LOGGER.debug("Exception while completing transaction.", e);
-                RollbackException rbe = new javax.transaction.RollbackException();
-                rbe.addSuppressed(e);
-                throw rbe;
-            }
-        } else {
-            // TODO: what now?
+        if (!(preCallToken instanceof TransactionToken)) {
+            throw new IllegalStateException("Expected a TransactionToken from preCall but got " + preCallToken);
+        }
+        final TransactionToken token = (TransactionToken)preCallToken;
+        token.getCoordination().end();
+        try {
+            token.getTransactionAttribute().finish(tm, token);
+        } catch (Exception e) {
+            // We are throwing an exception, so we don't error it out
+            LOGGER.debug("Exception while completing transaction.", e);
+            RollbackException rbe = new javax.transaction.RollbackException();
+            rbe.addSuppressed(e);
+            throw rbe;
         }
     }
+    
+    private static String getCmId(ComponentMetadata cm) {
+        return cm == null ? null : cm.getId();
+    }
 
-    private boolean isRollBackException(Throwable ex) {
+    private static boolean isRollBackException(Throwable ex) {
         return ex instanceof RuntimeException || ex instanceof Error;
     }
 

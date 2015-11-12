@@ -28,21 +28,18 @@ public class NotSupportedTestBeanImpl extends TestBeanImpl {
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
     @Override
     public void delegateInsertRow(String name, int value) throws SQLException {
-        // TODO Auto-generated method stub
         super.delegateInsertRow(name, value);
     }
 
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
     @Override
     public void throwApplicationException() throws SQLException {
-        // TODO Auto-generated method stub
         super.throwApplicationException();
     }
 
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
     @Override
     public void throwRuntimeException() {
-        // TODO Auto-generated method stub
         super.throwRuntimeException();
     }
 
