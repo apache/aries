@@ -26,9 +26,7 @@ public class TestBeanImpl implements TestBean {
     private Connector connector;
     private TestBean bean;
 
-    public TestBeanImpl() {
-    }
-
+    @Override
     public void insertRow(String name, int value, Exception e) throws SQLException {
         connector.insertRow(name, value);
         if (e instanceof SQLException) { 
@@ -38,16 +36,19 @@ public class TestBeanImpl implements TestBean {
         }
     }
 
+    @Override
     public void delegateInsertRow(String name, int value) throws SQLException {
         bean.insertRow(name, value, null);
     }
 
+    @Override
     public void throwApplicationException() throws SQLException {
         throw new SQLException("Test exception");
     }
 
+    @Override
     public void throwRuntimeException() {
-        throw new RuntimeException("Test exception");
+        throw new RuntimeException("Test exception"); // NOSONAR
     }
 
     public void setTestBean(TestBean bean) {

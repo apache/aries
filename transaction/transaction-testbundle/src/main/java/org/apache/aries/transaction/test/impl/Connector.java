@@ -71,12 +71,13 @@ public class Connector implements Counter {
             stmt.executeUpdate(sql);
             conn.commit();
         } catch (Exception e) {
-            // Ignore
+            throw new RuntimeException(e.getMessage(), e); // NOSONAR
         } finally {
             safeClose(stmt);
         }
     }
     
+    @Override
     public int countRows() {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -87,7 +88,7 @@ public class Connector implements Counter {
             rs.last();
             count = rs.getRow();
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e); // NOSONAR
         }
         finally {
             safeClose(rs);
@@ -119,33 +120,33 @@ public class Connector implements Counter {
         safeClose(conn);
     }
 
-    public void safeClose(Connection conn) {
+    private static void safeClose(Connection conn) {
         if (conn != null) {
             try {
                 conn.close();
             } catch (SQLException e) {
-                // Ignore
+                throw new IllegalStateException(e);
             }
         }
     }
 
-    public void safeClose(Statement stmt) {
+    private static void safeClose(Statement stmt) {
         if (stmt != null) {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                // Ignore
+                throw new IllegalStateException(e);
             }
         }
     }
     
 
-    private void safeClose(ResultSet rs) {
+    private static void safeClose(ResultSet rs) {
         if (rs != null) {
             try {
                 rs.close();
             } catch (SQLException e) {
-                // Ignore
+                throw new IllegalStateException(e);
             }
         }
     }

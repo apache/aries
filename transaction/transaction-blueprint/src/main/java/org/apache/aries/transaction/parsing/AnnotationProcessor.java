@@ -47,16 +47,17 @@ public class AnnotationProcessor implements BeanProcessor {
         this.coordinator = coordinator;
     }
 
-    public void afterDestroy(Object arg0, String arg1) {
-    }
-
-    public Object afterInit(Object arg0, String arg1, BeanCreator arg2, BeanMetadata arg3) {
-        return arg0;
-    }
-
+    @Override
     public void beforeDestroy(Object arg0, String arg1) {
+        // Nothing to be done
     }
 
+    @Override
+    public void afterDestroy(Object arg0, String arg1) {
+        // Nothing to be done
+    }
+
+    @Override
     public Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
         ComponentTxData txData = new ComponentTxData(bean.getClass());
         if (txData.isTransactional()) {
@@ -64,6 +65,11 @@ public class AnnotationProcessor implements BeanProcessor {
             cdr.registerInterceptorWithComponent(beanData, new TxInterceptorImpl(tm, coordinator, txData));
         }
         return bean;
+    }
+    
+    @Override
+    public Object afterInit(Object arg0, String arg1, BeanCreator arg2, BeanMetadata arg3) {
+        return arg0;
     }
 
 }
