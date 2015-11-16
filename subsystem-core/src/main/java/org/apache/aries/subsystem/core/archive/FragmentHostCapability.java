@@ -39,7 +39,7 @@ public class FragmentHostCapability extends AbstractCapability {
 		Collection<Attribute> attributes = clause.getAttributes();
 		Map<String, Object> result = new HashMap<String, Object>(attributes.size() + 2);
 		result.put(NAMESPACE, clause.getPath());
-		result.put(ATTRIBUTE_BUNDLE_VERSION, version.getValue());
+		result.put(ATTRIBUTE_BUNDLE_VERSION, version.getVersion());
 		for (Attribute attribute : attributes) {
 			result.put(attribute.getName(), attribute.getValue());
 		}
