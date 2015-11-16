@@ -14,6 +14,7 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -191,7 +192,9 @@ public class BundleResourceInstaller extends ResourceInstaller {
 	
 	private BundleRevision installBundle() throws Exception {
 		final Bundle bundle;
-		InputStream is = (InputStream)resource.getClass().getMethod("getContent").invoke(resource);
+		Method getContent = resource.getClass().getMethod("getContent");
+		getContent.setAccessible(true);
+		InputStream is = (InputStream)getContent.invoke(resource);
 		ThreadLocalSubsystem.set(provisionTo);
 		try {
 			bundle = provisionTo.getRegion().installBundleAtLocation(getLocation(), is);
