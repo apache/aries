@@ -28,7 +28,6 @@ import javax.transaction.Transactional.TxType;
 import org.apache.aries.blueprint.Interceptor;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,11 +74,7 @@ public class TxInterceptorImpl implements Interceptor {
         }
         LOGGER.debug("PostCallWithException for bean {}, method {}.", getCmId(cm), m.getName(), ex);
         final TransactionToken token = (TransactionToken)preCallToken;
-        try {
-            token.getCoordination().end();
-        } catch (CoordinationException e){
-            LOGGER.debug(e.getMessage(), e);
-        }
+        safeEndCoordination(token);
         try {
             Transaction tran = token.getActiveTransaction();
             if (tran != null && isRollBackException(ex)) {
@@ -93,7 +88,6 @@ public class TxInterceptorImpl implements Interceptor {
         }
     }
 
-
     @Override
     public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken)
         throws Exception {
@@ -106,7 +100,7 @@ public class TxInterceptorImpl implements Interceptor {
             throw new IllegalStateException("Expected a TransactionToken from preCall but got " + preCallToken);
         }
         final TransactionToken token = (TransactionToken)preCallToken;
-        token.getCoordination().end();
+        safeEndCoordination(token);
         try {
             token.getTransactionAttribute().finish(tm, token);
         } catch (Exception e) {
@@ -115,6 +109,16 @@ public class TxInterceptorImpl implements Interceptor {
             RollbackException rbe = new javax.transaction.RollbackException();
             rbe.addSuppressed(e);
             throw rbe;
+        }
+    }
+
+    private void safeEndCoordination(final TransactionToken token) {
+        try {
+            if (token != null && token.getCoordination() != null) {
+                token.getCoordination().end();
+            }
+        } catch (Exception e){
+            LOGGER.debug(e.getMessage(), e);
         }
     }
     
