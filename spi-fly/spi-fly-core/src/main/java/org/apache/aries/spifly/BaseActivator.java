@@ -52,7 +52,6 @@ public abstract class BaseActivator implements BundleActivator {
     public static BaseActivator activator;
 
     private BundleContext bundleContext;
-    private LogServiceTracker logServiceTracker;
     private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
     private BundleTracker consumerBundleTracker;
     private BundleTracker providerBundleTracker;
@@ -68,9 +67,6 @@ public abstract class BaseActivator implements BundleActivator {
 
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
         bundleContext = context;
-
-        logServiceTracker = new LogServiceTracker(context);
-        logServiceTracker.open();
 
         providerBundleTracker = new BundleTracker(context,
                 Bundle.ACTIVE, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
@@ -121,7 +117,6 @@ public abstract class BaseActivator implements BundleActivator {
 
         consumerBundleTracker.close();
         providerBundleTracker.close();
-        logServiceTracker.close();
     }
 
     public void log(int level, String message) {
@@ -262,22 +257,4 @@ public abstract class BaseActivator implements BundleActivator {
         return bundles;
     }
 
-    // TODO unRegisterConsumerBundle();
-    private class LogServiceTracker extends ServiceTracker {
-        public LogServiceTracker(BundleContext context) {
-            super(context, LogService.class.getName(), null);
-        }
-
-        public Object addingService(ServiceReference reference) {
-            Object svc = super.addingService(reference);
-            if (svc instanceof LogService)
-                logServices.add((LogService) svc);
-            return svc;
-        }
-
-        @Override
-        public void removedService(ServiceReference reference, Object service) {
-            logServices.remove(service);
-        }
-    }
 }
