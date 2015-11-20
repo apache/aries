@@ -320,9 +320,9 @@ public class BlueprintContainerImpl
                         }
                         resetComponentDefinitionRegistry();
                         if (xmlValidation == null || "true".equals(xmlValidation)) {
-                            parser.validate(handlerSet.getSchema());
+                            parser.validate(handlerSet.getSchema(parser.getSchemaLocations()));
                         } else if ("structure".equals(xmlValidation)) {
-                            parser.validate(handlerSet.getSchema(), new ValidationHandler());
+                            parser.validate(handlerSet.getSchema(parser.getSchemaLocations()), new ValidationHandler());
                         }
                         parser.populate(handlerSet, componentDefinitionRegistry);
                         state = State.Populated;

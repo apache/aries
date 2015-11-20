@@ -248,9 +248,10 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
 
     private Schema getSchema(Map<URI, NamespaceHandler> handlers,
                              final Bundle bundle,
-                             final Properties schemaMap) throws IOException, SAXException {
+                             final Properties schemaMap,
+                             Map<String, String> locations) throws IOException, SAXException {
         if (schemaMap != null && !schemaMap.isEmpty()) {
-            return createSchema(handlers, bundle, schemaMap);
+            return createSchema(handlers, bundle, schemaMap, locations);
         }
         // Find a schema that can handle all the requested namespaces
         // If it contains additional namespaces, it should not be a problem since
@@ -258,7 +259,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         Schema schema = getExistingSchema(handlers);
         if (schema == null) {
             // Create schema
-            schema = createSchema(handlers, bundle, schemaMap);
+            schema = createSchema(handlers, bundle, schemaMap, locations);
             cacheSchema(handlers, schema);
         }
         return schema;
@@ -320,7 +321,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
 
     private Schema createSchema(Map<URI, NamespaceHandler> handlers,
                                 Bundle bundle,
-                                Properties schemaMap) throws IOException, SAXException {
+                                Properties schemaMap,
+                                Map<String, String> locations) throws IOException, SAXException {
         final List<StreamSource> schemaSources = new ArrayList<StreamSource>();
         try {
             schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/aries/blueprint/blueprint.xsd")));
@@ -328,6 +330,12 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             // It will speed things as it can be reused for all other blueprint containers
             for (URI ns : handlers.keySet()) {
                 URL url = handlers.get(ns).getSchemaLocation(ns.toString());
+                if (url == null && locations != null) {
+                    String loc = locations.get(ns.toString());
+                    if (loc != null) {
+                        url = handlers.get(ns).getSchemaLocation(loc);
+                    }
+                }
                 if (url == null) {
                     LOGGER.warn("No URL is defined for schema " + ns + ". This schema will not be validated");
                 } else {
@@ -550,11 +558,15 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
 
         public Schema getSchema() throws SAXException, IOException {
+            return getSchema(null);
+        }
+
+        public Schema getSchema(Map<String, String> locations) throws SAXException, IOException {
             if (!isComplete()) {
                 throw new IllegalStateException("NamespaceHandlerSet is not complete");
             }
             if (schema == null) {
-                schema = NamespaceHandlerRegistryImpl.this.getSchema(handlers, bundle, schemaMap);
+                schema = NamespaceHandlerRegistryImpl.this.getSchema(handlers, bundle, schemaMap, locations);
             }
             return schema;
         }
