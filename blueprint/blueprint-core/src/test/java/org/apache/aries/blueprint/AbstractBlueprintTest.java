@@ -21,6 +21,7 @@ package org.apache.aries.blueprint;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.validation.Schema;
@@ -52,6 +53,9 @@ public abstract class AbstractBlueprintTest extends TestCase {
             }
             public Schema getSchema() throws SAXException, IOException {
                 return null;
+            }
+            public Schema getSchema(Map<String, String> locations) throws SAXException, IOException {
+              return null;
             }
             public boolean isComplete() {
                 return false;
