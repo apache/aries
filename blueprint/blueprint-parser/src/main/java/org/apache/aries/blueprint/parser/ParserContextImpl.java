@@ -18,7 +18,10 @@
  */
 package org.apache.aries.blueprint.parser;
 
+import java.net.URI;
+
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -87,5 +90,10 @@ public class ParserContextImpl implements ParserContext {
 
     public String getDefaultTimeout() {
         return parser.getDefaultTimeout();
+    }
+
+    @Override
+    public NamespaceHandler getNamespaceHandler(URI namespaceUri) {
+        return parser.getNamespaceHandler(namespaceUri);
     }
 }
