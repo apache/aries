@@ -1341,7 +1341,7 @@ public class Parser {
         return getNamespaceHandler(ns);
     }
 
-    private NamespaceHandler getNamespaceHandler(URI uri) {
+    public NamespaceHandler getNamespaceHandler(URI uri) {
         if (handlers == null) {
             throw new ComponentDefinitionException("Unsupported node (namespace handler registry is not set): " + uri);
         }
