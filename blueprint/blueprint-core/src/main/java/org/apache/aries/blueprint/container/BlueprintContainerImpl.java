@@ -531,13 +531,16 @@ public class BlueprintContainerImpl
                 continue;
             }
 
+            Object obj = null;
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
-                Object obj = repository.create(bean.getId(), ProxyUtils.asList(ComponentDefinitionRegistryProcessor.class));
+                obj = repository.create(bean.getId(), ProxyUtils.asList(ComponentDefinitionRegistryProcessor.class));
                 ((ComponentDefinitionRegistryProcessor) obj).process(componentDefinitionRegistry);
-            } else if (Processor.class.isAssignableFrom(clazz)) {
-                Object obj = repository.create(bean.getId(), ProxyUtils.asList(Processor.class));
+            }
+            if (Processor.class.isAssignableFrom(clazz)) {
+                obj = repository.create(bean.getId(), ProxyUtils.asList(Processor.class));
                 this.processors.add((Processor) obj);
-            } else { 
+            }
+            if (obj == null) {
                 continue;
             }
             untrackServiceReferences();
