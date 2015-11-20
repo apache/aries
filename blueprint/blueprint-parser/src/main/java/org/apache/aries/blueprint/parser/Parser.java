@@ -233,12 +233,17 @@ public class Parser {
      * @throws Exception on parse error
      */
     public void parse(InputStream inputStream) throws Exception { 
-      InputSource inputSource = new InputSource(inputStream);
-      DocumentBuilder builder = getDocumentBuilderFactory().newDocumentBuilder();
-      Document doc = builder.parse(inputSource);
-      documents.add(doc);
+      parse(null, inputStream);
     }
-    
+
+    public void parse(String location, InputStream inputStream) throws Exception {
+        InputSource inputSource = new InputSource(inputStream);
+        inputSource.setSystemId(location);
+        DocumentBuilder builder = getDocumentBuilderFactory().newDocumentBuilder();
+        Document doc = builder.parse(inputSource);
+        documents.add(doc);
+    }
+
     /**
      * Parse blueprint xml referred to by a list of URLs
      * @param urls URLs to blueprint xml to parse
@@ -250,7 +255,7 @@ public class Parser {
         for (URL url : urls) {
             InputStream inputStream = url.openStream();
             try {
-                parse (inputStream);
+                parse (url.toString(), inputStream);
             } finally {
                 inputStream.close();
             }
