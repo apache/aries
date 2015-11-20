@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.parser;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.validation.Schema;
@@ -49,6 +50,13 @@ public interface NamespaceHandlerSet {
      * @return the schema to use to validate the XML
      */
     Schema getSchema() throws SAXException, IOException;
+
+    /**
+     * Obtain a schema to validate the XML for the given list of namespaces
+     *
+     * @return the schema to use to validate the XML
+     */
+    Schema getSchema(Map<String, String> locations) throws SAXException, IOException;
 
     /**
      * Add a new Listener to be called when namespace handlers are registerd or unregistered

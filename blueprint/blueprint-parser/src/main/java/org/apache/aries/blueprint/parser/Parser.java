@@ -22,11 +22,14 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
@@ -209,6 +212,7 @@ public class Parser {
     private String defaultAvailability;
     private String defaultActivation;
     private Set<URI> namespaces;
+    private Map<String, String> locations;
 
     public Parser() {
       this(null);
@@ -256,20 +260,36 @@ public class Parser {
     public Set<URI> getNamespaces() {
         if (this.namespaces == null) {
             Set<URI> namespaces = new LinkedHashSet<URI>();
+            Map<String, String> locations = new HashMap<String, String>();
             for (Document doc : documents) {
-                findNamespaces(namespaces, doc);
+                findNamespaces(namespaces, locations, doc);
             }
             this.namespaces = namespaces;
+            this.locations = locations;
         }
         return this.namespaces;
     }
 
-    private void findNamespaces(Set<URI> namespaces, Node node) {
+    public Map<String, String> getSchemaLocations() {
+        getNamespaces();
+        return locations;
+    }
+
+    private void findNamespaces(Set<URI> namespaces, Map<String, String> locations, Node node) {
         if (node instanceof Element || node instanceof Attr) {
             String ns = node.getNamespaceURI();
-            if (ns != null && !isBlueprintNamespace(ns) && !isIgnorableAttributeNamespace(ns)) {
+            if ("http://www.w3.org/2001/XMLSchema-instance".equals(ns)
+                    && node instanceof Attr
+                    && "schemaLocation".equals(node.getLocalName())) {
+                String val = ((Attr) node).getValue();
+                List<String> locs = new ArrayList<String>(Arrays.asList(val.split("\\s+")));
+                locs.remove("");
+                for (int i = 0; i < locs.size() / 2; i++) {
+                    locations.put(locs.get(i * 2), locs.get(i * 2 + 1));
+                }
+            } else if (ns != null && !isBlueprintNamespace(ns) && !isIgnorableAttributeNamespace(ns)) {
                 namespaces.add(URI.create(ns));
-            }else if ( ns == null && //attributes from blueprint are unqualified as per schema.
+            } else if (ns == null && //attributes from blueprint are unqualified as per schema.
                        node instanceof Attr &&
                        SCOPE_ATTRIBUTE.equals(node.getNodeName()) &&
                        ((Attr)node).getOwnerElement() != null && //should never occur from parsed doc.
@@ -286,12 +306,12 @@ public class Parser {
         NamedNodeMap nnm = node.getAttributes();
         if(nnm!=null){
             for(int i = 0; i< nnm.getLength() ; i++){
-                findNamespaces(namespaces, nnm.item(i));
+                findNamespaces(namespaces, locations, nnm.item(i));
             }
         }
         NodeList nl = node.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
-            findNamespaces(namespaces, nl.item(i));
+            findNamespaces(namespaces, locations, nl.item(i));
         }
     }
 

@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.io.IOException;
 
@@ -241,6 +242,10 @@ public class ParserTest extends AbstractBlueprintTest {
         }
 
         public Schema getSchema() throws SAXException, IOException {
+            return null;
+        }
+
+        public Schema getSchema(Map<String, String> locations) throws SAXException, IOException {
             return null;
         }
 
