@@ -55,7 +55,7 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
         }
     }
     
-    private void processTypeConverters() throws Exception {
+    protected void processTypeConverters() throws Exception {
         List<String> typeConverters = new ArrayList<String>();
         for (Target target : registry.getTypeConverters()) {
             if (target instanceof ComponentMetadata) {

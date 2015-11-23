@@ -71,6 +71,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.BlueprintListener;
@@ -257,7 +258,7 @@ public class BlueprintContainerImpl
         }
     }
     
-    private void resetComponentDefinitionRegistry() {
+    protected void resetComponentDefinitionRegistry() {
         this.componentDefinitionRegistry.reset();
         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", bundle));
@@ -454,7 +455,12 @@ public class BlueprintContainerImpl
             }
         }
     }
-    
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return getBundle().adapt(BundleWiring.class).getClassLoader();
+    }
+
     public ServiceRegistration registerService(final String[] classes, final Object service, final Dictionary properties) {
         if (accessControlContext == null) {
             return bundleContext.registerService(classes, service, properties);
@@ -490,7 +496,7 @@ public class BlueprintContainerImpl
         return repository;
     }
 
-    private void processTypeConverters() throws Exception {
+    protected void processTypeConverters() throws Exception {
         List<String> typeConverters = new ArrayList<String>();
         for (Target target : componentDefinitionRegistry.getTypeConverters()) {
             if (target instanceof ComponentMetadata) {
@@ -502,7 +508,7 @@ public class BlueprintContainerImpl
             }
         }
 
-        Map<String, Object> objects = repository.createAll(typeConverters, ProxyUtils.asList(Converter.class));
+        Map<String, Object> objects = getRepository().createAll(typeConverters, ProxyUtils.asList(Converter.class));
         for (String name : typeConverters) {
             Object obj = objects.get(name);
             if (obj instanceof Converter) {
@@ -513,7 +519,7 @@ public class BlueprintContainerImpl
         }
     }
 
-    private void processProcessors() throws Exception {
+    protected void processProcessors() throws Exception {
         // Instantiate ComponentDefinitionRegistryProcessor and BeanProcessor
         for (BeanMetadata bean : getMetadata(BeanMetadata.class)) {
             if (bean instanceof ExtendedBeanMetadata && !((ExtendedBeanMetadata) bean).isProcessor()) {
