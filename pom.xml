@@ -49,7 +49,6 @@
         <aries.osgi.import.pkg>
            org.apache.aries.blueprint;provide:=true;version="[1.0,2.0)",
            org.apache.aries.blueprint.ext;provide:=true;version="[1.0,2.0)",
-           org.apache.aries.blueprint.reflect;version="[1.0,2.0)",
            *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>

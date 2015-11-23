@@ -21,14 +21,17 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
-import org.apache.aries.blueprint.reflect.RefMetadataImpl;
-import org.apache.aries.blueprint.reflect.ValueMetadataImpl;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
-import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
 import org.osgi.service.blueprint.container.ReifiedType;
+import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.Target;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.BeanFactory;
@@ -72,14 +75,11 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory {
         super.removeBeanDefinition(beanName);
     }
 
-    public class SpringMetadata extends BeanMetadataImpl {
+    public class SpringMetadata implements BeanMetadata {
         private final String beanName;
 
         public SpringMetadata(String beanName) {
             this.beanName = beanName;
-            setFactoryComponent(new RefMetadataImpl(BlueprintNamespaceHandler.SPRING_BEAN_FACTORY_ID));
-            setFactoryMethod("getBean");
-            addArgument(new ValueMetadataImpl(beanName), null, -1);
         }
 
         public BeanDefinition getDefinition() {
@@ -105,6 +105,68 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory {
         public List<String> getDependsOn() {
             String[] dependson = getDefinition().getDependsOn();
             return dependson != null ? Arrays.asList(dependson) : Collections.<String>emptyList();
+        }
+
+        @Override
+        public String getClassName() {
+            return null;
+        }
+
+        @Override
+        public String getInitMethod() {
+            return null;
+        }
+
+        @Override
+        public String getDestroyMethod() {
+            return null;
+        }
+
+        @Override
+        public List<BeanArgument> getArguments() {
+            return Collections.<BeanArgument>singletonList(new BeanArgument() {
+                @Override
+                public Metadata getValue() {
+                    return new ValueMetadata() {
+                        @Override
+                        public String getStringValue() {
+                            return beanName;
+                        }
+                        @Override
+                        public String getType() {
+                            return null;
+                        }
+                    };
+                }
+                @Override
+                public String getValueType() {
+                    return null;
+                }
+                @Override
+                public int getIndex() {
+                    return -1;
+                }
+            });
+        }
+
+        @Override
+        public List<BeanProperty> getProperties() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public String getFactoryMethod() {
+            return "getBean";
+        }
+
+        @Override
+        public Target getFactoryComponent() {
+            return new RefMetadata() {
+                @Override
+                public String getComponentId() {
+                    return BlueprintNamespaceHandler.SPRING_BEAN_FACTORY_ID;
+                }
+            };
         }
     }
 
