@@ -35,7 +35,7 @@ public class SpringApplicationContext extends AbstractApplicationContext {
     public SpringApplicationContext(ExtendedBlueprintContainer container) {
         this.container = container;
         this.beanFactory = new BlueprintBeanFactory(container);
-        setClassLoader(container.getBundleContext().getBundle().adapt(BundleWiring.class).getClassLoader());
+        setClassLoader(container.getClassLoader());
         prepareBeanFactory(beanFactory);
     }
 

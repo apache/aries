@@ -78,4 +78,6 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
 
     ExecutorService getExecutors();
 
+    ClassLoader getClassLoader();
+
 }
