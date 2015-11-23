@@ -25,12 +25,11 @@
              http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
-    <!-- connect to the local ActiveMQ broker -->
-    <bean id="beanB" class="org.apache.aries.blueprint.spring.pojos.BeanB">
+    <bean id="beanB" class="org.apache.aries.blueprint.testbundles.BeanB">
         <property name="beanA" ref="beanA"/>
     </bean>
 
-    <bean name="beanA" class="org.apache.aries.blueprint.spring.pojos.BeanAFactory"
+    <bean name="beanA" class="org.apache.aries.blueprint.testbundles.BeanAFactory"
           factory-method="createBean" xmlns="http://www.springframework.org/schema/beans">
         <constructor-arg value="arg1"/>
     </bean>
