@@ -31,6 +31,7 @@ import org.apache.aries.blueprint.spring.support.TestBlueprintContainer;
 import org.apache.aries.blueprint.testbundles.BeanA;
 import org.apache.aries.blueprint.testbundles.BeanB;
 import org.springframework.beans.factory.xml.UtilNamespaceHandler;
+import org.springframework.transaction.config.TxNamespaceHandler;
 import org.xml.sax.SAXException;
 
 public class SpringTest extends AbstractBlueprintTest {
@@ -65,6 +66,8 @@ public class SpringTest extends AbstractBlueprintTest {
                 return new BlueprintNamespaceHandler(null, null, new BeansNamespaceHandler());
             } else if ("http://www.springframework.org/schema/util".equals(namespace.toString())) {
                 return new BlueprintNamespaceHandler(null, null, new UtilNamespaceHandler());
+            } else if ("http://www.springframework.org/schema/tx".equals(namespace.toString())) {
+                return new BlueprintNamespaceHandler(null, null, new TxNamespaceHandler());
             }
             return null;
         }
