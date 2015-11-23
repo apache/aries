@@ -16,14 +16,13 @@
  */
 package org.apache.aries.blueprint.spring;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 
@@ -31,11 +30,25 @@ public class SpringApplicationContext extends AbstractApplicationContext {
 
     private final ExtendedBlueprintContainer container;
     private final DefaultListableBeanFactory beanFactory;
+    private final List<ClassLoader> parentClassLoaders = new ArrayList<ClassLoader>();
 
     public SpringApplicationContext(ExtendedBlueprintContainer container) {
         this.container = container;
         this.beanFactory = new BlueprintBeanFactory(container);
-        setClassLoader(container.getClassLoader());
+        parentClassLoaders.add(container.getClassLoader());
+        setClassLoader(new ClassLoader() {
+            @Override
+            public Class<?> loadClass(String name) throws ClassNotFoundException {
+                for (ClassLoader cl : parentClassLoaders) {
+                    try {
+                        return cl.loadClass(name);
+                    } catch (ClassNotFoundException e) {
+                        // Ignore
+                    }
+                }
+                throw new ClassNotFoundException(name);
+            }
+        });
         prepareBeanFactory(beanFactory);
     }
 
@@ -57,6 +70,13 @@ public class SpringApplicationContext extends AbstractApplicationContext {
     @Override
     public DefaultListableBeanFactory getBeanFactory() throws IllegalStateException {
         return beanFactory;
+    }
+
+    public void addSourceBundle(Bundle bundle) {
+        // This should always be not null, but we want to support unit testing
+        if (bundle != null) {
+            parentClassLoaders.add(bundle.adapt(BundleWiring.class).getClassLoader());
+        }
     }
 
 }
