@@ -26,10 +26,10 @@ import java.util.Set;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
-import org.apache.aries.blueprint.spring.pojos.BeanA;
-import org.apache.aries.blueprint.spring.pojos.BeanB;
 import org.apache.aries.blueprint.spring.support.AbstractBlueprintTest;
 import org.apache.aries.blueprint.spring.support.TestBlueprintContainer;
+import org.apache.aries.blueprint.testbundles.BeanA;
+import org.apache.aries.blueprint.testbundles.BeanB;
 import org.springframework.beans.factory.xml.UtilNamespaceHandler;
 import org.xml.sax.SAXException;
 
@@ -38,7 +38,7 @@ public class SpringTest extends AbstractBlueprintTest {
     public void testSpring() throws Exception {
         NamespaceHandlerSet handlers = new SpringNamespaceHandlerSet();
         TestBlueprintContainer container = new TestBlueprintContainer();
-        container.parse("/test1.xml", handlers);
+        container.parse("/OSGI-INF/blueprint/config.xml", handlers);
 
         List list = (List) container.getComponentInstance("springList");
         assertEquals("foo", list.get(0));
