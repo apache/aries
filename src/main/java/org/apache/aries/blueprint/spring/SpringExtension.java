@@ -62,7 +62,6 @@ public class SpringExtension implements Extension {
             String clazzName = props.getProperty(key);
             org.springframework.beans.factory.xml.NamespaceHandler springHandler
                     = (org.springframework.beans.factory.xml.NamespaceHandler) bundle.loadClass(clazzName).newInstance();
-            springHandler.init();
             NamespaceHandler wrapper = new BlueprintNamespaceHandler(bundle, schemas, springHandler);
             handlers.put(key, wrapper);
         }

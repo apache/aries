@@ -71,6 +71,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler {
         this.bundle = bundle;
         this.schemas = schemas;
         this.springHandler = springHandler;
+        springHandler.init();
     }
 
     public org.springframework.beans.factory.xml.NamespaceHandler getSpringHandler() {
