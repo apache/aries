@@ -153,6 +153,8 @@ public class BlueprintNamespaceHandler implements NamespaceHandler {
             bm.addArgument(createRef(parserContext, SPRING_APPLICATION_CONTEXT_ID), null, 0);
             registry.registerComponentDefinition(bm);
         }
+        // Add the namespace handler's bundle to the application context classloader
+        applicationContext.addSourceBundle(bundle);
         return springParserContext;
     }
 
