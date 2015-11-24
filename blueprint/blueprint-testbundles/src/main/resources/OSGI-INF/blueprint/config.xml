@@ -28,6 +28,12 @@
 
     <annotation-driven xmlns="http://www.springframework.org/schema/tx"/>
 
+    <bean:beans default-autowire="constructor">
+
+        <bean:bean id="beanC" class="org.apache.aries.blueprint.testbundles.BeanC"/>
+
+    </bean:beans>
+
     <bean id="beanB" class="org.apache.aries.blueprint.testbundles.BeanB">
         <property name="beanA" ref="beanA"/>
     </bean>
@@ -42,6 +48,7 @@
         <ref bean="beanA" />
         <ref bean="beanB"/>
         <ref bean="serializable"/>
+        <ref bean="beanC"/>
     </util:list>
 
     <util:constant id="serializable"
