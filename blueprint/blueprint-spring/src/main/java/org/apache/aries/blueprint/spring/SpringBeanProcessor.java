@@ -24,6 +24,7 @@ import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.apache.aries.blueprint.spring.BlueprintBeanFactory.SpringMetadata;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -57,6 +58,9 @@ public class SpringBeanProcessor implements BeanProcessor, ComponentDefinitionRe
 
     @Override
     public Object beforeInit(Object o, String s, BeanCreator beanCreator, BeanMetadata beanMetadata) {
+        if (beanMetadata instanceof SpringMetadata) {
+            return o;
+        }
         if (o instanceof Aware) {
             if (o instanceof BeanNameAware) {
                 ((BeanNameAware) o).setBeanName(s);

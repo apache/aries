@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 public class BeanC {
 
     private final BeanA beanA;
-    private boolean initialized;
+    private int initialized;
 
     public BeanC(BeanA beanA) {
         this.beanA = beanA;
@@ -29,10 +29,10 @@ public class BeanC {
 
     @PostConstruct
     public void start() {
-        this.initialized = true;
+        this.initialized++;
     }
 
-    public boolean isInitialized() {
+    public int getInitialized() {
         return initialized;
     }
 }
