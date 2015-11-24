@@ -18,6 +18,13 @@
  */
 package org.apache.aries.blueprint.parser;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.Validator;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
@@ -31,14 +38,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.Validator;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
@@ -346,6 +345,35 @@ public class Parser {
             for (Document doc : this.documents) {
                 validator.validate(new DOMSource(doc));
             }
+        } catch (Exception e) {
+            throw new ComponentDefinitionException("Unable to validate xml", e);
+        }
+    }
+
+    public void validatePsvi(Schema schema) {
+        try {
+            // In order to support validation with the built-in xml parser
+            // from the JDK, we can't use Validator.validate(source, result)
+            // as it fails with an exception, see
+            //   https://issues.apache.org/jira/browse/XERCESJ-1212
+            // This was fixed in xerces 2.9.0 years ago but still is not
+            // included in my JDK.
+            List<String> locations = new ArrayList<String>();
+            for (Document doc : documents) {
+                locations.add(doc.getDocumentURI());
+            }
+            List<Document> validated = new ArrayList<Document>();
+            for (String location : locations) {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                factory.setSchema(schema);
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                InputSource inputSource = new InputSource(location);
+                Document doc = builder.parse(inputSource);
+                validated.add(doc);
+            }
+            this.documents.clear();
+            this.documents.addAll(validated);
         } catch (Exception e) {
             throw new ComponentDefinitionException("Unable to validate xml", e);
         }
