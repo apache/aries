@@ -20,12 +20,14 @@ package org.apache.aries.blueprint.itests;
 
 import java.util.List;
 
+import org.apache.aries.blueprint.testbundles.BeanC;
 import org.junit.Test;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class SpringTest extends AbstractBlueprintIntegrationTest {
@@ -39,6 +41,9 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
         BlueprintContainer container = startBundleBlueprint("org.apache.aries.blueprint.testbundles");
         List list = (List) container.getComponentInstance("springList");
         System.out.println(list);
+
+        BeanC beanC = (BeanC) list.get(4);
+        assertEquals(1, beanC.getInitialized());
     }
 
     @org.ops4j.pax.exam.Configuration

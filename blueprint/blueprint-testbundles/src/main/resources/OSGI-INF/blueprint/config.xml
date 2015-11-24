@@ -20,15 +20,19 @@
            xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:bean="http://www.springframework.org/schema/beans"
            xmlns:util="http://www.springframework.org/schema/util"
+           xmlns:context="http://www.springframework.org/schema/context"
            xsi:schemaLocation="
              http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
              http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
              http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
              http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
 
     <annotation-driven xmlns="http://www.springframework.org/schema/tx"/>
 
     <bean:beans default-autowire="constructor">
+
+        <context:annotation-config />
 
         <bean:bean id="beanC" class="org.apache.aries.blueprint.testbundles.BeanC"/>
 
