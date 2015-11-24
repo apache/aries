@@ -16,13 +16,20 @@
  */
 package org.apache.aries.blueprint.spring;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
+import org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.beans.factory.xml.XmlReaderContext;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -52,6 +59,9 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
                 // Send registration event.
                 parserContext.getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
             }
+        } else if (DefaultBeanDefinitionDocumentReader.NESTED_BEANS_ELEMENT.equals(ele.getLocalName())) {
+            MyDefaultBeanDefinitionDocumentReader reader = new MyDefaultBeanDefinitionDocumentReader();
+            reader.registerBeanDefinitions(ele, parserContext.getReaderContext());
         } else {
             throw new UnsupportedOperationException();
         }
@@ -61,5 +71,22 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
     @Override
     public BeanDefinitionHolder decorate(Node source, BeanDefinitionHolder definition, ParserContext parserContext) {
         return definition;
+    }
+
+    private static class MyDefaultBeanDefinitionDocumentReader extends DefaultBeanDefinitionDocumentReader {
+
+        public void registerBeanDefinitions(final Element ele, XmlReaderContext readerContext) {
+            Document doc = (Document) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{Document.class}, new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                    if (method.getName().equals("getDocumentElement")) {
+                        return ele;
+                    }
+                    throw new UnsupportedOperationException();
+                }
+            });
+            registerBeanDefinitions(doc, readerContext);
+        }
+
     }
 }
