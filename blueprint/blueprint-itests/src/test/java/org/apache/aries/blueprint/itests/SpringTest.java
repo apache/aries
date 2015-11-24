@@ -18,21 +18,15 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import java.io.InputStream;
 import java.util.List;
 
 import org.junit.Test;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 
 import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.provision;
 
 public class SpringTest extends AbstractBlueprintIntegrationTest {
 
@@ -62,7 +56,6 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-tx"),
             // test bundle
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundles", false),
-//            Helper.debug(5006)
         };
     }
 
