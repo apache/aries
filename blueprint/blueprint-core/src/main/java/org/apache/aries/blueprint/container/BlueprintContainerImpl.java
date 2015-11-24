@@ -49,6 +49,7 @@ import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.NamespaceHandler;
+import org.apache.aries.blueprint.NamespaceHandler2;
 import org.apache.aries.blueprint.Processor;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
@@ -321,9 +322,22 @@ public class BlueprintContainerImpl
                         }
                         resetComponentDefinitionRegistry();
                         if (xmlValidation == null || "true".equals(xmlValidation)) {
+                            for (URI ns : handlerSet.getNamespaces()) {
+                                NamespaceHandler handler = handlerSet.getNamespaceHandler(ns);
+                                if (handler instanceof NamespaceHandler2) {
+                                    if (((NamespaceHandler2) handler).usePsvi()) {
+                                        xmlValidation = "psvi";
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (xmlValidation == null || "true".equals(xmlValidation)) {
                             parser.validate(handlerSet.getSchema(parser.getSchemaLocations()));
                         } else if ("structure".equals(xmlValidation)) {
                             parser.validate(handlerSet.getSchema(parser.getSchemaLocations()), new ValidationHandler());
+                        } else if ("psvi".equals(xmlValidation)) {
+                            parser.validatePsvi(handlerSet.getSchema(parser.getSchemaLocations()));
                         }
                         parser.populate(handlerSet, componentDefinitionRegistry);
                         state = State.Populated;
