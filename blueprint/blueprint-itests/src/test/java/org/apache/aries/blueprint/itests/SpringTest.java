@@ -21,14 +21,17 @@ package org.apache.aries.blueprint.itests;
 import java.util.List;
 
 import org.apache.aries.blueprint.testbundles.BeanC;
+import org.apache.aries.blueprint.testbundles.BeanCItf;
 import org.junit.Test;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class SpringTest extends AbstractBlueprintIntegrationTest {
 
@@ -42,8 +45,15 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
         List list = (List) container.getComponentInstance("springList");
         System.out.println(list);
 
-        BeanC beanC = (BeanC) list.get(4);
+        BeanCItf beanC = (BeanCItf) list.get(4);
         assertEquals(1, beanC.getInitialized());
+
+        try {
+            beanC.doSomething();
+            fail("Should have thrown an exception because the transaction manager is not defined");
+        } catch (NoSuchBeanDefinitionException e) {
+            // expected
+        }
     }
 
     @org.ops4j.pax.exam.Configuration

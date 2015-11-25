@@ -18,7 +18,9 @@ package org.apache.aries.blueprint.testbundles;
 
 import javax.annotation.PostConstruct;
 
-public class BeanC {
+import org.springframework.transaction.annotation.Transactional;
+
+public class BeanC implements BeanCItf {
 
     private final BeanA beanA;
     private int initialized;
@@ -30,6 +32,10 @@ public class BeanC {
     @PostConstruct
     public void start() {
         this.initialized++;
+    }
+
+    @Transactional
+    public void doSomething() {
     }
 
     public int getInitialized() {
