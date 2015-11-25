@@ -30,6 +30,8 @@
 
     <annotation-driven xmlns="http://www.springframework.org/schema/tx"/>
 
+    <bean:import resource="spring/imported.xml" />
+
     <bean:beans default-autowire="constructor">
 
         <context:annotation-config />
@@ -40,11 +42,6 @@
 
     <bean id="beanB" class="org.apache.aries.blueprint.testbundles.BeanB">
         <property name="beanA" ref="beanA"/>
-    </bean>
-
-    <bean name="beanA" class="org.apache.aries.blueprint.testbundles.BeanAFactory"
-          factory-method="createBean" xmlns="http://www.springframework.org/schema/beans">
-        <constructor-arg value="arg1"/>
     </bean>
 
     <util:list id="springList" xmlns="http://www.springframework.org/schema/beans">
