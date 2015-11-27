@@ -38,6 +38,9 @@ public class SpringNamespaceHandlerResolver implements NamespaceHandlerResolver 
             if (handler instanceof BlueprintNamespaceHandler) {
                 return ((BlueprintNamespaceHandler) handler).getSpringHandler();
             }
+            else if (handler != null) {
+                return new SpringNamespaceHandler(parserContext, handler);
+            }
         } catch (ComponentDefinitionException e) {
             // Ignore
         }

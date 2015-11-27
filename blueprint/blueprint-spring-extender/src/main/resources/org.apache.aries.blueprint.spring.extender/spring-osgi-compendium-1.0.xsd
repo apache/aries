@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<xsd:schema xmlns="http://www.springframework.org/schema/osgi-compendium"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns:tool="http://www.springframework.org/schema/tool"
+            targetNamespace="http://www.springframework.org/schema/osgi-compendium"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            version="1.0">
+
+    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+    <xsd:import namespace="http://www.springframework.org/schema/tool"/>
+
+    <xsd:annotation>
+        <xsd:documentation><![CDATA[
+            Namespace support for the compendium services provided by Spring Dynamic Modules.
+        ]]></xsd:documentation>
+    </xsd:annotation>
+
+    <!-- property placeholder -->
+    
+    <xsd:element name="property-placeholder" type="TpropertyPlaceholder">
+    	<xsd:annotation>
+    		<xsd:documentation><![CDATA[
+    			Defines a property placeholder that replaces property values using
+    			delimited values ( ${...} by default) with properties sourced from
+    			the Configuration Admin service under the given persistent id.
+    		]]></xsd:documentation>
+    		<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="java.util.Properties"/>
+				</tool:annotation>
+			</xsd:appinfo>			
+    	</xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="TpropertyPlaceholder">
+        <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+                <xsd:sequence minOccurs="0" maxOccurs="1">
+                    <!-- nested properties declaration -->
+                    <xsd:element name="default-properties" type="beans:propsType" minOccurs="0" maxOccurs="1">
+                    	<xsd:annotation>
+                    		<xsd:documentation><![CDATA[
+                    			Default property value to use for placeholder replacement
+                    			when the associated keys cannot be found under the given
+                    			persistent id.
+                    		]]></xsd:documentation>
+                    	</xsd:annotation>
+                    </xsd:element>
+                </xsd:sequence>
+                <xsd:attribute name="persistent-id" type="xsd:string" use="required">
+                	<xsd:annotation>
+                		<xsd:documentation><![CDATA[
+                			The persistent-id to lookup in Configuration Admin. Must refer to the pid of 
+                			a managed service, and not a managed service factory.
+                		]]></xsd:documentation>
+                	</xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="placeholder-prefix" type="xsd:string" use="optional" default="${">
+                	<xsd:annotation>
+                		<xsd:documentation><![CDATA[
+                			The prefix to use for placeholder values. The default is '${'.
+                		]]></xsd:documentation>
+                	</xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="placeholder-suffix" type="xsd:string" use="optional" default="}">
+                	<xsd:annotation>
+                		<xsd:documentation><![CDATA[
+                			The suffix to use for placeholder values. The default is '}'.
+                		]]></xsd:documentation>
+                	</xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="defaults-ref" type="xsd:string" use="optional">
+                	<xsd:annotation>
+                		<xsd:documentation><![CDATA[
+                			Refers to a bean of type Properties or Map that supplies default placeholder 
+                			replacement values to be used when the associated keys cannot be found under the given
+                			persistent id. 
+                		]]></xsd:documentation>
+                	</xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!--  ELEMENTS BELOW THIS LINE ARE NOT SUPPORTED IN THE 1.0 RELEASE -->
+
+    <!--  managed-service  -->
+
+    <xsd:element name="managed-service" type="TmanagedService">
+    	<xsd:annotation>
+    		<xsd:documentation><![CDATA[
+    			Defines a bean based on the given class name, and with properties autowired-by-name based
+    			on the configuration stored under the given persistent id.
+    		]]></xsd:documentation>
+    	</xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="TmanagedService">
+        <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+ 					<xsd:group ref="beans:beanElements"/>
+					<xsd:attributeGroup ref="beans:beanAttributes"/>
+					<xsd:attribute name="persistent-id" type="xsd:string" use="required">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+								The persistent-id under which the configuration for this bean is stored in 
+								the Configuration Admin service.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="updateStrategy" type="TupdateStrategyType" use="optional">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+								The strategy to use when the configuration data backing the beans defined by this element is 
+								updated. The default value is 'none', meaning that any update after the initial configuration
+								of the beans is ignored. A value of 'bean-managed' means that the method specified in the
+								'update-method' attribute will be invoked. A value of 'container-managed' means that the container
+								will autowire the bean instance by name with the new property set.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="update-method" type="xsd:string" use="optional">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+								The update-method to invoke when using a 'bean-managed' update strategy.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+				</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	
+    <!--  managed-service-factory -->
+
+    <xsd:element name="managed-service-factory" type="TmanagedServiceFactory">
+    	<xsd:annotation>
+    		<xsd:documentation><![CDATA[
+    			Defines a collection of beans based on the given class name, and with properties autowired-by-name based
+    			on the configuration sets stored under the given factory persistent id.
+    		]]></xsd:documentation>
+    	</xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="TmanagedServiceFactory">
+        <xsd:complexContent>
+            <xsd:extension base="beans:identifiedType">
+ 					<xsd:group ref="beans:beanElements"/>
+					<xsd:attributeGroup ref="beans:beanAttributes"/>
+					<xsd:attribute name="factory-pid" type="xsd:string" use="required">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+								The factory persistent id under which the configuration sets for the beans defined by 
+								this element are stored in the Configuration Admin service.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="updateStrategy" type="TupdateStrategyType" use="optional">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+								The strategy to use when the configuration data backing the beans defined by this element is 
+								updated. The default value is 'none', meaning that any update after the initial configuration
+								of the beans is ignored. A value of 'bean-managed' means that the method specified in the
+								'update-method' attribute will be invoked. A value of 'container-managed' means that the container
+								will autowire the bean instance by name with the new property set.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attribute name="update-method" type="xsd:string" use="optional">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+								The update-method to invoke when using a 'bean-managed' update strategy.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:simpleType name="TupdateStrategyType">
+	  <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="none"/>
+            <xsd:enumeration value="bean-managed"/>
+            <xsd:enumeration value="container-managed"/>
+        </xsd:restriction>
+	</xsd:simpleType>
+
+    <!-- config-properties -->
+
+    <xsd:element name="config-properties" type="TconfigProperties">
+    	<xsd:annotation>
+    		<xsd:documentation><![CDATA[
+    			Declares that the properties found in the Configuration Admin service under the given
+    			persistent id should be exported as properties of the registered service.
+    		]]></xsd:documentation>
+    	</xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="TconfigProperties">
+        <xsd:attribute name="persistent-id" type="xsd:string" use="required">
+        	<xsd:annotation>
+        		<xsd:documentation><![CDATA[
+        			The persistent id under which the properties to be exported are registered.
+        		]]></xsd:documentation>
+        	</xsd:annotation>
+        </xsd:attribute>
+	</xsd:complexType>
+
+</xsd:schema>

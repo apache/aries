@@ -56,6 +56,7 @@
         <module>blueprint-authz</module>
         <module>blueprint-testbundles</module>
         <module>blueprint-spring</module>
+        <module>blueprint-spring-extender</module>
         <module>blueprint-sample-annotation</module>
         <module>blueprint-sample-fragment</module>
         <module>blueprint-sample-war</module>
