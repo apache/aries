@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<xsd:schema xmlns="http://www.springframework.org/schema/osgi-compendium"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            xmlns:osgi="http://www.springframework.org/schema/osgi"
+            xmlns:tool="http://www.springframework.org/schema/tool"
+            targetNamespace="http://www.springframework.org/schema/osgi-compendium"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            version="1.2">
+
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.springframework.org/schema/beans"/>
+    <xsd:import namespace="http://www.springframework.org/schema/tool"/>
+    <xsd:import namespace="http://www.springframework.org/schema/osgi" 
+    	schemaLocation="http://www.springframework.org/schema/osgi/spring-osgi.xsd"/> 
+    
+
+    <xsd:annotation>
+        <xsd:documentation><![CDATA[
+    Namespace support for the compendium services provided by Spring Dynamic Modules.
+        ]]></xsd:documentation>
+    </xsd:annotation>
+
+	<!-- internal reusable type -->
+	<xsd:attributeGroup name="updateAttributes">
+		<xsd:attribute name="update-strategy" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+	The strategy to use when the configuration data backing the beans defined by this element is 
+	updated. The default value is 'none', meaning that any update after the initial configuration
+	of the beans is ignored. A value of 'bean-managed' means that the method specified in the
+	'update-method' attribute will be invoked. A value of 'container-managed' means that the container
+	will autowire the bean instance by name with the new property set.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+		            <xsd:enumeration value="none"/>
+		            <xsd:enumeration value="bean-managed"/>
+		            <xsd:enumeration value="container-managed"/>
+		        </xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="update-method" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+	The update-method to invoke when using a 'bean-managed' update strategy.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>			
+	</xsd:attributeGroup>
+    
+    
+    <xsd:element name="managed-properties">
+    	<xsd:annotation>
+    		<xsd:documentation><![CDATA[
+    Defines a bean based on the given class name and configuration, with properties autowired-by-name 
+    based on the configuration stored under the given persistent id.
+    		]]></xsd:documentation>
+    	</xsd:annotation>
+    	<xsd:complexType>
+	       	<xsd:attributeGroup ref="updateAttributes"/>
+		    <xsd:attribute name="persistent-id" type="xsd:string" use="required">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	The persistent-id under which the configuration for this bean is stored in 
+	the Configuration Admin service.
+					]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+    <!--  managed-service-factory -->
+
+    <xsd:element name="managed-service-factory">
+       	<xsd:annotation>
+    		<xsd:documentation><![CDATA[
+    Defines a collection of beans based on the given class name, with properties autowired-by-name based
+    on the configuration sets stored under the given factory persistent id.
+    		]]></xsd:documentation>
+    	</xsd:annotation>
+        <xsd:complexType>
+        	<xsd:complexContent>
+	            <xsd:extension base="osgi:TbaseService">
+	            	<xsd:sequence>
+	                    <xsd:element name="interfaces" type="beans:listOrSetType" minOccurs="0" maxOccurs="1">
+	                    	<xsd:annotation>
+	                    		<xsd:documentation><![CDATA[
+    The set of service interfaces to advertise in the service registry.
+	                    		]]></xsd:documentation>
+	                    	</xsd:annotation>
+	                    </xsd:element>
+	                    <xsd:element name="registration-listener" type="osgi:TserviceRegistrationListener" minOccurs="0" maxOccurs="unbounded">
+	                    	<xsd:annotation>
+	                    		<xsd:documentation><![CDATA[
+    Defines a listener that will be notified when this service is registered or unregistered in the
+    OSGi service registry.
+	                    		]]></xsd:documentation>
+	                    	</xsd:annotation>
+	                	</xsd:element>
+		            	<!-- the bean definition template -->
+	                    <xsd:any namespace="##other" minOccurs="1" maxOccurs="1" processContents="skip">
+	   				       	<xsd:annotation>
+	                    		<xsd:documentation><![CDATA[
+	Defines the service definition template.
+	                    		]]></xsd:documentation>
+	                    	</xsd:annotation>
+	                    </xsd:any>
+		           	</xsd:sequence>
+		           	<xsd:attribute name="factory-pid" type="xsd:string" use="required">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+	The persistent-id under which the configuration for this bean is stored in 
+	the Configuration Admin service.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+					<xsd:attributeGroup ref="updateAttributes"/>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+    
+    <!-- cm-properties -->
+    <xsd:element name="cm-properties">
+    	<xsd:annotation>
+    		<xsd:documentation source="java:org.springframework.osgi.compendium.cm.ConfigAdminPropertiesFactoryBean"><![CDATA[
+    Exposes the properties found in the Configuration Admin service under the given persistent id.
+    		]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="java.util.Properties"/>
+				</tool:annotation>
+			</xsd:appinfo>
+    	</xsd:annotation>
+    	<xsd:complexType>
+	    	<xsd:complexContent>
+	    		<xsd:extension base="beans:propsType">
+	    			<xsd:attribute name="id" type="xsd:ID"/>
+	    		    <xsd:attribute name="persistent-id" type="xsd:string" use="required">
+			        	<xsd:annotation>
+	        				<xsd:documentation><![CDATA[
+	The persistent id under which the properties reside.
+	        				]]></xsd:documentation>
+	        			</xsd:annotation>
+	        		</xsd:attribute>
+					<xsd:attribute name="local-override" type="xsd:boolean">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+	Specifies whether local properties override properties from the Configuration Admin service.
+	Default is "false": properties from Configuration Admin service override local defaults.
+	If set to "true", local properties will override properties from Configuration Admin service.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:attribute>
+	    		</xsd:extension>
+	    	</xsd:complexContent>
+    	</xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
