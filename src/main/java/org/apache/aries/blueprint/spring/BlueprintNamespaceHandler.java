@@ -22,7 +22,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.NamespaceHandler2;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
@@ -112,7 +111,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler2 {
 
     @Override
     public ComponentMetadata decorate(Node node, ComponentMetadata componentMetadata, ParserContext parserContext) {
-        throw new UnsupportedOperationException();
+        return componentMetadata;
     }
 
     private org.springframework.beans.factory.xml.ParserContext getOrCreateParserContext(ParserContext parserContext) {
@@ -203,7 +202,11 @@ public class BlueprintNamespaceHandler implements NamespaceHandler2 {
             ReaderEventListener listener = new EmptyReaderEventListener();
             SourceExtractor extractor = new NullSourceExtractor();
             NamespaceHandlerResolver resolver = new SpringNamespaceHandlerResolver(parserContext);
-            XmlReaderContext xmlReaderContext = new XmlReaderContext(resource, problemReporter, listener, extractor, xbdr, resolver);
+            xbdr.setProblemReporter(problemReporter);
+            xbdr.setEventListener(listener);
+            xbdr.setSourceExtractor(extractor);
+            xbdr.setNamespaceHandlerResolver(resolver);
+            XmlReaderContext xmlReaderContext = xbdr.createReaderContext(resource);
             BeanDefinitionParserDelegate bdpd = new BeanDefinitionParserDelegate(xmlReaderContext);
             return new org.springframework.beans.factory.xml.ParserContext(xmlReaderContext, bdpd);
         } catch (Exception e) {
