@@ -57,6 +57,7 @@ import org.osgi.framework.BundleReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 
 public class ClientWeavingHookGenericCapabilityTest {
@@ -664,6 +665,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
+        EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(null).anyTimes();
         EasyMock.replay(consumerBundle);
 
         List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(otherBundles));
