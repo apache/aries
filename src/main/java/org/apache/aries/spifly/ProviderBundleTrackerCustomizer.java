@@ -45,6 +45,9 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
@@ -73,15 +76,16 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         Map<String, Object> customAttributes = new HashMap<String, Object>();
         if (bundle.getHeaders().get(SpiFlyConstants.REQUIRE_CAPABILITY) != null) {
             try {
-                providedServices = readServiceLoaderMediatorCapabilityMetadata(bundle.getHeaders(), customAttributes);
+                providedServices = readServiceLoaderMediatorCapabilityMetadata(bundle, customAttributes);
             } catch (InvalidSyntaxException e) {
                 log(LogService.LOG_ERROR, "Unable to read capabilities from bundle " + bundle, e);
             }
         }
 
         boolean fromSPIProviderHeader = false;
-        if (providedServices == null && bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER) != null) {
-            String header = bundle.getHeaders().get(SpiFlyConstants.SPI_PROVIDER_HEADER).toString().trim();
+        String spiProviderHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.SPI_PROVIDER_HEADER);
+        if (providedServices == null && spiProviderHeader != null) {
+            String header = spiProviderHeader.trim();
             if ("*".equals(header)) {
                 providedServices = new ArrayList<String>();
             } else {
@@ -204,25 +208,62 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return registrations;
     }
 
+    private String getHeaderFromBundleOrFragment(Bundle bundle, String headerName) {
+        return getHeaderFromBundleOrFragment(bundle, headerName, null);
+    }
+
+    private String getHeaderFromBundleOrFragment(Bundle bundle, String headerName, String matchString) {
+        String val = bundle.getHeaders().get(headerName);
+        if (matches(val, matchString))
+            return val;
+
+        BundleRevision rev = bundle.adapt(BundleRevision.class);
+        if (rev != null) {
+            BundleWiring wiring = rev.getWiring();
+            if (wiring != null) {
+                for (BundleWire wire : wiring.getProvidedWires("osgi.wiring.host")) {
+                    Bundle fragment = wire.getRequirement().getRevision().getBundle();
+                    val = fragment.getHeaders().get(headerName);
+                    if (matches(val, matchString)) {
+                        return val;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private boolean matches(String val, String matchString) {
+        if (val == null)
+            return false;
+
+        if (matchString == null)
+            return true;
+
+        int idx = val.indexOf(matchString);
+        return idx >= 0;
+    }
+
     // An empty list returned means 'all SPIs'
     // A return value of null means no SPIs
     // A populated list means: only these SPIs
-    private List<String> readServiceLoaderMediatorCapabilityMetadata(Dictionary<?,?> headers, Map<String, Object> customAttributes) throws InvalidSyntaxException {
-        Object requirementHeader = headers.get(SpiFlyConstants.REQUIRE_CAPABILITY);
+    private List<String> readServiceLoaderMediatorCapabilityMetadata(Bundle bundle, Map<String, Object> customAttributes) throws InvalidSyntaxException {
+        String requirementHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
         if (requirementHeader == null)
             return null;
 
-        List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(requirementHeader.toString());
+        List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(requirementHeader);
         GenericMetadata extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
         if (extenderRequirement == null)
             return null;
 
         List<GenericMetadata> capabilities;
-        Object capabilityHeader = headers.get(SpiFlyConstants.PROVIDE_CAPABILITY);
+        String capabilityHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
         if (capabilityHeader == null) {
             capabilities = Collections.emptyList();
         } else {
-            capabilities = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader.toString());
+            capabilities = ManifestHeaderProcessor.parseCapabilityString(capabilityHeader);
         }
 
         List<String> serviceNames = new ArrayList<String>();
