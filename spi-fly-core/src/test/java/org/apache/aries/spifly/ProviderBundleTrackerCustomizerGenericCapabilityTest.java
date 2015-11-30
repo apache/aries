@@ -18,12 +18,6 @@
  */
 package org.apache.aries.spifly;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -43,16 +37,19 @@ import org.apache.aries.spifly.impl4.MySPIImpl4b;
 import org.apache.aries.spifly.impl4.MySPIImpl4c;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.easymock.IExpectationSetters;
-
 import org.junit.Test;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     @Test
@@ -79,7 +76,6 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI");
         Bundle implBundle = mockSPIBundle(implBC, headers);
 
-
         assertEquals("Precondition", 0, activator.findProviderBundles("org.apache.aries.mytest.MySPI").size());
         // Call addingBundle();
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
@@ -98,6 +94,38 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         // sreg.unregister() should have been called.
         EasyMock.verify(sreg);
+    }
+
+    @Test
+    public void testCapReqHeadersInFragment() throws Exception {
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
+        EasyMock.replay(mediatorBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
+
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
+        sreg.unregister();
+        EasyMock.expectLastCall();
+        EasyMock.replay(sreg);
+
+        BundleContext implBC = mockSPIBundleContext(sreg);
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
+        headers.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI");
+        Bundle implBundle = mockSPIBundle(implBC, headers);
+
+        assertEquals("Precondition", 0, activator.findProviderBundles("org.apache.aries.mytest.MySPI").size());
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
+        assertEquals(1, bundles.size());
+        assertSame(implBundle, bundles.iterator().next());
+
     }
 
     @Test
@@ -445,7 +473,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
 
         implBC.registerService(EasyMock.anyString(),
-                               EasyMock.anyObject(), 
+                               EasyMock.anyObject(),
                                (Dictionary<String,?>)EasyMock.anyObject());
         EasyMock.expectLastCall().andAnswer(new IAnswer<ServiceRegistration<Object>>() {
             @Override

@@ -243,6 +243,7 @@ public class ClientWeavingHookOSGi43Test  {
         EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
+        EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(null).anyTimes();
         EasyMock.replay(consumerBundle);
 
         List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(otherBundles));
