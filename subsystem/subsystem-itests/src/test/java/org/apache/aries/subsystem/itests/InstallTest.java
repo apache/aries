@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.internal.BasicSubsystem;
 import org.apache.aries.subsystem.itests.util.Utils;
 import org.apache.aries.unittest.fixture.ArchiveFixture;
@@ -120,7 +119,7 @@ public class InstallTest extends SubsystemTest {
     public void testLocationAsDirectoryUrl() throws Exception {
     	File file = new File("compositeDir");
     	try {
-    		Subsystem subsystem = installSubsystem(getRootSubsystem(), file.toURI().toString(), null);
+    		Subsystem subsystem = installSubsystem(getRootSubsystem(), file.toURI().toString(), null, (Boolean[]) null);
     		try {
     			assertSymbolicName("org.apache.aries.subsystem.itests.composite.dir", subsystem); 
     			assertConstituents(3, subsystem);

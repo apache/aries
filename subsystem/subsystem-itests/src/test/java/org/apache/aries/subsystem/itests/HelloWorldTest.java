@@ -79,7 +79,7 @@ public class HelloWorldTest extends SubsystemTest
     // Sanity check, application should not install if no IDirectoryFinder 
     // services are registered, which should be the case on entry to this test.
     try {
-      installSubsystem(getRootSubsystem(), TestIDirectoryFinder.HELLO_ID_STRING, null);
+      installSubsystem(getRootSubsystem(), TestIDirectoryFinder.HELLO_ID_STRING, null, (Boolean[]) null);
       fail("installed esa application from idir without an idirfinder service, shouldn't be possible.");
     } catch (SubsystemException se) {
       // expected exception
@@ -95,7 +95,7 @@ public class HelloWorldTest extends SubsystemTest
     // Call the SubsystemTest.installSubsystem method that does not create a URL
     // and stream from the location, as we just need the location string passed 
     // through to the installing root subsystem.
-    Subsystem subsystem = installSubsystem(getRootSubsystem(), TestIDirectoryFinder.HELLO_ID_STRING, null);    
+    Subsystem subsystem = installSubsystem(getRootSubsystem(), TestIDirectoryFinder.HELLO_ID_STRING, null, (Boolean[]) null);    
     try {
       checkHelloSubsystem(subsystem);
     } finally {

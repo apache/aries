@@ -121,9 +121,11 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 		builder.append(symbolicName)
 			.append(';')
 			.append(Clause.ATTRIBUTE_VERSION)
-			.append('=')
+			.append("=\"[")
 			.append(version.toString())
-			.append(';')
+			.append(',')
+			.append(version.toString())
+			.append("]\";")
 			.append(Clause.ATTRIBUTE_TYPE)
 			.append('=')
 			.append(type);

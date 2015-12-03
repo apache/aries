@@ -34,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,16 +43,18 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.itest.RichBundleContext;
 import org.apache.aries.subsystem.AriesSubsystem;
+import org.apache.aries.subsystem.core.archive.AriesProvisionDependenciesDirective;
 import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.archive.TypeAttribute;
+import org.apache.aries.subsystem.core.internal.BasicSubsystem;
 import org.apache.aries.subsystem.core.internal.BundleResource;
 import org.apache.aries.subsystem.core.internal.SubsystemIdentifier;
 import org.apache.aries.subsystem.itests.util.TestRepository;
@@ -157,6 +160,12 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 
     protected void init() throws Exception {
 
+    }
+    
+    protected long lastSubsystemId() throws Exception {
+    	Method method = SubsystemIdentifier.class.getDeclaredMethod("getLastId");
+    	method.setAccessible(true);
+    	return (Long)method.invoke(null);
     }
 
     private Option modelerBundles() {
@@ -301,14 +310,26 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
  	}
 
 	protected void assertEvent(Subsystem subsystem, Subsystem.State state, SubsystemEventHandler.ServiceEventInfo event, int type) {
+		assertEvent(subsystem.getSubsystemId(), subsystem.getSymbolicName(), 
+				subsystem.getVersion(), subsystem.getType(), state, event, type);
+	}
+	
+	protected void assertEvent(
+			long id, 
+			String symbolicName, 
+			Version version, 
+			String type, 
+			Subsystem.State state,
+			SubsystemEventHandler.ServiceEventInfo event,
+			int eventType) {
 		// TODO Could accept a ServiceRegistration as an argument and verify it against the one in the event.
 		assertNotNull("No event", event);
-		assertEquals("Wrong ID", subsystem.getSubsystemId(), event.getId());
-		assertEquals("Wrong symbolic name", subsystem.getSymbolicName(), event.getSymbolicName());
-		assertEquals("Wrong version", subsystem.getVersion(), event.getVersion());
-		assertEquals("Wrong type", subsystem.getType(), event.getType());
+		assertEquals("Wrong ID", id, event.getId());
+		assertEquals("Wrong symbolic name", symbolicName, event.getSymbolicName());
+		assertEquals("Wrong version", version, event.getVersion());
+		assertEquals("Wrong type", type, event.getType());
 		assertEquals("Wrong state", state, event.getState());
-		assertEquals("Wrong event type", type, event.getEventType());
+		assertEquals("Wrong event type", eventType, event.getEventType());
 	}
 
 	protected String assertHeaderExists(Subsystem subsystem, String name) {
@@ -782,16 +803,16 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		return installSubsystemFromFile(parent, new File(fileName));
 	}
 
-	protected Subsystem installSubsystemFromFile(String fileName) throws Exception {
-		return installSubsystemFromFile(new File(fileName));
+	protected Subsystem installSubsystemFromFile(String fileName, Boolean ... configChecks) throws Exception {
+		return installSubsystemFromFile(new File(fileName), configChecks);
 	}
 
 	protected Subsystem installSubsystemFromFile(Subsystem parent, File file) throws Exception {
 		return installSubsystem(parent, file.toURI().toURL().toExternalForm());
 	}
 
-	private Subsystem installSubsystemFromFile(File file) throws Exception {
-		return installSubsystem(getRootSubsystem(), file.toURI().toURL().toExternalForm());
+	private Subsystem installSubsystemFromFile(File file, Boolean ... configChecks) throws Exception {
+		return installSubsystem(getRootSubsystem(), file.toURI().toURL().toExternalForm(), configChecks);
 	}
 	
 	protected Subsystem installSubsystemFromFile(Subsystem parent, File file, String location) throws Exception {
@@ -806,26 +827,36 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		return installSubsystem(getRootSubsystem(), location, content);
 	}
 
-	protected Subsystem installSubsystem(Subsystem parent, String location) throws Exception {
+	protected Subsystem installSubsystem(Subsystem parent, String location, Boolean ... configChecks) throws Exception {
 		// The following input stream is closed by Subsystem.install.
-		return installSubsystem(parent, location, new URL(location).openStream());
+		return installSubsystem(parent, location, new URL(location).openStream(), configChecks);
 	}
 
-	protected Subsystem installSubsystem(Subsystem parent, String location, InputStream content) throws Exception {
-		subsystemEvents.clear();
-		Subsystem subsystem = parent.install(location, content);
-		assertSubsystemNotNull(subsystem);
-		assertEvent(subsystem, State.INSTALLING, 5000);
-		assertEvent(subsystem, State.INSTALLED, 5000);
-		assertChild(parent, subsystem);
-		assertLocation(location, subsystem);
-		assertParent(parent, subsystem);
-		assertState(State.INSTALLED, subsystem);
-		assertLocation(location, subsystem);
-		assertId(subsystem);
-		// TODO This does not take into account nested directories.
-//		assertDirectory(subsystem);
-		return subsystem;
+	protected Subsystem installSubsystem(Subsystem parent, String location, InputStream content, Boolean ... configChecks) throws Exception {
+	    boolean ariesProvisionDepsAtInstall = true; //set default value
+	    if (configChecks!=null && configChecks.length > 0) {
+	        ariesProvisionDepsAtInstall = configChecks[0].booleanValue();
+	    }
+	    subsystemEvents.clear();
+	    Subsystem subsystem = parent.install(location, content);
+	    assertSubsystemNotNull(subsystem);
+	    assertEvent(subsystem, State.INSTALLING, 5000);
+	    if (ariesProvisionDepsAtInstall) {
+	        assertEvent(subsystem, State.INSTALLED, 5000);
+	    }
+	    assertChild(parent, subsystem);
+	    assertLocation(location, subsystem);
+	    assertParent(parent, subsystem);
+	    State finalState=State.INSTALLED;
+	    if (!ariesProvisionDepsAtInstall) {
+	        finalState=State.INSTALLING;
+	    }
+	    assertState(finalState, subsystem);
+	    assertLocation(location, subsystem);
+	    assertId(subsystem);
+	    // TODO This does not take into account nested directories.
+	    //		assertDirectory(subsystem);
+	    return subsystem;
 	}
 
 	protected void registerRepositoryService(Repository repository) {
@@ -879,14 +910,27 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertBundleState(Bundle.ACTIVE, bundle.getSymbolicName(), subsystem);
 	}
 
-	protected void startSubsystem(Subsystem subsystem) throws Exception {
-		startSubsystemFromInstalled(subsystem);
+	protected void startSubsystem(Subsystem subsystem, Boolean ... configChecks) throws Exception {
+		startSubsystemFromInstalled(subsystem, configChecks);
 	}
 
-	protected void startSubsystemFromInstalled(Subsystem subsystem) throws InterruptedException {
-		assertState(State.INSTALLED, subsystem);
+	protected void startSubsystemFromInstalled(Subsystem subsystem, Boolean ... configChecks) throws InterruptedException {
+	    boolean ariesProvisionDependenciesAtInstall = true; //set default value
+	    if (configChecks.length>0) {
+	        ariesProvisionDependenciesAtInstall = configChecks[0].booleanValue();
+	    }
+	    if (ariesProvisionDependenciesAtInstall) {
+		    assertState(State.INSTALLED, subsystem);
+	    }
+	    else {
+	        assertState(State.INSTALLING, subsystem);
+	    }
+	        
 		subsystemEvents.clear();
 		subsystem.start();
+		if (!ariesProvisionDependenciesAtInstall) {
+		    assertEvent(subsystem, State.INSTALLED, 5000);
+		}
 		assertEvent(subsystem, State.RESOLVING, 5000);
 		assertEvent(subsystem, State.RESOLVED, 5000);
 		assertEvent(subsystem, State.STARTING, 5000);
@@ -936,27 +980,44 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void uninstallSubsystem(Subsystem subsystem) throws Exception {
-		assertState(EnumSet.of(State.INSTALLED, State.RESOLVED), subsystem);
-		subsystemEvents.clear();
-		Collection<Subsystem> parents = subsystem.getParents();
+		uninstallSubsystem(subsystem, false);
+	}
+	
+	protected void uninstallSubsystem(Subsystem subsystem, boolean quietly) throws Exception {
+		BasicSubsystem basicSubsystem = (BasicSubsystem)subsystem;
+		AriesProvisionDependenciesDirective directive = basicSubsystem.getAriesProvisionDependenciesDirective();
 		Bundle b = null;
 		Region region = null;
 		RegionDigraph digraph = context().getService(RegionDigraph.class);
-		if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
-				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)) {
-			b = getRegionContextBundle(subsystem);
-			region = digraph.getRegion(b);
+		if (!quietly) {
+			if (directive.isResolve()) {
+				assertState(EnumSet.of(State.INSTALLING, State.INSTALLED, State.RESOLVED), subsystem);
+			}
+			else {
+				assertState(EnumSet.of(State.INSTALLED, State.RESOLVED), subsystem);
+			}
+			subsystemEvents.clear();
+			if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
+					|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)) {
+				b = getRegionContextBundle(subsystem);
+				region = digraph.getRegion(b);
+			}
 		}
 		State state = subsystem.getState();
 		subsystem.uninstall();
-		if (!EnumSet.of(State.INSTALL_FAILED, State.INSTALLED, State.INSTALLING).contains(state))
+		if (quietly) {
+			return;
+		}
+		Collection<Subsystem> parents = subsystem.getParents();
+		if (!EnumSet.of(State.INSTALL_FAILED, State.INSTALLED, State.INSTALLING).contains(state)) {
 			assertEvent(subsystem, State.INSTALLED, 5000);
+		}
 		assertEvent(subsystem, State.UNINSTALLING, 5000);
 		assertEvent(subsystem, State.UNINSTALLED, 5000);
 		assertState(State.UNINSTALLED, subsystem);
-		for (Subsystem parent : parents)
+		for (Subsystem parent : parents) {
 			assertNotChild(parent, subsystem);
-//		assertNotDirectory(subsystem);
+		}
 		if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
 				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)) {
 			assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
@@ -968,7 +1029,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		if (subsystem == null)
 			return;
 		try {
-			uninstallSubsystem(subsystem);
+			uninstallSubsystem(subsystem, true);
 		}
 		catch (Throwable t) {
 			t.printStackTrace();

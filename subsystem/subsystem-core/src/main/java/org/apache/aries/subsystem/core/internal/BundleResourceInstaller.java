@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.aries.util.io.IOUtils;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.Version;
 import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.wiring.BundleCapability;
@@ -33,7 +32,6 @@ import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class BundleResourceInstaller extends ResourceInstaller {
@@ -199,9 +197,6 @@ public class BundleResourceInstaller extends ResourceInstaller {
 		try {
 			bundle = provisionTo.getRegion().installBundleAtLocation(getLocation(), is);
 		}
-		catch (BundleException e) {
-			throw new SubsystemException(e);
-		}
 		finally {
 			ThreadLocalSubsystem.remove();
 			// Although Region.installBundle ultimately calls BundleContext.install,
@@ -210,15 +205,6 @@ public class BundleResourceInstaller extends ResourceInstaller {
 			// be closed.
 			IOUtils.close(is);
 		}
-		coordination.addParticipant(new Participant() {
-			public void ended(Coordination coordination) throws Exception {
-				// Nothing
-			}
-
-			public void failed(Coordination coordination) throws Exception {
-				bundle.uninstall();
-			}
-		});
 		// Set the start level of all bundles managed (i.e. installed) by the
 		// subsystems implementation to 1 in case the framework's default bundle
 		// start level has been changed. Otherwise, start failures will occur

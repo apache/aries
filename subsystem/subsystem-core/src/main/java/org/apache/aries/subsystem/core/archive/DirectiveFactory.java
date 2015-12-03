@@ -13,24 +13,78 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DirectiveFactory {
+	private interface Creator {
+		Directive create(String value);
+	}
+	
+	private static final Map<String, Creator> map = new HashMap<String, Creator>();
+	
+	static {
+		map.put(AriesProvisionDependenciesDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return AriesProvisionDependenciesDirective.getInstance(value);
+			}
+		});
+		map.put(CardinalityDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return CardinalityDirective.getInstance(value);
+			}
+		});
+		map.put(EffectiveDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return EffectiveDirective.getInstance(value);
+			}
+		});
+		map.put(FilterDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return new FilterDirective(value);
+			}
+		});
+		map.put(ProvisionPolicyDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return ProvisionPolicyDirective.getInstance(value);
+			}
+		});
+		map.put(ReferenceDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return ReferenceDirective.getInstance(value);
+			}
+		});
+		map.put(ResolutionDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return ResolutionDirective.getInstance(value);
+			}
+		});
+		map.put(StartOrderDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return new StartOrderDirective(value);
+			}
+		});
+		map.put(VisibilityDirective.NAME, new Creator() {
+			@Override
+			public Directive create(String value) {
+				return VisibilityDirective.getInstance(value);
+			}
+		});
+	}
+	
 	public static Directive createDirective(String name, String value) {
-		if (ResolutionDirective.NAME.equals(name))
-			return ResolutionDirective.getInstance(value);
-		if (StartOrderDirective.NAME.equals(name))
-			return new StartOrderDirective(value);
-		if (FilterDirective.NAME.equals(name))
-			return new FilterDirective(value);
-		if (EffectiveDirective.NAME.equals(name))
-			return EffectiveDirective.getInstance(value);
-		if (VisibilityDirective.NAME.equals(name))
-			return VisibilityDirective.getInstance(value);
-		if (ProvisionPolicyDirective.NAME.equals(name))
-			return ProvisionPolicyDirective.getInstance(value);
-		if (ReferenceDirective.NAME.equals(name))
-			return ReferenceDirective.getInstance(value);
-		if (CardinalityDirective.NAME.equals(name))
-			return CardinalityDirective.getInstance(value);
-		return new GenericDirective(name, value);
+		Creator creator = map.get(name);
+		if (creator == null) {
+			return new GenericDirective(name, value);
+		}
+		return creator.create(value);
 	}
 }
