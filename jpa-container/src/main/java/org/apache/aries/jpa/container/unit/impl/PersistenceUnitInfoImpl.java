@@ -102,12 +102,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   }
 
   public ClassLoader getClassLoader() {
-    if (cl.get() == null) {
-        // use forced because for even for a resolved bundle we could otherwise get null
-        cl.compareAndSet(null, AriesFrameworkUtil.getClassLoaderForced(bundle));
-    }
-    
-    return cl.get();
+    return AriesFrameworkUtil.getClassLoaderForced(bundle);
   }
 
   @SuppressWarnings("unchecked")
