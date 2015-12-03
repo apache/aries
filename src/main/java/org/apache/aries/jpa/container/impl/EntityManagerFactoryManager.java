@@ -49,6 +49,8 @@ import org.apache.aries.jpa.container.quiesce.impl.QuiesceEMF;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -63,6 +65,10 @@ import org.slf4j.LoggerFactory;
     "unchecked", "rawtypes"
 })
 public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
+
+  public static final String DATA_SOURCE_NAME = "org.apache.aries.jpa.data.source.name";
+
+  public static final String DATA_SOURCE_NAME_JTA = "org.apache.aries.jpa.data.source.name.jta";
 
   /** The container's {@link BundleContext} */
   private final BundleContext containerContext;
@@ -81,10 +87,14 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   /** Quiesce this Manager */
   private boolean quiesce = false;
   
-  private volatile ServiceTracker tracker; 
-  
+  private volatile ServiceTracker jndiTracker;
+  private volatile ServiceTracker dataSourceFactoriesTracker;
+
   /** DataSourceFactories in use by persistence units in this bundle - class name key to collection of unit values */
-  private final ConcurrentMap<String, Collection<String>> dataSourceFactories = 
+  private final ConcurrentMap<String, Collection<String>> dataSourceFactories =
+         new ConcurrentHashMap<String, Collection<String>>();
+
+  private final ConcurrentMap<String, Collection<String>> jndiServices =
          new ConcurrentHashMap<String, Collection<String>>();
 
   /** Logger */
@@ -164,10 +174,19 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
         //Starting and active both require EMFs to be registered
       case Bundle.STARTING :
       case Bundle.ACTIVE :
-        if(tracker == null) {
-          tracker = new ServiceTracker(bundle.getBundleContext(), 
+        if(dataSourceFactoriesTracker == null) {
+          dataSourceFactoriesTracker = new ServiceTracker(bundle.getBundleContext(),
               "org.osgi.service.jdbc.DataSourceFactory", this);
-          tracker.open();
+          dataSourceFactoriesTracker.open();
+        }
+        if(jndiTracker == null) {
+          try {
+            jndiTracker = new ServiceTracker(bundle.getBundleContext(),
+                    FrameworkUtil.createFilter("(osgi.jndi.service.name=*)"), this);
+            jndiTracker.open();
+          } catch (InvalidSyntaxException e) {
+            throw new RuntimeException(e);
+          }
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Void> result = executor.submit(new Callable<Void>() {
@@ -185,9 +204,13 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
       case Bundle.STOPPING :
         //If we're stopping we no longer need to be quiescing
         quiesce = false;
-        if(tracker != null) {
-          tracker.close();
-          tracker = null;
+        if(jndiTracker != null) {
+          jndiTracker.close();
+          jndiTracker = null;
+        }
+        if(dataSourceFactoriesTracker != null) {
+          dataSourceFactoriesTracker.close();
+          dataSourceFactoriesTracker = null;
         }
         unregisterEntityManagerFactories();
         break;
@@ -274,7 +297,9 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
         Hashtable<String,Object> props = new Hashtable<String, Object>();
         String unitName = entry.getKey();
         
-        if(registrations.containsKey(unitName) || !!!availableDataSourceFactory(unitName))
+        if(registrations.containsKey(unitName) ||
+                !!!availableDataSourceFactory(unitName) ||
+                !!!availableJndiService(unitName))
           continue;
         
         props.put(PersistenceUnitConstants.OSGI_UNIT_NAME, unitName);
@@ -295,7 +320,43 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     }
   }
 
-  private boolean availableDataSourceFactory(String unitName) {
+  private boolean availableJndiService(String unitName) {
+    ManagedPersistenceUnitInfo mpui = persistenceUnits.get(unitName);
+
+    String dsName = (String) mpui.getContainerProperties().get(DATA_SOURCE_NAME);
+    if (dsName != null && dsName.startsWith("osgi:service/")) {
+      String jndi = dsName.substring("osgi:service/".length());
+      if (jndiServices.containsKey(jndi)) {
+        jndiServices.get(jndi).add(unitName);
+        if (_logger.isDebugEnabled())
+          _logger.debug(NLS.MESSAGES.getMessage("jndiservice.found", unitName, bundle.getSymbolicName(),
+              bundle.getVersion(), jndi));
+      } else {
+        _logger.debug(NLS.MESSAGES.getMessage("jndiservice.not.found", unitName, bundle.getSymbolicName(),
+            bundle.getVersion(), jndi));
+        return false;
+      }
+    }
+
+    String jtaDsName = (String) mpui.getContainerProperties().get(DATA_SOURCE_NAME_JTA);
+    if (jtaDsName != null && jtaDsName.startsWith("osgi:service/")) {
+      String jndi = jtaDsName.substring("osgi:service/".length());
+      if (jndiServices.containsKey(jndi)) {
+        jndiServices.get(jndi).add(unitName);
+        if (_logger.isDebugEnabled())
+          _logger.debug(NLS.MESSAGES.getMessage("jndiservice.found", unitName, bundle.getSymbolicName(),
+              bundle.getVersion(), jndi));
+      } else {
+        _logger.debug(NLS.MESSAGES.getMessage("jndiservice.not.found", unitName, bundle.getSymbolicName(),
+            bundle.getVersion(), jndi));
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+ private boolean availableDataSourceFactory(String unitName) {
     ManagedPersistenceUnitInfo mpui = persistenceUnits.get(unitName);
         
     String driver = (String) mpui.getPersistenceUnitInfo().getProperties().
@@ -405,9 +466,13 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     
     provider = null;
     persistenceUnits = null;
-    if(tracker != null) {
-      tracker.close();
-      tracker = null;
+    if(jndiTracker != null) {
+      jndiTracker.close();
+      jndiTracker = null;
+    }
+    if(dataSourceFactoriesTracker != null) {
+      dataSourceFactoriesTracker.close();
+      dataSourceFactoriesTracker = null;
     }
   }
 
@@ -473,74 +538,150 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   
   @Override
   public StringBuffer addingService(ServiceReference reference) {
-    //Use String.valueOf to save us from nulls
-    StringBuffer sb = new StringBuffer(String.valueOf(reference.getProperty("osgi.jdbc.driver.class")));
-    
-    //Only notify of a potential change if a new data source class is available
-    if(dataSourceFactories.putIfAbsent(sb.toString(), new ArrayList<String>()) == null) {
-      if(_logger.isDebugEnabled())
-        _logger.debug(NLS.MESSAGES.getMessage("new.datasourcefactory.available", sb.toString(), 
-            bundle.getSymbolicName(), bundle.getVersion()));
-      try {
-        bundleStateChange();
-      } catch (InvalidPersistenceUnitException e) {
-        //Not much we can do here unfortunately
-        _logger.warn(NLS.MESSAGES.getMessage("new.datasourcefactory.error", sb.toString(), 
-          bundle.getSymbolicName(), bundle.getVersion()), e);
+    Object driverClass = reference.getProperty("osgi.jdbc.driver.class");
+    if (driverClass != null) {
+      //Use String.valueOf to save us from nulls
+      StringBuffer sb = new StringBuffer(String.valueOf(reference.getProperty("osgi.jdbc.driver.class")));
+
+      //Only notify of a potential change if a new data source class is available
+      if (dataSourceFactories.putIfAbsent(sb.toString(), new ArrayList<String>()) == null) {
+        if (_logger.isDebugEnabled())
+          _logger.debug(NLS.MESSAGES.getMessage("new.datasourcefactory.available", sb.toString(),
+                  bundle.getSymbolicName(), bundle.getVersion()));
+        try {
+          bundleStateChange();
+        } catch (InvalidPersistenceUnitException e) {
+          //Not much we can do here unfortunately
+          _logger.warn(NLS.MESSAGES.getMessage("new.datasourcefactory.error", sb.toString(),
+                  bundle.getSymbolicName(), bundle.getVersion()), e);
+        }
+      }
+      return sb;
+    }
+    else
+    {
+      Object jndiName = reference.getProperty("osgi.jndi.service.name");
+      if (jndiName != null) {
+        StringBuffer sb = new StringBuffer(String.valueOf(jndiName));
+        if (jndiServices.putIfAbsent(sb.toString(), new ArrayList<String>()) == null) {
+          if (_logger.isDebugEnabled())
+            _logger.debug(NLS.MESSAGES.getMessage("new.jndiservice.available", sb.toString(),
+                  bundle.getSymbolicName(), bundle.getVersion()));
+          try {
+            bundleStateChange();
+          } catch (InvalidPersistenceUnitException e) {
+            //Not much we can do here unfortunately
+            _logger.warn(NLS.MESSAGES.getMessage("new.jndiservice.error", sb.toString(),
+                  bundle.getSymbolicName(), bundle.getVersion()), e);
+          }
+        }
+        return sb;
+      }
+      else {
+        throw new IllegalStateException();
       }
     }
-    return sb;
   }
 
   @Override
   public void modifiedService(ServiceReference reference, Object service) {
-    //Updates only matter if they change the value of the driver class
-    if(!!!service.toString().equals(reference.getProperty("osgi.jdbc.driver.class"))) {
-      
-      if(_logger.isDebugEnabled())
-        _logger.debug(NLS.MESSAGES.getMessage("changed.datasourcefactory.available", service.toString(), 
-            reference.getProperty("osgi.jdbc.driver.class"), bundle.getSymbolicName(), bundle.getVersion()));
-      
-      //Remove the service
-      removedService(reference, service);
-      //Clear the old driver class
-      StringBuffer sb = (StringBuffer) service;
-      sb.delete(0, sb.length());
-      //add the new one
-      sb.append(addingService(reference));
+    if (reference.getProperty("osgi.jdbc.driver.class") != null) {
+      //Updates only matter if they change the value of the driver class
+      if(!!!service.toString().equals(reference.getProperty("osgi.jdbc.driver.class"))) {
+
+        if (_logger.isDebugEnabled())
+          _logger.debug(NLS.MESSAGES.getMessage("changed.datasourcefactory.available", service.toString(),
+                  reference.getProperty("osgi.jdbc.driver.class"), bundle.getSymbolicName(), bundle.getVersion()));
+
+        //Remove the service
+        removedService(reference, service);
+        //Clear the old driver class
+        StringBuffer sb = (StringBuffer) service;
+        sb.delete(0, sb.length());
+        //add the new one
+        sb.append(addingService(reference));
+      }
     }
-  }
+    else if (reference.getProperty("osgi.jndi.service.name") != null) {
+      //Updates only matter if they change the value of the jndi name
+      if (!!!service.toString().equals(reference.getProperty("osgi.jndi.service.name"))) {
+
+        if (_logger.isDebugEnabled())
+          _logger.debug(NLS.MESSAGES.getMessage("changed.jndiservice.available", service.toString(),
+                  reference.getProperty("osgi.jndi.service.name"), bundle.getSymbolicName(), bundle.getVersion()));
+
+        //Remove the service
+        removedService(reference, service);
+        //Clear the old driver class
+        StringBuffer sb = (StringBuffer) service;
+        sb.delete(0, sb.length());
+        //add the new one
+        sb.append(addingService(reference));
+      }
+    }
+ }
 
   @Override
   public void removedService(ServiceReference reference, Object service) {
-    
-    if(_logger.isDebugEnabled())
-      _logger.debug(NLS.MESSAGES.getMessage("datasourcefactory.unavailable", service.toString(), 
-          bundle.getSymbolicName(), bundle.getVersion()));
-    
-    Object[] objects = tracker.getServices();
+    if (reference.getProperty("osgi.jdbc.driver.class") != null) {
+      if (_logger.isDebugEnabled())
+        _logger.debug(NLS.MESSAGES.getMessage("datasourcefactory.unavailable", service.toString(),
+                bundle.getSymbolicName(), bundle.getVersion()));
 
-    boolean gone = true;
-    if(objects != null) {
-      for(Object o : objects) {
-        if(service.equals(o)) {
-          gone = false;
-          break;
+      Object[] objects = dataSourceFactoriesTracker.getServices();
+
+      boolean gone = true;
+      if (objects != null) {
+        for (Object o : objects) {
+          if (service.equals(o)) {
+            gone = false;
+            break;
+          }
+        }
+      }
+      if (gone) {
+        Collection<String> units = dataSourceFactories.remove(service.toString());
+        if (units != null) {
+          synchronized (this) {
+            if (_logger.isInfoEnabled())
+              _logger.info(NLS.MESSAGES.getMessage("in.use.datasourcefactory.unavailable", service.toString(),
+                      bundle.getSymbolicName(), bundle.getVersion(), units));
+            for (String unit : units) {
+              unregisterEntityManagerFactory(unit);
+            }
+          }
         }
       }
     }
-    if(gone) {
-      Collection<String> units = dataSourceFactories.remove(service.toString());
-      if(units != null) {
-        synchronized (this) {
-          if(_logger.isInfoEnabled())
-            _logger.info(NLS.MESSAGES.getMessage("in.use.datasourcefactory.unavailable", service.toString(), 
-                bundle.getSymbolicName(), bundle.getVersion(), units));
-          for(String unit : units) {
-            unregisterEntityManagerFactory(unit);
+    else if (reference.getProperty("osgi.jndi.service.name") != null) {
+      if (_logger.isDebugEnabled())
+        _logger.debug(NLS.MESSAGES.getMessage("jndiservice.unavailable", service.toString(),
+                bundle.getSymbolicName(), bundle.getVersion()));
+
+      Object[] objects = jndiTracker.getServices();
+
+      boolean gone = true;
+      if (objects != null) {
+        for (Object o : objects) {
+          if (service.equals(o)) {
+            gone = false;
+            break;
           }
         }
-      } 
+      }
+      if (gone) {
+        Collection<String> units = jndiServices.remove(service.toString());
+        if (units != null) {
+          synchronized (this) {
+            if (_logger.isInfoEnabled())
+              _logger.info(NLS.MESSAGES.getMessage("in.use.jndiservice.unavailable", service.toString(),
+                      bundle.getSymbolicName(), bundle.getVersion(), units));
+            for (String unit : units) {
+              unregisterEntityManagerFactory(unit);
+            }
+          }
+        }
+      }
     }
   }
 
