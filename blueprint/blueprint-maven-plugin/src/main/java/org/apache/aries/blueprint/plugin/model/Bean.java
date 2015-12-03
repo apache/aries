@@ -28,8 +28,11 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+
+import org.springframework.stereotype.Component;
 
 public class Bean extends BeanRef {
     public String initMethod;
@@ -37,6 +40,7 @@ public class Bean extends BeanRef {
     public SortedSet<Property> properties;
     public Field[] persistenceFields;
     public TransactionalDef transactionDef;
+    public boolean isPrototype;
 
     public Bean(Class<?> clazz) {
         super(clazz, BeanRef.getBeanName(clazz));
@@ -51,12 +55,18 @@ public class Bean extends BeanRef {
                 this.destroyMethod = method.getName();
             }
         }
+        this.isPrototype = isPrototype(clazz);
         this.persistenceFields = getPersistenceFields();
         this.transactionDef = new JavaxTransactionFactory().create(clazz);
         if (this.transactionDef == null) {
             this.transactionDef = new SpringTransactionFactory().create(clazz);
         }
         properties = new TreeSet<Property>();
+    }
+
+    private boolean isPrototype(Class<?> clazz)
+    {
+        return clazz.getAnnotation(Singleton.class) == null && clazz.getAnnotation(Component.class) == null;
     }
 
     private Field[] getPersistenceFields() {
