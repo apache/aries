@@ -48,6 +48,9 @@ public class StopAction extends AbstractAction {
 			return null;
 		else if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLING, State.UNINSTALLED).contains(state))
 			throw new IllegalStateException("Cannot stop from state " + state);
+		else if (State.INSTALLING.equals(state) && !Utils.isProvisionDependenciesInstall(target)) {
+			return null;
+		}
 		else if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
 			waitForStateChange(state);
 			return new StopAction(requestor, target, disableRootCheck).run();

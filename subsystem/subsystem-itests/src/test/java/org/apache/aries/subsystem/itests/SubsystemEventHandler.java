@@ -8,10 +8,10 @@ import java.util.Map;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.Version;
-import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.Subsystem.State;
+import org.osgi.service.subsystem.SubsystemConstants;
 
-class SubsystemEventHandler implements ServiceListener {
+public class SubsystemEventHandler implements ServiceListener {
 	static class ServiceEventInfo {
 		private final ServiceEvent event;
 		private final long id;

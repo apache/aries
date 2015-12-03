@@ -20,7 +20,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
 
@@ -52,10 +51,16 @@ public abstract class ResourceInstaller {
 
     protected final Coordination coordination;
 	protected final BasicSubsystem provisionTo;
+	/* resource to install */
 	protected final Resource resource;
+	/* parent subsystem being installed into */
 	protected final BasicSubsystem subsystem;
 
 	public ResourceInstaller(Coordination coordination, Resource resource, BasicSubsystem subsystem) {
+		if (coordination == null || resource == null || subsystem == null) {
+			// We're assuming these are not null post construction, so enforce it here.
+			throw new NullPointerException();
+		}
 		this.coordination = coordination;
 		this.resource = resource;
 		this.subsystem = subsystem;
@@ -76,17 +81,6 @@ public abstract class ResourceInstaller {
 		if (provisionTo == null || resource.equals(provisionTo))
 			return;
 		Activator.getInstance().getSubsystems().addConstituent(provisionTo, resource, isReferencedProvisionTo());
-		coordination.addParticipant(new Participant() {
-			@Override
-			public void ended(Coordination arg0) throws Exception {
-				// Nothing
-			}
-
-			@Override
-			public void failed(Coordination arg0) throws Exception {
-				Activator.getInstance().getSubsystems().removeConstituent(provisionTo, resource);
-			}
-		});
 	}
 
 	protected void addReference(final Resource resource) {
@@ -100,16 +94,6 @@ public abstract class ResourceInstaller {
 		// other resources.
 		if (isReferencedSubsystem()) {
 			Activator.getInstance().getSubsystems().addReference(subsystem, resource);
-			coordination.addParticipant(new Participant() {
-				@Override
-				public void ended(Coordination arg0) throws Exception {
-					// Nothing
-				}
-				@Override
-				public void failed(Coordination arg0) throws Exception {
-					Activator.getInstance().getSubsystems().removeReference(subsystem, resource);
-				}
-			});
 		}
 	}
 

@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
+import org.apache.aries.subsystem.core.archive.SubsystemManifest;
+import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.apache.aries.subsystem.core.internal.DependencyCalculator.MissingCapability;
 import org.apache.aries.subsystem.core.repository.Repository;
@@ -32,6 +35,7 @@ import org.osgi.framework.namespace.ExecutionEnvironmentNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.namespace.NativeNamespace;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
@@ -171,11 +175,18 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	private void addWiring(Resource resource, Map<Resource, Wiring> wirings) {
 		if (resource instanceof BundleConstituent) {
 			BundleConstituent bc = (BundleConstituent)resource;
-			wirings.put(bc.getBundle().adapt(BundleRevision.class), bc.getWiring());
+			BundleWiring wiring = bc.getWiring();
+			if (wiring != null) {
+				wirings.put(bc.getBundle().adapt(BundleRevision.class), wiring);
+			}
 		}
 		else if (resource instanceof BundleRevision) {
 			BundleRevision br = (BundleRevision)resource;
-			wirings.put(br, br.getWiring());
+			BundleWiring wiring = br.getWiring();
+			if (wiring != null) {
+				wirings.put(br, wiring);
+			}
+			
 		}
 	}
 
@@ -188,49 +199,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		}
 		return Collections.unmodifiableMap(wirings);
 	}
-
-	private Region findRegionForCapabilityValidation(Resource resource) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
-		if (isInstallable(resource)) {
-			// This is an installable resource so we need to figure out where it
-			// will be installed.
-			if (isContent(resource) // If the resource is content of this subsystem, it will be installed here.
-					// Or if this subsystem accepts dependencies, the resource will be installed here.
-					|| this.resource.getSubsystemManifest().getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies()) {
-				if (this.resource.isComposite()) {
-					// Composites define their own sharing policy with which
-					// their regions are already configured by the time we get
-					// here. We ensure capabilities are visible to this region.
-					return this.resource.getRegion();
-				}
-				// For applications and features, we must ensure capabilities
-				// are visible to their scoped parent. Features import
-				// everything. Applications have their sharing policies
-				// computed, so if capabilities are visible to the parent, we
-				// know we can make them visible to the application.
-				return this.resource.getParents().iterator().next().getRegion();
-			}
-			// Same reasoning as above applies here.
-			if (this.resource.isComposite() && this.resource.getSubsystemManifest().getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies()) {
-				 return this.resource.getRegion();
-			}
-			return Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(this.resource.getParents().iterator().next()).getRegion();
-		}
-		else {
-			// This is an already installed resource from the system repository.
-			if (Utils.isBundle(resource)) {
-			    BundleRevision revision = resource instanceof BundleRevision ? (BundleRevision)resource : ((BundleRevisionResource)resource).getRevision();
-				// If it's a bundle, use region digraph to get the region in order
-				// to account for bundles in isolated regions outside of the
-				// subsystems API.
-				return Activator.getInstance().getRegionDigraph().getRegion(revision.getBundle());
-			}
-			else
-				// If it's anything else, get the region from one of the
-				// subsystems referencing it.
-				return Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource).iterator().next().getRegion();
-		}
-	}
-
+	
 	private boolean isContent(Resource resource) {
 		return this.resource.isContent(resource);
 	}
@@ -249,5 +218,75 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		Region from = findRegionForCapabilityValidation(capability.getResource());
 		Region to = findRegionForCapabilityValidation(requirement.getResource());
 		return new SharingPolicyValidator(from, to).isValid(capability);
+	}
+	
+	private boolean isAcceptDependencies() {
+		SubsystemManifest manifest = resource.getSubsystemManifest();
+		SubsystemTypeHeader header = manifest.getSubsystemTypeHeader();
+		ProvisionPolicyDirective directive = header.getProvisionPolicyDirective();
+		return directive.isAcceptDependencies();
+	}
+	
+	private Region findRegionForCapabilityValidation(Resource resource) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
+		if (isInstallable(resource)) {
+			// This is an installable resource so we need to figure out where it
+			// will be installed.
+			if (isContent(resource) // If the resource is content of this subsystem, it will be installed here.
+					// Or if this subsystem accepts dependencies, the resource will be installed here.
+					|| isAcceptDependencies()) {
+				if (this.resource.isComposite()) {
+					// Composites define their own sharing policy with which
+					// their regions are already configured by the time we get
+					// here. We ensure capabilities are visible to this region.
+					return this.resource.getRegion();
+				}
+				// For applications and features, we must ensure capabilities
+				// are visible to their scoped parent. Features import
+				// everything. Applications have their sharing policies
+				// computed, so if capabilities are visible to the parent, we
+				// know we can make them visible to the application. 
+				BasicSubsystem parent = this.resource.getParents().iterator().next();
+				// If the parent accepts dependencies, the resource will 
+				// be installed there and all capabilities will be visible.
+				if (parent.getSubsystemManifest().getSubsystemTypeHeader().getProvisionPolicyDirective().isAcceptDependencies()) {
+					return parent.getRegion();
+				}
+				// Otherwise, the "parent" is defined as the first scoped 
+				// ancestor whose sharing policy has already been set. This 
+				// covers the case of multiple subsystems from the same archive 
+				// being installed whose regions will form a tree of depth N.
+				parent = Utils.findFirstScopedAncestorWithSharingPolicy(this.resource);
+				return parent.getRegion();
+			}
+			return Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(this.resource.getParents().iterator().next()).getRegion();
+		}
+		else {
+			// This is an already installed resource from the system repository.
+			if (Utils.isBundle(resource)) {
+				if (this.resource.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isResolve()) {
+					// If we get here with a subsystem that is 
+					// apache-aries-provision-dependencies:=resolve, it means
+					// that a restart has occurred with the subsystem in the
+					// INSTALLING state. It's content has already been installed.
+					// However, because the sharing policy has not yet been set,
+					// we must treat it similarly to the installable content case
+					// above.
+					return Utils.findFirstScopedAncestorWithSharingPolicy(this.resource).getRegion();
+				}
+			    BundleRevision revision = resource instanceof BundleRevision ? (BundleRevision)resource : ((BundleRevisionResource)resource).getRevision();
+				// If it's a bundle, use region digraph to get the region in order
+				// to account for bundles in isolated regions outside of the
+				// subsystems API.
+				return Activator.getInstance().getRegionDigraph().getRegion(revision.getBundle());
+			}
+			else {
+				if (this.resource.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isResolve()) {
+					return Utils.findFirstScopedAncestorWithSharingPolicy(this.resource).getRegion();
+				}
+				// If it's anything else, get the region from one of the
+				// subsystems referencing it.
+				return Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource).iterator().next().getRegion();
+			}
+		}
 	}
 }

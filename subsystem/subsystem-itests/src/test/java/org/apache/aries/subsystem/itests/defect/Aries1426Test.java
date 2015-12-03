@@ -129,7 +129,7 @@ public class Aries1426Test extends SubsystemTest {
 			// relevant bundle clause.
 			assertNull("Wrong Subsystem-ImportService", headers.get(SubsystemConstants.SUBSYSTEM_IMPORTSERVICE));
 			org.apache.aries.subsystem.core.archive.Header<?> expected = 
-					new SubsystemContentHeader("bundle.a.jar");
+					new SubsystemContentHeader("bundle.a.jar;version=\"[0,0]\"");
 			org.apache.aries.subsystem.core.archive.Header<?> actual = 
 					new SubsystemContentHeader(headers.get(SubsystemConstants.SUBSYSTEM_CONTENT));
 			// The Subsystem-Content header should not include any synthesized

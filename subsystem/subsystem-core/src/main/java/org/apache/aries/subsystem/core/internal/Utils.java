@@ -13,6 +13,8 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import java.util.Collection;
+
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
@@ -24,6 +26,7 @@ import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
+import org.osgi.service.subsystem.Subsystem.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +53,35 @@ public class Utils {
 		return subsystem;
 	}
 	
+	public static BasicSubsystem findFirstScopedAncestorWithSharingPolicy(SubsystemResource descendant) {
+		Collection<BasicSubsystem> parents = descendant.getParents();
+		if (parents == null || parents.isEmpty()) {
+			return null;
+		}
+		BasicSubsystem result = (BasicSubsystem) parents.iterator().next();
+		// The result is defined as the first scoped ancestor whose sharing 
+		// policy has already been set. This covers the case of multiple 
+		// subsystems from the same archive being installed whose regions will 
+		// form a tree of depth N.
+		while (	// We only want scoped subsystems because they control 
+				// the region.
+				!result.isScoped()
+				// If the state is INSTALLING then the sharing policy 
+				// has not yet been set. This means we cannot use the
+				// region in order to test visibility and must proceed
+				// to the next parent.
+				|| result.getState().equals(State.INSTALLING)) {
+			result = result.getResource().getParents().iterator().next();
+		}
+		return result;
+	}
+	
 	public static BasicSubsystem findScopedSubsystemInRegion(BasicSubsystem subsystem) {
 		while (!subsystem.isScoped())
 			subsystem = (BasicSubsystem)subsystem.getParents().iterator().next();
 		return subsystem;
 	}
-	
+
 	public static int getActiveUseCount(Resource resource) {
 		int result = 0;
 		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource))
@@ -145,5 +171,9 @@ public class Utils {
 		return SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type) ||
 				SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type) ||
 				SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type);
+	}
+	
+	public static boolean isProvisionDependenciesInstall(BasicSubsystem subsystem) {
+		return subsystem.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isInstall();
 	}
 }

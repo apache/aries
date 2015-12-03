@@ -34,13 +34,17 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.aries.subsystem.AriesSubsystem;
+import org.apache.aries.subsystem.core.archive.AriesProvisionDependenciesDirective;
 import org.apache.aries.subsystem.core.archive.AriesSubsystemParentsHeader;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.Header;
+import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
+import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.util.filesystem.FileSystem;
+import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.io.IOUtils;
 import org.eclipse.equinox.region.Region;
@@ -268,6 +272,15 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		return getSubsystemManifest().getSubsystemVersionHeader().getVersion();
 	}
 
+    /** Get "aries-provision-dependencies" directive. 
+     * 
+     * @return requested directive or null if the directive is not specified in the header
+     */
+	public AriesProvisionDependenciesDirective getAriesProvisionDependenciesDirective() {
+        return getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective();
+    }
+	
+	
 	@Override
 	public AriesSubsystem install(String location) {
 		return install(location, (InputStream)null);
@@ -393,7 +406,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	synchronized SubsystemResource getResource() {
 		if (resource == null) {
 			try {
-				resource = new SubsystemResource(directory);
+				resource = new SubsystemResource(null, directory);
 			}
 			catch (Exception e) {
 				throw new SubsystemException(e);
@@ -686,19 +699,48 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 
 	@Override
 	public AriesSubsystem install(String location, final InputStream content, InputStream deploymentManifest) {
+		AriesSubsystem result = null;
+		IDirectory directory = null;
 		try {
-			return install(location, content == null ? null : 
+			directory = content == null ? null : 
 				AccessController.doPrivileged(new PrivilegedAction<IDirectory>() {
 					@Override
 					public IDirectory run() {
 						return FileSystem.getFSRoot(content);
 					}
-				}),
-				deploymentManifest);
+				});
+			result = install(location, directory, deploymentManifest);
+			return result;
 		}
 		finally {
 			// This method must guarantee the content input stream was closed.
+			// TODO Not sure closing the content is necessary. The content will
+			// either be null of will have been closed while copying the data
+			// to the temporary file.
 			IOUtils.close(content);
+			// If appropriate, delete the temporary file. Subsystems having
+			// apache-aries-provision-dependencies:=resolve may need the file
+			// at start time if it contains any dependencies.
+			if (directory instanceof ICloseableDirectory) {
+				if (result == null
+						|| Utils.isProvisionDependenciesInstall((BasicSubsystem)result)
+						|| !wasInstalledWithChildrenHavingProvisionDependenciesResolve()) {
+					final IDirectory toClose = directory;
+					AccessController.doPrivileged(new PrivilegedAction<Void>() {
+						@Override
+						public Void run() {
+							try {
+								((ICloseableDirectory) toClose).close();
+							}
+							catch (IOException ioex) {
+								logger.info("Exception calling close for content {}. Exception {}", 
+										content, ioex);					
+							}
+							return null;
+						}
+					});
+				}
+			}
 		}
 	}
 	
@@ -710,5 +752,39 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		for (TranslationFile translation : getResource().getTranslations()) {
 			translation.write(file);
 		}
+	}
+	
+	void computeDependenciesPostInstallation() throws IOException {
+		resource.computeDependencies(null);
+		ProvisionResourceHeader header = resource.computeProvisionResourceHeader();
+		setDeploymentManifest(
+				new DeploymentManifest.Builder()
+						.manifest(deploymentManifest)
+						.header(header)
+						.build());
+	}
+	
+	private boolean wasInstalledWithChildrenHavingProvisionDependenciesResolve() {
+		return wasInstalledWithChildrenHavingProvisionDependenciesResolve(this);
+	}
+	
+	private static boolean wasInstalledWithChildrenHavingProvisionDependenciesResolve(Subsystem child) {
+		BasicSubsystem bs = (BasicSubsystem) child;
+		SubsystemManifest manifest = bs.getSubsystemManifest();
+		SubsystemTypeHeader header = manifest.getSubsystemTypeHeader();
+		AriesProvisionDependenciesDirective directive = header.getAriesProvisionDependenciesDirective();
+		if (directive.isResolve()) {
+			return true;
+		}
+		return wasInstalledWithChildrenHavingProvisionDependenciesResolve(child.getChildren());
+	}
+	
+	private static boolean wasInstalledWithChildrenHavingProvisionDependenciesResolve(Collection<Subsystem> children) {
+		for (Subsystem child : children) {
+			if (wasInstalledWithChildrenHavingProvisionDependenciesResolve(child)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

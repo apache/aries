@@ -13,18 +13,25 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class SubsystemTypeHeader extends AbstractClauseBasedHeader<SubsystemTypeHeader.Clause> {
     public static class Clause extends AbstractClause {
+    	private static final Collection<Parameter> defaultParameters = generateDefaultParameters(
+    			ProvisionPolicyDirective.REJECT_DEPENDENCIES);
+    	
 		public Clause(String clause) {
 			super(
             		parsePath(clause, Patterns.SUBSYSTEM_TYPE, false), 
             		parseParameters(clause, false), 
-            		generateDefaultParameters(
-            				ProvisionPolicyDirective.REJECT_DEPENDENCIES));
+            		defaultParameters);
+		}
+		
+		public AriesProvisionDependenciesDirective getProvisionDependenciesDirective() {
+			return (AriesProvisionDependenciesDirective)getDirective(DIRECTIVE_PROVISION_DEPENDENCIES);
 		}
 				
 		public ProvisionPolicyDirective getProvisionPolicyDirective() {
@@ -36,10 +43,13 @@ public class SubsystemTypeHeader extends AbstractClauseBasedHeader<SubsystemType
 		}
 	}
 	
-	public static final String DIRECTIVE_PROVISION_POLICY = SubsystemConstants.PROVISION_POLICY_DIRECTIVE;
+	public static final String DIRECTIVE_PROVISION_DEPENDENCIES = AriesProvisionDependenciesDirective.NAME;
+    public static final String DIRECTIVE_PROVISION_POLICY = ProvisionPolicyDirective.NAME;
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_TYPE;
-	public static final String PROVISION_POLICY_ACCEPT_DEPENDENCIES = SubsystemConstants.PROVISION_POLICY_ACCEPT_DEPENDENCIES;
-	public static final String PROVISION_POLICY_REJECT_DEPENDENCIES = SubsystemConstants.PROVISION_POLICY_REJECT_DEPENDENCIES;
+	public static final String ARIES_PROVISION_DEPENDENCIES_INSTALL = AriesProvisionDependenciesDirective.VALUE_INSTALL;
+	public static final String ARIES_PROVISION_DEPENDENCIES_RESOLVE = AriesProvisionDependenciesDirective.VALUE_RESOLVE;
+	public static final String PROVISION_POLICY_ACCEPT_DEPENDENCIES = ProvisionPolicyDirective.VALUE_ACCEPT_DEPENDENCIES;
+	public static final String PROVISION_POLICY_REJECT_DEPENDENCIES = ProvisionPolicyDirective.VALUE_REJECT_DEPENDENCIES;
 	public static final String TYPE_APPLICATION = SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION;
 	public static final String TYPE_COMPOSITE = SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE;
 	public static final String TYPE_FEATURE = SubsystemConstants.SUBSYSTEM_TYPE_FEATURE;
@@ -68,6 +78,10 @@ public class SubsystemTypeHeader extends AbstractClauseBasedHeader<SubsystemType
 	@Override
 	public String getName() {
 		return NAME;
+	}
+	
+	public AriesProvisionDependenciesDirective getAriesProvisionDependenciesDirective() {
+		return clauses.iterator().next().getProvisionDependenciesDirective();
 	}
 	
 	public ProvisionPolicyDirective getProvisionPolicyDirective() {

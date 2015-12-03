@@ -66,7 +66,12 @@ public class RegionUpdater {
 								.append(head.getName())
 								.toString());
 			}
-			addRequirements(requirements, builder);
+			if (requirements == null) {
+				heads.put(head.getName(), null);
+			}
+			else {
+				addRequirements(requirements, builder);
+			}
 			addHeadRegions(heads, tail, copy);
 			addTailRegions(tails, tail, copy);
 			// Replace the current digraph.
@@ -92,8 +97,13 @@ public class RegionUpdater {
 	}
 	
 	private void addHeadRegions(Map<String, RegionFilterBuilder> heads, Region tail, RegionDigraph digraph) throws BundleException {
-		for (Map.Entry<String, RegionFilterBuilder> entry : heads.entrySet())
-			tail.connectRegion(digraph.getRegion(entry.getKey()), entry.getValue().build());
+		for (Map.Entry<String, RegionFilterBuilder> entry : heads.entrySet()) {
+			RegionFilterBuilder builder = entry.getValue();
+			if (builder == null) {
+				continue;
+			}
+			tail.connectRegion(digraph.getRegion(entry.getKey()), builder.build());
+		}
 	}
 	
 	private void addTailRegions(Map<String, RegionFilterBuilder> tails, Region head, RegionDigraph digraph) throws BundleException {
