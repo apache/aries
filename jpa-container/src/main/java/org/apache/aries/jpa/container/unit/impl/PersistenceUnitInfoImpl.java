@@ -304,5 +304,12 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 	  return dsProps;
   }
 
-  
+  public String getDataSourceName() {
+    return (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.NON_JTA_DATASOURCE);
+  }
+
+  public String getJtaDataSourceName() {
+    return (String) unit.getPersistenceXmlMetadata().get(ParsedPersistenceUnit.JTA_DATASOURCE);
+  }
+
 }

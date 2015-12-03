@@ -25,6 +25,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.apache.aries.jpa.container.ManagedPersistenceUnitInfo;
 import org.apache.aries.jpa.container.PersistenceUnitConstants;
+import org.apache.aries.jpa.container.impl.EntityManagerFactoryManager;
 import org.apache.aries.jpa.container.impl.NLS;
 import org.apache.aries.jpa.container.parsing.ParsedPersistenceUnit;
 import org.osgi.framework.Bundle;
@@ -65,6 +66,8 @@ public class ManagedPersistenceUnitInfoImpl implements
   public Map<String, Object> getContainerProperties() {
     Map<String, Object> props = new HashMap<String, Object>();
     props.put(PersistenceUnitConstants.USE_DATA_SOURCE_FACTORY, useDataSourceFactory.toString());
+    props.put(EntityManagerFactoryManager.DATA_SOURCE_NAME, info.getDataSourceName());
+    props.put(EntityManagerFactoryManager.DATA_SOURCE_NAME_JTA, info.getJtaDataSourceName());
     return props;
   }
 
