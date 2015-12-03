@@ -787,4 +787,30 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return new StringBuilder()
+				.append(getClass().getName())
+				.append(": ")
+				.append("children=")
+				.append(getChildren().size())
+				.append(", constituents=")
+				.append(getConstituents().size())
+				.append(", id=")
+				.append(getSubsystemId())
+				.append(", location=")
+				.append(getLocation())
+				.append(", parents=")
+				.append(getParents().size())
+				.append(", state=")
+				.append(getState())
+				.append(", symbolicName=")
+				.append(getSymbolicName())
+				.append(", type=")
+				.append(getType())
+				.append(", version=")
+				.append(getVersion())
+				.toString();
+	}
 }
