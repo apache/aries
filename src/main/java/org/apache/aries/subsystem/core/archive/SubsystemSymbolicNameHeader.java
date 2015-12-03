@@ -13,9 +13,10 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import org.osgi.service.subsystem.SubsystemConstants;
+
 public class SubsystemSymbolicNameHeader extends SymbolicNameHeader {
-	// TODO Add to constants.
-	public static final String NAME = "Subsystem-SymbolicName";
+	public static final String NAME = SubsystemConstants.SUBSYSTEM_SYMBOLICNAME;
 	
 	public SubsystemSymbolicNameHeader(String value) {
 		super(NAME, value);

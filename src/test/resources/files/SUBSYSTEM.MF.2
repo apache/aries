@@ -1,6 +1,6 @@
 Export-Package: a.b.c;version="1.0",	x.y.z;version="1.1.1";uses:="m.n",m.n
 Subsystem-Type: osgi.subsystem.composite
-Subsystem-SymbolicName: com.acme.rocket; apachearies-provision-dependencies:=start;  a=b
+Subsystem-SymbolicName: com.acme.rocket; apache-aries-provision-dependencies:=resolve;  a=b
 Import-Package: z.y.x;resolution:=optional;version="9",  n.m;version="[3.1.0, 4)";resolution:=mandatory,c.b.a;resolution:=mandatory;version="0.0"
 Preferred-Provider: org.bar;type=osg.bundle;version="[1,2)",foo;version=0;type=osgi.subsystem.composite
 Provide-Capability: x;  effective:=resolve;a=b, osgi.service;	effective:=active;b=a; objectClass=o.p.Quick

@@ -26,14 +26,25 @@ public class LocalRepository implements org.apache.aries.subsystem.core.reposito
 	
 	public LocalRepository(Collection<Resource> resources) {
 		repository = new CapabilitySetRepository();
-		for (Resource resource : resources) {
-		    repository.addResource(resource);
-		}
+		addResources(resources);
 	}
 	
 	@Override
 	public Map<Requirement, Collection<Capability>> findProviders(
 			Collection<? extends Requirement> requirements) {
 		return repository.findProviders(requirements);
+	}
+	
+	private void addResources(Collection<Resource> resources) {
+		for (Resource resource : resources) {
+			addResource(resource);
+		}
+	}
+	
+	private void addResource(Resource resource) {
+		repository.addResource(resource);
+		if (resource instanceof RawSubsystemResource) {
+			addResources(((RawSubsystemResource)resource).getResources());
+		}
 	}
 }

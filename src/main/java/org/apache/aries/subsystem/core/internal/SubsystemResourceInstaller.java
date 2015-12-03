@@ -52,35 +52,13 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		if (resource.equals(provisionTo))
 			return;
 		Activator.getInstance().getSubsystems().addChild(provisionTo, child, !isDependency());
-		coordination.addParticipant(new Participant() {
-			@Override
-			public void ended(Coordination arg0) throws Exception {
-				// Nothing
-			}
-
-			@Override
-			public void failed(Coordination arg0) throws Exception {
-				Activator.getInstance().getSubsystems().removeChild(provisionTo, child);
-			}
-		});
 	}
 
 	private void addSubsystem(final BasicSubsystem subsystem) {
 		Activator.getInstance().getSubsystems().addSubsystem(subsystem);
-		coordination.addParticipant(new Participant() {
-			@Override
-			public void ended(Coordination arg0) throws Exception {
-				// Nothing
-			}
-
-			@Override
-			public void failed(Coordination arg0) throws Exception {
-				Activator.getInstance().getSubsystems().removeSubsystem(subsystem);
-			}
-		});
 	}
 
-	private BasicSubsystem installAriesSubsystem(BasicSubsystem subsystem) throws Exception {
+	private BasicSubsystem installAriesSubsystem(final BasicSubsystem subsystem) throws Exception {
 		addChild(subsystem);
 		addReference(subsystem);
 		addConstituent(subsystem);
@@ -88,29 +66,32 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		installRegionContextBundle(subsystem);
 		// This will emit the initial service event for INSTALLING subsystems.
 		// The first event for RESOLVED (i.e. persisted) subsystems is emitted later.
-		if (State.INSTALLING.equals(subsystem.getState()))
+		if (State.INSTALLING.equals(subsystem.getState())) {
 			Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
+			coordination.addParticipant(new Participant() {
+				@Override
+				public void ended(Coordination coordination) throws Exception {
+					// Nothing.
+				}
+
+				@Override
+				public void failed(Coordination coordination) throws Exception {
+					subsystem.setState(State.INSTALL_FAILED);
+					subsystem.uninstall();
+				}
+			});
+		}
 		Comparator<Resource> comparator = new InstallResourceComparator();
-		// Install dependencies first...
-		List<Resource> dependencies = new ArrayList<Resource>(subsystem.getResource().getInstallableDependencies());
-		Collections.sort(dependencies, comparator);
-		for (Resource dependency : dependencies)
-			ResourceInstaller.newInstance(coordination, dependency, subsystem).install();
-		for (Resource dependency : subsystem.getResource().getSharedDependencies()) {
-			// TODO This needs some more thought. The following check
-			// protects against a child subsystem that has its parent as a
-			// dependency. Are there other places of concern as well? Is it
-			// only the current parent that is of concern or should all
-			// parents be checked?
-			if (!dependency.equals(this.subsystem))
-				ResourceInstaller.newInstance(coordination, dependency, subsystem).install();
+		// Install dependencies first if appropriate...
+		if (Utils.isProvisionDependenciesInstall(subsystem)) {
+		    new InstallDependencies().install(subsystem, this.subsystem, coordination);
 		}
 		// ...followed by content.
 		// Simulate installation of shared content so that necessary relationships are established.
-		for (Resource content : subsystem.getResource().getSharedContent()) {
-			ResourceInstaller.newInstance(coordination, content, subsystem).install();
-		}
-		// Now take care of the installable content.
+        for (Resource content : subsystem.getResource().getSharedContent()) {
+            ResourceInstaller.newInstance(coordination, content, subsystem).install();
+        }
+        // Now take care of the installable content.
 		if (State.INSTALLING.equals(subsystem.getState())) {
 			List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
 			Collections.sort(installableContent, comparator);
@@ -119,11 +100,14 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		}
 		// Only brand new subsystems should have acquired the INSTALLING state,
 		// in which case an INSTALLED event must be propagated.
-		if (State.INSTALLING.equals(subsystem.getState()))
+		if (State.INSTALLING.equals(subsystem.getState()) && 
+		        Utils.isProvisionDependenciesInstall(subsystem)) {
 			subsystem.setState(State.INSTALLED);
-		else
+		}
+		else {
 			// This is a persisted subsystem in the RESOLVED state. Emit the first service event.
 			Activator.getInstance().getSubsystemServiceRegistrar().register(subsystem, this.subsystem);
+		}
 		return subsystem;
 	}
 
@@ -136,17 +120,6 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		if (!subsystem.isScoped())
 			return;
 		RegionContextBundleHelper.installRegionContextBundle(subsystem, coordination);
-		coordination.addParticipant(new Participant() {
-			@Override
-			public void ended(Coordination coordination) throws Exception {
-				// Nothing
-			}
-
-			@Override
-			public void failed(Coordination coordination) throws Exception {
-				RegionContextBundleHelper.uninstallRegionContextBundle(subsystem);
-			}
-		});
 	}
 
 	private BasicSubsystem installRepositoryContent(Resource resource) throws Exception {

@@ -29,7 +29,8 @@ public class UninstallAction extends AbstractAction {
 		State state = target.getState();
 		if (EnumSet.of(State.UNINSTALLED).contains(state))
 			return null;
-		else if (EnumSet.of(State.INSTALL_FAILED, State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING, State.UNINSTALLING).contains(state)) {
+		else if ((State.INSTALLING.equals(state) && Utils.isProvisionDependenciesInstall(target))
+				|| EnumSet.of(State.RESOLVING, State.STARTING, State.STOPPING, State.UNINSTALLING).contains(state)) {
 			waitForStateChange(state);
 			target.uninstall();
 		}

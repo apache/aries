@@ -24,25 +24,16 @@ public class TargetRegion {
 
 	public TargetRegion(BasicSubsystem subsystem) {
 		// Find the scoped subsystem that controls the region.
-		BasicSubsystem controllingScopedSubsystem = subsystem;
-		while (controllingScopedSubsystem.isFeature())
-			controllingScopedSubsystem = (BasicSubsystem)subsystem.getParents().iterator().next();
-		// The scoped subsystem controlling the region is part of the region.
-		region.add(controllingScopedSubsystem);
-		// All children of the scoped subsystem are part of the region. If the
-		// child is a feature, then all descendants of the child that are
-		// features and part of an unbroken line of features are part of the
-		// region.
-		addChildrenToRegion(controllingScopedSubsystem);
+		while (!subsystem.isScoped()) {
+			subsystem = (BasicSubsystem) subsystem.getParents().iterator().next();
+		}
+		// All children of the scoped subsystem controlling the region are
+		// part of the target region, even those that are scoped subsystems.
+		add(subsystem.getChildren());
 	}
 
 	public boolean contains(Subsystem subsystem) {
-		for (Subsystem s : region) {
-			if (s.getSymbolicName().equals(subsystem.getSymbolicName())
-					&& s.getVersion().equals(subsystem.getVersion()))
-				return true;
-		}
-		return false;
+		return find(subsystem.getSymbolicName(), subsystem.getVersion()) != null;
 	}
 	
 	public Subsystem find(String symbolicName, Version version) {
@@ -54,24 +45,15 @@ public class TargetRegion {
 		return null;
 	}
 	
-	private void addChildrenToRegion(BasicSubsystem controllingScopedSubsystem) {
-		for (Subsystem child : controllingScopedSubsystem.getChildren()) {
+	private void add(Collection<Subsystem> children) {
+		for (Subsystem child : children) {
 			region.add(child);
-			// If the child is a feature, all of its children that are features
-			// must be added as well.
-			if (((BasicSubsystem)child).isFeature())
-				addFeatureDescendentsToRegion((BasicSubsystem)child);
-		}
-	}
-	
-	private void addFeatureDescendentsToRegion(BasicSubsystem parent) {
-		for (Subsystem child : parent.getChildren())
-			// If the descendant is not a feature, skip it.
-			if (((BasicSubsystem)child).isFeature()) {
-				region.add(child);
-				// All descendants that are features and part of an unbroken
-				// line of features must be added.
-				addFeatureDescendentsToRegion((BasicSubsystem)child);
+			if (((BasicSubsystem) child).isScoped()) {
+				// Children of scoped children are not part of the target region.
+				continue;
 			}
+			// Children of unscoped children are part of the target region.
+			add(child.getChildren());
+		}
 	}
 }

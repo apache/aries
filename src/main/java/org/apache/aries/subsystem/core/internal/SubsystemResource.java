@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.subsystem.core.archive.AriesSubsystemParentsHeader;
 import org.apache.aries.subsystem.core.archive.Attribute;
 import org.apache.aries.subsystem.core.archive.DeployedContentHeader;
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
@@ -95,21 +96,34 @@ public class SubsystemResource implements Resource {
 		this.resource = resource;
 		computeContentResources(resource.getDeploymentManifest());
 		capabilities = computeCapabilities();
-		computeDependencies(resource.getDeploymentManifest());
+		if (this.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isInstall()) {
+		    /* compute dependencies now only if we intend to provision them during install */
+	        computeDependencies(resource.getDeploymentManifest());		    
+		}
 		deploymentManifest = computeDeploymentManifest();
 	}
 
 	public SubsystemResource(File file) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
-		this(FileSystem.getFSRoot(file));
+		this(null, FileSystem.getFSRoot(file));
 	}
 
-	public SubsystemResource(IDirectory directory) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
-		parent = null;
+	public SubsystemResource(BasicSubsystem subsystem, IDirectory directory) throws IOException, URISyntaxException, ResolutionException, BundleException, InvalidSyntaxException {
+		if (subsystem == null) {
+			// This is intended to only support the case where the root subsystem
+			// is being initialized from a non-persistent state.
+			parent = null;
+		}
+		else {
+			parent = Utils.findScopedSubsystemInRegion(subsystem);
+		}
 		resource = new RawSubsystemResource(directory, parent);
 		deploymentManifest = resource.getDeploymentManifest();
 		computeContentResources(deploymentManifest);
 		capabilities = computeCapabilities();
-		computeDependencies(deploymentManifest);
+        if (getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isInstall()) {
+            /* compute dependencies if we intend to provision them during install */
+            computeDependencies(resource.getDeploymentManifest());          
+        }
 	}
 
 	@Override
@@ -193,13 +207,15 @@ public class SubsystemResource implements Resource {
 	
 	public Collection<BasicSubsystem> getParents() {
 		if (parent == null) {
-			Header<?> header = getDeploymentManifest().getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_PARENTS);
+			AriesSubsystemParentsHeader header = getDeploymentManifest().getAriesSubsystemParentsHeader();
 			if (header == null)
 				return Collections.emptyList();
-			String[] parentIds = header.getValue().split(",");
-			Collection<BasicSubsystem> result = new ArrayList<BasicSubsystem>(parentIds.length);
-			for (String parentId : parentIds)
-				result.add(Activator.getInstance().getSubsystems().getSubsystemById(Long.valueOf(parentId)));
+			Collection<AriesSubsystemParentsHeader.Clause> clauses = header.getClauses();
+			Collection<BasicSubsystem> result = new ArrayList<BasicSubsystem>(clauses.size());
+			Subsystems subsystems = Activator.getInstance().getSubsystems();
+			for (AriesSubsystemParentsHeader.Clause clause : clauses) {
+				result.add(subsystems.getSubsystemById(clause.getId()));
+			}
 			return result;
 		}
 		return Collections.singleton(parent);
@@ -351,20 +367,21 @@ public class SubsystemResource implements Resource {
 		}
 	}
 
-	private void computeDependencies(DeploymentManifest manifest) {
-		if (manifest == null)
-			computeDependencies(getSubsystemManifest());
-		else {
-			ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
-			if (header == null)
-				return;
-			for (ProvisionResourceHeader.Clause clause : header.getClauses()) {
-				Resource resource = findDependency(clause);
-				if (resource == null)
-					throw new SubsystemException("A required dependency could not be found. This means the resource was either missing or not recognized as a supported resource format due to, for example, an invalid bundle manifest or blueprint XML file. Turn on debug logging for more information. The resource was: " + resource);
-				addDependency(resource);
-			}
-		}
+	void computeDependencies(DeploymentManifest manifest) {
+	    if (manifest == null) {
+	        computeDependencies(getSubsystemManifest());
+	    }
+	    else {
+	        ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
+	        if (header == null)
+	            return;
+	        for (ProvisionResourceHeader.Clause clause : header.getClauses()) {
+	            Resource resource = findDependency(clause);
+	            if (resource == null)
+	                throw new SubsystemException("A required dependency could not be found. This means the resource was either missing or not recognized as a supported resource format due to, for example, an invalid bundle manifest or blueprint XML file. Turn on debug logging for more information. The resource was: " + resource);
+	            addDependency(resource);
+	        }
+	    }
 	}
 
 	private void computeDependencies(SubsystemManifest manifest)  {
@@ -426,7 +443,7 @@ public class SubsystemResource implements Resource {
 		return resource.getDeploymentManifest();
 	}
 
-	private ProvisionResourceHeader computeProvisionResourceHeader() {
+	ProvisionResourceHeader computeProvisionResourceHeader() {
 		Collection<Resource> dependencies = getDependencies();
 		if (dependencies.isEmpty())
 			return null;
@@ -569,7 +586,22 @@ public class SubsystemResource implements Resource {
 	}
 	
 	boolean isContent(Resource resource) {
-	   return installableContent.contains(resource) || sharedContent.contains(resource); 
+		if (installableContent.contains(resource) || sharedContent.contains(resource)) {
+			return true;
+		}
+		// Allow for implicit subsystem installations. An implicit installation
+		// occurs when a subsystem containing other subsystems as content is
+		// installed. When identifying the region to be used for validation
+		// purposes during resolution, resources that are content of children
+		// must be treated as content of this subsystem. See ResolveContext.isValid().
+		for (Resource installableResource : installableContent) {
+			if (installableResource instanceof RawSubsystemResource) {
+				if (((RawSubsystemResource)installableResource).getSubsystemManifest().getSubsystemContentHeader().contains(resource)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	private boolean isInstallable(Resource resource) {
