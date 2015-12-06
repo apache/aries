@@ -57,7 +57,9 @@ import org.osgi.framework.BundleReference;
 import org.osgi.framework.Version;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 
 public class ClientWeavingHookGenericCapabilityTest {
@@ -110,6 +112,64 @@ public class ClientWeavingHookGenericCapabilityTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
         Assert.assertEquals(Collections.singleton("olleh"), result);
+    }
+
+    @Test
+    public void testHeadersFromFragment() throws Exception {
+        // Register the bundle that provides the SPI implementation.
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
+
+        Dictionary<String, String> fragmentConsumerHeaders = new Hashtable<String, String>();
+        fragmentConsumerHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.CLIENT_REQUIREMENT);
+
+        Bundle fragment = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(fragment.getHeaders()).andReturn(fragmentConsumerHeaders).anyTimes();
+        EasyMock.replay(fragment);
+        BundleRevision frev = EasyMock.createMock(BundleRevision.class);
+        EasyMock.expect(frev.getBundle()).andReturn(fragment).anyTimes();
+        EasyMock.replay(frev);
+        BundleRequirement req = EasyMock.createMock(BundleRequirement.class);
+        EasyMock.expect(req.getRevision()).andReturn(frev).anyTimes();
+        EasyMock.replay(req);
+        BundleWire wire = EasyMock.createMock(BundleWire.class);
+        EasyMock.expect(wire.getRequirement()).andReturn(req).anyTimes();
+        EasyMock.replay(wire);
+        List<BundleWire> wires = Collections.singletonList(wire);
+        BundleWiring wiring = EasyMock.createMock(BundleWiring.class);
+        EasyMock.expect(wiring.getProvidedWires("osgi.wiring.host")).andReturn(wires).anyTimes();
+        EasyMock.replay(wiring);
+        BundleRevision rev = EasyMock.createMock(BundleRevision.class);
+        EasyMock.expect(rev.getWiring()).andReturn(wiring).anyTimes();
+        EasyMock.replay(rev);
+
+        Bundle consumerBundle = mockConsumerBundle(new Hashtable<String, String>(), rev, providerBundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        Assert.assertNotNull("Precondition", clsUrl);
+
+        String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
+        WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+        Assert.assertEquals(1, wc.getDynamicImports().size());
+        String di1 = "org.apache.aries.spifly;bundle-symbolic-name=spifly;bundle-version=1.9.4";
+        String di2 = "org.apache.aries.spifly;bundle-version=1.9.4;bundle-symbolic-name=spifly";
+        String di = wc.getDynamicImports().get(0);
+        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di) || di2.equals(di));
+
+        // Invoke the woven class and check that it properly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals(Collections.singleton("olleh"), result);
+
     }
 
 
@@ -655,6 +715,11 @@ public class ClientWeavingHookGenericCapabilityTest {
     }
 
     private Bundle mockConsumerBundle(Dictionary<String, String> headers, Bundle ... otherBundles) {
+        return mockConsumerBundle(headers, null, otherBundles);
+    }
+
+    private Bundle mockConsumerBundle(Dictionary<String, String> headers, BundleRevision rev,
+            Bundle ... otherBundles) {
         // Create a mock object for the client bundle which holds the code that uses ServiceLoader.load()
         // or another SPI invocation.
         BundleContext bc = EasyMock.createMock(BundleContext.class);
@@ -665,7 +730,8 @@ public class ClientWeavingHookGenericCapabilityTest {
         EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
-        EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(null).anyTimes();
+        EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(rev).anyTimes();
+
         EasyMock.replay(consumerBundle);
 
         List<Bundle> allBundles = new ArrayList<Bundle>(Arrays.asList(otherBundles));
