@@ -130,7 +130,10 @@ public abstract class BaseActivator implements BundleActivator {
 
         List<String> l = new ArrayList<String>();
         for (Bundle bf : bundlesFragments) {
-            l.add(bf.getHeaders().get(headerName));
+            String header = bf.getHeaders().get(headerName);
+            if (header != null) {
+                l.add(header);
+            }
         }
 
         return l;
