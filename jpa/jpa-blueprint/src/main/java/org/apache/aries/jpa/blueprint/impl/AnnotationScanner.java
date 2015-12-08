@@ -59,9 +59,13 @@ public class AnnotationScanner {
             if (!name.startsWith("set")) {
                 return null;
             }
-            return name. substring(3, 4).toLowerCase() + name.substring(4);
+            return lowerCamelCase(name.substring(3));
         }
         throw new IllegalArgumentException();
+    }
+
+    private static String lowerCamelCase(String name) {
+        return name.substring(0, 1).toLowerCase() + name.substring(1);
     }
     
     public static Class<?> getType(AccessibleObject member) {
