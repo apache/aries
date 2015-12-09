@@ -102,6 +102,11 @@ public class BlueprintTest extends AbstractCarJPAITest {
     }
     
     @Test
+    public void testInlined() throws Exception {
+        carRealTransactionalLifecycle(getCarService("emJtaAnnInlined"));
+    }
+    
+    @Test
     public void testCoordinationLifecycle() throws InterruptedException, ExecutionException {
         CarService carService = getCarService("em");
         assertNoCars(carService);
