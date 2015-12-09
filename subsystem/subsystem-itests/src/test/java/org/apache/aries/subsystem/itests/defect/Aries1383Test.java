@@ -37,6 +37,7 @@ import org.easymock.internal.matchers.Null;
 import org.junit.Test;
 import org.ops4j.pax.tinybundles.core.InnerClassStrategy;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -2139,6 +2140,70 @@ public class Aries1383Test extends SubsystemTest {
 		}
 		catch (SubsystemException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testMatchingCapabilityInDisconnectedRegion() throws Exception {
+		Subsystem root = getRootSubsystem();
+		BundleArchiveBuilder b1Builder = new BundleArchiveBuilder()
+				.symbolicName("b1")
+				.exportPackage("b1");
+		Bundle b1 = root.getBundleContext().installBundle("b1", b1Builder.build());
+		try {
+			Subsystem a1 = installSubsystem(
+					root,
+					"a1",
+					new SubsystemArchiveBuilder()
+							.symbolicName("a1")
+							.type(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION
+									+ ';'
+									+ AriesProvisionDependenciesDirective.RESOLVE.toString()
+									+ ';'
+									+ SubsystemConstants.PROVISION_POLICY_DIRECTIVE
+									+ ":="
+									+ SubsystemConstants.PROVISION_POLICY_ACCEPT_DEPENDENCIES)
+							.build(),
+					false
+			);
+			uninstallableSubsystems.add(a1);
+			startSubsystem(a1, false);
+			stoppableSubsystems.add(a1);
+			removeConnectionWithParent(a1);
+			Subsystem a2 = installSubsystem(
+					a1,
+					"a2",
+					new SubsystemArchiveBuilder()
+							.symbolicName("a2")
+							.type(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
+							.content("b2")
+							.bundle(
+									"b2", 
+									new BundleArchiveBuilder()
+											.symbolicName("b2")
+											.importPackage("b1")
+											.build())
+							.bundle(
+									"b1",
+									b1Builder.build())
+							.build(),
+					false
+			);
+			uninstallableSubsystems.add(a2);
+			assertState(State.INSTALLING, a2);
+			assertNotConstituent(a1, "b1");
+			try {
+				startSubsystem(a2, false);
+				stoppableSubsystems.add(a2);
+				assertConstituent(a1, "b1");
+			}
+			catch (SubsystemException e) {
+				e.printStackTrace();
+				fail("Subsystem should have started");
+			}
+		}
+		finally {
+			uninstallSilently(b1);
 		}
 	}
 }

@@ -263,11 +263,12 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		else {
 			// This is an already installed resource from the system repository.
 			if (Utils.isBundle(resource)) {
-				if (this.resource.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isResolve()) {
+				if (isContent(resource) 
+						&& this.resource.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isResolve()) {
 					// If we get here with a subsystem that is 
 					// apache-aries-provision-dependencies:=resolve, it means
 					// that a restart has occurred with the subsystem in the
-					// INSTALLING state. It's content has already been installed.
+					// INSTALLING state. Its content has already been installed.
 					// However, because the sharing policy has not yet been set,
 					// we must treat it similarly to the installable content case
 					// above.
