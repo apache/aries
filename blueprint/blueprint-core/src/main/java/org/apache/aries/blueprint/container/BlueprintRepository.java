@@ -35,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.container.BeanRecipe.UnwrapperedBeanHolder;
 import org.apache.aries.blueprint.di.CircularDependencyException;
@@ -47,6 +48,8 @@ import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
 /**
  * The default repository implementation
@@ -242,9 +245,15 @@ public class BlueprintRepository implements Repository, ExecutionContext {
         DependencyGraph graph = new DependencyGraph(this);
         HashMap<String, Object> objects = new LinkedHashMap<String, Object>();
         for (Map.Entry<String, Recipe> entry : graph.getSortedRecipes(names).entrySet()) {
-            objects.put(
-                    entry.getKey(), 
-                    entry.getValue().create());
+            String name = entry.getKey();
+            ComponentMetadata component = blueprintContainer.getComponentDefinitionRegistry().getComponentDefinition(name);
+            boolean prototype = (component instanceof BeanMetadata)
+                    && MetadataUtil.isPrototypeScope((BeanMetadata) component);
+            if (!prototype || names.contains(name)) {
+                objects.put(
+                        name,
+                        entry.getValue().create());
+            }
         }
         return objects;
     }
