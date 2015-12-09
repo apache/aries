@@ -38,10 +38,12 @@ import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
+import org.apache.aries.blueprint.mutable.MutableServiceMetadata;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 import org.osgi.service.coordinator.Coordinator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +71,17 @@ public class JpaComponentProcessor implements ComponentDefinitionRegistryProcess
         Set<String> components = new HashSet<String>(cdr.getComponentDefinitionNames());
         for (String component : components) {
             ComponentMetadata compDef = cdr.getComponentDefinition(component);
+            
             if (compDef instanceof MutableBeanMetadata && !((MutableBeanMetadata)compDef).isProcessor()) {
+                // Normal bean def
                 handleComponent((MutableBeanMetadata)compDef, bundle, cdr, container);
+            } else if(compDef instanceof MutableServiceMetadata) {
+                // Bean inlined into service def
+                MutableServiceMetadata sMeta = (MutableServiceMetadata)compDef;
+                Target target = sMeta.getServiceComponent();
+                if (target instanceof MutableBeanMetadata) {
+                    handleComponent((MutableBeanMetadata)target, bundle, cdr, container);
+                }
             }
         }
     }
