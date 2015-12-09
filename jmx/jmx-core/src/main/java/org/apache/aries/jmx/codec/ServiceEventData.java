@@ -83,14 +83,17 @@ public class ServiceEventData {
     }
     
     public ServiceEventData(ServiceEvent serviceEvent) {
+        @SuppressWarnings("rawtypes")
         ServiceReference serviceReference = serviceEvent.getServiceReference();
         this.serviceId = (Long) serviceReference.getProperty(Constants.SERVICE_ID);
         this.serviceInterfaces = (String[]) serviceReference.getProperty(Constants.OBJECTCLASS);
-        Bundle bundle = serviceReference.getBundle();
-        this.bundleId = bundle.getBundleId();
-        this.bundleLocation = bundle.getLocation();
-        this.bundleSymbolicName = bundle.getSymbolicName();
         this.eventType = serviceEvent.getType();
+        Bundle bundle = serviceReference.getBundle();
+        if (bundle != null) {
+            this.bundleId = bundle.getBundleId();
+            this.bundleLocation = bundle.getLocation();
+            this.bundleSymbolicName = bundle.getSymbolicName();
+        }
     }
     
     /**
