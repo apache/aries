@@ -9,7 +9,6 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -95,9 +94,6 @@ public class Aries1383Test extends SubsystemTest {
 	private static final String PACKAGE_C = SYMBOLICNAME_PREFIX + "c";
 	private static final String PACKAGE_D = SYMBOLICNAME_PREFIX + "d";
 	private static final String SUBSYSTEM_MANIFEST_FILE = "OSGI-INF/SUBSYSTEM.MF";
-	
-	private final List<Subsystem> stoppableSubsystems = new ArrayList<Subsystem>();
-	private final List<Subsystem> uninstallableSubsystems = new ArrayList<Subsystem>();
 	
 	/*
 	 * (1) A set of subsystems with interleaving content dependencies are able 
@@ -1828,24 +1824,6 @@ public class Aries1383Test extends SubsystemTest {
 			// Nothing.
 		}
 	}
-	
-	@Override
-    public void setUp() throws Exception {
-        super.setUp();
-        stoppableSubsystems.clear();
-        uninstallableSubsystems.clear();
-    }
-	
-	@Override
-    public void tearDown() throws Exception {
-		for (Subsystem subsystem : stoppableSubsystems) {
-			stopSubsystemSilently(subsystem);
-		}
-		for (Subsystem subsystem : uninstallableSubsystems) {
-			uninstallSubsystemSilently(subsystem);
-		}
-        super.tearDown();
-    }
 	
 	@Test
 	public void testInterleavingContentDependencies() throws Exception {

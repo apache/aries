@@ -42,6 +42,7 @@ import org.apache.aries.subsystem.itests.util.TestCapability;
 import org.apache.aries.subsystem.itests.util.TestRepository;
 import org.apache.aries.subsystem.itests.util.TestRepositoryContent;
 import org.eclipse.equinox.region.Region;
+import org.eclipse.equinox.region.RegionDigraph;
 import org.eclipse.equinox.region.RegionDigraph.FilteredRegion;
 import org.eclipse.equinox.region.RegionFilter;
 import org.junit.Before;
@@ -222,7 +223,7 @@ public class Aries1435Test extends SubsystemTest {
 			}
 		}
 		finally {
-			bundleB.uninstall();
+			uninstallSilently(bundleB);
 		}
 	}
 	
@@ -307,7 +308,7 @@ public class Aries1435Test extends SubsystemTest {
 				uninstallSubsystemSilently(applicationB);
 			}
 			finally {
-				bundleB.uninstall();
+				uninstallSilently(bundleB);
 			}
 		}
 		finally {
@@ -343,7 +344,7 @@ public class Aries1435Test extends SubsystemTest {
 				testSharingPolicy(getRootSubsystem(), "b.a", false);
 			}
 			finally {
-				bundleB.uninstall();
+				uninstallSilently(bundleB);
 			}
 		}
 		finally {
@@ -784,5 +785,42 @@ public class Aries1435Test extends SubsystemTest {
 		if (allowed && !wasAllowed) {
 			fail("Sharing policy should have been updated");
 		}
+	}
+	
+	@Test
+	public void testConnectedNonSubsystemRegions() throws Exception {
+		registerWeavingHook("b");
+		Bundle bundleB = getRootSubsystem().getBundleContext().installBundle(
+				BUNDLE_B, new ByteArrayInputStream(createBundleBContent()));
+		uninstallableBundles.add(bundleB);
+		Subsystem applicationA = installSubsystemFromFile(APPLICATION_A);
+		uninstallableSubsystems.add(applicationA);
+		Subsystem applicationB = getChild(applicationA, APPLICATION_B);
+		uninstallSubsystem(applicationB);
+		removeConnectionWithParent(applicationA);
+		Region region = getRegion(applicationA);
+		RegionDigraph digraph = region.getRegionDigraph();
+		Region r1 = digraph.createRegion("R1");
+		deletableRegions.add(r1);
+		region.connectRegion(r1, digraph.createRegionFilterBuilder().allow("y", "(y=x)").build());
+		Region r2a = digraph.createRegion("R2A");
+		deletableRegions.add(r2a);
+		Bundle bundleB1 = r2a.installBundleAtLocation(BUNDLE_B + '1', new ByteArrayInputStream(createBundleBContent()));
+		uninstallableBundles.add(bundleB1);
+		Region r2b = digraph.createRegion("R2B");
+		deletableRegions.add(r2b);
+		r2b.connectRegion(r2a, digraph.createRegionFilterBuilder().allow("osgi.wiring.package", "(&(osgi.wiring.package=b)(version=0))").build());
+		region.connectRegion(r2b, digraph.createRegionFilterBuilder().allow("osgi.wiring.package", "(&(osgi.wiring.package=b)(version=0))").build());
+		applicationB = installSubsystemFromFile(applicationA, APPLICATION_B);
+		uninstallableSubsystems.add(applicationB);
+		try {
+			testDynamicImport(applicationB, "b.B");
+		}
+		catch (AssertionError e) {
+			fail("Dynamic import should have succeeded");
+		}
+		testSharingPolicy(applicationB, "b", true);
+		testSharingPolicy(applicationA, "b", true);
+		testSharingPolicy(getRootSubsystem(), "b", false);
 	}
 }

@@ -19,20 +19,19 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.security.AccessController;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Set;
 
 import org.apache.aries.subsystem.core.archive.DynamicImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.DynamicImportPackageRequirement;
 import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.eclipse.equinox.region.Region;
+import org.eclipse.equinox.region.RegionDigraph.FilteredRegion;
 import org.eclipse.equinox.region.RegionDigraphVisitor;
 import org.eclipse.equinox.region.RegionFilter;
 import org.osgi.framework.Bundle;
@@ -162,84 +161,61 @@ public class WovenClassListener implements org.osgi.framework.hooks.weaving.Wove
 		final Map<Region, BasicSubsystem> regionToSubsystem = new HashMap<Region, BasicSubsystem>();
 		regionToSubsystem(scopedSubsystem, regionToSubsystem);
 		scopedSubsystem.getRegion().visitSubgraph(new RegionDigraphVisitor() {
-			private final AtomicBoolean abort = new AtomicBoolean();
-			private final Deque<BasicSubsystem> deque = new ArrayDeque<BasicSubsystem>();
+			private final List<BasicSubsystem> visited = new ArrayList<BasicSubsystem>();
 			
 			@Override
 			public void postEdgeTraverse(RegionFilter filter) {
-				if (	// The queue will be empty if the necessary sharing 
-						// policy updates have already been detected.
-						deque.isEmpty() || 
-						// This is an edge whose head region was owned by a
-						// subsystem that was not a parent of the last processed
-						// subsystem.
-						abort.getAndSet(false)) {
-					// Do nothing.
-					return;
-				}
-				BasicSubsystem subsystem = deque.pop();
-				if (filter.isAllowed(providers.iterator().next())) {
-					// The sharing policy already allows the dynamic import
-					// so no update is necessary.
-					return;
-				}
-				// Add the subsystem to the list indicating a sharing policy
-				// update is required.
-				subsystems.add(subsystem);
+				// Nothing.
 			}
 
 			@Override
 			public boolean preEdgeTraverse(RegionFilter filter) {
-				if (deque.isEmpty()) {
-					// The queue will be empty if the necessary sharing policy
-					// updates have already been detected.
-					// Do not visit the head region of this filter connection.
-					return false;
-				}
-				// Visit the head region of this filter connection
 				return true;
 			}
 
 			@Override
 			public boolean visit(Region region) {
 				BasicSubsystem subsystem = regionToSubsystem.get(region);
-				if (subsystem == null) {
-					// Neither the subsystem whose subgraph is being visited nor
-					// any ancestor in the subsystem tree owns this region.
+				if (subsystem == null || subsystem.isRoot()) {
+					// Don't mess with regions not created by the subsystem
+					// implementation. Also, the root subsystem never has a
+					// sharing policy.
 					return false;
 				}
-				if (	// The deque will be empty if this is first region visited.
-						!deque.isEmpty() && 
-						// This region is not owned by the scoped subsystem in
-						// the parent region of the last processed subsystem. 
-						// We want to traverse up the tree.
-						!scopedParent(deque.getFirst()).equals(subsystem)) {
-					// Indicate to postEdgeTraverse that it should not add a
-					// subsystem to the list.
-					abort.set(true);
-					// Do not traverse the edges of this region.
+				if (!visited.isEmpty() && !subsystem.equals(scopedParent(visited.get(visited.size() - 1)))) {
+					// We're only interested in walking up the scoped parent tree.
 					return false;
 				}
-				// Let postEdgeTraverse see the currently processing subsystem.
-				deque.push(subsystem);
-				for (BundleCapability provider : providers) {
-					BundleRevision br = provider.getResource();
-					if (region.contains(br.getBundle()) && !requirement.getPackageName().contains("*")) {
-						// The subsystem contains the provider so there is no
-						// need to update it's sharing policy. Remove it from
-						// the list.
-						deque.pop();
-						// Do not traverse the edges of this region.
-						return false;
+				visited.add(subsystem);
+				if (!requirement.getPackageName().contains("*")) {
+					for (BundleCapability provider : providers) {
+						BundleRevision br = provider.getResource();
+						if (region.contains(br.getBundle())) {
+							// The region contains a bundle providing a matching
+							// capability, and the dynamic import does not contain a
+							// wildcard. The requirement is therefore completely
+							// satisfied.
+							return false;
+						}
 					}
 				}
-				if (region.getEdges().isEmpty()) {
-					// We want to traverse the edges but it has none. This means
-					// there is no sharing policy to update. Remove it from the
-					// list.
-					deque.pop();
+				boolean allowed = false;
+				Set<FilteredRegion> filters = region.getEdges();
+				for (FilteredRegion filteredRegion : filters) {
+					RegionFilter filter = filteredRegion.getFilter();
+					if (filter.isAllowed(providers.iterator().next())) {
+						// The region already allows matching capabilities
+						// through so there is no need to update the sharing
+						// policy.
+						allowed = true;
+						break;
+					}
 				}
-				// Traverse the edges of this region.
+				if (!allowed) {
+					// The subsystem region requires a sharing policy update.
+					subsystems.add(subsystem);
+				}
+				// Visit the next region.
 				return true;
 			}
 		});
