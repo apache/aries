@@ -132,6 +132,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		return new Option[] {
 				baseOptions(),
 				systemProperty("org.osgi.framework.bsnversion").value("multiple"),
+				systemProperty("org.osgi.framework.storage.clean").value("onFirstInit"),
 				// Bundles
 				mavenBundle("org.apache.aries",             "org.apache.aries.util").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
@@ -193,26 +194,48 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	@SuppressWarnings("rawtypes")
     protected Collection<ServiceRegistration> serviceRegistrations = new ArrayList<ServiceRegistration>();
 
+	protected final List<Region> deletableRegions = new ArrayList<Region>();
+	protected final List<Subsystem> stoppableSubsystems = new ArrayList<Subsystem>();
+	protected final List<Bundle> uninstallableBundles = new ArrayList<Bundle>();
+    protected final List<Subsystem> uninstallableSubsystems = new ArrayList<Subsystem>();
+	
 	@Before
 	public void setUp() throws Exception {
+		deletableRegions.clear();
+		stoppableSubsystems.clear();
+		uninstallableBundles.clear();
+        uninstallableSubsystems.clear();
 		if (!createdApplications) {
 			createApplications();
 			createdApplications = true;
 		}
 		bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
 	}
-
-	protected void createApplications() throws Exception {
-	}
-
+	
 	@SuppressWarnings("rawtypes")
     @After
 	public void tearDown() throws Exception
 	{
+		for (Subsystem subsystem : stoppableSubsystems) {
+			stopSubsystemSilently(subsystem);
+		}
+		for (Subsystem subsystem : uninstallableSubsystems) {
+			uninstallSubsystemSilently(subsystem);
+		}
+		RegionDigraph digraph = context().getService(RegionDigraph.class);
+		for (Region region : deletableRegions) {
+			digraph.removeRegion(region);
+		}
+		for (Bundle bundle : uninstallableBundles) {
+			uninstallSilently(bundle);
+		}
 		bundleContext.removeServiceListener(subsystemEvents);
 		for (ServiceRegistration registration : serviceRegistrations)
 			Utils.unregisterQuietly(registration);
 		serviceRegistrations.clear();
+	}
+
+	protected void createApplications() throws Exception {
 	}
 
 	protected RichBundleContext context(Subsystem subsystem) {
@@ -976,7 +999,9 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		try {
 			bundle.uninstall();
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void uninstallSubsystem(Subsystem subsystem) throws Exception {
