@@ -72,6 +72,7 @@ public class GeneratorTest {
         Assert.assertEquals("init", xpath.evaluate("@init-method", bean1));
         Assert.assertEquals("destroy", xpath.evaluate("@destroy-method", bean1));
         Assert.assertEquals("true", xpath.evaluate("@field-injection", bean1));
+        Assert.assertEquals("", xpath.evaluate("@scope", bean1));
         
         // @Transactional
         Assert.assertEquals("*", xpath.evaluate("transaction/@method", bean1));

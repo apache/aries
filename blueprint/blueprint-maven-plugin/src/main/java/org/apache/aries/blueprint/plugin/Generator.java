@@ -143,6 +143,9 @@ public class Generator implements PropertyWriter {
         writer.writeAttribute("id", bean.id);
         writer.writeAttribute("class", bean.clazz.getName());
         writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
+        if (bean.isPrototype) {
+            writer.writeAttribute("scope", "prototype");
+        }
         if (bean instanceof ProducedBean) {
             writeFactory((ProducedBean)bean);
         }

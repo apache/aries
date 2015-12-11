@@ -19,7 +19,9 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.inject.Named;
 
@@ -47,6 +49,7 @@ public class BeanTest {
         assertEquals("*", bean.transactionDef.getMethod());
         assertEquals("Required", bean.transactionDef.getType());
         assertEquals(1, bean.properties.size());
+        assertFalse(bean.isPrototype);
         Property prop = bean.properties.iterator().next();
         assertEquals("bean2", prop.name);
         assertEquals("serviceA", prop.ref);
@@ -64,6 +67,7 @@ public class BeanTest {
         assertEquals("*", bean.transactionDef.getMethod());
         assertEquals("RequiresNew", bean.transactionDef.getType());
         assertEquals(5, bean.properties.size());
+        assertTrue(bean.isPrototype);
     }
     
     @Test
@@ -78,6 +82,7 @@ public class BeanTest {
         assertEquals("There should be no persistence fields", 0, bean.persistenceFields.length);
         assertNull("There should be no transaction definition", bean.transactionDef);
         assertEquals("There should be no properties", 0, bean.properties.size());
+        assertTrue(bean.isPrototype);
     }
     
     @Test
@@ -87,6 +92,7 @@ public class BeanTest {
         Property bcProp = bean.properties.iterator().next();
         assertEquals("bundleContext", bcProp.name);
         assertEquals("blueprintBundleContext", bcProp.ref);
+        assertFalse(bean.isPrototype);
     }
 
 }

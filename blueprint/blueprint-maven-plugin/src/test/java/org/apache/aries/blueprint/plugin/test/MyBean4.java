@@ -1,11 +1,11 @@
 package org.apache.aries.blueprint.plugin.test;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.osgi.framework.BundleContext;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class MyBean4 {
 
     @Inject
