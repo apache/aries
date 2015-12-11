@@ -20,13 +20,12 @@ package org.apache.aries.blueprint.plugin.test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Singleton
+@Named
 @Transactional(propagation=Propagation.REQUIRES_NEW)
 public class MyBean3 {
 
