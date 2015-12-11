@@ -30,7 +30,7 @@ import org.apache.xbean.finder.ClassFinder;
 import org.springframework.stereotype.Component;
 
 public class FilteredClassFinder {
-    
+
     @SuppressWarnings("unchecked")
     public static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames) {
         return findClasses(finder, packageNames, new Class[]{ Singleton.class, Component.class, Named.class});
