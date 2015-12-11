@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.xbean.finder.ClassFinder;
@@ -32,7 +33,7 @@ public class FilteredClassFinder {
     
     @SuppressWarnings("unchecked")
     public static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames) {
-        return findClasses(finder, packageNames, new Class[]{Singleton.class, Component.class});
+        return findClasses(finder, packageNames, new Class[]{ Singleton.class, Component.class, Named.class});
     }
 
     public static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames, Class<? extends Annotation>[] annotations) {
