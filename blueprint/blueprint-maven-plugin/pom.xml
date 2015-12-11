@@ -40,7 +40,6 @@
     <properties>
         <maven.version>3.0.5</maven.version>
         <aether.version>1.11</aether.version>
-        <aries.javadoc.exclude.packages>org.apache.aries.blueprint.plugin</aries.javadoc.exclude.packages>
     </properties>
 
     <scm>
@@ -233,7 +232,16 @@
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>2.9</version>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+            </plugin>
         </plugins>
+
     </reporting>
 
 </project>
