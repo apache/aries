@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.Processor;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 
 public class AuthorizationBeanProcessor implements BeanProcessor {
@@ -47,6 +48,10 @@ public class AuthorizationBeanProcessor implements BeanProcessor {
     }
 
     public Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
+        if (bean instanceof Processor) {
+            // Never enhance other processors
+            return bean;
+        }
         Class<?> c = bean.getClass();
         if (new SecurityAnotationParser().isSecured(c)) {
             LOGGER.debug("Adding annotation based authorization interceptor for bean {} with class {}", beanName, c);
