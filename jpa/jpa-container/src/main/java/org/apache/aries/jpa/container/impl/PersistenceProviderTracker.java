@@ -105,7 +105,7 @@ public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvid
             EntityManagerFactory emf = provider.createContainerEntityManagerFactory(punit, null);
             emf.close();
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage(), e);
+            LOGGER.debug("Error while creating the Dummy EntityManagerFactory to allow weaving.", e);
         }
         punit.setJtaDataSource(null);
         punit.setNonJtaDataSource(null);
