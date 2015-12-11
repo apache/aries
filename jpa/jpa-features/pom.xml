@@ -25,6 +25,9 @@
         <version>2.3.0-SNAPSHOT</version>
         <relativePath>../jpa-parent</relativePath>
     </parent>
+    <properties>
+        <karaf.version>4.0.3</karaf.version>
+    </properties>
     <artifactId>jpa-features</artifactId>
     <name>Apache Aries JPA features</name>
     <description>Karaf features for Aries JPA</description>
@@ -56,7 +59,7 @@
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>framework</artifactId>
             <type>kar</type>
-            <version>4.0.1</version>
+            <version>${karaf.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -66,7 +69,7 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <version>4.0.1</version>
+                <version>${karaf.version}</version>
                 <configuration>
                 </configuration>
                 <executions>
@@ -88,7 +91,7 @@
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>mvn:org.apache.karaf.features/framework/4.0.1/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
                                 <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                             </descriptors>
                             <distribution>org.apache.karaf.features:framework</distribution>
