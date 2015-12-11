@@ -83,6 +83,7 @@
                             <addBundlesToPrimaryFeature>false</addBundlesToPrimaryFeature>
                         </configuration>
                     </execution>
+                    <!--
                     <execution>
                         <id>verify</id>
                         <phase>process-resources</phase>
@@ -102,6 +103,7 @@
                             <ignoreMissingConditions>true</ignoreMissingConditions>
                         </configuration>
                     </execution>
+                                -->
                 </executions>
             </plugin>
             <plugin>
