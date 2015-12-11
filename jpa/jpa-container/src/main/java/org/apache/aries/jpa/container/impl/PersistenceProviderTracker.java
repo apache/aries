@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * Tracks matching persistence providers for a persistence unit.
  * If a provider is found:
  * - an EntityManagerFactoryBuilder is installed
- * - A DataSourceTracker is installed if the JtaDataSource refers to an OSGi service 
+ * - A DataSourceTracker is installed if the JtaDataSource refers to an OSGi service
  */
 public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvider, StoredPerProvider> {
     private static final String JAVAX_PERSISTENCE_PROVIDER = "javax.persistence.provider";
@@ -105,7 +105,7 @@ public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvid
             EntityManagerFactory emf = provider.createContainerEntityManagerFactory(punit, null);
             emf.close();
         } catch (Exception e) {
-            LOGGER.warn(e.getMessage(), e);
+            LOGGER.debug("We create a dummy EMF first, so this exception does not need to be critical...", e);
         }
         punit.setJtaDataSource(null);
         punit.setNonJtaDataSource(null);
