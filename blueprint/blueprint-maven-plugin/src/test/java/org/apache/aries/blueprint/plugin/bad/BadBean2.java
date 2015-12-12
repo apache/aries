@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test;
+package org.apache.aries.blueprint.plugin.bad;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
 
-public class ParentBean {
+import org.apache.aries.blueprint.plugin.test.ParentBean;
 
-    @PostConstruct
-    public void overridenInit() {
-    }
-
+@Singleton
+public class BadBean2 extends ParentBean
+{
     @PreDestroy
-    public void destroy() {
+    public void secondDestroy() {
+
     }
 }
