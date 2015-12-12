@@ -76,14 +76,14 @@
             <dependency>
                 <groupId>org.apache.aries.jpa</groupId>
                 <artifactId>org.apache.aries.jpa.api</artifactId>
-                <version>${aries.jpa.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- Test dependencies -->
             <dependency>
                 <groupId>org.apache.aries.jpa</groupId>
                 <artifactId>org.apache.aries.jpa.support</artifactId>
-                <version>${aries.jpa.version}</version>
+                <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
