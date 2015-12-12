@@ -38,6 +38,8 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.model.TransactionalDef;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
+import org.apache.aries.blueprint.plugin.test.ServiceA;
+import org.apache.aries.blueprint.plugin.test.ServiceB;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.xbean.finder.ClassFinder;
 import org.junit.Assert;
@@ -105,6 +107,31 @@ public class GeneratorTest {
         // @Autowired
         Assert.assertEquals("my1", xpath.evaluate("property[@name='bean2']/@ref", bean1));
 
+        // Service with 1 interface
+        Node serviceAImpl2 = (Node) xpath.evaluate("/blueprint/service[@ref='my2']", document, XPathConstants.NODE);
+        Assert.assertEquals(ServiceA.class.getName(), xpath.evaluate("@interface", serviceAImpl2));
+        Assert.assertEquals("", xpath.evaluate("@auto-export", serviceAImpl2));
+        Assert.assertEquals("", xpath.evaluate("interfaces", serviceAImpl2));
+
+        // Service with 0 interfaces (using auto-export=interfaces instead)
+        Node serviceAImpl3 = (Node) xpath.evaluate("/blueprint/service[@ref='serviceAImpl3']", document, XPathConstants.NODE);
+        Assert.assertEquals("", xpath.evaluate("@interface", serviceAImpl3));
+        Assert.assertEquals("interfaces", xpath.evaluate("@auto-export", serviceAImpl3));
+        Assert.assertEquals("", xpath.evaluate("interfaces", serviceAImpl3));
+
+        // Service with 2 interfaces (using <interfaces><value>ServiceA</value><value>ServiceB</value></interfaces>
+        Node serviceABImpl = (Node) xpath.evaluate("/blueprint/service[@ref='serviceABImpl']", document, XPathConstants.NODE);
+        Assert.assertEquals("", xpath.evaluate("@interface", serviceABImpl));
+        Assert.assertEquals("", xpath.evaluate("@auto-export", serviceABImpl));
+
+        NodeList interfaceValues = (NodeList) xpath.evaluate("interfaces/value", serviceABImpl, XPathConstants.NODESET);
+        Set<String> interfaceNames = new HashSet<String>();
+        for (int i = 0; i < interfaceValues.getLength(); ++i) {
+            Node interfaceValue = interfaceValues.item(i);
+            interfaceNames.add(interfaceValue.getTextContent());
+        }
+        Assert.assertEquals(Sets.newHashSet(ServiceA.class.getName(), ServiceB.class.getName()),
+                            interfaceNames);
     }
 
     private Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
