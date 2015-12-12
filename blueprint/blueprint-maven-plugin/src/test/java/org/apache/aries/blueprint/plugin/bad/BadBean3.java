@@ -16,27 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.bad;
 
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.CaseFormat;
+public class BadBean3
+{
+    @Transactional(propagation = Propagation.NESTED)
+    public void txNestedIsNotSupported() {
 
-public class SpringTransactionFactory extends AbstractTransactionalFactory<Transactional> {
-    @Override
-    public String getTransactionTypeName(Transactional transactional)
-    {
-        Propagation propagation = transactional.propagation();
-        if (propagation == Propagation.NESTED) {
-            throw new UnsupportedOperationException("Nested transactions not supported");
-        }
-        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, propagation.name());
-    }
-
-    @Override
-    public Class<Transactional> getTransactionalClass()
-    {
-        return Transactional.class;
     }
 }

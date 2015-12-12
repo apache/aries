@@ -23,10 +23,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
 import javax.inject.Named;
 
 import org.apache.aries.blueprint.plugin.bad.BadBean1;
 import org.apache.aries.blueprint.plugin.bad.BadBean2;
+import org.apache.aries.blueprint.plugin.bad.BadBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
@@ -34,6 +37,7 @@ import org.apache.aries.blueprint.plugin.test.ServiceAImpl1;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.collect.Sets;
 
 public class BeanTest {
 
@@ -48,13 +52,20 @@ public class BeanTest {
         Assert.assertEquals(2, bean.persistenceFields.length);
         assertEquals("em", bean.persistenceFields[0].getName());
         assertEquals("emf", bean.persistenceFields[1].getName());
-        assertEquals("*", bean.transactionDef.getMethod());
-        assertEquals("Required", bean.transactionDef.getType());
         assertEquals(1, bean.properties.size());
         assertFalse(bean.isPrototype);
         Property prop = bean.properties.iterator().next();
         assertEquals("bean2", prop.name);
         assertEquals("serviceA", prop.ref);
+
+        Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
+                                                            new TransactionalDef("txNotSupported", "NotSupported"),
+                                                            new TransactionalDef("txMandatory", "Mandatory"),
+                                                            new TransactionalDef("txNever", "Never"),
+                                                            new TransactionalDef("txRequired", "Required"),
+                                                            new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+                                                            new TransactionalDef("txSupports", "Supports"));
+        assertEquals(expectedTxs, bean.transactionDefs);
     }
 
     @Test
@@ -66,10 +77,17 @@ public class BeanTest {
         assertNull("There should be no initMethod", bean.initMethod);
         assertNull("There should be no destroyMethod", bean.destroyMethod);
         assertEquals("There should be no persistence fields", 0, bean.persistenceFields.length);
-        assertEquals("*", bean.transactionDef.getMethod());
-        assertEquals("RequiresNew", bean.transactionDef.getType());
         assertEquals(5, bean.properties.size());
         assertTrue(bean.isPrototype);
+
+        Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
+                                                            new TransactionalDef("txNotSupported", "NotSupported"),
+                                                            new TransactionalDef("txMandatory", "Mandatory"),
+                                                            new TransactionalDef("txNever", "Never"),
+                                                            new TransactionalDef("txRequired", "Required"),
+                                                            new TransactionalDef("txRequiresNew", "RequiresNew"),
+                                                            new TransactionalDef("txSupports", "Supports"));
+        assertEquals(expectedTxs, bean.transactionDefs);
     }
 
     @Test
@@ -82,7 +100,7 @@ public class BeanTest {
         assertNull("There should be no initMethod", bean.initMethod);
         assertNull("There should be no destroyMethod", bean.destroyMethod);
         assertEquals("There should be no persistence fields", 0, bean.persistenceFields.length);
-        assertNull("There should be no transaction definition", bean.transactionDef);
+        assertTrue("There should be no transaction definition", bean.transactionDefs.isEmpty());
         assertEquals("There should be no properties", 0, bean.properties.size());
         assertTrue(bean.isPrototype);
     }
@@ -95,6 +113,9 @@ public class BeanTest {
         assertEquals("bundleContext", bcProp.name);
         assertEquals("blueprintBundleContext", bcProp.ref);
         assertFalse(bean.isPrototype);
+
+        Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("txWithoutClassAnnotation", "Supports"));
+        assertEquals(expectedTxs, bean.transactionDefs);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -105,5 +126,10 @@ public class BeanTest {
     @Test(expected = IllegalArgumentException.class)
     public void testMultipleDestroyMethods() {
         new Bean(BadBean2.class);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testSpringNestedTransactionNotSupported() {
+        new Bean(BadBean3.class);
     }
 }

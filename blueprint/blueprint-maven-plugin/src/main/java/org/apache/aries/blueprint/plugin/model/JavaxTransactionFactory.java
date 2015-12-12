@@ -23,7 +23,9 @@ import java.util.HashMap;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
-public class JavaxTransactionFactory {
+import com.google.common.base.CaseFormat;
+
+public class JavaxTransactionFactory extends AbstractTransactionalFactory<Transactional> {
     private static HashMap<TxType, String> txTypeNames;
 
     static {
@@ -31,10 +33,16 @@ public class JavaxTransactionFactory {
         txTypeNames.put(TxType.REQUIRED, TransactionalDef.TYPE_REQUIRED);
         txTypeNames.put(TxType.REQUIRES_NEW, TransactionalDef.TYPE_REQUIRES_NEW);
     }
-    
-    TransactionalDef create(Class<?> clazz) {
-        Transactional transactional = clazz.getAnnotation(Transactional.class);
-        return transactional != null ? 
-                new TransactionalDef("*", txTypeNames.get(transactional.value())) : null;
+
+    @Override
+    public String getTransactionTypeName(Transactional transactional)
+    {
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());
+    }
+
+    @Override
+    public Class<Transactional> getTransactionalClass()
+    {
+        return Transactional.class;
     }
 }
