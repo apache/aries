@@ -34,6 +34,8 @@ import org.junit.Test;
 public class TaskServiceImplTest {
     @Test
     public void testPersistence() {
+        // Avoid creating derby.log
+        System.setProperty("derby.stream.error.field", "MyApp.DEV_NULL");
         TaskServiceImpl taskServiceImpl = new TaskServiceImpl();
         EntityManagerFactory emf = createTestEMF();
         final EntityManager em = emf.createEntityManager();
