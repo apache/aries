@@ -59,8 +59,8 @@
             org.apache.aries.blueprint.spring.Activator
         </aries.osgi.activator>
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.core.version>1.5.0-SNAPSHOT</blueprint.core.version>
-        <blueprint.parser.version>1.4.0-SNAPSHOT</blueprint.parser.version>
+        <blueprint.core.version>1.5.0</blueprint.core.version>
+        <blueprint.parser.version>1.4.0</blueprint.parser.version>
         <!--
         <lastReleaseVersion>1.0.4</lastReleaseVersion>
         -->
@@ -103,7 +103,6 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
-            <version>4.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -143,7 +142,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
