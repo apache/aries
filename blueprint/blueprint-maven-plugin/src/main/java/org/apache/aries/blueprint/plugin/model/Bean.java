@@ -30,10 +30,13 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
@@ -43,7 +46,7 @@ public class Bean extends BeanRef {
     public String initMethod;
     public String destroyMethod;
     public SortedSet<Property> properties;
-    public Field[] persistenceFields;
+    public List<Field> persistenceFields;
     public Set<TransactionalDef> transactionDefs = new HashSet<TransactionalDef>();
     public boolean isPrototype;
 
@@ -66,7 +69,7 @@ public class Bean extends BeanRef {
         transactionDefs.addAll(new JavaxTransactionFactory().create(clazz));
         transactionDefs.addAll(new SpringTransactionFactory().create(clazz));
         this.isPrototype = isPrototype(clazz);
-        this.persistenceFields = getPersistenceFields();
+        this.persistenceFields = new FieldFinder(PersistenceContext.class, PersistenceUnit.class).findFields(clazz);
         properties = new TreeSet<Property>();
     }
 
@@ -75,29 +78,8 @@ public class Bean extends BeanRef {
         return clazz.getAnnotation(Singleton.class) == null && clazz.getAnnotation(Component.class) == null;
     }
 
-    private Field[] getPersistenceFields() {
-        List<Field> persistenceFields = new ArrayList<Field>();
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
-            PersistenceContext persistenceContext = field.getAnnotation(PersistenceContext.class);
-            PersistenceUnit persistenceUnit = field.getAnnotation(PersistenceUnit.class);
-            if (persistenceContext !=null || persistenceUnit != null) {
-                 persistenceFields.add(field);
-            }
-        }
-        return persistenceFields.toArray(new Field[]{});
-    }
-
     public void resolve(Matcher matcher) {
-        Class<?> curClass = this.clazz;
-        while (curClass != null && curClass != Object.class) {
-            resolveProperties(matcher, curClass);
-            curClass = curClass.getSuperclass();
-        }
-    }
-
-    private void resolveProperties(Matcher matcher, Class<?> curClass) {
-        for (Field field : curClass.getDeclaredFields()) {
+        for (Field field : new FieldFinder(Value.class, Autowired.class, Inject.class).findFields(clazz)) {
             Property prop = Property.create(matcher, field);
             if (prop != null) {
                 properties.add(prop);

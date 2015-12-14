@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.PersistenceContext;
@@ -101,7 +102,7 @@ public class Generator implements PropertyWriter {
     private boolean isJpaUsed() {
         boolean jpaUsed = false;
         for (Bean bean : context.getBeans()) {
-        if (bean.persistenceFields.length > 0) {
+        if (bean.persistenceFields.size() > 0) {
             jpaUsed = true;
         }
         }
@@ -182,7 +183,7 @@ public class Generator implements PropertyWriter {
     }
 
 
-    private void writePersistenceFields(Field[] fields) throws XMLStreamException {
+    private void writePersistenceFields(List<Field> fields) throws XMLStreamException {
         for (Field field : fields) {
             writePersistenceField(field);
         }

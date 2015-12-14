@@ -30,6 +30,10 @@ import javax.inject.Named;
 import org.apache.aries.blueprint.plugin.bad.BadBean1;
 import org.apache.aries.blueprint.plugin.bad.BadBean2;
 import org.apache.aries.blueprint.plugin.bad.BadBean3;
+import org.apache.aries.blueprint.plugin.bad.BadFieldBean1;
+import org.apache.aries.blueprint.plugin.bad.BadFieldBean2;
+import org.apache.aries.blueprint.plugin.bad.BadFieldBean3;
+import org.apache.aries.blueprint.plugin.bad.FieldBean4;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
@@ -49,9 +53,9 @@ public class BeanTest {
         assertEquals("myBean1", bean.id); // Name derived from class name
         assertEquals("init", bean.initMethod);
         assertEquals("destroy", bean.destroyMethod);
-        Assert.assertEquals(2, bean.persistenceFields.length);
-        assertEquals("em", bean.persistenceFields[0].getName());
-        assertEquals("emf", bean.persistenceFields[1].getName());
+        Assert.assertEquals(2, bean.persistenceFields.size());
+        assertEquals("em", bean.persistenceFields.get(0).getName());
+        assertEquals("emf", bean.persistenceFields.get(1).getName());
         assertEquals(1, bean.properties.size());
         assertFalse(bean.isPrototype);
         Property prop = bean.properties.iterator().next();
@@ -76,7 +80,7 @@ public class BeanTest {
         assertEquals("myBean3", bean.id); // Name derived from class name
         assertNull("There should be no initMethod", bean.initMethod);
         assertNull("There should be no destroyMethod", bean.destroyMethod);
-        assertEquals("There should be no persistence fields", 0, bean.persistenceFields.length);
+        assertEquals("There should be no persistence fields", 0, bean.persistenceFields.size());
         assertEquals(5, bean.properties.size());
         assertTrue(bean.isPrototype);
 
@@ -99,7 +103,7 @@ public class BeanTest {
         assertEquals("Name should be defined using @Named", definedName, bean.id);
         assertNull("There should be no initMethod", bean.initMethod);
         assertNull("There should be no destroyMethod", bean.destroyMethod);
-        assertEquals("There should be no persistence fields", 0, bean.persistenceFields.length);
+        assertEquals("There should be no persistence fields", 0, bean.persistenceFields.size());
         assertTrue("There should be no transaction definition", bean.transactionDefs.isEmpty());
         assertEquals("There should be no properties", 0, bean.properties.size());
         assertTrue(bean.isPrototype);
@@ -131,5 +135,25 @@ public class BeanTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testSpringNestedTransactionNotSupported() {
         new Bean(BadBean3.class);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testBadFieldBean1() {
+        new Context(BadFieldBean1.class).resolve();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testBadFieldBean2() {
+        new Context(BadFieldBean2.class).resolve();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testBadFieldBean3() {
+        new Context(BadFieldBean3.class).resolve();
+    }
+
+    @Test
+    public void testFieldBean4() {
+        new Context(FieldBean4.class).resolve();
     }
 }
