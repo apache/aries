@@ -192,7 +192,7 @@ public class ServiceRecipe extends AbstractRecipe {
         if (registration.get() == null) {
             ServiceRegistration reg = blueprintContainer.registerService(classArray, new TriggerServiceFactory(this, metadata), props);
             if (!registration.compareAndSet(null, reg) && registration.get() != reg) {
-                reg.unregister();
+                AriesFrameworkUtil.safeUnregisterService(reg);
             }
         }
         initialServiceRegistration = false;
