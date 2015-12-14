@@ -91,7 +91,7 @@
         </aries.osgi.include.resource>
         <blueprint.annotation.api.version>1.0.0</blueprint.annotation.api.version>
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.parser.version>1.4.0-SNAPSHOT</blueprint.parser.version>
+        <blueprint.parser.version>1.4.0</blueprint.parser.version>
         <proxy.api.version>1.0.0</proxy.api.version>
         <proxy.impl.version>1.0.3</proxy.impl.version>
         <quiesce.api.version>1.0.0</quiesce.api.version>
@@ -105,7 +105,7 @@
             <properties>
                 <blueprint.annotation.api.version>1.0.1</blueprint.annotation.api.version>
                 <blueprint.api.version>1.0.1</blueprint.api.version>
-                <blueprint.parser.version>1.4.0-SNAPSHOT</blueprint.parser.version>
+                <blueprint.parser.version>1.5.0-SNAPSHOT</blueprint.parser.version>
                 <proxy.api.version>1.0.1</proxy.api.version>
                 <proxy.impl.version>1.0.1</proxy.impl.version>
                 <quiesce.api.version>1.0.0</quiesce.api.version>
