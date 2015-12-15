@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.ops4j.pax.tinybundles.core.InnerClassStrategy;
 import org.ops4j.pax.tinybundles.core.TinyBundle;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
 
@@ -16,6 +17,12 @@ public class BundleArchiveBuilder {
 	
 	public BundleArchiveBuilder() {
 		bundle = TinyBundles.bundle();
+	}
+	
+	public BundleArchiveBuilder activator(Class<?> clazz) {
+		bundle.set(Constants.BUNDLE_ACTIVATOR, clazz.getName());
+		bundle.add(clazz, InnerClassStrategy.NONE);
+		return this;
 	}
 	
 	public InputStream build() {
@@ -35,6 +42,11 @@ public class BundleArchiveBuilder {
 		return baos.toByteArray();
 	}
 	
+	public BundleArchiveBuilder clazz(Class<?> clazz) {
+		bundle.add(clazz, InnerClassStrategy.NONE);
+		return this;
+	}
+	
 	public BundleArchiveBuilder exportPackage(String value) {
 		return header(Constants.EXPORT_PACKAGE, value);
 	}
@@ -46,6 +58,18 @@ public class BundleArchiveBuilder {
 	
 	public BundleArchiveBuilder importPackage(String value) {
 		return header(Constants.IMPORT_PACKAGE, value);
+	}
+	
+	public BundleArchiveBuilder provideCapability(String value) {
+		return header(Constants.PROVIDE_CAPABILITY, value);
+	}
+	
+	public BundleArchiveBuilder requireBundle(String value) {
+		return header(Constants.REQUIRE_BUNDLE, value);
+	}
+	
+	public BundleArchiveBuilder requireCapability(String value) {
+		return header(Constants.REQUIRE_CAPABILITY, value);
 	}
 	
 	public BundleArchiveBuilder symbolicName(String value) {

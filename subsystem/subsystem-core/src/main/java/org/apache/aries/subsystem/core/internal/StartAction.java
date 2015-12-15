@@ -14,7 +14,6 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +49,6 @@ import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Participant;
-import org.osgi.service.resolver.ResolutionException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
@@ -134,6 +132,10 @@ public class StartAction extends AbstractAction {
 		    	// If necessary, install the dependencies.
 		    	if (State.INSTALLING.equals(target.getState()) && 
 		    			!Utils.isProvisionDependenciesInstall(target)) {
+		    		// The following line is necessary in order to ensure that
+		    		// the export sharing policies of composites are in place
+		    		// for capability validation.
+		    		setExportPolicyOfAllInstallingSubsystemsWithProvisionDependenciesResolve(coordination);
 		    		Collection<Subsystem> subsystems = new ArrayList<Subsystem>();
 		    		subsystems.addAll(Activator.getInstance().getSubsystems().getChildren(target));
 		    		subsystems.addAll(target.getParents());
@@ -302,7 +304,7 @@ public class StartAction extends AbstractAction {
 		}
 	}
 
-	private static void setExportIsolationPolicy(BasicSubsystem subsystem, Coordination coordination) throws InvalidSyntaxException, IOException, BundleException, URISyntaxException, ResolutionException {
+	private static void setExportIsolationPolicy(final BasicSubsystem subsystem, Coordination coordination) throws InvalidSyntaxException {
 		if (!subsystem.isComposite())
 			return;
 		final Region from = ((BasicSubsystem)subsystem.getParents().iterator().next()).getRegion();
@@ -317,15 +319,39 @@ public class StartAction extends AbstractAction {
 		if (logger.isDebugEnabled())
 			logger.debug("Establishing region connection: from=" + from
 					+ ", to=" + to + ", filter=" + regionFilter);
-		from.connectRegion(to, regionFilter);
+		try {
+			from.connectRegion(to, regionFilter);
+		}
+		catch (BundleException e) {
+			// TODO Assume this means that the export sharing policy has already
+			// been set. Bad assumption?
+			return;
+		}
 		coordination.addParticipant(new Participant() {
 			@Override
 			public void ended(Coordination coordination) throws Exception {
-				// Nothing.
+				// It may be necessary to rollback the export sharing policy
+				// even when the coordination did not fail. For example, this
+				// might have been a subsystem whose export sharing policy was
+				// set just in case it offered dependencies for some other
+				// subsystem.
+				unsetExportIsolationPolicyIfNecessary();
 			}
 
 			@Override
 			public void failed(Coordination coordination) throws Exception {
+				// Nothing to do because a coordination is always ended.
+			}
+			
+			private void unsetExportIsolationPolicyIfNecessary() throws BundleException, InvalidSyntaxException {
+				if (!EnumSet.of(State.INSTALLING, State.INSTALLED).contains(subsystem.getState())) {
+					// The subsystem is either RESOLVED or ACTIVE and therefore
+					// does not require a rollback.
+					return;
+				}
+				// The subsystem is either INSTALLING or INSTALLED and therefore
+				// requires a rollback since the export sharing policy must only
+				// be set upon entering the RESOLVED state.
 				RegionUpdater updater = new RegionUpdater(from, to);
 				updater.addRequirements(null);
 			}
@@ -532,5 +558,15 @@ public class StartAction extends AbstractAction {
 			diagnostics.append("\n");
 		}
 		logger.error(diagnostics.toString());
+	}
+	
+	private static void setExportPolicyOfAllInstallingSubsystemsWithProvisionDependenciesResolve(Coordination coordination) throws InvalidSyntaxException {
+		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystems()) {
+			if (!State.INSTALLING.equals(subsystem.getState())
+					|| Utils.isProvisionDependenciesInstall(subsystem)) {
+				continue;
+			}
+			setExportIsolationPolicy(subsystem, coordination);
+		}
 	}
 }
