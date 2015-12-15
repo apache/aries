@@ -295,8 +295,8 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	public void start() {
 		SecurityManager.checkExecutePermission(this);
 		// Changing the autostart setting must be privileged because of file IO.
-		// It cannot be done within SartAction because we only want to change it
-		// on an explicit start operation but StartAction is also used for
+		// It cannot be done within StartAction because we only want to change 
+		// it on an explicit start operation but StartAction is also used for
 		// implicit operations.
 		AccessController.doPrivileged(new PrivilegedAction<Object>() {
 			@Override
