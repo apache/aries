@@ -2184,4 +2184,24 @@ public class Aries1383Test extends SubsystemTest {
 			uninstallSilently(b1);
 		}
 	}
+	
+	@Test
+	public void testProvideCapabilityNamespaceOnly() throws Exception {
+		Subsystem root = getRootSubsystem();
+		Subsystem c1 = installSubsystem(
+				root,
+				"c1", 
+				new SubsystemArchiveBuilder()
+						.symbolicName("c1")
+						.type(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)
+						.provideCapability("y")
+						.build());
+		try {
+			startSubsystem(c1);
+		}
+		catch (SubsystemException e) {
+			e.printStackTrace();
+			fail("Subsystem should have started");
+		}
+	}
 }
