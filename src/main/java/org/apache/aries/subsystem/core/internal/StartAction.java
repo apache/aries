@@ -353,13 +353,26 @@ public class StartAction extends AbstractAction {
 		for (ProvideCapabilityHeader.Clause clause : header.getClauses()) {
 			ProvideCapabilityCapability capability = new ProvideCapabilityCapability(clause, subsystem);
 			String policy = capability.getNamespace();
-			StringBuilder filter = new StringBuilder("(&");
-			for (Entry<String, Object> attribute : capability.getAttributes().entrySet())
+			Set<Entry<String, Object>> entrySet = capability.getAttributes().entrySet();
+			StringBuilder filter = new StringBuilder();
+			if (entrySet.size() > 1) {
+				filter.append("(&");
+			}
+			for (Entry<String, Object> attribute : capability.getAttributes().entrySet()) {
 				filter.append('(').append(attribute.getKey()).append('=').append(attribute.getValue()).append(')');
-			filter.append(')');
-			if (logger.isDebugEnabled())
-				logger.debug("Allowing " + policy + " of " + filter);
-			builder.allow(policy, filter.toString());
+			}
+			if (entrySet.size() > 1) {
+				filter.append(')');
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("Allowing policy {} with filter {}", policy, filter);
+			}
+			if (filter.length() == 0) {
+				builder.allowAll(policy);
+			}
+			else {
+				builder.allow(policy, filter.toString());
+			}
 		}
 	}
 
