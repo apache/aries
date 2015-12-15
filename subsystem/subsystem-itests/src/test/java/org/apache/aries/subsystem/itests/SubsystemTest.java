@@ -194,13 +194,14 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	@SuppressWarnings("rawtypes")
     protected Collection<ServiceRegistration> serviceRegistrations = new ArrayList<ServiceRegistration>();
 
-	protected final List<Region> deletableRegions = new ArrayList<Region>();
-	protected final List<Subsystem> stoppableSubsystems = new ArrayList<Subsystem>();
-	protected final List<Bundle> uninstallableBundles = new ArrayList<Bundle>();
-    protected final List<Subsystem> uninstallableSubsystems = new ArrayList<Subsystem>();
+	protected final List<Region> deletableRegions = Collections.synchronizedList(new ArrayList<Region>());
+	protected final List<Subsystem> stoppableSubsystems = Collections.synchronizedList(new ArrayList<Subsystem>());
+	protected final List<Bundle> uninstallableBundles = Collections.synchronizedList(new ArrayList<Bundle>());
+    protected final List<Subsystem> uninstallableSubsystems = Collections.synchronizedList(new ArrayList<Subsystem>());
 	
 	@Before
 	public void setUp() throws Exception {
+		serviceRegistrations.clear();
 		deletableRegions.clear();
 		stoppableSubsystems.clear();
 		uninstallableBundles.clear();
@@ -232,7 +233,6 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		bundleContext.removeServiceListener(subsystemEvents);
 		for (ServiceRegistration registration : serviceRegistrations)
 			Utils.unregisterQuietly(registration);
-		serviceRegistrations.clear();
 	}
 
 	protected void createApplications() throws Exception {
