@@ -35,9 +35,9 @@
     <name>Aries JPA Container</name>
     
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa/jpa-container</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jpa/jpa-container</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/branches/jpa-1.x/jpa-container</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/branches/jpa-1.x/jpa-container</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/branches/jpa-1.x/jpa-container</url>
     </scm>
 
     <properties>
