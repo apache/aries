@@ -58,7 +58,7 @@ public class SpringBeanProcessor implements BeanProcessor, ComponentDefinitionRe
 
     @Override
     public Object beforeInit(Object o, String s, BeanCreator beanCreator, BeanMetadata beanMetadata) {
-        if (beanMetadata instanceof SpringMetadata) {
+        if (beanMetadata instanceof SpringMetadata || beanMetadata == null) {
             return o;
         }
         if (o instanceof Aware) {

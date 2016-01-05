@@ -102,7 +102,22 @@ public class BlueprintNamespaceHandler implements NamespaceHandler2 {
             org.springframework.beans.factory.xml.ParserContext springContext
                     = getOrCreateParserContext(parserContext);
             // Parse spring bean
-            springHandler.parse(element, springContext);
+            BeanDefinition bd = springHandler.parse(element, springContext);
+            for (String name : springContext.getRegistry().getBeanDefinitionNames()) {
+                if (springContext.getRegistry().getBeanDefinition(name) == bd) {
+                    ComponentDefinitionRegistry registry = parserContext.getComponentDefinitionRegistry();
+                    if (registry.containsComponentDefinition(name)) {
+                        // Hack: we can't really make the difference between a top level bean
+                        // and an inlined bean when using custom (eventually nested) namespaces.
+                        // To work around the problem, the BlueprintBeanFactory will always register
+                        // a BeanMetadata for each bean, but here, we unregister it and return it instead
+                        // so that the caller is responsible for registering the metadata.
+                        ComponentMetadata metadata = registry.getComponentDefinition(name);
+                        registry.removeComponentDefinition(name);
+                        return metadata;
+                    }
+                }
+            }
             return null;
         } catch (Exception e) {
             throw new RuntimeException(e);

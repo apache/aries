@@ -18,42 +18,38 @@
  */
 package org.apache.aries.blueprint.itests;
 
-import java.util.List;
-
-import org.apache.aries.blueprint.testbundles.BeanC;
-import org.apache.aries.blueprint.testbundles.BeanCItf;
+import org.apache.aries.blueprint.testbundlee.BeanCItf;
 import org.junit.Test;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class SpringTest extends AbstractBlueprintIntegrationTest {
+public class SpringExtenderTest extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void testSpringBundle() throws Exception {
-        Bundle bundles = context().getBundleByName("org.apache.aries.blueprint.testbundles");
+        try {
+            context().getService(BeanCItf.class, 1);
+            fail("The service should not be registered");
+        } catch (RuntimeException e) {
+            // Expected
+        }
+
+        Bundle bundles = context().getBundleByName("org.apache.aries.blueprint.testbundlee");
         assertNotNull(bundles);
         bundles.start();
 
-        BlueprintContainer container = startBundleBlueprint("org.apache.aries.blueprint.testbundles");
-        List list = (List) container.getComponentInstance("springList");
-        System.out.println(list);
-
-        BeanCItf beanC = (BeanCItf) list.get(4);
-        assertEquals(1, beanC.getInitialized());
-
-        try {
-            beanC.doSomething();
-            fail("Should have thrown an exception because the transaction manager is not defined");
-        } catch (NoSuchBeanDefinitionException e) {
-            // expected
-        }
+        BlueprintContainer container = startBundleBlueprint("org.apache.aries.blueprint.testbundlee");
+        assertNotNull(container);
+        BeanCItf beanC1 = context().getService(BeanCItf.class, "(name=BeanC-1)");
+        assertEquals(1, beanC1.getInitialized());
+        BeanCItf beanC2 = context().getService(BeanCItf.class, "(name=BeanC-2)");
+        assertEquals(1, beanC2.getInitialized());
     }
 
     @org.ops4j.pax.exam.Configuration
@@ -63,6 +59,7 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
             Helper.blueprintBundles(),
             // Blueprint spring
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring"),
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring.extender"),
             // Spring
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.aopalliance"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-core"),
@@ -73,7 +70,7 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-expression"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-tx"),
             // test bundle
-            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundles", false),
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundlee", false),
         };
     }
 

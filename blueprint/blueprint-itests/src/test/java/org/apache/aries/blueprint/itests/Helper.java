@@ -79,8 +79,7 @@ public class Helper {
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core", startBlueprint),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.cm", startBlueprint),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.api", startBlueprint),
-                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.impl", startBlueprint),
-                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring", startBlueprint)
+                mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.annotation.impl", startBlueprint)
         );
     }
 
