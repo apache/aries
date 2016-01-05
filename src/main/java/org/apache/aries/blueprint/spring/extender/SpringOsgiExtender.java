@@ -107,6 +107,7 @@ public class SpringOsgiExtender extends AbstractExtender {
     }
 
     private boolean isCompatible(Bundle bundle) {
+        // TODO
         return true;
     }
 
