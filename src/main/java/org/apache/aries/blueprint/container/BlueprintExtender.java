@@ -20,8 +20,10 @@ package org.apache.aries.blueprint.container;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -264,7 +266,11 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     }
 
     private boolean createContainer(Bundle bundle, List<Object> paths) {
-    try {
+        return createContainer(bundle, paths, null);
+    }
+
+    private boolean createContainer(Bundle bundle, List<Object> paths, Collection<URI> namespaces) {
+        try {
             if (paths == null || paths.isEmpty()) {
                 // This bundle is not a blueprint bundle, so ignore it
                 return false;
@@ -282,7 +288,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             BlueprintContainerImpl blueprintContainer = new BlueprintContainerImpl(bundle, bundleContext,
                                                                 context.getBundle(), eventDispatcher,
                                                                 handlers, getExecutorService(bundle),
-                                                                executors, paths, pm);
+                                                                executors, paths, pm, namespaces);
             synchronized (containers) {
                 if (containers.putIfAbsent(bundle, blueprintContainer) != null) {
                     return false;
@@ -594,6 +600,14 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
 
         public BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths) {
             if (BlueprintExtender.this.createContainer(bundle, blueprintPaths)) {
+                return getContainer(bundle);
+            } else {
+                return null;
+            }
+        }
+
+        public BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths, Collection<URI> namespaces) {
+            if (BlueprintExtender.this.createContainer(bundle, blueprintPaths, namespaces)) {
                 return getContainer(bundle);
             } else {
                 return null;

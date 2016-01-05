@@ -16,6 +16,8 @@
  */
 package org.apache.aries.blueprint.services;
 
+import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
 import org.osgi.framework.Bundle;
@@ -35,8 +37,17 @@ public interface BlueprintExtenderService {
      * @param bundle the application bundle
      * @param blueprintPaths the application blueprint resources
      * @return container
-     */    
+     */
     BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths);
+
+    /**
+     * Create Blueprint container for the application bundle using a list of Blueprint resources
+     * @param bundle the application bundle
+     * @param blueprintPaths the application blueprint resources
+     * @param namespaces additional namespaces to force reference to
+     * @return container
+     */
+    BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths, Collection<URI> namespaces);
 
     /**
      * Get an existing container for the application bundle
