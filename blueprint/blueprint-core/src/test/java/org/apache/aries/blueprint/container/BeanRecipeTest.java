@@ -120,7 +120,7 @@ public class BeanRecipeTest {
 
     @Test
     public void parameterWithGenerics() throws Exception {
-        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null);
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
         BeanRecipe recipe = new BeanRecipe("example", container, ExampleService.class, false);
         recipe.setArguments(Arrays.<Object>asList(new ExampleImpl()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
@@ -195,7 +195,7 @@ public class BeanRecipeTest {
 
     @Test
     public void protectedClassAccess() throws Exception {
-        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null);
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
         BeanRecipe recipe = new BeanRecipe("a", container, null, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
         recipe.setFactoryMethod("getA");
