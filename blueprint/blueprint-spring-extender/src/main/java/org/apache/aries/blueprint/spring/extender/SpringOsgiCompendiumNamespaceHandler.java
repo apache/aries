@@ -16,6 +16,7 @@
  */
 package org.apache.aries.blueprint.spring.extender;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.Set;
 
@@ -23,12 +24,13 @@ import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.ParserContext;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class SpringOsgiCompendiumNamespaceHandler implements NamespaceHandler {
+
+    public static final String CM_NAMESPACE = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0";
 
     @Override
     public URL getSchemaLocation(String namespace) {
@@ -49,20 +51,26 @@ public class SpringOsgiCompendiumNamespaceHandler implements NamespaceHandler {
 
     @Override
     public Metadata parse(Element element, ParserContext context) {
-        if ("managed-properties".equals(element.getLocalName())) {
-
-        }
-        else if ("managed-service-factory".equals(element.getLocalName())) {
-
-        }
-        else if ("cm-properties".equals(element.getLocalName())) {
-
-        }
-        throw new UnsupportedOperationException();
+        fixDom(element, CM_NAMESPACE);
+        NamespaceHandler handler = context.getNamespaceHandler(URI.create(CM_NAMESPACE));
+        return handler.parse(element, context);
     }
 
     @Override
     public ComponentMetadata decorate(Node node, ComponentMetadata component, ParserContext context) {
         return component;
     }
+
+    private static void fixDom(Node node, String namespace) {
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            if (!namespace.equals(node.getNamespaceURI())) {
+                node.getOwnerDocument().renameNode(node, namespace, node.getLocalName());
+            }
+            NodeList children = node.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                fixDom(children.item(i), namespace);
+            }
+        }
+    }
+
 }

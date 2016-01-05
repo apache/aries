@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) FuseSource, Inc.
+  http://fusesource.com
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+             http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <context:annotation-config />
+
+    <bean name="beanA" class="org.apache.aries.blueprint.testbundlee.BeanAFactory"
+          factory-method="createBean">
+        <constructor-arg value="arg1"/>
+    </bean>
+
+    <osgi:service interface="org.apache.aries.blueprint.testbundlee.BeanCItf">
+        <osgi:service-properties>
+            <entry key="name" value="BeanC-1"/>
+        </osgi:service-properties>
+        <bean class="org.apache.aries.blueprint.testbundlee.BeanC">
+            <constructor-arg ref="beanA"/>
+        </bean>
+    </osgi:service>
+
+    <osgi:service interface="org.apache.aries.blueprint.testbundlee.BeanCItf"
+                    ref="beanC">
+        <osgi:service-properties>
+            <entry key="name" value="BeanC-2"/>
+        </osgi:service-properties>
+    </osgi:service>
+
+    <bean id="beanC" class="org.apache.aries.blueprint.testbundlee.BeanC">
+        <constructor-arg ref="beanA"/>
+    </bean>
+
+</beans>

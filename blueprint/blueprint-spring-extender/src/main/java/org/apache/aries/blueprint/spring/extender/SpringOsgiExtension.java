@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +66,7 @@ public class SpringOsgiExtension implements Extension {
     public void start() throws Exception {
         List<Object> bpPaths = new ArrayList<Object>();
 
-        Set<String> namespaces = new LinkedHashSet<String>();
+        Set<URI> namespaces = new LinkedHashSet<URI>();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         for (URL url : paths) {
@@ -79,7 +80,11 @@ public class SpringOsgiExtension implements Extension {
                     List<String> locs = new ArrayList<String>(Arrays.asList(schemaLoc.getValue().split("\\s+")));
                     locs.remove("");
                     for (int i = 0; i < locs.size() / 2; i++) {
-                        namespaces.add(locs.get(i * 2));
+                        String ns = locs.get(i * 2);
+                        namespaces.add(URI.create(ns));
+                        if (ns.startsWith("http://www.springframework.org/schema/osgi-compendium")) {
+                            namespaces.add(URI.create(SpringOsgiCompendiumNamespaceHandler.CM_NAMESPACE));
+                        }
                     }
                 }
             } finally {
@@ -95,10 +100,6 @@ public class SpringOsgiExtension implements Extension {
             writer.write("\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
             writer.write("\txmlns:bean=\"http://www.springframework.org/schema/beans\"\n");
             writer.write("\txsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd\">\n");
-            // TODO: improve that, this is a big hack to force the reference to namespace handlers
-            for (String namespace : namespaces) {
-                writer.write("\t<bean class=\"java.lang.String\" scope=\"ns1:dummy\" xmlns:ns1=\"" + namespace + "\"/>\n");
-            }
             for (URL url : paths) {
                 writer.write("\t<bean:import resource=\"" + url.toString() + "\"/>\n");
             }
@@ -108,7 +109,7 @@ public class SpringOsgiExtension implements Extension {
         }
         LOGGER.info("Generated blueprint for bundle {}/{} at {}", bundle.getSymbolicName(), bundle.getVersion(), file);
         bpPaths.add(file.toURI().toURL());
-        container = blueprintExtenderService.createContainer(bundle, bpPaths);
+        container = blueprintExtenderService.createContainer(bundle, bpPaths, namespaces);
     }
 
     @Override

@@ -52,8 +52,8 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
 
     @Override
     public BeanDefinition parse(Element ele, ParserContext parserContext) {
-        getReader(parserContext).parseElement(ele);
-        return null;
+        BeanDefinitionHolder bdh = getReader(parserContext).parseElement(ele);
+        return bdh != null ? bdh.getBeanDefinition() : null;
     }
 
     @Override
@@ -129,11 +129,12 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
         }
 
 
-        public void parseElement(Element ele) {
+        public BeanDefinitionHolder parseElement(Element ele) {
             BeanDefinitionParserDelegate parent = this.delegate;
             this.delegate = createDelegate(getReaderContext(), ele.getOwnerDocument().getDocumentElement(), parent);
-            parseDefaultElement(ele, this.delegate);
+            BeanDefinitionHolder bdh = parseDefaultElement(ele, this.delegate);
             this.delegate = parent;
+            return bdh;
         }
 
         /**
@@ -199,7 +200,8 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
             }
         }
 
-        private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+        private BeanDefinitionHolder parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+            BeanDefinitionHolder bdh = null;
             if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
                 importBeanDefinitionResource(ele);
             }
@@ -207,12 +209,13 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
                 processAliasRegistration(ele);
             }
             else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
-                processBeanDefinition(ele, delegate);
+                bdh = processBeanDefinition(ele, delegate);
             }
             else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
                 // recurse
                 doRegisterBeanDefinitions(ele);
             }
+            return bdh;
         }
 
         /**
@@ -315,7 +318,7 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
          * Process the given bean element, parsing the bean definition
          * and registering it with the registry.
          */
-        protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
+        protected BeanDefinitionHolder processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
             BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
             if (bdHolder != null) {
                 bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
@@ -330,6 +333,7 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
                 // Send registration event.
                 getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
             }
+            return bdHolder;
         }
     }
 

@@ -16,9 +16,11 @@
  */
 package org.apache.aries.blueprint.spring.extender;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,16 +30,24 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableServiceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.service.blueprint.reflect.NonNullMetadata;
 import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.Target;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.*;
 
 public class SpringOsgiNamespaceHandler implements NamespaceHandler {
+
+    public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
+    public static final String SPRING_NAMESPACE = "http://www.springframework.org/schema/beans";
+    public static final String BEAN_ELEMENT = "bean";
+
+    private int idCounter;
 
     @Override
     public URL getSchemaLocation(String namespace) {
@@ -61,8 +71,11 @@ public class SpringOsgiNamespaceHandler implements NamespaceHandler {
         if ("reference".equals(element.getLocalName())) {
             MutableReferenceMetadata metadata = context.createMetadata(MutableReferenceMetadata.class);
             // Parse attributes
-            // TODO: auto generate id ?
-            metadata.setId(element.getAttribute("id"));
+            if (element.hasAttribute("id")) {
+                metadata.setId(element.getAttribute("id"));
+            } else {
+                metadata.setId(generateId(context));
+            }
             metadata.setAvailability("0..1".equals(element.getAttribute("cardinality"))
                     ? ReferenceMetadata.AVAILABILITY_OPTIONAL
                     : ReferenceMetadata.AVAILABILITY_MANDATORY);
@@ -90,7 +103,39 @@ public class SpringOsgiNamespaceHandler implements NamespaceHandler {
                     }
                     else if ("listener".equals(child.getLocalName())) {
                         // TODO: listener
-
+                        String bindMethod = nonEmpty(child.getAttribute("bind-method"));
+                        String unbindMethod = nonEmpty(child.getAttribute("unbind-method"));
+                        String refStr = nonEmpty(child.getAttribute("ref"));
+                        Target listenerComponent = null;
+                        if (refStr != null) {
+                            MutableRefMetadata ref = context.createMetadata(MutableRefMetadata.class);
+                            ref.setComponentId(refStr);
+                            listenerComponent = ref;
+                        }
+                        for (Element cchild : getChildren(child)) {
+                            if (BLUEPRINT_NAMESPACE.equals(cchild.getNamespaceURI())
+                                    && BEAN_ELEMENT.equals(cchild.getLocalName())) {
+                                if (listenerComponent != null) {
+                                    throw new IllegalArgumentException("Only one of @ref attribute and bean element is allowed");
+                                }
+                                listenerComponent = context.parseElement(BeanMetadata.class, metadata, cchild);
+                            }
+                            else if (SPRING_NAMESPACE.equals(cchild.getNamespaceURI())
+                                    && BEAN_ELEMENT.equals(cchild.getLocalName())) {
+                                if (listenerComponent != null) {
+                                    throw new IllegalArgumentException("Only one of @ref attribute or inlined bean definition element is allowed");
+                                }
+                                listenerComponent = (Target) context.getNamespaceHandler(URI.create(SPRING_NAMESPACE))
+                                        .parse(cchild, context);
+                            }
+                            else {
+                                throw new IllegalArgumentException("Unsupported element " + cchild.getLocalName());
+                            }
+                        }
+                        if (listenerComponent == null) {
+                            throw new IllegalArgumentException("Missing @ref attribute or inlined bean definition element");
+                        }
+                        metadata.addServiceListener(listenerComponent, bindMethod, unbindMethod);
                     }
                 }
                 else {
@@ -102,23 +147,26 @@ public class SpringOsgiNamespaceHandler implements NamespaceHandler {
         else if ("service".equals(element.getLocalName())) {
             MutableServiceMetadata metadata = context.createMetadata(MutableServiceMetadata.class);
             // Parse attributes
-            // TODO: auto generate id ?
-            metadata.setId(element.getAttribute("id"));
-            if (element.getAttribute("ref") != null) {
+            if (element.hasAttribute("id")) {
+                metadata.setId(element.getAttribute("id"));
+            } else {
+                metadata.setId(generateId(context));
+            }
+            if (nonEmpty(element.getAttribute("ref")) != null) {
                 MutableRefMetadata ref = context.createMetadata(MutableRefMetadata.class);
                 ref.setComponentId(element.getAttribute("ref"));
                 metadata.setServiceComponent(ref);
             }
-            metadata.setRanking(element.getAttribute("ranking") != null
+            metadata.setRanking(nonEmpty(element.getAttribute("ranking")) != null
                     ? Integer.parseInt(element.getAttribute("ranking"))
                     : 0);
-            String itf = element.getAttribute("interface");
+            String itf = nonEmpty(element.getAttribute("interface"));
             if (itf != null) {
                 metadata.addInterface(itf);
             }
-            String[] dependsOn = StringUtils.tokenizeToStringArray(element.getAttribute("depends-on"), ",; ");
+            String[] dependsOn = StringUtils.tokenizeToStringArray(nonEmpty(element.getAttribute("depends-on")), ",; ");
             metadata.setDependsOn(dependsOn != null ? Arrays.asList(dependsOn) : null);
-            String autoExp = element.getAttribute("auto-export");
+            String autoExp = nonEmpty(element.getAttribute("auto-export"));
             if ("interfaces".equals(autoExp)) {
                 metadata.setAutoExport(ServiceMetadata.AUTO_EXPORT_INTERFACES);
             } else if ("class-hierarchy".equals(autoExp)) {
@@ -185,8 +233,25 @@ public class SpringOsgiNamespaceHandler implements NamespaceHandler {
                         }
                     }
                 }
+                else if (BLUEPRINT_NAMESPACE.equals(child.getNamespaceURI())
+                        && BEAN_ELEMENT.equals(child.getLocalName())) {
+                    if (metadata.getServiceComponent() != null) {
+                        throw new IllegalArgumentException("Only one of @ref attribute and bean element is allowed");
+                    }
+                    Target bean = context.parseElement(BeanMetadata.class, metadata, child);
+                    metadata.setServiceComponent(bean);
+                }
+                else if (SPRING_NAMESPACE.equals(child.getNamespaceURI())
+                        && BEAN_ELEMENT.equals(child.getLocalName())) {
+                    if (metadata.getServiceComponent() != null) {
+                        throw new IllegalArgumentException("Only one of @ref attribute or inlined bean definition element is allowed");
+                    }
+                    Target bean = (Target) context.getNamespaceHandler(URI.create(SPRING_NAMESPACE))
+                            .parse(child, context);
+                    metadata.setServiceComponent(bean);
+                }
                 else {
-                    throw new UnsupportedOperationException("Custom namespaces not supported");
+                    throw new IllegalArgumentException("Unsupported element " + child.getLocalName());
                 }
             }
             return metadata;
@@ -201,6 +266,18 @@ public class SpringOsgiNamespaceHandler implements NamespaceHandler {
 
         }
         throw new UnsupportedOperationException();
+    }
+
+    private String nonEmpty(String ref) {
+        return ref != null && ref.isEmpty() ? null : ref;
+    }
+
+    private String generateId(ParserContext context) {
+        String id;
+        do {
+            id = ".spring-osgi-" + ++idCounter;
+        } while (context.getComponentDefinitionRegistry().containsComponentDefinition(id));
+        return id;
     }
 
     @Override
