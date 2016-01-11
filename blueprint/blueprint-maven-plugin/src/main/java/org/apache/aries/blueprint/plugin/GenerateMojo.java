@@ -79,25 +79,33 @@ public class GenerateMojo extends AbstractMojo {
         }
         
         try {
-            String buildDir = project.getBuild().getDirectory();
-            String generatedDir = buildDir + "/generated-resources";
-            Resource resource = new Resource();
-            resource.setDirectory(generatedDir);
-            project.addResource(resource);
             ClassFinder finder = createProjectScopeFinder();
             
-            File file = new File(generatedDir, "OSGI-INF/blueprint/autowire.xml");
-            file.getParentFile().mkdirs();
-            System.out.println("Generating blueprint to " + file);
             Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, scanPaths);
             Context context = new Context(classes);
             context.resolve();
-            OutputStream fos = buildContext.newFileOutputStream(file);
-            new Generator(context, fos, namespaces).generate();
-            fos.close();
+            if (context.getBeans().size() > 0) {
+                writeBlueprint(context);
+            }
         } catch (Exception e) {
             throw new MojoExecutionException("Error building commands help", e);
         }
+    }
+
+    private void writeBlueprint(Context context) throws Exception {
+        String buildDir = project.getBuild().getDirectory();
+        String generatedDir = buildDir + "/generated-resources";
+        Resource resource = new Resource();
+        resource.setDirectory(generatedDir);
+        project.addResource(resource);
+
+        File file = new File(generatedDir, "OSGI-INF/blueprint/autowire.xml");
+        file.getParentFile().mkdirs();
+        System.out.println("Generating blueprint to " + file);
+
+        OutputStream fos = buildContext.newFileOutputStream(file);
+        new Generator(context, fos, namespaces).generate();
+        fos.close();
     }
 
     private ClassFinder createProjectScopeFinder() throws MalformedURLException {
