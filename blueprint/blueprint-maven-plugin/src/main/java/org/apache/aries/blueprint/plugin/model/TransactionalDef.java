@@ -18,13 +18,14 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import com.google.common.base.Objects;
 
 public class TransactionalDef {
     public static final String TYPE_REQUIRED = "Required";
     public static final String TYPE_REQUIRES_NEW = "RequiresNew";
     private String method;
     private String type;
-    
+
     public TransactionalDef(String method, String type) {
         this.method = method;
         this.type = type;
@@ -33,8 +34,35 @@ public class TransactionalDef {
     public String getMethod() {
         return method;
     }
-    
+
     public String getType() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+        TransactionalDef that = (TransactionalDef) o;
+        return Objects.equal(method, that.method) && Objects.equal(type, that.type);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(method, type);
+    }
+
+    @Override
+    public String toString()
+    {
+        return Objects.toStringHelper(this).add("method", method).add("type", type).toString();
     }
 }
