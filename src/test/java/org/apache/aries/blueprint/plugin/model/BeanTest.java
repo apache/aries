@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 
 import javax.inject.Named;
 
+import org.apache.aries.blueprint.plugin.bad.BadBean1;
+import org.apache.aries.blueprint.plugin.bad.BadBean2;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
@@ -34,7 +36,7 @@ import org.junit.Test;
 
 
 public class BeanTest {
-    
+
     @Test
     public void testParseMyBean1() {
         Bean bean = new Bean(MyBean1.class);
@@ -54,7 +56,7 @@ public class BeanTest {
         assertEquals("bean2", prop.name);
         assertEquals("serviceA", prop.ref);
     }
-    
+
     @Test
     public void testParseMyBean3() {
         Bean bean = new Bean(MyBean3.class);
@@ -69,7 +71,7 @@ public class BeanTest {
         assertEquals(5, bean.properties.size());
         assertTrue(bean.isPrototype);
     }
-    
+
     @Test
     public void testParseNamedBean() {
         Bean bean = new Bean(ServiceAImpl1.class);
@@ -84,7 +86,7 @@ public class BeanTest {
         assertEquals("There should be no properties", 0, bean.properties.size());
         assertTrue(bean.isPrototype);
     }
-    
+
     @Test
     public void testBlueprintBundleContext() {
         Bean bean = new Bean(MyBean4.class);
@@ -95,4 +97,13 @@ public class BeanTest {
         assertFalse(bean.isPrototype);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testMultipleInitMethods() {
+        new Bean(BadBean1.class);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMultipleDestroyMethods() {
+        new Bean(BadBean2.class);
+    }
 }
