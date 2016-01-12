@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.plugin;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -27,6 +28,9 @@ import org.apache.aries.blueprint.plugin.model.Bean;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
 import org.ops4j.pax.cdi.api.Property;
+
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class OsgiServiceProviderWriter {
     private XMLStreamWriter writer;
@@ -40,30 +44,64 @@ public class OsgiServiceProviderWriter {
             write(bean);
         }
     }
-    
+
     public void write(Bean bean) throws XMLStreamException {
         OsgiServiceProvider serviceProvider = bean.clazz.getAnnotation(OsgiServiceProvider.class);
         if (serviceProvider == null) {
             return;
         }
-        if (serviceProvider.classes().length == 0) {
-            throw new IllegalArgumentException("Need to provide the interface class in the @OsgiServiceProvider(classes={...}) annotation on " + bean.clazz);
-        }
+
         Properties properties = bean.clazz.getAnnotation(Properties.class);
-        if (properties == null) {
+        List<String> interfaceNames = Lists.newArrayList();
+        for (Class<?> serviceIf : serviceProvider.classes()) {
+            interfaceNames.add(serviceIf.getName());
+        }
+
+        // If there are no properties to write and only one service attribute (either
+        // interface="MyServiceInterface" or auto-export="interfaces") then create an
+        // empty element
+        boolean writeEmptyElement = properties == null && interfaceNames.size() < 2;
+        if (writeEmptyElement) {
             writer.writeEmptyElement("service");
         } else {
             writer.writeStartElement("service");
         }
         writer.writeAttribute("ref", bean.id);
-        Class<?> serviceIf = serviceProvider.classes()[0];
-        writer.writeAttribute("interface", serviceIf.getName());
+
+        if (interfaceNames.size() == 0) {
+            writer.writeAttribute("auto-export", "interfaces");
+        } else if (interfaceNames.size() == 1) {
+            writer.writeAttribute("interface", Iterables.getOnlyElement(interfaceNames));
+        } else {
+            writeInterfacesElement(interfaceNames);
+        }
+
         writer.writeCharacters("\n");
         if (properties != null) {
             writeProperties(properties);
+        }
+
+        if (!writeEmptyElement) {
             writer.writeEndElement();
             writer.writeCharacters("\n");
         }
+    }
+
+    private void writeInterfacesElement(Iterable<String> interfaceNames) throws XMLStreamException
+    {
+        writer.writeCharacters("\n");
+        writer.writeCharacters("    ");
+        writer.writeStartElement("interfaces");
+        writer.writeCharacters("\n");
+        for (String interfaceName : interfaceNames) {
+            writer.writeCharacters("        ");
+            writer.writeStartElement("value");
+            writer.writeCharacters(interfaceName);
+            writer.writeEndElement();
+            writer.writeCharacters("\n");
+        }
+        writer.writeCharacters("    ");
+        writer.writeEndElement();
     }
 
     private void writeProperties(Properties properties) throws XMLStreamException {
