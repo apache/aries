@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.plugin.test;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.transaction.Transactional;
 
 public class ParentBean {
 
@@ -29,5 +30,17 @@ public class ParentBean {
 
     @PreDestroy
     public void destroy() {
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void txOverridenWithoutTransactional() {
+    }
+
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public void txSupports() {
+    }
+
+    @Transactional(Transactional.TxType.NEVER)
+    public void txOverridenWithRequiresNew() {
     }
 }

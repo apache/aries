@@ -22,7 +22,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -42,7 +44,7 @@ public class Bean extends BeanRef {
     public String destroyMethod;
     public SortedSet<Property> properties;
     public Field[] persistenceFields;
-    public TransactionalDef transactionDef;
+    public Set<TransactionalDef> transactionDefs = new HashSet<TransactionalDef>();
     public boolean isPrototype;
 
     public Bean(Class<?> clazz) {
@@ -59,12 +61,12 @@ public class Bean extends BeanRef {
         if (destroyMethod != null) {
             this.destroyMethod = destroyMethod.getName();
         }
+
+        // Transactional methods
+        transactionDefs.addAll(new JavaxTransactionFactory().create(clazz));
+        transactionDefs.addAll(new SpringTransactionFactory().create(clazz));
         this.isPrototype = isPrototype(clazz);
         this.persistenceFields = getPersistenceFields();
-        this.transactionDef = new JavaxTransactionFactory().create(clazz);
-        if (this.transactionDef == null) {
-            this.transactionDef = new SpringTransactionFactory().create(clazz);
-        }
         properties = new TreeSet<Property>();
     }
 

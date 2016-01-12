@@ -29,7 +29,7 @@ import javax.transaction.Transactional.TxType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Singleton
-@Transactional(value=TxType.REQUIRED)
+@Transactional(value=TxType.REQUIRES_NEW)
 public class MyBean1 extends ParentBean {
 
     @Autowired
@@ -48,9 +48,30 @@ public class MyBean1 extends ParentBean {
 
     @PostConstruct
     public void init() {
+
     }
 
-    public void saveData() {
+    @Transactional(TxType.NOT_SUPPORTED)
+    public void txNotSupported() {
+    }
 
+    @Transactional(TxType.MANDATORY)
+    public void txMandatory() {
+    }
+
+    @Transactional(TxType.NEVER)
+    public void txNever() {
+    }
+
+    @Transactional(TxType.REQUIRED)
+    public void txRequired() {
+    }
+
+    @Override
+    public void txOverridenWithoutTransactional() {
+    }
+
+    @Transactional(TxType.REQUIRES_NEW)
+    public void txOverridenWithRequiresNew() {
     }
 }
