@@ -20,26 +20,12 @@ package org.apache.aries.blueprint.plugin.test;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Singleton
 @Transactional(value=TxType.REQUIRES_NEW)
 public class MyBean1 extends ParentBean {
-
-    @Autowired
-    ServiceA bean2;
-
-    @PersistenceContext(unitName="person")
-    EntityManager em;
-
-    @PersistenceUnit(unitName="person")
-    EntityManager emf;
 
     public void overridenInit() {
         // By overriding the method and removing the annotation, this method has lost its

@@ -1,4 +1,3 @@
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,9 +18,16 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import org.springframework.stereotype.Component;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-@Component
-public class ServiceReferences extends ServiceReferencesParent {
+import org.ops4j.pax.cdi.api.OsgiService;
 
+public class ServiceReferencesParent
+{
+    @Inject @OsgiService(filter="(type=B1)") ServiceB serviceB;
+
+    @Named("serviceB2Id") @Inject @OsgiService(filter="(type=B2)") ServiceB serviceB2;
+
+    @Inject @OsgiService(filter="(type=B3)") ServiceB serviceB3;
 }
