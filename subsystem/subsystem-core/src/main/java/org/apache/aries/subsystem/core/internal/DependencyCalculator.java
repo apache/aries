@@ -83,8 +83,9 @@ public class DependencyCalculator {
 		@Override
 		public int insertHostedCapability(List<Capability> capabilities,
 				HostedCapability hostedCapability) {
-			capabilities.add(hostedCapability);
-			return capabilities.size() - 1;
+			int sz = capabilities.size();
+			capabilities.add(sz, hostedCapability);
+	        return sz;
 		}
 	}
 
