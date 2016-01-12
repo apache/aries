@@ -39,11 +39,35 @@ public class MyBean3 {
 
     @Inject
     ServiceB serviceB;
-    
+
     @Inject
     @Named("serviceB2Id")
     ServiceB serviceB2;
-    
+
     @Inject
     MyProduced myProduced;
+
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void txNotSupported() {
+    }
+
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void txMandatory() {
+    }
+
+    @Transactional(propagation = Propagation.NEVER)
+    public void txNever() {
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void txRequired() {
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void txRequiresNew() {
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void txSupports() {
+    }
 }
