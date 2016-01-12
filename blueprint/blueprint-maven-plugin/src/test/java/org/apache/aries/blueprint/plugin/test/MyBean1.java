@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -33,20 +34,23 @@ public class MyBean1 extends ParentBean {
 
     @Autowired
     ServiceA bean2;
-    
+
     @PersistenceContext(unitName="person")
     EntityManager em;
-    
+
     @PersistenceUnit(unitName="person")
     EntityManager emf;
-    
-    public void init() {
+
+    public void overridenInit() {
+        // By overriding the method and removing the annotation, this method has lost its
+        // @PostConstruct method because it isn't @Inherited
     }
-    
-    public void destroy() {
+
+    @PostConstruct
+    public void init() {
     }
 
     public void saveData() {
-        
+
     }
 }
