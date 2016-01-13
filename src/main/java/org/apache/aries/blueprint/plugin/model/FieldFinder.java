@@ -61,38 +61,51 @@ public final class FieldFinder {
                 fieldsByName.put(field.getName(), field);
 
                 // ...and if it meets the annotation requirement, add the field name to the set of accepted field names
-                if (hasAnyRequiredAnnotation(field))
+                if (hasAnyRequiredAnnotation(field)) {
                     acceptedFieldNames.add(field.getName());
+                }
             }
             clazz = clazz.getSuperclass();
         }
 
         // Add all accepted fields to acceptedFields
         List<Field> acceptedFields = Lists.newArrayList();
-        for (String acceptedFieldName : acceptedFieldNames) {
-            Collection<Field> acceptedFieldsWithSameName = fieldsByName.get(acceptedFieldName);
-
-            // Check that each field name is defined no more than once
-            if (acceptedFieldsWithSameName.size() > 1) {
-                String header = String.format("Field '%s' in bean class '%s' has been defined multiple times in:",
-                                              acceptedFieldName, originalClazz.getName());
-                StringBuilder msgBuilder = new StringBuilder(header);
-                for (Field field : acceptedFieldsWithSameName)
-                    msgBuilder.append("\n\t- ").append(field.getDeclaringClass().getName());
-                throw new UnsupportedOperationException(msgBuilder.toString());
-            } else {
-                acceptedFields.addAll(acceptedFieldsWithSameName);
-            }
+        for (String fieldName : acceptedFieldNames) {
+            Collection<Field> fields = fieldsByName.get(fieldName);
+            validateOnlyOneFieldWithName(originalClazz, fieldName, fields);
+            acceptedFields.addAll(fields);
         }
         return acceptedFields;
     }
 
+    /**
+     * Check that each field name is defined no more than once
+     * @param originalClazz
+     * @param acceptedFieldName
+     * @param acceptedFieldsWithSameName
+     */
+    private void validateOnlyOneFieldWithName(Class<?> originalClazz, String acceptedFieldName,
+                                              Collection<Field> acceptedFieldsWithSameName) {
+        if (acceptedFieldsWithSameName.size() > 1) {
+            String header = String.format("Field '%s' in bean class '%s' has been defined multiple times in:",
+                                          acceptedFieldName, originalClazz.getName());
+            StringBuilder msgBuilder = new StringBuilder(header);
+            for (Field field : acceptedFieldsWithSameName) {
+                msgBuilder.append("\n\t- ").append(field.getDeclaringClass().getName());
+            }
+            throw new UnsupportedOperationException(msgBuilder.toString());
+        }
+    }
+
     private boolean hasAnyRequiredAnnotation(Field field) {
-        if (requiredAnnotations.length == 0)
+        if (requiredAnnotations.length == 0) {
             return true;
-        for (Class<? extends Annotation> requiredAnnotation : requiredAnnotations)
-            if (field.getAnnotation(requiredAnnotation) != null)
+        }
+        for (Class<? extends Annotation> requiredAnnotation : requiredAnnotations) {
+            if (field.getAnnotation(requiredAnnotation) != null) {
                 return true;
+            }
+        }
         return false;
     }
 }
