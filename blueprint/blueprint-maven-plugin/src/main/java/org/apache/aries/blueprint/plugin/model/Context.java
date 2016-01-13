@@ -79,11 +79,8 @@ public class Context implements Matcher {
     }
 
     private void addServiceRefs(Class<?> clazz) {
-        for (Field field : clazz.getDeclaredFields()) {
-            OsgiService osgiService = field.getAnnotation(OsgiService.class);
-            if (osgiService != null) {
-                reg.add(new OsgiServiceRef(field));
-            }
+        for (Field field : new FieldFinder(OsgiService.class).findFields(clazz)) {
+            reg.add(new OsgiServiceRef(field));
         }
     }
 
@@ -92,7 +89,7 @@ public class Context implements Matcher {
             bean.resolve(this);
         }
     }
-    
+
     public BeanRef getMatching(BeanRef template) {
         for (BeanRef bean : reg) {
             if (bean.matches(template)) {
