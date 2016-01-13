@@ -79,7 +79,7 @@ public class Context implements Matcher {
     }
 
     private void addServiceRefs(Class<?> clazz) {
-        for (Field field : new FieldFinder(OsgiService.class).findFields(clazz)) {
+        for (Field field : new Introspector(clazz).fieldsWith(OsgiService.class)) {
             reg.add(new OsgiServiceRef(field));
         }
     }
