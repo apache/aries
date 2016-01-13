@@ -20,11 +20,15 @@ package org.apache.aries.blueprint.plugin.model;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -32,24 +36,24 @@ import com.google.common.collect.Sets;
 /**
  * Class to find uniquely-named fields declared in a class hierarchy with specified annotations.
  */
-public final class FieldFinder {
-    private final Class<? extends Annotation>[] requiredAnnotations;
+public final class Introspector {
+    private Class<?> originalClazz;
 
     /**
-     * @param requiredAnnotations if not empty, a field must have one of these annotations for it to be found.
+     * @param clazz the class to introspect (including those defined in parent classes).
      */
-    @SafeVarargs
-    public FieldFinder(Class<? extends Annotation>... requiredAnnotations) {
-        this.requiredAnnotations = requiredAnnotations;
+    public Introspector(Class<?> clazz) {
+        this.originalClazz = clazz;
     }
 
     /**
-     * @param originalClazz the class in which to find fields (including those defined in parent classes).
+     * @param 
      * @return fields in the given class (including parent classes) that match this finder's annotations requirements.
      * @throws UnsupportedOperationException if any field matching the annotations requirement shares its name with a
      * field declared elsewhere in the class hierarchy.
      */
-    public List<Field> findFields(Class<?> originalClazz) {
+    @SafeVarargs
+    public final List<Field> fieldsWith(Class<? extends Annotation>... requiredAnnotations) {
         Multimap<String, Field> fieldsByName = HashMultimap.create();
         Set<String> acceptedFieldNames = Sets.newHashSet();
         Class<?> clazz = originalClazz;
@@ -61,7 +65,7 @@ public final class FieldFinder {
                 fieldsByName.put(field.getName(), field);
 
                 // ...and if it meets the annotation requirement, add the field name to the set of accepted field names
-                if (hasAnyRequiredAnnotation(field)) {
+                if (hasAnyRequiredAnnotation(field, requiredAnnotations)) {
                     acceptedFieldNames.add(field.getName());
                 }
             }
@@ -72,7 +76,7 @@ public final class FieldFinder {
         List<Field> acceptedFields = Lists.newArrayList();
         for (String fieldName : acceptedFieldNames) {
             Collection<Field> fields = fieldsByName.get(fieldName);
-            validateOnlyOneFieldWithName(originalClazz, fieldName, fields);
+            validateOnlyOneFieldWithName(fieldName, fields);
             acceptedFields.addAll(fields);
         }
         return acceptedFields;
@@ -84,7 +88,7 @@ public final class FieldFinder {
      * @param acceptedFieldName
      * @param acceptedFieldsWithSameName
      */
-    private void validateOnlyOneFieldWithName(Class<?> originalClazz, String acceptedFieldName,
+    private void validateOnlyOneFieldWithName(String acceptedFieldName,
                                               Collection<Field> acceptedFieldsWithSameName) {
         if (acceptedFieldsWithSameName.size() > 1) {
             String header = String.format("Field '%s' in bean class '%s' has been defined multiple times in:",
@@ -97,9 +101,10 @@ public final class FieldFinder {
         }
     }
 
-    private boolean hasAnyRequiredAnnotation(Field field) {
+    @SafeVarargs
+    private final boolean hasAnyRequiredAnnotation(Field field, Class<? extends Annotation>... requiredAnnotations) {
         if (requiredAnnotations.length == 0) {
-            return true;
+            throw new IllegalArgumentException("Must specify at least one annotation");
         }
         for (Class<? extends Annotation> requiredAnnotation : requiredAnnotations) {
             if (field.getAnnotation(requiredAnnotation) != null) {
@@ -107,5 +112,24 @@ public final class FieldFinder {
             }
         }
         return false;
+    }
+    
+    public <T extends Annotation> Method methodWith(Class<T> annotationClass) {
+        List<Method> methods = methodsWith(annotationClass);
+        Preconditions.checkArgument(methods.size() <= 1,
+                                    "Found %d methods annotated with %s in class %s, but only 1 allowed",
+                                    methods.size(), annotationClass.getName(), originalClazz.getName());
+        return Iterables.getOnlyElement(methods, null);
+    }
+
+    public <T extends Annotation> List<Method> methodsWith(Class<T> annotationClass) {
+        List<Method> methods = new ArrayList<>();
+        for (Method method : originalClazz.getMethods()) {
+            T annotation = method.getAnnotation(annotationClass);
+            if (annotation != null) {
+                methods.add(method);
+            }
+        }
+        return methods;
     }
 }
