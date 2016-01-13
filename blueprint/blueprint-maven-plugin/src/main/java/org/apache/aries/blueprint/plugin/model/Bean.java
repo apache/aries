@@ -18,10 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,9 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
-
 public class Bean extends BeanRef {
     public String initMethod;
     public String destroyMethod;
@@ -52,15 +47,16 @@ public class Bean extends BeanRef {
 
     public Bean(Class<?> clazz) {
         super(clazz, BeanRef.getBeanName(clazz));
+        Introspector introspector = new Introspector(clazz);
 
         // Init method
-        Method initMethod = getMethodWithAnnotation(clazz, PostConstruct.class);
+        Method initMethod = introspector.methodWith(PostConstruct.class);
         if (initMethod != null) {
             this.initMethod = initMethod.getName();
         }
 
         // Destroy method
-        Method destroyMethod = getMethodWithAnnotation(clazz, PreDestroy.class);
+        Method destroyMethod = introspector.methodWith(PreDestroy.class);
         if (destroyMethod != null) {
             this.destroyMethod = destroyMethod.getName();
         }
@@ -69,7 +65,7 @@ public class Bean extends BeanRef {
         transactionDefs.addAll(new JavaxTransactionFactory().create(clazz));
         transactionDefs.addAll(new SpringTransactionFactory().create(clazz));
         this.isPrototype = isPrototype(clazz);
-        this.persistenceFields = new FieldFinder(PersistenceContext.class, PersistenceUnit.class).findFields(clazz);
+        this.persistenceFields = introspector.fieldsWith(PersistenceContext.class, PersistenceUnit.class);
         properties = new TreeSet<Property>();
     }
 
@@ -79,7 +75,7 @@ public class Bean extends BeanRef {
     }
 
     public void resolve(Matcher matcher) {
-        for (Field field : new FieldFinder(Value.class, Autowired.class, Inject.class).findFields(clazz)) {
+        for (Field field : new Introspector(clazz).fieldsWith(Value.class, Autowired.class, Inject.class)) {
             Property prop = Property.create(matcher, field);
             if (prop != null) {
                 properties.add(prop);
@@ -87,26 +83,7 @@ public class Bean extends BeanRef {
         }
     }
 
-    private static <T extends Annotation> Method getMethodWithAnnotation(Class<?> classToSearch,
-                                                                         Class<T> annotationClass) {
-        List<Method> methods = getMethodsWithAnnotation(classToSearch, annotationClass);
-        Preconditions.checkArgument(methods.size() <= 1,
-                                    "Found %d methods annotated with %s in class %s, but only 1 allowed",
-                                    methods.size(), annotationClass.getName(), classToSearch.getName());
-        return Iterables.getOnlyElement(methods, null);
-    }
 
-    private static <T extends Annotation> List<Method> getMethodsWithAnnotation(Class<?> classToSearch,
-                                                                                Class<T> annotationClass) {
-        List<Method> methods = new ArrayList<>();
-        for (Method method : classToSearch.getMethods()) {
-            T annotation = method.getAnnotation(annotationClass);
-            if (annotation != null) {
-                methods.add(method);
-            }
-        }
-        return methods;
-    }
 
     @Override
     public int hashCode() {
