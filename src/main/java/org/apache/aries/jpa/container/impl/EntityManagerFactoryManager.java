@@ -21,8 +21,10 @@ package org.apache.aries.jpa.container.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
@@ -35,6 +37,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.naming.CompositeName;
+import javax.naming.InvalidNameException;
+import javax.naming.Name;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -49,6 +54,8 @@ import org.apache.aries.jpa.container.quiesce.impl.QuiesceEMF;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -94,8 +101,8 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
   private final ConcurrentMap<String, Collection<String>> dataSourceFactories =
          new ConcurrentHashMap<String, Collection<String>>();
 
-  private final ConcurrentMap<String, Collection<String>> jndiServices =
-         new ConcurrentHashMap<String, Collection<String>>();
+  private final ConcurrentMap<ServiceReference, Collection<String>> jndiServices =
+         new ConcurrentHashMap<ServiceReference, Collection<String>>();
 
   /** Logger */
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.jpa.container");
@@ -320,40 +327,53 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
     }
   }
 
-  private boolean availableJndiService(String unitName) {
+  boolean availableJndiService(String unitName) {
     ManagedPersistenceUnitInfo mpui = persistenceUnits.get(unitName);
 
     String dsName = (String) mpui.getContainerProperties().get(DATA_SOURCE_NAME);
     if (dsName != null && dsName.startsWith("osgi:service/")) {
-      String jndi = dsName.substring("osgi:service/".length());
-      if (jndiServices.containsKey(jndi)) {
-        jndiServices.get(jndi).add(unitName);
-        if (_logger.isDebugEnabled())
-          _logger.debug(NLS.MESSAGES.getMessage("jndiservice.found", unitName, bundle.getSymbolicName(),
-              bundle.getVersion(), jndi));
-      } else {
-        _logger.debug(NLS.MESSAGES.getMessage("jndiservice.not.found", unitName, bundle.getSymbolicName(),
-            bundle.getVersion(), jndi));
-        return false;
-      }
+      return isJndiServiceAvailable(unitName, dsName);
     }
 
     String jtaDsName = (String) mpui.getContainerProperties().get(DATA_SOURCE_NAME_JTA);
     if (jtaDsName != null && jtaDsName.startsWith("osgi:service/")) {
-      String jndi = jtaDsName.substring("osgi:service/".length());
-      if (jndiServices.containsKey(jndi)) {
-        jndiServices.get(jndi).add(unitName);
-        if (_logger.isDebugEnabled())
-          _logger.debug(NLS.MESSAGES.getMessage("jndiservice.found", unitName, bundle.getSymbolicName(),
-              bundle.getVersion(), jndi));
-      } else {
-        _logger.debug(NLS.MESSAGES.getMessage("jndiservice.not.found", unitName, bundle.getSymbolicName(),
-            bundle.getVersion(), jndi));
-        return false;
-      }
+      return isJndiServiceAvailable(unitName, jtaDsName);
     }
 
     return true;
+  }
+
+  private boolean isJndiServiceAvailable(String unitName, String jndi) {
+    OsgiName osgi = new OsgiName(jndi);
+    String filter;
+    if (osgi.isInterfaceNameBased()) {
+      String interfaceName = osgi.getInterface();
+      if (osgi.hasFilter()) {
+        filter = "(&(objectClass=" + interfaceName + ")" + osgi.getFilter() + ")";
+      } else {
+        filter = "(objectClass=" + interfaceName + ")";
+      }
+    } else {
+      String serviceName = osgi.getServiceName();
+      filter = "(osgi.jndi.service.name=" + serviceName + ")";
+    }
+    try {
+      Filter flt = FrameworkUtil.createFilter(filter);
+      for (ServiceReference ref : jndiServices.keySet()) {
+        if (flt.match(ref)) {
+          jndiServices.get(ref).add(unitName);
+          if (_logger.isDebugEnabled())
+            _logger.debug(NLS.MESSAGES.getMessage("jndiservice.found", unitName, bundle.getSymbolicName(),
+                    bundle.getVersion(), jndi));
+          return true;
+        }
+      }
+    } catch (InvalidSyntaxException e) {
+      // Ignore
+    }
+    _logger.debug(NLS.MESSAGES.getMessage("jndiservice.not.found", unitName, bundle.getSymbolicName(),
+            bundle.getVersion(), jndi));
+    return false;
   }
 
  private boolean availableDataSourceFactory(String unitName) {
@@ -563,7 +583,7 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
       Object jndiName = reference.getProperty("osgi.jndi.service.name");
       if (jndiName != null) {
         StringBuffer sb = new StringBuffer(String.valueOf(jndiName));
-        if (jndiServices.putIfAbsent(sb.toString(), new ArrayList<String>()) == null) {
+        if (jndiServices.putIfAbsent(reference, new ArrayList<String>()) == null) {
           if (_logger.isDebugEnabled())
             _logger.debug(NLS.MESSAGES.getMessage("new.jndiservice.available", sb.toString(),
                   bundle.getSymbolicName(), bundle.getVersion()));
@@ -682,6 +702,134 @@ public class EntityManagerFactoryManager implements ServiceTrackerCustomizer {
           }
         }
       }
+    }
+  }
+
+  static class OsgiName extends CompositeName {
+    public static final String OSGI_SCHEME = "osgi";
+    public static final String ARIES_SCHEME = "aries";
+    public static final String SERVICE_PATH = "service";
+    public static final String SERVICES_PATH = "services";
+    public static final String SERVICE_LIST_PATH = "servicelist";
+    public static final String FRAMEWORK_PATH = "framework";
+
+    public OsgiName(String name)
+    {
+      super(split(name));
+    }
+
+    public boolean hasFilter()
+    {
+      return size() == 3;
+    }
+
+    public boolean isServiceNameBased()
+    {
+      return !isInterfaceNameBased();
+    }
+
+    public boolean isInterfaceNameBased()
+    {
+      if (size() < 2 || size() > 3) {
+        return false;
+      }
+      String itf = get(1);
+      if (!itf.matches("[a-zA-Z_$0-9]+(\\.[a-zA-Z_$0-9]+)+")) {
+        return false;
+      }
+      if (size() == 3) {
+
+      }
+      return true;
+    }
+
+    public String getInterface()
+    {
+      return get(1);
+    }
+
+    public String getFilter()
+    {
+      return hasFilter() ? get(2) : null;
+    }
+
+    public String getServiceName()
+    {
+      Enumeration<String> parts = getAll();
+      parts.nextElement();
+
+      StringBuilder builder = new StringBuilder();
+
+      if (parts.hasMoreElements()) {
+
+        while (parts.hasMoreElements()) {
+          builder.append(parts.nextElement());
+          builder.append('/');
+        }
+
+        builder.deleteCharAt(builder.length() - 1);
+      }
+
+      return builder.toString();
+    }
+
+    public boolean hasInterface()
+    {
+      return size() > 1;
+    }
+
+    protected static Enumeration<String> split(String name)
+    {
+      List<String> elements = new ArrayList<String>();
+
+      StringBuilder builder = new StringBuilder();
+
+      int len = name.length();
+      int count = 0;
+
+      for (int i = 0; i < len; i++) {
+        char c = name.charAt(i);
+
+        if (c == '/' && count == 0) {
+          elements.add(builder.toString());
+          builder = new StringBuilder();
+          continue;
+        } else if (c == '(') count++;
+        else if (c == ')') count++;
+
+        builder.append(c);
+      }
+
+      elements.add(builder.toString());
+
+      return Collections.enumeration(elements);
+    }
+
+    public String getScheme()
+    {
+      String part0 = get(0);
+      int index = part0.indexOf(':');
+      if (index > 0) {
+        return part0.substring(0, index);
+      } else {
+        return null;
+      }
+    }
+
+    public String getSchemePath()
+    {
+      String part0 = get(0);
+      int index = part0.indexOf(':');
+
+      String result;
+
+      if (index > 0) {
+        result = part0.substring(index + 1);
+      } else {
+        result = null;
+      }
+
+      return result;
     }
   }
 
