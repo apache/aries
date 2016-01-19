@@ -25,65 +25,68 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
         <version>2.0.0</version>
-        <relativePath>../../parent/pom.xml</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.async</groupId>
-    <artifactId>org.apache.aries.async.promise.api</artifactId>
-    <packaging>bundle</packaging>
-    <name>Apache Aries Async Promise API</name>
+    <artifactId>async-all-index</artifactId>
+    <name>Apache Aries Async (all-in-one) Index</name>
+    <packaging>pom</packaging>
     <version>1.0.2-SNAPSHOT</version>
     <description>
-        This bundle contains the Apache Aries Async Promise service API.
+       An index for the Apache Aries Async Service (all-in-one)
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/promise-api</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/promise-api</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/async/promise-api</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/async/async-index</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/async/async-index</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/async/async-index</url>
     </scm>
 
+
     <properties>
-        <!-- Export package versions are maintained in packageinfo files -->
-        <aries.osgi.export.pkg>
-            org.osgi.util.function,
-            org.osgi.util.promise;provide:=true,
-            org.apache.aries.async.promise
-        </aries.osgi.export.pkg>
-        <aries.osgi.private.pkg />
-        <aries.osgi.import.pkg>
-            org.osgi.util.function,
-            org.osgi.util.promise,
-            *
-        </aries.osgi.import.pkg>
-        <lastReleaseVersion>1.0.1</lastReleaseVersion>
+        <local.url.policy>REQUIRED</local.url.policy>
     </properties>
+    
+    
+    <profiles>
+        <profile>
+            <id>apache-release</id>
+            <properties>
+                <local.url.policy>FORBIDDEN</local.url.policy>
+            </properties>
+        </profile>
+        <profile>
+            <id>deploy</id>
+            <properties>
+                <local.url.policy>FORBIDDEN</local.url.policy>
+            </properties>
+        </profile>
+    </profiles>
+    
 
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.annotation</artifactId>
-            <version>6.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>org.apache.aries.async</groupId>
+            <artifactId>org.apache.aries.async</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-indexer-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <localURLs>${local.url.policy}</localURLs>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
+                        <id>index</id>
                         <goals>
-                            <goal>version-check</goal>
+                            <goal>index</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -91,4 +94,6 @@
         </plugins>
     </build>
 
+
 </project>
+

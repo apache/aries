@@ -48,6 +48,8 @@
         <module>async-api</module>
         <module>async-impl</module>
         <module>async-all</module>
+        <module>async-index</module>
+        <module>async-all-index</module>
     </modules>
 
 </project>
