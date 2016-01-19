@@ -49,6 +49,7 @@
         <module>jpa-support</module>
         <module>jpa-blueprint</module>
         <module>jpa-container-eclipselink-adapter</module>
+        <module>jpa-repository</module>
         <module>examples</module>
         <module>jpa-features</module>
         <module>itests</module>
