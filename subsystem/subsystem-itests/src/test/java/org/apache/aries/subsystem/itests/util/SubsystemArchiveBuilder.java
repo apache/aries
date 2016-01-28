@@ -49,6 +49,10 @@ public class SubsystemArchiveBuilder {
 		return header(Constants.EXPORT_PACKAGE, value);
 	}
 	
+	public SubsystemArchiveBuilder exportService(String value) {
+		return header(SubsystemConstants.SUBSYSTEM_EXPORTSERVICE, value);
+	}
+	
 	public SubsystemArchiveBuilder file(String name, InputStream value) {
 		bundle.add(name, value);
 		return this;
@@ -63,12 +67,20 @@ public class SubsystemArchiveBuilder {
 		return header(Constants.IMPORT_PACKAGE, value);
 	}
 	
-	public SubsystemArchiveBuilder requireBundle(String value) {
-		return header(Constants.REQUIRE_BUNDLE, value);
+	public SubsystemArchiveBuilder importService(String value) {
+		return header(SubsystemConstants.SUBSYSTEM_IMPORTSERVICE, value);
 	}
 	
 	public SubsystemArchiveBuilder provideCapability(String value) {
 		return header(Constants.PROVIDE_CAPABILITY, value);
+	}
+	
+	public SubsystemArchiveBuilder requireBundle(String value) {
+		return header(Constants.REQUIRE_BUNDLE, value);
+	}
+	
+	public SubsystemArchiveBuilder requireCapability(String value) {
+		return header(Constants.REQUIRE_CAPABILITY, value);
 	}
 	
 	public SubsystemArchiveBuilder subsystem(String name, InputStream value) {

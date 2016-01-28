@@ -41,56 +41,67 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 	
 	@Override
 	public BasicSubsystem run() {
-		State state = parent.getState();
-	    if (State.INSTALLING.equals(state)) {
-	        throw new SubsystemException("A child subsystem may not be installed while the parent is in the INSTALLING state");
-	    }
-		// Initialization of a null coordination must be privileged and,
-		// therefore, occur in the run() method rather than in the constructor.
-		Coordination coordination = Utils.createCoordination(parent);
+		// Doesn't appear to be any need of protecting against re-entry in the
+		// case of installation.
 		BasicSubsystem result = null;
+		// Acquire the global write lock to prevent all other operations until
+		// the installation is complete. There is no need to hold any other locks.
+		LockingStrategy.writeLock();
 		try {
-			TargetRegion region = new TargetRegion(parent);
-			SubsystemResource ssr = new SubsystemResource(location, content, parent);
-			result = Activator.getInstance().getSubsystems().getSubsystemByLocation(location);
-			if (result != null) {
+			State state = parent.getState();
+			if (State.INSTALLING.equals(state)) {
+				throw new SubsystemException("A child subsystem may not be installed while the parent is in the INSTALLING state");
+			}
+			// Initialization of a null coordination must be privileged and,
+			// therefore, occur in the run() method rather than in the constructor.
+			Coordination coordination = Utils.createCoordination(parent);
+			try {
+				TargetRegion region = new TargetRegion(parent);
+				SubsystemResource ssr = new SubsystemResource(location, content, parent, coordination);
+				result = Activator.getInstance().getSubsystems().getSubsystemByLocation(location);
+				if (result != null) {
+					if (!region.contains(result))
+						throw new SubsystemException("Location already exists but existing subsystem is not part of target region: " + location);
+					if (!(result.getSymbolicName().equals(ssr.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName())
+							&& result.getVersion().equals(ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion())
+							&& result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType())))
+						throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
+				}
+				else {
+					result = (BasicSubsystem)region.find(
+							ssr.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName(), 
+							ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion());
+					if (result != null) {
+						if (!result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType()))
+							throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
+					}
+					else {
+						result = new BasicSubsystem(ssr, deploymentManifest);
+					}
+				}
 				checkLifecyclePermission(result);
-				if (!region.contains(result))
-					throw new SubsystemException("Location already exists but existing subsystem is not part of target region: " + location);
-				if (!(result.getSymbolicName().equals(ssr.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName())
-						&& result.getVersion().equals(ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion())
-						&& result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType())))
-					throw new SubsystemException("Location already exists but symbolic name, version, and type are not the same: " + location);
 				return (BasicSubsystem)ResourceInstaller.newInstance(coordination, result, parent).install();
 			}
-			result = (BasicSubsystem)region.find(
-					ssr.getSubsystemManifest().getSubsystemSymbolicNameHeader().getSymbolicName(), 
-					ssr.getSubsystemManifest().getSubsystemVersionHeader().getVersion());
-			if (result != null) {
-				checkLifecyclePermission(result);
-				if (!result.getType().equals(ssr.getSubsystemManifest().getSubsystemTypeHeader().getType()))
-					throw new SubsystemException("Subsystem already exists in target region but has a different type: " + location);
-				return (BasicSubsystem)ResourceInstaller.newInstance(coordination, result, parent).install();
+			catch (Throwable t) {
+				coordination.fail(t);
 			}
-			result = new BasicSubsystem(ssr, deploymentManifest);
-			checkLifecyclePermission(result);
-			return (BasicSubsystem)ResourceInstaller.newInstance(coordination, result, parent).install();
-		}
-		catch (Throwable t) {
-			coordination.fail(t);
+			finally {
+				try {
+					coordination.end();
+				}
+				catch (CoordinationException e) {
+					Throwable t = e.getCause();
+					if (t instanceof SubsystemException)
+						throw (SubsystemException)t;
+					if (t instanceof SecurityException)
+						throw (SecurityException)t;
+					throw new SubsystemException(t);
+				}
+			}
 		}
 		finally {
-			try {
-				coordination.end();
-			}
-			catch (CoordinationException e) {
-				Throwable t = e.getCause();
-				if (t instanceof SubsystemException)
-					throw (SubsystemException)t;
-				if (t instanceof SecurityException)
-					throw (SecurityException)t;
-				throw new SubsystemException(t);
-			}
+			// Release the global write lock.
+			LockingStrategy.writeUnlock();
 		}
 		return result;
 	}

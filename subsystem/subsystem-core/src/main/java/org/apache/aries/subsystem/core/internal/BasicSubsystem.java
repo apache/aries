@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.aries.subsystem.AriesSubsystem;
 import org.apache.aries.subsystem.core.archive.AriesProvisionDependenciesDirective;
@@ -621,6 +622,11 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		}
 	}
 	
+	private final ReentrantLock stateChangeLock = new ReentrantLock();
+	ReentrantLock stateChangeLock() {
+		return stateChangeLock;
+	}
+	
 	private String getDeploymentManifestHeaderValue(String name) {
 		DeploymentManifest manifest = getDeploymentManifest();
 		if (manifest == null)
@@ -754,8 +760,8 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		}
 	}
 	
-	void computeDependenciesPostInstallation() throws IOException {
-		resource.computeDependencies(null);
+	void computeDependenciesPostInstallation(Coordination coordination) throws IOException {
+		resource.computeDependencies(null, coordination);
 		ProvisionResourceHeader header = resource.computeProvisionResourceHeader();
 		setDeploymentManifest(
 				new DeploymentManifest.Builder()

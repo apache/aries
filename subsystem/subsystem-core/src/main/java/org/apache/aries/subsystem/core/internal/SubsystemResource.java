@@ -87,18 +87,18 @@ public class SubsystemResource implements Resource {
 	private final Collection<Resource> sharedContent = new HashSet<Resource>();
 	private final Collection<Resource> sharedDependencies = new HashSet<Resource>();
 
-	public SubsystemResource(String location, IDirectory content, BasicSubsystem parent) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException {
-		this(new RawSubsystemResource(location, content, parent), parent);
+	public SubsystemResource(String location, IDirectory content, BasicSubsystem parent, Coordination coordination) throws URISyntaxException, IOException, ResolutionException, BundleException, InvalidSyntaxException {
+		this(new RawSubsystemResource(location, content, parent), parent, coordination);
 	}
 
-	public SubsystemResource(RawSubsystemResource resource, BasicSubsystem parent) throws IOException, BundleException, InvalidSyntaxException, URISyntaxException {
+	public SubsystemResource(RawSubsystemResource resource, BasicSubsystem parent, Coordination coordination) throws IOException, BundleException, InvalidSyntaxException, URISyntaxException {
 		this.parent = parent;
 		this.resource = resource;
 		computeContentResources(resource.getDeploymentManifest());
 		capabilities = computeCapabilities();
 		if (this.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isInstall()) {
 		    /* compute dependencies now only if we intend to provision them during install */
-	        computeDependencies(resource.getDeploymentManifest());		    
+	        computeDependencies(resource.getDeploymentManifest(), coordination);		    
 		}
 		deploymentManifest = computeDeploymentManifest();
 	}
@@ -122,7 +122,7 @@ public class SubsystemResource implements Resource {
 		capabilities = computeCapabilities();
         if (getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isInstall()) {
             /* compute dependencies if we intend to provision them during install */
-            computeDependencies(resource.getDeploymentManifest());          
+            computeDependencies(resource.getDeploymentManifest(), null);          
         }
 	}
 
@@ -367,9 +367,9 @@ public class SubsystemResource implements Resource {
 		}
 	}
 
-	void computeDependencies(DeploymentManifest manifest) {
+	void computeDependencies(DeploymentManifest manifest, Coordination coordination) {
 	    if (manifest == null) {
-	        computeDependencies(getSubsystemManifest());
+	        computeDependencies(getSubsystemManifest(), coordination);
 	    }
 	    else {
 	        ProvisionResourceHeader header = manifest.getProvisionResourceHeader();
@@ -384,9 +384,13 @@ public class SubsystemResource implements Resource {
 	    }
 	}
 
-	private void computeDependencies(SubsystemManifest manifest)  {
+	private void computeDependencies(SubsystemManifest manifest, Coordination coordination)  {
 		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		try {
+			// The following line is necessary in order to ensure that the
+			// export sharing policies of composites are in place for capability
+			// validation.
+			StartAction.setExportPolicyOfAllInstallingSubsystemsWithProvisionDependenciesResolve(coordination);
 			Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
 			setImportIsolationPolicy(resolution);
 			for (Map.Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
