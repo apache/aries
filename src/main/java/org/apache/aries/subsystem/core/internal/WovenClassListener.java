@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.aries.subsystem.core.archive.DynamicImportPackageHeader;
 import org.apache.aries.subsystem.core.archive.DynamicImportPackageRequirement;
 import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
+import org.apache.aries.subsystem.core.internal.StartAction.Restriction;
 import org.eclipse.equinox.region.Region;
 import org.eclipse.equinox.region.RegionDigraph.FilteredRegion;
 import org.eclipse.equinox.region.RegionDigraphVisitor;
@@ -111,7 +112,7 @@ public class WovenClassListener implements org.osgi.framework.hooks.weaving.Wove
 			// package imports to the sharing policy in order to minimize 
 			// unpredictable wirings. Resolving the scoped subsystem will also
 			// resolve all of the unscoped subsystems in the region.
-			AccessController.doPrivileged(new StartAction(subsystem, subsystem, subsystem, true));
+			AccessController.doPrivileged(new StartAction(subsystem, subsystem, subsystem, Restriction.RESOLVE_ONLY));
 		}
 		Bundle systemBundle = context.getBundle(org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION);
 		FrameworkWiring frameworkWiring = systemBundle.adapt(FrameworkWiring.class);

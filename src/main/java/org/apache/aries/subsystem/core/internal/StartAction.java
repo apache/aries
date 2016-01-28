@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -57,155 +57,283 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StartAction extends AbstractAction {
-	private static final Logger logger = LoggerFactory.getLogger(StartAction.class);
+	public static enum Restriction {
+		NONE,
+		INSTALL_ONLY,
+		RESOLVE_ONLY
+	}
 	
-	private static final ThreadLocal<Set<Subsystem>> subsystemsStartingOnCurrentThread = new ThreadLocal<Set<Subsystem>>() {
-		@Override
-		protected Set<Subsystem> initialValue() {
-			return new HashSet<Subsystem>();
-		}
-	};
+	private static final Logger logger = LoggerFactory.getLogger(StartAction.class);
 
 	private final Coordination coordination;
 	private final BasicSubsystem instigator;
-	private final boolean resolveOnly;
+	private final Restriction restriction;
 
 	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target) {
-		this(instigator, requestor, target, false);
+		this(instigator, requestor, target, Restriction.NONE);
 	}
 
-	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, boolean resolveOnly) {
-		this(instigator, requestor, target, null, resolveOnly);
+	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, Restriction restriction) {
+		this(instigator, requestor, target, null, restriction);
 	}
 	
 	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, Coordination coordination) {
-		this(instigator, requestor, target, coordination, false);
+		this(instigator, requestor, target, coordination, Restriction.NONE);
 	}
 	
-	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, Coordination coordination, boolean resolveOnly) {
+	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, Coordination coordination, Restriction restriction) {
 		super(requestor, target, false);
 		this.instigator = instigator;
 		this.coordination = coordination;
-		this.resolveOnly = resolveOnly;
+		this.restriction = restriction;
 	}
 	
-	private Object doRun() {
-		// TODO We now support circular dependencies so a sane locking strategy
-		// is required now more than ever before. Needs to be much more granular
-		// (and complex) than this. Perhaps something along the lines of a state
-		// change lock per subsystem then use a global lock only while acquiring
-		// the necessary state change locks.
-		synchronized (StartAction.class) {
-			State state = target.getState();
-		    // The following states are illegal.
-		    if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED, State.UNINSTALLING).contains(state))
-		        throw new SubsystemException("Cannot start from state " + state);
-		    // The following states must wait with the exception of INSTALLING
-		    // combined with apache-aries-provision-dependencies:=resolve.
-		    if ((State.INSTALLING.equals(state) 
-		    		&& Utils.isProvisionDependenciesInstall(target))
-		    	            || EnumSet.of(State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
-		        waitForStateChange(state);
-		        return new StartAction(instigator, requestor, target, coordination).run();
-		    }
-		    // The following states mean the requested state has already been attained.
-		    if (State.ACTIVE.equals(state))
-		        return null;
-		    // Always start if target is content of requestor.
-		    if (!Utils.isContent(requestor, target)) {
-		        // Always start if target is a dependency of requestor.
-		        if (!Utils.isDependency(requestor, target)) {
-		            // Always start if instigator equals target (explicit start).
-		            if (!instigator.equals(target)) {
-		                // Don't start if instigator is root (restart) and target is not ready.
-		                if (instigator.isRoot() && !target.isReadyToStart()) {
-		                    return null;
-		                }
-		            }
-		        }
-		    }
-		    Coordination coordination = this.coordination;
-		    if (coordination == null) {
-		        coordination = Utils.createCoordination(target);
-		    }
-		    try {
-		    	// If necessary, install the dependencies.
-		    	if (State.INSTALLING.equals(target.getState()) && 
-		    			!Utils.isProvisionDependenciesInstall(target)) {
-		    		// The following line is necessary in order to ensure that
-		    		// the export sharing policies of composites are in place
-		    		// for capability validation.
-		    		setExportPolicyOfAllInstallingSubsystemsWithProvisionDependenciesResolve(coordination);
-		    		Collection<Subsystem> subsystems = new ArrayList<Subsystem>();
-		    		subsystems.addAll(Activator.getInstance().getSubsystems().getChildren(target));
-		    		subsystems.addAll(target.getParents());
-		    		for (Subsystem subsystem : subsystems) {
-		    			if (State.INSTALLING.equals(subsystem.getState())) {
-		    				BasicSubsystem bs = (BasicSubsystem)subsystem;
-		    				bs.computeDependenciesPostInstallation();
-		    	            new InstallDependencies().install(bs, null, coordination);
-		    	            bs.setState(State.INSTALLED);
-		    			}
-		    		}
-		    		target.computeDependenciesPostInstallation();
-		            new InstallDependencies().install(target, null, coordination);
-		            target.setState(State.INSTALLED);
-		    	}
-		        // Resolve if necessary.
-		        if (State.INSTALLED.equals(target.getState()))
-		            resolve(target, coordination);
-		        if (resolveOnly)
-		            return null;
-		        target.setState(State.STARTING);
-		        // TODO Need to hold a lock here to guarantee that another start
-		        // operation can't occur when the state goes to RESOLVED.
-		        // Start the subsystem.
-		        List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(target));
-		        SubsystemContentHeader header = target.getSubsystemManifest().getSubsystemContentHeader();
-		        if (header != null)
-		            Collections.sort(resources, new StartResourceComparator(header));
-		        for (Resource resource : resources)
-		            startResource(resource, coordination);
-		        target.setState(State.ACTIVE);
-		    } catch (Throwable t) {
-		        coordination.fail(t);
-		        // TODO Need to reinstate complete isolation by disconnecting the
-		        // region and transition to INSTALLED.
-		    } finally {
-		        try {
-		            // Don't end the coordination if the subsystem being started
-		            // (i.e. the target) did not begin it.
-		            if (coordination.getName().equals(Utils.computeCoordinationName(target)))
-		                coordination.end();
-		        } catch (CoordinationException e) {
-		        	// If the target's state is INSTALLING then installing the
-		        	// dependencies failed, in which case we want to leave it as is.
-		        	if (!State.INSTALLING.equals(target.getState())) {
-		        		target.setState(State.RESOLVED);
-		        	}
-		            Throwable t = e.getCause();
-		            if (t instanceof SubsystemException)
-		                throw (SubsystemException)t;
-		            throw new SubsystemException(t);
-		        }
-		    }
-		    return null;
+	private static boolean isTargetStartable(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target) {
+		State state = target.getState();
+	    // The following states are illegal.
+	    if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(state))
+	        throw new SubsystemException("Cannot start from state " + state);
+	    // The following states mean the requested state has already been attained.
+	    if (State.ACTIVE.equals(state))
+	        return false;
+		// Always start if target is content of requestor.
+	    if (!Utils.isContent(requestor, target)) {
+	        // Always start if target is a dependency of requestor.
+	        if (!Utils.isDependency(requestor, target)) {
+	            // Always start if instigator equals target (explicit start).
+	            if (!instigator.equals(target)) {
+	                // Don't start if instigator is root (restart) and target is not ready.
+	                if (instigator.isRoot() && !target.isReadyToStart()) {
+	                    return false;
+	                }
+	            }
+	        }
+	    }
+	    return true;
+	}
+	
+	private void installDependencies(BasicSubsystem target, Coordination coordination) throws Exception {
+		for (Subsystem parent : target.getParents()) {
+			AccessController.doPrivileged(new StartAction(instigator, target, (BasicSubsystem)parent, coordination, Restriction.INSTALL_ONLY));
 		}
+		installDependencies(Collections.<Subsystem>singletonList(target), coordination);
+		for (Subsystem child : Activator.getInstance().getSubsystems().getChildren(target)) {
+			AccessController.doPrivileged(new StartAction(instigator, target, (BasicSubsystem)child, coordination, Restriction.INSTALL_ONLY));
+		}
+	}
+	
+	private static void installDependencies(Collection<Subsystem> subsystems, Coordination coordination) throws Exception {
+		for (Subsystem subsystem : subsystems) {
+			if (State.INSTALLING.equals(subsystem.getState())) {
+				BasicSubsystem bs = (BasicSubsystem)subsystem;
+				bs.computeDependenciesPostInstallation(coordination);
+				new InstallDependencies().install(bs, null, coordination);
+				bs.setState(State.INSTALLED);
+			}
+		}
+	}
+	
+	private Coordination createCoordination() {
+		Coordination coordination = this.coordination;
+	    if (coordination == null) {
+	        coordination = Utils.createCoordination(target);
+	    }
+	    return coordination;
+	}
+	
+	private static LinkedHashSet<BasicSubsystem> computeAffectedSubsystems(BasicSubsystem target) {
+		LinkedHashSet<BasicSubsystem> result = new LinkedHashSet<BasicSubsystem>();
+		Subsystems subsystems = Activator.getInstance().getSubsystems();
+		for (Resource dep : subsystems.getResourcesReferencedBy(target)) {
+			if (dep instanceof BasicSubsystem 
+					&& !subsystems.getChildren(target).contains(dep)) {
+				result.add((BasicSubsystem)dep);
+			}
+			else if (dep instanceof BundleRevision) {
+				BundleConstituent constituent = new BundleConstituent(null, (BundleRevision)dep);
+				if (!target.getConstituents().contains(constituent)) {
+					for (BasicSubsystem constituentOf : subsystems.getSubsystemsByConstituent(
+							new BundleConstituent(null, (BundleRevision)dep))) {
+						result.add(constituentOf);
+					}
+				}
+			}
+		}
+		for (Subsystem child : subsystems.getChildren(target)) {
+			result.add((BasicSubsystem)child);
+		}
+		for (Resource resource : target.getResource().getSharedContent()) {
+			for (BasicSubsystem constituentOf : subsystems.getSubsystemsByConstituent(
+					resource instanceof BundleRevision ? new BundleConstituent(null, (BundleRevision)resource) : resource)) {
+				result.add(constituentOf);
+			}
+		}
+		result.add(target);
+		return result;
 	}
 
 	@Override
 	public Object run() {
-		Set<Subsystem> subsystems = subsystemsStartingOnCurrentThread.get();
-		if (subsystems.contains(target)) {
+		// Protect against re-entry now that cycles are supported.
+		if (!LockingStrategy.set(State.STARTING, target)) {
 			return null;
 		}
-		subsystems.add(target);
-	    try {
-	    	return doRun();
-	    }
-	    finally {
-	    	subsystems.remove(target);
-	    }
+		try {
+			Collection<BasicSubsystem> subsystems;
+			// We are now protected against re-entry.
+			// If necessary, install the dependencies.
+	    	if (State.INSTALLING.equals(target.getState()) && !Utils.isProvisionDependenciesInstall(target)) {
+	    		// Acquire the global write lock while installing dependencies.
+				LockingStrategy.writeLock();
+				try {
+					// We are now protected against installs, starts, stops, and uninstalls.
+		    		// We need a separate coordination when installing 
+					// dependencies because cleaning up the temporary export 
+					// sharing policies must be done while holding the write lock.
+		    		Coordination c = Utils.createCoordination(target);
+		    		try {
+		    			installDependencies(target, c);
+		    			// Associated subsystems must be computed after all dependencies 
+						// are installed because some of the dependencies may be 
+						// subsystems. This is safe to do while only holding the read
+						// lock since we know that nothing can be added or removed.
+						subsystems = computeAffectedSubsystems(target);
+						for (BasicSubsystem subsystem : subsystems) {
+							if (State.INSTALLING.equals(subsystem.getState())
+									&& !Utils.isProvisionDependenciesInstall(subsystem)) {
+								installDependencies(subsystem, c);
+							}
+						}
+						// Downgrade to the read lock in order to prevent 
+		    			// installs and uninstalls but allow starts and stops.
+						LockingStrategy.readLock();
+		    		}
+		    		catch (Throwable t) {
+		    			c.fail(t);
+		    		}
+		    		finally {
+		    			// This will clean up the temporary export sharing
+		    			// policies. Must be done while holding the write lock.
+		    			c.end();
+		    		}
+				}
+				finally {
+					// Release the global write lock as soon as possible.
+					LockingStrategy.writeUnlock();
+				}
+	    	}
+	    	else {
+	    		// Acquire the read lock in order to prevent installs and
+	    		// uninstalls but allow starts and stops.
+	    		LockingStrategy.readLock();
+	    	}
+	    	try {
+	    		// We now hold the read lock and are protected against installs
+	    		// and uninstalls.
+	    		if (Restriction.INSTALL_ONLY.equals(restriction)) {
+					return null;
+				}
+	    		// Compute associated subsystems here in case (1) they weren't
+	    		// computed previously while holding the write lock or (2) they
+	    		// were computed previously and more were subsequently added. 
+				// This is safe to do while only holding the read lock since we
+				// know that nothing can be added or removed.
+				subsystems = computeAffectedSubsystems(target);
+				// Acquire the global mutual exclusion lock while acquiring the
+				// state change locks of affected subsystems.
+				LockingStrategy.lock();
+				try {
+					// We are now protected against cycles.
+					// Acquire the state change locks of affected subsystems.
+					LockingStrategy.lock(subsystems);
+				}
+				finally {
+					// Release the global mutual exclusion lock as soon as possible.
+					LockingStrategy.unlock();
+				}
+				Coordination coordination = this.coordination;
+				try {
+					coordination = createCoordination();
+					// We are now protected against other starts and stops of the affected subsystems.
+					if (!isTargetStartable(instigator, requestor, target)) {
+						return null;
+					}
+					
+					// Resolve if necessary.
+					if (State.INSTALLED.equals(target.getState()))
+						resolve(instigator, target, target, coordination, subsystems);
+					if (Restriction.RESOLVE_ONLY.equals(restriction))
+						return null;
+					target.setState(State.STARTING);
+					// Be sure to set the state back to RESOLVED if starting fails.
+					coordination.addParticipant(new Participant() {
+						@Override
+						public void ended(Coordination coordination) throws Exception {
+							// Nothing.
+						}
+
+						@Override
+						public void failed(Coordination coordination) throws Exception {
+							target.setState(State.RESOLVED);
+						}
+					});
+					for (BasicSubsystem subsystem : subsystems) {
+						if (!target.equals(subsystem)) {
+							startSubsystemResource(subsystem, coordination);
+						}
+					}
+					List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(target));
+					SubsystemContentHeader header = target.getSubsystemManifest().getSubsystemContentHeader();
+					if (header != null)
+						Collections.sort(resources, new StartResourceComparator(header));
+					for (Resource resource : resources)
+						startResource(resource, coordination);
+					target.setState(State.ACTIVE);
+					
+				}
+				catch (Throwable t) {
+					// We catch exceptions and fail the coordination here to
+					// ensure we are still holding the state change locks when
+					// the participant sets the state to RESOLVED.
+					coordination.fail(t);
+				}
+				finally {
+					try {
+						// Don't end a coordination that was not begun as part
+						// of this start action.
+						if (coordination.getName().equals(Utils.computeCoordinationName(target))) {
+							coordination.end();
+						}
+					}
+					finally {
+						// Release the state change locks of affected subsystems.
+						LockingStrategy.unlock(subsystems);
+					}
+				}
+	    	}
+	    	finally {
+				// Release the read lock.
+				LockingStrategy.readUnlock();
+			}
+		}
+		catch (CoordinationException e) {
+			Throwable t = e.getCause();
+			if (t == null) {
+				throw new SubsystemException(e);
+			}
+			if (t instanceof SecurityException) {
+				throw (SecurityException)t;
+			}
+			if (t instanceof SubsystemException) {
+				throw (SubsystemException)t;
+			}
+			throw new SubsystemException(t);
+		}
+		finally {
+			// Protection against re-entry no longer required.
+			LockingStrategy.unset(State.STARTING, target);
+		}
+		return null;
 	}
 
 	private static Collection<Bundle> getBundles(BasicSubsystem subsystem) {
@@ -233,41 +361,21 @@ public class StartAction extends AbstractAction {
 			subsystem.setState(State.RESOLVED);
 	}
 	
-	private static void resolveSubsystems(BasicSubsystem subsystem, Coordination coordination) {
-		//resolve dependencies to ensure framework resolution succeeds
-		Subsystems subsystems = Activator.getInstance().getSubsystems();
-		for (Resource dep : subsystems.getResourcesReferencedBy(subsystem)) {
-			if (dep instanceof BasicSubsystem 
-					&& !subsystems.getChildren(subsystem).contains(dep)) {
-				resolveSubsystem((BasicSubsystem)dep, coordination);
-			}
-			else if (dep instanceof BundleRevision
-					&& !subsystem.getConstituents().contains(dep)) {
-				for (BasicSubsystem constituentOf : subsystems.getSubsystemsByConstituent(
-						new BundleConstituent(null, (BundleRevision)dep))) {
-					resolveSubsystem(constituentOf, coordination);
-				}
-			}
-		}
-		for (Subsystem child : subsystems.getChildren(subsystem)) {
-			resolveSubsystem((BasicSubsystem)child, coordination);
-		}
-		for (Resource resource : subsystem.getResource().getSharedContent()) {
-			for (BasicSubsystem constituentOf : subsystems.getSubsystemsByConstituent(
-					resource instanceof BundleRevision ? new BundleConstituent(null, (BundleRevision)resource) : resource)) {
-				resolveSubsystem(constituentOf, coordination);
-			}
+	private static void resolveSubsystems(BasicSubsystem instigator, BasicSubsystem target, Coordination coordination, Collection<BasicSubsystem> subsystems) throws Exception {
+		for (BasicSubsystem subsystem : subsystems) {
+			resolveSubsystem(instigator, target, subsystem, coordination);
 		}
 	}
 	
-	private static void resolveSubsystem(BasicSubsystem subsystem, Coordination coordination) {
+	private static void resolveSubsystem(BasicSubsystem instigator, BasicSubsystem target, BasicSubsystem subsystem, Coordination coordination) throws Exception {
 		State state = subsystem.getState();
 		if (State.INSTALLED.equals(state)) {
-			AccessController.doPrivileged(new StartAction(subsystem, subsystem, subsystem, coordination, true));
-		}
-		else if (State.INSTALLING.equals(state)
-				&& !Utils.isProvisionDependenciesInstall(subsystem)) {
-			AccessController.doPrivileged(new StartAction(subsystem, subsystem, subsystem, coordination, true));
+			if (target.equals(subsystem)) {
+				resolve(instigator, target, subsystem, coordination, Collections.<BasicSubsystem>emptyList());
+			}
+			else {
+				AccessController.doPrivileged(new StartAction(instigator, target, subsystem, coordination, Restriction.RESOLVE_ONLY));
+			}
 		}
 	}
 	
@@ -282,7 +390,7 @@ public class StartAction extends AbstractAction {
 		}
 	}
 
-	private static void resolve(BasicSubsystem subsystem, Coordination coordination) {
+	private static void resolve(BasicSubsystem instigator, BasicSubsystem target, BasicSubsystem subsystem, Coordination coordination, Collection<BasicSubsystem> subsystems) {
 		emitResolvingEvent(subsystem);
 		try {
 			// The root subsystem should follow the same event pattern for
@@ -291,7 +399,7 @@ public class StartAction extends AbstractAction {
 			// actually doing the resolution work.
 			if (!subsystem.isRoot()) {
 				setExportIsolationPolicy(subsystem, coordination);
-				resolveSubsystems(subsystem, coordination);
+				resolveSubsystems(instigator, target, coordination, subsystems);
 				resolveBundles(subsystem);
 			}
 			emitResolvedEvent(subsystem);
@@ -491,8 +599,11 @@ public class StartAction extends AbstractAction {
         return false;
     }
 
-	private void startSubsystemResource(Resource resource, Coordination coordination) throws IOException {
+	private void startSubsystemResource(Resource resource, final Coordination coordination) throws IOException {
 		final BasicSubsystem subsystem = (BasicSubsystem)resource;
+		if (!isTargetStartable(instigator, target, subsystem)) {
+			 return;
+		}
 		// Subsystems that are content resources of another subsystem must have
 		// their autostart setting set to started.
 		if (Utils.isContent(this.target, subsystem))
@@ -560,7 +671,7 @@ public class StartAction extends AbstractAction {
 		logger.error(diagnostics.toString());
 	}
 	
-	private static void setExportPolicyOfAllInstallingSubsystemsWithProvisionDependenciesResolve(Coordination coordination) throws InvalidSyntaxException {
+	static void setExportPolicyOfAllInstallingSubsystemsWithProvisionDependenciesResolve(Coordination coordination) throws InvalidSyntaxException {
 		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystems()) {
 			if (!State.INSTALLING.equals(subsystem.getState())
 					|| Utils.isProvisionDependenciesInstall(subsystem)) {
