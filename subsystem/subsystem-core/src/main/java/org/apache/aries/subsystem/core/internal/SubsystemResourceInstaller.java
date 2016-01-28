@@ -83,15 +83,15 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		}
 		Comparator<Resource> comparator = new InstallResourceComparator();
 		// Install dependencies first if appropriate...
-		if (Utils.isProvisionDependenciesInstall(subsystem)) {
-		    new InstallDependencies().install(subsystem, this.subsystem, coordination);
+		if (!subsystem.isRoot() && Utils.isProvisionDependenciesInstall(subsystem)) {
+			new InstallDependencies().install(subsystem, this.subsystem, coordination);
 		}
 		// ...followed by content.
 		// Simulate installation of shared content so that necessary relationships are established.
-        for (Resource content : subsystem.getResource().getSharedContent()) {
-            ResourceInstaller.newInstance(coordination, content, subsystem).install();
-        }
-        // Now take care of the installable content.
+		for (Resource content : subsystem.getResource().getSharedContent()) {
+			ResourceInstaller.newInstance(coordination, content, subsystem).install();
+		}
+		// Now take care of the installable content.
 		if (State.INSTALLING.equals(subsystem.getState())) {
 			List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
 			Collections.sort(installableContent, comparator);
@@ -101,7 +101,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		// Only brand new subsystems should have acquired the INSTALLING state,
 		// in which case an INSTALLED event must be propagated.
 		if (State.INSTALLING.equals(subsystem.getState()) && 
-		        Utils.isProvisionDependenciesInstall(subsystem)) {
+				Utils.isProvisionDependenciesInstall(subsystem)) {
 			subsystem.setState(State.INSTALLED);
 		}
 		else {
@@ -112,7 +112,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	}
 
 	private BasicSubsystem installRawSubsystemResource(RawSubsystemResource resource) throws Exception {
-		SubsystemResource subsystemResource = new SubsystemResource(resource, provisionTo);
+		SubsystemResource subsystemResource = new SubsystemResource(resource, provisionTo, coordination);
 		return installSubsystemResource(subsystemResource);
 	}
 

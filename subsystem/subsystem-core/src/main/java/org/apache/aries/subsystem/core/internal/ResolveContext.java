@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.core.internal;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
 import org.apache.aries.subsystem.core.internal.DependencyCalculator.MissingCapability;
+import org.apache.aries.subsystem.core.internal.StartAction.Restriction;
 import org.apache.aries.subsystem.core.repository.Repository;
 import org.eclipse.equinox.region.Region;
 import org.osgi.framework.BundleException;
@@ -42,6 +44,7 @@ import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.resource.Wiring;
 import org.osgi.service.resolver.HostedCapability;
+import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
@@ -61,9 +64,40 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		repositoryServiceRepository = new RepositoryServiceRepository();
 		systemRepository = Activator.getInstance().getSystemRepository();
 	}
+	
+	private void installDependenciesOfRequirerIfNecessary(Requirement requirement) {
+		if (requirement == null) {
+			return;
+		}
+		Resource requirer = requirement.getResource();
+		if (resource.equals(requirer)) {
+			return;
+		}
+		Collection<BasicSubsystem> subsystems;
+		if (requirer instanceof BasicSubsystem) {
+			BasicSubsystem subsystem = (BasicSubsystem)requirer;
+			subsystems = Collections.singletonList(subsystem);
+		}
+		else if (requirer instanceof BundleRevision) {
+			BundleRevision revision = (BundleRevision)requirer;
+			BundleConstituent constituent = new BundleConstituent(null, revision);
+			subsystems = Activator.getInstance().getSubsystems().getSubsystemsByConstituent(constituent);
+		}
+		else {
+			return;
+		}
+		for (BasicSubsystem subsystem : subsystems) {
+			if (Utils.isProvisionDependenciesInstall(subsystem) 
+					|| !State.INSTALLING.equals(subsystem.getState())) {
+				continue;
+			}
+			AccessController.doPrivileged(new StartAction(subsystem, subsystem, subsystem, Restriction.INSTALL_ONLY));
+		}
+	}
 
 	@Override
 	public List<Capability> findProviders(Requirement requirement) {
+		installDependenciesOfRequirerIfNecessary(requirement);
 		ArrayList<Capability> result = new ArrayList<Capability>();
 		try {
 			// Only check the system repository for osgi.ee and osgi.native
@@ -160,7 +194,8 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	}
 
 	private boolean addDependenciesFromSystemRepository(Requirement requirement, List<Capability> capabilities) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
-		return addDependencies(systemRepository, requirement, capabilities, true);
+		boolean result = addDependencies(systemRepository, requirement, capabilities, true);
+		return result;
 	}
 
 	private void addValidCapabilities(Collection<Capability> from, Collection<Capability> to, Requirement requirement, boolean validate) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {

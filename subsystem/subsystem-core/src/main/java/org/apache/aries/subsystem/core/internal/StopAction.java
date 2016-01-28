@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.aries.subsystem.ContentHandler;
@@ -42,54 +43,102 @@ public class StopAction extends AbstractAction {
 
 	@Override
 	public Object run() {
-		checkRoot();
-		State state = target.getState();
-		if (EnumSet.of(State.INSTALLED, State.RESOLVED).contains(state))
-			return null;
-		else if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLING, State.UNINSTALLED).contains(state))
-			throw new IllegalStateException("Cannot stop from state " + state);
-		else if (State.INSTALLING.equals(state) && !Utils.isProvisionDependenciesInstall(target)) {
+		// Protect against re-entry now that cycles are supported.
+		if (!LockingStrategy.set(State.STOPPING, target)) {
 			return null;
 		}
-		else if (EnumSet.of(State.INSTALLING, State.RESOLVING, State.STARTING, State.STOPPING).contains(state)) {
-			waitForStateChange(state);
-			return new StopAction(requestor, target, disableRootCheck).run();
-		}
-		target.setState(State.STOPPING);
-		List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(target));
-		SubsystemContentHeader header = target.getSubsystemManifest().getSubsystemContentHeader();
-		if (header != null) {
-			Collections.sort(resources, new StartResourceComparator(target.getSubsystemManifest().getSubsystemContentHeader()));
-			Collections.reverse(resources);
-		}
-		for (Resource resource : resources) {
-			// Don't stop the region context bundle.
-			if (Utils.isRegionContextBundle(resource))
-				continue;
-			try {
-				stopResource(resource);
-			}
-			catch (Exception e) {
-				logger.error("An error occurred while stopping resource " + resource + " of subsystem " + target, e);
-			}
-		}
-		// TODO Can we automatically assume it actually is resolved?
-		target.setState(State.RESOLVED);
 		try {
-			synchronized (target) {
-				target.setDeploymentManifest(new DeploymentManifest(
-						target.getDeploymentManifest(),
-						null,
-						target.isAutostart(),
-						target.getSubsystemId(),
-						SubsystemIdentifier.getLastId(),
-						target.getLocation(),
-						false,
-						false));
+			// We are now protected against re-entry.
+			// Acquire the global read lock to prevent installs and uninstalls
+			// but allow starts and stops.
+			LockingStrategy.readLock();
+			try {
+				// We are now protected against installs and uninstalls.
+				checkRoot();
+				// Compute affected subsystems. This is safe to do while only 
+				// holding the read lock since we know that nothing can be added 
+				// or removed.
+				LinkedHashSet<BasicSubsystem> subsystems = new LinkedHashSet<BasicSubsystem>();
+				subsystems.add(target);
+				List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(target));
+				for (Resource resource : resources) {
+					if (resource instanceof BasicSubsystem) {
+						subsystems.add((BasicSubsystem)resource);
+					}
+				}
+				// Acquire the global mutual exclusion lock while acquiring the
+				// state change locks of affected subsystems.
+				LockingStrategy.lock();
+				try {
+					// We are now protected against cycles.
+					// Acquire the state change locks of affected subsystems.
+					LockingStrategy.lock(subsystems);
+				}
+				finally {
+					// Release the global mutual exclusion lock as soon as possible.
+					LockingStrategy.unlock();
+				}
+				try {
+					// We are now protected against other starts and stops of the affected subsystems.
+					State state = target.getState();
+					if (EnumSet.of(State.INSTALLED, State.INSTALLING, State.RESOLVED).contains(state)) {
+						// INSTALLING is included because a subsystem may
+						// persist in this state without being locked when
+						// apache-aries-provision-dependencies:=resolve.
+						return null;
+					}
+					else if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(state)) {
+						throw new IllegalStateException("Cannot stop from state " + state);
+					}
+					target.setState(State.STOPPING);
+					SubsystemContentHeader header = target.getSubsystemManifest().getSubsystemContentHeader();
+					if (header != null) {
+						Collections.sort(resources, new StartResourceComparator(target.getSubsystemManifest().getSubsystemContentHeader()));
+						Collections.reverse(resources);
+					}
+					for (Resource resource : resources) {
+						// Don't stop the region context bundle.
+						if (Utils.isRegionContextBundle(resource))
+							continue;
+						try {
+							stopResource(resource);
+						}
+						catch (Exception e) {
+							logger.error("An error occurred while stopping resource " + resource + " of subsystem " + target, e);
+						}
+					}
+					// TODO Can we automatically assume it actually is resolved?
+					target.setState(State.RESOLVED);
+					try {
+						synchronized (target) {
+							target.setDeploymentManifest(new DeploymentManifest(
+									target.getDeploymentManifest(),
+									null,
+									target.isAutostart(),
+									target.getSubsystemId(),
+									SubsystemIdentifier.getLastId(),
+									target.getLocation(),
+									false,
+									false));
+						}
+					}
+					catch (Exception e) {
+						throw new SubsystemException(e);
+					}
+				}
+				finally {
+					// Release the state change locks of affected subsystems.
+					LockingStrategy.unlock(subsystems);
+				}
+			}
+			finally {
+				// Release the read lock.
+				LockingStrategy.readUnlock();
 			}
 		}
-		catch (Exception e) {
-			throw new SubsystemException(e);
+		finally {
+			// Protection against re-entry no longer required.
+			LockingStrategy.unset(State.STOPPING, target);
 		}
 		return null;
 	}
