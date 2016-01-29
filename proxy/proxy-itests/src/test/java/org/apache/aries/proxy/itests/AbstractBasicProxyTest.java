@@ -54,6 +54,26 @@ public abstract class AbstractBasicProxyTest extends AbstractProxyTest
   }
 
   /**
+   * This method checks that we correctly proxy an interface with default methods on java 8
+   */
+  @Test
+  public void checkProxydefaultMethodInterface() throws UnableToProxyException
+  {
+      Bundle b = bundleContext.getBundle();
+      Callable<Object> c = new TestCallable();
+      Collection<Class<?>> classes = new ArrayList<Class<?>>();
+      // proxy an interface with a default methods (on Java 8).
+      classes.add(java.lang.CharSequence.class);
+      try {
+          mgr.createDelegatingProxy(b, classes, c, null);
+      } catch (FinalModifierException e) {
+          String msg = e.getMessage();
+          assertEquals("The message didn't look right", "The class " + TestCallable.class.getName() + " is final.", msg);
+          assertTrue("The message didn't appear in the toString", e.toString().endsWith(msg));
+      }
+  }
+  
+  /**
    * This method checks that we correctly fail to proxy a class with final methods.
    * It also does a quick validation on the exception message.
    */
