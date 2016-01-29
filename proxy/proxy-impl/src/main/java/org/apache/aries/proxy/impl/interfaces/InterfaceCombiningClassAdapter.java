@@ -84,16 +84,21 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
 
   @Override
   public final MethodVisitor visitMethod(int access, String name, String desc,
-      String sig, String[] arg4) {
-    //If we already implement this method (from another interface) then we don't
-    //want a duplicate. We also don't want to copy any static init blocks (these
-    //initialize static fields on the interface that we don't copy
-    if(adapter.getKnownMethods().contains(new Method(name, desc)) || 
-        "<clinit>".equals(name))
-      return null;
-    else {//We're going to implement this method, so make it non abstract!
-      return adapter.visitMethod(access, name, desc, null, arg4);
-    }
+          String sig, String[] arg4) {
+      //If we already implement this method (from another interface) then we don't
+      //want a duplicate. We also don't want to copy any static init blocks (these
+      //initialize static fields on the interface that we don't copy
+      if(adapter.getKnownMethods().contains(new Method(name, desc)) || 
+              "<clinit>".equals(name)) {
+          return null;
+      }
+      else if(((access & (ACC_PRIVATE|ACC_SYNTHETIC)) == (ACC_PRIVATE|ACC_SYNTHETIC))) {
+          // private, synthetic methods on interfaces don't need to be proxied.       
+          return null;
+      }
+      else {//We're going to implement this method, so make it non abstract!
+          return adapter.visitMethod(access, name, desc, null, arg4);
+      }
   }
 
   /**
