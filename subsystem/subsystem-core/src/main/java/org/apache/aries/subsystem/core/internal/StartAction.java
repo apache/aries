@@ -141,35 +141,57 @@ public class StartAction extends AbstractAction {
 	    return coordination;
 	}
 	
-	private static LinkedHashSet<BasicSubsystem> computeAffectedSubsystems(BasicSubsystem target) {
-		LinkedHashSet<BasicSubsystem> result = new LinkedHashSet<BasicSubsystem>();
-		Subsystems subsystems = Activator.getInstance().getSubsystems();
-		for (Resource dep : subsystems.getResourcesReferencedBy(target)) {
-			if (dep instanceof BasicSubsystem 
-					&& !subsystems.getChildren(target).contains(dep)) {
-				result.add((BasicSubsystem)dep);
-			}
-			else if (dep instanceof BundleRevision) {
-				BundleConstituent constituent = new BundleConstituent(null, (BundleRevision)dep);
-				if (!target.getConstituents().contains(constituent)) {
-					for (BasicSubsystem constituentOf : subsystems.getSubsystemsByConstituent(
-							new BundleConstituent(null, (BundleRevision)dep))) {
-						result.add(constituentOf);
+	private static class AffectedResources {
+		private final List<Resource> resources;
+		private final Collection<BasicSubsystem> subsystemResources;
+		
+		AffectedResources(BasicSubsystem target) {
+			LinkedHashSet<Resource> resources = new LinkedHashSet<Resource>();
+			LinkedHashSet<BasicSubsystem> subsystemResources = new LinkedHashSet<BasicSubsystem>();
+			Subsystems subsystems = Activator.getInstance().getSubsystems();
+			for (Resource dep : subsystems.getResourcesReferencedBy(target)) {
+				if (dep instanceof BasicSubsystem 
+						&& !subsystems.getChildren(target).contains(dep)) {
+					subsystemResources.add((BasicSubsystem)dep);
+				}
+				else if (dep instanceof BundleRevision) {
+					BundleConstituent constituent = new BundleConstituent(null, (BundleRevision)dep);
+					if (!target.getConstituents().contains(constituent)) {
+						for (BasicSubsystem constituentOf : subsystems.getSubsystemsByConstituent(
+								new BundleConstituent(null, (BundleRevision)dep))) {
+							subsystemResources.add(constituentOf);
+						}
 					}
 				}
+				resources.add(dep);
 			}
-		}
-		for (Subsystem child : subsystems.getChildren(target)) {
-			result.add((BasicSubsystem)child);
-		}
-		for (Resource resource : target.getResource().getSharedContent()) {
-			for (BasicSubsystem constituentOf : subsystems.getSubsystemsByConstituent(
-					resource instanceof BundleRevision ? new BundleConstituent(null, (BundleRevision)resource) : resource)) {
-				result.add(constituentOf);
+			for (Subsystem child : subsystems.getChildren(target)) {
+				subsystemResources.add((BasicSubsystem)child);
+				resources.add((BasicSubsystem)child);
 			}
+			for (Resource resource : target.getResource().getSharedContent()) {
+				for (BasicSubsystem constituentOf : subsystems.getSubsystemsByConstituent(
+						resource instanceof BundleRevision ? new BundleConstituent(null, (BundleRevision)resource) : resource)) {
+					subsystemResources.add(constituentOf);
+				}
+				resources.add(resource);
+			}
+			subsystemResources.add(target);
+			this.resources = new ArrayList<Resource>(resources);
+			this.subsystemResources = subsystemResources;
 		}
-		result.add(target);
-		return result;
+		
+		List<Resource> resources() {
+			return resources;
+		}
+		
+		Collection<BasicSubsystem> subsystems() {
+			return subsystemResources;
+		}
+	}
+	
+	private static AffectedResources computeAffectedResources(BasicSubsystem target) {
+		return new AffectedResources(target);
 	}
 
 	@Override
@@ -179,7 +201,7 @@ public class StartAction extends AbstractAction {
 			return null;
 		}
 		try {
-			Collection<BasicSubsystem> subsystems;
+			AffectedResources affectedResources;
 			// We are now protected against re-entry.
 			// If necessary, install the dependencies.
 	    	if (State.INSTALLING.equals(target.getState()) && !Utils.isProvisionDependenciesInstall(target)) {
@@ -197,8 +219,8 @@ public class StartAction extends AbstractAction {
 						// are installed because some of the dependencies may be 
 						// subsystems. This is safe to do while only holding the read
 						// lock since we know that nothing can be added or removed.
-						subsystems = computeAffectedSubsystems(target);
-						for (BasicSubsystem subsystem : subsystems) {
+		    			affectedResources = computeAffectedResources(target);
+						for (BasicSubsystem subsystem : affectedResources.subsystems()) {
 							if (State.INSTALLING.equals(subsystem.getState())
 									&& !Utils.isProvisionDependenciesInstall(subsystem)) {
 								installDependencies(subsystem, c);
@@ -238,14 +260,14 @@ public class StartAction extends AbstractAction {
 	    		// were computed previously and more were subsequently added. 
 				// This is safe to do while only holding the read lock since we
 				// know that nothing can be added or removed.
-				subsystems = computeAffectedSubsystems(target);
+	    		affectedResources = computeAffectedResources(target);
 				// Acquire the global mutual exclusion lock while acquiring the
 				// state change locks of affected subsystems.
 				LockingStrategy.lock();
 				try {
 					// We are now protected against cycles.
 					// Acquire the state change locks of affected subsystems.
-					LockingStrategy.lock(subsystems);
+					LockingStrategy.lock(affectedResources.subsystems());
 				}
 				finally {
 					// Release the global mutual exclusion lock as soon as possible.
@@ -261,7 +283,7 @@ public class StartAction extends AbstractAction {
 					
 					// Resolve if necessary.
 					if (State.INSTALLED.equals(target.getState()))
-						resolve(instigator, target, target, coordination, subsystems);
+						resolve(instigator, target, target, coordination, affectedResources.subsystems());
 					if (Restriction.RESOLVE_ONLY.equals(restriction))
 						return null;
 					target.setState(State.STARTING);
@@ -277,16 +299,10 @@ public class StartAction extends AbstractAction {
 							target.setState(State.RESOLVED);
 						}
 					});
-					for (BasicSubsystem subsystem : subsystems) {
-						if (!target.equals(subsystem)) {
-							startSubsystemResource(subsystem, coordination);
-						}
-					}
-					List<Resource> resources = new ArrayList<Resource>(Activator.getInstance().getSubsystems().getResourcesReferencedBy(target));
 					SubsystemContentHeader header = target.getSubsystemManifest().getSubsystemContentHeader();
 					if (header != null)
-						Collections.sort(resources, new StartResourceComparator(header));
-					for (Resource resource : resources)
+						Collections.sort(affectedResources.resources(), new StartResourceComparator(header));
+					for (Resource resource : affectedResources.resources())
 						startResource(resource, coordination);
 					target.setState(State.ACTIVE);
 					
@@ -307,7 +323,7 @@ public class StartAction extends AbstractAction {
 					}
 					finally {
 						// Release the state change locks of affected subsystems.
-						LockingStrategy.unlock(subsystems);
+						LockingStrategy.unlock(affectedResources.subsystems());
 					}
 				}
 	    	}
