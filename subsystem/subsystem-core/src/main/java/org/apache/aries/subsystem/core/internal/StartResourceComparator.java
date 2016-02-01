@@ -34,7 +34,7 @@ public class StartResourceComparator implements Comparator<Resource> {
 	private Integer getStartOrder(Resource r) {
 		SubsystemContentHeader.Clause clause = header.getClause(r);
 		if (clause == null)
-			return 0;
+			return -1;
 		return clause.getStartOrder();
 	}
 }
