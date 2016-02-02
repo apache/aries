@@ -142,7 +142,7 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
     assertEquals("Sets were not the same", expectedMethods, generatedMethods);
 
   }
-
+  
   /**
    * Test a method marked final
    */
@@ -180,7 +180,18 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
     assertNotNull("The new instance was null", o);
 
   }
-  
+
+  /**
+   * Test a generating proxy class of class with package access constructor.
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testPackageAccessCtor() throws Exception  {
+      Class<ProxyTestClassPackageAccessCtor> proxyClass = 
+              (Class<ProxyTestClassPackageAccessCtor>) ProxySubclassGenerator.getProxySubclass(ProxyTestClassPackageAccessCtor.class);
+      ProxyTestClassPackageAccessCtor proxy = (ProxyTestClassPackageAccessCtor) getProxyInstance(proxyClass); 
+      assertNotNull("The new instance was null", proxy);
+  }
 //  /**
 //   * Test object equality between real and proxy using a Collaborator
 //   */
