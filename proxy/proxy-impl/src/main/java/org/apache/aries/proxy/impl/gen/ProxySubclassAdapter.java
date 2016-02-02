@@ -146,17 +146,7 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
       // So what we do is build up the calling of the superclasses constructor using nulls and default values. This means that the 
       // class bytes can be verified by the JVM, and then in the ProxySubclassGenerator, we load the class without invoking the 
       // constructor. 
-      String constructorString = constructors[0].toGenericString();
-      Method constructor = null;
-      if (constructorString.indexOf(")") != -1) {
-        //If constructor throws two or more exceptions, getMethod(String) will report a StringIndexOutOfBounds exception,
-        //so attempt to remove exceptions
-        constructor = Method.getMethod(constructorString.substring(0, constructorString.indexOf(")") + 1));
-      } else {
-	//As a backup, just pass in the generic string as before
-        constructor = Method.getMethod(constructorString);
-      }
-      
+      Method constructor = Method.getMethod(constructors[0]);      
       Type[] argTypes = constructor.getArgumentTypes();
       if (argTypes.length == 0) {
         methodAdapter.invokeConstructor(Type.getType(superclassClass), new Method("<init>", Type.VOID_TYPE, NO_ARGS));
