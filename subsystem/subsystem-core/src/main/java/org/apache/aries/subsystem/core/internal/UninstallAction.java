@@ -25,7 +25,7 @@ public class UninstallAction extends AbstractAction {
 	@Override
 	public Object run() {
 		// Protect against re-entry now that cycles are supported.
-		if (!LockingStrategy.set(State.STOPPING, target)) {
+		if (!LockingStrategy.set(State.UNINSTALLING, target)) {
 			return null;
 		}
 		try {
@@ -51,7 +51,7 @@ public class UninstallAction extends AbstractAction {
 		}
 		finally {
 			// Protection against re-entry no longer required.
-			LockingStrategy.unset(State.STOPPING, target);
+			LockingStrategy.unset(State.UNINSTALLING, target);
 		}
 		return null;
 	}
