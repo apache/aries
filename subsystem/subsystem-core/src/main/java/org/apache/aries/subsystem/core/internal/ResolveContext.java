@@ -34,18 +34,21 @@ import org.eclipse.equinox.region.Region;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.namespace.ExecutionEnvironmentNamespace;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.namespace.NativeNamespace;
+import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
+import org.osgi.resource.Wire;
 import org.osgi.resource.Wiring;
 import org.osgi.service.resolver.HostedCapability;
 import org.osgi.service.subsystem.Subsystem.State;
-import org.osgi.service.subsystem.SubsystemException;
 
 public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	private final Repository contentRepository;
@@ -94,44 +97,147 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 			AccessController.doPrivileged(new StartAction(subsystem, subsystem, subsystem, Restriction.INSTALL_ONLY));
 		}
 	}
-
-	@Override
-	public List<Capability> findProviders(Requirement requirement) {
-		installDependenciesOfRequirerIfNecessary(requirement);
-		ArrayList<Capability> result = new ArrayList<Capability>();
+	
+	private boolean isResolved(Resource resource) {
+		return wirings.containsKey(resource);
+	}
+	
+	private boolean isProcessableAsFragment(Requirement requirement) {
+		Resource resource = requirement.getResource();
+		String namespace = requirement.getNamespace();
+		return Utils.isFragment(resource)
+				&& !(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE.equals(namespace)
+						|| HostNamespace.HOST_NAMESPACE.equals(namespace));
+	}
+	
+	private void processAsFragment(Requirement requirement, List<Capability> capabilities) {
+		String namespace = requirement.getNamespace();
+		Resource fragment = requirement.getResource();
+		Wiring fragmentWiring = wirings.get(fragment);
+		List<Wire> fragmentWires = fragmentWiring.getRequiredResourceWires(HostNamespace.HOST_NAMESPACE);
+		for (Wire fragmentWire : fragmentWires) {
+			Resource host = fragmentWire.getProvider();
+			Wiring hostWiring = wirings.get(host);
+			List<Wire> hostWires = hostWiring.getRequiredResourceWires(namespace);
+			processWires(hostWires, requirement, capabilities);
+		}
+	}
+	
+	private void processWires(Collection<Wire> wires, Requirement requirement, List<Capability> capabilities) {
+		if (wires.isEmpty()) {
+			handleNoWires(requirement, capabilities);
+			return;
+		}
+		for (Wire wire : wires) {
+			processWire(wire, requirement, capabilities);
+		}
+	}
+	
+	private void processWire(Wire wire, Requirement requirement, List<Capability> capabilities) {
+		Capability capability = wire.getCapability();
+		processCapability(capability, requirement, capabilities);
+	}
+	
+	private void processCapability(Capability capability, Requirement requirement, List<Capability> capabilities) {
+		if (ResourceHelper.matches(requirement, capability)) {
+			capabilities.add(capability);
+		}
+	}
+	
+	private void processResourceCapabilities(Collection<Capability> resourceCapabilities, Requirement requirement, List<Capability> capabilities) {
+		for (Capability resourceCapability : resourceCapabilities) {
+			processCapability(resourceCapability, requirement, capabilities);
+		}
+	}
+	
+	private void processAsBundle(Requirement requirement, List<Capability> capabilities) {
+		String namespace = requirement.getNamespace();
+		Resource bundle = requirement.getResource();
+		Wiring wiring = wirings.get(bundle);
+		List<Wire> wires = wiring.getRequiredResourceWires(namespace);
+		processWires(wires, requirement, capabilities);
+	}
+	
+	private void handleNoWires(Requirement requirement, List<Capability> capabilities) {
+		String namespace = requirement.getNamespace();
+		if (!ServiceNamespace.SERVICE_NAMESPACE.equals(namespace)) {
+			return;
+		}
+		try {
+			addDependenciesFromSystemRepository(requirement, capabilities);
+		}
+		catch (Exception e) {
+			Utils.handleTrowable(e);
+		}
+	}
+	
+	private void processAsSubstitutableExport(Requirement requirement, List<Capability> capabilities) {
+		String namespace = requirement.getNamespace();
+		if (!PackageNamespace.PACKAGE_NAMESPACE.equals(namespace)) {
+			return;
+		}
+		Resource resource = requirement.getResource();
+		Wiring wiring = wirings.get(resource);
+		List<Capability> resourceCapabilities = wiring.getResourceCapabilities(namespace);
+		processResourceCapabilities(resourceCapabilities, requirement, capabilities);
+	}
+	
+	private void processAlreadyResolvedResource(Resource resource, Requirement requirement, List<Capability> capabilities) {
+		if (isProcessableAsFragment(requirement)) {
+			processAsFragment(requirement, capabilities);
+		}
+		else {
+			processAsBundle(requirement, capabilities);
+		}
+		if (capabilities.isEmpty() && Utils.isMandatory(requirement)) {
+			processAsSubstitutableExport(requirement, capabilities);
+		}
+	}
+	
+	private void processNewlyResolvedResource(Resource resource, Requirement requirement, List<Capability> capabilities) {
 		try {
 			// Only check the system repository for osgi.ee and osgi.native
 			if (ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE.equals(requirement.getNamespace())
 					|| NativeNamespace.NATIVE_NAMESPACE.equals(requirement.getNamespace())) {
-				addDependenciesFromSystemRepository(requirement, result);
+				addDependenciesFromSystemRepository(requirement, capabilities);
 			} else {
-				addDependenciesFromContentRepository(requirement, result);
-				addDependenciesFromPreferredProviderRepository(requirement, result);
-				addDependenciesFromSystemRepository(requirement, result);
-				addDependenciesFromLocalRepository(requirement, result);
-				if (result.isEmpty()) {
-					addDependenciesFromRepositoryServiceRepositories(requirement, result);
+				addDependenciesFromContentRepository(requirement, capabilities);
+				addDependenciesFromPreferredProviderRepository(requirement, capabilities);
+				addDependenciesFromSystemRepository(requirement, capabilities);
+				addDependenciesFromLocalRepository(requirement, capabilities);
+				if (capabilities.isEmpty()) {
+					addDependenciesFromRepositoryServiceRepositories(requirement, capabilities);
 				}
 			}
-			if (result.isEmpty()) {
+			if (capabilities.isEmpty()) {
 				// Is the requirement optional?
 				String resolution = requirement.getDirectives().get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
 				if (Namespace.RESOLUTION_OPTIONAL.equals(resolution)) {
 					// Yes, it's optional. Add a missing capability to ensure
 					// it gets added to the sharing policy per the specification.
-					result.add(new MissingCapability(requirement));
+					capabilities.add(new MissingCapability(requirement));
 				}
 			}
 		}
 		catch (Throwable t) {
-			if (t instanceof SubsystemException)
-				throw (SubsystemException)t;
-			if (t instanceof SecurityException)
-				throw (SecurityException)t;
-			throw new SubsystemException(t);
+			Utils.handleTrowable(t);
 		}
-		result.trimToSize();
-		return result;
+	}
+
+	@Override
+	public List<Capability> findProviders(Requirement requirement) {
+		ArrayList<Capability> capabilities = new ArrayList<Capability>();
+		Resource resource = requirement.getResource();
+		if (isResolved(resource)
+				&& Utils.isEffectiveResolve(requirement)) {
+			processAlreadyResolvedResource(resource, requirement, capabilities);
+		}
+		else {
+			installDependenciesOfRequirerIfNecessary(requirement);
+			processNewlyResolvedResource(resource, requirement, capabilities);
+		}
+		capabilities.trimToSize();
+		return capabilities;
 	}
 
 	@Override
@@ -163,7 +269,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 
 	@Override
 	public Map<Resource, Wiring> getWirings() {
-		return wirings;
+		return Collections.emptyMap();
 	}
 
 	private boolean addDependencies(Repository repository, Requirement requirement, List<Capability> capabilities, boolean validate) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {

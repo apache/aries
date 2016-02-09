@@ -294,15 +294,6 @@ public class SubsystemResource implements Resource {
 			sharedContent.add(resource);
 	}
 
-	private void addDependency(Resource resource) {
-		if (resource == null)
-			return;
-		if (isInstallable(resource))
-			installableDependencies.add(resource);
-		else
-			sharedDependencies.add(resource);
-	}
-
 	private void addMissingResource(DeployedContentHeader.Clause resource) {
 		missingResources.add(resource);
 	}
@@ -383,9 +374,17 @@ public class SubsystemResource implements Resource {
 	        }
 	    }
 	}
+	
+	private void addDependency(Resource resource) {
+		if (resource == null)
+			return;
+		if (isInstallable(resource))
+			installableDependencies.add(resource);
+		else
+			sharedDependencies.add(resource);
+	}
 
 	private void computeDependencies(SubsystemManifest manifest, Coordination coordination)  {
-		SubsystemContentHeader contentHeader = manifest.getSubsystemContentHeader();
 		try {
 			// The following line is necessary in order to ensure that the
 			// export sharing policies of composites are in place for capability
@@ -393,36 +392,29 @@ public class SubsystemResource implements Resource {
 			StartAction.setExportPolicyOfAllInstallingSubsystemsWithProvisionDependenciesResolve(coordination);
 			Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
 			setImportIsolationPolicy(resolution);
-			for (Map.Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
-				Resource key = entry.getKey();
-				String type = ResourceHelper.getTypeAttribute(key);
-				// Do not include synthetic resources in the dependencies.
-				if (!Constants.ResourceTypeSynthesized.equals(type)
-						&& !contentHeader.contains(key)) {
-					addDependency(key);
-				}
-				for (Wire wire : entry.getValue()) {
-					Resource provider = wire.getProvider();
-					type = ResourceHelper.getTypeAttribute(provider);
-					// Do not include synthetic resources in the dependencies.
-					if (!Constants.ResourceTypeSynthesized.equals(type)
-							&& !contentHeader.contains(provider)) {
-						addDependency(provider);
-					}
-				}
-			}
-		}
-		catch (ResolutionException e) {
-			throw new SubsystemException(e);
+			addDependencies(resolution);
 		}
 		catch (Exception e) {
-			if (e instanceof SubsystemException) {
-				throw (SubsystemException)e;
-			}
-			if (e instanceof SecurityException) {
-				throw (SecurityException)e;
-			}
-			throw new SubsystemException(e);
+			Utils.handleTrowable(e);
+		}
+	}
+	
+	private void addDependencies(Map<Resource, List<Wire>> resolution) {
+		for (Map.Entry<Resource, List<Wire>> entry : resolution.entrySet()) {
+			addDependencies(entry, resolution);
+		}
+	}
+	
+	private void addDependencies(Map.Entry<Resource, List<Wire>> entry, Map<Resource, List<Wire>> resolution) {
+		addDependencies(entry.getKey(), entry, resolution);
+	}
+	
+	private void addDependencies(Resource resource, Map.Entry<Resource, List<Wire>> entry, Map<Resource, List<Wire>> resolution) {
+		String type = ResourceHelper.getTypeAttribute(resource);
+		SubsystemContentHeader contentHeader = getSubsystemManifest().getSubsystemContentHeader();
+		if (!Constants.ResourceTypeSynthesized.equals(type) // Do not include synthetic resources as dependencies.
+				&& !contentHeader.contains(resource)) { // Do not include content as dependencies.
+			addDependency(resource);
 		}
 	}
 

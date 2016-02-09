@@ -14,6 +14,7 @@
 package org.apache.aries.subsystem.core.internal;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.archive.ProvisionResourceHeader;
@@ -21,11 +22,14 @@ import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.resource.Namespace;
+import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemConstants;
+import org.osgi.service.subsystem.SubsystemException;
 import org.osgi.service.subsystem.Subsystem.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +102,16 @@ public class Utils {
 		return -1;
 	}
 	
+	public static void handleTrowable(Throwable t) {
+		if (t instanceof SubsystemException) {
+			throw (SubsystemException)t;
+		}
+		if (t instanceof SecurityException) {
+			throw (SecurityException)t;
+		}
+		throw new SubsystemException(t);
+	}
+	
 	public static void installResource(Resource resource, BasicSubsystem subsystem) {
 		Coordination coordination = Utils.createCoordination(subsystem);
 		try {
@@ -124,6 +138,23 @@ public class Utils {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		return IdentityNamespace.TYPE_BUNDLE.equals(type) ||
 				IdentityNamespace.TYPE_FRAGMENT.equals(type);
+	}
+	
+	public static boolean isFragment(Resource resource) {
+		String type = ResourceHelper.getTypeAttribute(resource);
+		return IdentityNamespace.TYPE_FRAGMENT.equals(type);
+	}
+	
+	public static boolean isEffectiveResolve(Requirement requirement) {
+		Map<String, String> directives = requirement.getDirectives();
+		String value = directives.get(Namespace.REQUIREMENT_EFFECTIVE_DIRECTIVE);
+		return value == null || Namespace.EFFECTIVE_RESOLVE.equals(value);
+	}
+	
+	public static boolean isMandatory(Requirement requirement) {
+		Map<String, String> directives = requirement.getDirectives();
+		String value = directives.get(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE);
+		return value == null || Namespace.RESOLUTION_MANDATORY.equals(value);
 	}
 	
 	/*

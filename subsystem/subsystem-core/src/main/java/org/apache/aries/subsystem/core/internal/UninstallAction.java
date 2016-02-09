@@ -29,8 +29,9 @@ public class UninstallAction extends AbstractAction {
 			return null;
 		}
 		try {
-			// Acquire the global write lock to prevent all other operations until
-			// the installation is complete. There is no need to hold any other locks.
+			// Acquire the global write lock to prevent all other operations 
+			// until the uninstall is complete. There is no need to hold any 
+			// other locks.
 			LockingStrategy.writeLock();
 			try {
 				checkRoot();
