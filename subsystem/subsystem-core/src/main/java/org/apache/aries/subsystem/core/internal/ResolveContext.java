@@ -40,7 +40,6 @@ import org.osgi.framework.namespace.NativeNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
@@ -124,10 +123,6 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	}
 	
 	private void processWires(Collection<Wire> wires, Requirement requirement, List<Capability> capabilities) {
-		if (wires.isEmpty()) {
-			handleNoWires(requirement, capabilities);
-			return;
-		}
 		for (Wire wire : wires) {
 			processWire(wire, requirement, capabilities);
 		}
@@ -156,19 +151,6 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		Wiring wiring = wirings.get(bundle);
 		List<Wire> wires = wiring.getRequiredResourceWires(namespace);
 		processWires(wires, requirement, capabilities);
-	}
-	
-	private void handleNoWires(Requirement requirement, List<Capability> capabilities) {
-		String namespace = requirement.getNamespace();
-		if (!ServiceNamespace.SERVICE_NAMESPACE.equals(namespace)) {
-			return;
-		}
-		try {
-			addDependenciesFromSystemRepository(requirement, capabilities);
-		}
-		catch (Exception e) {
-			Utils.handleTrowable(e);
-		}
 	}
 	
 	private void processAsSubstitutableExport(Requirement requirement, List<Capability> capabilities) {
