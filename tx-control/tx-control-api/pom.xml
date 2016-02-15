@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.apache.aries</groupId>
+		<artifactId>parent</artifactId>
+		<version>2.0.1</version>
+		<relativePath>../../parent/pom.xml</relativePath>
+	</parent>
+	<groupId>org.apache.aries.tx-control</groupId>
+	<artifactId>tx-control-api</artifactId>
+	<packaging>bundle</packaging>
+	<name>OSGi Transaction Control API</name>
+	<version>0.0.1-SNAPSHOT</version>
+
+
+	<description>
+        This bundle contains the OSGi Transaction Control Service API.
+    </description>
+
+	<scm>
+		<connection>
+            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-api
+        </connection>
+		<developerConnection>
+            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-api
+        </developerConnection>
+		<url>
+            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-api
+        </url>
+	</scm>
+
+	<properties>
+		<!-- Export package versions are maintained in packageinfo files -->
+		<aries.osgi.export.pkg>
+			org.osgi.service.transaction.control,
+			org.osgi.service.transaction.control.jdbc,
+			org.osgi.service.transaction.control.jpa
+		</aries.osgi.export.pkg>
+		<aries.osgi.private.pkg />
+		<aries.osgi.import.pkg>
+			org.osgi.service.transaction.control,
+			org.osgi.service.transaction.control.jdbc,
+			org.osgi.service.transaction.control.jpa,
+			*
+		</aries.osgi.import.pkg>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.service.jdbc</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.service.jpa</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jpa_2.0_spec</artifactId>
+			<version>1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>osgi.annotation</artifactId>
+			<version>6.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.aries.versioning</groupId>
+				<artifactId>org.apache.aries.versioning.plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-verify</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>version-check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
