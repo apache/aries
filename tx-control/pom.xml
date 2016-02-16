@@ -35,5 +35,6 @@
     </scm>
     <modules>
         <module>tx-control-api</module>
+        <module>tx-control-service-local</module>
     </modules>
 </project>
