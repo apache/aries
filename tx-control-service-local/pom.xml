@@ -40,9 +40,10 @@
             org.apache.aries.tx.control.service.local.*
         </aries.osgi.private.pkg>
 		<aries.osgi.import.pkg>
-			org.osgi.service.transaction.control;version="[0.0.1,0.0.1]",
+			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
 			*
 		</aries.osgi.import.pkg>
+		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
 	</properties>
 
 	<dependencies>

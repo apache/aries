@@ -40,17 +40,19 @@
 		<aries.osgi.private.pkg>
 			org.apache.aries.tx.control.jdbc.*,
 			com.zaxxer.hikari,
+			com.zaxxer.hikari.metrics,
 			com.zaxxer.hikari.pool,
 			com.zaxxer.hikari.util
 		</aries.osgi.private.pkg>
 		<aries.osgi.import.pkg>
 			!com.codahale.*,
-			!com.zaxxer.hikari.metrics.*,
+			!com.zaxxer.hikari.metrics.dropwizard,
 			!javassist.*,
-			!javax.naming.*,
-			org.osgi.service.transaction.control.jdbc;version="[0.0.1,0.0.1]",
+			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
+			org.osgi.service.transaction.control.jdbc;version="[0.0.1,0.0.2)",
 			*
 		</aries.osgi.import.pkg>
+		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
 	</properties>
 
 	<dependencies>

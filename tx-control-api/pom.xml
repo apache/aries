@@ -44,6 +44,7 @@
 			org.osgi.service.transaction.control.jpa,
 			*
 		</aries.osgi.import.pkg>
+		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
 	</properties>
 
 	<dependencies>
@@ -75,6 +76,13 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.aries.versioning</groupId>
 				<artifactId>org.apache.aries.versioning.plugin</artifactId>

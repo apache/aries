@@ -1,5 +1,6 @@
 package org.apache.aries.tx.control.jdbc.local.impl;
 
+import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_URL;
@@ -32,7 +33,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 
 		DataSource unpooled;
 		try {
-			if (toBoolean(resourceProviderProperties.get(USE_DRIVER), false)) {
+			if (toBoolean(resourceProviderProperties, USE_DRIVER, false)) {
 				unpooled = new DriverDataSource(dsf.createDriver(null), jdbcProperties.getProperty(JDBC_URL),
 						jdbcProperties);
 			} else {
@@ -81,9 +82,9 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	private void checkEnlistment(Map<String, Object> resourceProviderProperties) {
-		if (toBoolean(resourceProviderProperties.get(XA_ENLISTMENT_ENABLED), false)) {
+		if (toBoolean(resourceProviderProperties, XA_ENLISTMENT_ENABLED, false)) {
 			throw new TransactionException("This Resource Provider does not support XA transactions");
-		} else if (!toBoolean(resourceProviderProperties.get(LOCAL_ENLISTMENT_ENABLED), true)) {
+		} else if (!toBoolean(resourceProviderProperties, LOCAL_ENLISTMENT_ENABLED, true)) {
 			throw new TransactionException(
 					"This Resource Provider always enlists in local transactions as it does not support XA");
 		}
@@ -92,18 +93,18 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	private DataSource poolIfNecessary(Map<String, Object> resourceProviderProperties, DataSource unpooled) {
 		DataSource toUse;
 
-		if (toBoolean(resourceProviderProperties.get(CONNECTION_POOLING_ENABLED), true)) {
+		if (toBoolean(resourceProviderProperties, CONNECTION_POOLING_ENABLED, true)) {
 			HikariConfig hcfg = new HikariConfig();
 			hcfg.setDataSource(unpooled);
 
 			// Sizes
-			hcfg.setMaximumPoolSize(toInt(resourceProviderProperties.get(MAX_CONNECTIONS), 10));
-			hcfg.setMinimumIdle(toInt(resourceProviderProperties.get(MIN_CONNECTIONS), 10));
+			hcfg.setMaximumPoolSize(toInt(resourceProviderProperties, MAX_CONNECTIONS, 10));
+			hcfg.setMinimumIdle(toInt(resourceProviderProperties, MIN_CONNECTIONS, 10));
 
 			// Timeouts
-			hcfg.setConnectionTimeout(toLong(resourceProviderProperties.get(CONNECTION_TIMEOUT), SECONDS.toMillis(30)));
-			hcfg.setIdleTimeout(toLong(resourceProviderProperties.get(IDLE_TIMEOUT), TimeUnit.MINUTES.toMillis(3)));
-			hcfg.setMaxLifetime(toLong(resourceProviderProperties.get(CONNECTION_LIFETIME), HOURS.toMillis(3)));
+			hcfg.setConnectionTimeout(toLong(resourceProviderProperties, CONNECTION_TIMEOUT, SECONDS.toMillis(30)));
+			hcfg.setIdleTimeout(toLong(resourceProviderProperties, IDLE_TIMEOUT, TimeUnit.MINUTES.toMillis(3)));
+			hcfg.setMaxLifetime(toLong(resourceProviderProperties, CONNECTION_LIFETIME, HOURS.toMillis(3)));
 
 			toUse = new HikariDataSource(hcfg);
 
@@ -113,37 +114,48 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 		return toUse;
 	}
 
-	private boolean toBoolean(Object o, boolean defaultValue) {
+	private boolean toBoolean(Map<String, Object> props, String key, boolean defaultValue) {
+		Object o =  ofNullable(props)
+			.map(m -> m.get(key))
+			.orElse(defaultValue);
+		
 		if (o instanceof Boolean) {
 			return ((Boolean) o).booleanValue();
-		} else if (o instanceof String) {
+		} else if(o instanceof String) {
 			return Boolean.parseBoolean((String) o);
-		} else if (o == null) {
-			return defaultValue;
+		} else {
+			throw new IllegalArgumentException("The property " + key + " cannot be converted to a boolean");
 		}
-		throw new IllegalArgumentException("The value " + o + " cannot be converted to a boolean");
 	}
 
-	private int toInt(Object o, int defaultValue) {
+	private int toInt(Map<String, Object> props, String key, int defaultValue) {
+		
+		Object o =  ofNullable(props)
+				.map(m -> m.get(key))
+				.orElse(defaultValue);
+		
 		if (o instanceof Number) {
 			return ((Number) o).intValue();
-		} else if (o instanceof String) {
+		} else if(o instanceof String) {
 			return Integer.parseInt((String) o);
-		} else if (o == null) {
-			return defaultValue;
+		} else {
+			throw new IllegalArgumentException("The property " + key + " cannot be converted to an int");
 		}
-		throw new IllegalArgumentException("The value " + o + " cannot be converted to an int");
 	}
 
-	private long toLong(Object o, long defaultValue) {
+	private long toLong(Map<String, Object> props, String key, long defaultValue) {
+		
+		Object o =  ofNullable(props)
+				.map(m -> m.get(key))
+				.orElse(defaultValue);
+		
 		if (o instanceof Number) {
 			return ((Number) o).longValue();
-		} else if (o instanceof String) {
+		} else if(o instanceof String) {
 			return Long.parseLong((String) o);
-		} else if (o == null) {
-			return defaultValue;
+		} else {
+			throw new IllegalArgumentException("The property " + key + " cannot be converted to a long");
 		}
-		throw new IllegalArgumentException("The value " + o + " cannot be converted to a long");
 	}
 
 }
