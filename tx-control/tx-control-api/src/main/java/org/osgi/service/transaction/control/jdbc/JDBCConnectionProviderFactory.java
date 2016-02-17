@@ -119,11 +119,14 @@ public interface JDBCConnectionProviderFactory {
 	 * {@link Driver}.
 	 * 
 	 * @param driver
+	 * @param jdbcProperties The properties to pass to the {@link Driver} in
+	 *            order to create a {@link Connection}
 	 * @param resourceProviderProperties Configuration properties to pass to the
 	 *            JDBC Resource Provider runtime
 	 * @return A {@link JDBCConnectionProvider} that can be used in transactions
 	 */
 	JDBCConnectionProvider getProviderFor(Driver driver,
+			Properties jdbcProperties,
 			Map<String,Object> resourceProviderProperties);
 
 	/**
