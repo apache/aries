@@ -58,6 +58,7 @@
         <module>esa-ant-task</module>
         <module>esa-maven-plugin</module>
         <module>async</module>
+        <module>tx-control</module>
     </modules>
 
     <build>
