@@ -19,13 +19,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-api
+            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-service-local
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-api
+            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-service-local
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-api
+            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-service-local
         </url>
 	</scm>
 
