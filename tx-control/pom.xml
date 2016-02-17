@@ -36,5 +36,6 @@
     <modules>
         <module>tx-control-api</module>
         <module>tx-control-service-local</module>
+        <module>tx-control-provider-jdbc-local</module>
     </modules>
 </project>
