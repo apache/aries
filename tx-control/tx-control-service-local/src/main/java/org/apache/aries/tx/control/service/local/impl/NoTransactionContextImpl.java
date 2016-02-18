@@ -2,8 +2,6 @@ package org.apache.aries.tx.control.service.local.impl;
 
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 import javax.transaction.xa.XAResource;
@@ -17,9 +15,6 @@ import org.osgi.service.transaction.control.TransactionStatus;
 public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 		implements TransactionContext {
 
-	final List<Runnable>					preCompletion		= new ArrayList<>();
-	final List<Consumer<TransactionStatus>>	postCompletion		= new ArrayList<>();
-
 	volatile boolean						finished			= false;
 
 	public NoTransactionContextImpl(Coordination coordination) {
@@ -29,21 +24,17 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 
 			@Override
 			public void failed(Coordination coordination) throws Exception {
-
-				beforeCompletion();
-
-				afterCompletion();
+				finished();
 			}
 
-			private void beforeCompletion() {
-				preCompletion.stream().forEach(r -> {
-					try {
-						r.run();
-					} catch (Exception e) {
-						unexpectedException.compareAndSet(null, e);
-						// TODO log this
-					}
-				});
+			@Override
+			public void ended(Coordination coordination) throws Exception {
+				finished();
+			}
+
+			private void finished() {
+				beforeCompletion(() -> {});
+				afterCompletion();
 			}
 
 			private void afterCompletion() {
@@ -51,17 +42,10 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 					try {
 						c.accept(NO_TRANSACTION);
 					} catch (Exception e) {
-						unexpectedException.compareAndSet(null, e);
+						firstUnexpectedException.compareAndSet(null, e);
 						// TODO log this
 					}
 				});
-			}
-
-			@Override
-			public void ended(Coordination coordination) throws Exception {
-				beforeCompletion();
-
-				afterCompletion();
 			}
 		});
 	}
