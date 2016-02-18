@@ -23,9 +23,6 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl
 
 	final List<LocalResource>				resources			= new ArrayList<>();
 
-	final List<Runnable>					preCompletion		= new ArrayList<>();
-	final List<Consumer<TransactionStatus>>	postCompletion		= new ArrayList<>();
-
 	private volatile TransactionStatus		tranStatus;
 
 	public TransactionContextImpl(Coordination coordination) {
@@ -62,15 +59,7 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl
 			}
 
 			private void beforeCompletion() {
-				preCompletion.stream().forEach(r -> {
-					try {
-						r.run();
-					} catch (Exception e) {
-						unexpectedException.compareAndSet(null, e);
-						setRollbackOnly();
-						// TODO log this
-					}
-				});
+				TransactionContextImpl.this.beforeCompletion(() -> setRollbackOnly());
 			}
 
 			private void afterCompletion() {
@@ -78,7 +67,7 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl
 					try {
 						c.accept(tranStatus);
 					} catch (Exception e) {
-						unexpectedException.compareAndSet(null, e);
+						firstUnexpectedException.compareAndSet(null, e);
 						// TODO log this
 					}
 				});
@@ -107,7 +96,7 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl
 								committed.add(lr);
 							}
 						} catch (Exception e) {
-							unexpectedException.compareAndSet(null, e);
+							firstUnexpectedException.compareAndSet(null, e);
 							if (committed.isEmpty()) {
 								tranStatus = ROLLING_BACK;
 							}
