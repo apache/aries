@@ -6,6 +6,7 @@ import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACT
 import java.util.concurrent.Callable;
 
 import org.osgi.service.coordinator.Coordination;
+import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.transaction.control.TransactionBuilder;
 import org.osgi.service.transaction.control.TransactionContext;
@@ -145,9 +146,18 @@ public class TransactionControlImpl implements TransactionControl {
 				}
 				return result;
 			} catch (Throwable t) {
+				//TODO handle noRollbackFor
+				currentCoord.fail(t);
 				if (endCoordination) {
-					//TODO handle noRollbackFor
-					currentCoord.fail(t);
+					try {
+						currentCoord.end();
+					} catch (CoordinationException ce) {
+						if(ce.getType() == CoordinationException.FAILED) {
+							throw new TransactionRolledBackException("The transaction was rolled back due to a failure", ce.getCause());
+						} else {
+							throw ce;
+						}
+					}
 				}
 				TransactionControlImpl.<RuntimeException> throwException(t);
 			}
