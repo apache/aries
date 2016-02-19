@@ -184,6 +184,12 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 			for (Resource constituent : getConstituents()) {
 				if (header.contains(constituent)) {
 					for (Capability capability : constituent.getCapabilities(namespace)) {
+						if (namespace == null && IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace())) {
+							// Don't want to include the osgi.identity capabilities of
+							// content. Need a second check here in case the namespace
+							// is null.
+							continue;
+						}
 						result.add(new BasicCapability(capability, this));
 					}
 				}
