@@ -88,9 +88,14 @@ public class Utils {
 
 	public static int getActiveUseCount(Resource resource) {
 		int result = 0;
-		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource))
-			if (Subsystem.State.ACTIVE.equals(subsystem.getState()))
+		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource)) {
+			if (	// ACTIVE subsystem referencing the resource.
+					Subsystem.State.ACTIVE.equals(subsystem.getState())
+					// Ensure unmanaged bundle constituents of the root subsystem are not stopped or uninstalled.
+					|| (subsystem.isRoot() && isBundle(resource))) { 
 				result++;
+			}
+		}
 		return result;
 	}
 	
