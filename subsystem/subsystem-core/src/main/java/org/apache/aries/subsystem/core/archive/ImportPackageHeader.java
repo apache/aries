@@ -73,7 +73,7 @@ public class ImportPackageHeader extends AbstractClauseBasedHeader<ImportPackage
 		}
 		
 		public Clause(String path, Map<String, Parameter> parameters, Collection<Parameter> defaultParameters) {
-			super(path, parameters, defaultParameters);
+			super(path, parameters, defaultParameters == null ? Clause.defaultParameters : defaultParameters);
 		}
 		
 		public Clause(String clause) {
@@ -136,7 +136,20 @@ public class ImportPackageHeader extends AbstractClauseBasedHeader<ImportPackage
 		Collection<Clause> clauses = getClauses();
 		List<ImportPackageRequirement> result = new ArrayList<ImportPackageRequirement>(clauses.size());
 		for (Clause clause : clauses) {
-			result.add(clause.toRequirement(resource));
+			Collection<String> packageNames = clause.getPackageNames();
+			if (packageNames.size() > 1) {
+				for (String packageName : packageNames) {
+					Collection<Parameter> parameters = clause.getParameters();
+					Map<String, Parameter> name2parameter = new HashMap<String, Parameter>(parameters.size());
+					for (Parameter parameter : parameters) {
+						name2parameter.put(parameter.getName(), parameter);
+					}
+					result.add(new Clause(packageName, name2parameter, null).toRequirement(resource));
+				}
+			}
+			else {
+				result.add(clause.toRequirement(resource));
+			}
 		}
 		return result;
 	}
