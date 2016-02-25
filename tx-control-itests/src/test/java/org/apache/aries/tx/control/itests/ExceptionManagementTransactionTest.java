@@ -39,7 +39,6 @@ import javax.inject.Inject;
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -49,6 +48,7 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.service.jdbc.DataSourceFactory;
+import org.osgi.service.transaction.control.ScopedWorkException;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionRolledBackException;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
@@ -107,8 +107,8 @@ public class ExceptionManagementTransactionTest extends AbstractIntegrationTest 
 						throw toThrow;
 					});
 			fail("An exception should occur!");
-		} catch (TransactionRolledBackException tre) {
-			assertSame(toThrow, tre.getCause());
+		} catch (ScopedWorkException swe) {
+			assertSame(toThrow, swe.getCause());
 		}
 
 		assertRollback();
@@ -127,8 +127,8 @@ public class ExceptionManagementTransactionTest extends AbstractIntegrationTest 
 			fail("An exception should occur!");
 			// We have to catch Exception as the compiler complains
 			// otherwise
-		} catch (TransactionRolledBackException tre) {
-			assertSame(toThrow, tre.getCause());
+		} catch (ScopedWorkException swe) {
+			assertSame(toThrow, swe.getCause());
 		}
 
 		assertRollback();
@@ -137,7 +137,6 @@ public class ExceptionManagementTransactionTest extends AbstractIntegrationTest 
 	//This test currently fails - the local implementation should probably
 	//use the coordinator a little differently
 	@Test
-	@Ignore
 	public void testPreCompletionException() {
 		RuntimeException toThrow = new RuntimeException("Bang!");
 		
