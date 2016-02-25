@@ -29,7 +29,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.LocalResource;
-import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionException;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,7 +43,7 @@ public class TransactionContextTest {
 	
 	Map<Class<?>, Object> variables;
 	
-	TransactionContext ctx;
+	AbstractTransactionContextImpl ctx;
 	
 	@Before
 	public void setUp() {
@@ -107,7 +106,7 @@ public class TransactionContextTest {
 	}
 	
 	@Test
-	public void testPreCompletionEnd() throws Exception {
+	public void testPreCompletion() throws Exception {
 		
 		AtomicInteger value = new AtomicInteger(0);
 		
@@ -118,10 +117,7 @@ public class TransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		captor.getValue().ended(coordination);
+		ctx.finish();
 		
 		assertEquals(5, value.get());
 	}
@@ -138,16 +134,19 @@ public class TransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
+		
 		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
 		Mockito.verify(coordination).addParticipant(captor.capture());
 		
 		captor.getValue().failed(coordination);
 		
+		ctx.finish();
+
 		assertEquals(5, value.get());
 	}
 
 	@Test
-	public void testPostCompletionEnd() throws Exception {
+	public void testPostCompletion() throws Exception {
 		
 		AtomicInteger value = new AtomicInteger(0);
 		
@@ -158,10 +157,7 @@ public class TransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		captor.getValue().ended(coordination);
+		ctx.finish();
 		
 		assertEquals(5, value.get());
 	}
@@ -183,6 +179,8 @@ public class TransactionContextTest {
 		
 		captor.getValue().failed(coordination);
 		
+		ctx.finish();
+		
 		assertEquals(5, value.get());
 	}
 
@@ -200,10 +198,7 @@ public class TransactionContextTest {
 			value.compareAndSet(3, 5);
 		});
 		
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		captor.getValue().ended(coordination);
+		ctx.finish();
 		
 		assertEquals(5, value.get());
 	}
@@ -222,10 +217,7 @@ public class TransactionContextTest {
 			value.compareAndSet(3, 5);
 		});
 		
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		captor.getValue().ended(coordination);
+		ctx.finish();
 		
 		assertEquals(5, value.get());
 	}
@@ -241,9 +233,8 @@ public class TransactionContextTest {
 	@Test(expected=IllegalStateException.class)
 	public void testPreCompletionAfterEnd() throws Exception {
 		
-		getParticipant().ended(coordination);
+		ctx.finish();
 		
-		Mockito.when(coordination.isTerminated()).thenReturn(true);
 		ctx.preCompletion(() -> {});
 	}
 
@@ -252,16 +243,16 @@ public class TransactionContextTest {
 		
 		getParticipant().failed(coordination);
 		
-		Mockito.when(coordination.isTerminated()).thenReturn(true);
+		ctx.finish();
+		
 		ctx.preCompletion(() -> {});
 	}
 
 	@Test(expected=IllegalStateException.class)
 	public void testPostCompletionAfterEnd() throws Exception {
 		
-		getParticipant().ended(coordination);
+		ctx.finish();
 		
-		Mockito.when(coordination.isTerminated()).thenReturn(true);
 		ctx.postCompletion(x -> {});
 	}
 
@@ -270,12 +261,27 @@ public class TransactionContextTest {
 		
 		getParticipant().failed(coordination);
 		
-		Mockito.when(coordination.isTerminated()).thenReturn(true);
+		ctx.finish();
+		
 		ctx.postCompletion(x -> {});
 	}
 
 	@Test
-	public void testLocalResourceEnd() throws Exception {
+	public void testLocalResource() throws Exception {
+		ctx.registerLocalResource(localResource);
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(COMMITTING, ctx.getTransactionStatus());
+			return null;
+		}).when(localResource).commit();
+		
+		ctx.finish();
+		
+		Mockito.verify(localResource).commit();
+	}
+	
+	@Test
+	public void testLocalResourceEarlyEnd() throws Exception {
 		ctx.registerLocalResource(localResource);
 		
 		Mockito.doAnswer(i -> {
@@ -285,11 +291,13 @@ public class TransactionContextTest {
 		
 		getParticipant().ended(coordination);
 		
-		Mockito.verify(localResource).commit();
+		ctx.finish();
+		
+		Mockito.verify(localResource).rollback();
 	}
 
 	@Test
-	public void testLocalResourceEndRollbackOnly() throws Exception {
+	public void testLocalResourceRollbackOnly() throws Exception {
 		ctx.registerLocalResource(localResource);
 		ctx.setRollbackOnly();
 		
@@ -298,7 +306,7 @@ public class TransactionContextTest {
 			return null;
 		}).when(localResource).rollback();
 		
-		getParticipant().ended(coordination);
+		ctx.finish();
 		
 		Mockito.verify(localResource).rollback();
 	}
@@ -314,11 +322,13 @@ public class TransactionContextTest {
 		
 		getParticipant().failed(coordination);
 		
+		ctx.finish();
+		
 		Mockito.verify(localResource).rollback();
 	}
 	
 	@Test
-	public void testLocalResourceEndPreCommitException() throws Exception {
+	public void testLocalResourcePreCommitException() throws Exception {
 		ctx.registerLocalResource(localResource);
 		
 		Mockito.doAnswer(i -> {
@@ -328,13 +338,13 @@ public class TransactionContextTest {
 		
 		ctx.preCompletion(() -> { throw new IllegalArgumentException(); });
 		
-		getParticipant().ended(coordination);
+		ctx.finish();
 		
 		Mockito.verify(localResource).rollback();
 	}
 
 	@Test
-	public void testLocalResourceEndPostCommitException() throws Exception {
+	public void testLocalResourcePostCommitException() throws Exception {
 		ctx.registerLocalResource(localResource);
 		
 		Mockito.doAnswer(i -> {
@@ -347,7 +357,7 @@ public class TransactionContextTest {
 				throw new IllegalArgumentException(); 
 			});
 		
-		getParticipant().ended(coordination);
+		ctx.finish();
 		
 		Mockito.verify(localResource).commit();
 	}
@@ -370,7 +380,7 @@ public class TransactionContextTest {
 			return null;
 		}).when(localResource2).rollback();
 		
-		getParticipant().ended(coordination);
+		ctx.finish();
 		
 		Mockito.verify(localResource).commit();
 		Mockito.verify(localResource2).rollback();

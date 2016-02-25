@@ -1,5 +1,6 @@
 package org.apache.aries.tx.control.service.local.impl;
 
+import static org.osgi.service.transaction.control.TransactionStatus.ACTIVE;
 import static org.osgi.service.transaction.control.TransactionStatus.COMMITTED;
 import static org.osgi.service.transaction.control.TransactionStatus.COMMITTING;
 import static org.osgi.service.transaction.control.TransactionStatus.MARKED_ROLLBACK;
@@ -8,107 +9,24 @@ import static org.osgi.service.transaction.control.TransactionStatus.ROLLING_BAC
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import javax.transaction.xa.XAResource;
 
 import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionStatus;
 
-public class TransactionContextImpl extends AbstractTransactionContextImpl
-		implements TransactionContext {
+public class TransactionContextImpl extends AbstractTransactionContextImpl implements TransactionContext {
 
-	final List<LocalResource>				resources			= new ArrayList<>();
+	final List<LocalResource> resources = new ArrayList<>();
 
-	private volatile TransactionStatus		tranStatus;
+	private AtomicReference<TransactionStatus> tranStatus = new AtomicReference<>(ACTIVE);
 
 	public TransactionContextImpl(Coordination coordination) {
 		super(coordination);
-
-		tranStatus = TransactionStatus.ACTIVE;
-
-		coordination.addParticipant(new Participant() {
-
-			@Override
-			public void failed(Coordination coordination) throws Exception {
-				setRollbackOnly();
-
-				beforeCompletion();
-
-				vanillaRollback();
-
-				afterCompletion();
-			}
-
-			private void vanillaRollback() {
-
-				tranStatus = ROLLING_BACK;
-
-				resources.stream().forEach(lr -> {
-					try {
-						lr.rollback();
-					} catch (Exception e) {
-						// TODO log this
-					}
-				});
-
-				tranStatus = ROLLED_BACK;
-			}
-
-			private void beforeCompletion() {
-				TransactionContextImpl.this.beforeCompletion(() -> setRollbackOnly());
-			}
-
-			private void afterCompletion() {
-				postCompletion.stream().forEach(c -> {
-					try {
-						c.accept(tranStatus);
-					} catch (Exception e) {
-						firstUnexpectedException.compareAndSet(null, e);
-						// TODO log this
-					}
-				});
-			}
-
-			@Override
-			public void ended(Coordination coordination) throws Exception {
-				beforeCompletion();
-
-				if (getRollbackOnly()) {
-					vanillaRollback();
-				} else {
-					tranStatus = COMMITTING;
-
-					List<LocalResource> committed = new ArrayList<>(
-							resources.size());
-					List<LocalResource> rolledback = new ArrayList<>(0);
-
-					resources.stream().forEach(lr -> {
-						try {
-							if (getRollbackOnly()) {
-								lr.rollback();
-								rolledback.add(lr);
-							} else {
-								lr.commit();
-								committed.add(lr);
-							}
-						} catch (Exception e) {
-							firstUnexpectedException.compareAndSet(null, e);
-							if (committed.isEmpty()) {
-								tranStatus = ROLLING_BACK;
-							}
-							rolledback.add(lr);
-						}
-					});
-					tranStatus = tranStatus == ROLLING_BACK ? ROLLED_BACK
-							: COMMITTED;
-				}
-				afterCompletion();
-			}
-		});
 	}
 
 	@Override
@@ -118,63 +36,74 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl
 
 	@Override
 	public boolean getRollbackOnly() throws IllegalStateException {
-		switch (tranStatus) {
-			case MARKED_ROLLBACK :
-			case ROLLING_BACK :
-			case ROLLED_BACK :
+		switch (tranStatus.get()) {
+			case MARKED_ROLLBACK:
+			case ROLLING_BACK:
+			case ROLLED_BACK:
 				return true;
-			default :
+			default:
 				return false;
 		}
 	}
 
 	@Override
 	public void setRollbackOnly() throws IllegalStateException {
-		switch (tranStatus) {
-			case ACTIVE :
-			case MARKED_ROLLBACK :
-				tranStatus = MARKED_ROLLBACK;
+		TransactionStatus status = tranStatus.get();
+		switch (status) {
+			case ACTIVE:
+			case MARKED_ROLLBACK:
+				if(!tranStatus.compareAndSet(status, MARKED_ROLLBACK))
+					setRollbackOnly();
 				break;
-			case COMMITTING :
+			case COMMITTING:
 				// TODO something here? If it's the first resource then it might
 				// be ok to roll back?
-				throw new IllegalStateException(
-						"The transaction is already being committed");
-			case COMMITTED :
-				throw new IllegalStateException(
-						"The transaction is already committed");
-
-			case ROLLING_BACK :
-			case ROLLED_BACK :
+				throw new IllegalStateException("The transaction is already being committed");
+			case COMMITTED:
+				throw new IllegalStateException("The transaction is already committed");
+	
+			case ROLLING_BACK:
+			case ROLLED_BACK:
 				// A no op
 				break;
-			default :
-				throw new IllegalStateException(
-						"The transaction is in an unkown state");
+			default:
+				throw new IllegalStateException("The transaction is in an unkown state");
+		}
+	}
+	
+	@Override
+	protected void safeSetRollbackOnly() {
+		TransactionStatus status = tranStatus.get();
+		switch (status) {
+			case ACTIVE:
+			case MARKED_ROLLBACK:
+				if(!tranStatus.compareAndSet(status, MARKED_ROLLBACK))
+					safeSetRollbackOnly();
+				break;
+			default:
+				break;
 		}
 	}
 
 	@Override
 	public TransactionStatus getTransactionStatus() {
-		return tranStatus;
+		return tranStatus.get();
 	}
 
 	@Override
 	public void preCompletion(Runnable job) throws IllegalStateException {
-		if (tranStatus.compareTo(MARKED_ROLLBACK) > 0) {
-			throw new IllegalStateException(
-					"The current transaction is in state " + tranStatus);
+		if (tranStatus.get().compareTo(MARKED_ROLLBACK) > 0) {
+			throw new IllegalStateException("The current transaction is in state " + tranStatus);
 		}
 
 		preCompletion.add(job);
 	}
 
 	@Override
-	public void postCompletion(Consumer<TransactionStatus> job)
-			throws IllegalStateException {
-		if (tranStatus == COMMITTED || tranStatus == ROLLED_BACK) {
-			throw new IllegalStateException(
-					"The current transaction is in state " + tranStatus);
+	public void postCompletion(Consumer<TransactionStatus> job) throws IllegalStateException {
+		TransactionStatus status = tranStatus.get();
+		if (status == COMMITTED || status == ROLLED_BACK) {
+			throw new IllegalStateException("The current transaction is in state " + tranStatus);
 		}
 
 		postCompletion.add(job);
@@ -187,9 +116,8 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl
 
 	@Override
 	public void registerLocalResource(LocalResource resource) {
-		if (tranStatus.compareTo(MARKED_ROLLBACK) > 0) {
-			throw new IllegalStateException(
-					"The current transaction is in state " + tranStatus);
+		if (tranStatus.get().compareTo(MARKED_ROLLBACK) > 0) {
+			throw new IllegalStateException("The current transaction is in state " + tranStatus);
 		}
 		resources.add(resource);
 	}
@@ -202,5 +130,65 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl
 	@Override
 	public boolean supportsLocal() {
 		return true;
+	}
+
+	@Override
+	protected boolean isAlive() {
+		TransactionStatus status = tranStatus.get();
+		return status != COMMITTED && status != ROLLED_BACK;
+	}
+
+	@Override
+	public void finish() {
+		
+		beforeCompletion(() -> setRollbackOnly());
+
+		TransactionStatus status;
+
+		if (getRollbackOnly()) {
+			vanillaRollback();
+			status = ROLLED_BACK;
+		} else {
+			tranStatus.set(COMMITTING);
+
+			List<LocalResource> committed = new ArrayList<>(resources.size());
+			List<LocalResource> rolledback = new ArrayList<>(0);
+
+			resources.stream().forEach(lr -> {
+				try {
+					if (getRollbackOnly()) {
+						lr.rollback();
+						rolledback.add(lr);
+					} else {
+						lr.commit();
+						committed.add(lr);
+					}
+				} catch (Exception e) {
+					firstUnexpectedException.compareAndSet(null, e);
+					if (committed.isEmpty()) {
+						tranStatus.set(ROLLING_BACK);
+					}
+					rolledback.add(lr);
+				}
+			});
+			status = tranStatus.updateAndGet(ts -> ts == ROLLING_BACK ? ROLLED_BACK : COMMITTED);
+		}
+		afterCompletion(status);
+	}
+	
+	private void vanillaRollback() {
+		
+		tranStatus.set(ROLLING_BACK);
+	
+		resources.stream().forEach(lr -> {
+				try {
+					lr.rollback();
+				} catch (Exception e) {
+					// TODO log this
+					recordFailure(e);
+				}
+			});
+		
+		tranStatus.set(ROLLED_BACK);
 	}
 }

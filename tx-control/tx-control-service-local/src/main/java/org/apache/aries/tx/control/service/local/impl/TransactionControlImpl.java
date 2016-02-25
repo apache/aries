@@ -2,12 +2,14 @@ package org.apache.aries.tx.control.service.local.impl;
 
 import static java.util.Optional.ofNullable;
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
+import static org.osgi.service.transaction.control.TransactionStatus.ROLLED_BACK;
 
 import java.util.concurrent.Callable;
 
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.coordinator.Coordinator;
+import org.osgi.service.transaction.control.ScopedWorkException;
 import org.osgi.service.transaction.control.TransactionBuilder;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionControl;
@@ -50,18 +52,19 @@ public class TransactionControlImpl implements TransactionControl {
 				throw re;
 			}
 
-			return doWork(work, currentCoord, endCoordination);
+			return doWork(work, currentTran, currentCoord, endCoordination);
 		}
 
 		@Override
 		public <T> T requiresNew(Callable<T> work)
 				throws TransactionException, TransactionRolledBackException {
 			Coordination currentCoord = null;
+			AbstractTransactionContextImpl currentTran;
 			try {
 				currentCoord = coordinator.begin(
 						"Resource-Local-Transaction.REQUIRES_NEW", 30000);
 
-				AbstractTransactionContextImpl currentTran = new TransactionContextImpl(
+				currentTran = new TransactionContextImpl(
 						currentCoord);
 				currentCoord.getVariables().put(TransactionContextKey.class,
 						currentTran);
@@ -71,7 +74,7 @@ public class TransactionControlImpl implements TransactionControl {
 				throw re;
 			}
 
-			return doWork(work, currentCoord, true);
+			return doWork(work, currentTran, currentCoord, true);
 		}
 
 		@Override
@@ -101,7 +104,7 @@ public class TransactionControlImpl implements TransactionControl {
 				throw re;
 			}
 
-			return doWork(work, currentCoord, endCoordination);
+			return doWork(work, currentTran, currentCoord, endCoordination);
 		}
 
 		@Override
@@ -133,36 +136,71 @@ public class TransactionControlImpl implements TransactionControl {
 				}
 				throw re;
 			}
-			return doWork(work, currentCoord, endCoordination);
+			return doWork(work, currentTran, currentCoord, endCoordination);
 		}
 
 		private <R> R doWork(Callable<R> transactionalWork,
-				Coordination currentCoord, boolean endCoordination) {
+				AbstractTransactionContextImpl currentTran, Coordination currentCoord, boolean endCoordination) {
+			R result;
 			try {
-				R result = transactionalWork.call();
+				result = transactionalWork.call();
 
-				if (endCoordination) {
-					currentCoord.end();
-				}
-				return result;
 			} catch (Throwable t) {
 				//TODO handle noRollbackFor
 				currentCoord.fail(t);
+				try {
+					currentTran.finish();
+				} catch (Exception e) {
+					currentTran.recordFailure(e);
+				}
 				if (endCoordination) {
 					try {
 						currentCoord.end();
 					} catch (CoordinationException ce) {
-						if(ce.getType() == CoordinationException.FAILED) {
-							throw new TransactionRolledBackException("The transaction was rolled back due to a failure", ce.getCause());
-						} else {
-							throw ce;
+						if(ce.getType() != CoordinationException.FAILED) {
+							currentTran.recordFailure(ce);
 						}
 					}
 				}
-				TransactionControlImpl.<RuntimeException> throwException(t);
+				ScopedWorkException workException = new ScopedWorkException("The scoped work threw an exception", t, 
+						endCoordination ? null : currentTran);
+				Throwable throwable = currentTran.firstUnexpectedException.get();
+				if(throwable != null) {
+					workException.addSuppressed(throwable);
+				}
+				currentTran.subsequentExceptions.stream().forEach(workException::addSuppressed);
+				
+				throw workException;
 			}
-			throw new TransactionException(
-					"The code here should never be reached");
+			
+			try {
+				currentTran.finish();
+			} catch (Exception e) {
+				currentTran.recordFailure(e);
+				currentCoord.fail(e);
+			}
+			try {
+				if (endCoordination) {
+					currentCoord.end();
+				}
+			} catch (CoordinationException ce) {
+				if(ce.getType() != CoordinationException.FAILED) {
+					currentTran.recordFailure(ce);
+				}
+			}
+			
+			Throwable throwable = currentTran.firstUnexpectedException.get();
+			if(throwable != null) {
+				TransactionException te = currentTran.getTransactionStatus() == ROLLED_BACK ?
+						new TransactionRolledBackException("The transaction rolled back due to a failure", throwable) :
+						new TransactionException("There was an error in the Transaction completion.", throwable);
+				
+				currentTran.subsequentExceptions.stream().forEach(te::addSuppressed);
+				
+				throw te;
+			}
+			
+			return result;
 		}
 	}
 
@@ -242,21 +280,6 @@ public class TransactionControlImpl implements TransactionControl {
 					.get(TransactionContextKey.class);
 		}
 		return toUse;
-	}
-
-	/**
-	 * Borrowed from the netty project as a way to avoid wrapping checked
-	 * exceptions Viewable at https://github.com/netty/netty/
-	 * netty/common/src/main/java/io/netty/util/internal/PlatformDependent.java
-	 * 
-	 * @param t
-	 * @return
-	 * @throws T
-	 */
-	@SuppressWarnings("unchecked")
-	private static <T extends Throwable> T throwException(Throwable t)
-			throws T {
-		throw (T) t;
 	}
 
 	@Override
