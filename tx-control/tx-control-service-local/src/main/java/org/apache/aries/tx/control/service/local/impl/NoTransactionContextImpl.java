@@ -2,12 +2,12 @@ package org.apache.aries.tx.control.service.local.impl;
 
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import javax.transaction.xa.XAResource;
 
 import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionStatus;
@@ -15,39 +15,10 @@ import org.osgi.service.transaction.control.TransactionStatus;
 public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 		implements TransactionContext {
 
-	volatile boolean						finished			= false;
+	private final AtomicBoolean finished = new AtomicBoolean(false);
 
 	public NoTransactionContextImpl(Coordination coordination) {
 		super(coordination);
-
-		coordination.addParticipant(new Participant() {
-
-			@Override
-			public void failed(Coordination coordination) throws Exception {
-				finished();
-			}
-
-			@Override
-			public void ended(Coordination coordination) throws Exception {
-				finished();
-			}
-
-			private void finished() {
-				beforeCompletion(() -> {});
-				afterCompletion();
-			}
-
-			private void afterCompletion() {
-				postCompletion.stream().forEach(c -> {
-					try {
-						c.accept(NO_TRANSACTION);
-					} catch (Exception e) {
-						firstUnexpectedException.compareAndSet(null, e);
-						// TODO log this
-					}
-				});
-			}
-		});
 	}
 
 	@Override
@@ -76,6 +47,7 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 			throw new IllegalStateException(
 					"The transaction context has finished");
 		}
+		
 		preCompletion.add(job);
 	}
 
@@ -108,5 +80,22 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 	@Override
 	public boolean supportsLocal() {
 		return false;
+	}
+
+	@Override
+	protected boolean isAlive() {
+		return !finished.get();
+	}
+	
+	@Override
+	public void finish() {
+		if(finished.compareAndSet(false, true)) {
+			beforeCompletion(() -> {});
+			afterCompletion(NO_TRANSACTION);
+		}
+	}
+
+	@Override
+	protected void safeSetRollbackOnly() {
 	}
 }

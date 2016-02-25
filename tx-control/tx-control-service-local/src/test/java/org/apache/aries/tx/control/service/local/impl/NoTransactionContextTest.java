@@ -22,7 +22,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.LocalResource;
-import org.osgi.service.transaction.control.TransactionContext;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NoTransactionContextTest {
@@ -36,7 +35,7 @@ public class NoTransactionContextTest {
 	
 	Map<Class<?>, Object> variables;
 	
-	TransactionContext ctx;
+	AbstractTransactionContextImpl ctx;
 	
 	@Before
 	public void setUp() {
@@ -97,7 +96,7 @@ public class NoTransactionContextTest {
 	}
 	
 	@Test
-	public void testPreCompletionEnd() throws Exception {
+	public void testPreCompletion() throws Exception {
 		
 		AtomicInteger value = new AtomicInteger(0);
 		
@@ -105,8 +104,7 @@ public class NoTransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
-		Participant participant = getParticipant();
-		participant.ended(coordination);
+		ctx.finish();
 		
 		assertEquals(5, value.get());
 	}
@@ -123,11 +121,13 @@ public class NoTransactionContextTest {
 		Participant participant = getParticipant();
 		participant.failed(coordination);
 		
+		ctx.finish();
+		
 		assertEquals(5, value.get());
 	}
 
 	@Test
-	public void testPostCompletionEnd() throws Exception {
+	public void testPostCompletion() throws Exception {
 		
 		AtomicInteger value = new AtomicInteger(0);
 		
@@ -138,8 +138,7 @@ public class NoTransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
-		Participant participant = getParticipant();
-		participant.ended(coordination);
+		ctx.finish();
 		
 		assertEquals(5, value.get());
 	}
@@ -159,11 +158,13 @@ public class NoTransactionContextTest {
 		Participant participant = getParticipant();
 		participant.failed(coordination);
 		
+		ctx.finish();
+		
 		assertEquals(5, value.get());
 	}
 
 	@Test
-	public void testPostCompletionIsAfterPreCompletionEnd() throws Exception {
+	public void testPostCompletionIsAfterPreCompletion() throws Exception {
 		
 		AtomicInteger value = new AtomicInteger(0);
 		
@@ -173,8 +174,7 @@ public class NoTransactionContextTest {
 			value.compareAndSet(3, 5);
 		});
 		
-		Participant participant = getParticipant();
-		participant.ended(coordination);
+		ctx.finish();
 		
 		assertEquals(5, value.get());
 	}
@@ -193,6 +193,8 @@ public class NoTransactionContextTest {
 		Participant participant = getParticipant();
 		participant.failed(coordination);
 		
+		ctx.finish();
+		
 		assertEquals(5, value.get());
 	}
 
@@ -210,8 +212,7 @@ public class NoTransactionContextTest {
 			value.compareAndSet(3, 5);
 		});
 		
-		Participant participant = getParticipant();
-		participant.ended(coordination);
+		ctx.finish();
 		
 		assertEquals(5, value.get());
 	}
