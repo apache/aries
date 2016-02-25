@@ -32,10 +32,13 @@ public interface TransactionStarter {
 	 * @throws TransactionException if there is an error starting or completing
 	 *             the transaction
 	 * @throws TransactionRolledBackException if the transaction rolled back due
-	 *             to a failure
+	 *             to a failure in one of the resources or an internal error in
+	 *             the TransactionControl service
+	 * @throws ScopedWorkException if the supplied work throws an
+	 *             {@link Exception}
 	 */
-	<T> T required(Callable<T> work)
-			throws TransactionException, TransactionRolledBackException;
+	<T> T required(Callable<T> work) throws TransactionException,
+			TransactionRolledBackException, ScopedWorkException;
 
 	/**
 	 * A new transaction is required to run the supplied piece of work. If an
@@ -50,9 +53,11 @@ public interface TransactionStarter {
 	 *             the transaction
 	 * @throws TransactionRolledBackException if the transaction rolled back due
 	 *             to a failure
+	 * @throws ScopedWorkException if the supplied work throws an
+	 *             {@link Exception}
 	 */
-	<T> T requiresNew(Callable<T> work)
-			throws TransactionException, TransactionRolledBackException;
+	<T> T requiresNew(Callable<T> work) throws TransactionException,
+			TransactionRolledBackException, ScopedWorkException;
 
 	/**
 	 * The supplied piece of work must be run outside the context of a
@@ -69,8 +74,11 @@ public interface TransactionStarter {
 	 * @return The value returned by the work
 	 * @throws TransactionException if there is an error starting or completing
 	 *             the transaction
+	 * @throws ScopedWorkException if the supplied work throws an
+	 *             {@link Exception}
 	 */
-	<T> T notSupported(Callable<T> work) throws TransactionException;
+	<T> T notSupported(Callable<T> work)
+			throws TransactionException, ScopedWorkException;
 
 	/**
 	 * The supplied piece of work may run inside or outside the context of a
@@ -88,8 +96,11 @@ public interface TransactionStarter {
 	 * @return The value returned by the work
 	 * @throws TransactionException if there is an error starting or completing
 	 *             the transaction
+	 * @throws ScopedWorkException if the supplied work throws an
+	 *             {@link Exception}
 	 */
-	<T> T supports(Callable<T> work) throws TransactionException;
+	<T> T supports(Callable<T> work)
+			throws TransactionException, ScopedWorkException;
 
 
 }

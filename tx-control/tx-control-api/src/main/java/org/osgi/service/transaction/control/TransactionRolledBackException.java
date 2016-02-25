@@ -16,7 +16,8 @@
 package org.osgi.service.transaction.control;
 
 /**
- * An Exception indicating that the active transaction was rolled back
+ * An Exception indicating that the active transaction was unexpectedly rolled
+ * back
  */
 public class TransactionRolledBackException extends TransactionException {
 
