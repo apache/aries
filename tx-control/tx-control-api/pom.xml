@@ -35,13 +35,15 @@
 		<aries.osgi.export.pkg>
 			org.osgi.service.transaction.control,
 			org.osgi.service.transaction.control.jdbc,
-			org.osgi.service.transaction.control.jpa
+			org.osgi.service.transaction.control.jpa,
+			org.osgi.service.transaction.control.recovery
 		</aries.osgi.export.pkg>
 		<aries.osgi.private.pkg />
 		<aries.osgi.import.pkg>
 			org.osgi.service.transaction.control,
 			org.osgi.service.transaction.control.jdbc,
 			org.osgi.service.transaction.control.jpa,
+			org.osgi.service.transaction.control.recovery,
 			*
 		</aries.osgi.import.pkg>
 		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
