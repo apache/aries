@@ -29,6 +29,7 @@ import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -134,8 +135,6 @@ public class ExceptionManagementTransactionTest extends AbstractIntegrationTest 
 		assertRollback();
 	}
 
-	//This test currently fails - the local implementation should probably
-	//use the coordinator a little differently
 	@Test
 	public void testPreCompletionException() {
 		RuntimeException toThrow = new RuntimeException("Bang!");
@@ -156,6 +155,43 @@ public class ExceptionManagementTransactionTest extends AbstractIntegrationTest 
 		}
 		
 		assertRollback();
+	}
+
+	@Test
+	public void testNoRollbackForException() {
+		RuntimeException toThrow = new RuntimeException("Bang!");
+		
+		try {
+			txControl.build()
+				.noRollbackFor(RuntimeException.class)
+				.required(() -> {
+						PreparedStatement ps = connection
+								.prepareStatement("Insert into TEST_TABLE values ( ? )");
+						
+						ps.setString(1, "Hello World!");
+						ps.executeUpdate();
+						
+						throw toThrow;
+					});
+			fail("An exception should occur!");
+			// We have to catch Exception as the compiler complains
+			// otherwise
+		} catch (ScopedWorkException swe) {
+			assertSame(toThrow, swe.getCause());
+		}
+		
+		assertEquals("1: Hello World!", txControl.notSupported(() -> {
+			Statement s = connection.createStatement();
+			
+			ResultSet rs = s.executeQuery("Select count(*) from TEST_TABLE");
+			rs.next();
+			int count = rs.getInt(1);
+			
+			rs = s.executeQuery("Select message from TEST_TABLE ORDER BY message");
+			
+			rs.next();
+			return "" + count + ": " + rs.getString(1);
+		}));
 	}
 
 	private void assertRollback() {

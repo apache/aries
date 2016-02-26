@@ -1,9 +1,13 @@
 package org.apache.aries.tx.control.service.local.impl;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLED_BACK;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import org.osgi.service.coordinator.Coordination;
@@ -20,11 +24,21 @@ public class TransactionControlImpl implements TransactionControl {
 
 	private final class TransactionBuilderImpl extends TransactionBuilder {
 
+		private void checkExceptions() {
+			List<Class<? extends Throwable>> duplicates = rollbackFor.stream()
+					.filter(noRollbackFor::contains)
+					.collect(toList());
+			if(!duplicates.isEmpty()) {
+				throw new TransactionException("The transaction declares that the Exceptions " + 
+						duplicates + " must both trigger and not trigger rollback");
+			}
+		}
 
 		@Override
 		public <T> T required(Callable<T> work)
 				throws TransactionException, TransactionRolledBackException {
-
+			checkExceptions();
+			
 			Coordination currentCoord = coordinator.peek();
 			boolean endCoordination = false;
 
@@ -58,6 +72,8 @@ public class TransactionControlImpl implements TransactionControl {
 		@Override
 		public <T> T requiresNew(Callable<T> work)
 				throws TransactionException, TransactionRolledBackException {
+			checkExceptions();
+			
 			Coordination currentCoord = null;
 			AbstractTransactionContextImpl currentTran;
 			try {
@@ -79,6 +95,8 @@ public class TransactionControlImpl implements TransactionControl {
 
 		@Override
 		public <T> T supports(Callable<T> work) throws TransactionException {
+			checkExceptions();
+			
 			Coordination currentCoord = coordinator.peek();
 			boolean endCoordination = false;
 
@@ -110,6 +128,8 @@ public class TransactionControlImpl implements TransactionControl {
 		@Override
 		public <T> T notSupported(Callable<T> work)
 				throws TransactionException {
+			checkExceptions();
+			
 			Coordination currentCoord = coordinator.peek();
 			boolean endCoordination = false;
 
@@ -147,7 +167,9 @@ public class TransactionControlImpl implements TransactionControl {
 
 			} catch (Throwable t) {
 				//TODO handle noRollbackFor
-				currentCoord.fail(t);
+				if(requiresRollback(t)) {
+					currentCoord.fail(t);
+				}
 				try {
 					currentTran.finish();
 				} catch (Exception e) {
@@ -201,6 +223,24 @@ public class TransactionControlImpl implements TransactionControl {
 			}
 			
 			return result;
+		}
+
+		private boolean requiresRollback(Throwable t) {
+			return mostSpecificMatch(noRollbackFor, t)
+				.map(noRollbackType -> mostSpecificMatch(rollbackFor, t)
+						.map(rollbackType -> noRollbackType.isAssignableFrom(rollbackType))
+						.orElse(false))
+				.orElse(true);
+		}
+		
+		private Optional<Class<? extends Throwable>> mostSpecificMatch(Collection<Class<? extends Throwable>> types, Throwable t) {
+			return types.stream()
+					.filter(c -> c.isInstance(t))
+					.max((c1, c2) -> {
+							if(c1 == c2) return 0;
+							
+							return c1.isAssignableFrom(c2) ? 1 : c2.isAssignableFrom(c1) ? -1 : 0;
+						});
 		}
 	}
 
