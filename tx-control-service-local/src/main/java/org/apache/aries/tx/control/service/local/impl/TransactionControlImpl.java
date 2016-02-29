@@ -40,6 +40,7 @@ public class TransactionControlImpl implements TransactionControl {
 			checkExceptions();
 			
 			Coordination currentCoord = coordinator.peek();
+			boolean endTransaction = false;
 			boolean endCoordination = false;
 
 			AbstractTransactionContextImpl currentTran = ofNullable(
@@ -56,17 +57,21 @@ public class TransactionControlImpl implements TransactionControl {
 							"Resource-Local-Transaction.REQUIRED", 30000);
 					endCoordination = true;
 					currentTran = new TransactionContextImpl(currentCoord);
+					endTransaction = true;
 					currentCoord.getVariables().put(TransactionContextKey.class,
 							currentTran);
 				}
 			} catch (RuntimeException re) {
+				if(endTransaction) {
+					currentTran.finish();
+				}
 				if (endCoordination) {
 					currentCoord.end();
 				}
 				throw re;
 			}
 
-			return doWork(work, currentTran, currentCoord, endCoordination);
+			return doWork(work, currentTran, currentCoord, endTransaction, endCoordination);
 		}
 
 		@Override
@@ -90,7 +95,7 @@ public class TransactionControlImpl implements TransactionControl {
 				throw re;
 			}
 
-			return doWork(work, currentTran, currentCoord, true);
+			return doWork(work, currentTran, currentCoord, true, true);
 		}
 
 		@Override
@@ -98,6 +103,7 @@ public class TransactionControlImpl implements TransactionControl {
 			checkExceptions();
 			
 			Coordination currentCoord = coordinator.peek();
+			boolean endTransaction = false;
 			boolean endCoordination = false;
 
 			AbstractTransactionContextImpl currentTran = ofNullable(
@@ -112,17 +118,21 @@ public class TransactionControlImpl implements TransactionControl {
 							"Resource-Local-Transaction.SUPPORTS", 30000);
 					endCoordination = true;
 					currentTran = new NoTransactionContextImpl(currentCoord);
+					endTransaction = true;
 					currentCoord.getVariables().put(TransactionContextKey.class,
 							currentTran);
 				}
 			} catch (RuntimeException re) {
+				if(endTransaction) {
+					currentTran.finish();
+				}
 				if (endCoordination) {
 					currentCoord.end();
 				}
 				throw re;
 			}
 
-			return doWork(work, currentTran, currentCoord, endCoordination);
+			return doWork(work, currentTran, currentCoord, endTransaction, endCoordination);
 		}
 
 		@Override
@@ -131,6 +141,7 @@ public class TransactionControlImpl implements TransactionControl {
 			checkExceptions();
 			
 			Coordination currentCoord = coordinator.peek();
+			boolean endTransaction = false;
 			boolean endCoordination = false;
 
 			AbstractTransactionContextImpl currentTran = ofNullable(
@@ -147,20 +158,25 @@ public class TransactionControlImpl implements TransactionControl {
 							"Resource-Local-Transaction.NOT_SUPPORTED", 30000);
 					endCoordination = true;
 					currentTran = new NoTransactionContextImpl(currentCoord);
+					endTransaction = true;
 					currentCoord.getVariables().put(TransactionContextKey.class,
 							currentTran);
 				}
 			} catch (RuntimeException re) {
+				if(endTransaction) {
+					currentTran.finish();
+				}
 				if (endCoordination) {
 					currentCoord.end();
 				}
 				throw re;
 			}
-			return doWork(work, currentTran, currentCoord, endCoordination);
+			return doWork(work, currentTran, currentCoord, endTransaction, endCoordination);
 		}
 
 		private <R> R doWork(Callable<R> transactionalWork,
-				AbstractTransactionContextImpl currentTran, Coordination currentCoord, boolean endCoordination) {
+				AbstractTransactionContextImpl currentTran, Coordination currentCoord, 
+				boolean endTransaction, boolean endCoordination) {
 			R result;
 			try {
 				result = transactionalWork.call();
@@ -170,10 +186,12 @@ public class TransactionControlImpl implements TransactionControl {
 				if(requiresRollback(t)) {
 					currentCoord.fail(t);
 				}
-				try {
-					currentTran.finish();
-				} catch (Exception e) {
-					currentTran.recordFailure(e);
+				if(endTransaction) {
+					try {
+						currentTran.finish();
+					} catch (Exception e) {
+						currentTran.recordFailure(e);
+					}
 				}
 				if (endCoordination) {
 					try {
@@ -195,11 +213,13 @@ public class TransactionControlImpl implements TransactionControl {
 				throw workException;
 			}
 			
-			try {
-				currentTran.finish();
-			} catch (Exception e) {
-				currentTran.recordFailure(e);
-				currentCoord.fail(e);
+			if(endTransaction) {
+				try {
+					currentTran.finish();
+				} catch (Exception e) {
+					currentTran.recordFailure(e);
+					currentCoord.fail(e);
+				}
 			}
 			try {
 				if (endCoordination) {
