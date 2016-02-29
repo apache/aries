@@ -89,7 +89,7 @@ public class TxContextBindingConnection extends ConnectionWrapper {
 					conn.commit();
 				} catch (SQLException e) {
 					throw new TransactionException(
-							"An error occurred when committing the connection");
+							"An error occurred when committing the connection", e);
 				}
 			}
 
@@ -99,7 +99,7 @@ public class TxContextBindingConnection extends ConnectionWrapper {
 					conn.rollback();
 				} catch (SQLException e) {
 					throw new TransactionException(
-							"An error occurred when rolling back the connection");
+							"An error occurred when rolling back the connection", e);
 				}
 			}
 
