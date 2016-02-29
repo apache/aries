@@ -22,8 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
-import java.sql.ResultSet;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

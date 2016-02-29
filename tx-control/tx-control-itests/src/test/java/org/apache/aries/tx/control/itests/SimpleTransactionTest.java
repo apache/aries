@@ -163,4 +163,41 @@ public class SimpleTransactionTest extends AbstractTransactionTest {
 			}));
 	}
 	
+	@Test
+	public void testRequiredInheritsTx() {
+		txControl.required(() -> {
+			Object key = txControl.getCurrentContext().getTransactionKey();
+			
+			connection.createStatement()
+				.execute("Insert into TEST_TABLE values ( 'Hello World!' )");
+			
+			return txControl.required(() -> {
+					assertEquals(key , txControl.getCurrentContext().getTransactionKey());
+					return connection.createStatement()
+							.execute("Insert into TEST_TABLE values ( 'Hello Nested World!' )");
+				});
+		});
+		
+		String[] results = txControl.notSupported(() -> {
+				Statement s = connection.createStatement();
+				
+				ResultSet rs = s.executeQuery("Select count(*) from TEST_TABLE");
+				rs.next();
+				int count = rs.getInt(1);
+				
+				rs = s.executeQuery("Select message from TEST_TABLE ORDER BY message");
+				
+				String[] result = new String[2];
+				rs.next();
+				result[0] = "" + count + ": " + rs.getString(1);
+				rs.next();
+				result[1] = "" + count + ": " + rs.getString(1);
+				return result;
+			});
+		
+		System.out.println(Arrays.toString(results));
+		
+		assertEquals("2: Hello Nested World!", results[0]);
+		assertEquals("2: Hello World!", results[1]);
+	}
 }
