@@ -40,7 +40,7 @@ public class SpringJdbcTemplateTransactionTest extends AbstractTransactionTest {
 	JdbcTemplate jdbcTemplate; 
 
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		super.setUp();
 		
 		jdbcTemplate = new JdbcTemplate(new SingleConnectionDataSource(connection, false));

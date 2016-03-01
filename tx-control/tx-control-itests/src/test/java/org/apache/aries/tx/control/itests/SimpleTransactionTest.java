@@ -200,4 +200,23 @@ public class SimpleTransactionTest extends AbstractTransactionTest {
 		assertEquals("2: Hello Nested World!", results[0]);
 		assertEquals("2: Hello World!", results[1]);
 	}
+
+	@Test
+	public void testSuspendedTx() {
+		txControl.required(() -> {        
+			
+			connection.createStatement()
+				.execute("Insert into TEST_TABLE values ( 'Hello World!' )");
+			
+			assertEquals(Integer.valueOf(0), txControl.notSupported(() -> {
+				ResultSet rs = connection.createStatement()
+						.executeQuery("Select count(*) from TEST_TABLE");
+				rs.next();
+				return rs.getInt(1);
+			}));                
+			
+			return null;            
+			
+		});   
+	}
 }
