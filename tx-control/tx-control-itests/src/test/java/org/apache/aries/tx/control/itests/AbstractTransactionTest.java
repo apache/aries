@@ -32,6 +32,7 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
+import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -49,6 +50,8 @@ import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 
+	private static final String REMOTE_DB_PROPERTY = "org.apache.aries.tx.control.itests.remotedb";
+
 	@Inject
 	protected TransactionControl txControl;
 
@@ -60,14 +63,27 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 	
 	protected Connection connection;
 
+	private Server server;
+
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		Properties jdbc = new Properties();
 		
-		jdbc.setProperty(DataSourceFactory.JDBC_URL, "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+		Boolean external = Boolean.parseBoolean(REMOTE_DB_PROPERTY);
+		
+		String jdbcUrl;
+		if(external) {
+			server = Server.createTcpServer("-tcpPort", "0");
+			server.start();
+			
+			jdbcUrl = "jdbc:h2:tcp://127.0.0.1:" + server.getPort() + "/target/test/db1";
+		} else {
+			jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
+		}
+		
+		jdbc.setProperty(DataSourceFactory.JDBC_URL, jdbcUrl);
 		
 		connection = resourceProviderFactory.getProviderFor(dsf, jdbc, null).getResource(txControl);
-		
 		
 		txControl.required(() -> {
 				Statement s = connection.createStatement();
@@ -84,11 +100,14 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 
 		txControl.required(() -> connection.createStatement()
 				.execute("DROP TABLE TEST_TABLE"));
-
+		
+		if(server != null) {
+			server.stop();
+		}
 	}
 
 	@Configuration
-	public Option[] configuration() {
+	public Option[] localH2Configuration() {
 		String localRepo = System.getProperty("maven.repo.local");
 		if (localRepo == null) {
 			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
@@ -112,6 +131,34 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		 * waitForFrameworkStartup(),
 		 */
 		);
+	}
+
+	@Configuration
+	public Option[] serverH2Configuration() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		Option testSpecificOptions = testSpecificOptions();
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+				localTxControlService(),
+				localJdbcResourceProviderWithH2(),
+				systemProperty(REMOTE_DB_PROPERTY).value("true"),
+				when(testSpecificOptions != null).useOptions(testSpecificOptions),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+				/*
+				 * vmOption
+				 * ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+				 * waitForFrameworkStartup(),
+				 */
+				);
 	}
 	
 	public Option localTxControlService() {
