@@ -239,10 +239,8 @@ public class PersistenceBundleManager implements BundleTrackerCustomizer, Servic
     if(event != null && (event.getType() == BundleEvent.UPDATED || event.getType() == BundleEvent.UNRESOLVED)) {
       mgr.destroy();
       persistenceUnitFactory.destroyPersistenceBundle(ctx, bundle);
-      if (event.getType() == BundleEvent.UPDATED) {
-          //Don't add to the managersAwaitingProviders, the setupManager will do it
-          setupManager(bundle, mgr, true);
-      }
+      //Don't add to the managersAwaitingProviders, the setupManager will do it
+      setupManager(bundle, mgr, event.getType() == BundleEvent.UPDATED);
     } else {
       try {
         boolean reassign;
