@@ -59,6 +59,12 @@
 			<version>1.0.2</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.configadmin</artifactId>
+			<scope>test</scope>
+			<version>1.8.8</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-provider-jdbc-local</artifactId>
 			<scope>test</scope>
