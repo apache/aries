@@ -35,6 +35,7 @@
 		</aries.osgi.activator>
 		<aries.osgi.export.pkg>
 			org.osgi.service.transaction.control.jdbc,
+			org.osgi.service.cm,
 			org.osgi.service.jdbc
 		</aries.osgi.export.pkg>
 		<aries.osgi.private.pkg>
@@ -50,6 +51,8 @@
 			!javassist.*,
 			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
 			org.osgi.service.transaction.control.jdbc;version="[0.0.1,0.0.2)",
+			org.osgi.service.cm,
+			org.osgi.service.jdbc,
 			*
 		</aries.osgi.import.pkg>
 		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
@@ -70,6 +73,18 @@
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.jdbc</artifactId>
 			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.service.cm</artifactId>
+			<version>1.5.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.util.tracker</artifactId>
+			<version>1.5.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

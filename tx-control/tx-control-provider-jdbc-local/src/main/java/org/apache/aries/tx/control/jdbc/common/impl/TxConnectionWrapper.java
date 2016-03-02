@@ -16,7 +16,7 @@ public class TxConnectionWrapper extends ConnectionWrapper {
 		try {
 			delegate.setAutoCommit(false);
 		} catch (SQLException e) {
-			throw new TransactionException("Unable to disable autocommit");
+			throw new TransactionException("Unable to disable autocommit", e);
 		}
 	}
 
