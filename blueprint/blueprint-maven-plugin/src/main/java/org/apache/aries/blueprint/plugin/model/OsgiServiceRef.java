@@ -27,17 +27,39 @@ import org.ops4j.pax.cdi.api.OsgiService;
  */
 public class OsgiServiceRef extends BeanRef {
 
-    public String filter;
+    final public String filter;
+    final public String compName;
+
 
     public OsgiServiceRef(Field field) {
         super(field);
         OsgiService osgiService = field.getAnnotation(OsgiService.class);
-        filter = osgiService.filter();
+        String filterValue = osgiService.filter();
+        if (filterValue.contains("(")) {
+            filter = filterValue;
+            compName = null;
+        } else {
+            compName = filterValue;
+            filter = null;
+        }
         id = getBeanName(clazz);
         if (filter != null) {
             id = id + "-" + getId(filter);
         }
     }
+
+    public OsgiServiceRef(Class<?> clazz, OsgiService osgiService, String name) {
+        super(clazz, name);
+        String filterValue = osgiService.filter();
+        if (filterValue.contains("(")) {
+            filter = filterValue;
+            compName = null;
+        } else {
+            compName = filterValue;
+            filter = null;
+        }
+    }
+
 
     private String getId(String raw) {
         StringBuilder builder = new StringBuilder();

@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.test;
 
-public interface Matcher {
-    BeanRef getMatching(BeanRef template);
+public interface ServiceC {
+
 }
