@@ -34,52 +34,52 @@
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat</groupId>
                 <artifactId>org.apache.aries.samples.dgoat.api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat</groupId>
                 <artifactId>org.apache.aries.samples.dgoat.web</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat</groupId>
                 <artifactId>org.apache.aries.samples.dgoat.assembly</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat</groupId>
                 <artifactId>org.apache.aries.samples.dgoat.dummy</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat</groupId>
                 <artifactId>org.apache.aries.samples.dgoat.dummy2</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat</groupId>
                 <artifactId>org.apache.aries.samples.dgoat.bundlecontextmodel</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${pom.groupId}</groupId>
                 <artifactId>org.apache.aries.samples.dgoat.info.enhancer</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat.cxf-api</groupId>
                 <artifactId>cxf-api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat.cxf-client</groupId>
                 <artifactId>cxf-client</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.dgoat.cxf-server</groupId>
                 <artifactId>cxf-server</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
