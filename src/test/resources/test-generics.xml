@@ -20,6 +20,12 @@
             xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0"
             default-availability="mandatory" >
 
+    <bean id="gen2" class="org.apache.aries.blueprint.pojos.PojoGenerics2$MyClass">
+        <argument>
+            <bean class="org.apache.aries.blueprint.pojos.PojoGenerics2$Toto"/>
+        </argument>
+    </bean>
+
     <bean id="method" class="org.apache.aries.blueprint.pojos.PojoGenerics">
         <property name="list">
             <list>

@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.container;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URL;
@@ -33,6 +34,10 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 import org.apache.aries.blueprint.TestBlueprintContainer;
+import org.apache.aries.blueprint.pojos.PojoGenerics2.MyClass;
+import org.apache.aries.blueprint.pojos.PojoGenerics2.MyObject;
+import org.apache.aries.blueprint.pojos.PojoGenerics2.Tata;
+import org.apache.aries.blueprint.pojos.PojoGenerics2.Toto;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.Converter;
 
@@ -191,6 +196,14 @@ public class AggregateConverterTest extends TestCase {
         //assertTrue(result instanceof AsianRegion || result instanceof EuRegion);
         result = s.convert(new Object(), NullMarker.class);
         assertNull(result);
+    }
+
+    public void testGenericWilcard() throws Exception {
+        Constructor cns = MyClass.class.getConstructor(MyObject.class);
+        assertTrue(AggregateConverter.isAssignable(new Toto(), new GenericType(cns.getGenericParameterTypes()[0])));
+
+        cns = Tata.class.getConstructor(MyObject.class);
+        assertTrue(AggregateConverter.isAssignable(new Toto(), new GenericType(cns.getGenericParameterTypes()[0])));
     }
 
     public void testGenericAssignable() throws Exception {

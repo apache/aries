@@ -56,15 +56,27 @@ public class GenericType extends ReifiedType {
         primitiveClasses.put("boolean", boolean.class);
     }
 
+    enum BoundType {
+        Exact,
+        Extends,
+        Super
+    }
+
     private GenericType[] parameters;
+    private BoundType boundType;
 
 	public GenericType(Type type) {
-		this(getConcreteClass(type), parametersOf(type));
+		this(getConcreteClass(type), boundType(type), parametersOf(type));
 	}
 
     public GenericType(Class clazz, GenericType... parameters) {
+        this(clazz, BoundType.Exact, parameters);
+    }
+
+    public GenericType(Class clazz, BoundType boundType, GenericType... parameters) {
         super(clazz);
         this.parameters = parameters;
+        this.boundType = boundType;
     }
 
     public static GenericType parse(String rawType, final Object loader) throws ClassNotFoundException, IllegalArgumentException {
@@ -133,6 +145,12 @@ public class GenericType extends ReifiedType {
 
     @Override
     public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (boundType == BoundType.Extends) {
+            sb.append("? extends ");
+        } else if (boundType == BoundType.Super) {
+            sb.append("? super ");
+        }
         Class cl = getRawClass();
         if (cl.isArray()) {
             if (parameters.length > 0) {
@@ -141,9 +159,8 @@ public class GenericType extends ReifiedType {
                 return cl.getComponentType().getName() + "[]";
             }
         }
+        sb.append(cl.getName());
         if (parameters.length > 0) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(cl.getName());    
             sb.append("<");
             for (int i = 0; i < parameters.length; i++) {
                 if (i > 0) {
@@ -152,9 +169,8 @@ public class GenericType extends ReifiedType {
                 sb.append(parameters[i].toString());
             }
             sb.append(">");   
-            return sb.toString();
         }
-        return cl.getName();
+        return sb.toString();
     }
 
     public boolean equals(Object object) {
@@ -163,6 +179,9 @@ public class GenericType extends ReifiedType {
         }
         GenericType other = (GenericType) object;
         if (getRawClass() != other.getRawClass()) {
+            return false;
+        }
+        if (boundType != other.boundType) {
             return false;
         }
         if (parameters == null) {
@@ -182,7 +201,33 @@ public class GenericType extends ReifiedType {
             return true;
         }
     }
-    
+
+    static ReifiedType bound(ReifiedType type) {
+        if (type instanceof GenericType
+                && ((GenericType) type).boundType != BoundType.Exact) {
+            GenericType t = (GenericType) type;
+            return new GenericType(t.getRawClass(), BoundType.Exact, t.parameters);
+        }
+        return type;
+    }
+
+    static BoundType boundType(ReifiedType type) {
+        if (type instanceof GenericType) {
+            return ((GenericType) type).boundType;
+        } else {
+            return BoundType.Exact;
+        }
+    }
+
+    static BoundType boundType(Type type) {
+        if (type instanceof WildcardType) {
+            WildcardType wct = (WildcardType) type;
+            return wct.getLowerBounds().length == 0
+                    ? BoundType.Extends : BoundType.Super;
+        }
+        return BoundType.Exact;
+    }
+
     static GenericType[] parametersOf(Type type) {
 		if (type instanceof Class) {
 		    Class clazz = (Class) type;
