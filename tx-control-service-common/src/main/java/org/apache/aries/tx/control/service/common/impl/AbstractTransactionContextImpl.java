@@ -1,4 +1,4 @@
-package org.apache.aries.tx.control.service.local.impl;
+package org.apache.aries.tx.control.service.common.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;

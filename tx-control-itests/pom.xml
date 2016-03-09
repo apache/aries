@@ -53,6 +53,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.aries.tx-control</groupId>
+			<artifactId>tx-control-service-xa</artifactId>
+			<scope>test</scope>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.coordinator</artifactId>
 			<scope>test</scope>
