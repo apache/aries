@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 
 import javax.transaction.xa.XAResource;
 
+import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionContext;

@@ -1,4 +1,4 @@
-package org.apache.aries.tx.control.service.local.impl;
+package org.apache.aries.tx.control.service.xa.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,13 +17,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 
 import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
+import org.apache.aries.tx.control.service.xa.impl.TransactionContextImpl;
+import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -47,8 +52,8 @@ public class TransactionContextTest {
 	AbstractTransactionContextImpl ctx;
 	
 	@Before
-	public void setUp() {
-		ctx = new TransactionContextImpl(coordination);
+	public void setUp() throws XAException {
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), coordination);
 		variables = new HashMap<>();
 		Mockito.when(coordination.getVariables()).thenReturn(variables);
 	}
@@ -87,10 +92,10 @@ public class TransactionContextTest {
 
 	@Test
 	public void testXAResourceSupport() {
-		assertFalse(ctx.supportsXA());
+		assertTrue(ctx.supportsXA());
 	}
 
-	@Test(expected=IllegalStateException.class)
+	@Test
 	public void testXAResourceRegistration() {
 		ctx.registerXAResource(xaResource);
 	}
@@ -385,6 +390,220 @@ public class TransactionContextTest {
 		
 		Mockito.verify(localResource).commit();
 		Mockito.verify(localResource2).rollback();
+	}
+	
+	@Test
+	public void testSingleXAResource() throws Exception {
+		ctx.registerXAResource(xaResource);
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(COMMITTING, ctx.getTransactionStatus());
+			return null;
+		}).when(xaResource).commit(Mockito.any(Xid.class), Mockito.eq(true));
+		
+		ctx.finish();
+		
+		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
+		
+		InOrder inOrder = Mockito.inOrder(xaResource);
+		
+		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
+		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
+		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMSUCCESS));
+		inOrder.verify(xaResource).commit(Mockito.eq(captor.getValue()), Mockito.eq(true));
+		
+		Mockito.verifyNoMoreInteractions(xaResource);
+	}
+	
+	@Test
+	public void testXAResourceEarlyEnd() throws Exception {
+		ctx.registerXAResource(xaResource);
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
+			return null;
+		}).when(xaResource).rollback(Mockito.any(Xid.class));
+		
+		getParticipant().ended(coordination);
+		
+		ctx.finish();
+		
+		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
+		
+		InOrder inOrder = Mockito.inOrder(xaResource);
+		
+		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
+		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
+		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMFAIL));
+		inOrder.verify(xaResource).rollback(Mockito.eq(captor.getValue()));
+		
+		Mockito.verifyNoMoreInteractions(xaResource);
+	}
+
+	@Test
+	public void testXAResourceRollbackOnly() throws Exception {
+		ctx.registerXAResource(xaResource);
+		ctx.setRollbackOnly();
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
+			return null;
+		}).when(xaResource).rollback(Mockito.any(Xid.class));
+		
+		ctx.finish();
+		
+		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
+		
+		InOrder inOrder = Mockito.inOrder(xaResource);
+		
+		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
+		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
+		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMFAIL));
+		inOrder.verify(xaResource).rollback(Mockito.eq(captor.getValue()));
+		
+		Mockito.verifyNoMoreInteractions(xaResource);
+	}
+
+	@Test
+	public void testXAResourceFail() throws Exception {
+		ctx.registerXAResource(xaResource);
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
+			return null;
+		}).when(xaResource).rollback(Mockito.any(Xid.class));
+		
+		getParticipant().failed(coordination);
+		
+		ctx.finish();
+		
+		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
+		
+		InOrder inOrder = Mockito.inOrder(xaResource);
+		
+		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
+		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
+		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMFAIL));
+		inOrder.verify(xaResource).rollback(Mockito.eq(captor.getValue()));
+		
+		Mockito.verifyNoMoreInteractions(xaResource);
+	}
+	
+	@Test
+	public void testXAResourcePreCommitException() throws Exception {
+		ctx.registerXAResource(xaResource);
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
+			return null;
+		}).when(xaResource).rollback(Mockito.any(Xid.class));
+		
+		ctx.preCompletion(() -> { throw new IllegalArgumentException(); });
+		
+		ctx.finish();
+		
+		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
+		
+		InOrder inOrder = Mockito.inOrder(xaResource);
+		
+		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
+		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
+		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMFAIL));
+		inOrder.verify(xaResource).rollback(Mockito.eq(captor.getValue()));
+		
+		Mockito.verifyNoMoreInteractions(xaResource);
+	}
+
+	@Test
+	public void testXAResourcePostCommitException() throws Exception {
+		ctx.registerXAResource(xaResource);
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(COMMITTING, ctx.getTransactionStatus());
+			return null;
+		}).when(xaResource).commit(Mockito.any(Xid.class), Mockito.eq(true));
+		
+		ctx.postCompletion(i -> { 
+			assertEquals(COMMITTED, ctx.getTransactionStatus());
+			throw new IllegalArgumentException(); 
+		});
+		
+		ctx.finish();
+		
+		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
+		
+		InOrder inOrder = Mockito.inOrder(xaResource);
+		
+		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
+		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
+		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMSUCCESS));
+		inOrder.verify(xaResource).commit(Mockito.eq(captor.getValue()), Mockito.eq(true));
+		
+		Mockito.verifyNoMoreInteractions(xaResource);
+	}
+
+	@Test
+	public void testLastParticipantSuccessSoCommit() throws Exception {
+		
+		ctx.registerLocalResource(localResource);
+		ctx.registerXAResource(xaResource);
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(COMMITTING, ctx.getTransactionStatus());
+			return null;
+		}).when(localResource).commit();
+
+		Mockito.doAnswer(i -> {
+			assertEquals(COMMITTING, ctx.getTransactionStatus());
+			return null;
+		}).when(xaResource).commit(Mockito.any(Xid.class), Mockito.eq(false));
+		
+		ctx.finish();
+		
+		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
+		
+		InOrder inOrder = Mockito.inOrder(xaResource, localResource);
+		
+		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
+		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
+		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMSUCCESS));
+		inOrder.verify(xaResource).prepare(captor.getValue());
+		inOrder.verify(localResource).commit();
+		inOrder.verify(xaResource).commit(Mockito.eq(captor.getValue()), Mockito.eq(false));
+		
+		Mockito.verifyNoMoreInteractions(xaResource, localResource);
+	}
+
+	@Test
+	public void testLastParticipantFailsSoRollback() throws Exception {
+		
+		ctx.registerLocalResource(localResource);
+		ctx.registerXAResource(xaResource);
+		
+		Mockito.doAnswer(i -> {
+			assertEquals(COMMITTING, ctx.getTransactionStatus());
+			throw new TransactionException("Unable to commit");
+		}).when(localResource).commit();
+
+		Mockito.doAnswer(i -> {
+			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
+			return null;
+		}).when(xaResource).rollback(Mockito.any(Xid.class));
+		
+		ctx.finish();
+		
+		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
+		
+		InOrder inOrder = Mockito.inOrder(xaResource, localResource);
+		
+		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
+		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
+		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMSUCCESS));
+		inOrder.verify(xaResource).prepare(captor.getValue());
+		inOrder.verify(localResource).commit();
+		inOrder.verify(xaResource).rollback(Mockito.eq(captor.getValue()));
+		
+		Mockito.verifyNoMoreInteractions(xaResource, localResource);
 	}
 	
 }

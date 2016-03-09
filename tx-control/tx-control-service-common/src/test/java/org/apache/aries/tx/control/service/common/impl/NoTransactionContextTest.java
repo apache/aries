@@ -1,4 +1,4 @@
-package org.apache.aries.tx.control.service.local.impl;
+package org.apache.aries.tx.control.service.common.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.transaction.xa.XAResource;
 
+import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
+import org.apache.aries.tx.control.service.common.impl.NoTransactionContextImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

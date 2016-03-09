@@ -164,7 +164,7 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 	}
 
 	@Configuration
-	public Option[] localH2Configuration() {
+	public Option[] localEmbeddedH2LocalTxConfiguration() {
 		String localRepo = System.getProperty("maven.repo.local");
 		if (localRepo == null) {
 			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
@@ -187,7 +187,7 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 	}
 
 	@Configuration
-	public Option[] serverH2Configuration() {
+	public Option[] localServerH2LocalTxConfiguration() {
 		String localRepo = System.getProperty("maven.repo.local");
 		if (localRepo == null) {
 			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
@@ -211,7 +211,7 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 	}
 
 	@Configuration
-	public Option[] configAdminDrivenConfiguration() {
+	public Option[] localConfigAdminDrivenH2LocalTxConfiguration() {
 		String localRepo = System.getProperty("maven.repo.local");
 		if (localRepo == null) {
 			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
@@ -224,6 +224,79 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				localTxControlService(),
+				localJdbcResourceProviderWithH2(),
+				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
+				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
+				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value("true"),
+				when(testSpecificOptions != null).useOptions(testSpecificOptions),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+				);
+	}
+	
+	@Configuration
+	public Option[] localEmbeddedH2XATxConfiguration() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		Option testSpecificOptions = testSpecificOptions();
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+						.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+				xaTxControlService(),
+				localJdbcResourceProviderWithH2(),
+				when(testSpecificOptions != null).useOptions(testSpecificOptions),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+		);
+	}
+
+	@Configuration
+	public Option[] localServerH2XATxConfiguration() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		Option testSpecificOptions = testSpecificOptions();
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+				xaTxControlService(),
+				localJdbcResourceProviderWithH2(),
+				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
+				when(testSpecificOptions != null).useOptions(testSpecificOptions),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+				);
+	}
+
+	@Configuration
+	public Option[] localConfigAdminDrivenH2XATxConfiguration() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		Option testSpecificOptions = testSpecificOptions();
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+				xaTxControlService(),
 				localJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
@@ -251,6 +324,12 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return CoreOptions.composite(
 				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-local").versionAsInProject());
+	}
+
+	public Option xaTxControlService() {
+		return CoreOptions.composite(
+				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
+				mavenBundle("org.apache.aries.tx-control", "tx-control-service-xa").versionAsInProject());
 	}
 
 	public Option localJdbcResourceProviderWithH2() {
