@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import org.apache.aries.blueprint.container.BeanRecipe.UnwrapperedBeanHolder;
+import org.apache.aries.blueprint.container.GenericType.BoundType;
 import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
@@ -460,6 +461,22 @@ public class AggregateConverter implements Converter {
         if (from.equals(to)) {
             return true;
         }
+        if (from.getRawClass() == to.getRawClass()) {
+            if (from.size() == to.size()) {
+                boolean ok = true;
+                for (int i = 0; i < from.size(); i++) {
+                    ReifiedType tf = from.getActualTypeArgument(i);
+                    ReifiedType tt = to.getActualTypeArgument(i);
+                    if (!isWildcardCompatible(tf, tt)) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok) {
+                    return true;
+                }
+            }
+        }
         Type t = from.getRawClass().getGenericSuperclass();
         if (t != null && isTypeAssignable(new GenericType(t), to)) {
             return true;
@@ -470,6 +487,18 @@ public class AggregateConverter implements Converter {
             }
         }
         return false;
+    }
+
+    private static boolean isWildcardCompatible(ReifiedType from, ReifiedType to) {
+        BoundType fromBoundType = GenericType.boundType(from);
+        BoundType toBoundType = GenericType.boundType(to);
+        if (toBoundType == BoundType.Extends) {
+            return fromBoundType != BoundType.Super && isTypeAssignable(from, GenericType.bound(to));
+        } else if (toBoundType == BoundType.Super) {
+            return fromBoundType != BoundType.Extends && isTypeAssignable(GenericType.bound(to), from);
+        } else {
+            return fromBoundType == BoundType.Exact && GenericType.bound(from).equals(GenericType.bound(to));
+        }
     }
 
     private static Class unwrap(Class c) {

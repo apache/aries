@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint;
 
+import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
@@ -36,7 +37,9 @@ import java.util.TimeZone;
 import junit.framework.Assert;
 
 import org.apache.aries.blueprint.CallbackTracker.Callback;
+import org.apache.aries.blueprint.container.AggregateConverter;
 import org.apache.aries.blueprint.container.BlueprintRepository;
+import org.apache.aries.blueprint.container.GenericType;
 import org.apache.aries.blueprint.container.ServiceRecipe;
 import org.apache.aries.blueprint.di.CircularDependencyException;
 import org.apache.aries.blueprint.di.ExecutionContext;
@@ -52,6 +55,10 @@ import org.apache.aries.blueprint.pojos.Multiple;
 import org.apache.aries.blueprint.pojos.PojoA;
 import org.apache.aries.blueprint.pojos.PojoB;
 import org.apache.aries.blueprint.pojos.PojoGenerics;
+import org.apache.aries.blueprint.pojos.PojoGenerics2.MyClass;
+import org.apache.aries.blueprint.pojos.PojoGenerics2.MyObject;
+import org.apache.aries.blueprint.pojos.PojoGenerics2.Tata;
+import org.apache.aries.blueprint.pojos.PojoGenerics2.Toto;
 import org.apache.aries.blueprint.pojos.PojoListener;
 import org.apache.aries.blueprint.pojos.PojoRecursive;
 import org.apache.aries.blueprint.pojos.Primavera;
@@ -398,6 +405,12 @@ public class WiringTest extends AbstractBlueprintTest {
        assertTrue(obj instanceof Multiple);
        assertEquals(map, ((Multiple)obj).getProperties());
    }
+
+    public void testGenerics2() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        repository.create("gen2");
+    }
 
     public void testGenerics() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
