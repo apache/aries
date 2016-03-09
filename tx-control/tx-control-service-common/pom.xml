@@ -8,13 +8,14 @@
 		<relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
-	<artifactId>tx-control-service-local</artifactId>
-	<packaging>bundle</packaging>
-	<name>OSGi Transaction Control Service - Local Transactions</name>
+	<artifactId>tx-control-service-common</artifactId>
+	<name>OSGi Transaction Control Service - Common Code</name>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<description>
-        This bundle contains a Coordinator based OSGi Transaction Control Service implementation suitable for local resources.
+        This jar contains a common code for building OSGi Transaction Control Service implementations.
+        It is not complete and should not be deployed at runtime, instead it should be repackaged
+        inside a complete implementation.
     </description>
 
 	<scm>
@@ -29,24 +30,6 @@
         </url>
 	</scm>
 
-	<properties>
-		<aries.osgi.activator>
-		   org.apache.aries.tx.control.service.local.impl.Activator
-		</aries.osgi.activator>
-		<aries.osgi.export.pkg>
-			org.osgi.service.transaction.control
-		</aries.osgi.export.pkg>
-        <aries.osgi.private.pkg>
-            org.apache.aries.tx.control.service.common.*,
-            org.apache.aries.tx.control.service.local.*
-        </aries.osgi.private.pkg>
-		<aries.osgi.import.pkg>
-			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
-			*
-		</aries.osgi.import.pkg>
-		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
-	</properties>
-
 	<dependencies>
 	    <dependency>
 	        <groupId>org.slf4j</groupId>
@@ -58,12 +41,6 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-            <groupId>org.apache.aries.tx-control</groupId>
-            <artifactId>tx-control-service-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.coordinator</artifactId>

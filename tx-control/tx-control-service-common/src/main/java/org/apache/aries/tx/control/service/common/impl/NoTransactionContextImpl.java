@@ -1,4 +1,4 @@
-package org.apache.aries.tx.control.service.local.impl;
+package org.apache.aries.tx.control.service.common.impl;
 
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
 
