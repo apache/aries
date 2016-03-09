@@ -104,6 +104,16 @@ public class GenericType extends ReifiedType {
         if (primitiveClasses.containsKey(type)) {
             return new GenericType(primitiveClasses.get(type));
         }
+        // Extends
+        if (type.startsWith("? extends ")) {
+            String raw = type.substring("? extends ".length());
+            return new GenericType(((ClassLoader) loader).loadClass(raw), BoundType.Extends);
+        }
+        // Super
+        if (type.startsWith("? super ")) {
+            String raw = type.substring("? extends ".length());
+            return new GenericType(((ClassLoader) loader).loadClass(raw), BoundType.Super);
+        }
         // Class
         if (loader instanceof ClassLoader) {
             return new GenericType(((ClassLoader) loader).loadClass(type));

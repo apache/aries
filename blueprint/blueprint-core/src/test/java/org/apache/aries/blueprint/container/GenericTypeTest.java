@@ -62,6 +62,11 @@ public class GenericTypeTest extends TestCase {
         assertEquals(List[].class, type.getRawClass());
         assertEquals(1, type.size());
         assertEquals(Integer.class, type.getActualTypeArgument(0).getActualTypeArgument(0).getRawClass());
+
+        type = parse("java.util.List<? extends java.lang.Number>");
+        assertEquals(List.class, type.getRawClass());
+        assertEquals(1, type.size());
+        assertEquals(Number.class, type.getActualTypeArgument(0).getRawClass());
     }
 
     public void testBasic() throws Exception {        
