@@ -8,55 +8,28 @@
 		<relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
-	<artifactId>tx-control-provider-jdbc-local</artifactId>
-	<packaging>bundle</packaging>
-	<name>OSGi Transaction Control JDBC Resource Provider - Local Transactions</name>
+	<artifactId>tx-control-provider-jdbc-common</artifactId>
+	<packaging>jar</packaging>
+	<name>OSGi Transaction Control JDBC Resource Provider - Common Code</name>
 	<version>0.0.1-SNAPSHOT</version>
 
 	<description>
-        This bundle contains a JDBC resource provider for use with the OSGi Transaction Control Service that supports local transactions.
+        This jar contains a common code for building OSGi Transaction Control JDBCConnectionProvider 
+        implementations. It is not complete and should not be deployed at runtime, instead it should 
+        be repackaged inside a complete implementation.
     </description>
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jdbc-local
+            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jdbc-common
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jdbc-local
+            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jdbc-common
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-provider-jdbc-local
+            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-provider-jdbc-common
         </url>
 	</scm>
-
-	<properties>
-		<aries.osgi.activator>
-			org.apache.aries.tx.control.jdbc.local.impl.Activator
-		</aries.osgi.activator>
-		<aries.osgi.export.pkg>
-			org.osgi.service.transaction.control.jdbc,
-			org.osgi.service.cm,
-			org.osgi.service.jdbc
-		</aries.osgi.export.pkg>
-		<aries.osgi.private.pkg>
-			org.apache.aries.tx.control.jdbc.*,
-			com.zaxxer.hikari,
-			com.zaxxer.hikari.metrics,
-			com.zaxxer.hikari.pool,
-			com.zaxxer.hikari.util
-		</aries.osgi.private.pkg>
-		<aries.osgi.import.pkg>
-			!com.codahale.*,
-			!com.zaxxer.hikari.metrics.dropwizard,
-			!javassist.*,
-			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
-			org.osgi.service.transaction.control.jdbc;version="[0.0.1,0.0.2)",
-			org.osgi.service.cm,
-			org.osgi.service.jdbc,
-			*
-		</aries.osgi.import.pkg>
-		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -66,12 +39,6 @@
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.tx-control</groupId>
-			<artifactId>tx-control-provider-jdbc-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>

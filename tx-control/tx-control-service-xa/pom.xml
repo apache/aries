@@ -48,9 +48,15 @@
 			org.apache.aries.tx.control.service.xa.*,
 			org.apache.geronimo.transaction.*
 		</aries.osgi.private.pkg>
-		<!-- No transaction log at the moment -->
+		<!--
+		  No transaction log at the moment. 
+		  Also we must explicitly import javax.transaction.xa at zero so that we can pick it
+		  up from the JRE.
+		-->
 		<aries.osgi.import.pkg>
+			!javax.resource.*,
 			!org.objectweb.howl.*,
+			javax.transaction.xa;version=0,
 			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
 			*
 		</aries.osgi.import.pkg>
