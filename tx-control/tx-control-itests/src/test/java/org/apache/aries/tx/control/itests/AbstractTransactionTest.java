@@ -32,8 +32,6 @@ import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.Properties;
 
-import javax.inject.Inject;
-
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.h2.tools.Server;
 import org.junit.After;
@@ -55,10 +53,10 @@ import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 
+	private static final String TX_CONTROL_FILTER = "org.apache.aries.tx.control.itests.filter";
 	private static final String REMOTE_DB_PROPERTY = "org.apache.aries.tx.control.itests.remotedb";
 	private static final String CONFIGURED_PROVIDER_PROPERTY = "org.apache.aries.tx.control.itests.configured";
 
-	@Inject
 	protected TransactionControl txControl;
 
 	protected Connection connection;
@@ -67,8 +65,11 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 
 	@Before
 	public void setUp() throws Exception {
-		Properties jdbc = new Properties();
 		
+		txControl = context().getService(TransactionControl.class, 
+				System.getProperty(TX_CONTROL_FILTER), 5000);
+		
+		Properties jdbc = new Properties();
 		
 		boolean external = System.getProperties().containsKey(REMOTE_DB_PROPERTY);
 		
@@ -84,7 +85,7 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		
 		jdbc.setProperty(DataSourceFactory.JDBC_URL, jdbcUrl);
 		
-		boolean configuredProvider = Boolean.getBoolean(CONFIGURED_PROVIDER_PROPERTY);
+		boolean configuredProvider = System.getProperties().containsKey(CONFIGURED_PROVIDER_PROPERTY);
 		
 		connection = configuredProvider ? configuredConnection(jdbc) : programaticConnection(jdbc);
 		
@@ -111,10 +112,18 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Connection configuredConnection(Properties jdbc) throws IOException {
 		
+		String type = System.getProperty(CONFIGURED_PROVIDER_PROPERTY);
+		
 		jdbc.setProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.h2.Driver");
 		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
 		
-		org.osgi.service.cm.Configuration config = cm.createFactoryConfiguration("org.apache.aries.tx.control.jdbc.local", null);
+		String pid = "local".equals(type) ? "org.apache.aries.tx.control.jdbc.local" 
+				: "org.apache.aries.tx.control.jdbc.xa";
+		
+		System.out.println("Configuring connection provider with pid " + pid);
+		
+		org.osgi.service.cm.Configuration config = cm.createFactoryConfiguration(
+				pid, null);
 		config.update((Hashtable)jdbc);
 		
 		return context().getService(JDBCConnectionProvider.class, 5000).getResource(txControl);
@@ -127,7 +136,7 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 				.execute("DROP TABLE TEST_TABLE"));
 		
 		
-		if(Boolean.getBoolean(CONFIGURED_PROVIDER_PROPERTY)) {
+		if(System.getProperties().containsKey(CONFIGURED_PROVIDER_PROPERTY)) {
 			clearConfiguration();
 		}
 		
@@ -227,7 +236,7 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 				localJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
-				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value("true"),
+				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value("local"),
 				when(testSpecificOptions != null).useOptions(testSpecificOptions),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
@@ -300,7 +309,57 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 				localJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
-				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value("true"),
+				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value("local"),
+				when(testSpecificOptions != null).useOptions(testSpecificOptions),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+				);
+	}
+	
+	@Configuration
+	public Option[] xaServerH2XATxConfiguration() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		Option testSpecificOptions = testSpecificOptions();
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+				xaTxControlService(),
+				xaJdbcResourceProviderWithH2(),
+				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
+				when(testSpecificOptions != null).useOptions(testSpecificOptions),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+				);
+	}
+
+	@Configuration
+	public Option[] xaConfigAdminDrivenH2XATxConfiguration() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		Option testSpecificOptions = testSpecificOptions();
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+				xaTxControlService(),
+				xaJdbcResourceProviderWithH2(),
+				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
+				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
+				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value("xa"),
 				when(testSpecificOptions != null).useOptions(testSpecificOptions),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
@@ -322,12 +381,14 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 	
 	public Option localTxControlService() {
 		return CoreOptions.composite(
+				systemProperty(TX_CONTROL_FILTER).value("(!(osgi.xa.enabled=*))"),
 				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-local").versionAsInProject());
 	}
 
 	public Option xaTxControlService() {
 		return CoreOptions.composite(
+				systemProperty(TX_CONTROL_FILTER).value("(osgi.xa.enabled=true)"),
 				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-xa").versionAsInProject());
 	}
@@ -336,6 +397,12 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return CoreOptions.composite(
 				mavenBundle("com.h2database", "h2").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jdbc-local").versionAsInProject());
+	}
+
+	public Option xaJdbcResourceProviderWithH2() {
+		return CoreOptions.composite(
+				mavenBundle("com.h2database", "h2").versionAsInProject(),
+				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jdbc-xa").versionAsInProject());
 	}
 
 	protected Option testSpecificOptions() {
