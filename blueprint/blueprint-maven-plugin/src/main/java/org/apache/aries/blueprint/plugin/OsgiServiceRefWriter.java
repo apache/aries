@@ -18,15 +18,14 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import java.util.Collection;
+import org.apache.aries.blueprint.plugin.model.OsgiServiceRef;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.aries.blueprint.plugin.model.OsgiServiceRef;
+import java.util.Collection;
 
 public class OsgiServiceRefWriter {
-    private XMLStreamWriter writer;
+    private final XMLStreamWriter writer;
 
     public OsgiServiceRefWriter(XMLStreamWriter writer) {
         this.writer = writer;
@@ -44,6 +43,9 @@ public class OsgiServiceRefWriter {
         writer.writeAttribute("interface", serviceBean.clazz.getName());
         if (serviceBean.filter != null && !"".equals(serviceBean.filter)) {
             writer.writeAttribute("filter", serviceBean.filter);
+        }
+        if (serviceBean.compName != null && !"".equals(serviceBean.compName)) {
+            writer.writeAttribute("component-name", serviceBean.compName);
         }
         writer.writeCharacters("\n");
     }

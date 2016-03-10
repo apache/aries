@@ -18,22 +18,20 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import java.util.Collection;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.apache.aries.blueprint.plugin.model.Bean;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
 import org.ops4j.pax.cdi.api.Property;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.util.Collection;
+import java.util.List;
 
 public class OsgiServiceProviderWriter {
-    private XMLStreamWriter writer;
+    private final XMLStreamWriter writer;
 
     public OsgiServiceProviderWriter(XMLStreamWriter writer) {
         this.writer = writer;
