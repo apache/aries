@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,15 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Set;
-
-import javax.inject.Named;
-
+import com.google.common.collect.Sets;
 import org.apache.aries.blueprint.plugin.bad.BadBean1;
 import org.apache.aries.blueprint.plugin.bad.BadBean2;
 import org.apache.aries.blueprint.plugin.bad.BadBean3;
@@ -37,11 +29,18 @@ import org.apache.aries.blueprint.plugin.bad.FieldBean4;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
+import org.apache.aries.blueprint.plugin.test.MyBean5;
 import org.apache.aries.blueprint.plugin.test.ServiceAImpl1;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.collect.Sets;
+import javax.inject.Named;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class BeanTest {
 
@@ -63,12 +62,12 @@ public class BeanTest {
         assertEquals("serviceA", prop.ref);
 
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-                                                            new TransactionalDef("txNotSupported", "NotSupported"),
-                                                            new TransactionalDef("txMandatory", "Mandatory"),
-                                                            new TransactionalDef("txNever", "Never"),
-                                                            new TransactionalDef("txRequired", "Required"),
-                                                            new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
-                                                            new TransactionalDef("txSupports", "Supports"));
+                new TransactionalDef("txNotSupported", "NotSupported"),
+                new TransactionalDef("txMandatory", "Mandatory"),
+                new TransactionalDef("txNever", "Never"),
+                new TransactionalDef("txRequired", "Required"),
+                new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+                new TransactionalDef("txSupports", "Supports"));
         assertEquals(expectedTxs, bean.transactionDefs);
     }
 
@@ -85,12 +84,12 @@ public class BeanTest {
         assertTrue(bean.isPrototype);
 
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-                                                            new TransactionalDef("txNotSupported", "NotSupported"),
-                                                            new TransactionalDef("txMandatory", "Mandatory"),
-                                                            new TransactionalDef("txNever", "Never"),
-                                                            new TransactionalDef("txRequired", "Required"),
-                                                            new TransactionalDef("txRequiresNew", "RequiresNew"),
-                                                            new TransactionalDef("txSupports", "Supports"));
+                new TransactionalDef("txNotSupported", "NotSupported"),
+                new TransactionalDef("txMandatory", "Mandatory"),
+                new TransactionalDef("txNever", "Never"),
+                new TransactionalDef("txRequired", "Required"),
+                new TransactionalDef("txRequiresNew", "RequiresNew"),
+                new TransactionalDef("txSupports", "Supports"));
         assertEquals(expectedTxs, bean.transactionDefs);
     }
 
@@ -156,4 +155,25 @@ public class BeanTest {
     public void testFieldBean4() {
         new Context(FieldBean4.class).resolve();
     }
+
+    @Test
+    public void testParseBeanWithConstructorInject() {
+        Bean bean = new Bean(MyBean5.class);
+        bean.resolve(new Context());
+        assertEquals(MyBean5.class, bean.clazz);
+        assertEquals("myBean5", bean.id); // Name derived from class name
+        assertNull("There should be no initMethod", bean.initMethod);
+        assertNull("There should be no destroyMethod", bean.destroyMethod);
+        assertTrue("There should be no persistenceUnit", bean.persistenceFields.isEmpty());
+        assertEquals(0, bean.properties.size());
+        assertEquals(7, bean.constructorArguments.size());
+        assertEquals("my2", bean.constructorArguments.get(0).getRef());
+        assertEquals("serviceA", bean.constructorArguments.get(1).getRef());
+        assertEquals("serviceB", bean.constructorArguments.get(2).getRef());
+        assertEquals("100", bean.constructorArguments.get(3).getValue());
+        assertEquals("ser1", bean.constructorArguments.get(4).getRef());
+        assertEquals("ser2", bean.constructorArguments.get(5).getRef());
+        assertEquals("serviceA", bean.constructorArguments.get(6).getRef());
+    }
+
 }

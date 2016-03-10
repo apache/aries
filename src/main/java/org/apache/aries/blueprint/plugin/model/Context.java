@@ -87,7 +87,12 @@ public class Context implements Matcher {
     public void resolve() {
         for (Bean bean : getBeans()) {
             bean.resolve(this);
+            addServiceRefs(bean);
         }
+    }
+
+    private void addServiceRefs(Bean bean) {
+        reg.addAll(bean.serviceRefs);
     }
 
     public BeanRef getMatching(BeanRef template) {
