@@ -40,6 +40,8 @@ import org.apache.aries.blueprint.mutable.MutableRefMetadata;
 import org.apache.aries.blueprint.mutable.MutableReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
 import org.apache.aries.blueprint.utils.ServiceListener;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.BeanProperty;
@@ -148,7 +150,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public void setConfigAdmin(ConfigurationAdmin configAdmin) {
-        this.configAdmin = configAdmin;
+        CmNamespaceHandler.configAdmin = configAdmin;
     }
 
     public URL getSchemaLocation(String namespace) {
@@ -160,6 +162,15 @@ public class CmNamespaceHandler implements NamespaceHandler {
             return getClass().getResource("blueprint-cm-1.1.0.xsd");
         } else if (BLUEPRINT_CM_NAMESPACE_1_0.equals(namespace)) {
             return getClass().getResource("blueprint-cm-1.0.0.xsd");
+        } else if (namespace.startsWith("http://aries.apache.org/blueprint/xmlns/blueprint-ext")) {
+            try {
+                Bundle extBundle = FrameworkUtil.getBundle(PlaceholdersUtils.class);
+                Class<?> extNsHandlerClazz = extBundle.loadClass("org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler");
+                return ((NamespaceHandler) extNsHandlerClazz.newInstance()).getSchemaLocation(namespace);
+            } catch (Throwable t) {
+                LOGGER.warn("Could not locate ext namespace schema", t);
+                return null;
+            }
         } else {
             return null;
         }
