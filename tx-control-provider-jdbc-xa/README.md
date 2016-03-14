@@ -90,31 +90,50 @@ The factory pid is _org.apache.aries.tx.control.jdbc.xa_ and it may use the foll
 
 ### Resource Provider properties
 
-*aries.dsf.target.filter* : The target filter to use when searching for a DataSourceFactory. If not specified then *osgi.jdbc.driver.class* must be specified.
-*aries.jdbc.property.names* : The names of the properties to pass to the DataSourceFactory when creating the JDBC resources
-*osgi.jdbc.driver.class* : Used to locate the DataSourceFactory service if the *aries.dsf.target.filter* is not set.
-*osgi.local.enabled* : Defaults to true. If false then this resource will not participate in local transactions, and will fail if used within one. One of *osgi.local.enabled* and *osgi.xa.enabled* must be true.
-*osgi.xa.enabled* : Defaults to true. If false then this resource will not participate in xa transactions, and will fail if used within one. One of *osgi.local.enabled* and *osgi.xa.enabled* must be true.
-*osgi.connection.pooling.enabled* : Defaults to true. If true then the Database connections will be pooled.
-*osgi.connection.max* : Defaults to 10. The maximum number of connections that should be kept in the pool
-*osgi.connection.min* : Defaults to 10. The minimum number of connections that should be kept in the pool
-*osgi.connection.timeout* : Defaults to 30,000 (30 seconds). The maximum time in milliseconds to block when waiting for a database connection
-*osgi.idle.timeout* : Defaults to 180,000 (3 minutes). The time in milliseconds before an idle connection is eligible to be closed.
-*osgi.connection.timeout* : Defaults to 10,800,000 (3 hours). The maximum time in milliseconds that a connection may remain open before being closed.
-*osgi.use.driver* : Defaults to false. If true then use the createDriver method to connect to the database. Cannot be true if *osgi.xa.enabled* is true.
+* *aries.dsf.target.filter* : The target filter to use when searching for a DataSourceFactory. If not specified then *osgi.jdbc.driver.class* must be specified.
+
+* *aries.jdbc.property.names* : The names of the properties to pass to the DataSourceFactory when creating the JDBC resources
+
+* *osgi.jdbc.driver.class* : Used to locate the DataSourceFactory service if the *aries.dsf.target.filter* is not set.
+
+* *osgi.local.enabled* : Defaults to true. If false then this resource will not participate in local transactions, and will fail if used within one. One of *osgi.local.enabled* and *osgi.xa.enabled* must be true.
+
+* *osgi.xa.enabled* : Defaults to true. If false then this resource will not participate in xa transactions, and will fail if used within one. One of *osgi.local.enabled* and *osgi.xa.enabled* must be true.
+
+* *osgi.connection.pooling.enabled* : Defaults to true. If true then the Database connections will be pooled.
+
+* *osgi.connection.max* : Defaults to 10. The maximum number of connections that should be kept in the pool
+
+* *osgi.connection.min* : Defaults to 10. The minimum number of connections that should be kept in the pool
+
+* *osgi.connection.timeout* : Defaults to 30,000 (30 seconds). The maximum time in milliseconds to block when waiting for a database connection
+
+* *osgi.idle.timeout* : Defaults to 180,000 (3 minutes). The time in milliseconds before an idle connection is eligible to be closed.
+
+* *osgi.connection.timeout* : Defaults to 10,800,000 (3 hours). The maximum time in milliseconds that a connection may remain open before being closed.
+
+* *osgi.use.driver* : Defaults to false. If true then use the createDriver method to connect to the database. Cannot be true if *osgi.xa.enabled* is true.
 
 
 ### JDBC properties
 
 The following properties will automatically be passed to the DataSourceFactory if they are present. The list of properties may be overridden using the *aries.jdbc.property.names* property if necessary.
 
-*databaseName* : The name of the database
-*dataSourceName* : The name of the dataSource that will be created
-*description* : A description of the dataSource being created
-*networkProtocol* : The network protocol to use.
-*portNumber* : The port number to use
-*roleName* : The name of the JDBC role
-*serverName* : The name of the database server
-*user* : The JDBC user
-*password* : The JDBC password
+* *databaseName* : The name of the database
+
+* *dataSourceName* : The name of the dataSource that will be created
+
+* *description* : A description of the dataSource being created
+
+* *networkProtocol* : The network protocol to use.
+
+* *portNumber* : The port number to use
+
+* *roleName* : The name of the JDBC role
+
+* *serverName* : The name of the database server
+
+* *user* : The JDBC user
+
+* *password* : The JDBC password
 
