@@ -22,20 +22,27 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.jmx</groupId>
-        <artifactId>org.apache.aries.jmx.parent</artifactId>
-        <version>1.1.6-SNAPSHOT</version>
-        <relativePath>../jmx-parent</relativePath>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.0.1</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>  
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.core</artifactId>
+	<version>1.1.6-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Core</name>
     <description>
         This bundle contains the core implementation 
 		of the JMX Control specification
     </description>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-core</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-core</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-core</url>
+    </scm>
 
     <properties>
         <aries.osgi.activator>
@@ -75,7 +82,7 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.api</artifactId>
-            <version>${project.version}</version>
+            <version>1.1.5</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -124,6 +131,13 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-javadoc-plugin</artifactId>
+                 <configuration>
+                     <additionalparam>-Xdoclint:none</additionalparam>
+                 </configuration>
             </plugin>
         </plugins>
     </build>
