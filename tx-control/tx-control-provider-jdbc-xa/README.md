@@ -133,6 +133,8 @@ The following properties will automatically be passed to the DataSourceFactory i
 
 * *serverName* : The name of the database server
 
+* *url* : The JDBC url to use (often used instead of other properties such as *serverName*, *portNumber* and *databaseName*).
+
 * *user* : The JDBC user
 
 * *password* : The JDBC password
