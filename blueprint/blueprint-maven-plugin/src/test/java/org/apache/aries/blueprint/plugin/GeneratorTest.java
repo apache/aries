@@ -185,6 +185,24 @@ public class GeneratorTest {
         assertEquals("(mode=123)", xpath.evaluate("@filter", ser2));
     }
 
+    @Test
+    public void testProducesNamedBeans() throws Exception {
+        Node bean1 = getBeanById("produced1");
+        assertEquals("org.apache.aries.blueprint.plugin.test.MyProduced", xpath.evaluate("@class", bean1));
+        assertEquals("myFactoryNamedBean", xpath.evaluate("@factory-ref", bean1));
+        assertEquals("createBean1", xpath.evaluate("@factory-method", bean1));
+        assertEquals("prototype", xpath.evaluate("@scope", bean1));
+
+        Node bean2 = getBeanById("produced2");
+        assertEquals("org.apache.aries.blueprint.plugin.test.MyProduced", xpath.evaluate("@class", bean1));
+        assertEquals("myFactoryNamedBean", xpath.evaluate("@factory-ref", bean2));
+        assertEquals("createBean2", xpath.evaluate("@factory-method", bean2));
+        assertEquals("", xpath.evaluate("@scope", bean2));
+
+        Node myBean5 = getBeanById("myBean5");
+        assertEquals("produced2", xpath.evaluate("argument[8]/@ref", myBean5));
+    }
+
     private static Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
             SAXException, IOException {
         InputStream is = new ByteArrayInputStream(os.toByteArray());
