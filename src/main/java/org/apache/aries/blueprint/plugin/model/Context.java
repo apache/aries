@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,20 +18,21 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import org.ops4j.pax.cdi.api.OsgiService;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.Converter;
+
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import javax.enterprise.inject.Produces;
-
-import org.ops4j.pax.cdi.api.OsgiService;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.Converter;
 
 public class Context implements Matcher {
 
@@ -70,9 +71,19 @@ public class Context implements Matcher {
     private void addProducedBeans(Class<?> clazz, BeanRef factoryBean) {
         for (Method method : clazz.getMethods()) {
             Produces produces = method.getAnnotation(Produces.class);
+            Named named = method.getAnnotation(Named.class);
+            Singleton singleton = method.getAnnotation(Singleton.class);
             if (produces != null) {
                 Class<?> producedClass = method.getReturnType();
-                ProducedBean producedBean = new ProducedBean(producedClass, factoryBean, method.getName());
+                ProducedBean producedBean;
+                if (named != null) {
+                    producedBean = new ProducedBean(producedClass, named.value(), factoryBean, method.getName());
+                } else {
+                    producedBean = new ProducedBean(producedClass, factoryBean, method.getName());
+                }
+                if (singleton != null) {
+                    producedBean.setSingleton();
+                }
                 reg.add(producedBean);
             }
         }
@@ -108,7 +119,7 @@ public class Context implements Matcher {
         TreeSet<Bean> beans = new TreeSet<Bean>();
         for (BeanRef ref : reg) {
             if (ref instanceof Bean) {
-                beans.add((Bean)ref);
+                beans.add((Bean) ref);
             }
         }
         return beans;
@@ -118,7 +129,7 @@ public class Context implements Matcher {
         TreeSet<OsgiServiceRef> serviceRefs = new TreeSet<OsgiServiceRef>();
         for (BeanRef ref : reg) {
             if (ref instanceof OsgiServiceRef) {
-                serviceRefs.add((OsgiServiceRef)ref);
+                serviceRefs.add((OsgiServiceRef) ref);
             }
         }
         return serviceRefs;
