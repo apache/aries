@@ -49,7 +49,8 @@ public class MyBean5 {
                    @Value("100") int bla,
                    @OsgiService(filter = "myRef") @Named("ser1") ServiceC myReference,
                    @OsgiService(filter = "(mode=123)") @Named("ser2") ServiceC myReference2,
-                   @AnnotatedService ServiceA serviceAAnnotated) {
+                   @AnnotatedService ServiceA serviceAAnnotated,
+                   @Named("produced2") MyProduced myProduced) {
         this.serviceA1 = serviceA1;
         this.serviceA2 = serviceA2;
         this.serviceB = serviceB;
