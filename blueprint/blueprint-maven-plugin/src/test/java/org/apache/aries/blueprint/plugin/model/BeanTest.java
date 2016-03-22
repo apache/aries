@@ -166,7 +166,7 @@ public class BeanTest {
         assertNull("There should be no destroyMethod", bean.destroyMethod);
         assertTrue("There should be no persistenceUnit", bean.persistenceFields.isEmpty());
         assertEquals(0, bean.properties.size());
-        assertEquals(7, bean.constructorArguments.size());
+        assertEquals(8, bean.constructorArguments.size());
         assertEquals("my2", bean.constructorArguments.get(0).getRef());
         assertEquals("serviceA", bean.constructorArguments.get(1).getRef());
         assertEquals("serviceB", bean.constructorArguments.get(2).getRef());
@@ -174,6 +174,7 @@ public class BeanTest {
         assertEquals("ser1", bean.constructorArguments.get(4).getRef());
         assertEquals("ser2", bean.constructorArguments.get(5).getRef());
         assertEquals("serviceA", bean.constructorArguments.get(6).getRef());
+        assertEquals("produced2", bean.constructorArguments.get(7).getRef());
     }
 
 }
