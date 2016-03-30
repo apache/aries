@@ -37,9 +37,13 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ManagedServiceFactoryImpl.class);
+	
 	private static final String DSF_TARGET_FILTER = "aries.dsf.target.filter";
 	private static final String JDBC_PROP_NAMES = "aries.jdbc.property.names";
 	private static final List<String> JDBC_PROPERTIES = asList(JDBC_DATABASE_NAME, JDBC_DATASOURCE_NAME,
@@ -70,13 +74,14 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 			propsMap.put(key, properties.get(key));
 		}
 
-		Properties jdbcProps = getJdbcProps(propsMap);
+		Properties jdbcProps = getJdbcProps(pid, propsMap);
 
 		try {
-			ManagedJDBCResourceProvider mjrp = new ManagedJDBCResourceProvider(context, jdbcProps, propsMap);
+			ManagedJDBCResourceProvider mjrp = new ManagedJDBCResourceProvider(context, pid, jdbcProps, propsMap);
 			ofNullable(managedInstances.put(pid, mjrp)).ifPresent(ManagedJDBCResourceProvider::stop);
 			mjrp.start();
 		} catch (InvalidSyntaxException e) {
+			LOG.error("The configuration {} contained an invalid target filter {}", pid, e.getFilter());
 			throw new ConfigurationException(DSF_TARGET_FILTER, "The target filter was invalid", e);
 		}
 	}
@@ -86,7 +91,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Properties getJdbcProps(Map<String, Object> properties) throws ConfigurationException {
+	private Properties getJdbcProps(String pid, Map<String, Object> properties) throws ConfigurationException {
 
 		Object object = properties.getOrDefault(JDBC_PROP_NAMES, JDBC_PROPERTIES);
 		Collection<String> propnames;
@@ -97,6 +102,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 		} else if (object instanceof Collection) {
 			propnames = (Collection<String>) object;
 		} else {
+			LOG.error("The configuration {} contained an invalid list of JDBC property names", pid, object);
 			throw new ConfigurationException(JDBC_PROP_NAMES,
 					"The jdbc property names must be a String+ or comma-separated String");
 		}
@@ -119,6 +125,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 			implements ServiceTrackerCustomizer<DataSourceFactory, DataSourceFactory> {
 
 		private final BundleContext context;
+		private final String pid;
 		private final Properties jdbcProperties;
 		private final Map<String, Object> providerProperties;
 		private final ServiceTracker<DataSourceFactory, DataSourceFactory> dsfTracker;
@@ -126,9 +133,10 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 		private final AtomicReference<DataSourceFactory> activeDsf = new AtomicReference<>();
 		private final AtomicReference<ServiceRegistration<JDBCConnectionProvider>> serviceReg = new AtomicReference<>();
 
-		public ManagedJDBCResourceProvider(BundleContext context, Properties jdbcProperties,
+		public ManagedJDBCResourceProvider(BundleContext context, String pid, Properties jdbcProperties,
 				Map<String, Object> providerProperties) throws InvalidSyntaxException, ConfigurationException {
 			this.context = context;
+			this.pid = pid;
 			this.jdbcProperties = jdbcProperties;
 			this.providerProperties = providerProperties;
 
@@ -136,6 +144,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 			if (targetFilter == null) {
 				String driver = (String) providerProperties.get(OSGI_JDBC_DRIVER_CLASS);
 				if (driver == null) {
+					LOG.error("The configuration {} must specify a target filter or a JDBC driver class", pid);
 					throw new ConfigurationException(OSGI_JDBC_DRIVER_CLASS,
 							"The configuration must specify either a target filter or a JDBC driver class");
 				}
@@ -179,6 +188,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 						throw new IllegalStateException("Unable to set the JDBC connection provider registration");
 					}
 				} catch (Exception e) {
+					LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
 					activeDsf.compareAndSet(service, null);
 				}
 			}
@@ -210,7 +220,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 				try {
 					oldReg.unregister();
 				} catch (IllegalStateException ise) {
-
+					LOG.debug("An exception occurred when unregistering a service for {}", pid);
 				}
 			}
 
