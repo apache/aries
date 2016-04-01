@@ -161,6 +161,7 @@
                 <version>2.5.3</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <obrRepository>NONE</obrRepository>
                     <instructions>
                         <_include>osgi.bnd</_include>
                     </instructions>
