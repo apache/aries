@@ -27,7 +27,6 @@ import javax.transaction.UserTransaction;
 import javax.transaction.xa.XAException;
 
 import org.apache.aries.transaction.AriesTransactionManager;
-import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.geronimo.transaction.log.HOWLLog;
 import org.apache.geronimo.transaction.log.UnrecoverableLog;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
@@ -168,7 +167,13 @@ public class TransactionManagerService {
     }
 
     public void close() throws Exception {
-        AriesFrameworkUtil.safeUnregisterService(serviceRegistration);
+        if(serviceRegistration != null) {
+          try {
+            serviceRegistration.unregister();
+          } catch (IllegalStateException e) {
+            //This can be safely ignored
+          }
+        }
       
         if (transactionLog instanceof HOWLLog) {
             ((HOWLLog) transactionLog).doStop();
