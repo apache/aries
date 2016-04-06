@@ -63,6 +63,7 @@ public abstract class AbstractJPAItest {
     protected static final String XA_TEST_UNIT = "xa-test-unit";
     protected static final String DSF_TEST_UNIT = "dsf-test-unit";
     protected static final String DSF_XA_TEST_UNIT = "dsf-xa-test-unit";
+    protected static final String EXTERNAL_TEST_UNIT = "external-test-unit";
 
     protected static final String TEST_BUNDLE_NAME = "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle";
     

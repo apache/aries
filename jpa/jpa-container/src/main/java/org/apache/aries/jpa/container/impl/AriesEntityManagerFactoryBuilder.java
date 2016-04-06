@@ -18,12 +18,14 @@
  */
 package org.apache.aries.jpa.container.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
-import javax.persistence.spi.PersistenceUnitInfo;
+import javax.sql.DataSource;
 
+import org.apache.aries.jpa.container.parser.impl.PersistenceUnit;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 
 /**
@@ -33,12 +35,15 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
  */
 public class AriesEntityManagerFactoryBuilder implements EntityManagerFactoryBuilder {
     private static final String JAVAX_PERSISTENCE_JDBC_DRIVER = "javax.persistence.jdbc.driver";
+    private static final String JAVAX_PERSISTENCE_JTA_DATASOURCE = "javax.persistence.jtaDataSource";
+    private static final String JAVAX_PERSISTENCE_NON_JTA_DATASOURCE = "javax.persistence.nonJtaDataSource";
 
     private PersistenceProvider provider;
-    private PersistenceUnitInfo persistenceUnit;
+    private PersistenceUnit persistenceUnit;
     private String driver;
+    
 
-    public AriesEntityManagerFactoryBuilder(PersistenceProvider provider, PersistenceUnitInfo persistenceUnit) {
+    public AriesEntityManagerFactoryBuilder(PersistenceProvider provider, PersistenceUnit persistenceUnit) {
         this.provider = provider;
         this.persistenceUnit = persistenceUnit;
         this.driver = (String)persistenceUnit.getProperties().get(JAVAX_PERSISTENCE_JDBC_DRIVER);
@@ -46,12 +51,30 @@ public class AriesEntityManagerFactoryBuilder implements EntityManagerFactoryBui
 
     @Override
     public EntityManagerFactory createEntityManagerFactory(Map<String, Object> props) {
-        String newDriver = (String)props.get(JAVAX_PERSISTENCE_JDBC_DRIVER);
+        props = new HashMap<String, Object>(props);
+    	
+    	String newDriver = (String)props.get(JAVAX_PERSISTENCE_JDBC_DRIVER);
         if (driver == null) {
             driver = newDriver;
         } else if (newDriver != null && !newDriver.equals(driver)){
             throw new IllegalArgumentException("Can not rebind to a different database driver");
         }
+        
+        // Handle overridden datasources in a provider agnostic way
+        // This isn't necessary for EclipseLink, but Hibernate and 
+        // OpenJPA both need some extra help.
+        Object o = props.get(JAVAX_PERSISTENCE_JTA_DATASOURCE);
+        if(o instanceof DataSource) {
+        	persistenceUnit.setJtaDataSource((DataSource) o);
+        	props.remove(JAVAX_PERSISTENCE_JTA_DATASOURCE);
+        }
+
+        o = props.get(JAVAX_PERSISTENCE_NON_JTA_DATASOURCE);
+        if(o instanceof DataSource) {
+        	persistenceUnit.setNonJtaDataSource((DataSource) o);
+        	props.remove(JAVAX_PERSISTENCE_NON_JTA_DATASOURCE);
+        }
+        
         return provider.createContainerEntityManagerFactory(persistenceUnit, props);
     }
 
