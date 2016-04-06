@@ -18,11 +18,9 @@
  */
 package org.apache.aries.tx.control.itests;
 
-import static org.ops4j.pax.exam.CoreOptions.bootClasspathLibrary;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
@@ -56,6 +54,8 @@ import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest {
+
+	protected static final String ARIES_EMF_BUILDER_TARGET_FILTER = "aries.emf.builder.target.filter";
 
 	protected TransactionControl txControl;
 
@@ -94,6 +94,12 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 		props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.h2.Driver");
 		props.put(DataSourceFactory.JDBC_URL, jdbcUrl);
 		props.put(EntityManagerFactoryBuilder.JPA_UNIT_NAME, "test-unit");
+		
+		String filter = System.getProperty(ARIES_EMF_BUILDER_TARGET_FILTER);
+		
+		if(filter != null) {
+			props.put(ARIES_EMF_BUILDER_TARGET_FILTER, filter);
+		}
 		
 		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
 		
@@ -175,7 +181,7 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				localTxControlService(),
 				localJpaResourceProviderWithH2(),
-				eclipseLink2_3_0(),
+				jpaProvider(),
 				ariesJPA(),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
@@ -197,20 +203,13 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jpa-local").versionAsInProject());
 	}
 	
-	public Option eclipseLink2_3_0() {
-		return CoreOptions.composite(
-				systemPackage("javax.transaction;version=1.1"),
-				systemPackage("javax.transaction.xa;version=1.1"),
-				bootClasspathLibrary(mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec", "1.1.1")),
-				mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa", "2.6.0"),
-				mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.core", "2.6.0"),
-				mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm", "2.6.0"),
-				mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.antlr", "2.6.0"),
-				mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa.jpql", "2.6.0"),
-				mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.eclipselink.adapter", "2.3.0"));
+	public Option ariesJPA() {
+		return mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container", ariesJPAVersion());
 	}
 
-	public Option ariesJPA() {
-		return mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container", "2.3.0");
+	protected String ariesJPAVersion() {
+		return "2.3.0";
 	}
+	
+	protected abstract Option jpaProvider();
 }
