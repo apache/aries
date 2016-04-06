@@ -27,14 +27,8 @@ import javax.persistence.criteria.CriteriaQuery;
 
 import org.apache.aries.tx.control.itests.entity.Message;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-@RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
-public class SimpleTransactionTest extends AbstractJPATransactionTest {
+public abstract class AbstractSimpleTransactionTest extends AbstractJPATransactionTest {
 
 	@Test
 	public void testTx() {
