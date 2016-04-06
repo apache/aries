@@ -16,10 +16,12 @@
 package org.apache.aries.jpa.container.itest;
 
 import static org.junit.Assert.assertEquals;
+import static org.osgi.service.jdbc.DataSourceFactory.OSGI_JDBC_DRIVER_CLASS;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -33,6 +35,7 @@ import org.apache.aries.jpa.supplier.EmSupplier;
 import org.junit.Test;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.Coordinator;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 
 public abstract class JPAContainerTest extends AbstractCarJPAITest {
@@ -140,4 +143,21 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
         assertEquals(BLUE_CAR_PLATE, car.getNumberPlate());
     }
 
+    @Test
+    public void testCarEMFBuilderExternalDS() throws Exception {
+    	DataSourceFactory dsf = getService(DataSourceFactory.class, 
+    			"(" + OSGI_JDBC_DRIVER_CLASS + "=org.apache.derby.jdbc.EmbeddedDriver)");
+       
+    	EntityManagerFactoryBuilder emfBuilder = getService(EntityManagerFactoryBuilder.class,
+    			"(osgi.unit.name=" + EXTERNAL_TEST_UNIT + ")");
+    	
+    	Properties jdbcProps = new Properties();
+    	jdbcProps.setProperty("url", "jdbc:derby:memory:DSFTEST;create=true");
+    	
+    	Map<String, Object> props = new HashMap<String, Object>();
+    	props.put("javax.persistence.nonJtaDataSource", dsf.createDataSource(jdbcProps));
+    	
+    	EntityManagerFactory emf = emfBuilder.createEntityManagerFactory(props);
+    	carLifecycleRL(emf.createEntityManager());
+    }
 }
