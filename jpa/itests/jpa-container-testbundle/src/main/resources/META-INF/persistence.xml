@@ -86,4 +86,13 @@
       <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
     </properties>
   </persistence-unit>
+  
+  <persistence-unit name="external-test-unit" transaction-type="RESOURCE_LOCAL">
+    <description>Test persistence unit for the JPA Container External DataSource iTests</description>
+    <properties>
+        <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+        <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+        <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+    </properties>
+  </persistence-unit>
 </persistence>

@@ -34,7 +34,7 @@
     <packaging>pom</packaging>
     
     <properties>
-        <baseline>2.1.0</baseline>
+        <baseline>2.3.0</baseline>
         <baseline.skip>false</baseline.skip>
     </properties>
 
