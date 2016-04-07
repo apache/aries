@@ -172,6 +172,13 @@ public class GeneratorTest {
     }
 
     @Test
+    public void testGenerateBeanWithConstructorInjectionWithoutInjectAnnotation() throws Exception {
+        // Bean with constructor injection
+        Node myBean6 = getBeanById("myBean6");
+        assertEquals("my2", xpath.evaluate("argument[1]/@ref", myBean6));
+    }
+
+    @Test
     public void testGenerateReferenceWithComponentName() throws Exception {
         Node ser1 = getReferenceById("ser1");
         assertEquals("myRef", xpath.evaluate("@component-name", ser1));
