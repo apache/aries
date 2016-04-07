@@ -221,4 +221,8 @@ public class PersistenceUnit implements PersistenceUnitInfo {
             }
         }
     }
+
+	public void setTransactionType(PersistenceUnitTransactionType transactionType) {
+		this.transactionType = transactionType;
+	}
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceProvider;
+import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
 import org.apache.aries.jpa.container.parser.impl.PersistenceUnit;
@@ -37,6 +38,7 @@ public class AriesEntityManagerFactoryBuilder implements EntityManagerFactoryBui
     private static final String JAVAX_PERSISTENCE_JDBC_DRIVER = "javax.persistence.jdbc.driver";
     private static final String JAVAX_PERSISTENCE_JTA_DATASOURCE = "javax.persistence.jtaDataSource";
     private static final String JAVAX_PERSISTENCE_NON_JTA_DATASOURCE = "javax.persistence.nonJtaDataSource";
+    private static final String JAVAX_PERSISTENCE_TX_TYPE = "javax.persistence.transactionType";
 
     private PersistenceProvider provider;
     private PersistenceUnit persistenceUnit;
@@ -73,6 +75,14 @@ public class AriesEntityManagerFactoryBuilder implements EntityManagerFactoryBui
         if(o instanceof DataSource) {
         	persistenceUnit.setNonJtaDataSource((DataSource) o);
         	props.remove(JAVAX_PERSISTENCE_NON_JTA_DATASOURCE);
+        }
+        
+        o = props.get(JAVAX_PERSISTENCE_TX_TYPE);
+        if(o instanceof PersistenceUnitTransactionType) {
+        	persistenceUnit.setTransactionType((PersistenceUnitTransactionType) o);
+        } else if (o instanceof String) {
+        	persistenceUnit.setTransactionType(
+        			PersistenceUnitTransactionType.valueOf((String) o));
         }
         
         return provider.createContainerEntityManagerFactory(persistenceUnit, props);
