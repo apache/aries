@@ -30,6 +30,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.tx.control.itests.entity.Message;
@@ -119,9 +121,12 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 
 		try {
 			txControl.required(() -> 
-				em.createQuery(
-						em.getCriteriaBuilder().createCriteriaDelete(Message.class)
-				).executeUpdate());
+				{
+					CriteriaBuilder cb = em.getCriteriaBuilder();
+					CriteriaDelete<Message> delete = cb.createCriteriaDelete(Message.class);
+					delete.from(Message.class);
+					return em.createQuery(delete).executeUpdate();
+				});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
