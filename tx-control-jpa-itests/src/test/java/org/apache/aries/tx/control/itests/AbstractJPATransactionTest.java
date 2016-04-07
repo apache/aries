@@ -30,11 +30,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
 
 import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.tx.control.itests.entity.Message;
 import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
@@ -91,7 +88,7 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 
 	private EntityManager configuredEntityManager(String jdbcUrl) throws IOException {
 		
-		Dictionary<String, Object> props = new Hashtable<>();
+		Dictionary<String, Object> props = getBaseProperties();
 		
 		props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.h2.Driver");
 		props.put(DataSourceFactory.JDBC_URL, jdbcUrl);
@@ -115,23 +112,14 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 		
 		return context().getService(JPAEntityManagerProvider.class, 5000).getResource(txControl);
 	}
+
+	protected Dictionary<String, Object> getBaseProperties() {
+		return new Hashtable<>();
+	}
 	
 	@After
 	public void tearDown() {
 
-		try {
-			txControl.required(() -> 
-				{
-					CriteriaBuilder cb = em.getCriteriaBuilder();
-					CriteriaDelete<Message> delete = cb.createCriteriaDelete(Message.class);
-					delete.from(Message.class);
-					return em.createQuery(delete).executeUpdate();
-				});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		
 		clearConfiguration();
 		
 		if(server != null) {
@@ -192,7 +180,7 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
 				
-//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
 				);
 	}
 
