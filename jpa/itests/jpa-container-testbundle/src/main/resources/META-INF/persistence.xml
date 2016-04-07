@@ -87,7 +87,7 @@
     </properties>
   </persistence-unit>
   
-  <persistence-unit name="external-test-unit" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="external-test-unit">
     <description>Test persistence unit for the JPA Container External DataSource iTests</description>
     <properties>
         <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
