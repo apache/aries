@@ -37,7 +37,7 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 			tranType = PersistenceUnitTransactionType.valueOf(o.toString());
 		} else {
 			//TODO log this?
-			tranType = null;
+			tranType = RESOURCE_LOCAL;
 		}
 		
 		if(RESOURCE_LOCAL != tranType) {
