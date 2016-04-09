@@ -16,24 +16,25 @@
  */
 package org.apache.aries.blueprint;
 
-import java.net.URL;
-import java.util.Set;
-
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 /**
  * Additional namespace features
  */
 public interface NamespaceHandler2 extends NamespaceHandler {
 
-    /*
+    /**
      * A namespace can return true if its parsing relies on PSVI,
      * i.e. extensions from the schema for default attributes values
      * for example.
      */
     boolean usePsvi();
+
+    /**
+     * <p>A hint for a registry of handlers that this handler actually may resolve given namespace
+     * and {@link NamespaceHandler#getSchemaLocation(String) return a location for XSD resource} for it.</p>
+     * <p>Some handlers return <em>some</em> XSD resource when asked for location of unknown namespace</p>
+     * @param namespace
+     * @return
+     */
+    boolean mayResolve(String namespace);
 
 }
