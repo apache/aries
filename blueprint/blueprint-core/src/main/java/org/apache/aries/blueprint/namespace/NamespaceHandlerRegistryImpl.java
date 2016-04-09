@@ -51,6 +51,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.aries.blueprint.NamespaceHandler;
+import org.apache.aries.blueprint.NamespaceHandler2;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.osgi.framework.Bundle;
@@ -416,27 +417,46 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     }
                 }
             }
-            for (NamespaceHandler h : handlers.values()) {
-                URL url = h.getSchemaLocation(namespaceURI);
-                if (url != null) {
-                    // handling include-relative-path case
-                    if (systemId != null && !systemId.matches("^[a-z][-+.0-9a-z]*:.*")) {
-                        try {
-                            url = new URL(url, systemId);
-                        } catch (Exception e) {
-                            // ignore and use the given systemId
-                        }
+            URI uri = URI.create(namespaceURI);
+            Set<NamespaceHandler> hs = NamespaceHandlerRegistryImpl.this.handlers.get(uri);
+            // first check registered handlers
+            if (hs != null) {
+                for (NamespaceHandler h : hs) {
+                    URL url = h.getSchemaLocation(namespaceURI);
+                    if (url != null) {
+                        return createLSInput(publicId, systemId, url);
                     }
-                    try {
-                        final StreamSource source = new StreamSource(url.openStream(), url.toExternalForm());
-                        schemaSources.add(source);
-                        return new SourceLSInput(source, publicId, url);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                }
+            }
+            // then check if some handler may resolve the namespace
+            for (NamespaceHandler h : handlers.values()) {
+                if (h instanceof NamespaceHandler2 && ((NamespaceHandler2) h).mayResolve(namespaceURI)) {
+                    URL url = h.getSchemaLocation(namespaceURI);
+                    if (url != null) {
+                        return createLSInput(publicId, systemId, url);
+
                     }
                 }
             }
             return null;
+        }
+
+        private LSInput createLSInput(String publicId, String systemId, URL url) {
+            // handling include-relative-path case
+            if (systemId != null && !systemId.matches("^[a-z][-+.0-9a-z]*:.*")) {
+                try {
+                    url = new URL(url, systemId);
+                } catch (Exception e) {
+                    // ignore and use the given systemId
+                }
+            }
+            try {
+                final StreamSource source = new StreamSource(url.openStream(), url.toExternalForm());
+                schemaSources.add(source);
+                return new SourceLSInput(source, publicId, url);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
