@@ -83,6 +83,11 @@ public class BlueprintNamespaceHandler implements NamespaceHandler2 {
     }
 
     @Override
+    public boolean mayResolve(String namespace) {
+        return schemas.containsKey(namespace);
+    }
+
+    @Override
     public URL getSchemaLocation(String s) {
         if (schemas.containsKey(s)) {
             return bundle.getResource(schemas.getProperty(s));
