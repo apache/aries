@@ -1,4 +1,4 @@
-package org.apache.aries.tx.control.jdbc.xa.impl;
+package org.apache.aries.tx.control.jdbc.xa.connection.impl;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

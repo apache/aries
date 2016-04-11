@@ -18,6 +18,7 @@
  */
 package org.apache.aries.tx.control.itests;
 
+import static java.lang.Boolean.getBoolean;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -54,7 +55,9 @@ import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest {
 
+	protected static final String TX_CONTROL_FILTER = "tx.control.filter";
 	protected static final String ARIES_EMF_BUILDER_TARGET_FILTER = "aries.emf.builder.target.filter";
+	protected static final String IS_XA = "aries.test.is.xa";
 
 	protected TransactionControl txControl;
 
@@ -65,7 +68,7 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 	@Before
 	public void setUp() throws Exception {
 		
-		txControl = context().getService(TransactionControl.class, 5000);
+		txControl = context().getService(TransactionControl.class, System.getProperty(TX_CONTROL_FILTER), 5000);
 		
 		server = Server.createTcpServer("-tcpPort", "0");
 		server.start();
@@ -102,7 +105,8 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 		
 		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
 		
-		String pid = "org.apache.aries.tx.control.jpa.local"; 
+		String pid = getBoolean(IS_XA) ? "org.apache.aries.tx.control.jpa.xa" :
+				"org.apache.aries.tx.control.jpa.local"; 
 		
 		System.out.println("Configuring connection provider with pid " + pid);
 		
@@ -180,20 +184,58 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
 				
-				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+				);
+	}
+
+	@Configuration
+	public Option[] xaTxConfiguration() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+				systemProperty(IS_XA).value(Boolean.TRUE.toString()),
+				xaTxControlService(),
+				xaJpaResourceProviderWithH2(),
+				jpaProvider(),
+				ariesJPA(),
+				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
 				);
 	}
 
 	public Option localTxControlService() {
 		return CoreOptions.composite(
+				systemProperty(TX_CONTROL_FILTER).value("(osgi.local.enabled=true)"),
 				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-local").versionAsInProject());
+	}
+
+	public Option xaTxControlService() {
+		return CoreOptions.composite(
+				systemProperty(TX_CONTROL_FILTER).value("(osgi.xa.enabled=true)"),
+				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
+				mavenBundle("org.apache.aries.tx-control", "tx-control-service-xa").versionAsInProject());
 	}
 
 	public Option localJpaResourceProviderWithH2() {
 		return CoreOptions.composite(
 				mavenBundle("com.h2database", "h2").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jpa-local").versionAsInProject());
+	}
+	
+	public Option xaJpaResourceProviderWithH2() {
+		return CoreOptions.composite(
+				mavenBundle("com.h2database", "h2").versionAsInProject(),
+				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jpa-xa").versionAsInProject());
 	}
 	
 	public Option ariesJPA() {
