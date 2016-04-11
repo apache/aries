@@ -15,6 +15,7 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
 
+import org.apache.aries.tx.control.jdbc.xa.connection.impl.XADataSourceMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

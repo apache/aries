@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 import org.apache.aries.tx.control.jdbc.common.impl.DriverDataSource;
+import org.apache.aries.tx.control.jdbc.xa.connection.impl.XADataSourceMapper;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.TransactionException;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
