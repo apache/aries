@@ -175,8 +175,14 @@ public class CmNamespaceHandler implements NamespaceHandler2 {
             return getClass().getResource("blueprint-cm-1.0.0.xsd");
         } else if (namespace.startsWith("http://aries.apache.org/blueprint/xmlns/blueprint-ext")) {
             try {
+                Class<?> extNsHandlerClazz;
                 Bundle extBundle = FrameworkUtil.getBundle(PlaceholdersUtils.class);
-                Class<?> extNsHandlerClazz = extBundle.loadClass("org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler");
+                if (extBundle == null) {
+                    // we may not be in OSGi environment
+                    extNsHandlerClazz = getClass().getClassLoader().loadClass("org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler");
+                } else {
+                    extNsHandlerClazz = extBundle.loadClass("org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler");
+                }
                 return ((NamespaceHandler) extNsHandlerClazz.newInstance()).getSchemaLocation(namespace);
             } catch (Throwable t) {
                 LOGGER.warn("Could not locate ext namespace schema", t);
