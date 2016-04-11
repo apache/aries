@@ -21,22 +21,38 @@
 
     <bean id="CmNamespaceHandler" class="org.apache.aries.blueprint.compendium.cm.CmNamespaceHandler"/>
 
-    <service ref="CmNamespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
+    <service ref="CmNamespaceHandler">
+        <interfaces>
+            <value>org.apache.aries.blueprint.NamespaceHandler</value>
+            <value>org.apache.aries.blueprint.NamespaceHandler2</value>
+        </interfaces>
         <service-properties>
             <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"/>
         </service-properties>
     </service>
-    <service ref="CmNamespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
+    <service ref="CmNamespaceHandler">
+        <interfaces>
+            <value>org.apache.aries.blueprint.NamespaceHandler</value>
+            <value>org.apache.aries.blueprint.NamespaceHandler2</value>
+        </interfaces>
         <service-properties>
             <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"/>
         </service-properties>
     </service>
-    <service ref="CmNamespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
+    <service ref="CmNamespaceHandler">
+        <interfaces>
+            <value>org.apache.aries.blueprint.NamespaceHandler</value>
+            <value>org.apache.aries.blueprint.NamespaceHandler2</value>
+        </interfaces>
         <service-properties>
             <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0"/>
         </service-properties>
     </service>
-    <service ref="CmNamespaceHandler" interface="org.apache.aries.blueprint.NamespaceHandler">
+    <service ref="CmNamespaceHandler">
+        <interfaces>
+            <value>org.apache.aries.blueprint.NamespaceHandler</value>
+            <value>org.apache.aries.blueprint.NamespaceHandler2</value>
+        </interfaces>
         <service-properties>
             <entry key="osgi.service.blueprint.namespace" value="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"/>
         </service-properties>
