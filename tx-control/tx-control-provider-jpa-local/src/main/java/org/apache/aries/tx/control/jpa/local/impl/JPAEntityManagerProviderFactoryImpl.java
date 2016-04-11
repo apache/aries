@@ -46,7 +46,7 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 	}
 
 	@Override
-	public JPAEntityManagerProvider getProviderFor(EntityManagerFactory emf, Map<String, Object> jpaProperties,
+	public JPAEntityManagerProvider getProviderFor(EntityManagerFactory emf,
 			Map<String, Object> resourceProviderProperties) {
 		checkEnlistment(resourceProviderProperties);
 		validateEMF(emf);

@@ -50,6 +50,12 @@ public interface JPAEntityManagerProviderFactory {
 	 * javax.persistence.jtaDataSource property
 	 */
 	public static final String	TRANSACTIONAL_DB_CONNECTION	= "osgi.jdbc.provider";
+	
+	/**
+	 * The property used to indicate that database connections will be automatically
+	 * enlisted in ongoing transactions without intervention from the JPA provider
+	 */
+	public static final String  PRE_ENLISTED_DB_CONNECTION = "osgi.jdbc.enlisted";
 
 	/**
 	 * Create a private {@link JPAEntityManagerProvider} using an
@@ -74,16 +80,12 @@ public interface JPAEntityManagerProviderFactory {
 	 * {@link EntityManagerFactory}.
 	 * 
 	 * @param emf
-	 * @param jpaProperties The properties to pass to the
-	 *            {@link EntityManagerFactory} in order to create the underlying
-	 *            {@link EntityManager} instances
 	 * @param resourceProviderProperties Configuration properties to pass to the
 	 *            JDBC Resource Provider runtime
 	 * @return A {@link JPAEntityManagerProvider} that can be used in
 	 *         transactions
 	 */
 	JPAEntityManagerProvider getProviderFor(EntityManagerFactory emf,
-			Map<String,Object> jpaProperties,
 			Map<String,Object> resourceProviderProperties);
 
 }
