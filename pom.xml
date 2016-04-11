@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.blueprint.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Core</name>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.6.1-SNAPSHOT</version>
     <description>
         This bundle contains the core implementation of Blueprint
         along with the "ext" namespace handler.
@@ -91,12 +91,12 @@
         </aries.osgi.include.resource>
         <blueprint.annotation.api.version>1.0.0</blueprint.annotation.api.version>
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.parser.version>1.5.0</blueprint.parser.version>
+        <blueprint.parser.version>1.5.0-SNAPSHOT</blueprint.parser.version>
         <proxy.api.version>1.0.0</proxy.api.version>
         <proxy.impl.version>1.0.3</proxy.impl.version>
         <quiesce.api.version>1.0.0</quiesce.api.version>
         <util.version>1.0.0</util.version>
-        <lastReleaseVersion>1.4.0</lastReleaseVersion>
+        <lastReleaseVersion>1.5.0</lastReleaseVersion>
     </properties>
 
     <profiles>
@@ -105,7 +105,7 @@
             <properties>
                 <blueprint.annotation.api.version>1.0.1</blueprint.annotation.api.version>
                 <blueprint.api.version>1.0.1</blueprint.api.version>
-                <blueprint.parser.version>1.5.0</blueprint.parser.version>
+                <blueprint.parser.version>1.5.0-SNAPSHOT</blueprint.parser.version>
                 <proxy.api.version>1.0.1</proxy.api.version>
                 <proxy.impl.version>1.0.1</proxy.impl.version>
                 <quiesce.api.version>1.0.0</quiesce.api.version>
