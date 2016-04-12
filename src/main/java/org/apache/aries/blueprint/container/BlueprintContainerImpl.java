@@ -54,6 +54,7 @@ import org.apache.aries.blueprint.Processor;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
+import org.apache.aries.blueprint.namespace.MissingNamespaceException;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
@@ -337,15 +338,21 @@ public class BlueprintContainerImpl
                                 }
                             }
                         }
-                        if (xmlValidation == null || "true".equals(xmlValidation)) {
-                            parser.validate(handlerSet.getSchema(parser.getSchemaLocations()));
-                        } else if ("structure".equals(xmlValidation)) {
-                            parser.validate(handlerSet.getSchema(parser.getSchemaLocations()), new ValidationHandler());
-                        } else if ("psvi".equals(xmlValidation)) {
-                            parser.validatePsvi(handlerSet.getSchema(parser.getSchemaLocations()));
+                        try {
+                            if (xmlValidation == null || "true".equals(xmlValidation)) {
+                                parser.validate(handlerSet.getSchema(parser.getSchemaLocations()));
+                            } else if ("structure".equals(xmlValidation)) {
+                                parser.validate(handlerSet.getSchema(parser.getSchemaLocations()), new ValidationHandler());
+                            } else if ("psvi".equals(xmlValidation)) {
+                                parser.validatePsvi(handlerSet.getSchema(parser.getSchemaLocations()));
+                            }
+                            parser.populate(handlerSet, componentDefinitionRegistry);
+                            state = State.Populated;
+                        } catch (MissingNamespaceException e) {
+                            // If we found a missing namespace when parsing the schema,
+                            // we remain in the current state
+                            namespaces.add(e.getNamespace());
                         }
-                        parser.populate(handlerSet, componentDefinitionRegistry);
-                        state = State.Populated;
                         break;
                     }
                     case Populated:
