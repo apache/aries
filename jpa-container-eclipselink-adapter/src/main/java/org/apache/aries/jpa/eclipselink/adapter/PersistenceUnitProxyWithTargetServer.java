@@ -20,6 +20,7 @@ package org.apache.aries.jpa.eclipselink.adapter;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.persistence.SharedCacheMode;
@@ -41,10 +42,10 @@ public class PersistenceUnitProxyWithTargetServer implements PersistenceUnitInfo
   private final PersistenceUnitInfo delegate;
     private final ClassLoader unionClassLoader; 
     
-    public PersistenceUnitProxyWithTargetServer(PersistenceUnitInfo info, Bundle b) {
+    public PersistenceUnitProxyWithTargetServer(PersistenceUnitInfo info, Bundle b, Map<String, Object> arg1) {
         delegate = info;
         unionClassLoader = new UnionClassLoader(delegate.getClassLoader(), b, 
-            FrameworkUtil.getBundle(getClass()));
+            FrameworkUtil.getBundle(getClass()), arg1);
     }
 
     @Override
