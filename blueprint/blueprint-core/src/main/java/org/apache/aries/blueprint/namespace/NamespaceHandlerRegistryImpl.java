@@ -51,7 +51,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.aries.blueprint.NamespaceHandler;
-import org.apache.aries.blueprint.NamespaceHandler2;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.osgi.framework.Bundle;
@@ -75,8 +74,6 @@ import org.xml.sax.SAXException;
  */
 public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, ServiceTrackerCustomizer {
     
-    public static final URI BLUEPRINT_NAMESPACE = URI.create("http://www.osgi.org/xmlns/blueprint/v1.0.0");
-
     public static final String NAMESPACE = "osgi.service.blueprint.namespace";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceHandlerRegistryImpl.class);
@@ -330,8 +327,10 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                                 Properties schemaMap,
                                 Map<String, String> locations) throws IOException, SAXException {
         final List<StreamSource> schemaSources = new ArrayList<StreamSource>();
+        final Map<String, URI> urlToNamespace = new HashMap<String, URI>();
         try {
             schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/aries/blueprint/blueprint.xsd")));
+            schemaSources.add(new StreamSource(getClass().getResourceAsStream("/org/apache/aries/blueprint/ext/impl/xml.xsd")));
             // Create a schema for all namespaces known at this point
             // It will speed things as it can be reused for all other blueprint containers
             for (URI ns : handlers.keySet()) {
@@ -345,6 +344,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 if (url == null) {
                     LOGGER.warn("No URL is defined for schema " + ns + ". This schema will not be validated");
                 } else {
+                    urlToNamespace.put(url.toExternalForm(), ns);
                     schemaSources.add(new StreamSource(url.openStream(), url.toExternalForm()));
                 }
             }
@@ -357,7 +357,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 }
             }
             synchronized (schemaFactory) {
-                schemaFactory.setResourceResolver(new BundleResourceResolver(handlers, schemaMap, bundle, schemaSources));
+                schemaFactory.setResourceResolver(new BundleResourceResolver(handlers, schemaMap, bundle, schemaSources, urlToNamespace));
                 return schemaFactory.newSchema(schemaSources.toArray(new Source[schemaSources.size()]));
             }
         } finally {
@@ -377,23 +377,28 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
     }
 
-    private class BundleResourceResolver implements LSResourceResolver {
+    private static class BundleResourceResolver implements LSResourceResolver {
         private final Map<URI, NamespaceHandler> handlers;
         private final Properties schemaMap;
         private final Bundle bundle;
         private final List<StreamSource> schemaSources;
+        private final Map<String, URI> urlToNamespace;
 
-        public BundleResourceResolver(Map<URI, NamespaceHandler> handlers, Properties schemaMap, Bundle bundle, List<StreamSource> schemaSources) {
+        public BundleResourceResolver(Map<URI, NamespaceHandler> handlers, Properties schemaMap, Bundle bundle, List<StreamSource> schemaSources, Map<String, URI> urlToNamespace) {
             this.handlers = handlers;
             this.schemaMap = schemaMap;
             this.bundle = bundle;
             this.schemaSources = schemaSources;
+            this.urlToNamespace = urlToNamespace;
         }
 
         public LSInput resolveResource(String type,
                                        final String namespaceURI,
                                        final String publicId,
-                                       String systemId, String baseURI) {
+                                       String systemId,
+                                       String baseURI) {
+            URI nsUri = namespaceURI != null ? URI.create(namespaceURI) : null;
+            // Use provided schema map to find the resource
             String loc = null;
             if (namespaceURI != null) {
                 loc = schemaMap.getProperty(namespaceURI);
@@ -407,68 +412,65 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             if (loc != null) {
                 URL url = bundle.getResource(loc);
                 if (url != null) {
-                    try {
-                        StreamSource source
-                                = new StreamSource(url.openStream(), url.toExternalForm());
-                        schemaSources.add(source);
-                        return new SourceLSInput(source, publicId, url);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    return createLSInput(url, nsUri);
                 }
             }
-            URI uri = URI.create(namespaceURI);
-            Set<NamespaceHandler> hs = NamespaceHandlerRegistryImpl.this.handlers.get(uri);
-            // first check registered handlers
-            if (hs != null) {
-                for (NamespaceHandler h : hs) {
-                    URL url = h.getSchemaLocation(namespaceURI);
-                    if (url != null) {
-                        return createLSInput(publicId, systemId, url);
+            // Support include-relative-path case
+            if (baseURI != null && systemId != null && !systemId.matches("^[a-z][-+.0-9a-z]*:.*")) {
+                URL url;
+                try {
+                    url = new URL(new URL(baseURI), systemId);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                return createLSInput(url, nsUri);
+            }
+            if (namespaceURI != null) {
+                String id = systemId != null ? systemId : namespaceURI;
+                // This is a namespace with a known handler
+                if (handlers.containsKey(nsUri)) {
+                    NamespaceHandler h = handlers.get(nsUri);
+                    if (h != null) {
+                        URL url = h.getSchemaLocation(id);
+                        if (url != null) {
+                            return createLSInput(url, nsUri);
+                        }
                     }
                 }
-            }
-            // then check if some handler may resolve the namespace
-            for (NamespaceHandler h : handlers.values()) {
-                if (h instanceof NamespaceHandler2 && ((NamespaceHandler2) h).mayResolve(namespaceURI)) {
-                    URL url = h.getSchemaLocation(namespaceURI);
-                    if (url != null) {
-                        return createLSInput(publicId, systemId, url);
-
+                // This is a resource loaded from a schema
+                if (baseURI != null && urlToNamespace.containsKey(baseURI)) {
+                    NamespaceHandler h = handlers.get(urlToNamespace.get(baseURI));
+                    if (h != null) {
+                        URL url = h.getSchemaLocation(id);
+                        if (url != null) {
+                            return createLSInput(url, nsUri);
+                        }
                     }
                 }
             }
             return null;
         }
 
-        private LSInput createLSInput(String publicId, String systemId, URL url) {
-            // handling include-relative-path case
-            if (systemId != null && !systemId.matches("^[a-z][-+.0-9a-z]*:.*")) {
-                try {
-                    url = new URL(url, systemId);
-                } catch (Exception e) {
-                    // ignore and use the given systemId
-                }
-            }
+        private LSInput createLSInput(URL url, URI nsUri) {
             try {
-                final StreamSource source = new StreamSource(url.openStream(), url.toExternalForm());
+                String systemId = url.toExternalForm();
+                final StreamSource source = new StreamSource(url.openStream(), systemId);
                 schemaSources.add(source);
-                return new SourceLSInput(source, publicId, url);
+                if (nsUri != null) {
+                    urlToNamespace.put(systemId, nsUri);
+                }
+                return new SourceLSInput(source);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    private class SourceLSInput implements LSInput {
+    private static class SourceLSInput implements LSInput {
         private final StreamSource source;
-        private final URL systemId;
-        private final String publicId;
 
-        public SourceLSInput(StreamSource source, String publicId, URL systemId) {
+        public SourceLSInput(StreamSource source) {
             this.source = source;
-            this.publicId = publicId;
-            this.systemId = systemId;
         }
 
         public Reader getCharacterStream() {
@@ -493,14 +495,14 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
 
         public String getSystemId() {
-            return systemId.toExternalForm();
+            return source.getSystemId();
         }
 
         public void setSystemId(String systemId) {
         }
 
         public String getPublicId() {
-            return publicId;
+            return null;
         }
 
         public void setPublicId(String publicId) {
