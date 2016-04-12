@@ -31,7 +31,8 @@
     <bean id="NSHandlerFive" class="org.apache.aries.blueprint.testbundlea.NSHandlerFive"/>
     <bean id="NSHandlerSix" class="org.apache.aries.blueprint.testbundlea.NSHandlerSix"/>
     <bean id="NSHandlerSeven" class="org.apache.aries.blueprint.testbundlea.NSHandlerSeven"/>
-    
+    <bean id="NSHandlerHeight" class="org.apache.aries.blueprint.testbundlea.NSHandlerHeight"/>
+
     <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="NSHandlerOne">
         <service-properties>
             <entry key="osgi.service.blueprint.namespace" value="http://ns.handler.one"/>
@@ -83,7 +84,16 @@
             </entry>
         </service-properties>
     </service>
-    
+    <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="NSHandlerHeight">
+        <service-properties>
+            <entry key="osgi.service.blueprint.namespace">
+                <list>
+                    <value>http://ns.handler.height</value>
+                </list>
+            </entry>
+        </service-properties>
+    </service>
+
     <bean id="MultiService" class="org.apache.aries.blueprint.testbundlea.multi.MultiService"/>
     <service ref="MultiService">
     	<interfaces>
