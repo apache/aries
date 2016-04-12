@@ -27,7 +27,7 @@ import javax.persistence.spi.ProviderUtil;
 
 import org.osgi.framework.Bundle;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 final class EclipseLinkPersistenceProvider implements PersistenceProvider {
     private final PersistenceProvider delegate;
     private final Bundle eclipeLinkBundle;
@@ -47,14 +47,14 @@ final class EclipseLinkPersistenceProvider implements PersistenceProvider {
         return delegate.createEntityManagerFactory(arg0, arg1);
     }
 
-    @Override
+	@Override
     public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo punit, Map props) {
-        return delegate.createContainerEntityManagerFactory(new PersistenceUnitProxyWithTargetServer(punit, eclipeLinkBundle), props);
+        return delegate.createContainerEntityManagerFactory(new PersistenceUnitProxyWithTargetServer(punit, eclipeLinkBundle, props), props);
     }
 
     @Override
     public void generateSchema(PersistenceUnitInfo punit, Map arg1) {
-        delegate.generateSchema(new PersistenceUnitProxyWithTargetServer(punit, eclipeLinkBundle), arg1);
+        delegate.generateSchema(new PersistenceUnitProxyWithTargetServer(punit, eclipeLinkBundle, arg1), arg1);
     }
 
     @Override

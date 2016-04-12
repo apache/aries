@@ -23,6 +23,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
@@ -35,15 +38,33 @@ public final class UnionClassLoader extends ClassLoader implements BundleReferen
     private static final Logger LOG = LoggerFactory.getLogger(UnionClassLoader.class);
     private final Bundle eclipseLinkBundle;
     private final Bundle adaptorBundle;
+    private final Map<String, Class<?>> registeredPlugins = new HashMap<String, Class<?>>();
 
-    public UnionClassLoader(ClassLoader parentLoader, Bundle b, Bundle adaptor) {
+    public UnionClassLoader(ClassLoader parentLoader, Bundle b, Bundle adaptor, Map<String, Object> arg1) {
         super(parentLoader);
         this.eclipseLinkBundle = b;
         this.adaptorBundle = adaptor;
+        
+        //Populate the plugins
+        
+        Object o = arg1 == null ? null : arg1.get("org.apache.aries.jpa.eclipselink.plugin.types");
+       
+        if(o instanceof Class) {
+        	Class<?> c = (Class<?>) o;
+        	registeredPlugins.put(c.getName(), c);
+        } else if (o instanceof Collection) {
+        	for(Object o2 : (Collection<?>) o) {
+        		Class<?> c = (Class<?>) o2;
+            	registeredPlugins.put(c.getName(), c);
+        	}
+        }
     }
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
+    	if(registeredPlugins.containsKey(name)) {
+    		return registeredPlugins.get(name);
+    	}
         if ("org.apache.aries.jpa.eclipselink.adapter.platform.OSGiTSServer".equals(name) 
             || "org.apache.aries.jpa.eclipselink.adapter.platform.OSGiTSWrapper".equals(name)) {
             return loadTempClass(name);
