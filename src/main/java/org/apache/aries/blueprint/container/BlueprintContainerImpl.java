@@ -315,7 +315,7 @@ public class BlueprintContainerImpl
                     {
                         List<String> missing = new ArrayList<String>();
                         List<URI> missingURIs = new ArrayList<URI>();
-                        for (URI ns : namespaces) {
+                        for (URI ns : handlerSet.getNamespaces()) {
                             if (handlerSet.getNamespaceHandler(ns) == null) {
                                 missing.add("(&(" + Constants.OBJECTCLASS + "=" + NamespaceHandler.class.getName() + ")(" + NamespaceHandlerRegistryImpl.NAMESPACE + "=" + ns + "))");
                                 missingURIs.add(ns);
@@ -351,7 +351,7 @@ public class BlueprintContainerImpl
                         } catch (MissingNamespaceException e) {
                             // If we found a missing namespace when parsing the schema,
                             // we remain in the current state
-                            namespaces.add(e.getNamespace());
+                            handlerSet.getNamespaces().add(e.getNamespace());
                         }
                         break;
                     }
@@ -933,13 +933,13 @@ public class BlueprintContainerImpl
     }
 
     public void namespaceHandlerRegistered(URI uri) {
-        if (namespaces != null && namespaces.contains(uri)) {
+        if (handlerSet != null && handlerSet.getNamespaces().contains(uri)) {
             schedule();
         }
     }
 
     public void namespaceHandlerUnregistered(URI uri) {
-        if (namespaces != null && namespaces.contains(uri)) {
+        if (handlerSet != null && handlerSet.getNamespaces().contains(uri)) {
             synchronized (scheduled) {
                 if (destroyed.get()) {
                     return;
@@ -948,6 +948,10 @@ public class BlueprintContainerImpl
                 resetComponentDefinitionRegistry();
                 cancelFutureIfPresent();
                 this.repository = null;
+                handlerSet.removeListener(this);
+                handlerSet.destroy();
+                handlerSet = handlers.getNamespaceHandlers(namespaces, getBundle());
+                handlerSet.addListener(this);
                 state = State.WaitForNamespaceHandlers;
                 schedule();
             }
