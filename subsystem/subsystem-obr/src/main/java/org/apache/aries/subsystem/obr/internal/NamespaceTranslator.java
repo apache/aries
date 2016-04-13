@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.osgi.framework.namespace.BundleNamespace;
-import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.namespace.service.ServiceNamespace;
 
@@ -30,11 +29,9 @@ public class NamespaceTranslator {
 		result.put(PackageNamespace.PACKAGE_NAMESPACE, org.apache.felix.bundlerepository.Capability.PACKAGE);
 		result.put(ServiceNamespace.SERVICE_NAMESPACE, org.apache.felix.bundlerepository.Capability.SERVICE);
 		result.put(BundleNamespace.BUNDLE_NAMESPACE, org.apache.felix.bundlerepository.Capability.BUNDLE);
-		result.put(HostNamespace.HOST_NAMESPACE, org.apache.felix.bundlerepository.Capability.FRAGMENT);
 		result.put(org.apache.felix.bundlerepository.Capability.PACKAGE, PackageNamespace.PACKAGE_NAMESPACE);
 		result.put(org.apache.felix.bundlerepository.Capability.SERVICE, ServiceNamespace.SERVICE_NAMESPACE);
 		result.put(org.apache.felix.bundlerepository.Capability.BUNDLE, BundleNamespace.BUNDLE_NAMESPACE);
-		result.put(org.apache.felix.bundlerepository.Capability.FRAGMENT, HostNamespace.HOST_NAMESPACE);
 		return Collections.unmodifiableMap(result);
 	}
 	
