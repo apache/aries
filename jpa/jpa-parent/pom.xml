@@ -167,6 +167,18 @@
                     </instructions>
                 </configuration>
                 <executions>
+					<execution>
+						<id>cleanVersions</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>cleanVersions</goal>
+						</goals>
+						<configuration>
+							<versions>
+							    <project.version.clean>${project.version}</project.version.clean>
+							</versions>
+						</configuration>
+					</execution>
                     <execution>
                         <id>baseline</id>
                         <goals>
