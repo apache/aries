@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.aries.subsystem.core.archive.ProvisionPolicyDirective;
+import org.apache.aries.subsystem.core.archive.SubsystemContentHeader;
 import org.apache.aries.subsystem.core.archive.SubsystemManifest;
 import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
@@ -338,8 +339,17 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	private boolean isValid(Capability capability, Requirement requirement) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace()))
 			return true;
-		Region from = findRegionForCapabilityValidation(capability.getResource());
-		Region to = findRegionForCapabilityValidation(requirement.getResource());
+		Resource provider = capability.getResource();
+		Resource requirer = requirement.getResource();
+		SubsystemManifest manifest = resource.getSubsystemManifest();
+		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
+		if (header.contains(provider) && header.contains(requirer)) {
+			// Shortcut. If both the provider and requirer are content then they
+			// are in the same region and the capability will be visible.
+			return true;
+		}
+		Region from = findRegionForCapabilityValidation(provider);
+		Region to = findRegionForCapabilityValidation(requirer);
 		return new SharingPolicyValidator(from, to).isValid(capability);
 	}
 	
