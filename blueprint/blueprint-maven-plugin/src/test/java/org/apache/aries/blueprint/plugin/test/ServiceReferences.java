@@ -19,17 +19,9 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.ops4j.pax.cdi.api.OsgiService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ServiceReferences {
-    @Inject @OsgiService(filter="(type=B1)") ServiceB serviceB;
-    
-    @Named("serviceB2Id") @Inject @OsgiService(filter="(type=B2)") ServiceB serviceB2;
-    
-    @Inject @OsgiService(filter="(type=B3)") ServiceB serviceB3;
+public class ServiceReferences extends ServiceReferencesParent {
+
 }

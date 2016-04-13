@@ -18,23 +18,25 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import java.util.HashMap;
-
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-public class SpringTransactionFactory {
-    private static HashMap<Propagation, String> txTypeNames;
+import com.google.common.base.CaseFormat;
 
-    static {
-        txTypeNames = new HashMap<Propagation, String>();
-        txTypeNames.put(Propagation.REQUIRED, TransactionalDef.TYPE_REQUIRED);
-        txTypeNames.put(Propagation.REQUIRES_NEW, TransactionalDef.TYPE_REQUIRES_NEW);
+public class SpringTransactionFactory extends AbstractTransactionalFactory<Transactional> {
+    @Override
+    public String getTransactionTypeName(Transactional transactional)
+    {
+        Propagation propagation = transactional.propagation();
+        if (propagation == Propagation.NESTED) {
+            throw new UnsupportedOperationException("Nested transactions not supported");
+        }
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, propagation.name());
     }
 
-    TransactionalDef create(Class<?> clazz) {
-        Transactional transactional = clazz.getAnnotation(Transactional.class);
-        return transactional != null ? 
-                new TransactionalDef("*", txTypeNames.get(transactional.propagation())) : null;
+    @Override
+    public Class<Transactional> getTransactionalClass()
+    {
+        return Transactional.class;
     }
 }

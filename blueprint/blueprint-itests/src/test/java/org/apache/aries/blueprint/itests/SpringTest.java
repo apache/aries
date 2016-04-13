@@ -61,6 +61,9 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),
+            // Blueprint spring
+            mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring"),
+            // Spring
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.aopalliance"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-core"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-context"),

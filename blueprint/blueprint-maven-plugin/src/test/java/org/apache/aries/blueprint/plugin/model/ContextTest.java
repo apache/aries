@@ -25,6 +25,7 @@ import org.apache.aries.blueprint.plugin.test.MyFactoryBean;
 import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.ServiceB;
 import org.apache.aries.blueprint.plugin.test.ServiceReferences;
+import org.apache.aries.blueprint.plugin.test.ServiceReferencesParent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -40,29 +41,29 @@ public class ContextTest {
         Assert.assertEquals(1, context.getBeans().size());
         Assert.assertEquals(0, context.getServiceRefs().size());
     }
-    
+
     @Test
     public void testLists2()  {
         Context context = new Context(ServiceReferences.class);
         Assert.assertEquals(1, context.getBeans().size());
         Assert.assertEquals(3, context.getServiceRefs().size());
     }
-    
+
     @Test
     public void testMatching() throws NoSuchFieldException, SecurityException  {
         Context context = new Context(ServiceReferences.class);
-        BeanRef matching = context.getMatching(new BeanRef(ServiceReferences.class.getDeclaredField("serviceB")));
+        BeanRef matching = context.getMatching(new BeanRef(ServiceReferencesParent.class.getDeclaredField("serviceB")));
         Assert.assertEquals(OsgiServiceRef.class, matching.getClass());
         Assert.assertEquals(ServiceB.class, matching.clazz);
         Assert.assertEquals("serviceB-typeB1", matching.id);
     }
-    
+
     private void assertSpecialRef(String expectedId, Class<?> clazz) {
         Context context = new Context();
         BeanRef ref = context.getMatching(new BeanRef(clazz));
         assertEquals(expectedId, ref.id);
     }
-    
+
     @Test
     public void testSpecialRefs() {
         assertSpecialRef("blueprintBundleContext", BundleContext.class);
@@ -70,7 +71,7 @@ public class ContextTest {
         assertSpecialRef("blueprintContainer", BlueprintContainer.class);
         assertSpecialRef("blueprintConverter", Converter.class);
     }
-    
+
     @Test
     public void testProduced() throws NoSuchFieldException, SecurityException  {
         Context context = new Context(MyFactoryBean.class);
@@ -80,5 +81,5 @@ public class ContextTest {
         Assert.assertEquals("myFactoryBean", matching.factoryBean.id);
         Assert.assertEquals("create", matching.factoryMethod);
     }
-    
+
 }

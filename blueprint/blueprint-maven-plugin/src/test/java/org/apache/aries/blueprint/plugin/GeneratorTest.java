@@ -36,14 +36,20 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.aries.blueprint.plugin.model.Context;
+import org.apache.aries.blueprint.plugin.model.TransactionalDef;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
+import org.apache.aries.blueprint.plugin.test.ServiceA;
+import org.apache.aries.blueprint.plugin.test.ServiceB;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.xbean.finder.ClassFinder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.google.common.collect.Sets;
 
 public class GeneratorTest {
 
@@ -72,22 +78,60 @@ public class GeneratorTest {
         Assert.assertEquals("init", xpath.evaluate("@init-method", bean1));
         Assert.assertEquals("destroy", xpath.evaluate("@destroy-method", bean1));
         Assert.assertEquals("true", xpath.evaluate("@field-injection", bean1));
-        
+        Assert.assertEquals("", xpath.evaluate("@scope", bean1));
+
         // @Transactional
-        Assert.assertEquals("*", xpath.evaluate("transaction/@method", bean1));
-        Assert.assertEquals("Required", xpath.evaluate("transaction/@value", bean1));
+        NodeList txs = (NodeList) xpath.evaluate("transaction", bean1, XPathConstants.NODESET);
+        Set<TransactionalDef> defs = new HashSet<TransactionalDef>();
+        for (int i = 0; i < txs.getLength(); ++i) {
+            Node tx = txs.item(i);
+            defs.add(new TransactionalDef(xpath.evaluate("@method", tx), xpath.evaluate("@value", tx)));
+        }
+        Set<TransactionalDef> expectedDefs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
+                                                             new TransactionalDef("txNotSupported", "NotSupported"),
+                                                             new TransactionalDef("txMandatory", "Mandatory"),
+                                                             new TransactionalDef("txNever", "Never"),
+                                                             new TransactionalDef("txRequired", "Required"),
+                                                             new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+                                                             new TransactionalDef("txSupports", "Supports"));
+        Assert.assertEquals(expectedDefs, defs);
 
         // @PersistenceContext
         Assert.assertEquals("person", xpath.evaluate("context/@unitname", bean1));
         Assert.assertEquals("em", xpath.evaluate("context/@property", bean1));
-        
+
         // @PersistenceUnit
         Assert.assertEquals("person", xpath.evaluate("unit/@unitname", bean1));
         Assert.assertEquals("emf", xpath.evaluate("unit/@property", bean1));
-        
+
         // @Autowired
         Assert.assertEquals("my1", xpath.evaluate("property[@name='bean2']/@ref", bean1));
 
+        // Service with 1 interface
+        Node serviceAImpl2 = (Node) xpath.evaluate("/blueprint/service[@ref='my2']", document, XPathConstants.NODE);
+        Assert.assertEquals(ServiceA.class.getName(), xpath.evaluate("@interface", serviceAImpl2));
+        Assert.assertEquals("", xpath.evaluate("@auto-export", serviceAImpl2));
+        Assert.assertEquals("", xpath.evaluate("interfaces", serviceAImpl2));
+
+        // Service with 0 interfaces (using auto-export=interfaces instead)
+        Node serviceAImpl3 = (Node) xpath.evaluate("/blueprint/service[@ref='serviceAImpl3']", document, XPathConstants.NODE);
+        Assert.assertEquals("", xpath.evaluate("@interface", serviceAImpl3));
+        Assert.assertEquals("interfaces", xpath.evaluate("@auto-export", serviceAImpl3));
+        Assert.assertEquals("", xpath.evaluate("interfaces", serviceAImpl3));
+
+        // Service with 2 interfaces (using <interfaces><value>ServiceA</value><value>ServiceB</value></interfaces>
+        Node serviceABImpl = (Node) xpath.evaluate("/blueprint/service[@ref='serviceABImpl']", document, XPathConstants.NODE);
+        Assert.assertEquals("", xpath.evaluate("@interface", serviceABImpl));
+        Assert.assertEquals("", xpath.evaluate("@auto-export", serviceABImpl));
+
+        NodeList interfaceValues = (NodeList) xpath.evaluate("interfaces/value", serviceABImpl, XPathConstants.NODESET);
+        Set<String> interfaceNames = new HashSet<String>();
+        for (int i = 0; i < interfaceValues.getLength(); ++i) {
+            Node interfaceValue = interfaceValues.item(i);
+            interfaceNames.add(interfaceValue.getTextContent());
+        }
+        Assert.assertEquals(Sets.newHashSet(ServiceA.class.getName(), ServiceB.class.getName()),
+                            interfaceNames);
     }
 
     private Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,

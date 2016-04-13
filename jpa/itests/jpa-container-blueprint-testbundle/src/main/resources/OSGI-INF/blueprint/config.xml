@@ -64,6 +64,13 @@
     <bean id="carServiceEmJtaAnn"
         class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceEmJtaAnn">
     </bean>
+    
+    <service interface="org.apache.aries.jpa.container.itest.entities.CarService">
+        <service-properties>
+            <entry key="type" value="emJtaAnnInlined" />
+        </service-properties>
+        <bean class="org.apache.aries.jpa.container.itest.bundle.blueprint.impl.CarServiceEmJtaAnn"/>
+    </service>
 
     <service ref="carServiceEmSupplier"
         interface="org.apache.aries.jpa.container.itest.entities.CarService">

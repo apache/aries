@@ -20,14 +20,41 @@ package org.apache.aries.blueprint.plugin.test;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ParentBean {
 
+    @Autowired
+    ServiceA bean2;
+
+    @PersistenceContext(unitName="person")
+    EntityManager em;
+
+    @PersistenceUnit(unitName="person")
+    EntityManager emf;
+
     @PostConstruct
-    public void init() {
+    public void overridenInit() {
     }
-    
+
     @PreDestroy
     public void destroy() {
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void txOverridenWithoutTransactional() {
+    }
+
+    @Transactional(Transactional.TxType.SUPPORTS)
+    public void txSupports() {
+    }
+
+    @Transactional(Transactional.TxType.NEVER)
+    public void txOverridenWithRequiresNew() {
     }
 }

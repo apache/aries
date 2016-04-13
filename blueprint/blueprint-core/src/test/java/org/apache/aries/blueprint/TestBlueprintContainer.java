@@ -44,7 +44,7 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
     }
 
     public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry, ProxyManager proxyManager) throws Exception {
-        super(null, new TestBundleContext(), null, null, null, null, null, null, proxyManager);
+        super(null, new TestBundleContext(), null, null, null, null, null, null, proxyManager, null);
         this.registry = registry;
         if (registry != null) {
             registry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));

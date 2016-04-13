@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.PersistenceContext;
@@ -44,7 +45,7 @@ public class Generator implements PropertyWriter {
     public static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
     public static final String NS_TX = "http://aries.apache.org/xmlns/transactions/v1.2.0";
     public static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
-    
+
     private Context context;
     private XMLStreamWriter writer;
     private Set<String> namespaces;
@@ -65,7 +66,7 @@ public class Generator implements PropertyWriter {
             writer.writeCharacters("\n");
             writeBlueprint();
             writer.writeCharacters("\n");
-            
+
             if (namespaces.contains(NS_JPA2) && isJpaUsed()) {
                 writer.writeEmptyElement(NS_JPA2, "enable");
                 writer.writeCharacters("\n");
@@ -84,10 +85,10 @@ public class Generator implements PropertyWriter {
                 writer.writeEndElement();
                 writer.writeCharacters("\n");
             }
-            
+
             new OsgiServiceRefWriter(writer).write(context.getServiceRefs());
             new OsgiServiceProviderWriter(writer).write(context.getBeans());
-            
+
             writer.writeEndElement();
             writer.writeCharacters("\n");
             writer.writeEndDocument();
@@ -101,7 +102,7 @@ public class Generator implements PropertyWriter {
     private boolean isJpaUsed() {
         boolean jpaUsed = false;
         for (Bean bean : context.getBeans()) {
-        if (bean.persistenceFields.length > 0) {
+        if (bean.persistenceFields.size() > 0) {
             jpaUsed = true;
         }
         }
@@ -109,14 +110,12 @@ public class Generator implements PropertyWriter {
     }
 
     private boolean isJtaUsed() {
-        boolean jtaUsed = false;
         for (Bean bean : context.getBeans()) {
-            if (bean.transactionDef != null) {
-                jtaUsed = true;
+            if (!bean.transactionDefs.isEmpty()) {
+                return true;
             }
-
         }
-        return jtaUsed;
+        return false;
     }
 
     private void writeBlueprint() throws XMLStreamException {
@@ -128,7 +127,7 @@ public class Generator implements PropertyWriter {
             writer.writeNamespace(prefix, namespace);
         }
     }
-    
+
     private String getPrefixForNamesapace(String namespace) {
         if (namespace.contains("jpa")) {
             return "jpa";
@@ -143,6 +142,9 @@ public class Generator implements PropertyWriter {
         writer.writeAttribute("id", bean.id);
         writer.writeAttribute("class", bean.clazz.getName());
         writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
+        if (bean.isPrototype) {
+            writer.writeAttribute("scope", "prototype");
+        }
         if (bean instanceof ProducedBean) {
             writeFactory((ProducedBean)bean);
         }
@@ -153,15 +155,17 @@ public class Generator implements PropertyWriter {
             writer.writeAttribute("destroy-method", bean.destroyMethod);
         }
         writer.writeCharacters("\n");
-        
+
         if (namespaces.contains(NS_TX)) {
-            writeTransactional(bean.transactionDef);
+            for (TransactionalDef transactionalDef : bean.transactionDefs) {
+                writeTransactional(transactionalDef);
+            }
         }
         if (namespaces.contains(NS_JPA)) {
             writePersistenceFields(bean.persistenceFields);
         }
     }
-    
+
     private void writeFactory(ProducedBean bean) throws XMLStreamException {
         writer.writeAttribute("factory-ref", bean.factoryBean.id);
         writer.writeAttribute("factory-method", bean.factoryMethod);
@@ -178,8 +182,8 @@ public class Generator implements PropertyWriter {
         }
     }
 
-    
-    private void writePersistenceFields(Field[] fields) throws XMLStreamException {
+
+    private void writePersistenceFields(List<Field> fields) throws XMLStreamException {
         for (Field field : fields) {
             writePersistenceField(field);
         }

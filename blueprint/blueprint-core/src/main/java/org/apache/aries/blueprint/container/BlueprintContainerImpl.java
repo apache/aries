@@ -140,6 +140,7 @@ public class BlueprintContainerImpl
     private final AggregateConverter converter;
     private final ExecutorService executors;
     private final ScheduledExecutorService timer;
+    private final Collection<URI> additionalNamespaces;
     private Set<URI> namespaces;
     private State state = State.Unknown;
     private NamespaceHandlerSet handlerSet;
@@ -162,7 +163,7 @@ public class BlueprintContainerImpl
 
     public BlueprintContainerImpl(Bundle bundle, BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher,
                                   NamespaceHandlerRegistry handlers, ExecutorService executor, ScheduledExecutorService timer,
-                                  List<Object> pathList, ProxyManager proxyManager) {
+                                  List<Object> pathList, ProxyManager proxyManager, Collection<URI> namespaces) {
         this.bundle = bundle;
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
@@ -180,6 +181,7 @@ public class BlueprintContainerImpl
             this.accessControlContext = null;
         }
         this.proxyManager = proxyManager;
+        this.additionalNamespaces = namespaces;
     }
 
     public ExecutorService getExecutors() {
@@ -301,6 +303,9 @@ public class BlueprintContainerImpl
                         parser = new Parser();
                         parser.parse(getResources());
                         namespaces = parser.getNamespaces();
+                        if (additionalNamespaces != null) {
+                            namespaces.addAll(additionalNamespaces);
+                        }
                         handlerSet = handlers.getNamespaceHandlers(namespaces, getBundle());
                         handlerSet.addListener(this);
                         state = State.WaitForNamespaceHandlers;
