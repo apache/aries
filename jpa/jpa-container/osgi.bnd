@@ -5,3 +5,4 @@ Import-Package: \
 Bundle-Activator: org.apache.aries.jpa.container.impl.Activator
 Export-Service: \
     javax.persistence.EntityManagerFactory
+Provide-Capability: osgi.extender;osgi.extender=aries.jpa;version:Version="${project.version.clean}"
