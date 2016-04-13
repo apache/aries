@@ -13,6 +13,8 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.spi.PersistenceProvider;
@@ -93,12 +95,13 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 			try {
 				JPAEntityManagerProvider jpaEM = new DelayedJPAEntityManagerProvider(t -> {
 					
-					Map<String, Object> props = new HashMap<String, Object>(jpaProperties);
+					Map<String, Object> jpaProps = new HashMap<String, Object>(jpaProperties);
+					Map<String, Object> providerProps = new HashMap<String, Object>(providerProperties);
 					
-					setupTransactionManager(props, t, reference);
+					setupTransactionManager(jpaProps, providerProps, t, reference);
 					
 					return new JPAEntityManagerProviderFactoryImpl().getProviderFor(service,
-							props, providerProperties);
+							jpaProps, providerProps);
 				});
 				ServiceRegistration<JPAEntityManagerProvider> reg = context
 						.registerService(JPAEntityManagerProvider.class, jpaEM, getServiceProperties());
@@ -112,8 +115,8 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 		}
 	}
 
-	private void setupTransactionManager(Map<String, Object> props, TransactionControl txControl,
-			ServiceReference<EntityManagerFactoryBuilder> reference) {
+	private void setupTransactionManager(Map<String, Object> props, Map<String, Object> providerProps, 
+			TransactionControl txControl, ServiceReference<EntityManagerFactoryBuilder> reference) {
 		String provider = (String) reference.getProperty(JPA_UNIT_PROVIDER);
 		
 		ServiceReference<PersistenceProvider> providerRef = getPersistenceProvider(provider);
@@ -148,6 +151,28 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 				
 				props.put("hibernate.transaction.coordinator_class", plugin);
 				
+			} else if("org.apache.openjpa.persistence.PersistenceProviderImpl".equals(provider)) {
+					
+				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
+					
+				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.openjpa.impl.OpenJPATxControlPlatform");
+				Object plugin = pluginClazz.getConstructor(TransactionControl.class)
+						.newInstance(txControl);
+					
+				props.put("openjpa.ManagedRuntime", plugin);
+					
+			} else if("org.eclipse.persistence.jpa.PersistenceProvider".equals(provider)) {
+				
+				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
+				
+				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.eclipse.impl.EclipseTxControlPlatform");
+				
+				pluginClazz.getMethod("setTransactionControl", TransactionControl.class)
+						.invoke(null, txControl);
+				
+				props.put("eclipselink.target-server", pluginClazz.getName());
+				props.put("org.apache.aries.jpa.eclipselink.plugin.types", pluginClazz);
+				
 			} else {
 				// TODO log a warning and give up
 				return;
@@ -161,9 +186,20 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 	private ClassLoader getPluginLoader(Bundle providerBundle, Bundle txControlProviderBundle) {
 		return new ClassLoader() {
 
+			ConcurrentMap<String, Class<?>> loaded = new ConcurrentHashMap<>();
+			
 			@Override
 			public Class<?> loadClass(String name) throws ClassNotFoundException {
-				if(name.startsWith("org.apache.aries.tx.control.jpa.xa.hibernate")) {
+				if(name.startsWith("org.apache.aries.tx.control.jpa.xa.hibernate") ||
+					name.startsWith("org.apache.aries.tx.control.jpa.xa.openjpa") ||
+					name.startsWith("org.apache.aries.tx.control.jpa.xa.eclipse")) {
+					
+					Class<?> c = loaded.get(name);
+					
+					if(c != null) {
+						return c;
+					}
+					
 					String resource = name.replace('.', '/') + ".class";
 					
 					try (InputStream is = txControlProviderBundle.getResource(resource).openStream()) {
@@ -174,8 +210,10 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 							baos.write(b, 0, read);
 						}
 						byte[] clazzBytes = baos.toByteArray();
-						return defineClass(name, clazzBytes, 0, clazzBytes.length, 
+						c = defineClass(name, clazzBytes, 0, clazzBytes.length, 
 								ManagedJPAEMFLocator.class.getProtectionDomain());
+						loaded.putIfAbsent(name, c);
+						return c;
 					} catch (IOException e) {
 						throw new ClassNotFoundException("Unable to load class " + name, e);
 					}
