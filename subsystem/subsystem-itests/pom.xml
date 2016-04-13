@@ -177,7 +177,7 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <scope>test</scope>
-            <version>1.6.4</version>
+            <version>1.6.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
@@ -580,6 +580,44 @@
                     </execution>
 
                     <!-- End of new pom for hello tests, part 1 -->
+                    
+                    <execution>
+                        <id>aries1523host</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/aries1523host/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/aries1523host/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/aries1523</outputDirectory>
+                            <finalName>aries1523host</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                    
+                    <execution>
+                        <id>aries1523fragment</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/aries1523fragment/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/aries1523fragment/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/aries1523</outputDirectory>
+                            <finalName>aries1523fragment</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
 
                 </executions>
             </plugin>
@@ -679,6 +717,32 @@
                     </execution>
 
                     <!-- End of new pom for hello tests, part 2 -->
+                    
+                    <execution>
+                        <id>add-source-aries1523host</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/aries1523host</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    
+                    <execution>
+                        <id>add-source-aries1523fragment</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/aries1523fragment</source>
+                            </sources>
+                        </configuration>
+                    </execution>
 
                     <execution>
                         <id>add-source-classes</id>
