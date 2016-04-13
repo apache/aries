@@ -89,7 +89,7 @@ public class Bean extends BeanRef {
         }
     }
 
-    private void resolveConstructorArguments(Matcher matcher) {
+    protected void resolveConstructorArguments(Matcher matcher) {
         Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
         for (Constructor constructor : declaredConstructors) {
             Annotation inject = constructor.getAnnotation(Inject.class);
@@ -97,44 +97,48 @@ public class Bean extends BeanRef {
             if (inject != null || autowired != null || declaredConstructors.length == 1) {
                 Class[] parameterTypes = constructor.getParameterTypes();
                 Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
-                for (int i = 0; i < parameterTypes.length; ++i) {
-                    Annotation[] annotations = parameterAnnotations[i];
-                    String ref = null;
-                    String value = null;
-                    Value valueAnnotation = findAnnotation(annotations, Value.class);
-                    OsgiService osgiServiceAnnotation = findAnnotation(annotations, OsgiService.class);
-
-                    if (valueAnnotation != null) {
-                        value = valueAnnotation.value();
-                    }
-
-                    if (osgiServiceAnnotation != null) {
-                        Named namedAnnotation = findAnnotation(annotations, Named.class);
-                        ref = namedAnnotation != null ? namedAnnotation.value() : getBeanNameFromSimpleName(parameterTypes[i].getSimpleName());
-                        OsgiServiceRef osgiServiceRef = new OsgiServiceRef(parameterTypes[i], osgiServiceAnnotation, ref);
-                        serviceRefs.add(osgiServiceRef);
-                    }
-
-                    if (ref == null && value == null && osgiServiceAnnotation == null) {
-                        BeanRef template = new BeanRef(parameterTypes[i]);
-                        template.setQualifiersFromAnnotations(annotations);
-                        BeanRef bean = matcher.getMatching(template);
-                        if (bean != null) {
-                            ref = bean.id;
-                        } else {
-                            Named namedAnnotation = findAnnotation(annotations, Named.class);
-                            if (namedAnnotation != null) {
-                                ref = namedAnnotation.value();
-                            } else {
-                                ref = getBeanName(parameterTypes[i]);
-                            }
-                        }
-                    }
-
-                    constructorArguments.add(new Argument(ref, value));
-                }
+                resolveParametersForConstructor(matcher, parameterTypes, parameterAnnotations);
                 break;
             }
+        }
+    }
+
+    protected void resolveParametersForConstructor(Matcher matcher, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
+        for (int i = 0; i < parameterTypes.length; ++i) {
+            Annotation[] annotations = parameterAnnotations[i];
+            String ref = null;
+            String value = null;
+            Value valueAnnotation = findAnnotation(annotations, Value.class);
+            OsgiService osgiServiceAnnotation = findAnnotation(annotations, OsgiService.class);
+
+            if (valueAnnotation != null) {
+                value = valueAnnotation.value();
+            }
+
+            if (osgiServiceAnnotation != null) {
+                Named namedAnnotation = findAnnotation(annotations, Named.class);
+                ref = namedAnnotation != null ? namedAnnotation.value() : getBeanNameFromSimpleName(parameterTypes[i].getSimpleName());
+                OsgiServiceRef osgiServiceRef = new OsgiServiceRef(parameterTypes[i], osgiServiceAnnotation, ref);
+                serviceRefs.add(osgiServiceRef);
+            }
+
+            if (ref == null && value == null && osgiServiceAnnotation == null) {
+                BeanRef template = new BeanRef(parameterTypes[i]);
+                template.setQualifiersFromAnnotations(annotations);
+                BeanRef bean = matcher.getMatching(template);
+                if (bean != null) {
+                    ref = bean.id;
+                } else {
+                    Named namedAnnotation = findAnnotation(annotations, Named.class);
+                    if (namedAnnotation != null) {
+                        ref = namedAnnotation.value();
+                    } else {
+                        ref = getBeanName(parameterTypes[i]);
+                    }
+                }
+            }
+
+            constructorArguments.add(new Argument(ref, value));
         }
     }
 
