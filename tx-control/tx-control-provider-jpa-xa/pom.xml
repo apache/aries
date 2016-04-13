@@ -66,11 +66,14 @@
 			!javassist.*,
 			!javax.transaction,
 			!org.apache.geronimo.osgi.registry.api,
+			!org.apache.openjpa.*,
+			!org.eclipse.*,
 			!org.hibernate.*,
 			javax.persistence;version="0.0.0",
 			javax.persistence.criteria;version="0.0.0",
 			javax.persistence.metamodel;version="0.0.0",
 			javax.persistence.spi;version="0.0.0",
+			javax.transaction.xa;version="0.0.0",
 			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
 			org.osgi.service.transaction.control.jpa;version="[0.0.1,0.0.2)",
 			org.osgi.service.cm,
@@ -99,9 +102,21 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>org.eclipse.persistence.jpa</artifactId>
+			<version>2.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>5.0.0.Final</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.openjpa</groupId>
+			<artifactId>openjpa-kernel</artifactId>
+			<version>2.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
