@@ -41,6 +41,7 @@ public class FelixResourceAdapterTest {
 		EasyMock.replay(resource);
 		FelixResourceAdapter adapter = new FelixResourceAdapter(resource);
 		List<org.osgi.resource.Capability> caps = adapter.getCapabilities(null);
-		assertEquals("Null namespace should return all capabilities", 3, caps.size());
+		// osgi.identity, osgi.content. osgi.wiring.host, and osgi.wiring.package
+		assertEquals("Null namespace should return all capabilities", 4, caps.size());
 	}
 }

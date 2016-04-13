@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Aries 1523 Host
+Bundle-SymbolicName: org.apache.aries.subsystem.itests.aries1523host
+Bundle-Version: 1.0.0
