@@ -172,6 +172,11 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 				
 				props.put("eclipselink.target-server", pluginClazz.getName());
 				props.put("org.apache.aries.jpa.eclipselink.plugin.types", pluginClazz);
+				// This is needed to ensure that sequences can be generated in nested
+				// transactions without blowing up.
+				if(!props.containsKey("eclipselink.jdbc.sequence-connection-pool")) {
+					props.put("eclipselink.jdbc.sequence-connection-pool", "true");
+				}
 				
 			} else {
 				// TODO log a warning and give up
