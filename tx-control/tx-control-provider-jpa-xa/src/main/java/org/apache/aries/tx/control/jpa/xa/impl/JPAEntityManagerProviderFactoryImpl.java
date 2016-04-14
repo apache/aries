@@ -51,7 +51,7 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 		DataSource ds = (DataSource) jpaProperties.get("javax.persistence.jtaDataSource");
 
 		if(!jpaProperties.containsKey("javax.persistence.nonJtaDataSource")) {
-			toReturn.put("javax.persistence.jtaDataSource", ds);
+			toReturn.put("javax.persistence.nonJtaDataSource", ds);
 		}
 		
 		toReturn.put("javax.persistence.jtaDataSource", new EnlistingDataSource(tx, ds));
