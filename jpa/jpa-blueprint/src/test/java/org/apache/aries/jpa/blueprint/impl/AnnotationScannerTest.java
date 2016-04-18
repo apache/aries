@@ -87,5 +87,14 @@ public class AnnotationScannerTest {
         Assert.assertEquals("setEmf", method.getName());
     }
 
+    /**
+     * When using a factory the class can be an interface. We need to make sure this does not cause a NPE
+     */
+    @Test
+    public void getFactoryTest() {
+        AnnotationScanner scanner = new AnnotationScanner();
+        List<AccessibleObject> members = scanner.getJpaAnnotatedMembers(TestInterface.class, PersistenceUnit.class);
+        Assert.assertEquals(0, members.size());
+    }
     
 }
