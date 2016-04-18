@@ -29,7 +29,7 @@ public class AnnotationScanner {
 
     public List<AccessibleObject> getJpaAnnotatedMembers(Class<?> c, Class<? extends Annotation> annotation) {
         final List<AccessibleObject> jpaAnnotated = new ArrayList<AccessibleObject>();
-        for (Class<?> cl = c; cl != Object.class; cl = cl.getSuperclass()) {  
+        for (Class<?> cl = c; cl != Object.class && cl != null; cl = cl.getSuperclass()) {
             parseClass(annotation, jpaAnnotated, cl);
         }
         return jpaAnnotated;
