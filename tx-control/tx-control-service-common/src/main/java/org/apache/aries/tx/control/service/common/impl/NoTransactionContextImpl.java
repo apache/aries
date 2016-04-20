@@ -83,6 +83,11 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 	}
 
 	@Override
+	public boolean isReadOnly() {
+		return false;
+	}
+
+	@Override
 	protected boolean isAlive() {
 		return !finished.get();
 	}

@@ -24,6 +24,14 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 
 	private final class TransactionBuilderImpl extends TransactionBuilder {
 
+		private boolean readOnly = false;
+		
+		@Override
+		public TransactionBuilder readOnly() {
+			readOnly = true;
+			return this;
+		}
+
 		private void checkExceptions() {
 			List<Class<? extends Throwable>> duplicates = rollbackFor.stream()
 					.filter(noRollbackFor::contains)
@@ -56,10 +64,12 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 					currentCoord = coordinator.begin(
 							"Resource-Local-Transaction.REQUIRED", 30000);
 					endCoordination = true;
-					currentTran = startTransaction(currentCoord);
+					currentTran = startTransaction(currentCoord, readOnly);
 					endTransaction = true;
 					currentCoord.getVariables().put(TransactionContextKey.class,
 							currentTran);
+				} else if (currentTran.isReadOnly() && !readOnly){
+					throw new TransactionException("A read only transaction is currently active, and cannot be upgraded to a writeable transaction");
 				}
 			} catch (RuntimeException re) {
 				if(endTransaction) {
@@ -85,7 +95,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 				currentCoord = coordinator.begin(
 						"Resource-Local-Transaction.REQUIRES_NEW", 30000);
 
-				currentTran = startTransaction(currentCoord);
+				currentTran = startTransaction(currentCoord, readOnly);
 				currentCoord.getVariables().put(TransactionContextKey.class,
 						currentTran);
 			} catch (RuntimeException re) {
@@ -271,7 +281,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 		coordinator = c;
 	}
 
-	protected abstract AbstractTransactionContextImpl startTransaction(Coordination currentCoord);
+	protected abstract AbstractTransactionContextImpl startTransaction(Coordination currentCoord, boolean readOnly);
 
 	@Override
 	public TransactionBuilder build() {

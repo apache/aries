@@ -24,10 +24,14 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 
 	final List<LocalResource> resources = new ArrayList<>();
 
+	private final boolean readOnly;
+
 	private AtomicReference<TransactionStatus> tranStatus = new AtomicReference<>(ACTIVE);
 
-	public TransactionContextImpl(Coordination coordination) {
+
+	public TransactionContextImpl(Coordination coordination, boolean readOnly) {
 		super(coordination);
+		this.readOnly = readOnly;
 	}
 
 	@Override
@@ -131,6 +135,11 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 	@Override
 	public boolean supportsLocal() {
 		return true;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return readOnly;
 	}
 
 	@Override

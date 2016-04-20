@@ -16,8 +16,8 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 	}
 
 	@Override
-	protected AbstractTransactionContextImpl startTransaction(Coordination currentCoord) {
-		return new TransactionContextImpl(transactionManager, currentCoord);
+	protected AbstractTransactionContextImpl startTransaction(Coordination currentCoord, boolean readOnly) {
+		return new TransactionContextImpl(transactionManager, currentCoord, readOnly);
 	}
 	
 }
