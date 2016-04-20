@@ -2,7 +2,6 @@ package org.apache.aries.tx.control.service.local.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -13,8 +12,6 @@ import static org.osgi.service.transaction.control.TransactionStatus.MARKED_ROLL
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLED_BACK;
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLING_BACK;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.transaction.xa.XAResource;
@@ -23,12 +20,9 @@ import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContex
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionException;
 
@@ -36,21 +30,18 @@ import org.osgi.service.transaction.control.TransactionException;
 public class TransactionContextTest {
 
 	@Mock
-	Coordination coordination;
-	@Mock
 	XAResource xaResource;
 	@Mock
 	LocalResource localResource;
 	
-	Map<Class<?>, Object> variables;
-	
 	AbstractTransactionContextImpl ctx;
+	
+	private Object txId;
 	
 	@Before
 	public void setUp() {
-		ctx = new TransactionContextImpl(coordination, false);
-		variables = new HashMap<>();
-		Mockito.when(coordination.getVariables()).thenReturn(variables);
+		txId = new Object();
+		ctx = new TransactionContextImpl(txId, false);
 	}
 	
 	@Test
@@ -71,15 +62,13 @@ public class TransactionContextTest {
 
 	@Test
 	public void testisReadOnlyTrue() {
-		ctx = new TransactionContextImpl(coordination, true);
+		ctx = new TransactionContextImpl(txId, true);
 		assertTrue(ctx.isReadOnly());
 	}
 
 	@Test
 	public void testTransactionKey() {
-		Mockito.when(coordination.getId()).thenReturn(42L);
-		
-		assertNotNull(ctx.getTransactionKey());
+		assertSame(txId, ctx.getTransactionKey());
 	}
 	
 	@Test
@@ -147,10 +136,7 @@ public class TransactionContextTest {
 		assertEquals(0, value.getAndSet(1));
 		
 		
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		captor.getValue().failed(coordination);
+		ctx.setRollbackOnly();
 		
 		ctx.finish();
 
@@ -186,10 +172,7 @@ public class TransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		captor.getValue().failed(coordination);
+		ctx.setRollbackOnly();
 		
 		ctx.finish();
 		
@@ -234,14 +217,6 @@ public class TransactionContextTest {
 		assertEquals(5, value.get());
 	}
 
-	private Participant getParticipant() {
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		Participant participant = captor.getValue();
-		return participant;
-	}
-	
 	@Test(expected=IllegalStateException.class)
 	public void testPreCompletionAfterEnd() throws Exception {
 		
@@ -251,27 +226,7 @@ public class TransactionContextTest {
 	}
 
 	@Test(expected=IllegalStateException.class)
-	public void testPreCompletionAfterFail() throws Exception {
-		
-		getParticipant().failed(coordination);
-		
-		ctx.finish();
-		
-		ctx.preCompletion(() -> {});
-	}
-
-	@Test(expected=IllegalStateException.class)
 	public void testPostCompletionAfterEnd() throws Exception {
-		
-		ctx.finish();
-		
-		ctx.postCompletion(x -> {});
-	}
-
-	@Test(expected=IllegalStateException.class)
-	public void testPostCompletionAfterFail() throws Exception {
-		
-		getParticipant().failed(coordination);
 		
 		ctx.finish();
 		
@@ -301,7 +256,7 @@ public class TransactionContextTest {
 			return null;
 		}).when(localResource).rollback();
 		
-		getParticipant().ended(coordination);
+		ctx.setRollbackOnly();
 		
 		ctx.finish();
 		
@@ -332,7 +287,7 @@ public class TransactionContextTest {
 			return null;
 		}).when(localResource).rollback();
 		
-		getParticipant().failed(coordination);
+		ctx.setRollbackOnly();
 		
 		ctx.finish();
 		

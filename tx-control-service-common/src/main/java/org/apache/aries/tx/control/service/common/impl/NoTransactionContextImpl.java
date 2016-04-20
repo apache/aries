@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 
 import javax.transaction.xa.XAResource;
 
-import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionStatus;
@@ -17,8 +16,8 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 
 	private final AtomicBoolean finished = new AtomicBoolean(false);
 
-	public NoTransactionContextImpl(Coordination coordination) {
-		super(coordination);
+	public NoTransactionContextImpl() {
+		super();
 	}
 
 	@Override
@@ -43,7 +42,7 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 
 	@Override
 	public void preCompletion(Runnable job) throws IllegalStateException {
-		if (coordination.isTerminated()) {
+		if (finished.get()) {
 			throw new IllegalStateException(
 					"The transaction context has finished");
 		}
@@ -54,7 +53,7 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 	@Override
 	public void postCompletion(Consumer<TransactionStatus> job)
 			throws IllegalStateException {
-		if (coordination.isTerminated()) {
+		if (finished.get()) {
 			throw new IllegalStateException(
 					"The transaction context has finished");
 		}

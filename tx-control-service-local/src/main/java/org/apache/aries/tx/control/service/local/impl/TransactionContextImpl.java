@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 import javax.transaction.xa.XAResource;
 
 import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
-import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionStatus;
@@ -28,15 +27,16 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 
 	private AtomicReference<TransactionStatus> tranStatus = new AtomicReference<>(ACTIVE);
 
+	private Object txId;
 
-	public TransactionContextImpl(Coordination coordination, boolean readOnly) {
-		super(coordination);
+	public TransactionContextImpl(Object txId, boolean readOnly) {
+		this.txId = txId;
 		this.readOnly = readOnly;
 	}
 
 	@Override
 	public Object getTransactionKey() {
-		return coordination.getId();
+		return txId;
 	}
 
 	@Override
