@@ -155,6 +155,8 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
                 mavenBundle("org.ops4j.pax.logging",        "pax-logging-service").versionAsInProject(),
                 mavenBundle("org.ops4j.pax.tinybundles",    "tinybundles").versionAsInProject(),
                 mavenBundle("biz.aQute.bnd",                "bndlib").versionAsInProject(),
+                mavenBundle("org.apache.aries.subsystem",	"org.apache.aries.subsystem.obr").versionAsInProject(),
+                mavenBundle("org.apache.felix",				"org.apache.felix.bundlerepository").versionAsInProject(),	
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
 		};
 	}
