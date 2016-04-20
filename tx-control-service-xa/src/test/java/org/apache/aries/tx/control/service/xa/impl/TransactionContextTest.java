@@ -53,7 +53,7 @@ public class TransactionContextTest {
 	
 	@Before
 	public void setUp() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), coordination);
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), coordination, false);
 		variables = new HashMap<>();
 		Mockito.when(coordination.getVariables()).thenReturn(variables);
 	}
@@ -68,6 +68,18 @@ public class TransactionContextTest {
 		ctx.setRollbackOnly();
 		assertTrue(ctx.getRollbackOnly());
 	}
+	
+	@Test
+	public void testisReadOnlyFalse() {
+		assertFalse(ctx.isReadOnly());
+	}
+
+	@Test
+	public void testisReadOnlyTrue() throws XAException {
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), coordination, true);
+		assertTrue(ctx.isReadOnly());
+	}
+
 
 	@Test
 	public void testTransactionKey() {

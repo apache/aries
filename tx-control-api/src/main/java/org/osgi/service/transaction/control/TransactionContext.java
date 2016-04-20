@@ -99,6 +99,14 @@ public interface TransactionContext {
 	boolean supportsLocal();
 
 	/**
+	 * @return true if the TransactionContext supports read-only optimisations
+	 * <em>and</em> the transaction was marked read only. In particular it is
+	 * legal for this method to return false even if the transaction was marked
+	 * read only by the initiating client.
+	 */
+	boolean isReadOnly();
+
+	/**
 	 * Register an XA resource with the current transaction
 	 * 
 	 * @param resource

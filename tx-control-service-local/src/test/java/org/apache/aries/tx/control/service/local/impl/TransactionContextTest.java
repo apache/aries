@@ -48,7 +48,7 @@ public class TransactionContextTest {
 	
 	@Before
 	public void setUp() {
-		ctx = new TransactionContextImpl(coordination);
+		ctx = new TransactionContextImpl(coordination, false);
 		variables = new HashMap<>();
 		Mockito.when(coordination.getVariables()).thenReturn(variables);
 	}
@@ -62,6 +62,17 @@ public class TransactionContextTest {
 	public void testSetRollbackOnly() {
 		ctx.setRollbackOnly();
 		assertTrue(ctx.getRollbackOnly());
+	}
+
+	@Test
+	public void testisReadOnlyFalse() {
+		assertFalse(ctx.isReadOnly());
+	}
+
+	@Test
+	public void testisReadOnlyTrue() {
+		ctx = new TransactionContextImpl(coordination, true);
+		assertTrue(ctx.isReadOnly());
 	}
 
 	@Test
