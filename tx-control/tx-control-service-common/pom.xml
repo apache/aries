@@ -43,12 +43,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.coordinator</artifactId>
-			<version>1.0.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.util.tracker</artifactId>
 			<version>1.5.1</version>
 			<scope>provided</scope>

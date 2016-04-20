@@ -382,14 +382,12 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 	public Option localTxControlService() {
 		return CoreOptions.composite(
 				systemProperty(TX_CONTROL_FILTER).value("(!(osgi.xa.enabled=*))"),
-				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-local").versionAsInProject());
 	}
 
 	public Option xaTxControlService() {
 		return CoreOptions.composite(
 				systemProperty(TX_CONTROL_FILTER).value("(osgi.xa.enabled=true)"),
-				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-xa").versionAsInProject());
 	}
 

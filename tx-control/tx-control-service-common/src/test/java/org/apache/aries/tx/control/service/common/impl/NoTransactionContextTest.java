@@ -6,44 +6,30 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.transaction.xa.XAResource;
 
-import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
-import org.apache.aries.tx.control.service.common.impl.NoTransactionContextImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.LocalResource;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NoTransactionContextTest {
 
 	@Mock
-	Coordination coordination;
-	@Mock
 	XAResource xaResource;
 	@Mock
 	LocalResource localResource;
-	
-	Map<Class<?>, Object> variables;
 	
 	AbstractTransactionContextImpl ctx;
 	
 	@Before
 	public void setUp() {
-		ctx = new NoTransactionContextImpl(coordination);
-		variables = new HashMap<>();
-		Mockito.when(coordination.getVariables()).thenReturn(variables);
+		ctx = new NoTransactionContextImpl();
 	}
 	
 	@Test(expected=IllegalStateException.class)
@@ -120,8 +106,7 @@ public class NoTransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
-		Participant participant = getParticipant();
-		participant.failed(coordination);
+		ctx.recordFailure(new Exception());
 		
 		ctx.finish();
 		
@@ -157,8 +142,7 @@ public class NoTransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
-		Participant participant = getParticipant();
-		participant.failed(coordination);
+		ctx.recordFailure(new Exception());
 		
 		ctx.finish();
 		
@@ -192,8 +176,7 @@ public class NoTransactionContextTest {
 			value.compareAndSet(3, 5);
 		});
 		
-		Participant participant = getParticipant();
-		participant.failed(coordination);
+		ctx.recordFailure(new Exception());
 		
 		ctx.finish();
 		
@@ -219,24 +202,15 @@ public class NoTransactionContextTest {
 		assertEquals(5, value.get());
 	}
 
-	private Participant getParticipant() {
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		Participant participant = captor.getValue();
-		return participant;
-	}
-
 	@Test(expected=IllegalStateException.class)
 	public void testPreCompletionAfterEnd() throws Exception {
-		
-		Mockito.when(coordination.isTerminated()).thenReturn(true);
+		ctx.finish();
 		ctx.preCompletion(() -> {});
 	}
 
 	@Test(expected=IllegalStateException.class)
 	public void testPostCompletionAfterEnd() throws Exception {
-		Mockito.when(coordination.isTerminated()).thenReturn(true);
+		ctx.finish();
 		ctx.postCompletion(x -> {});
 	}
 	

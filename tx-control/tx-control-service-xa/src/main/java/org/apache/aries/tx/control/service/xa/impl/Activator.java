@@ -7,7 +7,6 @@ import javax.transaction.xa.XAException;
 
 import org.apache.aries.tx.control.service.common.activator.AbstractActivator;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
-import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.transaction.control.TransactionControl;
 
 public class Activator extends AbstractActivator {
@@ -23,8 +22,8 @@ public class Activator extends AbstractActivator {
 	}
 	
 	@Override
-	protected TransactionControl getTransactionControl(Coordinator c) {
-		return new TransactionControlImpl(transactionManager, c);
+	protected TransactionControl getTransactionControl() {
+		return new TransactionControlImpl(transactionManager);
 	}
 	
 	@Override

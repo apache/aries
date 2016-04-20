@@ -29,7 +29,6 @@ import javax.transaction.xa.Xid;
 
 import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
-import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionException;
@@ -51,9 +50,8 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 
 	private final boolean readOnly;
 
-	public TransactionContextImpl(GeronimoTransactionManager transactionManager, Coordination coordination, 
+	public TransactionContextImpl(GeronimoTransactionManager transactionManager, 
 			boolean readOnly) {
-		super(coordination);
 		this.transactionManager = transactionManager;
 		this.readOnly = readOnly;
 		Transaction tmp = null;

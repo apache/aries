@@ -1,6 +1,5 @@
 package org.apache.aries.tx.control.service.common.impl;
 
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLED_BACK;
@@ -10,9 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.CoordinationException;
-import org.osgi.service.coordinator.Coordinator;
 import org.osgi.service.transaction.control.ScopedWorkException;
 import org.osgi.service.transaction.control.TransactionBuilder;
 import org.osgi.service.transaction.control.TransactionContext;
@@ -47,41 +43,25 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 				throws TransactionException, TransactionRolledBackException {
 			checkExceptions();
 			
-			Coordination currentCoord = coordinator.peek();
 			boolean endTransaction = false;
-			boolean endCoordination = false;
 
-			AbstractTransactionContextImpl currentTran = ofNullable(
-					currentCoord).map(c -> (AbstractTransactionContextImpl) c
-							.getVariables().get(TransactionContextKey.class))
-							.filter(atc -> atc
-									.getTransactionStatus() != NO_TRANSACTION)
-							.orElse(null);
+			AbstractTransactionContextImpl existingTran = existingTx.get();
+			AbstractTransactionContextImpl currentTran;
 			try {
-				if (currentTran == null) {
-					// We must create a new coordination to scope our new
-					// transaction
-					currentCoord = coordinator.begin(
-							"Resource-Local-Transaction.REQUIRED", 30000);
-					endCoordination = true;
-					currentTran = startTransaction(currentCoord, readOnly);
+				if (existingTran == null || existingTran.getTransactionStatus() == NO_TRANSACTION) {
+					currentTran = startTransaction(readOnly);
 					endTransaction = true;
-					currentCoord.getVariables().put(TransactionContextKey.class,
-							currentTran);
-				} else if (currentTran.isReadOnly() && !readOnly){
+					existingTx.set(currentTran);
+				} else if (existingTran.isReadOnly() && !readOnly){
 					throw new TransactionException("A read only transaction is currently active, and cannot be upgraded to a writeable transaction");
+				} else {
+					currentTran = existingTran;
 				}
-			} catch (RuntimeException re) {
-				if(endTransaction) {
-					currentTran.finish();
-				}
-				if (endCoordination) {
-					currentCoord.end();
-				}
-				throw re;
+				return doWork(work, currentTran, endTransaction);
+			} finally {
+				existingTx.set(existingTran);
 			}
-
-			return doWork(work, currentTran, currentCoord, endTransaction, endCoordination);
+			
 		}
 
 		@Override
@@ -89,59 +69,38 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 				throws TransactionException, TransactionRolledBackException {
 			checkExceptions();
 			
-			Coordination currentCoord = null;
-			AbstractTransactionContextImpl currentTran;
+			AbstractTransactionContextImpl existingTran = existingTx.get();
 			try {
-				currentCoord = coordinator.begin(
-						"Resource-Local-Transaction.REQUIRES_NEW", 30000);
-
-				currentTran = startTransaction(currentCoord, readOnly);
-				currentCoord.getVariables().put(TransactionContextKey.class,
-						currentTran);
-			} catch (RuntimeException re) {
-				if (currentCoord != null)
-					currentCoord.end();
-				throw re;
+				AbstractTransactionContextImpl currentTran = startTransaction(readOnly);
+				existingTx.set(currentTran);
+				return doWork(work, currentTran, true);
+			} finally {
+				existingTx.set(existingTran);
 			}
 
-			return doWork(work, currentTran, currentCoord, true, true);
 		}
 
 		@Override
 		public <T> T supports(Callable<T> work) throws TransactionException {
 			checkExceptions();
 			
-			Coordination currentCoord = coordinator.peek();
 			boolean endTransaction = false;
-			boolean endCoordination = false;
 
-			AbstractTransactionContextImpl currentTran = ofNullable(
-					currentCoord).map(c -> (AbstractTransactionContextImpl) c
-							.getVariables().get(TransactionContextKey.class))
-							.orElse(null);
+			AbstractTransactionContextImpl existingTran = existingTx.get();
+			AbstractTransactionContextImpl currentTran;
 			try {
-				if (currentTran == null) {
-					// We must create a new coordination to scope our new
-					// transaction
-					currentCoord = coordinator.begin(
-							"Resource-Local-Transaction.SUPPORTS", 30000);
-					endCoordination = true;
-					currentTran = new NoTransactionContextImpl(currentCoord);
+				if (existingTran == null) {
+					currentTran = new NoTransactionContextImpl();
 					endTransaction = true;
-					currentCoord.getVariables().put(TransactionContextKey.class,
-							currentTran);
+					existingTx.set(currentTran);
+				} else {
+					currentTran = existingTran;
 				}
-			} catch (RuntimeException re) {
-				if(endTransaction) {
-					currentTran.finish();
-				}
-				if (endCoordination) {
-					currentCoord.end();
-				}
-				throw re;
+				return doWork(work, currentTran, endTransaction);
+			} finally {
+				existingTx.set(existingTran);
 			}
 
-			return doWork(work, currentTran, currentCoord, endTransaction, endCoordination);
 		}
 
 		@Override
@@ -149,43 +108,30 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 				throws TransactionException {
 			checkExceptions();
 			
-			Coordination currentCoord = coordinator.peek();
 			boolean endTransaction = false;
-			boolean endCoordination = false;
 
-			AbstractTransactionContextImpl currentTran = ofNullable(
-					currentCoord).map(c -> (AbstractTransactionContextImpl) c
-							.getVariables().get(TransactionContextKey.class))
-							.filter(atc -> atc
-									.getTransactionStatus() == NO_TRANSACTION)
-							.orElse(null);
+			AbstractTransactionContextImpl existingTran = existingTx.get();
+			AbstractTransactionContextImpl currentTran;
+			
 			try {
-				if (currentTran == null) {
+				if (existingTran == null || existingTran.getTransactionStatus() != NO_TRANSACTION) {
 					// We must create a new coordination to scope our new
 					// transaction
-					currentCoord = coordinator.begin(
-							"Resource-Local-Transaction.NOT_SUPPORTED", 30000);
-					endCoordination = true;
-					currentTran = new NoTransactionContextImpl(currentCoord);
+					currentTran = new NoTransactionContextImpl();
 					endTransaction = true;
-					currentCoord.getVariables().put(TransactionContextKey.class,
-							currentTran);
+					existingTx.set(currentTran);
+				} else {
+					currentTran = existingTran;
 				}
-			} catch (RuntimeException re) {
-				if(endTransaction) {
-					currentTran.finish();
-				}
-				if (endCoordination) {
-					currentCoord.end();
-				}
-				throw re;
+				return doWork(work, currentTran, endTransaction);
+			} finally {
+				existingTx.set(existingTran);
 			}
-			return doWork(work, currentTran, currentCoord, endTransaction, endCoordination);
 		}
 
 		private <R> R doWork(Callable<R> transactionalWork,
-				AbstractTransactionContextImpl currentTran, Coordination currentCoord, 
-				boolean endTransaction, boolean endCoordination) {
+				AbstractTransactionContextImpl currentTran, 
+				boolean endTransaction) {
 			R result;
 			try {
 				result = transactionalWork.call();
@@ -193,7 +139,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 			} catch (Throwable t) {
 				//TODO handle noRollbackFor
 				if(requiresRollback(t)) {
-					currentCoord.fail(t);
+					currentTran.safeSetRollbackOnly();
 				}
 				if(endTransaction) {
 					try {
@@ -202,17 +148,8 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 						currentTran.recordFailure(e);
 					}
 				}
-				if (endCoordination) {
-					try {
-						currentCoord.end();
-					} catch (CoordinationException ce) {
-						if(ce.getType() != CoordinationException.FAILED) {
-							currentTran.recordFailure(ce);
-						}
-					}
-				}
 				ScopedWorkException workException = new ScopedWorkException("The scoped work threw an exception", t, 
-						endCoordination ? null : currentTran);
+						endTransaction ? null : currentTran);
 				Throwable throwable = currentTran.firstUnexpectedException.get();
 				if(throwable != null) {
 					workException.addSuppressed(throwable);
@@ -227,16 +164,6 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 					currentTran.finish();
 				} catch (Exception e) {
 					currentTran.recordFailure(e);
-					currentCoord.fail(e);
-				}
-			}
-			try {
-				if (endCoordination) {
-					currentCoord.end();
-				}
-			} catch (CoordinationException ce) {
-				if(ce.getType() != CoordinationException.FAILED) {
-					currentTran.recordFailure(ce);
 				}
 			}
 			
@@ -273,15 +200,9 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 		}
 	}
 
-	private static class TransactionContextKey {}
+	private final ThreadLocal<AbstractTransactionContextImpl> existingTx = new ThreadLocal<>();
 
-	private final Coordinator coordinator;
-
-	public AbstractTransactionControlImpl(Coordinator c) {
-		coordinator = c;
-	}
-
-	protected abstract AbstractTransactionContextImpl startTransaction(Coordination currentCoord, boolean readOnly);
+	protected abstract AbstractTransactionContextImpl startTransaction(boolean readOnly);
 
 	@Override
 	public TransactionBuilder build() {
@@ -343,14 +264,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 
 	@Override
 	public TransactionContext getCurrentContext() {
-		TransactionContext toUse = null;
-
-		Coordination peek = coordinator.peek();
-		if (peek != null) {
-			toUse = (TransactionContext) peek.getVariables()
-					.get(TransactionContextKey.class);
-		}
-		return toUse;
+		return existingTx.get();
 	}
 
 	@Override
