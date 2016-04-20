@@ -49,9 +49,13 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 	
 	private final Object key;
 
-	public TransactionContextImpl(GeronimoTransactionManager transactionManager, Coordination coordination) {
+	private final boolean readOnly;
+
+	public TransactionContextImpl(GeronimoTransactionManager transactionManager, Coordination coordination, 
+			boolean readOnly) {
 		super(coordination);
 		this.transactionManager = transactionManager;
+		this.readOnly = readOnly;
 		Transaction tmp = null;
 		try {
 			tmp = transactionManager.suspend();
@@ -219,6 +223,11 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 	@Override
 	public boolean supportsLocal() {
 		return true;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+		return readOnly;
 	}
 
 	@Override

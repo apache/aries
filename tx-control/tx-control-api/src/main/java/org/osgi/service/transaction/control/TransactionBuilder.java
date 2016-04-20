@@ -131,4 +131,23 @@ public abstract class TransactionBuilder implements TransactionStarter {
 		noRollbackFor.addAll(Arrays.asList(throwables));
 		return this;
 	}
+	
+	/**
+	 * Indicate to the Transaction Control service that this transaction
+	 * will be read-only. This hint may be used by the Transaction Control
+	 * service and associated resources to optimise the transaction.
+	 * 
+	 * <p>
+	 * Note that this method is for optimisation purposes only. The TransactionControl
+	 * service is free to ignore the call if it does not offer read-only optimisation. 
+	 * 
+	 * <p>
+	 * If a transaction is marked read-only and then the scoped work performs a write
+	 * operation on a resource then this is a programming error. The resource is
+	 * free to raise an exception when the write is attempted, or to permit the write 
+	 * operation. As a result the transaction may commit successfully, or may rollback.
+	 * 
+	 * @return this builder
+	 */
+	public abstract TransactionBuilder readOnly();
 }
