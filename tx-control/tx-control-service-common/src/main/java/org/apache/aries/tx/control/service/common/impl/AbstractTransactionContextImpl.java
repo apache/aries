@@ -3,66 +3,33 @@ package org.apache.aries.tx.control.service.common.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionStatus;
 
 public abstract class AbstractTransactionContextImpl implements TransactionContext {
 
-	protected static class TransactionVariablesKey {
-	}
-
 	protected final AtomicReference<Throwable> firstUnexpectedException = new AtomicReference<>();
 
 	protected final List<Throwable> subsequentExceptions = new ArrayList<>();
 
-	protected final Coordination coordination;
-
 	protected final List<Runnable> preCompletion = new ArrayList<>();
 
 	protected final List<Consumer<TransactionStatus>> postCompletion = new ArrayList<>();
+	
+	protected final Map<Object, Object> scopedVariables = new HashMap<>();
 
-	public AbstractTransactionContextImpl(Coordination coordination) {
-		this.coordination = coordination;
-
-		coordination.addParticipant(new Participant() {
-
-			@Override
-			public void failed(Coordination coordination) throws Exception {
-				Throwable failure = coordination.getFailure();
-				recordFailure(failure);
-				safeSetRollbackOnly();
-			}
-
-			@Override
-			public void ended(Coordination coordination) throws Exception {
-				if (isAlive()) {
-					// TODO log this
-					recordFailure(new IllegalStateException(
-							"The surrounding coordination ended before the transaction completed"));
-					safeSetRollbackOnly();
-
-				}
-			}
-		});
-	}
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public Object getScopedValue(Object key) {
-		return ((HashMap<Object, Object>) coordination.getVariables().getOrDefault(TransactionVariablesKey.class,
-				new HashMap<>())).get(key);
+		return scopedVariables.get(key);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void putScopedValue(Object key, Object value) {
-		((HashMap<Object, Object>) coordination.getVariables().computeIfAbsent(TransactionVariablesKey.class,
-				k -> new HashMap<>())).put(key, value);
+		scopedVariables.put(key, value);
 	}
 
 	protected void beforeCompletion(Runnable onFirstError) {

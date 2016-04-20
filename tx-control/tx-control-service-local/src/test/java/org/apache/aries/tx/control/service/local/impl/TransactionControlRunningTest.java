@@ -9,20 +9,13 @@ import static org.osgi.service.transaction.control.TransactionStatus.COMMITTED;
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLED_BACK;
 
 import java.net.BindException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Coordinator;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.ResourceProvider;
 import org.osgi.service.transaction.control.ScopedWorkException;
@@ -32,89 +25,15 @@ import org.osgi.service.transaction.control.TransactionStatus;
 public class TransactionControlRunningTest {
 
 	@Mock
-	Coordinator coordinator;
-	@Mock
-	Coordination coordination1;
-	@Mock
-	Coordination coordination2;
-
-	@Mock
 	ResourceProvider<Object> testProvider;
 	@Mock
 	LocalResource testResource;
 
 	TransactionControlImpl txControl;
 
-	Map<Class<?>, Object> variables1;
-	Map<Class<?>, Object> variables2;
-
 	@Before
 	public void setUp() {
-		variables1 = new HashMap<>();
-		variables2 = new HashMap<>();
-
-		setupCoordinations();
-
-		txControl = new TransactionControlImpl(coordinator);
-	}
-
-	/**
-	 * Allow up to two Coordinations to be happening
-	 */
-	private void setupCoordinations() {
-		Mockito.when(coordinator.begin(Mockito.anyString(), Mockito.anyLong())).then(i -> {
-			Mockito.when(coordinator.peek()).thenReturn(coordination1);
-			return coordination1;
-		}).then(i -> {
-			Mockito.when(coordinator.peek()).thenReturn(coordination2);
-			return coordination2;
-		}).thenThrow(new IllegalStateException("Only two coordinations at a time in the test"));
-
-		Mockito.when(coordination1.getVariables()).thenReturn(variables1);
-		Mockito.when(coordination1.getId()).thenReturn(42L);
-		Mockito.doAnswer(i -> {
-			Mockito.when(coordinator.peek()).thenReturn(null);
-			ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-			Mockito.verify(coordination1, Mockito.atLeast(1)).addParticipant(captor.capture());
-			
-			for(Participant p : captor.getAllValues()) {
-				p.ended(coordination1);
-			}
-			return null;
-		}).when(coordination1).end();
-		Mockito.doAnswer(i -> {
-			Mockito.when(coordinator.peek()).thenReturn(null);
-			ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-			Mockito.verify(coordination1, Mockito.atLeast(1)).addParticipant(captor.capture());
-			
-			for(Participant p : captor.getAllValues()) {
-				p.failed(coordination1);
-			}
-			return null;
-		}).when(coordination1).fail(Mockito.any(Throwable.class));
-
-		Mockito.when(coordination2.getVariables()).thenReturn(variables2);
-		Mockito.when(coordination2.getId()).thenReturn(43L);
-		Mockito.doAnswer(i -> {
-			Mockito.when(coordinator.peek()).thenReturn(coordination1);
-			ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-			Mockito.verify(coordination2, Mockito.atLeast(1)).addParticipant(captor.capture());
-			
-			for(Participant p : captor.getAllValues()) {
-				p.ended(coordination2);
-			}
-			return null;
-		}).when(coordination2).end();
-		Mockito.doAnswer(i -> {
-			Mockito.when(coordinator.peek()).thenReturn(coordination1);
-			ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-			Mockito.verify(coordination2, Mockito.atLeast(1)).addParticipant(captor.capture());
-			
-			for(Participant p : captor.getAllValues()) {
-				p.failed(coordination2);
-			}
-			return null;
-		}).when(coordination2).fail(Mockito.any(Throwable.class));
+		txControl = new TransactionControlImpl();
 	}
 
 	@Test

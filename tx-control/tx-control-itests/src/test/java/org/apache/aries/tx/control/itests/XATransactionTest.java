@@ -231,7 +231,6 @@ public class XATransactionTest extends AbstractIntegrationTest {
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
 				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
-				mavenBundle("org.apache.felix", "org.apache.felix.coordinator").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-xa").versionAsInProject(),
 				mavenBundle("com.h2database", "h2").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jdbc-xa").versionAsInProject(),

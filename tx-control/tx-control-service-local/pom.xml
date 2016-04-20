@@ -14,7 +14,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<description>
-        This bundle contains a Coordinator based OSGi Transaction Control Service implementation suitable for local resources.
+        This bundle contains an OSGi Transaction Control Service implementation suitable for local resources.
     </description>
 
 	<scm>
@@ -64,12 +64,6 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.coordinator</artifactId>
-			<version>1.0.2</version>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.util.tracker</artifactId>

@@ -13,8 +13,6 @@ import static org.osgi.service.transaction.control.TransactionStatus.MARKED_ROLL
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLED_BACK;
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLING_BACK;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.transaction.xa.XAException;
@@ -22,7 +20,6 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
-import org.apache.aries.tx.control.service.xa.impl.TransactionContextImpl;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +29,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.osgi.service.coordinator.Coordination;
-import org.osgi.service.coordinator.Participant;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionException;
 
@@ -41,21 +36,15 @@ import org.osgi.service.transaction.control.TransactionException;
 public class TransactionContextTest {
 
 	@Mock
-	Coordination coordination;
-	@Mock
 	XAResource xaResource;
 	@Mock
 	LocalResource localResource;
-	
-	Map<Class<?>, Object> variables;
 	
 	AbstractTransactionContextImpl ctx;
 	
 	@Before
 	public void setUp() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), coordination, false);
-		variables = new HashMap<>();
-		Mockito.when(coordination.getVariables()).thenReturn(variables);
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), false);
 	}
 	
 	@Test
@@ -76,15 +65,13 @@ public class TransactionContextTest {
 
 	@Test
 	public void testisReadOnlyTrue() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), coordination, true);
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true);
 		assertTrue(ctx.isReadOnly());
 	}
 
 
 	@Test
 	public void testTransactionKey() {
-		Mockito.when(coordination.getId()).thenReturn(42L);
-		
 		assertNotNull(ctx.getTransactionKey());
 	}
 	
@@ -153,10 +140,7 @@ public class TransactionContextTest {
 		assertEquals(0, value.getAndSet(1));
 		
 		
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		captor.getValue().failed(coordination);
+		ctx.setRollbackOnly();
 		
 		ctx.finish();
 
@@ -192,10 +176,7 @@ public class TransactionContextTest {
 		
 		assertEquals(0, value.getAndSet(1));
 		
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		captor.getValue().failed(coordination);
+		ctx.setRollbackOnly();
 		
 		ctx.finish();
 		
@@ -240,14 +221,6 @@ public class TransactionContextTest {
 		assertEquals(5, value.get());
 	}
 
-	private Participant getParticipant() {
-		ArgumentCaptor<Participant> captor = ArgumentCaptor.forClass(Participant.class);
-		Mockito.verify(coordination).addParticipant(captor.capture());
-		
-		Participant participant = captor.getValue();
-		return participant;
-	}
-	
 	@Test(expected=IllegalStateException.class)
 	public void testPreCompletionAfterEnd() throws Exception {
 		
@@ -257,27 +230,7 @@ public class TransactionContextTest {
 	}
 
 	@Test(expected=IllegalStateException.class)
-	public void testPreCompletionAfterFail() throws Exception {
-		
-		getParticipant().failed(coordination);
-		
-		ctx.finish();
-		
-		ctx.preCompletion(() -> {});
-	}
-
-	@Test(expected=IllegalStateException.class)
 	public void testPostCompletionAfterEnd() throws Exception {
-		
-		ctx.finish();
-		
-		ctx.postCompletion(x -> {});
-	}
-
-	@Test(expected=IllegalStateException.class)
-	public void testPostCompletionAfterFail() throws Exception {
-		
-		getParticipant().failed(coordination);
 		
 		ctx.finish();
 		
@@ -299,22 +252,6 @@ public class TransactionContextTest {
 	}
 	
 	@Test
-	public void testLocalResourceEarlyEnd() throws Exception {
-		ctx.registerLocalResource(localResource);
-		
-		Mockito.doAnswer(i -> {
-			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
-			return null;
-		}).when(localResource).rollback();
-		
-		getParticipant().ended(coordination);
-		
-		ctx.finish();
-		
-		Mockito.verify(localResource).rollback();
-	}
-
-	@Test
 	public void testLocalResourceRollbackOnly() throws Exception {
 		ctx.registerLocalResource(localResource);
 		ctx.setRollbackOnly();
@@ -329,22 +266,6 @@ public class TransactionContextTest {
 		Mockito.verify(localResource).rollback();
 	}
 
-	@Test
-	public void testLocalResourceFail() throws Exception {
-		ctx.registerLocalResource(localResource);
-		
-		Mockito.doAnswer(i -> {
-			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
-			return null;
-		}).when(localResource).rollback();
-		
-		getParticipant().failed(coordination);
-		
-		ctx.finish();
-		
-		Mockito.verify(localResource).rollback();
-	}
-	
 	@Test
 	public void testLocalResourcePreCommitException() throws Exception {
 		ctx.registerLocalResource(localResource);
@@ -426,31 +347,6 @@ public class TransactionContextTest {
 		
 		Mockito.verifyNoMoreInteractions(xaResource);
 	}
-	
-	@Test
-	public void testXAResourceEarlyEnd() throws Exception {
-		ctx.registerXAResource(xaResource);
-		
-		Mockito.doAnswer(i -> {
-			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
-			return null;
-		}).when(xaResource).rollback(Mockito.any(Xid.class));
-		
-		getParticipant().ended(coordination);
-		
-		ctx.finish();
-		
-		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
-		
-		InOrder inOrder = Mockito.inOrder(xaResource);
-		
-		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
-		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
-		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMFAIL));
-		inOrder.verify(xaResource).rollback(Mockito.eq(captor.getValue()));
-		
-		Mockito.verifyNoMoreInteractions(xaResource);
-	}
 
 	@Test
 	public void testXAResourceRollbackOnly() throws Exception {
@@ -476,31 +372,6 @@ public class TransactionContextTest {
 		Mockito.verifyNoMoreInteractions(xaResource);
 	}
 
-	@Test
-	public void testXAResourceFail() throws Exception {
-		ctx.registerXAResource(xaResource);
-		
-		Mockito.doAnswer(i -> {
-			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
-			return null;
-		}).when(xaResource).rollback(Mockito.any(Xid.class));
-		
-		getParticipant().failed(coordination);
-		
-		ctx.finish();
-		
-		ArgumentCaptor<Xid> captor = ArgumentCaptor.forClass(Xid.class);
-		
-		InOrder inOrder = Mockito.inOrder(xaResource);
-		
-		inOrder.verify(xaResource).start(captor.capture(), Mockito.eq(XAResource.TMNOFLAGS));
-		inOrder.verify(xaResource).setTransactionTimeout(Mockito.anyInt());
-		inOrder.verify(xaResource).end(Mockito.eq(captor.getValue()), Mockito.eq(XAResource.TMFAIL));
-		inOrder.verify(xaResource).rollback(Mockito.eq(captor.getValue()));
-		
-		Mockito.verifyNoMoreInteractions(xaResource);
-	}
-	
 	@Test
 	public void testXAResourcePreCommitException() throws Exception {
 		ctx.registerXAResource(xaResource);
