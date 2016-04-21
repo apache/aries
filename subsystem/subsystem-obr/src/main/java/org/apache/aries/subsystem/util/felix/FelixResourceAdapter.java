@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.apache.aries.subsystem.obr.internal.NamespaceTranslator;
 import org.apache.aries.subsystem.obr.internal.ResourceHelper;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
@@ -71,6 +72,13 @@ public class FelixResourceAdapter implements Resource, RepositoryContent {
 		// TODO Add to constants.
 		if (namespace == null || namespace.equals("osgi.content")) {
 			result.add(new OsgiContentCapability(this, resource.getURI()));
+			if (namespace != null) {
+				result.trimToSize();
+			    return Collections.unmodifiableList(result);
+			}
+		}
+		if (namespace == null || namespace.equals(HostNamespace.HOST_NAMESPACE)) {
+			result.add(new OsgiWiringHostCapability(this, resource.getSymbolicName(), resource.getVersion()));
 			if (namespace != null) {
 				result.trimToSize();
 			    return Collections.unmodifiableList(result);
