@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.aries.subsystem.obr.internal.AbstractRequirement;
 import org.apache.aries.subsystem.obr.internal.NamespaceTranslator;
-import org.osgi.framework.namespace.BundleNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Resource;
@@ -64,17 +63,11 @@ public class FelixRequirementAdapter extends AbstractRequirement {
 		/* (1) The Felix OBR specific "mandatory:<*" syntax must be stripped out of the filter.
 		 * (2) The namespace must be translated.
 		 */
-		String namespace = getNamespace();
-		String filter = requirement.getFilter()
+		result.put(Namespace.REQUIREMENT_FILTER_DIRECTIVE, requirement.getFilter()
 				.replaceAll("\\(mandatory\\:\\<\\*[^\\)]*\\)", "")
 				.replaceAll("\\(service\\=[^\\)]*\\)", "")
 				.replaceAll("objectclass", "objectClass")
-				.replaceAll(requirement.getName() + '=', namespace + '=');
-		if (BundleNamespace.BUNDLE_NAMESPACE.equals(namespace)) {
-			filter = filter.replaceAll("symbolicname", namespace)
-					.replaceAll("version", BundleNamespace.CAPABILITY_BUNDLE_VERSION_ATTRIBUTE);
-		}
-		result.put(Namespace.REQUIREMENT_FILTER_DIRECTIVE, filter);
+				.replaceAll(requirement.getName() + '=', getNamespace() + '='));
 		result.put(Namespace.REQUIREMENT_RESOLUTION_DIRECTIVE, requirement.isOptional() ? Namespace.RESOLUTION_OPTIONAL : Namespace.RESOLUTION_MANDATORY);
 		result.put(Namespace.REQUIREMENT_CARDINALITY_DIRECTIVE, requirement.isMultiple() ? Namespace.CARDINALITY_MULTIPLE : Namespace.CARDINALITY_SINGLE);
 		return Collections.unmodifiableMap(result);

@@ -17,34 +17,43 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>parent</artifactId>
-        <version>2.0.0</version>
-        <relativePath>../parent/pom.xml</relativePath>
+        <groupId>org.apache.aries.jpa</groupId>
+        <artifactId>org.apache.aries.jpa.parent</artifactId>
+        <version>2.4.0-SNAPSHOT</version>
+        <relativePath>jpa-parent</relativePath>
     </parent>
 
-    <groupId>org.apache.aries.jpa</groupId>
-    <artifactId>jpa</artifactId>
+    <artifactId>org.apache.aries.jpa.main</artifactId>
+    <name>Apache Aries JPA parent</name>
     <packaging>pom</packaging>
-    <name>Aries JPA Component</name>
-    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jpa</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jpa</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jpa</url>
+    </scm>
 
     <modules>
+        <module>jpa-parent</module>
         <module>jpa-api</module>
         <module>jpa-container</module>
-        <module>jpa-container-context</module>
-        <module>jpa-blueprint-aries</module>
-        <module>jpa-container-eclipselink-adapter</module> 
-        <module>jpa-container-testbundle</module>
-        <module>jpa-container-testbundle-eclipselink</module>
-        <module>jpa-container-advancedtestbundle</module>
-        <module>jpa-container-itest</module>
-        <module>jpa-blueprint-testbundle</module>
+        <module>jpa-support</module>
+        <module>jpa-blueprint</module>
+        <module>jpa-container-eclipselink-adapter</module>
+        <module>jpa-repository</module>
+        <module>examples</module>
+        <module>jpa-features</module>
+        <module>itests</module>
     </modules>
 
 </project>
+
