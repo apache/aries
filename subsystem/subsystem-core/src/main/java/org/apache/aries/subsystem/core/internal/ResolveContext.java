@@ -200,6 +200,12 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 					// it gets added to the sharing policy per the specification.
 					capabilities.add(new MissingCapability(requirement));
 				}
+				// Is the requirement resource already resolved? See ARIES-1538.
+				else if (isResolved(requirement.getResource())) {
+					// Yes, the resource has already been resolved. Do not fail
+					// the subsystem resolution due to a missing dependency.
+					capabilities.add(new MissingCapability(requirement));
+				}
 			}
 		}
 		catch (Throwable t) {
