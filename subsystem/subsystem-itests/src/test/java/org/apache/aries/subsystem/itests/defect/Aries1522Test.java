@@ -70,12 +70,12 @@ public class Aries1522Test extends SubsystemTest {
 	}
 	
 	@Test
-	public void testApacheAriesProvisionDepenenciesInstall() throws Exception {
+	public void testApacheAriesProvisionDependenciesInstall() throws Exception {
 		test(AriesProvisionDependenciesDirective.INSTALL);
 	}
 	
 	@Test
-	public void testApacheAriesProvisionDepenenciesResolve() throws Exception {
+	public void testApacheAriesProvisionDependenciesResolve() throws Exception {
 		test(AriesProvisionDependenciesDirective.RESOLVE);
 	}
 	
