@@ -32,16 +32,36 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public class Aries1538Test extends SubsystemTest {
 	@Test
-	public void testApacheAriesProvisionDepenenciesInstall() throws Exception {
-		test(AriesProvisionDependenciesDirective.INSTALL);
+	public void testEffectiveActiveApacheAriesProvisionDependenciesInstall() throws Exception {
+		testEffectiveActive(AriesProvisionDependenciesDirective.INSTALL);
 	}
 	
 	@Test
-	public void testApacheAriesProvisionDepenenciesResolve() throws Exception {
-		test(AriesProvisionDependenciesDirective.RESOLVE);
+	public void testEffectiveActiveApacheAriesProvisionDependenciesResolve() throws Exception {
+		testEffectiveActive(AriesProvisionDependenciesDirective.RESOLVE);
 	}
 	
-	private void test(AriesProvisionDependenciesDirective provisionDependencies) throws Exception {
+	@Test
+	public void testSubstitutableExportApacheAriesProvisionDependenciesInstall() throws Exception {
+		testSubstitutableExport(AriesProvisionDependenciesDirective.INSTALL);
+	}
+	
+	@Test
+	public void testSubstituableExportApacheAriesProvisionDependenciesResolve() throws Exception {
+		testSubstitutableExport(AriesProvisionDependenciesDirective.RESOLVE);
+	}
+	
+	@Test
+	public void testHostFragmentCircularDependencyApacheAriesProvisionDependenciesInstall() throws Exception {
+		testHostFragmentCircularDependency(AriesProvisionDependenciesDirective.INSTALL);
+	}
+	
+	@Test
+	public void testHostFragmentCircularDependencyApacheAriesProvisionDependenciesResolve() throws Exception {
+		testHostFragmentCircularDependency(AriesProvisionDependenciesDirective.RESOLVE);
+	}
+	
+	private void testEffectiveActive(AriesProvisionDependenciesDirective provisionDependencies) throws Exception {
 		boolean flag = AriesProvisionDependenciesDirective.INSTALL.equals(provisionDependencies);
 		BundleArchiveBuilder bab = new BundleArchiveBuilder();
 		bab.symbolicName("bundle");
@@ -65,6 +85,100 @@ public class Aries1538Test extends SubsystemTest {
 									"b", 
 									new BundleArchiveBuilder()
 											.symbolicName("b")
+											.importPackage("foo")
+											.build())
+							.build(),
+					flag
+			);
+			uninstallableSubsystems.add(subsystem);
+			startSubsystem(subsystem, flag);
+			stoppableSubsystems.add(subsystem);
+		}
+		catch (SubsystemException e) {
+			e.printStackTrace();
+			fail("Subsystem should have installed and started");
+		}
+	}
+	
+	private void testSubstitutableExport(AriesProvisionDependenciesDirective provisionDependencies) throws Exception {
+		boolean flag = AriesProvisionDependenciesDirective.INSTALL.equals(provisionDependencies);
+		BundleArchiveBuilder hostBuilder = new BundleArchiveBuilder();
+		hostBuilder.symbolicName("host");
+		BundleArchiveBuilder fragmentBuilder = new BundleArchiveBuilder();
+		fragmentBuilder.symbolicName("fragment");
+		fragmentBuilder.exportPackage("foo");
+		fragmentBuilder.importPackage("foo");
+		fragmentBuilder.header("Fragment-Host", "host");
+		Subsystem root = getRootSubsystem();
+		Bundle host = root.getBundleContext().installBundle(
+				"host", 
+				hostBuilder.build());
+		uninstallableBundles.add(host);
+		Bundle fragment = root.getBundleContext().installBundle(
+				"fragment", 
+				fragmentBuilder.build());
+		uninstallableBundles.add(fragment);
+		startBundle(host);
+		try {
+			Subsystem subsystem = installSubsystem(
+					root,
+					"subsystem", 
+					new SubsystemArchiveBuilder()
+							.symbolicName("subsystem")
+							.type(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION + ';' 
+										+ provisionDependencies.toString())
+							.bundle(
+									"a", 
+									new BundleArchiveBuilder()
+											.symbolicName("a")
+											.importPackage("foo")
+											.build())
+							.build(),
+					flag
+			);
+			uninstallableSubsystems.add(subsystem);
+			startSubsystem(subsystem, flag);
+			stoppableSubsystems.add(subsystem);
+		}
+		catch (SubsystemException e) {
+			e.printStackTrace();
+			fail("Subsystem should have installed and started");
+		}
+	}
+	
+	private void testHostFragmentCircularDependency(AriesProvisionDependenciesDirective provisionDependencies) throws Exception {
+		boolean flag = AriesProvisionDependenciesDirective.INSTALL.equals(provisionDependencies);
+		BundleArchiveBuilder hostBuilder = new BundleArchiveBuilder();
+		hostBuilder.symbolicName("host");
+		hostBuilder.exportPackage("foo");
+		hostBuilder.importPackage("bar");
+		BundleArchiveBuilder fragmentBuilder = new BundleArchiveBuilder();
+		fragmentBuilder.symbolicName("fragment");
+		fragmentBuilder.exportPackage("bar");
+		fragmentBuilder.importPackage("foo");
+		fragmentBuilder.header("Fragment-Host", "host");
+		Subsystem root = getRootSubsystem();
+		Bundle host = root.getBundleContext().installBundle(
+				"host", 
+				hostBuilder.build());
+		uninstallableBundles.add(host);
+		Bundle fragment = root.getBundleContext().installBundle(
+				"fragment", 
+				fragmentBuilder.build());
+		uninstallableBundles.add(fragment);
+		startBundle(host);
+		try {
+			Subsystem subsystem = installSubsystem(
+					root,
+					"subsystem", 
+					new SubsystemArchiveBuilder()
+							.symbolicName("subsystem")
+							.type(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION + ';' 
+										+ provisionDependencies.toString())
+							.bundle(
+									"a", 
+									new BundleArchiveBuilder()
+											.symbolicName("a")
 											.importPackage("foo")
 											.build())
 							.build(),
