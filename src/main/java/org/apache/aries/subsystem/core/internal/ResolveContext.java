@@ -154,26 +154,44 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		processWires(wires, requirement, capabilities);
 	}
 	
-	private void processAsSubstitutableExport(Requirement requirement, List<Capability> capabilities) {
+	private void processAsSubstitutableExport(boolean isFragment, Requirement requirement, List<Capability> capabilities) {
 		String namespace = requirement.getNamespace();
 		if (!PackageNamespace.PACKAGE_NAMESPACE.equals(namespace)) {
 			return;
 		}
 		Resource resource = requirement.getResource();
 		Wiring wiring = wirings.get(resource);
-		List<Capability> resourceCapabilities = wiring.getResourceCapabilities(namespace);
-		processResourceCapabilities(resourceCapabilities, requirement, capabilities);
+		if (isFragment) {
+			List<Wire> fragmentWires = wiring.getRequiredResourceWires(HostNamespace.HOST_NAMESPACE);
+			for (Wire fragmentWire : fragmentWires) {
+				Resource host = fragmentWire.getProvider();
+				processResourceCapabilities(
+						wirings.get(host).getResourceCapabilities(namespace),
+						requirement,
+						capabilities);
+			}
+		}
+		else {
+			List<Capability> resourceCapabilities = wiring.getResourceCapabilities(namespace);
+			processResourceCapabilities(resourceCapabilities, requirement, capabilities);
+		}
 	}
 	
 	private void processAlreadyResolvedResource(Resource resource, Requirement requirement, List<Capability> capabilities) {
-		if (isProcessableAsFragment(requirement)) {
+		boolean isFragment = isProcessableAsFragment(requirement);
+		if (isFragment) {
 			processAsFragment(requirement, capabilities);
 		}
 		else {
 			processAsBundle(requirement, capabilities);
 		}
 		if (capabilities.isEmpty() && Utils.isMandatory(requirement)) {
-			processAsSubstitutableExport(requirement, capabilities);
+			processAsSubstitutableExport(isFragment, requirement, capabilities);
+			if (capabilities.isEmpty()) {
+				// ARIES-1538. Do not fail subsystem resolution if an already
+				// resolved resource has a missing dependency.
+				capabilities.add(new MissingCapability(requirement));
+			}
 		}
 	}
 	
