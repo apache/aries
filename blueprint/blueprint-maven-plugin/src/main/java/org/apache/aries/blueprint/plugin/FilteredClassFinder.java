@@ -18,16 +18,15 @@
  */
 package org.apache.aries.blueprint.plugin;
 
+import org.apache.xbean.finder.ClassFinder;
+import org.springframework.stereotype.Component;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import org.apache.xbean.finder.ClassFinder;
-import org.springframework.stereotype.Component;
 
 public class FilteredClassFinder {
     
@@ -50,12 +49,9 @@ public class FilteredClassFinder {
             for (String packageName : packageNames) {
                 if (clazz.getPackage().getName().startsWith(packageName)) {
                     filteredClasses.add(clazz);
-                    continue;
                 }
             }
         }
-        //System.out.println("Raw: " + rawClasses);
-        //System.out.println("Filtered: " + beanClasses);
         return filteredClasses;
     }
 }
