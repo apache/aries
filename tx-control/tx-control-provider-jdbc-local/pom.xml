@@ -49,8 +49,8 @@
 			!com.codahale.*,
 			!com.zaxxer.hikari.metrics.dropwizard,
 			!javassist.*,
-			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
-			org.osgi.service.transaction.control.jdbc;version="[0.0.1,0.0.2)",
+			org.osgi.service.transaction.control,
+			org.osgi.service.transaction.control.jdbc,
 			org.osgi.service.cm,
 			org.osgi.service.jdbc,
 			*
