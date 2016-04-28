@@ -57,7 +57,7 @@
 			!javax.resource.*,
 			!org.objectweb.howl.*,
 			javax.transaction.xa;version=0,
-			org.osgi.service.transaction.control;version="[0.0.1,0.0.2)",
+			org.osgi.service.transaction.control,
 			*
 		</aries.osgi.import.pkg>
 		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
