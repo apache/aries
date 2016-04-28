@@ -1,1 +1,3 @@
-version 0.0.1.SNAPSHOT
+version 1
+api.status aries.prerelease
+mandatory: api.status
