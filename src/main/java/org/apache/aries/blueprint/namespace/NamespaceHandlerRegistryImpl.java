@@ -541,16 +541,20 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                         }
                     }
                     // Find a compatible namespace handler
-                    LOGGER.warn("Dynamically adding namespace handler {} to bundle {}/{}",
-                            nsUri, bundle.getSymbolicName(), bundle.getVersion());
                     h = findCompatibleNamespaceHandler(nsUri);
                     if (h != null) {
-                        URL url = h.getSchemaLocation(rid);
+                        URL url = h.getSchemaLocation(namespaceURI);
+                        if (url == null) {
+                            url = h.getSchemaLocation(rid);
+                        }
                         if (isCorrectUrl(url)) {
+                            LOGGER.warn("Dynamically adding namespace handler {} to bundle {}/{}",
+                                    nsUri, bundle.getSymbolicName(), bundle.getVersion());
                             return createLSInput(url, id, namespaceURI);
                         }
                     }
                 }
+                LOGGER.warn("Unable to find namespace handler for {}", namespaceURI);
                 return null;
             }
 
