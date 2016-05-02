@@ -46,7 +46,7 @@ public class ProducedBean extends Bean {
     }
 
     @Override
-    protected void resolveConstructorArguments(Matcher matcher) {
-        resolveParametersForConstructor(matcher, producingMethod.getParameterTypes(), producingMethod.getParameterAnnotations());
+    protected void resolveArguments(Matcher matcher) {
+        resolveArguments(matcher, producingMethod.getParameterTypes(), producingMethod.getParameterAnnotations());
     }
 }
