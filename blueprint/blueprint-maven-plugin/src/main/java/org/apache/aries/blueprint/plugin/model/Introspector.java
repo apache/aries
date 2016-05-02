@@ -47,7 +47,7 @@ public final class Introspector {
     }
 
     /**
-     * @param 
+     * @param requiredAnnotations annotations the fields must have
      * @return fields in the given class (including parent classes) that match this finder's annotations requirements.
      * @throws UnsupportedOperationException if any field matching the annotations requirement shares its name with a
      * field declared elsewhere in the class hierarchy.
