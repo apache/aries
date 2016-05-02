@@ -210,6 +210,17 @@ public class GeneratorTest {
         assertEquals("produced2", xpath.evaluate("argument[8]/@ref", myBean5));
     }
 
+    @Test
+    public void testProducesBeanUsingParametersNotConstructor() throws Exception {
+        Node bean1 = getBeanById("myProducedWithConstructor");
+        assertEquals("org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor", xpath.evaluate("@class", bean1));
+        assertEquals("myFactoryBean", xpath.evaluate("@factory-ref", bean1));
+        assertEquals("createBeanWithParameters", xpath.evaluate("@factory-method", bean1));
+        assertEquals("myBean1", xpath.evaluate("argument[1]/@ref", bean1));
+        assertEquals("100", xpath.evaluate("argument[2]/@value", bean1));
+        assertEquals("ser1", xpath.evaluate("argument[3]/@ref", bean1));
+    }
+
     private static Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
             SAXException, IOException {
         InputStream is = new ByteArrayInputStream(os.toByteArray());

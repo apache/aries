@@ -77,9 +77,9 @@ public class Context implements Matcher {
                 Class<?> producedClass = method.getReturnType();
                 ProducedBean producedBean;
                 if (named != null) {
-                    producedBean = new ProducedBean(producedClass, named.value(), factoryBean, method.getName());
+                    producedBean = new ProducedBean(producedClass, named.value(), factoryBean, method);
                 } else {
-                    producedBean = new ProducedBean(producedClass, factoryBean, method.getName());
+                    producedBean = new ProducedBean(producedClass, factoryBean, method);
                 }
                 if (singleton != null) {
                     producedBean.setSingleton();
