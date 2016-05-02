@@ -89,7 +89,7 @@ public final class ValidatingGenericConnectionManager extends GenericConnectionM
 
         Object foundPool = null;
         if (current instanceof AbstractSinglePoolConnectionInterceptor) {
-            foundPool = Reflections.get(stack, "pool");
+            foundPool = Reflections.get(current, "pool");
         } else if (current instanceof MultiPoolConnectionInterceptor) {
             log.warn("validation on stack {} not supported", stack);
         }
