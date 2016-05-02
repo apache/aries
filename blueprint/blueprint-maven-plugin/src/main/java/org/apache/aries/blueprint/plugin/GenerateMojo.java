@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,15 +17,6 @@
  * under the License.
  */
 package org.apache.aries.blueprint.plugin;
-
-import java.io.File;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.maven.artifact.Artifact;
@@ -37,8 +28,18 @@ import org.apache.maven.project.MavenProject;
 import org.apache.xbean.finder.ClassFinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Generates blueprint from spring annotations
+ *
  * @goal blueprint-generate
  * @phase process-classes
  * @requiresDependencyResolution compile
@@ -63,8 +64,8 @@ public class GenerateMojo extends AbstractMojo {
     
     /**
      * Which extension namespaces should the plugin support
-     * 
-     * @parameter 
+     *
+     * @parameter
      */
     protected Set<String> namespaces;
     
@@ -72,6 +73,13 @@ public class GenerateMojo extends AbstractMojo {
      * @component
      */
     private BuildContext buildContext;
+
+    /**
+     * Name of file to generate, default: autowire.xml
+     *
+     * @parameter
+     */
+    protected String generatedFileName;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (!buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()))) {
@@ -99,7 +107,9 @@ public class GenerateMojo extends AbstractMojo {
         resource.setDirectory(generatedDir);
         project.addResource(resource);
 
-        File file = new File(generatedDir, "OSGI-INF/blueprint/autowire.xml");
+        String fileName = generatedFileName != null ? generatedFileName : "autowire.xml";
+
+        File file = new File(generatedDir, "OSGI-INF/blueprint/" + fileName);
         file.getParentFile().mkdirs();
         System.out.println("Generating blueprint to " + file);
 
@@ -111,12 +121,12 @@ public class GenerateMojo extends AbstractMojo {
     private ClassFinder createProjectScopeFinder() throws MalformedURLException {
         List<URL> urls = new ArrayList<URL>();
 
-        urls.add( new File(project.getBuild().getOutputDirectory()).toURI().toURL() );
-        for ( Object artifactO : project.getArtifacts() ) {
-            Artifact artifact = (Artifact)artifactO;
+        urls.add(new File(project.getBuild().getOutputDirectory()).toURI().toURL());
+        for (Object artifactO : project.getArtifacts()) {
+            Artifact artifact = (Artifact) artifactO;
             File file = artifact.getFile();
-            if ( file != null ) {
-                urls.add( file.toURI().toURL() );
+            if (file != null) {
+                urls.add(file.toURI().toURL());
             }
         }
         ClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
