@@ -24,6 +24,11 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.xbean.finder.ClassFinder;
 import org.sonatype.plexus.build.incremental.BuildContext;
@@ -38,47 +43,31 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Generates blueprint from spring annotations
- *
- * @goal blueprint-generate
- * @phase process-classes
- * @requiresDependencyResolution compile
- * @inheritByDefault false
- * @description Generates blueprint file from spring annotations @Component, @Autowire and @Value
+ * Generates blueprint from CDI and spring annotations
  */
+@Mojo(name="blueprint-generate", requiresDependencyResolution=ResolutionScope.COMPILE, 
+    defaultPhase=LifecyclePhase.PROCESS_CLASSES, inheritByDefault=false)
 public class GenerateMojo extends AbstractMojo {
 
-    /**
-     * The maven project.
-     *
-     * @parameter default-value="${project}"
-     * @required
-     */
+    @Parameter(defaultValue="${project}", required=true)
     protected MavenProject project;
 
-    /**
-     * @parameter
-     * @required
-     */
+    @Parameter(required=true)
     protected List<String> scanPaths;
     
     /**
      * Which extension namespaces should the plugin support
-     *
-     * @parameter
      */
+    @Parameter
     protected Set<String> namespaces;
     
-    /**
-     * @component
-     */
+    @Component
     private BuildContext buildContext;
 
     /**
-     * Name of file to generate, default: autowire.xml
-     *
-     * @parameter
+     * Name of file to generate
      */
+    @Parameter(defaultValue="autowire.xml")
     protected String generatedFileName;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -107,9 +96,7 @@ public class GenerateMojo extends AbstractMojo {
         resource.setDirectory(generatedDir);
         project.addResource(resource);
 
-        String fileName = generatedFileName != null ? generatedFileName : "autowire.xml";
-
-        File file = new File(generatedDir, "OSGI-INF/blueprint/" + fileName);
+        File file = new File(generatedDir, "OSGI-INF/blueprint/" + generatedFileName);
         file.getParentFile().mkdirs();
         System.out.println("Generating blueprint to " + file);
 

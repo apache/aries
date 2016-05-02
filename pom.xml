@@ -57,6 +57,11 @@
                     <source>1.7</source>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.4</version>
+            </plugin>
+
         </plugins>
         <pluginManagement>
             <plugins>
@@ -97,6 +102,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.4</version>
+        </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -226,14 +236,5 @@
         </dependency>
     </dependencies>
 
-    <reporting>
-        <plugins>
-            <plugin>
-                <artifactId>maven-plugin-plugin</artifactId>
-                <version>2.9</version>
-            </plugin>
-        </plugins>
-
-    </reporting>
 
 </project>
