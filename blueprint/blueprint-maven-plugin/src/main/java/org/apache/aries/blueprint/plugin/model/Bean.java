@@ -80,7 +80,7 @@ public class Bean extends BeanRef {
     }
 
     public void resolve(Matcher matcher) {
-        resolveConstructorArguments(matcher);
+        resolveArguments(matcher);
         for (Field field : new Introspector(clazz).fieldsWith(Value.class, Autowired.class, Inject.class)) {
             Property prop = Property.create(matcher, field);
             if (prop != null) {
@@ -89,21 +89,19 @@ public class Bean extends BeanRef {
         }
     }
 
-    protected void resolveConstructorArguments(Matcher matcher) {
+    protected void resolveArguments(Matcher matcher) {
         Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
         for (Constructor constructor : declaredConstructors) {
             Annotation inject = constructor.getAnnotation(Inject.class);
             Annotation autowired = constructor.getAnnotation(Autowired.class);
             if (inject != null || autowired != null || declaredConstructors.length == 1) {
-                Class[] parameterTypes = constructor.getParameterTypes();
-                Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
-                resolveParametersForConstructor(matcher, parameterTypes, parameterAnnotations);
+                resolveArguments(matcher, constructor.getParameterTypes(), constructor.getParameterAnnotations());
                 break;
             }
         }
     }
 
-    protected void resolveParametersForConstructor(Matcher matcher, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
+    protected void resolveArguments(Matcher matcher, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
         for (int i = 0; i < parameterTypes.length; ++i) {
             Annotation[] annotations = parameterAnnotations[i];
             String ref = null;
