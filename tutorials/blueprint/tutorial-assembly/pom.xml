@@ -82,31 +82,31 @@
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.api</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.client.blueprint</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.client.osgi</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.server.blueprint</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.server.osgi</artifactId>
-                        <version>${version}</version>
+                        <version>${project.version}</version>
 		</dependency>
 
 	</dependencies>

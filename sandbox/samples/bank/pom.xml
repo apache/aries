@@ -35,47 +35,47 @@
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-biz</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-web</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-checkingAccount</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-checkingAccountBindings</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-creditCheck</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-creditCheckBindings</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-lineOfCreditAccount</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.bank</groupId>
                 <artifactId>bank-lineOfCreditAccountBindings</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

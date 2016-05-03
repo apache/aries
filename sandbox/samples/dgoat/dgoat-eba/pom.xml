@@ -41,32 +41,32 @@ under the License.
         <dependency>
             <groupId>org.apache.aries.samples.dgoat</groupId>
             <artifactId>org.apache.aries.samples.dgoat.api</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.dgoat</groupId>
             <artifactId>org.apache.aries.samples.dgoat.web</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.dgoat</groupId>
             <artifactId>org.apache.aries.samples.dgoat.bundlecontextmodel</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.dgoat</groupId>
             <artifactId>org.apache.aries.samples.dgoat.dummy</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.dgoat</groupId>
             <artifactId>org.apache.aries.samples.dgoat.dummy2</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.dgoat</groupId>
             <artifactId>org.apache.aries.samples.dgoat.info.enhancer</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
         </dependency>
     </dependencies>
 
