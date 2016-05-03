@@ -40,27 +40,27 @@
             <dependency>
                 <groupId>words</groupId>
                 <artifactId>words-api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>words</groupId>
                 <artifactId>words-assembly</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>words</groupId>
                 <artifactId>words-datasource</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>words</groupId>
                 <artifactId>words-jpa</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>words</groupId>
                 <artifactId>words-web</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

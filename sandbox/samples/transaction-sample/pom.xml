@@ -34,22 +34,22 @@
             <dependency>
                 <groupId>org.apache.aries.samples</groupId>
                 <artifactId>osgi-jdbc-api</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples</groupId>
                 <artifactId>osgi-jdbc-derby</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples</groupId>
                 <artifactId>transaction-assembly</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples</groupId>
                 <artifactId>transaction-sample-web</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
