@@ -59,7 +59,7 @@
             org.apache.aries.blueprint.spring.extender.Activator
         </aries.osgi.activator>
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.core.version>1.6.0</blueprint.core.version>
+        <blueprint.core.version>1.6.2</blueprint.core.version>
         <blueprint.parser.version>1.5.0-SNAPSHOT</blueprint.parser.version>
         <!--
         <lastReleaseVersion>1.0.4</lastReleaseVersion>
@@ -86,13 +86,13 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-parser</artifactId>
-            <version>1.4.0</version>
+            <version>${blueprint.parser.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.6.1-SNAPSHOT</version>
+            <version>${blueprint.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
