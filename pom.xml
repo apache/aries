@@ -56,7 +56,7 @@
         </aries.osgi.private.pkg>
 
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.core.version>1.6.1-SNAPSHOT</blueprint.core.version>
+        <blueprint.core.version>1.6.3-SNAPSHOT</blueprint.core.version>
         <blueprint.parser.version>1.4.0</blueprint.parser.version>
         <lastReleaseVersion>1.0.8</lastReleaseVersion>
     </properties>
