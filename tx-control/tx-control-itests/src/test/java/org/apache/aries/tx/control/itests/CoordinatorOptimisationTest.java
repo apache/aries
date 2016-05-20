@@ -63,6 +63,7 @@ public class CoordinatorOptimisationTest extends AbstractTransactionTest impleme
     				.collect(toList());
     	
     	long noCoord;
+    	long oneTran;
     	long withCoord;
     	
     	long start = System.currentTimeMillis();
@@ -75,17 +76,27 @@ public class CoordinatorOptimisationTest extends AbstractTransactionTest impleme
     	
     	txControl.required(() -> connection.createStatement().executeUpdate("DELETE FROM TEST_TABLE"));
     	
+    	txControl.required(() -> {
+    			messages.stream()
+    				.forEach(this::persistMessage);
+    			return null;
+    		});
+    	oneTran = System.currentTimeMillis() - start;
+
+    	txControl.required(() -> connection.createStatement().executeUpdate("DELETE FROM TEST_TABLE"));
+    	
     	coordinator.begin("foo", MINUTES.toMillis(5));
     	start = System.currentTimeMillis();
     	try {
     		messages.stream()
-    			.forEach(this::persistMessage);
+    		.forEach(this::persistMessage);
     	} finally {
     		coordinator.peek().end();
     		withCoord = System.currentTimeMillis() - start;
     	}
     	
-    	System.out.println("\n\n\n\nWithout Coord: " + noCoord + "  With Coord: " + withCoord);
+    	System.out.println("\n\n\n\nWithout Coord: " + noCoord + "  One Tran: " + oneTran+  
+    			"  With Coord: " + withCoord);
     }
     
     @SuppressWarnings("unchecked")
