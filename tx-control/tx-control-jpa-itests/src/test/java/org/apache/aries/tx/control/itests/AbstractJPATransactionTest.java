@@ -81,12 +81,11 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 	private String getRemoteDBPath() {
 		String fullResourceName = getClass().getName().replace('.', '/') + ".class";
 		
-		String resourcePath = getClass().getResource(getClass().getSimpleName() + ".class").getPath();
+		String resourcePath = getClass().getClassLoader().getResource(fullResourceName).getPath();
 		
 		File testClassesDir = new File(resourcePath.substring(0, resourcePath.length() - fullResourceName.length()));
 		
-		String dbPath = new File(testClassesDir.getParentFile(), "testdb/db1").getAbsolutePath();
-		return dbPath;
+		return new File(testClassesDir.getParentFile(), "testdb/db1").getAbsolutePath();
 	}
 
 	private EntityManager configuredEntityManager(String jdbcUrl) throws IOException {
