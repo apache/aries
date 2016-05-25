@@ -39,9 +39,9 @@ public class FelixResourceAdapter implements Resource, RepositoryContent {
 	public boolean equals(Object o) {
 		if (o == this) 
 			return true;
-		if (!(o instanceof Resource)) 
+		if (!(o instanceof FelixResourceAdapter)) 
 			return false;
-		Resource that = (Resource)o;
+		FelixResourceAdapter that = (FelixResourceAdapter)o;
 		if (!ResourceHelper.getTypeAttribute(that).equals(ResourceHelper.getTypeAttribute(this))) 
 			return false;
 		if (!ResourceHelper.getSymbolicNameAttribute(that).equals(ResourceHelper.getSymbolicNameAttribute(this)))
