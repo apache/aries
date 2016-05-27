@@ -27,7 +27,7 @@ public interface TransactionStarter {
 	 * transaction is active then it must be started and associated with the
 	 * work and then completed after the transactional work has finished.
 	 * 
-	 * @param work
+	 * @param work The work to execute
 	 * @return The value returned by the work
 	 * @throws TransactionException if there is an error starting or completing
 	 *             the transaction
@@ -47,7 +47,7 @@ public interface TransactionStarter {
 	 * completed the new transaction must also complete and any suspended
 	 * transaction be resumed.
 	 * 
-	 * @param work
+	 * @param work The work to execute
 	 * @return The value returned by the work
 	 * @throws TransactionException if there is an error starting or completing
 	 *             the transaction
@@ -70,7 +70,7 @@ public interface TransactionStarter {
 	 * completion callback to any registered functions. This function is
 	 * suitable for final cleanup, such as closing a connection
 	 * 
-	 * @param work
+	 * @param work The work to execute
 	 * @return The value returned by the work
 	 * @throws TransactionException if there is an error starting or completing
 	 *             the transaction
@@ -92,7 +92,7 @@ public interface TransactionStarter {
 	 * completion callback to any registered functions. This function is
 	 * suitable for final cleanup, such as closing a connection
 	 * 
-	 * @param work
+	 * @param work The work to execute
 	 * @return The value returned by the work
 	 * @throws TransactionException if there is an error starting or completing
 	 *             the transaction
@@ -101,6 +101,5 @@ public interface TransactionStarter {
 	 */
 	<T> T supports(Callable<T> work)
 			throws TransactionException, ScopedWorkException;
-
 
 }

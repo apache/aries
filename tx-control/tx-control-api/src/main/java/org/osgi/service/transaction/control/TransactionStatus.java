@@ -20,7 +20,7 @@ package org.osgi.service.transaction.control;
  * 
  * A transaction may not enter all of the states in this enum, however it will always
  * traverse the enum in ascending order. In particular if the TransactionStatus is 
- * reported as X then it will never proceed into a state Y where X.compareTo(Y) >= 0;
+ * reported as X then it will never proceed into a state Y where X.compareTo(Y) &gt;= 0;
  *
  */
 public enum TransactionStatus {
