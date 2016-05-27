@@ -61,7 +61,7 @@ public interface JPAEntityManagerProviderFactory {
 	 * Create a private {@link JPAEntityManagerProvider} using an
 	 * {@link EntityManagerFactoryBuilder}
 	 * 
-	 * @param emfb
+	 * @param emfb The {@link EntityManagerFactoryBuilder} to create JPA resources with
 	 * @param jpaProperties The properties to pass to the
 	 *            {@link EntityManagerFactoryBuilder} in order to create the
 	 *            underlying {@link EntityManagerFactory} and
@@ -79,7 +79,7 @@ public interface JPAEntityManagerProviderFactory {
 	 * Create a private {@link JPAEntityManagerProvider} using an existing
 	 * {@link EntityManagerFactory}.
 	 * 
-	 * @param emf
+	 * @param emf The {@link EntityManagerFactory} to use in the {@link JPAEntityManagerProvider}
 	 * @param resourceProviderProperties Configuration properties to pass to the
 	 *            JDBC Resource Provider runtime
 	 * @return A {@link JPAEntityManagerProvider} that can be used in

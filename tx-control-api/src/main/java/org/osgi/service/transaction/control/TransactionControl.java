@@ -24,7 +24,6 @@ public interface TransactionControl extends TransactionStarter {
 	/**
 	 * Build a transaction context to surround a piece of transactional work
 	 * 
-	 * @param propagation The transaction propagation to use
 	 * @return A builder to complete the creation of the transaction
 	 */
 	TransactionBuilder build();

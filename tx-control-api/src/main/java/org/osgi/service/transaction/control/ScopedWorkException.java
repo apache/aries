@@ -65,7 +65,7 @@ public class ScopedWorkException extends RuntimeException {
 	}
 
 	/**
-	 * Throws the cause of this Exception as a RuntimeException the supplied
+	 * Throws the cause of this Exception as a RuntimeException, or as the supplied
 	 * Exception type.
 	 * <p>
 	 * Usage is of the form:
@@ -80,11 +80,19 @@ public class ScopedWorkException extends RuntimeException {
 	 * }
 	 * </pre>
 	 * 
-	 * @param throwable
-	 * @return This method will always throw an exception
-	 * @throws T
+	 * @param throwable The exception type to throw
+	 *        
+	 * @return This method will always throw an exception, either:
+	 *           <ul>
+	 *             <li>The cause of this exception as the type &lt;T&gt;</li>
+	 *             <li>The cause of this exception as a runtime exception</li>
+	 *             <li>An IllegalArgumentException with its cause set to <code>this</code></li>
+	 *           </ul>
+	 * 
+	 * @throws T the type of exception to be thrown
+	 * @throws IllegalArgumentException if the cause is not a {@link RuntimeException} or of type T
 	 */
-	public <T extends Throwable> T as(Class<T> throwable) throws T {
+	public <T extends Throwable> T as(Class<T> throwable) throws T, IllegalArgumentException {
 		Throwable t = getCause();
 
 		if (t instanceof RuntimeException) {
@@ -100,7 +108,7 @@ public class ScopedWorkException extends RuntimeException {
 	}
 
 	/**
-	 * Throws the cause of this Exception as a RuntimeException or one of the
+	 * Throws the cause of this Exception as a RuntimeException, or as one of the
 	 * supplied Exception types.
 	 * <p>
 	 * Usage is of the form:
@@ -115,14 +123,21 @@ public class ScopedWorkException extends RuntimeException {
 	 * }
 	 * </pre>
 	 * 
-	 * @param a
-	 * @param b
-	 * @return This method will always throw an exception
-	 * @throws A
-	 * @throws B
+	 * @param a The first possible exception type to throw
+	 * @param b The second possible exception type to throw
+	 * @return This method will always throw an exception, either:
+	 *           <ul>
+	 *             <li>The cause of this exception as the type &lt;A&gt;</li>
+	 *             <li>The cause of this exception as the type &lt;B&gt;</li>
+	 *             <li>The cause of this exception as a runtime exception</li>
+	 *             <li>An IllegalArgumentException with its cause set to <code>this</code></li>
+	 *           </ul>
+	 * @throws A The first possible exception type to throw
+	 * @throws B The second possible exception type to throw
+	 * @throws IllegalArgumentException if the cause is not a {@link RuntimeException} or of type A or B
 	 */
 	public <A extends Throwable, B extends Throwable> RuntimeException asOneOf(
-			Class<A> a, Class<B> b) throws A, B {
+			Class<A> a, Class<B> b) throws A, B, IllegalArgumentException {
 		Throwable t = getCause();
 
 		if (t instanceof RuntimeException) {
@@ -143,15 +158,24 @@ public class ScopedWorkException extends RuntimeException {
 	 * supplied Exception types.
 	 * 
 	 * @see #asOneOf(Class, Class)
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @return This method will always throw an exception
-	 * @throws A
-	 * @throws B
+	 * @param a The first possible exception type to throw
+	 * @param b The second possible exception type to throw
+	 * @param c The third possible exception type to throw
+	 * @return This method will always throw an exception, either:
+	 *           <ul>
+	 *             <li>The cause of this exception as the type &lt;A&gt;</li>
+	 *             <li>The cause of this exception as the type &lt;B&gt;</li>
+	 *             <li>The cause of this exception as the type &lt;C&gt;</li>
+	 *             <li>The cause of this exception as a runtime exception</li>
+	 *             <li>An IllegalArgumentException with its cause set to <code>this</code></li>
+	 *           </ul>
+	 * @throws A The first possible exception type to throw
+	 * @throws B The second possible exception type to throw
+	 * @throws C The third possible exception type to throw
+	 * @throws IllegalArgumentException if the cause is not a {@link RuntimeException} or one of types A, B or C
 	 */
 	public <A extends Throwable, B extends Throwable, C extends Throwable> RuntimeException asOneOf(
-			Class<A> a, Class<B> b, Class<C> c) throws A, B, C {
+			Class<A> a, Class<B> b, Class<C> c) throws A, B, C, IllegalArgumentException {
 		Throwable t = getCause();
 
 		if (t instanceof RuntimeException) {
@@ -173,18 +197,26 @@ public class ScopedWorkException extends RuntimeException {
 	 * supplied Exception types.
 	 * 
 	 * @see #asOneOf(Class, Class)
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @param d
-	 * @return This method will always throw an exception
-	 * @throws A
-	 * @throws B
-	 * @throws C
-	 * @throws D
+	 * @param a The first possible exception type to throw
+	 * @param b The second possible exception type to throw
+	 * @param c The third possible exception type to throw
+	 * @param d The fourth possible exception type to throw
+	 * @return This method will always throw an exception, either:
+	 *           <ul>
+	 *             <li>The cause of this exception as the type &lt;A&gt;</li>
+	 *             <li>The cause of this exception as the type &lt;B&gt;</li>
+	 *             <li>The cause of this exception as the type &lt;C&gt;</li>
+	 *             <li>The cause of this exception as a runtime exception</li>
+	 *             <li>An IllegalArgumentException with its cause set to <code>this</code></li>
+	 *           </ul>
+	 * @throws A The first possible exception type to throw
+	 * @throws B The second possible exception type to throw
+	 * @throws C The third possible exception type to throw
+	 * @throws D The fourth possible exception type to throw
+	 * @throws IllegalArgumentException if the cause is not a {@link RuntimeException} or one of types A, B, C or D
 	 */
 	public <A extends Throwable, B extends Throwable, C extends Throwable, D extends Throwable> RuntimeException asOneOf(
-			Class<A> a, Class<B> b, Class<C> c, Class<D> d) throws A, B, C, D {
+			Class<A> a, Class<B> b, Class<C> c, Class<D> d) throws A, B, C, D, IllegalArgumentException {
 		Throwable t = getCause();
 
 		if (t instanceof RuntimeException) {

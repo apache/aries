@@ -15,6 +15,7 @@
  */
 package org.osgi.service.transaction.control.jdbc;
 
+import java.sql.Connection;
 import java.sql.Driver;
 import java.util.Map;
 import java.util.Properties;
@@ -90,7 +91,7 @@ public interface JDBCConnectionProviderFactory {
 	 * Create a private {@link JDBCConnectionProvider} using a
 	 * DataSourceFactory.
 	 * 
-	 * @param dsf
+	 * @param dsf The {@link DataSourceFactory} that provides access to the database
 	 * @param jdbcProperties The properties to pass to the
 	 *            {@link DataSourceFactory} in order to create the underlying
 	 *            {@link DataSource}
@@ -106,7 +107,7 @@ public interface JDBCConnectionProviderFactory {
 	 * Create a private {@link JDBCConnectionProvider} using an existing
 	 * {@link DataSource}.
 	 * 
-	 * @param ds
+	 * @param ds The {@link DataSource} that provides access to the database
 	 * @param resourceProviderProperties Configuration properties to pass to the
 	 *            JDBC Resource Provider runtime
 	 * @return A {@link JDBCConnectionProvider} that can be used in transactions
@@ -118,7 +119,7 @@ public interface JDBCConnectionProviderFactory {
 	 * Create a private {@link JDBCConnectionProvider} using an existing
 	 * {@link Driver}.
 	 * 
-	 * @param driver
+	 * @param driver The {@link Driver} that provides access to the database
 	 * @param jdbcProperties The properties to pass to the {@link Driver} in
 	 *            order to create a {@link Connection}
 	 * @param resourceProviderProperties Configuration properties to pass to the
@@ -133,7 +134,7 @@ public interface JDBCConnectionProviderFactory {
 	 * Create a private {@link JDBCConnectionProvider} using an existing
 	 * {@link XADataSource}.
 	 * 
-	 * @param ds
+	 * @param ds The {@link XADataSource} that provides access to the database
 	 * @param resourceProviderProperties Configuration properties to pass to the
 	 *            JDBC Resource Provider runtime
 	 * @return A {@link JDBCConnectionProvider} that can be used in transactions
