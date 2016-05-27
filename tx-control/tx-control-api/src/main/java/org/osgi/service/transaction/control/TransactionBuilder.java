@@ -63,8 +63,8 @@ public abstract class TransactionBuilder implements TransactionStarter {
 	 * </li>
 	 * </ul>
 	 * 
-	 * @param t
-	 * @param throwables The Exception types that should trigger rollback
+	 * @param t An exception type that should trigger rollback
+	 * @param throwables further exception types that should trigger rollback
 	 * @return this builder
 	 */
 	@SafeVarargs

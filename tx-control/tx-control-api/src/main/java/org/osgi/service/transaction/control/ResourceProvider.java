@@ -16,19 +16,20 @@
 package org.osgi.service.transaction.control;
 
 /**
- * A resource provider is used to provide a transactional resource to the
+ * A resource provider is used to provide a scoped resource to the
  * application
  * 
- * @param <T>
+ * @param <T> The type of the scoped resource created by this {@link ResourceProvider}
  */
 public interface ResourceProvider<T> {
 
 	/**
-	 * Get a resource which will associate with the current transaction context
-	 * when used
+	 * Get a resource which will automatically associate with the current 
+	 * scope
 	 * 
-	 * @param txControl
-	 * @return The resource which will participate in the current transaction
+	 * @param txControl The transaction control service to associate with
+	 * @return The resource which will participate in the scopes started
+	 *         by the provided {@link TransactionControl}
 	 * @throws TransactionException if the resource cannot be registered with
 	 *             the transaction
 	 */

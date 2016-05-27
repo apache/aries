@@ -24,14 +24,14 @@ public interface LocalResource {
 	/**
 	 * Commit the resource
 	 * 
-	 * @throws TransactionException
+	 * @throws TransactionException if an error occurs while committing,
 	 */
 	void commit() throws TransactionException;
 
 	/**
 	 * Roll back the resource
 	 * 
-	 * @throws TransactionException
+	 * @throws TransactionException if an error occurs while rolling back
 	 */
 	void rollback() throws TransactionException;
 }
