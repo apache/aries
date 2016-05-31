@@ -117,14 +117,15 @@ public class Aries1523Test extends SubsystemTest {
 	
 	private URL createRepositoryXml(DataModelHelper helper) throws Exception {
 		File dir;
-		if (new File("").getAbsolutePath().endsWith("/target")) {
+		String cwd = new File("").getAbsolutePath();
+		if (cwd.endsWith(File.separator + "target")) {
 			dir = new File("test-classes/aries1523");
 		}
 		else {
 			dir = new File("target/test-classes/aries1523");
 		}
 		File jar = new File(dir, "aries1523host.jar");
-		assertTrue("The host jar does not exist", jar.exists());
+		assertTrue("The host jar does not exist: " + jar.getAbsolutePath(), jar.exists());
 		Resource resource = helper.createResource(jar.toURI().toURL());
 		Repository repository = helper.repository(new Resource[] {resource});
 		File file = new File(dir, "repository.xml");
