@@ -15,15 +15,15 @@ feature:install scr transaction pax-jdbc-config pax-jdbc-h2 pax-jdbc-pool-dbcp2 
 
 # Closure based example. (Make sure to start karaf with JDK 8)
 ```
-install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.model/2.1.0
-install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.ds/2.1.0
+install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.model/2.3.0
+install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.ds/2.3.0
 ```
 
 # Blueprint based example
 ```
-install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.blueprint/2.1.0
-install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.model/2.1.0
-install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.blueprint/2.1.0
+install -s mvn:org.apache.aries.jpa/org.apache.aries.jpa.blueprint/2.3.0
+install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.model/2.3.0
+install -s mvn:org.apache.aries.jpa.example/org.apache.aries.jpa.example.tasklist.blueprint/2.3.0
 ```
 
 After installing the examples you can check for the services.
