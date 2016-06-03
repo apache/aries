@@ -71,6 +71,9 @@ public class GenerateMojo extends AbstractMojo {
     protected String generatedFileName;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
+            throw new MojoExecutionException("Configuration scanPaths must be set");
+        }
         if (!buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()))) {
             return;
         }
