@@ -16,67 +16,53 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin;
+package org.apache.aries.blueprint.plugin.model.service;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import org.apache.aries.blueprint.plugin.model.Bean;
-import org.ops4j.pax.cdi.api.OsgiServiceProvider;
-import org.ops4j.pax.cdi.api.Properties;
-import org.ops4j.pax.cdi.api.Property;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
-public class OsgiServiceProviderWriter {
+public class ServiceProviderWriter {
     private final XMLStreamWriter writer;
 
-    public OsgiServiceProviderWriter(XMLStreamWriter writer) {
+    public ServiceProviderWriter(XMLStreamWriter writer) {
         this.writer = writer;
     }
 
-    public void write(Collection<Bean> beans) throws XMLStreamException {
-        for (Bean bean : beans) {
-            write(bean);
+    public void write(Collection<ServiceProvider> serviceProviders) throws XMLStreamException {
+        for (ServiceProvider serviceProvider : serviceProviders) {
+            write(serviceProvider);
         }
     }
 
-    public void write(Bean bean) throws XMLStreamException {
-        OsgiServiceProvider serviceProvider = bean.clazz.getAnnotation(OsgiServiceProvider.class);
-        if (serviceProvider == null) {
-            return;
-        }
-
-        Properties properties = bean.clazz.getAnnotation(Properties.class);
-        List<String> interfaceNames = Lists.newArrayList();
-        for (Class<?> serviceIf : serviceProvider.classes()) {
-            interfaceNames.add(serviceIf.getName());
-        }
+    private void write(ServiceProvider serviceProvider) throws XMLStreamException {
 
         // If there are no properties to write and only one service attribute (either
         // interface="MyServiceInterface" or auto-export="interfaces") then create an
         // empty element
-        boolean writeEmptyElement = properties == null && interfaceNames.size() < 2;
+        boolean writeEmptyElement = serviceProvider.serviceProperties.isEmpty() && serviceProvider.interfaces.size() < 2;
         if (writeEmptyElement) {
             writer.writeEmptyElement("service");
         } else {
             writer.writeStartElement("service");
         }
-        writer.writeAttribute("ref", bean.id);
+        writer.writeAttribute("ref", serviceProvider.beanRef);
 
-        if (interfaceNames.size() == 0) {
+        if (serviceProvider.interfaces.size() == 0) {
             writer.writeAttribute("auto-export", "interfaces");
-        } else if (interfaceNames.size() == 1) {
-            writer.writeAttribute("interface", Iterables.getOnlyElement(interfaceNames));
+        } else if (serviceProvider.interfaces.size() == 1) {
+            writer.writeAttribute("interface", Iterables.getOnlyElement(serviceProvider.interfaces));
         } else {
-            writeInterfacesElement(interfaceNames);
+            writeInterfacesElement(serviceProvider.interfaces);
         }
 
         writer.writeCharacters("\n");
-        if (properties != null) {
-            writeProperties(properties);
+
+        if (!serviceProvider.serviceProperties.isEmpty()) {
+            writeProperties(serviceProvider.serviceProperties);
         }
 
         if (!writeEmptyElement) {
@@ -102,15 +88,15 @@ public class OsgiServiceProviderWriter {
         writer.writeEndElement();
     }
 
-    private void writeProperties(Properties properties) throws XMLStreamException {
+    private void writeProperties(Map<String,String> properties) throws XMLStreamException {
         writer.writeCharacters("    ");
         writer.writeStartElement("service-properties");
         writer.writeCharacters("\n");
-        for (Property property : properties.value()) {
+        for (Map.Entry<String,String> property : properties.entrySet()) {
             writer.writeCharacters("        ");
             writer.writeEmptyElement("entry");
-            writer.writeAttribute("key", property.name());
-            writer.writeAttribute("value", property.value());
+            writer.writeAttribute("key", property.getKey());
+            writer.writeAttribute("value", property.getValue());
             writer.writeCharacters("\n");
         }
         writer.writeCharacters("    ");
