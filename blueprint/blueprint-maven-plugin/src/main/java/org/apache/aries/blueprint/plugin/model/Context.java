@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import org.apache.aries.blueprint.plugin.model.service.ServiceProvider;
 import org.ops4j.pax.cdi.api.OsgiService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -29,21 +30,23 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Context implements Matcher {
 
-    SortedSet<BeanRef> reg;
+    SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
+    private final List<ServiceProvider> serviceProviders = new ArrayList<>();
 
     public Context(Class<?>... beanClasses) {
         this(Arrays.asList(beanClasses));
     }
 
     public Context(Collection<Class<?>> beanClasses) {
-        this.reg = new TreeSet<BeanRef>();
         addBlueprintRefs();
         addBeans(beanClasses);
     }
@@ -65,11 +68,16 @@ public class Context implements Matcher {
         Bean bean = new Bean(clazz);
         reg.add(bean);
         addServiceRefs(clazz);
-        addProducedBeans(clazz, bean);
+        addProducedBeans(bean);
+        addServiceProviders(bean);
     }
 
-    private void addProducedBeans(Class<?> clazz, BeanRef factoryBean) {
-        for (Method method : clazz.getMethods()) {
+    private void addServiceProviders(Bean bean) {
+        serviceProviders.addAll(bean.serviceProviders);
+    }
+
+    private void addProducedBeans(BeanRef factoryBean) {
+        for (Method method : factoryBean.clazz.getMethods()) {
             Produces produces = method.getAnnotation(Produces.class);
             Named named = method.getAnnotation(Named.class);
             Singleton singleton = method.getAnnotation(Singleton.class);
@@ -135,4 +143,7 @@ public class Context implements Matcher {
         return serviceRefs;
     }
 
+    public List<ServiceProvider> getServiceProviders() {
+        return serviceProviders;
+    }
 }

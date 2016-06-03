@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import org.apache.aries.blueprint.plugin.model.service.ServiceProvider;
 import org.ops4j.pax.cdi.api.OsgiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,7 @@ public class Bean extends BeanRef {
     public List<Field> persistenceFields;
     public Set<TransactionalDef> transactionDefs = new HashSet<>();
     public boolean isPrototype;
+    public List<ServiceProvider> serviceProviders = new ArrayList<>();
 
     public Bean(Class<?> clazz) {
         super(clazz, BeanRef.getBeanName(clazz));
@@ -73,6 +75,11 @@ public class Bean extends BeanRef {
         this.isPrototype = isPrototype(clazz);
         this.persistenceFields = introspector.fieldsWith(PersistenceContext.class, PersistenceUnit.class);
         setQualifiersFromAnnotations(clazz.getAnnotations());
+
+        ServiceProvider serviceProvider = ServiceProvider.fromBean(this);
+        if(serviceProvider != null){
+            serviceProviders.add(serviceProvider);
+        }
     }
 
     private boolean isPrototype(Class<?> clazz) {
