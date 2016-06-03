@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,24 +18,45 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import org.ops4j.pax.cdi.api.OsgiServiceProvider;
+import org.ops4j.pax.cdi.api.Properties;
+import org.ops4j.pax.cdi.api.Property;
+
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-public class MyFactoryNamedBean {
+public class MyFactoryBeanAsService {
     
     @Produces
-    @Named("produced1")
-    public MyProduced createBean1() {
+    @Named("producedForService")
+    @OsgiServiceProvider
+    public MyProduced createBeanWithServiceExpose1() {
         return new MyProduced("My message");
     }
 
     @Produces
-    @Named("produced2")
-    @Singleton
-    public MyProduced createBean2() {
+    @Named("producedForServiceWithOneInterface")
+    @OsgiServiceProvider(classes = MyProduced.class)
+    public MyProduced createBeanWithServiceExpose2() {
+        return new MyProduced("My message");
+    }
+    @Produces
+    @Named("producedForServiceWithTwoInterfaces")
+    @OsgiServiceProvider(classes = {MyProduced.class, ServiceA.class})
+    public MyProduced createBeanWithServiceExpose3() {
         return new MyProduced("My message");
     }
 
+    @Produces
+    @Named("producedForServiceWithProperties")
+    @OsgiServiceProvider
+    @Properties({
+        @Property(name = "n1", value = "v1"),
+        @Property(name = "n2", value = "v2")
+    })
+    public MyProduced createBeanWithServiceExpose4() {
+        return new MyProduced("My message");
+    }
 }
