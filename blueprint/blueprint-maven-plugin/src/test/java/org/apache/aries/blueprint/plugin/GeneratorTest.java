@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.model.TransactionalDef;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
+import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.ServiceA;
 import org.apache.aries.blueprint.plugin.test.ServiceB;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -219,6 +220,46 @@ public class GeneratorTest {
         assertEquals("myBean1", xpath.evaluate("argument[1]/@ref", bean1));
         assertEquals("100", xpath.evaluate("argument[2]/@value", bean1));
         assertEquals("ser1", xpath.evaluate("argument[3]/@ref", bean1));
+    }
+
+    @Test
+    public void testExposeProducedBeanAsServiceWithAutoExport() throws Exception {
+        Node service = getServiceByRef("producedForService");
+        assertEquals("interfaces", xpath.evaluate("@auto-export", service));
+        assertEquals("", xpath.evaluate("@interface", service));
+        assertEquals("0", xpath.evaluate("count(interfaces)", service));
+        assertEquals("0", xpath.evaluate("count(service-properties)", service));
+    }
+
+    @Test
+    public void testExposeProducedBeanAsServiceWithOneInterface() throws Exception {
+        Node service = getServiceByRef("producedForServiceWithOneInterface");
+        assertEquals("", xpath.evaluate("@auto-export", service));
+        assertEquals(MyProduced.class.getName(), xpath.evaluate("@interface", service));
+        assertEquals("0", xpath.evaluate("count(interfaces)", service));
+        assertEquals("0", xpath.evaluate("count(service-properties)", service));
+    }
+
+    @Test
+    public void testExposeProducedBeanAsServiceWithTwoInterfaces() throws Exception {
+        Node service = getServiceByRef("producedForServiceWithTwoInterfaces");
+        assertEquals("", xpath.evaluate("@auto-export", service));
+        assertEquals("", xpath.evaluate("@interface", service));
+        assertEquals("2", xpath.evaluate("count(interfaces/value)", service));
+        assertEquals(MyProduced.class.getName(), xpath.evaluate("interfaces/value[1]", service));
+        assertEquals(ServiceA.class.getName(), xpath.evaluate("interfaces/value[2]", service));
+        assertEquals("0", xpath.evaluate("count(service-properties)", service));
+    }
+
+    @Test
+    public void testExposeProducedBeanAsServiceWithServiceProperties() throws Exception {
+        Node service = getServiceByRef("producedForServiceWithProperties");
+        assertEquals("interfaces", xpath.evaluate("@auto-export", service));
+        assertEquals("", xpath.evaluate("@interface", service));
+        assertEquals("0", xpath.evaluate("count(interfaces)", service));
+        assertEquals("2", xpath.evaluate("count(service-properties/entry)", service));
+        assertEquals("v1", xpath.evaluate("service-properties/entry[@key='n1']/@value", service));
+        assertEquals("v2", xpath.evaluate("service-properties/entry[@key='n2']/@value", service));
     }
 
     private static Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
