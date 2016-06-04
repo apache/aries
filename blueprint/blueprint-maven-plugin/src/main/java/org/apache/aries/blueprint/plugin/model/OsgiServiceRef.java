@@ -19,7 +19,10 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.ops4j.pax.cdi.api.OsgiService;
+import org.springframework.stereotype.Component;
 
+import javax.inject.Named;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -33,59 +36,61 @@ public class OsgiServiceRef extends BeanRef {
 
     public OsgiServiceRef(Field field) {
         super(field);
-        OsgiService osgiService = field.getAnnotation(OsgiService.class);
-        String filterValue = osgiService.filter();
-        if (filterValue.contains("(")) {
-            filter = filterValue;
-            compName = null;
-        } else {
-            compName = filterValue;
-            filter = null;
+        ServiceFilter serviceFilter = extractServiceFilter(field);
+        filter = serviceFilter.filter;
+        compName = serviceFilter.compName;
+        id = generateReferenceId(field);
+    }
+
+    private String generateReferenceId(AnnotatedElement annotatedElement) {
+        String prefix = getBeanName(clazz, annotatedElement);
+        String suffix = createIdSuffix(annotatedElement);
+        return prefix + suffix;
+    }
+
+    private String createIdSuffix(AnnotatedElement annotatedElement) {
+        if (shouldAddSuffix(annotatedElement)) {
+            if (filter != null) {
+                return "-" + getId(filter);
+            }
+            if (compName != null) {
+                return "-" + compName;
+            }
         }
-        id = getBeanName(clazz);
-        if (filter != null) {
-            id = id + "-" + getId(filter);
-        }
-        if (compName != null) {
-            id = id + "-" + compName;
-        }
+        return "";
+    }
+
+    private boolean shouldAddSuffix(AnnotatedElement annotatedElement) {
+        Component component = annotatedElement.getAnnotation(Component.class);
+        Named named = annotatedElement.getAnnotation(Named.class);
+        return (component == null || "".equals(component.value())) &&
+            (named == null || "".equals(named.value()));
     }
 
     public OsgiServiceRef(Method method) {
         super(method);
-        OsgiService osgiService = method.getAnnotation(OsgiService.class);
+        ServiceFilter serviceFilter = extractServiceFilter(method);
+        filter = serviceFilter.filter;
+        compName = serviceFilter.compName;
+        id = generateReferenceId(method);
+    }
+
+    private ServiceFilter extractServiceFilter(AnnotatedElement annotatedElement) {
+        OsgiService osgiService = annotatedElement.getAnnotation(OsgiService.class);
+        return extractServiceFilter(osgiService);
+    }
+
+    private ServiceFilter extractServiceFilter(OsgiService osgiService) {
         String filterValue = osgiService.filter();
-        if (filterValue.contains("(")) {
-            filter = filterValue;
-            compName = null;
-        } else {
-            compName = filterValue;
-            filter = null;
-        }
-        if (id != null) {
-            return;
-        }
-        id = getBeanName(clazz);
-        if (filter != null) {
-            id = id + "-" + getId(filter);
-        }
-        if (compName != null) {
-            id = id + "-" + compName;
-        }
+        return new ServiceFilter(filterValue);
     }
 
     public OsgiServiceRef(Class<?> clazz, OsgiService osgiService, String name) {
         super(clazz, name);
-        String filterValue = osgiService.filter();
-        if (filterValue.contains("(")) {
-            filter = filterValue;
-            compName = null;
-        } else {
-            compName = filterValue;
-            filter = null;
-        }
+        ServiceFilter serviceFilter = extractServiceFilter(osgiService);
+        filter = serviceFilter.filter;
+        compName = serviceFilter.compName;
     }
-
 
     private String getId(String raw) {
         StringBuilder builder = new StringBuilder();
@@ -98,4 +103,21 @@ public class OsgiServiceRef extends BeanRef {
         return builder.toString();
     }
 
+    private static class ServiceFilter {
+        final public String filter;
+        final public String compName;
+
+        public ServiceFilter(String filterValue) {
+            if (filterValue == null) {
+                filter = null;
+                compName = null;
+            } else if (filterValue.contains("(")) {
+                filter = filterValue;
+                compName = null;
+            } else {
+                filter = null;
+                compName = filterValue;
+            }
+        }
+    }
 }

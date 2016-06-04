@@ -77,11 +77,11 @@ public class GeneratorTest {
     public void testGenerateBeanWithInitDestroyAndfieldInjection() throws Exception {
         Node bean1 = getBeanById("myBean1");
 
-        assertEquals(MyBean1.class.getName(), xpath.evaluate("@class", bean1));
-        assertEquals("init", xpath.evaluate("@init-method", bean1));
-        assertEquals("destroy", xpath.evaluate("@destroy-method", bean1));
-        assertEquals("true", xpath.evaluate("@field-injection", bean1));
-        assertEquals("", xpath.evaluate("@scope", bean1));
+        assertXpathEquals(bean1, "@class", MyBean1.class.getName());
+        assertXpathEquals(bean1, "@init-method", "init");
+        assertXpathEquals(bean1, "@destroy-method", "destroy");
+        assertXpathEquals(bean1, "@field-injection", "true");
+        assertXpathDoesNotExist(bean1, "@scope");
     }
 
     @Test
@@ -108,46 +108,47 @@ public class GeneratorTest {
     public void testGeneratePersistenceContext() throws Exception {
         Node bean1 = getBeanById("myBean1");
 
-        assertEquals("person", xpath.evaluate("context/@unitname", bean1));
-        assertEquals("em", xpath.evaluate("context/@property", bean1));
+        assertXpathEquals(bean1, "context/@unitname", "person");
+        assertXpathEquals(bean1, "context/@property", "em");
     }
 
     @Test
     public void testGeneratePersistenceUnit() throws Exception {
         Node bean1 = getBeanById("myBean1");
 
-        assertEquals("person", xpath.evaluate("unit/@unitname", bean1));
-        assertEquals("emf", xpath.evaluate("unit/@property", bean1));
+        assertXpathEquals(bean1, "unit/@unitname", "person");
+        assertXpathEquals(bean1, "unit/@property", "emf");
     }
 
     @Test
     public void testGenerateAutowiredBean() throws Exception {
         Node bean1 = getBeanById("myBean1");
 
-        assertEquals("my1", xpath.evaluate("property[@name='bean2']/@ref", bean1));
+        assertXpathEquals(bean1, "property[@name='bean2']/@ref", "my1");
     }
 
     @Test
     public void testGenerateServiceWithOneInterface() throws Exception {
         Node serviceAImpl2 = getServiceByRef("my2");
-        assertEquals(ServiceA.class.getName(), xpath.evaluate("@interface", serviceAImpl2));
-        assertEquals("", xpath.evaluate("@auto-export", serviceAImpl2));
-        assertEquals("", xpath.evaluate("interfaces", serviceAImpl2));
+        assertXpathEquals(serviceAImpl2, "@interface", ServiceA.class.getName());
+        assertXpathDoesNotExist(serviceAImpl2, "@auto-export");
+        assertXpathDoesNotExist(serviceAImpl2, "interfaces");
     }
 
     @Test
     public void testGenerateServiceWithAutoExport() throws Exception {
         Node serviceAImpl3 = getServiceByRef("serviceAImpl3");
-        assertEquals("", xpath.evaluate("@interface", serviceAImpl3));
-        assertEquals("interfaces", xpath.evaluate("@auto-export", serviceAImpl3));
-        assertEquals("", xpath.evaluate("interfaces", serviceAImpl3));
+        assertXpathDoesNotExist(serviceAImpl3, "@interface");
+        assertXpathEquals(serviceAImpl3, "@auto-export", "interfaces");
+        assertXpathDoesNotExist(serviceAImpl3, "interfaces");
     }
 
     @Test
     public void testGenerateServiceWith2Interfaces() throws Exception {
         Node serviceABImpl = getServiceByRef("serviceABImpl");
-        assertEquals("", xpath.evaluate("@interface", serviceABImpl));
-        assertEquals("", xpath.evaluate("@auto-export", serviceABImpl));
+
+        assertXpathDoesNotExist(serviceABImpl, "@interface");
+        assertXpathDoesNotExist(serviceABImpl, "@auto-export");
 
         NodeList interfaceValues = (NodeList) xpath.evaluate("interfaces/value", serviceABImpl, XPathConstants.NODESET);
         Set<String> interfaceNames = new HashSet<String>();
@@ -163,135 +164,143 @@ public class GeneratorTest {
     public void testGenerateBeanWithConstructorInjection() throws Exception {
         // Bean with constructor injection
         Node myBean5 = getBeanById("myBean5");
-        assertEquals("my2", xpath.evaluate("argument[1]/@ref", myBean5));
-        assertEquals("my1", xpath.evaluate("argument[2]/@ref", myBean5));
-        assertEquals("serviceABImpl", xpath.evaluate("argument[3]/@ref", myBean5));
-        assertEquals("100", xpath.evaluate("argument[4]/@value", myBean5));
-        assertEquals("ser1", xpath.evaluate("argument[5]/@ref", myBean5));
-        assertEquals("ser2", xpath.evaluate("argument[6]/@ref", myBean5));
-        assertEquals("serviceAImplQualified", xpath.evaluate("argument[7]/@ref", myBean5));
+        assertXpathEquals(myBean5, "argument[1]/@ref", "my2");
+        assertXpathEquals(myBean5, "argument[2]/@ref", "my1");
+        assertXpathEquals(myBean5, "argument[3]/@ref", "serviceABImpl");
+        assertXpathEquals(myBean5, "argument[4]/@value", "100");
+        assertXpathEquals(myBean5, "argument[5]/@ref", "ser1");
+        assertXpathEquals(myBean5, "argument[6]/@ref", "ser2");
+        assertXpathEquals(myBean5, "argument[7]/@ref", "serviceAImplQualified");
     }
 
     @Test
     public void testGenerateBeanWithConstructorInjectionWithoutInjectAnnotation() throws Exception {
         // Bean with constructor injection
         Node myBean6 = getBeanById("myBean6");
-        assertEquals("my2", xpath.evaluate("argument[1]/@ref", myBean6));
+        assertXpathEquals(myBean6, "argument[1]/@ref", "my2");
     }
 
     @Test
     public void testGenerateReferenceWithComponentName() throws Exception {
         Node ser1 = getReferenceById("ser1");
-        assertEquals("myRef", xpath.evaluate("@component-name", ser1));
-        assertEquals("", xpath.evaluate("@filter", ser1));
+        assertXpathEquals(ser1, "@component-name", "myRef");
+        assertXpathDoesNotExist(ser1, "@filter");
     }
 
     @Test
     public void testGenerateReferenceWithFilter() throws Exception {
         Node ser2 = getReferenceById("ser2");
-        assertEquals("", xpath.evaluate("@component-name", ser2));
-        assertEquals("(mode=123)", xpath.evaluate("@filter", ser2));
+        assertXpathDoesNotExist(ser2, "@component-name");
+        assertXpathEquals(ser2, "@filter", "(mode=123)");
     }
 
     @Test
     public void testProducesNamedBeans() throws Exception {
         Node bean1 = getBeanById("produced1");
-        assertEquals("org.apache.aries.blueprint.plugin.test.MyProduced", xpath.evaluate("@class", bean1));
-        assertEquals("myFactoryNamedBean", xpath.evaluate("@factory-ref", bean1));
-        assertEquals("createBean1", xpath.evaluate("@factory-method", bean1));
-        assertEquals("prototype", xpath.evaluate("@scope", bean1));
+        assertXpathEquals(bean1, "@class", "org.apache.aries.blueprint.plugin.test.MyProduced");
+        assertXpathEquals(bean1, "@factory-ref", "myFactoryNamedBean");
+        assertXpathEquals(bean1, "@factory-method", "createBean1");
+        assertXpathEquals(bean1, "@scope", "prototype");
 
         Node bean2 = getBeanById("produced2");
-        assertEquals("org.apache.aries.blueprint.plugin.test.MyProduced", xpath.evaluate("@class", bean1));
-        assertEquals("myFactoryNamedBean", xpath.evaluate("@factory-ref", bean2));
-        assertEquals("createBean2", xpath.evaluate("@factory-method", bean2));
-        assertEquals("", xpath.evaluate("@scope", bean2));
+        assertXpathEquals(bean1, "@class", "org.apache.aries.blueprint.plugin.test.MyProduced");
+        assertXpathEquals(bean2, "@factory-ref", "myFactoryNamedBean");
+        assertXpathEquals(bean2, "@factory-method", "createBean2");
+        assertXpathDoesNotExist(bean2, "@scope");
 
         Node myBean5 = getBeanById("myBean5");
-        assertEquals("produced2", xpath.evaluate("argument[8]/@ref", myBean5));
+        assertXpathEquals(myBean5, "argument[8]/@ref", "produced2");
     }
 
     @Test
     public void testProducesBeanUsingParametersNotConstructor() throws Exception {
         Node bean1 = getBeanById("myProducedWithConstructor");
-        assertEquals("org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor", xpath.evaluate("@class", bean1));
-        assertEquals("myFactoryBean", xpath.evaluate("@factory-ref", bean1));
-        assertEquals("createBeanWithParameters", xpath.evaluate("@factory-method", bean1));
-        assertEquals("myBean1", xpath.evaluate("argument[1]/@ref", bean1));
-        assertEquals("100", xpath.evaluate("argument[2]/@value", bean1));
-        assertEquals("ser1", xpath.evaluate("argument[3]/@ref", bean1));
+        assertXpathEquals(bean1, "@class", "org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor");
+        assertXpathEquals(bean1, "@factory-ref", "myFactoryBean");
+        assertXpathEquals(bean1, "@factory-method", "createBeanWithParameters");
+        assertXpathEquals(bean1, "argument[1]/@ref", "myBean1");
+        assertXpathEquals(bean1, "argument[2]/@value", "100");
+        assertXpathEquals(bean1, "argument[3]/@ref", "ser1");
     }
 
     @Test
     public void testExposeProducedBeanAsServiceWithAutoExport() throws Exception {
         Node service = getServiceByRef("producedForService");
-        assertEquals("interfaces", xpath.evaluate("@auto-export", service));
-        assertEquals("", xpath.evaluate("@interface", service));
-        assertEquals("0", xpath.evaluate("count(interfaces)", service));
-        assertEquals("0", xpath.evaluate("count(service-properties)", service));
+        assertXpathEquals(service, "@auto-export", "interfaces");
+        assertXpathDoesNotExist(service, "@interface");
+        assertXpathDoesNotExist(service, "interfaces");
+        assertXpathDoesNotExist(service, "service-properties");
     }
 
     @Test
     public void testExposeProducedBeanAsServiceWithOneInterface() throws Exception {
         Node service = getServiceByRef("producedForServiceWithOneInterface");
-        assertEquals("", xpath.evaluate("@auto-export", service));
-        assertEquals(MyProduced.class.getName(), xpath.evaluate("@interface", service));
-        assertEquals("0", xpath.evaluate("count(interfaces)", service));
-        assertEquals("0", xpath.evaluate("count(service-properties)", service));
+        assertXpathDoesNotExist(service, "@auto-export");
+        assertXpathEquals(service, "@interface", MyProduced.class.getName());
+        assertXpathDoesNotExist(service, "interfaces");
+        assertXpathDoesNotExist(service, "service-properties");
     }
 
     @Test
     public void testExposeProducedBeanAsServiceWithTwoInterfaces() throws Exception {
         Node service = getServiceByRef("producedForServiceWithTwoInterfaces");
-        assertEquals("", xpath.evaluate("@auto-export", service));
-        assertEquals("", xpath.evaluate("@interface", service));
-        assertEquals("2", xpath.evaluate("count(interfaces/value)", service));
-        assertEquals(MyProduced.class.getName(), xpath.evaluate("interfaces/value[1]", service));
-        assertEquals(ServiceA.class.getName(), xpath.evaluate("interfaces/value[2]", service));
-        assertEquals("0", xpath.evaluate("count(service-properties)", service));
+        assertXpathDoesNotExist(service, "@auto-export");
+        assertXpathDoesNotExist(service, "@interface");
+        assertXpathEquals(service, "count(interfaces/value)", "2");
+        assertXpathEquals(service, "interfaces/value[1]", MyProduced.class.getName());
+        assertXpathEquals(service, "interfaces/value[2]", ServiceA.class.getName());
+        assertXpathDoesNotExist(service, "service-properties");
     }
 
     @Test
     public void testExposeProducedBeanAsServiceWithServiceProperties() throws Exception {
         Node service = getServiceByRef("producedForServiceWithProperties");
-        assertEquals("interfaces", xpath.evaluate("@auto-export", service));
-        assertEquals("", xpath.evaluate("@interface", service));
-        assertEquals("0", xpath.evaluate("count(interfaces)", service));
-        assertEquals("2", xpath.evaluate("count(service-properties/entry)", service));
-        assertEquals("v1", xpath.evaluate("service-properties/entry[@key='n1']/@value", service));
-        assertEquals("v2", xpath.evaluate("service-properties/entry[@key='n2']/@value", service));
+        assertXpathEquals(service, "@auto-export", "interfaces");
+        assertXpathDoesNotExist(service, "@interface");
+        assertXpathDoesNotExist(service, "interfaces");
+        assertXpathEquals(service, "count(service-properties/entry)", "2");
+        assertXpathEquals(service, "service-properties/entry[@key='n1']/@value", "v1");
+        assertXpathEquals(service, "service-properties/entry[@key='n2']/@value", "v2");
     }
 
     @Test
     public void testSetterInjection() throws Exception {
         Node bean1 = getBeanById("beanWithSetters");
 
-        assertEquals("0", xpath.evaluate("count(property[@name='useless'])", bean1));
-        assertEquals("0", xpath.evaluate("count(property[@name='iOnlyHaveSetPrefix'])", bean1));
-        assertEquals("0", xpath.evaluate("count(property[@name='ihaveMoreThenOneParameter'])", bean1));
-        assertEquals("0", xpath.evaluate("count(property[@name='iOnlyHaveSetPrefixValue'])", bean1));
-        assertEquals("0", xpath.evaluate("count(property[@name='ihaveMoreThenOneParameterValue'])", bean1));
+        assertXpathDoesNotExist(bean1, "property[@name='useless']");
+        assertXpathDoesNotExist(bean1, "property[@name='iOnlyHaveSetPrefix']");
+        assertXpathDoesNotExist(bean1, "property[@name='ihaveMoreThenOneParameter']");
+        assertXpathDoesNotExist(bean1, "property[@name='iOnlyHaveSetPrefixValue']");
+        assertXpathDoesNotExist(bean1, "property[@name='ihaveMoreThenOneParameterValue']");
 
-        assertEquals("test", xpath.evaluate("property[@name='myValue']/@value", bean1));
-        assertEquals("my1", xpath.evaluate("property[@name='serviceA1']/@ref", bean1));
-        assertEquals("my1", xpath.evaluate("property[@name='serviceA2']/@ref", bean1));
-        assertEquals("serviceABImpl", xpath.evaluate("property[@name='serviceB']/@ref", bean1));
-        assertEquals("serviceB2Id", xpath.evaluate("property[@name='serviceB2']/@ref", bean1));
-        assertEquals("serviceB-typeB1Ref", xpath.evaluate("property[@name='serviceBRef']/@ref", bean1));
-        assertEquals("serviceB2IdRef", xpath.evaluate("property[@name='serviceB2Ref']/@ref", bean1));
-        assertEquals("serviceB-B3Ref", xpath.evaluate("property[@name='serviceB3Ref']/@ref", bean1));
+        assertXpathEquals(bean1, "property[@name='myValue']/@value", "test");
+        assertXpathEquals(bean1, "property[@name='serviceA1']/@ref", "my1");
+        assertXpathEquals(bean1, "property[@name='serviceA2']/@ref", "my1");
+        assertXpathEquals(bean1, "property[@name='serviceB']/@ref", "serviceABImpl");
+        assertXpathEquals(bean1, "property[@name='serviceB2']/@ref", "serviceB2Id");
+        assertXpathEquals(bean1, "property[@name='serviceBRef']/@ref", "serviceB-typeB1Ref");
+        assertXpathEquals(bean1, "property[@name='serviceB2Ref']/@ref", "serviceB2IdRef");
+        assertXpathEquals(bean1, "property[@name='serviceB3Ref']/@ref", "serviceB-B3Ref");
 
         Node reference1 = getReferenceById("serviceB-typeB1Ref");
-        assertEquals(ServiceB.class.getName(), xpath.evaluate("@interface", reference1));
-        assertEquals("(type=B1Ref)", xpath.evaluate("@filter", reference1));
+        assertXpathEquals(reference1, "@interface", ServiceB.class.getName());
+        assertXpathEquals(reference1, "@filter", "(type=B1Ref)");
 
         Node reference2 = getReferenceById("serviceB2IdRef");
-        assertEquals(ServiceB.class.getName(), xpath.evaluate("@interface", reference2));
-        assertEquals("(type=B2Ref)", xpath.evaluate("@filter", reference2));
+        assertXpathEquals(reference2, "@interface", ServiceB.class.getName());
+        assertXpathEquals(reference2, "@filter", "(type=B2Ref)");
 
         Node reference3 = getReferenceById("serviceB-B3Ref");
-        assertEquals(ServiceB.class.getName(), xpath.evaluate("@interface", reference3));
-        assertEquals("B3Ref", xpath.evaluate("@component-name", reference3));
+        assertXpathEquals(reference3, "@interface", ServiceB.class.getName());
+        assertXpathEquals(reference3, "@component-name", "B3Ref");
+    }
+
+    private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
+        assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
+    }
+
+    private void assertXpathEquals(Node node, String xpathExpression, String expected) throws XPathExpressionException {
+        assertEquals(expected, xpath.evaluate(xpathExpression, node));
     }
 
     private static Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
