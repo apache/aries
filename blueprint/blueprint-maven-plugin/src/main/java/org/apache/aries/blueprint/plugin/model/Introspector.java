@@ -18,6 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -25,13 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 /**
  * Class to find uniquely-named fields declared in a class hierarchy with specified annotations.
@@ -84,7 +84,6 @@ public final class Introspector {
 
     /**
      * Check that each field name is defined no more than once
-     * @param originalClazz
      * @param acceptedFieldName
      * @param acceptedFieldsWithSameName
      */
@@ -122,12 +121,15 @@ public final class Introspector {
         return Iterables.getOnlyElement(methods, null);
     }
 
-    public <T extends Annotation> List<Method> methodsWith(Class<T> annotationClass) {
+    @SafeVarargs
+    public final List<Method> methodsWith(Class<? extends Annotation>... annotationClasses) {
         List<Method> methods = new ArrayList<>();
         for (Method method : originalClazz.getMethods()) {
-            T annotation = method.getAnnotation(annotationClass);
-            if (annotation != null) {
-                methods.add(method);
+            for(Class<? extends Annotation> annotationClass : annotationClasses) {
+                if (method.getAnnotation(annotationClass) != null) {
+                    methods.add(method);
+                    break;
+                }
             }
         }
         return methods;

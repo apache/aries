@@ -94,6 +94,12 @@ public class Bean extends BeanRef {
                 properties.add(prop);
             }
         }
+        for (Method method : new Introspector(clazz).methodsWith(Value.class, Autowired.class, Inject.class)) {
+            Property prop = Property.create(matcher, method);
+            if (prop != null) {
+                properties.add(prop);
+            }
+        }
     }
 
     protected void resolveArguments(Matcher matcher) {
