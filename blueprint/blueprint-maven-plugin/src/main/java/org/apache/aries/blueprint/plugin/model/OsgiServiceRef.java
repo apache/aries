@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,9 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import java.lang.reflect.Field;
-
 import org.ops4j.pax.cdi.api.OsgiService;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Synthetic bean that refers to an OSGi service
@@ -29,7 +30,6 @@ public class OsgiServiceRef extends BeanRef {
 
     final public String filter;
     final public String compName;
-
 
     public OsgiServiceRef(Field field) {
         super(field);
@@ -45,6 +45,32 @@ public class OsgiServiceRef extends BeanRef {
         id = getBeanName(clazz);
         if (filter != null) {
             id = id + "-" + getId(filter);
+        }
+        if (compName != null) {
+            id = id + "-" + compName;
+        }
+    }
+
+    public OsgiServiceRef(Method method) {
+        super(method);
+        OsgiService osgiService = method.getAnnotation(OsgiService.class);
+        String filterValue = osgiService.filter();
+        if (filterValue.contains("(")) {
+            filter = filterValue;
+            compName = null;
+        } else {
+            compName = filterValue;
+            filter = null;
+        }
+        if (id != null) {
+            return;
+        }
+        id = getBeanName(clazz);
+        if (filter != null) {
+            id = id + "-" + getId(filter);
+        }
+        if (compName != null) {
+            id = id + "-" + compName;
         }
     }
 

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -95,12 +95,12 @@ public class GeneratorTest {
             defs.add(new TransactionalDef(xpath.evaluate("@method", tx), xpath.evaluate("@value", tx)));
         }
         Set<TransactionalDef> expectedDefs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-                new TransactionalDef("txNotSupported", "NotSupported"),
-                new TransactionalDef("txMandatory", "Mandatory"),
-                new TransactionalDef("txNever", "Never"),
-                new TransactionalDef("txRequired", "Required"),
-                new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
-                new TransactionalDef("txSupports", "Supports"));
+            new TransactionalDef("txNotSupported", "NotSupported"),
+            new TransactionalDef("txMandatory", "Mandatory"),
+            new TransactionalDef("txNever", "Never"),
+            new TransactionalDef("txRequired", "Required"),
+            new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+            new TransactionalDef("txSupports", "Supports"));
         assertEquals(expectedDefs, defs);
     }
 
@@ -156,7 +156,7 @@ public class GeneratorTest {
             interfaceNames.add(interfaceValue.getTextContent());
         }
         assertEquals(Sets.newHashSet(ServiceA.class.getName(), ServiceB.class.getName()),
-                interfaceNames);
+            interfaceNames);
     }
 
     @Test
@@ -262,8 +262,40 @@ public class GeneratorTest {
         assertEquals("v2", xpath.evaluate("service-properties/entry[@key='n2']/@value", service));
     }
 
+    @Test
+    public void testSetterInjection() throws Exception {
+        Node bean1 = getBeanById("beanWithSetters");
+
+        assertEquals("0", xpath.evaluate("count(property[@name='useless'])", bean1));
+        assertEquals("0", xpath.evaluate("count(property[@name='iOnlyHaveSetPrefix'])", bean1));
+        assertEquals("0", xpath.evaluate("count(property[@name='ihaveMoreThenOneParameter'])", bean1));
+        assertEquals("0", xpath.evaluate("count(property[@name='iOnlyHaveSetPrefixValue'])", bean1));
+        assertEquals("0", xpath.evaluate("count(property[@name='ihaveMoreThenOneParameterValue'])", bean1));
+
+        assertEquals("test", xpath.evaluate("property[@name='myValue']/@value", bean1));
+        assertEquals("my1", xpath.evaluate("property[@name='serviceA1']/@ref", bean1));
+        assertEquals("my1", xpath.evaluate("property[@name='serviceA2']/@ref", bean1));
+        assertEquals("serviceABImpl", xpath.evaluate("property[@name='serviceB']/@ref", bean1));
+        assertEquals("serviceB2Id", xpath.evaluate("property[@name='serviceB2']/@ref", bean1));
+        assertEquals("serviceB-typeB1Ref", xpath.evaluate("property[@name='serviceBRef']/@ref", bean1));
+        assertEquals("serviceB2IdRef", xpath.evaluate("property[@name='serviceB2Ref']/@ref", bean1));
+        assertEquals("serviceB-B3Ref", xpath.evaluate("property[@name='serviceB3Ref']/@ref", bean1));
+
+        Node reference1 = getReferenceById("serviceB-typeB1Ref");
+        assertEquals(ServiceB.class.getName(), xpath.evaluate("@interface", reference1));
+        assertEquals("(type=B1Ref)", xpath.evaluate("@filter", reference1));
+
+        Node reference2 = getReferenceById("serviceB2IdRef");
+        assertEquals(ServiceB.class.getName(), xpath.evaluate("@interface", reference2));
+        assertEquals("(type=B2Ref)", xpath.evaluate("@filter", reference2));
+
+        Node reference3 = getReferenceById("serviceB-B3Ref");
+        assertEquals(ServiceB.class.getName(), xpath.evaluate("@interface", reference3));
+        assertEquals("B3Ref", xpath.evaluate("@component-name", reference3));
+    }
+
     private static Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
-            SAXException, IOException {
+        SAXException, IOException {
         InputStream is = new ByteArrayInputStream(os.toByteArray());
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = builderFactory.newDocumentBuilder();

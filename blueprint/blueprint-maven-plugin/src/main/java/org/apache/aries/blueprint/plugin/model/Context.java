@@ -105,6 +105,9 @@ public class Context implements Matcher {
         for (Field field : new Introspector(clazz).fieldsWith(OsgiService.class)) {
             reg.add(new OsgiServiceRef(field));
         }
+        for (Method method : new Introspector(clazz).methodsWith(OsgiService.class)) {
+            reg.add(new OsgiServiceRef(method));
+        }
     }
 
     public void resolve() {
