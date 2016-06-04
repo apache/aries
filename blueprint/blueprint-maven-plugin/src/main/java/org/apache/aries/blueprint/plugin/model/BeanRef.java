@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -47,18 +48,17 @@ public class BeanRef implements Comparable<BeanRef> {
 
     public BeanRef(Field field) {
         this(field.getType());
-        Annotation[] annotations = field.getAnnotations();
-        setQualifiersFromAnnotations(annotations);
+        parseQualifiers(field);
     }
 
     public BeanRef(Method method) {
         this(method.getParameterTypes()[0]);
-        Annotation[] annotations = method.getAnnotations();
+        parseQualifiers(method);
+    }
+
+    private void parseQualifiers(AnnotatedElement annotatedElement) {
+        Annotation[] annotations = annotatedElement.getAnnotations();
         setQualifiersFromAnnotations(annotations);
-        Named named = method.getAnnotation(Named.class);
-        if (named != null) {
-            id = named.value();
-        }
     }
 
     protected void setQualifiersFromAnnotations(Annotation[] annotations) {
@@ -74,8 +74,12 @@ public class BeanRef implements Comparable<BeanRef> {
     }
 
     public static String getBeanName(Class<?> clazz) {
-        Component component = clazz.getAnnotation(Component.class);
-        Named named = clazz.getAnnotation(Named.class);
+        return getBeanName(clazz, clazz);
+    }
+
+    public static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
+        Component component = annotatedElement.getAnnotation(Component.class);
+        Named named = annotatedElement.getAnnotation(Named.class);
         if (component != null && !"".equals(component.value())) {
             return component.value();
         } else if (named != null && !"".equals(named.value())) {

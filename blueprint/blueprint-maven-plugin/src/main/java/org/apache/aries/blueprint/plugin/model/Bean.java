@@ -43,7 +43,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Bean extends BeanRef {
-    public String initMethod;
+    public final String initMethod;
     public String destroyMethod;
     public SortedSet<Property> properties = new TreeSet<>();
     public List<Argument> constructorArguments = new ArrayList<>();
@@ -57,29 +57,41 @@ public class Bean extends BeanRef {
         super(clazz, BeanRef.getBeanName(clazz));
         Introspector introspector = new Introspector(clazz);
 
-        // Init method
-        Method initMethod = introspector.methodWith(PostConstruct.class);
-        if (initMethod != null) {
-            this.initMethod = initMethod.getName();
-        }
+        initMethod = findMethodAnnotatedWith(introspector, PostConstruct.class);
+        destroyMethod = findMethodAnnotatedWith(introspector, PreDestroy.class);
 
-        // Destroy method
-        Method destroyMethod = introspector.methodWith(PreDestroy.class);
-        if (destroyMethod != null) {
-            this.destroyMethod = destroyMethod.getName();
-        }
+        interpretTransactionalMethods(clazz);
 
-        // Transactional methods
-        transactionDefs.addAll(new JavaxTransactionFactory().create(clazz));
-        transactionDefs.addAll(new SpringTransactionFactory().create(clazz));
         this.isPrototype = isPrototype(clazz);
-        this.persistenceFields = introspector.fieldsWith(PersistenceContext.class, PersistenceUnit.class);
+        this.persistenceFields = findPersistenceFields(introspector);
+
         setQualifiersFromAnnotations(clazz.getAnnotations());
 
+        interpretServiceProvider();
+    }
+
+    private void interpretServiceProvider() {
         ServiceProvider serviceProvider = ServiceProvider.fromBean(this);
-        if(serviceProvider != null){
+        if (serviceProvider != null) {
             serviceProviders.add(serviceProvider);
         }
+    }
+
+    private List<Field> findPersistenceFields(Introspector introspector) {
+        return introspector.fieldsWith(PersistenceContext.class, PersistenceUnit.class);
+    }
+
+    private void interpretTransactionalMethods(Class<?> clazz) {
+        transactionDefs.addAll(new JavaxTransactionFactory().create(clazz));
+        transactionDefs.addAll(new SpringTransactionFactory().create(clazz));
+    }
+
+    private String findMethodAnnotatedWith(Introspector introspector, Class<? extends Annotation> annotation) {
+        Method initMethod = introspector.methodWith(annotation);
+        if (initMethod == null) {
+            return null;
+        }
+        return initMethod.getName();
     }
 
     private boolean isPrototype(Class<?> clazz) {
@@ -88,14 +100,22 @@ public class Bean extends BeanRef {
 
     public void resolve(Matcher matcher) {
         resolveArguments(matcher);
-        for (Field field : new Introspector(clazz).fieldsWith(Value.class, Autowired.class, Inject.class)) {
-            Property prop = Property.create(matcher, field);
+        resolveFiields(matcher);
+        resolveMethods(matcher);
+    }
+
+    private void resolveMethods(Matcher matcher) {
+        for (Method method : new Introspector(clazz).methodsWith(Value.class, Autowired.class, Inject.class)) {
+            Property prop = Property.create(matcher, method);
             if (prop != null) {
                 properties.add(prop);
             }
         }
-        for (Method method : new Introspector(clazz).methodsWith(Value.class, Autowired.class, Inject.class)) {
-            Property prop = Property.create(matcher, method);
+    }
+
+    private void resolveFiields(Matcher matcher) {
+        for (Field field : new Introspector(clazz).fieldsWith(Value.class, Autowired.class, Inject.class)) {
+            Property prop = Property.create(matcher, field);
             if (prop != null) {
                 properties.add(prop);
             }
