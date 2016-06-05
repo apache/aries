@@ -145,7 +145,9 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         writer.writeStartElement("bean");
         writer.writeAttribute("id", bean.id);
         writer.writeAttribute("class", bean.clazz.getName());
-        writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
+        if(bean.needFieldInjection()) {
+            writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
+        }
         if (bean.isPrototype) {
             writer.writeAttribute("scope", "prototype");
         }

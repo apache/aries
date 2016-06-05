@@ -200,4 +200,12 @@ public class Bean extends BeanRef {
     }
 
 
+    public boolean needFieldInjection() {
+        for (Property property : properties) {
+            if (property.isField) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

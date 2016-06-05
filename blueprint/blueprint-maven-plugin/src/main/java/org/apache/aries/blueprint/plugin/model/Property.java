@@ -29,14 +29,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class Property implements Comparable<Property> {
-    public String name;
-    public String ref;
-    public String value;
+    public final String name;
+    public final String ref;
+    public final String value;
+    public final boolean isField;
 
-    public Property(String name, String ref, String value) {
+    public Property(String name, String ref, String value, boolean isField) {
         this.name = name;
         this.ref = ref;
         this.value = value;
+        this.isField = isField;
     }
 
     public static Property create(Matcher matcher, Field field) {
@@ -44,9 +46,9 @@ public class Property implements Comparable<Property> {
         if (needsInject(field)) {
             BeanRef matching = matcher.getMatching(new BeanRef(field));
             String ref = (matching == null) ? getRefName(field) : matching.id;
-            return new Property(field.getName(), ref, null);
+            return new Property(field.getName(), ref, null, true);
         } else if (value != null) {
-            return new Property(field.getName(), null, cleanValue(value.value()));
+            return new Property(field.getName(), null, cleanValue(value.value()), true);
         } else {
             // Field is not a property
             return null;
@@ -61,14 +63,14 @@ public class Property implements Comparable<Property> {
 
         Value value = method.getAnnotation(Value.class);
         if (value != null) {
-            return new Property(propertyName, null, cleanValue(value.value()));
+            return new Property(propertyName, null, cleanValue(value.value()), false);
         }
 
         if (needsInject(method)) {
             BeanRef beanRef = new BeanRef(method);
             BeanRef matching = matcher.getMatching(beanRef);
             String ref = (matching == null) ? beanRef.id : matching.id;
-            return new Property(propertyName, ref, null);
+            return new Property(propertyName, ref, null, false);
         }
 
         return null;
