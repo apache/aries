@@ -164,6 +164,7 @@ public class GeneratorTest {
     public void testGenerateBeanWithConstructorInjection() throws Exception {
         // Bean with constructor injection
         Node myBean5 = getBeanById("myBean5");
+        assertXpathDoesNotExist(myBean5, "@field-injection");
         assertXpathEquals(myBean5, "argument[1]/@ref", "my2");
         assertXpathEquals(myBean5, "argument[2]/@ref", "my1");
         assertXpathEquals(myBean5, "argument[3]/@ref", "serviceABImpl");
@@ -266,6 +267,7 @@ public class GeneratorTest {
     @Test
     public void testSetterInjection() throws Exception {
         Node bean1 = getBeanById("beanWithSetters");
+        assertXpathDoesNotExist(bean1, "@field-injection");
 
         assertXpathDoesNotExist(bean1, "property[@name='useless']");
         assertXpathDoesNotExist(bean1, "property[@name='iOnlyHaveSetPrefix']");
