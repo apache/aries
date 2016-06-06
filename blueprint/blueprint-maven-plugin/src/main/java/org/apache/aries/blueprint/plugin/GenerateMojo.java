@@ -60,7 +60,7 @@ public class GenerateMojo extends AbstractMojo {
      */
     @Parameter
     protected Set<String> namespaces;
-    
+
     @Component
     private BuildContext buildContext;
 
@@ -69,6 +69,15 @@ public class GenerateMojo extends AbstractMojo {
      */
     @Parameter(defaultValue="autowire.xml")
     protected String generatedFileName;
+
+    /**
+     * Specifies the default activation setting that will be defined for components.
+     * Default is null, which indicates eager (blueprint default).
+     * If LAZY then default-activation will be set to lazy.
+     * If EAGER then default-activation will be explicitly set to eager.
+     */
+    @Parameter
+    protected Activation defaultActivation;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
@@ -104,7 +113,7 @@ public class GenerateMojo extends AbstractMojo {
         System.out.println("Generating blueprint to " + file);
 
         OutputStream fos = buildContext.newFileOutputStream(file);
-        new Generator(context, fos, namespaces).generate();
+        new Generator(context, fos, namespaces, defaultActivation).generate();
         fos.close();
     }
 

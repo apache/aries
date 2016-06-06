@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import org.springframework.context.annotation.Lazy;
+
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -35,6 +37,14 @@ public class MyFactoryNamedBean {
     @Named("produced2")
     @Singleton
     public MyProduced createBean2() {
+        return new MyProduced("My message");
+    }
+
+    @Produces
+    @Named("producedEager")
+    @Singleton
+    @Lazy(false)
+    public MyProduced createBean2AsEager() {
         return new MyProduced("My message");
     }
 
