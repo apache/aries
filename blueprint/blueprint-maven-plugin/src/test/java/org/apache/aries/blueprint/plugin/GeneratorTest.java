@@ -66,7 +66,7 @@ public class GeneratorTest {
         context.resolve();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, Generator.NS_TX));
-        new Generator(context, os, namespaces).generate();
+        new Generator(context, os, namespaces, null).generate();
         System.out.println(os.toString("UTF-8"));
 
         document = readToDocument(os);
@@ -295,6 +295,34 @@ public class GeneratorTest {
         Node reference3 = getReferenceById("serviceB-B3Ref");
         assertXpathEquals(reference3, "@interface", ServiceB.class.getName());
         assertXpathEquals(reference3, "@component-name", "B3Ref");
+    }
+
+    @Test
+    public void testLazyWithTrueBeanHasActivationEager() throws Exception {
+        Node bean = getBeanById("beanWithSetters");
+
+        assertXpathEquals(bean, "@activation", "eager");
+    }
+
+    @Test
+    public void testLazyBeanHasActivationLazy() throws Exception {
+        Node bean = getBeanById("myBean1");
+
+        assertXpathEquals(bean, "@activation", "lazy");
+    }
+
+    @Test
+    public void testBeanWithoutLazyAnnotationHasNotActivationAttribute() throws Exception {
+        Node bean1 = getBeanById("myBean3");
+
+        assertXpathDoesNotExist(bean1, "@activation");
+    }
+
+    @Test
+    public void testLazyProducedBeanOverriddenByFactoryMethodAnnotation() throws Exception {
+        Node bean = getBeanById("producedEager");
+
+        assertXpathEquals(bean, "@activation", "eager");
     }
 
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {

@@ -18,10 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import org.apache.aries.blueprint.plugin.Activation;
 import org.apache.aries.blueprint.plugin.model.service.ServiceProvider;
 import org.ops4j.pax.cdi.api.OsgiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -32,6 +34,7 @@ import javax.inject.Singleton;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -52,11 +55,13 @@ public class Bean extends BeanRef {
     public Set<TransactionalDef> transactionDefs = new HashSet<>();
     public boolean isPrototype;
     public List<ServiceProvider> serviceProviders = new ArrayList<>();
+    public Activation activation;
 
     public Bean(Class<?> clazz) {
         super(clazz, BeanRef.getBeanName(clazz));
         Introspector introspector = new Introspector(clazz);
 
+        activation = getActivation(clazz);
         initMethod = findMethodAnnotatedWith(introspector, PostConstruct.class);
         destroyMethod = findMethodAnnotatedWith(introspector, PreDestroy.class);
 
@@ -68,6 +73,14 @@ public class Bean extends BeanRef {
         setQualifiersFromAnnotations(clazz.getAnnotations());
 
         interpretServiceProvider();
+    }
+
+    protected Activation getActivation(AnnotatedElement annotatedElement) {
+        Lazy lazy = annotatedElement.getAnnotation(Lazy.class);
+        if (lazy == null) {
+            return null;
+        }
+        return lazy.value() ? Activation.LAZY : Activation.EAGER;
     }
 
     private void interpretServiceProvider() {

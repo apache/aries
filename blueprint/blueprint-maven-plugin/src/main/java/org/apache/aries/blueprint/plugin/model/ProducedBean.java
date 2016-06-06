@@ -19,6 +19,8 @@
 package org.apache.aries.blueprint.plugin.model;
 
 
+import org.apache.aries.blueprint.plugin.Activation;
+
 import java.lang.reflect.Method;
 
 public class ProducedBean extends Bean {
@@ -31,6 +33,7 @@ public class ProducedBean extends Bean {
         this.factoryBean = factoryBean;
         this.factoryMethod = factoryMethod.getName();
         this.producingMethod = factoryMethod;
+        overrideActivationIfNeeded(factoryMethod);
     }
 
     public ProducedBean(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod) {
@@ -39,6 +42,14 @@ public class ProducedBean extends Bean {
         this.factoryBean = factoryBean;
         this.factoryMethod = factoryMethod.getName();
         this.producingMethod = factoryMethod;
+        overrideActivationIfNeeded(factoryMethod);
+    }
+
+    private void overrideActivationIfNeeded(Method factoryMethod) {
+        Activation methodActivation = getActivation(factoryMethod);
+        if (methodActivation != null) {
+            this.activation = methodActivation;
+        }
     }
 
     public void setSingleton() {

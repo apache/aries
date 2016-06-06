@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import org.springframework.context.annotation.Lazy;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -25,6 +27,7 @@ import javax.transaction.Transactional.TxType;
 
 @Singleton
 @Transactional(value=TxType.REQUIRES_NEW)
+@Lazy
 public class MyBean1 extends ParentBean {
 
     public void overridenInit() {
