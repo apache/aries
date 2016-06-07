@@ -95,7 +95,7 @@
             <artifactId>geronimo-connector</artifactId>
             <version>3.1.1</version>
         </dependency>
-        
+
         <!--  JTA 1.2 -->
         <dependency>
             <groupId>javax.transaction</groupId>
@@ -139,7 +139,7 @@
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.jdbc</artifactId>
             <scope>test</scope>
-            <version>2.1.2-SNAPSHOT</version>
+            <version>2.1.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
