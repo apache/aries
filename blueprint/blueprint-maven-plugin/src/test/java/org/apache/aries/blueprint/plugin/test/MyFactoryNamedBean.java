@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 
 import javax.enterprise.inject.Produces;
@@ -36,6 +37,7 @@ public class MyFactoryNamedBean {
     @Produces
     @Named("produced2")
     @Singleton
+    @DependsOn("produced1")
     public MyProduced createBean2() {
         return new MyProduced("My message");
     }

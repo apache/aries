@@ -18,10 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import org.springframework.context.annotation.DependsOn;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
+@DependsOn
 public class MyBean6 {
 
     private final ServiceA serviceA1;

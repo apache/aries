@@ -325,6 +325,48 @@ public class GeneratorTest {
         assertXpathEquals(bean, "@activation", "eager");
     }
 
+    @Test
+    public void testBeanWithoutDependsOnHasNotDependsOnAttribute() throws Exception {
+        Node bean = getBeanById("beanWithSetters");
+
+        assertXpathDoesNotExist(bean, "@depends-on");
+    }
+
+    @Test
+    public void testBeanWithEmptyDependsOnHasNotDependsOnAttribute() throws Exception {
+        Node bean = getBeanById("myBean6");
+
+        assertXpathDoesNotExist(bean, "@depends-on");
+    }
+
+    @Test
+    public void testBeanWithOneIdInDependsOnHasDependsOnAttribute() throws Exception {
+        Node bean = getBeanById("myBean5");
+
+        assertXpathEquals(bean, "@depends-on", "myBean6");
+    }
+
+    @Test
+    public void testBeanWithTwoIdInDependsOnHasDependsOnAttribute() throws Exception {
+        Node bean = getBeanById("myBean4");
+
+        assertXpathEquals(bean, "@depends-on", "myBean5 myBean6");
+    }
+
+    @Test
+    public void testProducedBeanMetohodWithoutDependsOnHasNotDependsOnAttribute() throws Exception {
+        Node bean = getBeanById("produced1");
+
+        assertXpathDoesNotExist(bean, "@depends-on");
+    }
+
+    @Test
+    public void testProducedBeanMethodWithDependsOnHasDependsOnAttribute() throws Exception {
+        Node bean = getBeanById("produced2");
+
+        assertXpathEquals(bean, "@depends-on", "produced1");
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }

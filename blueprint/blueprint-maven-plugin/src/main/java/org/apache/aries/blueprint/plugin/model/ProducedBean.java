@@ -29,26 +29,32 @@ public class ProducedBean extends Bean {
     private Method producingMethod;
 
     public ProducedBean(Class<?> clazz, BeanRef factoryBean, Method factoryMethod) {
-        super(clazz);
-        this.factoryBean = factoryBean;
-        this.factoryMethod = factoryMethod.getName();
-        this.producingMethod = factoryMethod;
-        overrideActivationIfNeeded(factoryMethod);
+        this(clazz, null, factoryBean,factoryMethod);
     }
 
     public ProducedBean(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod) {
         super(clazz);
-        this.id = id;
+        if(id != null) {
+            this.id = id;
+        }
         this.factoryBean = factoryBean;
         this.factoryMethod = factoryMethod.getName();
         this.producingMethod = factoryMethod;
         overrideActivationIfNeeded(factoryMethod);
+        overrideDependsOnIfNeeded(factoryMethod);
     }
 
     private void overrideActivationIfNeeded(Method factoryMethod) {
         Activation methodActivation = getActivation(factoryMethod);
         if (methodActivation != null) {
             this.activation = methodActivation;
+        }
+    }
+
+    private void overrideDependsOnIfNeeded(Method factoryMethod) {
+        String dependsOn = getDependsOn(factoryMethod);
+        if (dependsOn != null) {
+            this.dependsOn = dependsOn;
         }
     }
 
