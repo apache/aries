@@ -156,6 +156,9 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         if (bean.activation != null) {
             writer.writeAttribute("activation", bean.activation.toString());
         }
+        if (bean.dependsOn != null) {
+            writer.writeAttribute("depends-on", bean.dependsOn);
+        }
         if (bean instanceof ProducedBean) {
             writeFactory((ProducedBean) bean);
         }

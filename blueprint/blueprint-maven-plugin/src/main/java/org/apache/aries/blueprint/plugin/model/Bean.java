@@ -20,9 +20,11 @@ package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.Activation;
 import org.apache.aries.blueprint.plugin.model.service.ServiceProvider;
+import org.apache.commons.lang.StringUtils;
 import org.ops4j.pax.cdi.api.OsgiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -56,12 +58,15 @@ public class Bean extends BeanRef {
     public boolean isPrototype;
     public List<ServiceProvider> serviceProviders = new ArrayList<>();
     public Activation activation;
+    public String dependsOn;
 
     public Bean(Class<?> clazz) {
         super(clazz, BeanRef.getBeanName(clazz));
         Introspector introspector = new Introspector(clazz);
 
         activation = getActivation(clazz);
+        dependsOn = getDependsOn(clazz);
+
         initMethod = findMethodAnnotatedWith(introspector, PostConstruct.class);
         destroyMethod = findMethodAnnotatedWith(introspector, PreDestroy.class);
 
@@ -73,6 +78,15 @@ public class Bean extends BeanRef {
         setQualifiersFromAnnotations(clazz.getAnnotations());
 
         interpretServiceProvider();
+    }
+
+    protected String getDependsOn(AnnotatedElement annotatedElement) {
+        DependsOn annotation = annotatedElement.getAnnotation(DependsOn.class);
+        if (annotation == null || annotation.value().length == 0) {
+            return null;
+        }
+        String[] value = annotation.value();
+        return StringUtils.join(value, " ");
     }
 
     protected Activation getActivation(AnnotatedElement annotatedElement) {
