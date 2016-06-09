@@ -32,6 +32,7 @@ import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 public class SpringTest extends AbstractBlueprintIntegrationTest {
 
@@ -72,6 +73,8 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-aop"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-expression"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-tx"),
+            // Axon namespace handler for testing
+            mavenBundle("org.axonframework", "axon-core", "2.4.4"),
             // test bundle
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundles", false),
         };
