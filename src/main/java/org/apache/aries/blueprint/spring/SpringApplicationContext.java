@@ -50,6 +50,7 @@ public class SpringApplicationContext extends AbstractApplicationContext {
             }
         });
         prepareBeanFactory(beanFactory);
+        prepareRefresh();
     }
 
     public void process() {
