@@ -22,26 +22,21 @@ import javax.persistence.spi.ClassTransformer;
 
 import org.osgi.framework.Bundle;
 
-/**
- * {@link ClassTransformer} instances should be registered with the
- * instance of this interface returned by {@link TransformerRegistrySingleton#getTransformerRegistry()}
- */
 public interface TransformerRegistry {
 
   /**
    * Register a new transformer with the WeavingHook
    * 
-   * @param pBundle  The persistence bundle to weave
-   * @param transformer  The transformer to weave with
-   * @param provider The provider to provide packages from
+   * @param pBundle The persistence bundle to weave
+   * @param transformer The transformer to weave with
    */
   public void addTransformer(Bundle pBundle, ClassTransformer transformer);
   
   
   /**
    * Remove a given transformer from this weaving hook. This must be 
-   * @param pBundle
-   * @param transformer
+   * @param pBundle The persistence bundle to unweave
+   * @param transformer The transformer to remove
    */
   public void removeTransformer(Bundle pBundle, ClassTransformer transformer);
 }
