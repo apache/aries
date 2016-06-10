@@ -53,11 +53,9 @@ public class PersistenceUnitParser {
      * "META-INF/persistence.xml" and the Meta-Persistence header. Note that getEntry is used to ensure we do
      * not alter the state of the bundle Note also that web application bundles will never return persistence
      * descriptors
-     * @param context 
      * 
      * @param bundle The bundle to search
-     * @param packageAdmin 
-     * @return
+     * @return persistence units located in the bundle
      */
     public static Collection<PersistenceUnit> getPersistenceUnits(Bundle bundle) {
         Collection<PersistenceUnit> punits = new ArrayList<PersistenceUnit>();
@@ -123,9 +121,8 @@ public class PersistenceUnitParser {
     /**
      * Locate a persistence descriptor file in a bundle based on a String name.
      * 
-     * @param bundle
-     * @param persistenceXmlFiles
-     * @param jarLocation
+     * @param bundle to look in
+     * @param location location in bundle
      * @throws IOException
      */
     private static InputStream locateFile(Bundle bundle, String location) throws IOException {

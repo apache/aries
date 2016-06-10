@@ -49,7 +49,7 @@ public class JPAHandler extends DefaultHandler {
     /**
      * Create a new JPA Handler for a bundle
      * 
-     * @param bundle
+     * @param bundle to parse
      */
     public JPAHandler(Bundle bundle) {
         this.bundle = bundle;
