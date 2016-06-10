@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tracks EntityManagerFactory services and publishes a Supplier<EntityManager> for each.
+ * Tracks EntityManagerFactory services and publishes a Supplier&lt;EntityManager&gt; for each.
  * IF the persistence unit uses JTA a TMTracker is created. If it uses RESOURCE_LOCAL as 
  * ResourceLocalJpaTemplate is created.
  */
@@ -88,7 +88,7 @@ public class EMFTracker extends ServiceTracker {
 
     /**
      * 
-     * @param emf
+     * @param emf to get type from
      * @return
      */
     private PersistenceUnitTransactionType getTransactionType(EntityManagerFactory emf) {

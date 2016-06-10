@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Creates an EntityManagerFactory(EMF) for a persistence unit and publishes it as a service.
  * Custom properties can be configured by supplying a config admin configuriation named like
- * the JPA_CONFIGURATION_PREFIX.<persistence unit name>.
+ * the JPA_CONFIGURATION_PREFIX.persistence unit name.
  */
 public class ManagedEMF implements Closeable, ManagedService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagedEMF.class);
