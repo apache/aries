@@ -20,7 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.AccessControlContext;
@@ -476,17 +478,90 @@ public class AggregateConverter implements Converter {
                     return true;
                 }
             }
-        }
-        Type t = from.getRawClass().getGenericSuperclass();
-        if (t != null && isTypeAssignable(new GenericType(t), to)) {
-            return true;
-        }
-        for (Type ti : from.getRawClass().getGenericInterfaces()) {
-            if (ti != null && isTypeAssignable(new GenericType(ti), to)) {
-                return true;
+        } else {
+            ReifiedType t = getExactSuperType(from, to.getRawClass());
+            if (t != null) {
+                return isTypeAssignable(t, to);
             }
         }
         return false;
+    }
+
+    private static ReifiedType getExactSuperType(ReifiedType from, Class<?> to) {
+        if (from.getRawClass() == to) {
+            return from;
+        }
+        if (!to.isAssignableFrom(from.getRawClass())) {
+            return null;
+        }
+        for (ReifiedType superType: getExactDirectSuperTypes(from)) {
+            ReifiedType result = getExactSuperType(superType, to);
+            if (result != null)
+                return result;
+        }
+        return null;
+    }
+
+    public static ReifiedType[] getExactDirectSuperTypes(ReifiedType type) {
+        Class<?> clazz = type.getRawClass();
+        Type[] superInterfaces = clazz.getGenericInterfaces();
+        Type superClass = clazz.getGenericSuperclass();
+        // the only supertype of an interface without superinterfaces is Object
+        if (superClass == null && superInterfaces.length == 0 && clazz.isInterface()) {
+            return new ReifiedType[] { new GenericType(Object.class) };
+        }
+        ReifiedType[] result;
+        int resultIndex;
+        if (superClass == null) {
+            result = new ReifiedType[superInterfaces.length];
+            resultIndex = 0;
+        } else {
+            result = new ReifiedType[superInterfaces.length + 1];
+            resultIndex = 1;
+            result[0] = mapTypeParameters(superClass, type);
+        }
+        for (Type superInterface : superInterfaces) {
+            result[resultIndex++] = mapTypeParameters(superInterface, type);
+        }
+        return result;
+    }
+
+    private static ReifiedType mapTypeParameters(Type toMapType, ReifiedType typeAndParams) {
+        if (typeAndParams.size() == 0 && typeAndParams.getRawClass().getTypeParameters().length > 0) {
+            // Missing generics information, return erased type
+            return new GenericType(new GenericType(toMapType).getRawClass());
+        }
+        if (toMapType instanceof Class) {
+            return new GenericType(toMapType);
+        }
+        Map<TypeVariable<?>, GenericType> map = new HashMap<TypeVariable<?>, GenericType>();
+        for (int i = 0; i < typeAndParams.size(); i++) {
+            map.put(typeAndParams.getRawClass().getTypeParameters()[i], (GenericType) typeAndParams.getActualTypeArgument(i));
+        }
+        return map(map, toMapType);
+    }
+
+
+    private static GenericType map(Map<TypeVariable<?>, GenericType> map, Type type) {
+        if (type instanceof Class) {
+            return new GenericType(type);
+        }
+        if (type instanceof TypeVariable) {
+            TypeVariable<?> tv = (TypeVariable<?>) type;
+            if (!map.containsKey(type)) {
+                throw new IllegalArgumentException("Unable to resolve TypeVariable: " + tv);
+            }
+            return map.get(type);
+        }
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) type;
+            GenericType[] args = new GenericType[pType.getActualTypeArguments().length];
+            for (int i = 0; i < args.length; i++) {
+                args[i] = map(map, pType.getActualTypeArguments()[i]);
+            }
+            return new GenericType((Class<?>) pType.getRawType(), args);
+        }
+        throw new RuntimeException("not implemented: mapping " + type.getClass() + " (" + type + ")");
     }
 
     private static boolean isWildcardCompatible(ReifiedType from, ReifiedType to) {
