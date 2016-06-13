@@ -1,0 +1,11 @@
+Import-Package: \
+    javax.persistence*;version=2.1, \
+    *
+Provide-Capability: \
+    org.ops4j.pax.cdi.extension; extension=aries-jpa-cdi; \
+        version:Version=${version;====;${replace;${project.version};-;.}}
+Require-Capability: \
+    org.ops4j.pax.cdi.extension; filter:="(extension=pax-cdi-extension2)"
+    osgi.extender; filter:="(osgi.extender=aries.jpa)"
+
+
