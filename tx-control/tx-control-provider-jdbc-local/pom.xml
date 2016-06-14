@@ -139,6 +139,17 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <instructions>
+                        <Provide-Capability>osgi.service;objectClass="org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jdbc",osgi.service;objectClass="org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jdbc"</Provide-Capability>
+                        <Require-Capability>osgi.service;filter:="(objectClass=org.osgi.service.jdbc.DataSourceFactory)";resolution:="optional";effective:="active"</Require-Capability>
+                    </instructions>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 </project>

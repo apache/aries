@@ -171,8 +171,8 @@
 				<version>3.0.1</version>
 				<configuration>
 					<instructions>
-						<Provide-Capability>osgi.contract;osgi.contract="JavaJPA";version:List&lt;Version&gt;="1.0,2.0,2.1";uses:="javax.persistence,javax.persistence.criteria,javax.persistence.metamodel,javax.persistence.spi"</Provide-Capability>
-						<Require-Capability>osgi.contract;filter:="(&amp;(osgi.contract=JavaJPA)(version=2.1))"</Require-Capability>
+						<Provide-Capability>osgi.contract;osgi.contract="JavaJPA";version:List&lt;Version&gt;="1.0,2.0,2.1";uses:="javax.persistence,javax.persistence.criteria,javax.persistence.metamodel,javax.persistence.spi",osgi.service;objectClass="org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jpa",osgi.service;objectClass="org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jpa"</Provide-Capability>
+                        <Require-Capability>osgi.contract;filter:="(&amp;(osgi.contract=JavaJPA)(version=2.1))",osgi.service;filter:="(objectClass=org.osgi.service.jdbc.DataSourceFactory)";resolution:="optional";effective:="active",osgi.service;filter:="(objectClass=org.osgi.service.jpa.EntityManagerFactoryBuilder)";resolution:="optional";effective:="active"</Require-Capability>
 					</instructions>
 				</configuration>
 			</plugin>
