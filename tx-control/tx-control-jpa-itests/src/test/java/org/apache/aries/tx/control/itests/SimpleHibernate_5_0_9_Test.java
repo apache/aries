@@ -29,7 +29,7 @@ import org.ops4j.pax.exam.Option;
 public class SimpleHibernate_5_0_9_Test extends AbstractSimpleTransactionTest {
 
 	protected String ariesJPAVersion() {
-		return "2.4.0-SNAPSHOT";
+		return "2.4.0";
 	}
 	
 	@Override

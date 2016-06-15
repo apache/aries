@@ -32,7 +32,7 @@ import org.ops4j.pax.exam.Option;
 public class SimpleOpenJPA_2_4_1_Test extends AbstractSimpleTransactionTest {
 
 	protected String ariesJPAVersion() {
-		return "2.4.0-SNAPSHOT";
+		return "2.4.0";
 	}
 	
 	protected Dictionary<String, Object> getBaseProperties() {

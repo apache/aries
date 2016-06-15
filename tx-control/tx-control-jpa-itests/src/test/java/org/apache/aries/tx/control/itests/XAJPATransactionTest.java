@@ -28,12 +28,14 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -43,7 +45,6 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.tx.control.itests.entity.Message;
 import org.h2.tools.Server;
 import org.junit.After;
@@ -60,21 +61,29 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.exam.util.Filter;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionRolledBackException;
 import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
+import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public abstract class XAJPATransactionTest  extends AbstractIntegrationTest {
+public abstract class XAJPATransactionTest {
 
 	static final String XA_TEST_UNIT_1 = "xa-test-unit-1";
 	static final String XA_TEST_UNIT_2 = "xa-test-unit-2";
 
 	protected static final String ARIES_EMF_BUILDER_TARGET_FILTER = "aries.emf.builder.target.filter";
+	
+	@Inject
+	BundleContext context;
 	
 	@Inject
 	@Filter("(osgi.xa.enabled=true)")
@@ -85,6 +94,8 @@ public abstract class XAJPATransactionTest  extends AbstractIntegrationTest {
 
 	private Server server1;
 	private Server server2;
+	
+	private final List<ServiceTracker<?,?>> trackers = new ArrayList<>();
 
 	@Before
 	public void setUp() throws Exception {
@@ -111,7 +122,7 @@ public abstract class XAJPATransactionTest  extends AbstractIntegrationTest {
 		return new File(testClassesDir.getParentFile(), "testdb/" + dbName).getAbsolutePath();
 	}
 	
-	private EntityManager configuredEntityManager(String jdbcUrl, String unit) throws IOException {
+	private EntityManager configuredEntityManager(String jdbcUrl, String unit) throws Exception {
 		
 		Dictionary<String, Object> props = getBaseProperties();
 		
@@ -125,17 +136,49 @@ public abstract class XAJPATransactionTest  extends AbstractIntegrationTest {
 			props.put(ARIES_EMF_BUILDER_TARGET_FILTER, "(&(osgi.unit.name=" + unit + ")" + filter + ")");
 		}
 		
-		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
+		ConfigurationAdmin cm = getService(ConfigurationAdmin.class, 5000);
 		
 		org.osgi.service.cm.Configuration config = cm.createFactoryConfiguration(
 				"org.apache.aries.tx.control.jpa.xa", null);
 		config.update(props);
 		
-		return context().getService(JPAEntityManagerProvider.class,
+		return getService(JPAEntityManagerProvider.class,
 				"(" + EntityManagerFactoryBuilder.JPA_UNIT_NAME + "=" + unit + ")",
 				5000).getResource(txControl);
 	}
 
+	private <T> T getService(Class<T> clazz, long timeout) {
+		try {
+			return getService(clazz, null, timeout);
+		} catch (InvalidSyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	private <T> T getService(Class<T> clazz, String filter, long timeout) throws InvalidSyntaxException {
+		org.osgi.framework.Filter f = FrameworkUtil.createFilter(filter == null ? "(|(foo=bar)(!(foo=bar)))" : filter); 
+		
+		ServiceTracker<T, T> tracker = new ServiceTracker<T, T>(context, clazz, null) {
+			@Override
+			public T addingService(ServiceReference<T> reference) {
+				return f.match(reference) ? super.addingService(reference) : null;
+			}
+		};
+
+		tracker.open();
+		try {
+			T t = tracker.waitForService(timeout);
+			if(t == null) {
+				throw new NoSuchElementException(clazz.getName());
+			}
+			return t;
+		} catch (InterruptedException e) {
+			throw new RuntimeException("Error waiting for service " + clazz.getName(), e);
+		} finally {
+			trackers.add(tracker);
+		}
+	}
+	
 	protected Dictionary<String, Object> getBaseProperties() {
 		return new Hashtable<>();
 	}
@@ -152,12 +195,14 @@ public abstract class XAJPATransactionTest  extends AbstractIntegrationTest {
 			server2.stop();
 		}
 
+		trackers.stream().forEach(ServiceTracker::close);
+		
 		em1 = null;
 		em2 = null;
 	}
 
 	private void clearConfiguration() {
-		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
+		ConfigurationAdmin cm = getService(ConfigurationAdmin.class, 5000);
 		org.osgi.service.cm.Configuration[] cfgs = null;
 		try {
 			cfgs = cm.listConfigurations(null);
@@ -196,7 +241,6 @@ public abstract class XAJPATransactionTest  extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-xa").versionAsInProject(),
 				mavenBundle("com.h2database", "h2").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jpa-xa").versionAsInProject(),
@@ -308,8 +352,16 @@ public abstract class XAJPATransactionTest  extends AbstractIntegrationTest {
 	}
 	
 	Object getMessageEntityFrom(String unit) throws Exception {
-		Class<?> clz = context().getBundleByName(unit).loadClass(
-				"org.apache.aries.tx.control.itests.entity.Message");
+		Class<?> clz = Arrays.stream(context.getBundles())
+					.filter(b -> unit.equals(b.getSymbolicName()))
+					.map(b -> {
+							try {
+								return b.loadClass("org.apache.aries.tx.control.itests.entity.Message");
+							} catch (ClassNotFoundException e) {
+								throw new RuntimeException(e);
+							}
+						})
+					.findFirst().orElseThrow(() -> new IllegalArgumentException(unit));
 		return clz.newInstance();
 	}
 	

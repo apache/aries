@@ -38,7 +38,6 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
@@ -58,7 +57,7 @@ import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public class XATransactionTest extends AbstractIntegrationTest {
+public class XATransactionTest {
 
 	@Inject
 	@Filter("(osgi.xa.enabled=true)")
@@ -67,6 +66,10 @@ public class XATransactionTest extends AbstractIntegrationTest {
 	@Inject
 	@Filter("(osgi.xa.enabled=true)")
 	private JDBCConnectionProviderFactory factory;
+
+	@Inject
+	@Filter("(osgi.jdbc.driver.class=org.h2.Driver)")
+	private DataSourceFactory dsf;
 	
 	protected Connection connection1;
 	protected Connection connection2;
@@ -88,10 +91,10 @@ public class XATransactionTest extends AbstractIntegrationTest {
 		String jdbcUrl2 = "jdbc:h2:tcp://127.0.0.1:" + server2.getPort() + "/" + getRemoteDBPath("db2");
 		
 		jdbc.setProperty(DataSourceFactory.JDBC_URL, jdbcUrl1);
-		connection1 = programaticConnection(jdbc);
+		connection1 = factory.getProviderFor(dsf, jdbc, null).getResource(txControl);
 		
 		jdbc.setProperty(DataSourceFactory.JDBC_URL, jdbcUrl2);
-		connection2 = programaticConnection(jdbc);
+		connection2 = factory.getProviderFor(dsf, jdbc, null).getResource(txControl);
 		
 		txControl.required(() -> {
 				Statement s = connection1.createStatement();
@@ -109,16 +112,6 @@ public class XATransactionTest extends AbstractIntegrationTest {
 				s.execute("CREATE TABLE TEST_TABLE ( idValue varchar(16) PRIMARY KEY )");
 				return null;
 			});
-	}
-
-	private Connection programaticConnection(Properties jdbc) {
-		
-		JDBCConnectionProviderFactory resourceProviderFactory = context()
-				.getService(JDBCConnectionProviderFactory.class, 5000);
-		
-		DataSourceFactory dsf = context().getService(DataSourceFactory.class, 5000);
-		
-		return resourceProviderFactory.getProviderFor(dsf, jdbc, null).getResource(txControl);
 	}
 
 	@After
@@ -230,7 +223,6 @@ public class XATransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-xa").versionAsInProject(),
 				mavenBundle("com.h2database", "h2").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jdbc-xa").versionAsInProject(),

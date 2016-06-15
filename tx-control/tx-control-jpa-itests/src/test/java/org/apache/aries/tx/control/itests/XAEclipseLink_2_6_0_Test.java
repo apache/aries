@@ -44,7 +44,7 @@ public class XAEclipseLink_2_6_0_Test extends XAJPATransactionTest {
 				mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.asm", "2.6.0"),
 				mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.antlr", "2.6.0"),
 				mavenBundle("org.eclipse.persistence", "org.eclipse.persistence.jpa.jpql", "2.6.0"),
-				mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.eclipselink.adapter", "2.4.0-SNAPSHOT"));
+				mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.eclipselink.adapter", "2.4.0"));
 	}
 
 }
