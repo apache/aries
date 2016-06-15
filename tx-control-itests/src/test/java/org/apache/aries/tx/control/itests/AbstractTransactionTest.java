@@ -29,10 +29,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
+import javax.inject.Inject;
+
 import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
@@ -43,30 +47,41 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
+import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
-
+public abstract class AbstractTransactionTest {
+	
 	private static final String TX_CONTROL_FILTER = "org.apache.aries.tx.control.itests.filter";
 	private static final String REMOTE_DB_PROPERTY = "org.apache.aries.tx.control.itests.remotedb";
 	private static final String CONFIGURED_PROVIDER_PROPERTY = "org.apache.aries.tx.control.itests.configured";
 
+	@Inject
+	BundleContext context;
+	
 	protected TransactionControl txControl;
 
 	protected Connection connection;
 
 	private Server server;
+	
+	private final List<ServiceTracker<?,?>> trackers = new ArrayList<>();
 
 	@Before
 	public void setUp() throws Exception {
 		
-		txControl = context().getService(TransactionControl.class, 
+		txControl = getService(TransactionControl.class, 
 				System.getProperty(TX_CONTROL_FILTER), 5000);
 		
 		Properties jdbc = new Properties();
@@ -99,12 +114,43 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 			});
 	}
 
+	private <T> T getService(Class<T> clazz, long timeout) {
+		try {
+			return getService(clazz, null, timeout);
+		} catch (InvalidSyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	private <T> T getService(Class<T> clazz, String filter, long timeout) throws InvalidSyntaxException {
+		Filter f = FrameworkUtil.createFilter(filter == null ? "(|(foo=bar)(!(foo=bar)))" : filter); 
+		
+		ServiceTracker<T, T> tracker = new ServiceTracker<T, T>(context, clazz, null) {
+			@Override
+			public T addingService(ServiceReference<T> reference) {
+				return f.match(reference) ? super.addingService(reference) : null;
+			}
+		};
+
+		tracker.open();
+		try {
+			T t = tracker.waitForService(timeout);
+			if(t == null) {
+				throw new NoSuchElementException(clazz.getName());
+			}
+			return t;
+		} catch (InterruptedException e) {
+			throw new RuntimeException("Error waiting for service " + clazz.getName(), e);
+		} finally {
+			trackers.add(tracker);
+		}
+	}
+	
 	private Connection programaticConnection(Properties jdbc) {
 		
-		JDBCConnectionProviderFactory resourceProviderFactory = context()
-				.getService(JDBCConnectionProviderFactory.class, 5000);
+		JDBCConnectionProviderFactory resourceProviderFactory = getService(JDBCConnectionProviderFactory.class, 5000);
 		
-		DataSourceFactory dsf = context().getService(DataSourceFactory.class, 5000);
+		DataSourceFactory dsf = getService(DataSourceFactory.class, 5000);
 		
 		return resourceProviderFactory.getProviderFor(dsf, jdbc, null).getResource(txControl);
 	}
@@ -115,7 +161,7 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		String type = System.getProperty(CONFIGURED_PROVIDER_PROPERTY);
 		
 		jdbc.setProperty(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.h2.Driver");
-		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
+		ConfigurationAdmin cm = getService(ConfigurationAdmin.class, 5000);
 		
 		String pid = "local".equals(type) ? "org.apache.aries.tx.control.jdbc.local" 
 				: "org.apache.aries.tx.control.jdbc.xa";
@@ -126,7 +172,7 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 				pid, null);
 		config.update((Hashtable)jdbc);
 		
-		return context().getService(JDBCConnectionProvider.class, 5000).getResource(txControl);
+		return getService(JDBCConnectionProvider.class, 5000).getResource(txControl);
 	}
 	
 	@After
@@ -143,12 +189,14 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		if(server != null) {
 			server.stop();
 		}
+		
+		trackers.stream().forEach(ServiceTracker::close);
 
 		connection = null;
 	}
 
 	private void clearConfiguration() {
-		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
+		ConfigurationAdmin cm = getService(ConfigurationAdmin.class, 5000);
 		org.osgi.service.cm.Configuration[] cfgs = null;
 		try {
 			cfgs = cm.listConfigurations(null);
@@ -184,7 +232,6 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 						.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				localTxControlService(),
 				localJdbcResourceProviderWithH2(),
 				when(testSpecificOptions != null).useOptions(testSpecificOptions),
@@ -207,7 +254,6 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				localTxControlService(),
 				localJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
@@ -231,7 +277,6 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				localTxControlService(),
 				localJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
@@ -257,7 +302,6 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 						.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				xaTxControlService(),
 				localJdbcResourceProviderWithH2(),
 				when(testSpecificOptions != null).useOptions(testSpecificOptions),
@@ -280,7 +324,6 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				xaTxControlService(),
 				localJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
@@ -304,7 +347,6 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				xaTxControlService(),
 				localJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
@@ -330,7 +372,6 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				xaTxControlService(),
 				xaJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),
@@ -354,7 +395,6 @@ public abstract class AbstractTransactionTest extends AbstractIntegrationTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				xaTxControlService(),
 				xaJdbcResourceProviderWithH2(),
 				systemProperty(REMOTE_DB_PROPERTY).value(getRemoteDBPath()),

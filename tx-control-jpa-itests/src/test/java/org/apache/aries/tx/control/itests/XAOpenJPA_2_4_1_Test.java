@@ -33,7 +33,7 @@ public class XAOpenJPA_2_4_1_Test extends XAJPATransactionTest {
 
 	@Override
 	protected String ariesJPAVersion() {
-		return "2.4.0-SNAPSHOT";
+		return "2.4.0";
 	}
 	
 	@Override

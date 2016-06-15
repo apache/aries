@@ -29,7 +29,7 @@ import org.ops4j.pax.exam.Option;
 public class XAHibernate_5_0_9_Test extends XAJPATransactionTest {
 
 	protected String ariesJPAVersion() {
-		return "2.4.0-SNAPSHOT";
+		return "2.4.0";
 	}
 	
 	@Override
