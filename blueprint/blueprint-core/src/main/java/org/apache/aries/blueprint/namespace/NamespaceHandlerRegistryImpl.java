@@ -18,6 +18,10 @@
  */
 package org.apache.aries.blueprint.namespace;
 
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static javax.xml.XMLConstants.XML_NS_URI;
+import static org.apache.aries.blueprint.parser.Parser.BLUEPRINT_NAMESPACE;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +48,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -62,10 +67,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
-
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-import static javax.xml.XMLConstants.XML_NS_URI;
-import static org.apache.aries.blueprint.parser.Parser.BLUEPRINT_NAMESPACE;
 
 /**
  * Default implementation of the NamespaceHandlerRegistry.
@@ -461,7 +462,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             return schema;
         }
 
-        private class Loader implements LSResourceResolver, AutoCloseable {
+        private class Loader implements LSResourceResolver, Closeable {
             final List<StreamSource> sources = new ArrayList<StreamSource>();
             final Map<String, URL> loaded = new HashMap<String, URL>();
             final Map<String, String> namespaces = new HashMap<String, String>();
