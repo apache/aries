@@ -27,12 +27,15 @@ import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.NoSuchElementException;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
@@ -45,30 +48,41 @@ import org.ops4j.pax.exam.TestProbeBuilder;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
+import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest {
+public abstract class AbstractJPATransactionTest {
 
 	protected static final String TX_CONTROL_FILTER = "tx.control.filter";
 	protected static final String ARIES_EMF_BUILDER_TARGET_FILTER = "aries.emf.builder.target.filter";
 	protected static final String IS_XA = "aries.test.is.xa";
 
+	@Inject
+	BundleContext context;
+	
 	protected TransactionControl txControl;
 
 	protected EntityManager em;
 
 	private Server server;
+	
+	private final List<ServiceTracker<?,?>> trackers = new ArrayList<>();
 
 	@Before
 	public void setUp() throws Exception {
 		
-		txControl = context().getService(TransactionControl.class, System.getProperty(TX_CONTROL_FILTER), 5000);
+		txControl = getService(TransactionControl.class, System.getProperty(TX_CONTROL_FILTER), 5000);
 		
 		server = Server.createTcpServer("-tcpPort", "0");
 		server.start();
@@ -78,6 +92,38 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 		em = configuredEntityManager(jdbcUrl);
 	}
 
+	private <T> T getService(Class<T> clazz, long timeout) {
+		try {
+			return getService(clazz, null, timeout);
+		} catch (InvalidSyntaxException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	private <T> T getService(Class<T> clazz, String filter, long timeout) throws InvalidSyntaxException {
+		Filter f = FrameworkUtil.createFilter(filter == null ? "(|(foo=bar)(!(foo=bar)))" : filter); 
+		
+		ServiceTracker<T, T> tracker = new ServiceTracker<T, T>(context, clazz, null) {
+			@Override
+			public T addingService(ServiceReference<T> reference) {
+				return f.match(reference) ? super.addingService(reference) : null;
+			}
+		};
+
+		tracker.open();
+		try {
+			T t = tracker.waitForService(timeout);
+			if(t == null) {
+				throw new NoSuchElementException(clazz.getName());
+			}
+			return t;
+		} catch (InterruptedException e) {
+			throw new RuntimeException("Error waiting for service " + clazz.getName(), e);
+		} finally {
+			trackers.add(tracker);
+		}
+	}
+	
 	private String getRemoteDBPath() {
 		String fullResourceName = getClass().getName().replace('.', '/') + ".class";
 		
@@ -102,7 +148,7 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 			props.put(ARIES_EMF_BUILDER_TARGET_FILTER, filter);
 		}
 		
-		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
+		ConfigurationAdmin cm = getService(ConfigurationAdmin.class, 5000);
 		
 		String pid = getBoolean(IS_XA) ? "org.apache.aries.tx.control.jpa.xa" :
 				"org.apache.aries.tx.control.jpa.local"; 
@@ -113,7 +159,7 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 				pid, null);
 		config.update(props);
 		
-		return context().getService(JPAEntityManagerProvider.class, 5000).getResource(txControl);
+		return getService(JPAEntityManagerProvider.class, 5000).getResource(txControl);
 	}
 
 	protected Dictionary<String, Object> getBaseProperties() {
@@ -129,11 +175,13 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 			server.stop();
 		}
 
+		trackers.stream().forEach(ServiceTracker::close);
+		
 		em = null;
 	}
 
 	private void clearConfiguration() {
-		ConfigurationAdmin cm = context().getService(ConfigurationAdmin.class, 5000);
+		ConfigurationAdmin cm = getService(ConfigurationAdmin.class, 5000);
 		org.osgi.service.cm.Configuration[] cfgs = null;
 		try {
 			cfgs = cm.listConfigurations(null);
@@ -174,7 +222,6 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				localTxControlService(),
 				localJpaResourceProviderWithH2(),
 				jpaProvider(),
@@ -197,7 +244,6 @@ public abstract class AbstractJPATransactionTest extends AbstractIntegrationTest
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				systemProperty(IS_XA).value(Boolean.TRUE.toString()),
 				xaTxControlService(),
 				xaJpaResourceProviderWithH2(),
