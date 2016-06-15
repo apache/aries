@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,25 +18,78 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import java.lang.reflect.Field;
-
 import org.ops4j.pax.cdi.api.OsgiService;
+import org.springframework.stereotype.Component;
+
+import javax.inject.Named;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Synthetic bean that refers to an OSGi service
  */
 public class OsgiServiceRef extends BeanRef {
 
-    public String filter;
+    final public String filter;
+    final public String compName;
 
     public OsgiServiceRef(Field field) {
         super(field);
-        OsgiService osgiService = field.getAnnotation(OsgiService.class);
-        filter = osgiService.filter();
-        id = getBeanName(clazz);
-        if (filter != null) {
-            id = id + "-" + getId(filter);
+        ServiceFilter serviceFilter = extractServiceFilter(field);
+        filter = serviceFilter.filter;
+        compName = serviceFilter.compName;
+        id = generateReferenceId(field);
+    }
+
+    private String generateReferenceId(AnnotatedElement annotatedElement) {
+        String prefix = getBeanName(clazz, annotatedElement);
+        String suffix = createIdSuffix(annotatedElement);
+        return prefix + suffix;
+    }
+
+    private String createIdSuffix(AnnotatedElement annotatedElement) {
+        if (shouldAddSuffix(annotatedElement)) {
+            if (filter != null) {
+                return "-" + getId(filter);
+            }
+            if (compName != null) {
+                return "-" + compName;
+            }
         }
+        return "";
+    }
+
+    private boolean shouldAddSuffix(AnnotatedElement annotatedElement) {
+        Component component = annotatedElement.getAnnotation(Component.class);
+        Named named = annotatedElement.getAnnotation(Named.class);
+        return (component == null || "".equals(component.value())) &&
+            (named == null || "".equals(named.value()));
+    }
+
+    public OsgiServiceRef(Method method) {
+        super(method);
+        ServiceFilter serviceFilter = extractServiceFilter(method);
+        filter = serviceFilter.filter;
+        compName = serviceFilter.compName;
+        id = generateReferenceId(method);
+    }
+
+    private ServiceFilter extractServiceFilter(AnnotatedElement annotatedElement) {
+        OsgiService osgiService = annotatedElement.getAnnotation(OsgiService.class);
+        return extractServiceFilter(osgiService);
+    }
+
+    private ServiceFilter extractServiceFilter(OsgiService osgiService) {
+        String filterValue = osgiService.filter();
+        return new ServiceFilter(filterValue);
+    }
+
+    public OsgiServiceRef(Class<?> clazz, OsgiService osgiService, String name) {
+        super(clazz, name);
+        ServiceFilter serviceFilter = extractServiceFilter(osgiService);
+        filter = serviceFilter.filter;
+        compName = serviceFilter.compName;
     }
 
     private String getId(String raw) {
@@ -50,4 +103,21 @@ public class OsgiServiceRef extends BeanRef {
         return builder.toString();
     }
 
+    private static class ServiceFilter {
+        final public String filter;
+        final public String compName;
+
+        public ServiceFilter(String filterValue) {
+            if (filterValue == null) {
+                filter = null;
+                compName = null;
+            } else if (filterValue.contains("(")) {
+                filter = filterValue;
+                compName = null;
+            } else {
+                filter = null;
+                compName = filterValue;
+            }
+        }
+    }
 }

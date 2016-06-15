@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.blueprint.NamespaceHandler2;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.PassThroughMetadata;
@@ -55,7 +56,7 @@ import org.w3c.dom.Node;
 /**
  * Blueprint NamespaceHandler wrapper for a spring NamespaceHandler
  */
-public class BlueprintNamespaceHandler implements NamespaceHandler2 {
+public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHandler2 {
 
     public static final String SPRING_CONTEXT_ID = "." + org.springframework.beans.factory.xml.ParserContext.class.getName();
     public static final String SPRING_BEAN_PROCESSOR_ID = "." + SpringBeanProcessor.class.getName();

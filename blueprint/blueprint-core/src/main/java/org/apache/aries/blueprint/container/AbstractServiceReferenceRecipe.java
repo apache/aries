@@ -89,7 +89,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     private final AtomicBoolean started = new AtomicBoolean();
     private final AtomicBoolean satisfied = new AtomicBoolean();
-    private SatisfactionListener satisfactionListener;
+    private volatile SatisfactionListener satisfactionListener;
 
     private final AccessControlContext accessControlContext;
 
@@ -416,7 +416,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         // so that it will only be true if the value actually changed
         if (satisfied.getAndSet(s) != s) {
             LOGGER.debug("Service reference with filter {} satisfied {}", getOsgiFilter(), this.satisfied);
-            this.satisfactionListener.notifySatisfaction(this);
+            SatisfactionListener listener = this.satisfactionListener;
+            if (listener != null) {
+                listener.notifySatisfaction(this);
+            }
         }
     }
 

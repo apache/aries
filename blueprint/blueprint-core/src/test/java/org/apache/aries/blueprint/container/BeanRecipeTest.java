@@ -68,6 +68,16 @@ public class BeanRecipeTest {
         public ExampleService(Example<String> e) {}
     }
 
+    static public interface BaseInterface<T> { }
+    static public interface ExtendedInterface<T0, T1> extends BaseInterface<T1> {}
+    static public class MyClass implements ExtendedInterface<String, Integer> { }
+    static public class MyClass2<T> implements BaseInterface<T> { }
+    static public class MyClass3 extends MyClass2<Long> { }
+    static public class MyService {
+        public MyService(BaseInterface<? extends Number> e) {}
+    }
+
+
     static public interface A {
         String getA();
         void setA(String a);
@@ -123,6 +133,26 @@ public class BeanRecipeTest {
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
         BeanRecipe recipe = new BeanRecipe("example", container, ExampleService.class, false);
         recipe.setArguments(Arrays.<Object>asList(new ExampleImpl()));
+        recipe.setArgTypes(Arrays.<String>asList((String) null));
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        recipe.create();
+    }
+
+    @Test
+    public void parameterWithComplexGenerics1() throws Exception {
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+        BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false);
+        recipe.setArguments(Arrays.<Object>asList(new MyClass()));
+        recipe.setArgTypes(Arrays.<String>asList((String) null));
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        recipe.create();
+    }
+
+    @Test
+    public void parameterWithComplexGenerics2() throws Exception {
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+        BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false);
+        recipe.setArguments(Arrays.<Object>asList(new MyClass3()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         recipe.create();

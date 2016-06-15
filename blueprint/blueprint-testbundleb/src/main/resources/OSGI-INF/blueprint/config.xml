@@ -28,6 +28,7 @@
            xmlns:six="http://ns.handler.six"
            xmlns:sixim="http://ns.handler.six.import"
            xmlns:seven="http://ns.handler.seven"
+           xmlns:height="http://ns.handler.height"
            default-availability="optional">
 
     <ext:property-placeholder placeholder-prefix="$(" placeholder-suffix=")">
@@ -120,9 +121,15 @@
           <seven:stuffinc>foo</seven:stuffinc>
           <mytest:foo xmlns:mytest="http://ns.handler.mytest">blah</mytest:foo>
       </seven:stuff>
-  </seven:nshandlerseven> 
-  
-  
+  </seven:nshandlerseven>
+
+  <height:nshandlerheight height:id="HEIGHT" height:attrib="foo">
+      <height:stuff>
+          <height:stuffinc>foo</height:stuffinc>
+          <mytest:foo xmlns:mytest="http://ns.handler.mytest">blah</mytest:foo>
+      </height:stuff>
+  </height:nshandlerheight>
+
   <reference id="OnlyA" interface="org.apache.aries.blueprint.testbundlea.multi.InterfaceA"/>
   <reference id="AandB" interface="org.apache.aries.blueprint.testbundlea.multi.InterfaceA">
   	<ext:additional-interfaces>

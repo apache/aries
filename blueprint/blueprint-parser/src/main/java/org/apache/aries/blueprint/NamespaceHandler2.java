@@ -16,20 +16,12 @@
  */
 package org.apache.aries.blueprint;
 
-import java.net.URL;
-import java.util.Set;
-
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 /**
  * Additional namespace features
  */
 public interface NamespaceHandler2 extends NamespaceHandler {
 
-    /*
+    /**
      * A namespace can return true if its parsing relies on PSVI,
      * i.e. extensions from the schema for default attributes values
      * for example.

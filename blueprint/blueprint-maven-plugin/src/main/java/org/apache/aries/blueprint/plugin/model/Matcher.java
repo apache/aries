@@ -18,8 +18,6 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-
-
 public interface Matcher {
     BeanRef getMatching(BeanRef template);
 }

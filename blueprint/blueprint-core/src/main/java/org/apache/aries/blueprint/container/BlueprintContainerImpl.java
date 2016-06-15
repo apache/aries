@@ -54,6 +54,7 @@ import org.apache.aries.blueprint.Processor;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
+import org.apache.aries.blueprint.namespace.MissingNamespaceException;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
@@ -314,7 +315,7 @@ public class BlueprintContainerImpl
                     {
                         List<String> missing = new ArrayList<String>();
                         List<URI> missingURIs = new ArrayList<URI>();
-                        for (URI ns : namespaces) {
+                        for (URI ns : handlerSet.getNamespaces()) {
                             if (handlerSet.getNamespaceHandler(ns) == null) {
                                 missing.add("(&(" + Constants.OBJECTCLASS + "=" + NamespaceHandler.class.getName() + ")(" + NamespaceHandlerRegistryImpl.NAMESPACE + "=" + ns + "))");
                                 missingURIs.add(ns);
@@ -337,15 +338,21 @@ public class BlueprintContainerImpl
                                 }
                             }
                         }
-                        if (xmlValidation == null || "true".equals(xmlValidation)) {
-                            parser.validate(handlerSet.getSchema(parser.getSchemaLocations()));
-                        } else if ("structure".equals(xmlValidation)) {
-                            parser.validate(handlerSet.getSchema(parser.getSchemaLocations()), new ValidationHandler());
-                        } else if ("psvi".equals(xmlValidation)) {
-                            parser.validatePsvi(handlerSet.getSchema(parser.getSchemaLocations()));
+                        try {
+                            if (xmlValidation == null || "true".equals(xmlValidation)) {
+                                parser.validate(handlerSet.getSchema(parser.getSchemaLocations()));
+                            } else if ("structure".equals(xmlValidation)) {
+                                parser.validate(handlerSet.getSchema(parser.getSchemaLocations()), new ValidationHandler());
+                            } else if ("psvi".equals(xmlValidation)) {
+                                parser.validatePsvi(handlerSet.getSchema(parser.getSchemaLocations()));
+                            }
+                            parser.populate(handlerSet, componentDefinitionRegistry);
+                            state = State.Populated;
+                        } catch (MissingNamespaceException e) {
+                            // If we found a missing namespace when parsing the schema,
+                            // we remain in the current state
+                            handlerSet.getNamespaces().add(e.getNamespace());
                         }
-                        parser.populate(handlerSet, componentDefinitionRegistry);
-                        state = State.Populated;
                         break;
                     }
                     case Populated:
@@ -926,13 +933,13 @@ public class BlueprintContainerImpl
     }
 
     public void namespaceHandlerRegistered(URI uri) {
-        if (namespaces != null && namespaces.contains(uri)) {
+        if (handlerSet != null && handlerSet.getNamespaces().contains(uri)) {
             schedule();
         }
     }
 
     public void namespaceHandlerUnregistered(URI uri) {
-        if (namespaces != null && namespaces.contains(uri)) {
+        if (handlerSet != null && handlerSet.getNamespaces().contains(uri)) {
             synchronized (scheduled) {
                 if (destroyed.get()) {
                     return;
@@ -941,6 +948,10 @@ public class BlueprintContainerImpl
                 resetComponentDefinitionRegistry();
                 cancelFutureIfPresent();
                 this.repository = null;
+                handlerSet.removeListener(this);
+                handlerSet.destroy();
+                handlerSet = handlers.getNamespaceHandlers(namespaces, getBundle());
+                handlerSet.addListener(this);
                 state = State.WaitForNamespaceHandlers;
                 schedule();
             }

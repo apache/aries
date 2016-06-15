@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,31 +18,35 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.enterprise.inject.Produces;
-
+import org.apache.aries.blueprint.plugin.model.service.ServiceProvider;
 import org.ops4j.pax.cdi.api.OsgiService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
 
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 public class Context implements Matcher {
 
-    SortedSet<BeanRef> reg;
+    SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
+    private final List<ServiceProvider> serviceProviders = new ArrayList<>();
 
     public Context(Class<?>... beanClasses) {
         this(Arrays.asList(beanClasses));
     }
 
     public Context(Collection<Class<?>> beanClasses) {
-        this.reg = new TreeSet<BeanRef>();
         addBlueprintRefs();
         addBeans(beanClasses);
     }
@@ -64,16 +68,35 @@ public class Context implements Matcher {
         Bean bean = new Bean(clazz);
         reg.add(bean);
         addServiceRefs(clazz);
-        addProducedBeans(clazz, bean);
+        addProducedBeans(bean);
+        addServiceProviders(bean);
     }
 
-    private void addProducedBeans(Class<?> clazz, BeanRef factoryBean) {
-        for (Method method : clazz.getMethods()) {
+    private void addServiceProviders(Bean bean) {
+        serviceProviders.addAll(bean.serviceProviders);
+    }
+
+    private void addProducedBeans(BeanRef factoryBean) {
+        for (Method method : factoryBean.clazz.getMethods()) {
             Produces produces = method.getAnnotation(Produces.class);
+            Named named = method.getAnnotation(Named.class);
+            Singleton singleton = method.getAnnotation(Singleton.class);
             if (produces != null) {
                 Class<?> producedClass = method.getReturnType();
-                ProducedBean producedBean = new ProducedBean(producedClass, factoryBean, method.getName());
+                ProducedBean producedBean;
+                if (named != null) {
+                    producedBean = new ProducedBean(producedClass, named.value(), factoryBean, method);
+                } else {
+                    producedBean = new ProducedBean(producedClass, factoryBean, method);
+                }
+                if (singleton != null) {
+                    producedBean.setSingleton();
+                }
                 reg.add(producedBean);
+                ServiceProvider serviceProvider = ServiceProvider.fromMethod(producedBean, method);
+                if (serviceProvider != null) {
+                    serviceProviders.add(serviceProvider);
+                }
             }
         }
     }
@@ -82,12 +105,20 @@ public class Context implements Matcher {
         for (Field field : new Introspector(clazz).fieldsWith(OsgiService.class)) {
             reg.add(new OsgiServiceRef(field));
         }
+        for (Method method : new Introspector(clazz).methodsWith(OsgiService.class)) {
+            reg.add(new OsgiServiceRef(method));
+        }
     }
 
     public void resolve() {
         for (Bean bean : getBeans()) {
             bean.resolve(this);
+            addServiceRefs(bean);
         }
+    }
+
+    private void addServiceRefs(Bean bean) {
+        reg.addAll(bean.serviceRefs);
     }
 
     public BeanRef getMatching(BeanRef template) {
@@ -103,7 +134,7 @@ public class Context implements Matcher {
         TreeSet<Bean> beans = new TreeSet<Bean>();
         for (BeanRef ref : reg) {
             if (ref instanceof Bean) {
-                beans.add((Bean)ref);
+                beans.add((Bean) ref);
             }
         }
         return beans;
@@ -113,10 +144,13 @@ public class Context implements Matcher {
         TreeSet<OsgiServiceRef> serviceRefs = new TreeSet<OsgiServiceRef>();
         for (BeanRef ref : reg) {
             if (ref instanceof OsgiServiceRef) {
-                serviceRefs.add((OsgiServiceRef)ref);
+                serviceRefs.add((OsgiServiceRef) ref);
             }
         }
         return serviceRefs;
     }
 
+    public List<ServiceProvider> getServiceProviders() {
+        return serviceProviders;
+    }
 }
