@@ -24,14 +24,14 @@
 	<description>Transaction Control service, including Resource Provider implementations.</description>
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control
-        </connection>
+			scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control
+		</connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control
-        </developerConnection>
+			scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control
+		</developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/trunk/tx-control
-        </url>
+			http://svn.apache.org/viewvc/aries/trunk/tx-control
+		</url>
 	</scm>
 
 	<profiles>
@@ -56,4 +56,40 @@
 		</profile>
 	</profiles>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.aries.versioning</groupId>
+				<artifactId>org.apache.aries.versioning.plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-verify</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>version-check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.0.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
