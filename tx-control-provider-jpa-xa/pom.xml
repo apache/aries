@@ -3,14 +3,14 @@
     <parent>
         <groupId>org.apache.aries.tx-control</groupId>
         <artifactId>tx-control</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-provider-jpa-xa</artifactId>
 	<packaging>bundle</packaging>
 	<name>OSGi Transaction Control JPA Resource Provider - XA Transactions</name>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<description>
         This bundle contains a JPA resource provider for use with the OSGi Transaction Control Service that supports XA transactions.
@@ -18,13 +18,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.1/tx-control-provider-jpa-xa
+            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jpa-xa
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.1/tx-control-provider-jpa-xa
+            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jpa-xa
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/tags/tx-control-0.0.1/tx-control-provider-jpa-xa
+            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-provider-jpa-xa
         </url>
 	</scm>
 
@@ -91,7 +91,7 @@
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-api</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -115,13 +115,13 @@
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-provider-jdbc-common</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-provider-jdbc-xa</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
