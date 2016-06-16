@@ -48,8 +48,8 @@ public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvid
 
     private PersistenceUnit punit;
 
-    public PersistenceProviderTracker(BundleContext context, PersistenceUnit punit) {
-        super(context, createFilter(context, punit), null);
+    public PersistenceProviderTracker(BundleContext containerContext, PersistenceUnit punit) {
+        super(containerContext, createFilter(containerContext, punit), null);
         this.punit = punit;
     }
 
@@ -80,7 +80,9 @@ public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvid
         }
         StoredPerProvider stored = new StoredPerProvider();
         LOGGER.info("Found provider for " + punit.getPersistenceUnitName() + " " + punit.getPersistenceProviderClassName());
-        PersistenceProvider provider = context.getService(reference);
+        
+        // This get must happen using the persistence bundle's context to avoid ARIES-1575
+        PersistenceProvider provider = punit.getBundle().getBundleContext().getService(reference);
 
         createAndCloseDummyEMF(provider);
 

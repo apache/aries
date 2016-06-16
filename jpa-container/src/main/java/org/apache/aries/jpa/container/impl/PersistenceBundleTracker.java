@@ -40,11 +40,11 @@ import org.slf4j.LoggerFactory;
 public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceBundleTracker.class);
     private final Map<Bundle, Collection<PersistenceProviderTracker>> trackers;
-    private final BundleContext context;
+    private final BundleContext containerContext;
     private Map<Integer, String> typeMap;
 
     public PersistenceBundleTracker(BundleContext context) {
-        this.context = context;
+        this.containerContext = context;
         trackers = new HashMap<Bundle, Collection<PersistenceProviderTracker>>();
         this.typeMap = new HashMap<Integer, String>();
         this.typeMap.put(BundleEvent.INSTALLED, "INSTALLED");
@@ -102,7 +102,7 @@ public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle>
         LOGGER.info(String.format("Found persistence unit %s in bundle %s with provider %s.",
                                   punit.getPersistenceUnitName(), bundle.getSymbolicName(),
                                   punit.getPersistenceProviderClassName()));
-        PersistenceProviderTracker tracker = new PersistenceProviderTracker(context, punit);
+        PersistenceProviderTracker tracker = new PersistenceProviderTracker(containerContext, punit);
         tracker.open();
         getTrackers(bundle).add(tracker);
     }
