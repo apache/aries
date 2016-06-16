@@ -23,74 +23,14 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.Statement;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class XAHibernate_5_0_9_Test extends XAJPATransactionTest {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(XAHibernate_5_0_9_Test.class);
-	
-	@Rule
-    public MethodRule rule = (s,m,o) -> {
-	    	return new Statement() {
-				@Override
-					public void evaluate() throws Throwable {
-						try {
-							s.evaluate();
-						} catch (Throwable t) {
-							if(!hibernateBugOccurred)
-								throw t;
-						}					
-					}
-	    		};
-		};
-
-	private boolean hibernateBugOccurred = false;
-	
-	@Before
-	public void clearBugState() {
-		hibernateBugOccurred  = false;
-	}
-		
-	@After
-	public void hibernateBug() {
-		try {
-			
-			Class<?> m1Clazz = getMessageEntityFrom(XA_TEST_UNIT_1).getClass();
-			Class<?> m2Clazz = getMessageEntityFrom(XA_TEST_UNIT_2).getClass();
-			
-			hibernateBugOccurred = txControl.notSupported(() -> {
-					Class<?> hibernateM1Clazz = em1.getMetamodel()
-							.getEntities().iterator().next().getJavaType();
-					Class<?> hibernateM2Clazz = em2.getMetamodel()
-							.getEntities().iterator().next().getJavaType();
-					
-					if(hibernateM1Clazz != m1Clazz ||
-							hibernateM2Clazz != m2Clazz) {
-						LOGGER.warn("Encountered Hibernate bug: {}",
-								"https://hibernate.atlassian.net/browse/HHH-10855");
-						return true;
-					}
-					return false;
-				});
-		} catch (Exception e) {
-			hibernateBugOccurred = false;
-			LOGGER.error("Unable to check the Hibernate bug", e);
-			// Just swallow this so we don't hide an underlying test problem
-		}
-	}
-
 	protected String ariesJPAVersion() {
-		return "2.4.0";
+		return "2.5.0-SNAPSHOT";
 	}
-	
 	
 	@Override
 	protected Option jpaProvider() {
