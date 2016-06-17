@@ -124,7 +124,7 @@
         <module>tasklist-blueprint</module>
         <module>tasklist-ds</module>
         <module>tasklist-model</module>
-        <module>tasklist-cdi</module>
+<!--        <module>tasklist-cdi</module>-->
     </modules>
 
 </project>
