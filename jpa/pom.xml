@@ -48,7 +48,7 @@
         <module>jpa-container</module>
         <module>jpa-support</module>
         <module>jpa-blueprint</module>
-        <module>jpa-cdi</module>
+<!--        <module>jpa-cdi</module>-->
         <module>jpa-container-eclipselink-adapter</module>
         <module>jpa-repository</module>
         <module>examples</module>
