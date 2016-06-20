@@ -26,8 +26,6 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
 
 import javax.enterprise.inject.Produces;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -79,17 +77,16 @@ public class Context implements Matcher {
     private void addProducedBeans(BeanRef factoryBean) {
         for (Method method : factoryBean.clazz.getMethods()) {
             Produces produces = method.getAnnotation(Produces.class);
-            Named named = method.getAnnotation(Named.class);
-            Singleton singleton = method.getAnnotation(Singleton.class);
+            String name = AnnotationHelper.findName(method.getAnnotations());
             if (produces != null) {
                 Class<?> producedClass = method.getReturnType();
                 ProducedBean producedBean;
-                if (named != null) {
-                    producedBean = new ProducedBean(producedClass, named.value(), factoryBean, method);
+                if (name != null) {
+                    producedBean = new ProducedBean(producedClass, name, factoryBean, method);
                 } else {
                     producedBean = new ProducedBean(producedClass, factoryBean, method);
                 }
-                if (singleton != null) {
+                if (AnnotationHelper.findSingletons(method.getAnnotations())) {
                     producedBean.setSingleton();
                 }
                 reg.add(producedBean);

@@ -16,27 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.spring;
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.apache.aries.blueprint.plugin.spi.BeanAttributesResolver;
+import org.springframework.context.annotation.Lazy;
 
-import com.google.common.base.CaseFormat;
+import java.lang.reflect.AnnotatedElement;
+import java.util.HashMap;
+import java.util.Map;
 
-public class SpringTransactionFactory extends AbstractTransactionalFactory<Transactional> {
+public class LazyAttributeResolver implements BeanAttributesResolver<Lazy> {
     @Override
-    public String getTransactionTypeName(Transactional transactional)
-    {
-        Propagation propagation = transactional.propagation();
-        if (propagation == Propagation.NESTED) {
-            throw new UnsupportedOperationException("Nested transactions not supported");
-        }
-        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, propagation.name());
+    public Class<Lazy> getAnnotation() {
+        return Lazy.class;
     }
 
     @Override
-    public Class<Transactional> getTransactionalClass()
-    {
-        return Transactional.class;
+    public Map<String, String> resolveAttributes(Class<?> clazz, AnnotatedElement annotatedElement) {
+        Lazy lazy = annotatedElement.getAnnotation(Lazy.class);
+        Map<String, String> map = new HashMap<>();
+        map.put("activation", lazy.value() ? "lazy" : "eager");
+        return map;
     }
 }

@@ -18,21 +18,14 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.Activation;
+import org.apache.aries.blueprint.plugin.Extensions;
 import org.apache.aries.blueprint.plugin.model.service.ServiceProvider;
-import org.apache.commons.lang.StringUtils;
+import org.apache.aries.blueprint.plugin.spi.BeanAttributesResolver;
+import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.ops4j.pax.cdi.api.OsgiService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import java.lang.annotation.Annotation;
@@ -41,11 +34,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findAnnotation;
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 
 public class Bean extends BeanRef {
     public final String initMethod;
@@ -57,15 +56,11 @@ public class Bean extends BeanRef {
     public Set<TransactionalDef> transactionDefs = new HashSet<>();
     public boolean isPrototype;
     public List<ServiceProvider> serviceProviders = new ArrayList<>();
-    public Activation activation;
-    public String dependsOn;
+    public final Map<String, String> attributes = new HashMap<>();
 
     public Bean(Class<?> clazz) {
         super(clazz, BeanRef.getBeanName(clazz));
         Introspector introspector = new Introspector(clazz);
-
-        activation = getActivation(clazz);
-        dependsOn = getDependsOn(clazz);
 
         initMethod = findMethodAnnotatedWith(introspector, PostConstruct.class);
         destroyMethod = findMethodAnnotatedWith(introspector, PreDestroy.class);
@@ -78,23 +73,16 @@ public class Bean extends BeanRef {
         setQualifiersFromAnnotations(clazz.getAnnotations());
 
         interpretServiceProvider();
+
+        resolveBeanAttributes();
     }
 
-    protected String getDependsOn(AnnotatedElement annotatedElement) {
-        DependsOn annotation = annotatedElement.getAnnotation(DependsOn.class);
-        if (annotation == null || annotation.value().length == 0) {
-            return null;
+    private void resolveBeanAttributes() {
+        for (BeanAttributesResolver beanAttributesResolver : Extensions.beanAttributesResolvers) {
+            if (clazz.getAnnotation(beanAttributesResolver.getAnnotation()) != null) {
+                attributes.putAll(beanAttributesResolver.resolveAttributes(clazz, clazz));
+            }
         }
-        String[] value = annotation.value();
-        return StringUtils.join(value, " ");
-    }
-
-    protected Activation getActivation(AnnotatedElement annotatedElement) {
-        Lazy lazy = annotatedElement.getAnnotation(Lazy.class);
-        if (lazy == null) {
-            return null;
-        }
-        return lazy.value() ? Activation.LAZY : Activation.EAGER;
     }
 
     private void interpretServiceProvider() {
@@ -109,8 +97,9 @@ public class Bean extends BeanRef {
     }
 
     private void interpretTransactionalMethods(Class<?> clazz) {
-        transactionDefs.addAll(new JavaxTransactionFactory().create(clazz));
-        transactionDefs.addAll(new SpringTransactionFactory().create(clazz));
+        for (AbstractTransactionalFactory transactionalFactory : Extensions.transactionalFactories) {
+            transactionDefs.addAll(transactionalFactory.create(clazz));
+        }
     }
 
     private String findMethodAnnotatedWith(Introspector introspector, Class<? extends Annotation> annotation) {
@@ -122,17 +111,26 @@ public class Bean extends BeanRef {
     }
 
     private boolean isPrototype(Class<?> clazz) {
-        return clazz.getAnnotation(Singleton.class) == null && clazz.getAnnotation(Component.class) == null;
+        return !findSingleton(clazz);
+    }
+
+    private boolean findSingleton(Class clazz) {
+        for (Class<?> singletonAnnotation : Extensions.singletons) {
+            if (clazz.getAnnotation(singletonAnnotation) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void resolve(Matcher matcher) {
         resolveArguments(matcher);
-        resolveFiields(matcher);
+        resolveFields(matcher);
         resolveMethods(matcher);
     }
 
     private void resolveMethods(Matcher matcher) {
-        for (Method method : new Introspector(clazz).methodsWith(Value.class, Autowired.class, Inject.class)) {
+        for (Method method : new Introspector(clazz).methodsWith(AnnotationHelper.injectDependencyAnnotations)) {
             Property prop = Property.create(matcher, method);
             if (prop != null) {
                 properties.add(prop);
@@ -140,8 +138,8 @@ public class Bean extends BeanRef {
         }
     }
 
-    private void resolveFiields(Matcher matcher) {
-        for (Field field : new Introspector(clazz).fieldsWith(Value.class, Autowired.class, Inject.class)) {
+    private void resolveFields(Matcher matcher) {
+        for (Field field : new Introspector(clazz).fieldsWith(AnnotationHelper.injectDependencyAnnotations)) {
             Property prop = Property.create(matcher, field);
             if (prop != null) {
                 properties.add(prop);
@@ -152,30 +150,32 @@ public class Bean extends BeanRef {
     protected void resolveArguments(Matcher matcher) {
         Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
         for (Constructor constructor : declaredConstructors) {
-            Annotation inject = constructor.getAnnotation(Inject.class);
-            Annotation autowired = constructor.getAnnotation(Autowired.class);
-            if (inject != null || autowired != null || declaredConstructors.length == 1) {
+            if (declaredConstructors.length == 1 || shouldInject(constructor)) {
                 resolveArguments(matcher, constructor.getParameterTypes(), constructor.getParameterAnnotations());
                 break;
             }
         }
     }
 
+    private boolean shouldInject(AnnotatedElement annotatedElement) {
+        for (InjectLikeHandler injectLikeHandler : Extensions.beanInjectLikeHandlers) {
+            if (annotatedElement.getAnnotation(injectLikeHandler.getAnnotation()) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected void resolveArguments(Matcher matcher, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
         for (int i = 0; i < parameterTypes.length; ++i) {
             Annotation[] annotations = parameterAnnotations[i];
+            String value = findValue(annotations);
             String ref = null;
-            String value = null;
-            Value valueAnnotation = findAnnotation(annotations, Value.class);
+
             OsgiService osgiServiceAnnotation = findAnnotation(annotations, OsgiService.class);
-
-            if (valueAnnotation != null) {
-                value = valueAnnotation.value();
-            }
-
             if (osgiServiceAnnotation != null) {
-                Named namedAnnotation = findAnnotation(annotations, Named.class);
-                ref = namedAnnotation != null ? namedAnnotation.value() : getBeanNameFromSimpleName(parameterTypes[i].getSimpleName());
+                String name = findName(annotations);
+                ref = name != null ? name : getBeanNameFromSimpleName(parameterTypes[i].getSimpleName());
                 OsgiServiceRef osgiServiceRef = new OsgiServiceRef(parameterTypes[i], osgiServiceAnnotation, ref);
                 serviceRefs.add(osgiServiceRef);
             }
@@ -187,9 +187,9 @@ public class Bean extends BeanRef {
                 if (bean != null) {
                     ref = bean.id;
                 } else {
-                    Named namedAnnotation = findAnnotation(annotations, Named.class);
-                    if (namedAnnotation != null) {
-                        ref = namedAnnotation.value();
+                    String name = findName(annotations);
+                    if (name != null) {
+                        ref = name;
                     } else {
                         ref = getBeanName(parameterTypes[i]);
                     }
@@ -198,15 +198,6 @@ public class Bean extends BeanRef {
 
             constructorArguments.add(new Argument(ref, value));
         }
-    }
-
-    private static <T> T findAnnotation(Annotation[] annotations, Class<T> annotation) {
-        for (Annotation a : annotations) {
-            if (a.annotationType() == annotation) {
-                return annotation.cast(a);
-            }
-        }
-        return null;
     }
 
     @Override
@@ -225,7 +216,6 @@ public class Bean extends BeanRef {
             writer.writeArgument(argument);
         }
     }
-
 
     public boolean needFieldInjection() {
         for (Property property : properties) {

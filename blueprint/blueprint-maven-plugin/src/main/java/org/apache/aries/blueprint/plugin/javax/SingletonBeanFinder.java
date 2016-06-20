@@ -16,8 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.javax;
 
-public interface PropertyWriter {
-    void writeProperty(Property property);
+import javax.inject.Singleton;
+
+public class SingletonBeanFinder implements org.apache.aries.blueprint.plugin.spi.BeanFinder<Singleton> {
+    @Override
+    public Class<Singleton> beanAnnotation() {
+        return Singleton.class;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
 }

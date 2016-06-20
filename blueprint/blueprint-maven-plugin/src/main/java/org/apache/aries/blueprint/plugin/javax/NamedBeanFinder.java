@@ -16,8 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.javax;
 
-public interface PropertyWriter {
-    void writeProperty(Property property);
+import javax.inject.Named;
+
+public class NamedBeanFinder implements org.apache.aries.blueprint.plugin.spi.BeanFinder<Named> {
+    @Override
+    public Class<Named> beanAnnotation() {
+        return Named.class;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return false;
+    }
 }

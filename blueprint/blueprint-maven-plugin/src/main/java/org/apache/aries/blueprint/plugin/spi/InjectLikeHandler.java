@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.spi;
 
-public interface PropertyWriter {
-    void writeProperty(Property property);
+import java.lang.annotation.Annotation;
+
+public interface InjectLikeHandler<A extends Annotation> {
+    Class<A> getAnnotation();
 }

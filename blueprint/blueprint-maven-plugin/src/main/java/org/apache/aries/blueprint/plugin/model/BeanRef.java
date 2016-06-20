@@ -18,9 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.springframework.stereotype.Component;
+import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 
-import javax.inject.Named;
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -78,16 +78,16 @@ public class BeanRef implements Comparable<BeanRef> {
     }
 
     public static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
-        Component component = annotatedElement.getAnnotation(Component.class);
-        Named named = annotatedElement.getAnnotation(Named.class);
-        if (component != null && !"".equals(component.value())) {
-            return component.value();
-        } else if (named != null && !"".equals(named.value())) {
-            return named.value();
-        } else {
-            String name = clazz.getSimpleName();
-            return getBeanNameFromSimpleName(name);
+        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+            if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
+                String name = namedLikeHandler.getName(clazz, annotatedElement);
+                if (name != null) {
+                    return name;
+                }
+            }
         }
+        String name = clazz.getSimpleName();
+        return getBeanNameFromSimpleName(name);
     }
 
     protected static String getBeanNameFromSimpleName(String name) {
