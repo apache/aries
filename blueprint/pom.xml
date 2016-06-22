@@ -45,12 +45,12 @@
         <module>blueprint-bundle</module>
         <module>blueprint-compatibility</module>
         <module>blueprint-core-compatibility</module>
-        <module>blueprint-maven-plugin</module>
+        <!--module>blueprint-maven-plugin</module-->
         <module>blueprint-noosgi</module>
         <module>blueprint-web</module>
         <module>blueprint-web-osgi</module>
         <module>blueprint-jexl-evaluator</module>
-        <module>blueprint-repository</module>
+        <!--module>blueprint-repository</module-->
         <module>blueprint-sample</module>
         <module>blueprint-annotation-api</module>
         <module>blueprint-annotation-impl</module>
