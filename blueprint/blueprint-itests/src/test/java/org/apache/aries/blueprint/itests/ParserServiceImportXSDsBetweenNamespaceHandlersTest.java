@@ -18,8 +18,15 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.blueprintBundles;
+import static org.junit.Assert.assertNotNull;
+import static org.ops4j.pax.exam.CoreOptions.keepCaches;
+import static org.ops4j.pax.exam.CoreOptions.streamBundle;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+
 import java.io.InputStream;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.itests.cm.handler.Aries1503aNamespaceHandler;
@@ -29,10 +36,9 @@ import org.junit.Test;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Constants;
-
-import static org.apache.aries.blueprint.itests.Helper.blueprintBundles;
-import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.*;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.blueprint.container.BlueprintEvent;
+import org.osgi.service.blueprint.container.BlueprintListener;
 
 public class ParserServiceImportXSDsBetweenNamespaceHandlersTest extends AbstractBlueprintIntegrationTest {
 
@@ -94,10 +100,41 @@ public class ParserServiceImportXSDsBetweenNamespaceHandlersTest extends Abstrac
 
     @Test
     public void testXSDImports() throws Exception {
+    	waitForConfig();
         ParserService parserService = context().getService(ParserService.class);
         URL blueprintXML = context().getBundleByName(TEST_BUNDLE).getEntry("OSGI-INF/blueprint/ImportNamespacesTest.xml");
         ComponentDefinitionRegistry cdr = parserService.parse(blueprintXML, context().getBundleByName(TEST_BUNDLE));
         assertNotNull(cdr.getComponentDefinition("aries-1503"));
+    }
+    
+    private void waitForConfig() throws InterruptedException {
+    	final AtomicBoolean ready = new AtomicBoolean();
+    	@SuppressWarnings("rawtypes")
+		ServiceRegistration reg = context().registerService(
+    			BlueprintListener.class, 
+    			new BlueprintListener() {
+    				@Override
+    				public void blueprintEvent(BlueprintEvent event) {
+    					if ("org.apache.aries.blueprint.aries1503b".equals(event.getBundle().getSymbolicName())
+    							&& BlueprintEvent.CREATED == event.getType()) {
+    						synchronized (ready) {
+    							ready.set(true);
+    							ready.notify();
+    						}
+    					}
+    				}
+    			}, 
+    			null);
+    	try {
+	    	synchronized (ready) {
+	    		if (!ready.get()) {
+	    			ready.wait(3000);
+	    		}
+	    	}
+    	}
+    	finally {
+    		reg.unregister();
+    	}
     }
 
 }
