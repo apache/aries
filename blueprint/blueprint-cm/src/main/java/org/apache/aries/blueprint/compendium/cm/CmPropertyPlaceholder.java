@@ -20,7 +20,9 @@ package org.apache.aries.blueprint.compendium.cm;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.blueprint.ext.PropertyPlaceholder;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
@@ -41,11 +43,12 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
     private static final Logger LOGGER = LoggerFactory.getLogger(CmPropertyPlaceholder.class);
 
     private ExtendedBlueprintContainer blueprintContainer;
-    private ConfigurationAdmin configAdmin; 
+    private ConfigurationAdmin configAdmin;
     private String persistentId;
     private String updateStrategy;
     private ManagedObjectManager managedObjectManager;
     private Dictionary<String,Object> properties;
+    private static ConcurrentHashMap<String, Dictionary<String,Object>> allPidsMap = new ConcurrentHashMap<String, Dictionary<String, Object>>();
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
         return blueprintContainer;
@@ -89,9 +92,14 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
 
     public void init() throws Exception {
         LOGGER.debug("Initializing CmPropertyPlaceholder");
-        Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
-        if (config != null) {
-            properties = config.getProperties();
+        Dictionary dic = CmPropertyPlaceholder.allPidsMap.get(persistentId);
+        if (dic != null) {
+            properties = dic;
+        } else {
+            Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
+            if (config != null) {
+                properties = config.getProperties();
+            }
         }
         Properties props = new Properties();
         props.put(Constants.SERVICE_PID, persistentId);
@@ -127,7 +135,15 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
         return blueprintContainer.getBundleContext().getBundle();
     }
 
+    @Override
     public void updated(Dictionary props) {
+        if (props != null) {
+            String pid = (String) props.get("service.pid");
+            if (this.persistentId.equals(pid)) {
+                CmPropertyPlaceholder.allPidsMap.put(pid, props);
+            }
+        }
+
         if ("reload".equalsIgnoreCase(updateStrategy) && !equals(properties, props)) {
             LOGGER.debug("Configuration updated for pid={}", persistentId);
             // Run in a separate thread to avoid re-entrance
