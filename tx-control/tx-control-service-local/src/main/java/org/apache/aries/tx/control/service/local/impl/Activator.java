@@ -21,20 +21,33 @@ package org.apache.aries.tx.control.service.local.impl;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import org.apache.aries.tx.control.service.common.activator.AbstractActivator;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.transaction.control.TransactionControl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Activator extends AbstractActivator {
+public class Activator implements BundleActivator {
 
-	@Override
-	protected TransactionControl getTransactionControl() {
-		return new TransactionControlImpl();
-	}
+private static final Logger logger = LoggerFactory.getLogger(Activator.class);
 	
 	@Override
-	protected Dictionary<String, Object> getProperties() {
+	public void start(BundleContext context) throws Exception {
+		Dictionary<String, Object> properties = getProperties();
+		logger.info("Registering a new Local TransactionControl service with properties {}", properties);
+		context.registerService(TransactionControl.class, 
+				new TransactionControlImpl(), properties);
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception { }
+
+	private Dictionary<String, Object> getProperties() {
 		Dictionary<String, Object> props = new Hashtable<>();
 		props.put("osgi.local.enabled", Boolean.TRUE);
+		props.put(Constants.SERVICE_DESCRIPTION, "The Apache Aries Transaction Control Service for Local Transactions");
+		props.put(Constants.SERVICE_VENDOR, "Apache Aries");
 		return props;
 	}
 }

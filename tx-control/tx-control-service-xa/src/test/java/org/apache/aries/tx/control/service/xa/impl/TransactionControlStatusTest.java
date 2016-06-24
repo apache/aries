@@ -30,9 +30,8 @@ import static org.osgi.service.transaction.control.TransactionStatus.ACTIVE;
 import static org.osgi.service.transaction.control.TransactionStatus.MARKED_ROLLBACK;
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
 
-import javax.transaction.xa.XAException;
+import java.util.Collections;
 
-import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,11 +54,11 @@ public class TransactionControlStatusTest {
 	Object resource = new Object();
 
 	@Before
-	public void setUp() throws XAException {
+	public void setUp() throws Exception {
 
 		resource = new Object();
 		
-		txControl = new TransactionControlImpl(new GeronimoTransactionManager());
+		txControl = new TransactionControlImpl(null, Collections.emptyMap());
 	}
 
 	@Test
