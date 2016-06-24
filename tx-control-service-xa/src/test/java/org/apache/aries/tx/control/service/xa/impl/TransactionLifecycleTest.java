@@ -23,9 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import javax.transaction.xa.XAException;
+import java.util.Collections;
 
-import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +44,8 @@ public class TransactionLifecycleTest {
 	TransactionControlImpl txControl;
 
 	@Before
-	public void setUp() throws XAException {
-		txControl = new TransactionControlImpl(new GeronimoTransactionManager());
+	public void setUp() throws Exception {
+		txControl = new TransactionControlImpl(null, Collections.emptyMap());
 	}
 
 	@Test

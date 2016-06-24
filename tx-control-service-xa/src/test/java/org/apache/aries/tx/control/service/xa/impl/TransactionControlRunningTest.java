@@ -27,11 +27,9 @@ import static org.osgi.service.transaction.control.TransactionStatus.COMMITTED;
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLED_BACK;
 
 import java.net.BindException;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.transaction.xa.XAException;
-
-import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +51,8 @@ public class TransactionControlRunningTest {
 	TransactionControlImpl txControl;
 
 	@Before
-	public void setUp() throws XAException {
-		txControl = new TransactionControlImpl(new GeronimoTransactionManager());
+	public void setUp() throws Exception {
+		txControl = new TransactionControlImpl(null, Collections.emptyMap());
 	}
 
 	@Test
