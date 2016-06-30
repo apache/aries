@@ -22,6 +22,7 @@ import static java.util.Optional.ofNullable;
 import static javax.transaction.xa.XAException.XA_HEURMIX;
 import static javax.transaction.xa.XAException.XA_RBOTHER;
 import static javax.transaction.xa.XAException.XA_RBPROTO;
+import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.DISABLED;
 import static org.osgi.service.transaction.control.TransactionStatus.ACTIVE;
 import static org.osgi.service.transaction.control.TransactionStatus.COMMITTED;
 import static org.osgi.service.transaction.control.TransactionStatus.COMMITTING;
@@ -68,10 +69,13 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 
 	private final boolean readOnly;
 
+	private LocalResourceSupport localResourceSupport;
+
 	public TransactionContextImpl(GeronimoTransactionManager transactionManager, 
-			boolean readOnly) {
+			boolean readOnly, LocalResourceSupport localResourceSupport) {
 		this.transactionManager = transactionManager;
 		this.readOnly = readOnly;
+		this.localResourceSupport = localResourceSupport;
 		Transaction tmp = null;
 		try {
 			tmp = transactionManager.suspend();
@@ -228,7 +232,22 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 		if (status.compareTo(MARKED_ROLLBACK) > 0) {
 			throw new IllegalStateException("The current transaction is in state " + status);
 		}
-		resources.add(resource);
+		
+		switch (localResourceSupport) {
+			case ENFORCE_SINGLE:
+				if(!resources.isEmpty()) {
+					throw new TransactionException(
+							"Only one local resource may be added. Adding multiple local resources increases the risk of inconsistency on failure.");
+				}
+			case ENABLED:
+				resources.add(resource);
+				break;
+			case DISABLED:
+				throw new TransactionException(
+						"This Transaction Control Service does not support local resources");
+			default :
+				throw new IllegalArgumentException("Unknown local resources configuration option");
+		}
 	}
 
 	@Override
@@ -238,7 +257,7 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 
 	@Override
 	public boolean supportsLocal() {
-		return true;
+		return localResourceSupport != DISABLED;
 	}
 
 	@Override
