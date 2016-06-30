@@ -1,0 +1,1 @@
+Export-Package: org.osgi.service.transaction.control.*;version="1.0.0";api.status="aries.prerelease";mandatory:="api.status"
