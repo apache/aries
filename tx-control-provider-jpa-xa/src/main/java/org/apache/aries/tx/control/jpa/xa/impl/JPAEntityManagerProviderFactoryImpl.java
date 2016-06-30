@@ -210,7 +210,7 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 					toReturn = new ScopedConnectionWrapper(toClose);
 				} else if (txContext.supportsXA()) {
 					toReturn = new TxConnectionWrapper(toClose);
-					txContext.registerXAResource(getXAResource(toClose));
+					txContext.registerXAResource(getXAResource(toClose), null);
 				} else {
 					throw new TransactionException(
 							"There is a transaction active, but it does not support XA participants");

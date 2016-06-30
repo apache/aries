@@ -133,7 +133,7 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 	}
 
 	@Override
-	public void registerXAResource(XAResource resource) {
+	public void registerXAResource(XAResource resource, String name) {
 		throw new IllegalStateException("Not an XA manager");
 	}
 
