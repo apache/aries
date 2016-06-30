@@ -19,7 +19,8 @@
 package org.apache.aries.blueprint.plugin.model;
 
 
-import org.apache.aries.blueprint.plugin.Activation;
+import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.spi.BeanAttributesResolver;
 
 import java.lang.reflect.Method;
 
@@ -29,32 +30,25 @@ public class ProducedBean extends Bean {
     private Method producingMethod;
 
     public ProducedBean(Class<?> clazz, BeanRef factoryBean, Method factoryMethod) {
-        this(clazz, null, factoryBean,factoryMethod);
+        this(clazz, null, factoryBean, factoryMethod);
     }
 
     public ProducedBean(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod) {
         super(clazz);
-        if(id != null) {
+        if (id != null) {
             this.id = id;
         }
         this.factoryBean = factoryBean;
         this.factoryMethod = factoryMethod.getName();
         this.producingMethod = factoryMethod;
-        overrideActivationIfNeeded(factoryMethod);
-        overrideDependsOnIfNeeded(factoryMethod);
+        resolveBeanAttributes();
     }
 
-    private void overrideActivationIfNeeded(Method factoryMethod) {
-        Activation methodActivation = getActivation(factoryMethod);
-        if (methodActivation != null) {
-            this.activation = methodActivation;
-        }
-    }
-
-    private void overrideDependsOnIfNeeded(Method factoryMethod) {
-        String dependsOn = getDependsOn(factoryMethod);
-        if (dependsOn != null) {
-            this.dependsOn = dependsOn;
+    private void resolveBeanAttributes() {
+        for (BeanAttributesResolver beanAttributesResolver : Extensions.beanAttributesResolvers) {
+            if (producingMethod.getAnnotation(beanAttributesResolver.getAnnotation()) != null) {
+                attributes.putAll(beanAttributesResolver.resolveAttributes(clazz, producingMethod));
+            }
         }
     }
 

@@ -16,8 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.spring;
 
-public interface PropertyWriter {
-    void writeProperty(Property property);
+import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class AutowiredAsInject implements InjectLikeHandler<Autowired> {
+    @Override
+    public Class<Autowired> getAnnotation() {
+        return Autowired.class;
+    }
 }

@@ -38,6 +38,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Generator implements PropertyWriter, ArgumentWriter {
@@ -55,7 +56,7 @@ public class Generator implements PropertyWriter, ArgumentWriter {
 
     public Generator(Context context, OutputStream os, Set<String> namespaces, Activation defaultActivation) throws XMLStreamException {
         this.context = context;
-        this.namespaces = namespaces != null ? namespaces :  new HashSet<>(Arrays.asList(NS_TX2, NS_JPA2));
+        this.namespaces = namespaces != null ? namespaces : new HashSet<>(Arrays.asList(NS_TX2, NS_JPA2));
         this.defaultActivation = defaultActivation;
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         writer = factory.createXMLStreamWriter(os);
@@ -153,11 +154,10 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         if (bean.isPrototype) {
             writer.writeAttribute("scope", "prototype");
         }
-        if (bean.activation != null) {
-            writer.writeAttribute("activation", bean.activation.toString());
-        }
-        if (bean.dependsOn != null) {
-            writer.writeAttribute("depends-on", bean.dependsOn);
+
+        Map<String, String> attributes = bean.attributes;
+        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+            writer.writeAttribute(entry.getKey(), entry.getValue());
         }
         if (bean instanceof ProducedBean) {
             writeFactory((ProducedBean) bean);

@@ -16,33 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
-
-import java.util.HashMap;
-
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+package org.apache.aries.blueprint.plugin.spring;
 
 import com.google.common.base.CaseFormat;
+import org.apache.aries.blueprint.plugin.spi.TransactionalFactory;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-public class JavaxTransactionFactory extends AbstractTransactionalFactory<Transactional> {
-    private static HashMap<TxType, String> txTypeNames;
-
-    static {
-        txTypeNames = new HashMap<TxType, String>();
-        txTypeNames.put(TxType.REQUIRED, TransactionalDef.TYPE_REQUIRED);
-        txTypeNames.put(TxType.REQUIRES_NEW, TransactionalDef.TYPE_REQUIRES_NEW);
+public class SpringTransactionalFactory implements TransactionalFactory<Transactional> {
+    @Override
+    public String getTransactionTypeName(Transactional transactional) {
+        Propagation propagation = transactional.propagation();
+        if (propagation == Propagation.NESTED) {
+            throw new UnsupportedOperationException("Nested transactions not supported");
+        }
+        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, propagation.name());
     }
 
     @Override
-    public String getTransactionTypeName(Transactional transactional)
-    {
-        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());
-    }
-
-    @Override
-    public Class<Transactional> getTransactionalClass()
-    {
+    public Class<Transactional> getTransactionalClass() {
         return Transactional.class;
     }
 }

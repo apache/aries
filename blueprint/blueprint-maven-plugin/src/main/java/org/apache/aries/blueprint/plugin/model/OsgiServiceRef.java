@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.ops4j.pax.cdi.api.OsgiService;
-import org.springframework.stereotype.Component;
 
-import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -61,10 +61,15 @@ public class OsgiServiceRef extends BeanRef {
     }
 
     private boolean shouldAddSuffix(AnnotatedElement annotatedElement) {
-        Component component = annotatedElement.getAnnotation(Component.class);
-        Named named = annotatedElement.getAnnotation(Named.class);
-        return (component == null || "".equals(component.value())) &&
-            (named == null || "".equals(named.value()));
+        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+            if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
+                String name = namedLikeHandler.getName(clazz, annotatedElement);
+                if (name != null) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public OsgiServiceRef(Method method) {
