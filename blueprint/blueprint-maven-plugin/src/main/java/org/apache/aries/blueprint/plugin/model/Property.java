@@ -18,12 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -42,13 +39,14 @@ public class Property implements Comparable<Property> {
     }
 
     public static Property create(Matcher matcher, Field field) {
-        Value value = field.getAnnotation(Value.class);
         if (needsInject(field)) {
+            String value = AnnotationHelper.findValue(field.getAnnotations());
+            if (value != null) {
+                return new Property(field.getName(), null, value, true);
+            }
             BeanRef matching = matcher.getMatching(new BeanRef(field));
             String ref = (matching == null) ? getRefName(field) : matching.id;
             return new Property(field.getName(), ref, null, true);
-        } else if (value != null) {
-            return new Property(field.getName(), null, cleanValue(value.value()), true);
         } else {
             // Field is not a property
             return null;
@@ -61,9 +59,9 @@ public class Property implements Comparable<Property> {
             return null;
         }
 
-        Value value = method.getAnnotation(Value.class);
+        String value = AnnotationHelper.findValue(method.getAnnotations());
         if (value != null) {
-            return new Property(propertyName, null, cleanValue(value.value()), false);
+            return new Property(propertyName, null, value, false);
         }
 
         if (needsInject(method)) {
@@ -86,33 +84,29 @@ public class Property implements Comparable<Property> {
 
     /**
      * Assume it is defined in another manually created blueprint context with default name
+     *
      * @param field
      * @return
      */
     private static String getRefName(Field field) {
-        Named named = field.getAnnotation(Named.class);
-        if (named != null) {
-            return named.value();
-        }
-        Qualifier qualifier = field.getAnnotation(Qualifier.class);
-        if (qualifier != null) {
-            return qualifier.value();
+        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+            if (field.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
+                String name = namedLikeHandler.getName(field.getType(), field);
+                if (name != null) {
+                    return name;
+                }
+            }
         }
         return Bean.getBeanName(field.getType());
     }
 
     private static boolean needsInject(AnnotatedElement annotatedElement) {
-        return annotatedElement.getAnnotation(Autowired.class) != null || annotatedElement.getAnnotation(Inject.class) != null;
-    }
-
-    /**
-     * Remove default value definition
-     *
-     * @param value
-     * @return
-     */
-    private static String cleanValue(String value) {
-        return value.replaceAll("\\:.*\\}", "}");
+        for (Class injectDependencyAnnotation : AnnotationHelper.injectDependencyAnnotations) {
+            if (annotatedElement.getAnnotation(injectDependencyAnnotation) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

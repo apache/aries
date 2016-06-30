@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Generates blueprint from CDI and spring annotations
+ * Generates blueprint from CDI annotations
  */
 @Mojo(name="blueprint-generate", requiresDependencyResolution=ResolutionScope.COMPILE, 
     defaultPhase=LifecyclePhase.PROCESS_CLASSES, inheritByDefault=false)

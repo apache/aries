@@ -16,8 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.spi;
 
-public interface PropertyWriter {
-    void writeProperty(Property property);
+import java.lang.annotation.Annotation;
+
+public interface TransactionalFactory<A extends Annotation> {
+    /**
+     * @param transactional the transactional annotation.
+     * @return the blueprint-compatible name of the transaction type.
+     */
+    String getTransactionTypeName(A transactional);
+
+    /**
+     * @return the annotation class to search for.
+     */
+    Class<A> getTransactionalClass();
 }
