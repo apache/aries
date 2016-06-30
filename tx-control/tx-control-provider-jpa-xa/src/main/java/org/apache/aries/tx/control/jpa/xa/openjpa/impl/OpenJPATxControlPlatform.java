@@ -132,7 +132,7 @@ public class OpenJPATxControlPlatform implements ManagedRuntime, TransactionMana
 
 	@Override
 	public boolean enlistResource(XAResource xaRes) throws IllegalStateException, RollbackException, SystemException {
-		txControl.getCurrentContext().registerXAResource(xaRes);
+		txControl.getCurrentContext().registerXAResource(xaRes, null);
 		return true;
 	}
 

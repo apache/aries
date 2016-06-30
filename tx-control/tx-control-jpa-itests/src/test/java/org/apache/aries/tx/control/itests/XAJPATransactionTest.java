@@ -325,7 +325,7 @@ public abstract class XAJPATransactionTest {
 						return null;
 					});
 				
-				txControl.getCurrentContext().registerXAResource(new PoisonResource());
+				txControl.getCurrentContext().registerXAResource(new PoisonResource(), null);
 				
 				return null;
 			});

@@ -110,7 +110,7 @@ public class TransactionContextTest {
 
 	@Test(expected=IllegalStateException.class)
 	public void testXAResourceRegistration() {
-		ctx.registerXAResource(xaResource);
+		ctx.registerXAResource(xaResource, null);
 	}
 
 	@Test

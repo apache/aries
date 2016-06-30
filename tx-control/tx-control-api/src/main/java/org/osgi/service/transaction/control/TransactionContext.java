@@ -19,6 +19,8 @@ import java.util.function.Consumer;
 
 import javax.transaction.xa.XAResource;
 
+import org.osgi.service.transaction.control.recovery.RecoverableXAResource;
+
 /**
  * A transaction context defines the current transaction, and allows resources
  * to register information and/or synchronisations
@@ -110,10 +112,14 @@ public interface TransactionContext {
 	 * Register an XA resource with the current transaction
 	 * 
 	 * @param resource
+	 * @param name 		The resource name used for recovery, may be <code>null</code>
+	 *             		if this resource is not recoverable. If a name is passed then
+	 *                  a corresponding {@link RecoverableXAResource} must be registered
+	 *                  in the service registry
 	 * @throws IllegalStateException if no transaction is active, or the current
 	 *             transaction is not XA capable
 	 */
-	void registerXAResource(XAResource resource) throws IllegalStateException;
+	void registerXAResource(XAResource resource, String name) throws IllegalStateException;
 
 	/**
 	 * Register an XA resource with the current transaction

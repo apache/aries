@@ -28,23 +28,37 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.resource.spi.IllegalStateException;
+import javax.transaction.SystemException;
+import javax.transaction.xa.XAResource;
+
 import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
 import org.apache.aries.tx.control.service.common.impl.AbstractTransactionControlImpl;
 import org.apache.aries.tx.control.service.xa.impl.Activator.ChangeType;
 import org.apache.geronimo.transaction.log.HOWLLog;
-import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
+import org.apache.geronimo.transaction.manager.NamedXAResource;
+import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
+import org.apache.geronimo.transaction.manager.RecoveryWorkAroundTransactionManager;
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.apache.geronimo.transaction.manager.XidFactoryImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.transaction.control.recovery.RecoverableXAResource;
+import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TransactionControlImpl extends AbstractTransactionControlImpl {
 
+	private static final Logger logger = LoggerFactory.getLogger(TransactionControlImpl.class);
+	
 	private Map<String, Object> config;
 	private final XidFactory xidFactory;
 	private final HOWLLog log;
-	private final GeronimoTransactionManager transactionManager;
+	private final RecoveryWorkAroundTransactionManager transactionManager;
 	private final LocalResourceSupport localResourceSupport;
+	private final ServiceTracker<RecoverableXAResource, RecoverableXAResource> recoverableResources;
 
 	public TransactionControlImpl(BundleContext ctx, Map<String, Object> config) throws Exception {
 		
@@ -58,8 +72,72 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 				log.doStart();
 			}
 			
-			transactionManager = new GeronimoTransactionManager(getTimeout(),
+			transactionManager = new RecoveryWorkAroundTransactionManager(getTimeout(),
 					xidFactory, log);
+			
+			if(log != null) {
+				recoverableResources = 
+						new ServiceTracker<RecoverableXAResource, RecoverableXAResource>(
+								ctx, RecoverableXAResource.class, null) {
+
+									@Override
+									public RecoverableXAResource addingService(
+											ServiceReference<RecoverableXAResource> reference) {
+										RecoverableXAResource resource = super.addingService(reference);
+										
+										if(resource.getId() == null) {
+											logger.warn("The RecoverableXAResource service with id {} does not have a name and will be ignored", 
+													reference.getProperty("service.id"));
+											return null;
+										}
+										
+										if(log == null) {
+											logger.warn("A RecoverableXAResource with id {} has been registered, but recovery logging is disabled for this Transaction Control service. No recovery will be availble in the event of a Transaction Manager failure.", resource.getId());
+										}
+										
+										transactionManager.registerNamedXAResourceFactory(new NamedXAResourceFactory() {
+											
+											@Override
+											public void returnNamedXAResource(NamedXAResource namedXAResource) {
+												resource.releaseXAResource(((NamedXAResourceImpl)namedXAResource).xaResource);
+											}
+											
+											@Override
+											public NamedXAResource getNamedXAResource() throws SystemException {
+												try {
+													XAResource xaResource = resource.getXAResource();
+													if(xaResource == null) {
+														throw new IllegalStateException("The recoverable resource " + resource.getId() 
+														+ " is currently unavailable");
+													}
+													return new NamedXAResourceImpl(resource.getId(), xaResource,
+															transactionManager, false);
+												} catch (Exception e) {
+													throw new SystemException("Unable to get recoverable resource " + 
+															resource.getId() + ": " + e.getMessage());
+												}
+											}
+											
+											@Override
+											public String getName() {
+												return resource.getId();
+											}
+										});
+										
+										return resource;
+									}
+
+									@Override
+									public void removedService(ServiceReference<RecoverableXAResource> reference,
+											RecoverableXAResource service) {
+										transactionManager.unregisterNamedXAResourceFactory(service.getId());
+									}
+					
+								};
+				recoverableResources.open();
+			} else {
+				recoverableResources = null;
+			}
 		} catch (Exception e) {
 			destroy();
 			throw e;
@@ -73,7 +151,7 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 	}
 
 	private HOWLLog getLog(BundleContext ctx) throws Exception {
-		Object recovery = config.getOrDefault("recovery.enabled", false);
+		Object recovery = config.getOrDefault("recovery.log.enabled", false);
 		
 		if (recovery instanceof Boolean ? (Boolean) recovery : Boolean.valueOf(recovery.toString())) {
 			String logFileExt = "log";
@@ -122,6 +200,9 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 	}
 	
 	public void destroy() {
+		if(recoverableResources != null) {
+			recoverableResources.close();
+		}
 		if(log != null) {
 			try {
 				log.doStop();
@@ -172,7 +253,7 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 		Map<String, Object> filtered = new HashMap<>();
 		
 		copy(raw, filtered, "transaction.timeout");
-		copy(raw, filtered, "recovery.enabled");
+		copy(raw, filtered, "recovery.log.enabled");
 		copy(raw, filtered, "recovery.log.dir");
 		copy(raw, filtered, "local.resources");
 		
