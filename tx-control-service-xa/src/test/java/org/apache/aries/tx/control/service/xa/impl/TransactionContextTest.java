@@ -18,12 +18,16 @@
  */
 package org.apache.aries.tx.control.service.xa.impl;
 
+import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.DISABLED;
+import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.ENABLED;
+import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.ENFORCE_SINGLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.osgi.service.transaction.control.TransactionStatus.ACTIVE;
 import static org.osgi.service.transaction.control.TransactionStatus.COMMITTED;
 import static org.osgi.service.transaction.control.TransactionStatus.COMMITTING;
@@ -62,7 +66,7 @@ public class TransactionContextTest {
 	
 	@Before
 	public void setUp() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), false);
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), false, ENFORCE_SINGLE);
 	}
 	
 	@Test
@@ -83,7 +87,7 @@ public class TransactionContextTest {
 
 	@Test
 	public void testisReadOnlyTrue() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true);
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, ENFORCE_SINGLE);
 		assertTrue(ctx.isReadOnly());
 	}
 
@@ -105,6 +109,18 @@ public class TransactionContextTest {
 	@Test
 	public void testLocalResourceSupport() {
 		assertTrue(ctx.supportsLocal());
+	}
+
+	@Test
+	public void testLocalResourceSupportEnabled() throws XAException {
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, ENABLED);
+		assertTrue(ctx.supportsLocal());
+	}
+
+	@Test
+	public void testLocalResourceSupportDisabled() throws XAException {
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, DISABLED);
+		assertFalse(ctx.supportsLocal());
 	}
 
 	@Test
@@ -320,7 +336,34 @@ public class TransactionContextTest {
 	}
 
 	@Test
-	public void testLocalResourcesFirstFailsSoRollback() throws Exception {
+	public void testSecondLocalResourceCannotBeAdded() throws Exception {
+		
+		ctx.registerLocalResource(localResource);
+		
+		LocalResource localResource2 = Mockito.mock(LocalResource.class);
+		try {
+			ctx.registerLocalResource(localResource2);
+			fail("A second local resource should trigger a failure");
+		} catch (TransactionException te) {
+			
+		}
+	}
+
+	@Test
+	public void testNoLocalResourceCanBeAddedWhenDisabled() throws Exception {
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, DISABLED);
+		
+		try {
+			ctx.registerLocalResource(localResource);
+			fail("A local resource should trigger a failure");
+		} catch (TransactionException te) {
+			
+		}
+	}
+	
+	@Test
+	public void testMultipleLocalResourcesFirstFailsSoRollback() throws Exception {
+		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, ENABLED);
 		
 		ctx.registerLocalResource(localResource);
 

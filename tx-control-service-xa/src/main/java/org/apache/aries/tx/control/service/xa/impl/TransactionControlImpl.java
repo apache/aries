@@ -20,6 +20,7 @@ package org.apache.aries.tx.control.service.xa.impl;
 
 import static org.apache.aries.tx.control.service.xa.impl.Activator.ChangeType.RECREATE;
 import static org.apache.aries.tx.control.service.xa.impl.Activator.ChangeType.SERVICE_PROPS;
+import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.ENFORCE_SINGLE;
 
 import java.io.File;
 import java.util.Dictionary;
@@ -43,11 +44,13 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 	private final XidFactory xidFactory;
 	private final HOWLLog log;
 	private final GeronimoTransactionManager transactionManager;
+	private final LocalResourceSupport localResourceSupport;
 
 	public TransactionControlImpl(BundleContext ctx, Map<String, Object> config) throws Exception {
 		
 		try {
 			this.config = config;
+			this.localResourceSupport = getLocalResourceSupport();
 			xidFactory = new XidFactoryImpl();
 			log = getLog(ctx);
 			
@@ -55,12 +58,18 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 				log.doStart();
 			}
 			
-			transactionManager = new GeronimoTransactionManager(getTimeout(config),
+			transactionManager = new GeronimoTransactionManager(getTimeout(),
 					xidFactory, log);
 		} catch (Exception e) {
 			destroy();
 			throw e;
 		}
+	}
+
+	private LocalResourceSupport getLocalResourceSupport() {
+		Object o = config.getOrDefault("local.resources", ENFORCE_SINGLE);
+		return o instanceof LocalResourceSupport ? (LocalResourceSupport) o : 
+			LocalResourceSupport.valueOf(o.toString());
 	}
 
 	private HOWLLog getLog(BundleContext ctx) throws Exception {
@@ -107,8 +116,8 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 		return null;
 	}
 	
-	private int getTimeout(Map<String, Object> newConfig) {
-		Object o = newConfig.getOrDefault("transaction.timeout", 300);
+	private int getTimeout() {
+		Object o = config.getOrDefault("transaction.timeout", 300);
 		return o instanceof Integer ? (Integer) o : Integer.valueOf(o.toString());
 	}
 	
@@ -165,6 +174,7 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 		copy(raw, filtered, "transaction.timeout");
 		copy(raw, filtered, "recovery.enabled");
 		copy(raw, filtered, "recovery.log.dir");
+		copy(raw, filtered, "local.resources");
 		
 		return filtered;
 	}
@@ -177,7 +187,7 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 	
 	@Override
 	protected AbstractTransactionContextImpl startTransaction(boolean readOnly) {
-		return new TransactionContextImpl(transactionManager, readOnly);
+		return new TransactionContextImpl(transactionManager, readOnly, localResourceSupport);
 	}
 	
 }

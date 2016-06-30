@@ -31,32 +31,14 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedService;
-import org.osgi.service.metatype.annotations.AttributeDefinition;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
 	
-	private static final String PID = "org.apache.aries.tx.control.service.xa";
+	static final String PID = "org.apache.aries.tx.control.service.xa";
 
-	/**
-	 * This will be more useful once the OSGi converter exists, for now it just
-	 * generates a metatype for this service.
-	 */
-	@ObjectClassDefinition(pid=PID, description="Apache Aries Transaction Control Service (XA)")
-	@interface Config {
-		@AttributeDefinition(name="Enable recovery", required=false, description="Enable recovery")
-		boolean recovery_enabled() default false;
-
-		@AttributeDefinition(name="Recovery Log storage folder", required=false, description="Transaction Recovery Log directory")
-		boolean recovery_log_dir();
-		
-		@AttributeDefinition(name="Transaction Timeout", required=false, description="Transaction Timeout in seconds")
-		int transaction_timeout() default 300;
-	}
-	
 	private static final Logger logger = LoggerFactory.getLogger(Activator.class);
 
 	private ServiceRegistration<ManagedService> msReg;
