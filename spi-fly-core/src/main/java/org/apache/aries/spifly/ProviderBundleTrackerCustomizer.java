@@ -66,7 +66,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     }
 
     public List<ServiceRegistration> addingBundle(final Bundle bundle, BundleEvent event) {
-        log(LogService.LOG_INFO, "Bundle Considered for SPI providers: "
+        log(LogService.LOG_DEBUG, "Bundle Considered for SPI providers: "
                 + bundle.getSymbolicName());
 
         if (bundle.equals(spiBundle))
@@ -95,7 +95,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         if (providedServices == null) {
-            log(LogService.LOG_INFO, "No '"
+            log(LogService.LOG_DEBUG, "No '"
                     + SpiFlyConstants.SPI_PROVIDER_HEADER
                     + "' Manifest header. Skipping bundle: "
                     + bundle.getSymbolicName());
