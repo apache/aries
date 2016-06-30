@@ -1,0 +1,18 @@
+
+Bundle-Activator: org.apache.aries.tx.control.service.local.impl.Activator
+
+# Export the API so that this is an easily deployable bundle 
+
+Export-Package: org.osgi.service.transaction.control
+
+
+# We repackage the common transaction service code so that we can be deployed
+# as a single bundle.
+
+Private-Package: org.apache.aries.tx.control.service.common.*,\
+                 org.apache.aries.tx.control.service.local.*
+
+# Ensure that the API is exported substitutably
+
+Import-Package: org.osgi.service.transaction.control, \
+                *

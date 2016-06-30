@@ -1,0 +1,35 @@
+
+Bundle-Activator: org.apache.aries.tx.control.jdbc.local.impl.Activator
+
+# Export the APIs we use so that this is an easily deployable bundle 
+
+Export-Package: org.osgi.service.transaction.control.jdbc, \
+                org.osgi.service.cm, \
+                org.osgi.service.jdbc
+
+
+# We repackage the common JDBC code so that we can be deployed
+# as a single bundle. We also embed Hikari CP to avoid dependency fanout
+
+Private-Package: org.apache.aries.tx.control.jdbc.*, \
+                 com.zaxxer.hikari, \
+                 com.zaxxer.hikari.metrics, \
+                 com.zaxxer.hikari.pool, \
+                 com.zaxxer.hikari.util
+
+# Ensure that the API is exported substitutably, and that we don't pull
+# in any unused pieces of Hikari
+
+Import-Package: !com.codahale.*, \
+                !com.zaxxer.hikari.metrics.dropwizard, \
+                !javassist.*, \
+                org.osgi.service.transaction.control, \
+                org.osgi.service.transaction.control.jdbc, \
+                org.osgi.service.cm, \
+                org.osgi.service.jdbc, \
+                * 
+
+Provide-Capability: osgi.service;objectClass="org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jdbc", \
+                    osgi.service;objectClass="org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jdbc"
+                    
+Require-Capability: osgi.service;filter:="(objectClass=org.osgi.service.jdbc.DataSourceFactory)";resolution:="optional";effective:="active"

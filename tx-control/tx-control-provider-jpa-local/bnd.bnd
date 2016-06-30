@@ -1,0 +1,57 @@
+
+Bundle-Activator: org.apache.aries.tx.control.jpa.local.impl.Activator
+
+# Export the APIs we use so that this is an easily deployable bundle 
+# We keep the dual versions provided by Geronimo to keep things maximally happy
+
+Export-Package: org.osgi.service.transaction.control.jpa, \
+                org.osgi.service.cm, \
+                org.osgi.service.jdbc, \
+                org.osgi.service.jpa, \
+                javax.persistence;version=1.2;jpa=2.1, \
+                javax.persistence.criteria;version=1.2;jpa=2.1, \
+                javax.persistence.metamodel;version=1.2;jpa=2.1,  \
+                javax.persistence.spi;version=1.2;jpa=2.1,  \
+                javax.persistence;version=2.1,  \
+                javax.persistence.criteria;version=2.1, \
+                javax.persistence.metamodel;version=2.1,  \
+                javax.persistence.spi;version=2.1
+
+
+# We repackage the JPA API internals and we also embed Hikari CP 
+# to avoid dependency fanout
+
+Private-Package: org.apache.aries.tx.control.jpa.*, \
+                 org.apache.geronimo.osgi.locator, \
+                 org.apache.geronimo.specs.jpa, \
+                 com.zaxxer.hikari, \
+                 com.zaxxer.hikari.metrics, \
+                 com.zaxxer.hikari.pool, \
+                 com.zaxxer.hikari.util
+
+# Ensure that the API is exported substitutably, and that we don't pull
+# in any unused pieces of Hikari
+
+Import-Package: !com.codahale.*, \
+                !com.zaxxer.hikari.metrics.dropwizard, \
+                !javassist.*, \
+                !org.apache.geronimo.osgi.registry.api, \
+                javax.persistence;version="0.0.0", \
+                javax.persistence.criteria;version="0.0.0", \
+                javax.persistence.metamodel;version="0.0.0", \
+                javax.persistence.spi;version="0.0.0", \
+                org.osgi.service.transaction.control, \
+                org.osgi.service.transaction.control.jpa, \
+                org.osgi.service.cm, \
+                org.osgi.service.jdbc, \
+                org.osgi.service.jpa, \
+                *
+
+Provide-Capability: osgi.contract;osgi.contract="JavaJPA";version:List<Version>="1.0,2.0,2.1";uses:="javax.persistence,javax.persistence.criteria,javax.persistence.metamodel,javax.persistence.spi", \
+                    osgi.service;objectClass="org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jpa", \
+                    osgi.service;objectClass="org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jpa"
+                    
+Require-Capability: osgi.contract;filter:="(&(osgi.contract=JavaJPA)(version=2.1))", \
+                    osgi.service;filter:="(objectClass=org.osgi.service.jdbc.DataSourceFactory)";resolution:="optional";effective:="active", \
+                    osgi.service;filter:="(objectClass=org.osgi.service.jpa.EntityManagerFactoryBuilder)";resolution:="optional";effective:="active"
+

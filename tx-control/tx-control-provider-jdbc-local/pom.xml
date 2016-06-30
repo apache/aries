@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.apache.aries.tx-control</groupId>
@@ -8,7 +9,6 @@
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-provider-jdbc-local</artifactId>
-	<packaging>bundle</packaging>
 	<name>OSGi Transaction Control JDBC Resource Provider - Local Transactions</name>
 	<version>0.0.2-SNAPSHOT</version>
 
@@ -28,40 +28,8 @@
         </url>
 	</scm>
 
-	<properties>
-		<aries.osgi.activator>
-			org.apache.aries.tx.control.jdbc.local.impl.Activator
-		</aries.osgi.activator>
-		<aries.osgi.export.pkg>
-			org.osgi.service.transaction.control.jdbc,
-			org.osgi.service.cm,
-			org.osgi.service.jdbc
-		</aries.osgi.export.pkg>
-		<aries.osgi.private.pkg>
-			org.apache.aries.tx.control.jdbc.*,
-			com.zaxxer.hikari,
-			com.zaxxer.hikari.metrics,
-			com.zaxxer.hikari.pool,
-			com.zaxxer.hikari.util
-		</aries.osgi.private.pkg>
-		<aries.osgi.import.pkg>
-			!com.codahale.*,
-			!com.zaxxer.hikari.metrics.dropwizard,
-			!javassist.*,
-			org.osgi.service.transaction.control,
-			org.osgi.service.transaction.control.jdbc,
-			org.osgi.service.cm,
-			org.osgi.service.jdbc,
-			*
-		</aries.osgi.import.pkg>
-		<lastReleaseVersion>0.0.1-SNAPSHOT</lastReleaseVersion>
-	</properties>
-
 	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
+		<!-- Internal Aries project dependencies -->
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-api</artifactId>
@@ -74,35 +42,38 @@
 			<version>0.0.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- OSGi API dependencies -->
 		<dependency>
 			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.jdbc</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.cm</artifactId>
-			<version>1.5.0</version>
-			<scope>provided</scope>
+			<artifactId>org.osgi.core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.util.tracker</artifactId>
-			<version>1.5.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<scope>provided</scope>
+			<artifactId>org.osgi.service.cm</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.service.jdbc</artifactId>
+		</dependency>
+
+		<!-- Hikari CP dependency -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
-			<version>2.4.3</version>
-			<scope>provided</scope>
 		</dependency>
+
+		<!-- Logging dependencies -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -111,7 +82,6 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -119,35 +89,8 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.aries.versioning</groupId>
-				<artifactId>org.apache.aries.versioning.plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-verify</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>version-check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>3.0.1</version>
-				<configuration>
-					<instructions>
-						<Provide-Capability>osgi.service;objectClass="org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jdbc",osgi.service;objectClass="org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control.jdbc"</Provide-Capability>
-						<Require-Capability>osgi.service;filter:="(objectClass=org.osgi.service.jdbc.DataSourceFactory)";resolution:="optional";effective:="active"</Require-Capability>
-					</instructions>
-				</configuration>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
