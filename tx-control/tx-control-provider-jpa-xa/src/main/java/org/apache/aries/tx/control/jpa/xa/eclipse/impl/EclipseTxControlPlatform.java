@@ -204,7 +204,7 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 		@Override
 		public boolean enlistResource(XAResource xaRes)
 				throws IllegalStateException, RollbackException, SystemException {
-			context.registerXAResource(xaRes);
+			context.registerXAResource(xaRes, null);
 			return true;
 		}
 

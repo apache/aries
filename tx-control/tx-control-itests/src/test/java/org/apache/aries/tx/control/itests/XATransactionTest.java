@@ -182,7 +182,7 @@ public class XATransactionTest {
 						return null;
 					});
 				
-				txControl.getCurrentContext().registerXAResource(new PoisonResource());
+				txControl.getCurrentContext().registerXAResource(new PoisonResource(), null);
 				
 				return null;
 			});

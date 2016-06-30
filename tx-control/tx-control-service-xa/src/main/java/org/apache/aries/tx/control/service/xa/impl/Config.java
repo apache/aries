@@ -11,8 +11,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
  */
 @ObjectClassDefinition(pid=Activator.PID, description="Apache Aries Transaction Control Service (XA)")
 @interface Config {
-	@AttributeDefinition(name="Enable recovery", required=false, description="Enable recovery")
-	boolean recovery_enabled() default false;
+	@AttributeDefinition(name="Enable recovery logging", required=false, description="Enable recovery logging")
+	boolean recovery_log_enabled() default false;
 
 	@AttributeDefinition(name="Recovery Log storage folder", required=false, description="Transaction Recovery Log directory")
 	boolean recovery_log_dir();

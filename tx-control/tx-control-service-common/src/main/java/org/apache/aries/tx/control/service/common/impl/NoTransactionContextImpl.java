@@ -80,7 +80,7 @@ public class NoTransactionContextImpl extends AbstractTransactionContextImpl
 	}
 
 	@Override
-	public void registerXAResource(XAResource resource) {
+	public void registerXAResource(XAResource resource, String recoveryName) {
 		throw new IllegalStateException("No transaction is active");
 	}
 

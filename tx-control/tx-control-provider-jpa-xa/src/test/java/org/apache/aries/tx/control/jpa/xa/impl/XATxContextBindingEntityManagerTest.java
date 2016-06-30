@@ -108,7 +108,7 @@ public class XATxContextBindingEntityManagerTest {
 		
 		Mockito.verify(rawEm, times(2)).isOpen();
 		Mockito.verify(rawEm, times(0)).getTransaction();
-		Mockito.verify(context, times(0)).registerXAResource(Mockito.any());
+		Mockito.verify(context, times(0)).registerXAResource(Mockito.any(), Mockito.anyString());
 		
 		Mockito.verify(context).postCompletion(Mockito.any());
 	}

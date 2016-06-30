@@ -47,7 +47,7 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
-import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
+import org.apache.geronimo.transaction.manager.RecoveryWorkAroundTransactionManager;
 import org.osgi.service.transaction.control.LocalResource;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionException;
@@ -63,7 +63,7 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 	
 	private final AtomicReference<TransactionStatus> completionState = new AtomicReference<>();
 
-	private final GeronimoTransactionManager transactionManager;
+	private final RecoveryWorkAroundTransactionManager transactionManager;
 	
 	private final Object key;
 
@@ -71,7 +71,7 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 
 	private LocalResourceSupport localResourceSupport;
 
-	public TransactionContextImpl(GeronimoTransactionManager transactionManager, 
+	public TransactionContextImpl(RecoveryWorkAroundTransactionManager transactionManager, 
 			boolean readOnly, LocalResourceSupport localResourceSupport) {
 		this.transactionManager = transactionManager;
 		this.readOnly = readOnly;
@@ -214,13 +214,19 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 	}
 
 	@Override
-	public void registerXAResource(XAResource resource) {
+	public void registerXAResource(XAResource resource, String name) {
 		TransactionStatus status = getTransactionStatus();
 		if (status.compareTo(MARKED_ROLLBACK) > 0) {
 			throw new IllegalStateException("The current transaction is in state " + status);
 		}
 		try {
-			currentTransaction.enlistResource(resource);
+			if(name == null) {
+				currentTransaction.enlistResource(resource);
+			} else {
+				NamedXAResourceImpl res = new NamedXAResourceImpl(name, resource, transactionManager, true);
+				postCompletion(x -> res.close());
+				currentTransaction.enlistResource(res);
+			}
 		} catch (Exception e) {
 			throw new TransactionException("The transaction was unable to enlist a resource", e);
 		}
@@ -288,52 +294,22 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 				}
 			}
 		}
-		
-		TxListener listener; 
-		boolean manualCallListener;
-		if(!preCompletion.isEmpty() || !postCompletion.isEmpty()) {
-			listener = new TxListener();
-			try {
-				transactionManager.registerInterposedSynchronization(listener);
-				manualCallListener = false;
-			} catch (Exception e) {
-				manualCallListener = true;
-				recordFailure(e);
-				safeSetRollbackOnly();
-			}
-		} else {
-			listener = null;
-			manualCallListener = false;
-		}
-		
 
 		try {
-			int status;
+			TxListener listener = new TxListener(); 
 			try {
+				transactionManager.registerInterposedSynchronization(listener);
+
 				if (getRollbackOnly()) {
 					// GERONIMO-4449 says that we get no beforeCompletion 
 					// callback for rollback :(
-					if(listener != null) {
-						listener.beforeCompletion();
-					}
+					listener.beforeCompletion();
 					transactionManager.rollback();
-					status = Status.STATUS_ROLLEDBACK;
-					completionState.set(ROLLED_BACK);
 				} else {
-					if(manualCallListener) {
-						listener.beforeCompletion();
-					}
 					transactionManager.commit();
-					status = Status.STATUS_COMMITTED;
-					completionState.set(COMMITTED);
 				}
 			} catch (Exception e) {
 				recordFailure(e);
-				status = Status.STATUS_ROLLEDBACK;
-				completionState.set(ROLLED_BACK);
-			}
-			if(manualCallListener) {
-				listener.afterCompletion(status);
 			}
 		} finally {
 			try {
@@ -465,7 +441,7 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 	}
 	
 	private class TxListener implements Synchronization {
-
+		
 		@Override
 		public void beforeCompletion() {
 			TransactionContextImpl.this.beforeCompletion(() -> safeSetRollbackOnly());
@@ -473,8 +449,9 @@ public class TransactionContextImpl extends AbstractTransactionContextImpl imple
 
 		@Override
 		public void afterCompletion(int status) {
-			TransactionContextImpl.this.afterCompletion(status == Status.STATUS_COMMITTED ? COMMITTED : ROLLED_BACK);
+			TransactionStatus ts = status == Status.STATUS_COMMITTED ? COMMITTED : ROLLED_BACK;
+			completionState.set(ts);
+			TransactionContextImpl.this.afterCompletion(ts);
 		}
-		
 	}
 }

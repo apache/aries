@@ -211,7 +211,7 @@ public class XAEnabledTxContextBindingConnectionTest {
 		
 		
 		Mockito.verify(rawConnection, times(2)).isValid(500);
-		Mockito.verify(context).registerXAResource(xaResource);
+		Mockito.verify(context).registerXAResource(xaResource, null);
 		
 		Mockito.verify(context).postCompletion(Mockito.any());
 		
@@ -226,7 +226,7 @@ public class XAEnabledTxContextBindingConnectionTest {
 		xaConn.isValid(500);
 		
 		Mockito.verify(rawConnection, times(2)).isValid(500);
-		Mockito.verify(context).registerXAResource(xaResource);
+		Mockito.verify(context).registerXAResource(xaResource, null);
 		
 		Mockito.verify(context).postCompletion(Mockito.any());
 		

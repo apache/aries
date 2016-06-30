@@ -79,7 +79,7 @@ public class XAEnabledTxContextBindingConnection extends ConnectionWrapper {
 			} else if (txContext.supportsXA() && xaEnabled) {
 				toClose = dataSource.getConnection();
 				toReturn = new TxConnectionWrapper(toClose);
-				txContext.registerXAResource(getXAResource(toClose));
+				txContext.registerXAResource(getXAResource(toClose), null);
 			} else if (txContext.supportsLocal() && localEnabled) {
 				toClose = dataSource.getConnection();
 				toReturn = new TxConnectionWrapper(toClose);

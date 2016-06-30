@@ -42,7 +42,8 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.apache.aries.tx.control.service.common.impl.AbstractTransactionContextImpl;
-import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
+import org.apache.geronimo.transaction.manager.RecoveryWorkAroundTransactionManager;
+import org.apache.geronimo.transaction.manager.XidFactoryImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,7 +67,11 @@ public class TransactionContextTest {
 	
 	@Before
 	public void setUp() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), false, ENFORCE_SINGLE);
+		ctx = new TransactionContextImpl(getTxMgr(), false, ENFORCE_SINGLE);
+	}
+
+	private RecoveryWorkAroundTransactionManager getTxMgr() throws XAException {
+		return new RecoveryWorkAroundTransactionManager(30, new XidFactoryImpl(), null);
 	}
 	
 	@Test
@@ -87,7 +92,7 @@ public class TransactionContextTest {
 
 	@Test
 	public void testisReadOnlyTrue() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, ENFORCE_SINGLE);
+		ctx = new TransactionContextImpl(getTxMgr(), true, ENFORCE_SINGLE);
 		assertTrue(ctx.isReadOnly());
 	}
 
@@ -113,13 +118,13 @@ public class TransactionContextTest {
 
 	@Test
 	public void testLocalResourceSupportEnabled() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, ENABLED);
+		ctx = new TransactionContextImpl(getTxMgr(), true, ENABLED);
 		assertTrue(ctx.supportsLocal());
 	}
 
 	@Test
 	public void testLocalResourceSupportDisabled() throws XAException {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, DISABLED);
+		ctx = new TransactionContextImpl(getTxMgr(), true, DISABLED);
 		assertFalse(ctx.supportsLocal());
 	}
 
@@ -130,7 +135,12 @@ public class TransactionContextTest {
 
 	@Test
 	public void testXAResourceRegistration() {
-		ctx.registerXAResource(xaResource);
+		ctx.registerXAResource(xaResource, null);
+	}
+
+	@Test
+	public void testRecoverableXAResourceRegistration() {
+		ctx.registerXAResource(xaResource, "anId");
 	}
 
 	@Test
@@ -351,7 +361,7 @@ public class TransactionContextTest {
 
 	@Test
 	public void testNoLocalResourceCanBeAddedWhenDisabled() throws Exception {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, DISABLED);
+		ctx = new TransactionContextImpl(getTxMgr(), true, DISABLED);
 		
 		try {
 			ctx.registerLocalResource(localResource);
@@ -363,7 +373,7 @@ public class TransactionContextTest {
 	
 	@Test
 	public void testMultipleLocalResourcesFirstFailsSoRollback() throws Exception {
-		ctx = new TransactionContextImpl(new GeronimoTransactionManager(), true, ENABLED);
+		ctx = new TransactionContextImpl(getTxMgr(), true, ENABLED);
 		
 		ctx.registerLocalResource(localResource);
 
@@ -388,7 +398,7 @@ public class TransactionContextTest {
 	
 	@Test
 	public void testSingleXAResource() throws Exception {
-		ctx.registerXAResource(xaResource);
+		ctx.registerXAResource(xaResource, null);
 		
 		Mockito.doAnswer(i -> {
 			assertEquals(COMMITTING, ctx.getTransactionStatus());
@@ -411,7 +421,7 @@ public class TransactionContextTest {
 
 	@Test
 	public void testXAResourceRollbackOnly() throws Exception {
-		ctx.registerXAResource(xaResource);
+		ctx.registerXAResource(xaResource, null);
 		ctx.setRollbackOnly();
 		
 		Mockito.doAnswer(i -> {
@@ -435,7 +445,7 @@ public class TransactionContextTest {
 
 	@Test
 	public void testXAResourcePreCommitException() throws Exception {
-		ctx.registerXAResource(xaResource);
+		ctx.registerXAResource(xaResource, null);
 		
 		Mockito.doAnswer(i -> {
 			assertEquals(ROLLING_BACK, ctx.getTransactionStatus());
@@ -460,7 +470,7 @@ public class TransactionContextTest {
 
 	@Test
 	public void testXAResourcePostCommitException() throws Exception {
-		ctx.registerXAResource(xaResource);
+		ctx.registerXAResource(xaResource, null);
 		
 		Mockito.doAnswer(i -> {
 			assertEquals(COMMITTING, ctx.getTransactionStatus());
@@ -490,7 +500,7 @@ public class TransactionContextTest {
 	public void testLastParticipantSuccessSoCommit() throws Exception {
 		
 		ctx.registerLocalResource(localResource);
-		ctx.registerXAResource(xaResource);
+		ctx.registerXAResource(xaResource, null);
 		
 		Mockito.doAnswer(i -> {
 			assertEquals(COMMITTING, ctx.getTransactionStatus());
@@ -522,7 +532,7 @@ public class TransactionContextTest {
 	public void testLastParticipantFailsSoRollback() throws Exception {
 		
 		ctx.registerLocalResource(localResource);
-		ctx.registerXAResource(xaResource);
+		ctx.registerXAResource(xaResource, null);
 		
 		Mockito.doAnswer(i -> {
 			assertEquals(COMMITTING, ctx.getTransactionStatus());

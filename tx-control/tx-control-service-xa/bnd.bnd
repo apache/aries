@@ -3,7 +3,8 @@ Bundle-Activator: org.apache.aries.tx.control.service.xa.impl.Activator
 
 # Export the API so that this is an easily deployable bundle 
 
-Export-Package: org.osgi.service.transaction.control
+Export-Package: org.osgi.service.transaction.control,\
+                org.osgi.service.transaction.control.recovery
 
 
 # This bundle repackages code from a variety of places to make the
