@@ -90,9 +90,9 @@ public class XAEnabledTxContextBindingConnectionTest {
 		Mockito.when(xaMock.getConnection()).thenReturn(rawConnection);
 		Mockito.when(xaMock.getXAResource()).thenReturn(xaResource);
 		
-		localConn = new XAEnabledTxContextBindingConnection(control, dataSource, id, false, true);
+		localConn = new XAEnabledTxContextBindingConnection(control, dataSource, id, false, true, null);
 		xaConn = new XAEnabledTxContextBindingConnection(control, new XADataSourceMapper(xaDataSource), 
-				id, true, false);
+				id, true, false, null);
 	}
 	
 	private void setupNoTransaction() {
