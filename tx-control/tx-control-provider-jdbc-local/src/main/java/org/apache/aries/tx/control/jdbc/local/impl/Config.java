@@ -1,0 +1,90 @@
+package org.apache.aries.tx.control.jdbc.local.impl;
+
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATABASE_NAME;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATASOURCE_NAME;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DESCRIPTION;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_NETWORK_PROTOCOL;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_PASSWORD;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_PORT_NUMBER;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_ROLE_NAME;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_SERVER_NAME;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_URL;
+import static org.osgi.service.jdbc.DataSourceFactory.JDBC_USER;
+
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.AttributeType;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+
+@ObjectClassDefinition(factoryPid="org.apache.aries.tx.control.jdbc.local", description="Aries Transaction Control Factory for Local JDBCResourceProvider Services")
+public @interface Config {
+
+	// Most commonly used properties declared first so that they go into the metatype first
+	
+	@AttributeDefinition(required=false, 
+			description="The name of the driver class for the DataSourceFactory service. This property need not be defined if aries.dsf.target.filter is defined.")
+	String osgi_jdbc_driver_class();
+
+	@AttributeDefinition(required=false, description="The JDBC URL to pass to the DataSourceFactory")
+	String url();
+	
+	@AttributeDefinition(required=false, description="The userid to pass to the DataSourceFactory")
+	String user();
+	
+	@AttributeDefinition(type=AttributeType.PASSWORD, required=false, 
+			description="The password to pass to the DataSourceFactory (not visible as a service property)")
+	String password();
+	
+	// Pool configuration properties
+	
+	@AttributeDefinition(required=false, description="Is connection pooling enabled for this JDBCResourceProvider")
+	boolean osgi_connection_pooling_enabled() default true;
+	
+	@AttributeDefinition(required=false, description="The maximum number of connections in the pool")
+	int osgi_connection_max() default 10;
+
+	@AttributeDefinition(required=false, description="The minimum number of connections in the pool")
+	int osgi_connection_min() default 10;
+	
+	@AttributeDefinition(required=false, description="The maximum time (in ms) that the pool will wait for a connection before failing")
+	long osgi_connection_timeout() default 30000;
+	
+	@AttributeDefinition(required=false, description="The minimum time (in ms) a connection will be idle before being reclaimed by the pool")
+	long osgi_idle_timeout() default 180000;
+	
+	@AttributeDefinition(required=false, description="The maximum time (in ms) that a connection will stay in the pool before being discarded")
+	long osgi_connection_lifetime() default 10800000;
+	
+	// Detailed Configuration
+	
+	@AttributeDefinition(required=false, description="The filter to use when finding the DataSourceFactory service. This property need not be defined if osgi.jdbc.driver.class is defined.")
+	String aries_dsf_target_filter();
+	
+	@AttributeDefinition(required=false, description="The names of the properties from this configuration that should be passed to the DataSourceFactory")
+	String[] aries_jdbc_property_names() default {JDBC_DATABASE_NAME, JDBC_DATASOURCE_NAME,
+			JDBC_DESCRIPTION, JDBC_NETWORK_PROTOCOL, JDBC_PASSWORD, JDBC_PORT_NUMBER, JDBC_ROLE_NAME, JDBC_SERVER_NAME,
+			JDBC_URL, JDBC_USER};
+	
+
+	//Raw JDBC configuration
+	
+	@AttributeDefinition(required=false, description="JDBC configuration property")
+	String databaseName();
+	
+	@AttributeDefinition(required=false, description="JDBC configuration property")
+	String dataSourceName();
+
+	@AttributeDefinition(required=false, description="JDBC configuration property")
+	String description();
+
+	@AttributeDefinition(required=false, description="JDBC configuration property")
+	String networkProtocol();
+
+	@AttributeDefinition(required=false, description="JDBC configuration property")
+	int portNumber();
+
+	@AttributeDefinition(required=false, description="JDBC configuration property")
+	String roleName();
+
+	@AttributeDefinition(required=false, description="JDBC configuration property")
+	String serverName();
+}
