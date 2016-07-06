@@ -34,6 +34,10 @@ public @interface Config {
 			description="The password to pass to the DataSourceFactory (not visible as a service property)")
 	String password();
 	
+	// Recovery configuration
+	@AttributeDefinition(required=false, description="The recovery identifier for this resource. If not set then this resource will not be recoverable. This identifier must uniquely identify a single resource, and must not change if the framework is restarted.")
+	String osgi_recovery_identifier();
+	
 	// Pool configuration properties
 	
 	@AttributeDefinition(required=false, description="Is connection pooling enabled for this JDBCResourceProvider")
@@ -53,6 +57,15 @@ public @interface Config {
 	
 	@AttributeDefinition(required=false, description="The maximum time (in ms) that a connection will stay in the pool before being discarded")
 	long osgi_connection_lifetime() default 10800000;
+	
+	// Recovery credential configuration
+	
+	@AttributeDefinition(required=false, description="The user that should be used for recovery. If not specified then recovery will use the same user credentials as normal operation")
+	String recovery_user();
+	
+	@AttributeDefinition(type=AttributeType.PASSWORD, required=false, 
+			description="The password that should be used for recovery. Only used if recovery.user is specified")
+	String _recovery_password();
 	
 	// Transaction integration configuration
 	

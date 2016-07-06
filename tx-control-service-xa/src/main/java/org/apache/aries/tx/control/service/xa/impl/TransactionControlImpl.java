@@ -20,6 +20,7 @@ package org.apache.aries.tx.control.service.xa.impl;
 
 import static org.apache.aries.tx.control.service.xa.impl.Activator.ChangeType.RECREATE;
 import static org.apache.aries.tx.control.service.xa.impl.Activator.ChangeType.SERVICE_PROPS;
+import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.DISABLED;
 import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.ENFORCE_SINGLE;
 
 import java.io.File;
@@ -221,7 +222,7 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 			.forEach(e -> props.put(e.getKey(), e.getValue()));
 		
 		props.put("osgi.xa.enabled", Boolean.TRUE);
-		props.put("osgi.local.enabled", Boolean.TRUE);
+		props.put("osgi.local.enabled", getLocalResourceSupport() != DISABLED);
 		props.put(Constants.SERVICE_DESCRIPTION, "The Apache Aries Transaction Control Service for XA Transactions");
 		props.put(Constants.SERVICE_VENDOR, "Apache Aries");
 		
@@ -237,7 +238,7 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 	 * @return
 	 */
 	public synchronized ChangeType changed(Map<String, Object> updated, boolean isRegistered) {
-		Map<String, Object> current = filterFixedProps(updated);
+		Map<String, Object> current = filterFixedProps(config);
 		Map<String, Object> replacement = filterFixedProps(updated);
 		
 		// If our configuration is unchanged then just issue a service property update

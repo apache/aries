@@ -20,6 +20,7 @@ package org.apache.aries.tx.control.jdbc.xa.impl;
 
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
+import static org.apache.aries.tx.control.jdbc.xa.impl.JDBCConnectionProviderFactoryImpl.toBoolean;
 import static org.osgi.framework.Constants.OBJECTCLASS;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATABASE_NAME;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATASOURCE_NAME;
@@ -32,6 +33,8 @@ import static org.osgi.service.jdbc.DataSourceFactory.JDBC_SERVER_NAME;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_URL;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_USER;
 import static org.osgi.service.jdbc.DataSourceFactory.OSGI_JDBC_DRIVER_CLASS;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.OSGI_RECOVERY_IDENTIFIER;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.XA_ENLISTMENT_ENABLED;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -53,6 +55,7 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
+import org.osgi.service.transaction.control.recovery.RecoverableXAResource;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
@@ -148,8 +151,9 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 		private final Map<String, Object> providerProperties;
 		private final ServiceTracker<DataSourceFactory, DataSourceFactory> dsfTracker;
 
-		private final AtomicReference<DataSourceFactory> activeDsf = new AtomicReference<>();
-		private final AtomicReference<ServiceRegistration<JDBCConnectionProvider>> serviceReg = new AtomicReference<>();
+		private DataSourceFactory activeDsf;
+		private ServiceRegistration<JDBCConnectionProvider> serviceReg;
+		private ServiceRegistration<RecoverableXAResource> recoveryReg;
 
 		public ManagedJDBCResourceProvider(BundleContext context, String pid, Properties jdbcProperties,
 				Map<String, Object> providerProperties) throws InvalidSyntaxException, ConfigurationException {
@@ -185,33 +189,81 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 		@Override
 		public DataSourceFactory addingService(ServiceReference<DataSourceFactory> reference) {
 			DataSourceFactory service = context.getService(reference);
+			return updateService(service);
+		}
 
-			updateService(service);
+		private DataSourceFactory updateService(DataSourceFactory service) {
+			boolean setDsf;
+			synchronized (this) {
+				setDsf = activeDsf == null;
+				if(setDsf)
+					activeDsf = service;
+			}
+
+			ServiceRegistration<JDBCConnectionProvider> reg = null;
+			ServiceRegistration<RecoverableXAResource> reg2 = null;
+			if (setDsf) {
+				try {
+					JDBCConnectionProviderImpl provider = new JDBCConnectionProviderFactoryImpl().getProviderFor(service,
+							jdbcProperties, providerProperties);
+					reg = context
+							.registerService(JDBCConnectionProvider.class, provider, getServiceProperties());
+
+					
+					String recoveryId = (String) providerProperties.get(OSGI_RECOVERY_IDENTIFIER);
+					if(recoveryId !=null) {
+						if(toBoolean(providerProperties, XA_ENLISTMENT_ENABLED, true)) {
+							LOG.warn("A JDBCResourceProvider has been configured with a recovery identifier {} but it has also been configured not to use XA transactions. No recovery will be available.", recoveryId);
+						} else {
+							reg2 = context.registerService(RecoverableXAResource.class, 
+											new RecoverableXAResourceImpl(recoveryId, provider, 
+													(String) providerProperties.get("recovery.user"),
+													(String) providerProperties.get(".recovery.password)")), 
+													getServiceProperties());
+						}
+					}
+					
+					ServiceRegistration<JDBCConnectionProvider> oldReg;
+					ServiceRegistration<RecoverableXAResource> oldReg2;
+					
+					synchronized (this) {
+						if(activeDsf == service) {
+							oldReg = serviceReg;
+							serviceReg = reg;
+							oldReg2 = recoveryReg;
+							recoveryReg = reg2;
+						} else {
+							oldReg = reg;
+							oldReg2 = reg2;
+						}
+					}
+					safeUnregister(oldReg);
+					safeUnregister(oldReg2);
+				} catch (Exception e) {
+					LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
+					
+					synchronized (this) {
+						if(activeDsf == service) {
+							activeDsf = null;
+						}
+					}
+					safeUnregister(reg);
+					safeUnregister(reg2);
+				}
+			}
 			return service;
 		}
 
-		private void updateService(DataSourceFactory service) {
-			boolean setDsf;
-			synchronized (this) {
-				setDsf = activeDsf.compareAndSet(null, service);
-			}
-
-			if (setDsf) {
+		private void safeUnregister(ServiceRegistration<?> reg) {
+			if(reg != null) {
 				try {
-					JDBCConnectionProvider provider = new JDBCConnectionProviderFactoryImpl().getProviderFor(service,
-							jdbcProperties, providerProperties);
-					ServiceRegistration<JDBCConnectionProvider> reg = context
-							.registerService(JDBCConnectionProvider.class, provider, getServiceProperties());
-					if (!serviceReg.compareAndSet(null, reg)) {
-						throw new IllegalStateException("Unable to set the JDBC connection provider registration");
-					}
-				} catch (Exception e) {
-					LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
-					activeDsf.compareAndSet(service, null);
+					reg.unregister();
+				} catch (IllegalStateException ise) {
+					LOG.debug("An exception occurred when unregistering a service for {}", pid);
 				}
 			}
 		}
-
+			
 		private Dictionary<String, ?> getServiceProperties() {
 			Hashtable<String, Object> props = new Hashtable<>();
 			providerProperties.keySet().stream()
@@ -229,20 +281,19 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 		public void removedService(ServiceReference<DataSourceFactory> reference, DataSourceFactory service) {
 			boolean dsfLeft;
 			ServiceRegistration<JDBCConnectionProvider> oldReg = null;
+			ServiceRegistration<RecoverableXAResource> oldReg2 = null;
 			synchronized (this) {
-				dsfLeft = activeDsf.compareAndSet(service, null);
+				dsfLeft = activeDsf == service;
 				if (dsfLeft) {
-					oldReg = serviceReg.getAndSet(null);
+					activeDsf = null;
+					oldReg = serviceReg;
+					oldReg2 = recoveryReg;
+					serviceReg = null;
+					recoveryReg = null;
 				}
 			}
-
-			if (oldReg != null) {
-				try {
-					oldReg.unregister();
-				} catch (IllegalStateException ise) {
-					LOG.debug("An exception occurred when unregistering a service for {}", pid);
-				}
-			}
+			safeUnregister(oldReg);
+			safeUnregister(oldReg2);
 
 			if (dsfLeft) {
 				DataSourceFactory newDSF = dsfTracker.getService();

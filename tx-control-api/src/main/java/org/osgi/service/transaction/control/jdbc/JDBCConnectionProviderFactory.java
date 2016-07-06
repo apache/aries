@@ -86,6 +86,11 @@ public interface JDBCConnectionProviderFactory {
 	 * held in the pool
 	 */
 	public static final String	USE_DRIVER					= "osgi.use.driver";
+	
+	/**
+	 * The property used to set the recovery identifier that should be used
+	 */
+	public static String OSGI_RECOVERY_IDENTIFIER = "osgi.recovery.identifier";
 
 	/**
 	 * Create a private {@link JDBCConnectionProvider} using a

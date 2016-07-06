@@ -43,14 +43,17 @@ public class XAEnabledTxContextBindingConnection extends ConnectionWrapper {
 	private final DataSource			dataSource;
 	private final boolean				xaEnabled;
 	private final boolean				localEnabled;
+	private final String				recoveryIdentifier;
 
 	public XAEnabledTxContextBindingConnection(TransactionControl txControl,
-			DataSource dataSource, UUID resourceId, boolean xaEnabled, boolean localEnabled) {
+			DataSource dataSource, UUID resourceId, boolean xaEnabled, boolean localEnabled,
+			String recoveryIdentifier) {
 		this.txControl = txControl;
 		this.dataSource = dataSource;
 		this.resourceId = resourceId;
 		this.xaEnabled = xaEnabled;
 		this.localEnabled = localEnabled;
+		this.recoveryIdentifier = recoveryIdentifier;
 	}
 
 	@Override
@@ -79,7 +82,7 @@ public class XAEnabledTxContextBindingConnection extends ConnectionWrapper {
 			} else if (txContext.supportsXA() && xaEnabled) {
 				toClose = dataSource.getConnection();
 				toReturn = new TxConnectionWrapper(toClose);
-				txContext.registerXAResource(getXAResource(toClose), null);
+				txContext.registerXAResource(getXAResource(toClose), recoveryIdentifier);
 			} else if (txContext.supportsLocal() && localEnabled) {
 				toClose = dataSource.getConnection();
 				toReturn = new TxConnectionWrapper(toClose);
@@ -109,7 +112,7 @@ public class XAEnabledTxContextBindingConnection extends ConnectionWrapper {
 	}
 
 	
-	private XAResource getXAResource(Connection conn) throws SQLException {
+	static XAResource getXAResource(Connection conn) throws SQLException {
 		if(conn instanceof XAConnectionWrapper) {
 			return ((XAConnectionWrapper)conn).getXaResource();
 		} else if(conn.isWrapperFor(XAConnectionWrapper.class)){
