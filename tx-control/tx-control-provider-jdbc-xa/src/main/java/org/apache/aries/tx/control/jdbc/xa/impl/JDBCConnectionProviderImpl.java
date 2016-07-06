@@ -37,18 +37,25 @@ public class JDBCConnectionProviderImpl implements JDBCConnectionProvider {
 	
 	private final boolean localEnabled;
 	
+	private final String recoveryIdentifier;
+	
 	public JDBCConnectionProviderImpl(DataSource dataSource, boolean xaEnabled,
-			boolean localEnabled) {
+			boolean localEnabled, String recoveryIdentifier) {
 		this.dataSource = dataSource;
 		this.xaEnabled = xaEnabled;
 		this.localEnabled = localEnabled;
+		this.recoveryIdentifier = recoveryIdentifier;
 	}
 
 	@Override
 	public Connection getResource(TransactionControl txControl)
 			throws TransactionException {
 		return new XAEnabledTxContextBindingConnection(txControl, dataSource , uuid,
-				xaEnabled, localEnabled);
+				xaEnabled, localEnabled, recoveryIdentifier);
+	}
+
+	public DataSource getRawDataSource() {
+		return dataSource;
 	}
 
 }
