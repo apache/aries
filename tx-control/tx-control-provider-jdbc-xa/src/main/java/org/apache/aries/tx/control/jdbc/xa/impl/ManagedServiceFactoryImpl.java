@@ -166,7 +166,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 					throw new ConfigurationException(OSGI_JDBC_DRIVER_CLASS,
 							"The configuration must specify either a target filter or a JDBC driver class");
 				}
-				targetFilter = "(" + OSGI_JDBC_DRIVER_CLASS + "=" + driver + ")";
+				targetFilter = "(&(" + OBJECTCLASS + "=" + DataSourceFactory.class.getName() + ")(" + OSGI_JDBC_DRIVER_CLASS + "=" + driver + "))";
 			}
 
 			targetFilter = "(&(" + OBJECTCLASS + "=" + DataSourceFactory.class.getName() + ")" + targetFilter + ")";
@@ -214,7 +214,9 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 
 		private Dictionary<String, ?> getServiceProperties() {
 			Hashtable<String, Object> props = new Hashtable<>();
-			providerProperties.keySet().stream().filter(s -> !JDBC_PASSWORD.equals(s))
+			providerProperties.keySet().stream()
+					.filter(s -> !s.startsWith("."))
+					.filter(s -> !JDBC_PASSWORD.equals(s))
 					.forEach(s -> props.put(s, providerProperties.get(s)));
 			return props;
 		}
