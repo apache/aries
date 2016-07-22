@@ -107,7 +107,7 @@ public class TransactionLogTest {
 	
 	@After
 	public void destroy() {
-		txControl.destroy();
+		txControl.close();
 		try (Connection conn = dataSource.getConnection()) {
 			conn.createStatement().execute("shutdown immediately");
 		} catch (SQLException e) {

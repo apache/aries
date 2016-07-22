@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -154,6 +155,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 		private DataSourceFactory activeDsf;
 		private ServiceRegistration<JDBCConnectionProvider> serviceReg;
 		private ServiceRegistration<RecoverableXAResource> recoveryReg;
+		private AbstractJDBCConnectionProvider provider;
 
 		public ManagedJDBCResourceProvider(BundleContext context, String pid, Properties jdbcProperties,
 				Map<String, Object> providerProperties) throws InvalidSyntaxException, ConfigurationException {
@@ -202,9 +204,10 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 
 			ServiceRegistration<JDBCConnectionProvider> reg = null;
 			ServiceRegistration<RecoverableXAResource> reg2 = null;
+			JDBCConnectionProviderImpl provider = null;
 			if (setDsf) {
 				try {
-					JDBCConnectionProviderImpl provider = new JDBCConnectionProviderFactoryImpl().getProviderFor(service,
+					provider = new JDBCConnectionProviderFactoryImpl().getProviderFor(service,
 							jdbcProperties, providerProperties);
 					String recoveryId = (String) providerProperties.get(OSGI_RECOVERY_IDENTIFIER);
 					if(recoveryId !=null) {
@@ -223,20 +226,24 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 
 					ServiceRegistration<JDBCConnectionProvider> oldReg;
 					ServiceRegistration<RecoverableXAResource> oldReg2;
-					
+					AbstractJDBCConnectionProvider oldProvider;
 					synchronized (this) {
 						if(activeDsf == service) {
 							oldReg = serviceReg;
 							serviceReg = reg;
 							oldReg2 = recoveryReg;
 							recoveryReg = reg2;
+							oldProvider = this.provider;
+							this.provider = provider;
 						} else {
 							oldReg = reg;
 							oldReg2 = reg2;
+							oldProvider = provider;
 						}
 					}
 					safeUnregister(oldReg);
 					safeUnregister(oldReg2);
+					safeClose(oldProvider);
 				} catch (Exception e) {
 					LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
 					
@@ -247,6 +254,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 					}
 					safeUnregister(reg);
 					safeUnregister(reg2);
+					safeClose(provider);
 				}
 			}
 			return service;
@@ -262,6 +270,16 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 			}
 		}
 			
+		private void safeClose(AbstractJDBCConnectionProvider oldProvider) {
+			if(oldProvider != null) {
+				try {
+					oldProvider.close();
+				} catch (Exception e) {
+					LOG.debug("An exception occurred when closing a provider for {}", pid, e);
+				}
+			}
+		}
+
 		private Dictionary<String, ?> getServiceProperties() {
 			Hashtable<String, Object> props = new Hashtable<>();
 			providerProperties.keySet().stream()
@@ -280,18 +298,22 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 			boolean dsfLeft;
 			ServiceRegistration<JDBCConnectionProvider> oldReg = null;
 			ServiceRegistration<RecoverableXAResource> oldReg2 = null;
+			AbstractJDBCConnectionProvider oldProvider = null;
 			synchronized (this) {
 				dsfLeft = activeDsf == service;
 				if (dsfLeft) {
 					activeDsf = null;
 					oldReg = serviceReg;
 					oldReg2 = recoveryReg;
+					oldProvider = provider;
 					serviceReg = null;
 					recoveryReg = null;
+					provider = null;
 				}
 			}
 			safeUnregister(oldReg);
 			safeUnregister(oldReg2);
+			safeClose(oldProvider);
 
 			if (dsfLeft) {
 				DataSourceFactory newDSF = dsfTracker.getService();

@@ -23,6 +23,8 @@ import static org.osgi.framework.Constants.SERVICE_PID;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.apache.aries.tx.control.jdbc.common.impl.InternalJDBCConnectionProviderFactory;
+import org.apache.aries.tx.control.jdbc.common.impl.JDBCConnectionProviderFactoryServiceFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -31,22 +33,42 @@ import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 
 public class Activator implements BundleActivator {
 
-	private ServiceRegistration<JDBCConnectionProviderFactory> reg;
+	private ServiceRegistration<?> reg;
 	private ServiceRegistration<ManagedServiceFactory> factoryReg;
+	private JDBCConnectionProviderFactoryServiceFactory service;
+	private ManagedServiceFactoryImpl msf;
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
-		reg = context.registerService(JDBCConnectionProviderFactory.class, 
-				new JDBCConnectionProviderFactoryImpl(), getProperties());
 		
+		InternalJDBCConnectionProviderFactory ijcpf = new JDBCConnectionProviderFactoryImpl();
+		
+		service = new JDBCConnectionProviderFactoryServiceFactory() {
+			@Override
+			protected InternalJDBCConnectionProviderFactory getInternalJDBCConnectionProviderFactory() {
+				return ijcpf;
+			}
+		};
+		reg = context.registerService(JDBCConnectionProviderFactory.class.getName(), 
+				service, getProperties());
+		
+		msf = new ManagedServiceFactoryImpl(context);
 		factoryReg = context.registerService(ManagedServiceFactory.class, 
-				new ManagedServiceFactoryImpl(context), getMSFProperties());
+				msf, getMSFProperties());
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		reg.unregister();
-		factoryReg.unregister();
+		safeUnregister(reg);
+		safeUnregister(factoryReg);
+		service.close();
+		msf.stop();
+	}
+
+	private void safeUnregister(ServiceRegistration<?> reg) {
+		try {
+			reg.unregister();
+		} catch (IllegalStateException ise) {}
 	}
 
 	private Dictionary<String, Object> getProperties() {

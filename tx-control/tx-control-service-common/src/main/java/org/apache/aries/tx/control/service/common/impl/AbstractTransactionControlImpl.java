@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.osgi.service.transaction.control.ScopedWorkException;
 import org.osgi.service.transaction.control.TransactionBuilder;
@@ -46,7 +47,12 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 			return this;
 		}
 
-		private void checkExceptions() {
+		private void checkValid() {
+			
+			if(closed.get()) {
+				throw new TransactionException("The transaction control service is closed");
+			}
+			
 			List<Class<? extends Throwable>> duplicates = rollbackFor.stream()
 					.filter(noRollbackFor::contains)
 					.collect(toList());
@@ -59,7 +65,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 		@Override
 		public <T> T required(Callable<T> work)
 				throws TransactionException, TransactionRolledBackException {
-			checkExceptions();
+			checkValid();
 			
 			boolean endTransaction = false;
 
@@ -85,7 +91,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 		@Override
 		public <T> T requiresNew(Callable<T> work)
 				throws TransactionException, TransactionRolledBackException {
-			checkExceptions();
+			checkValid();
 			
 			AbstractTransactionContextImpl existingTran = existingTx.get();
 			try {
@@ -100,7 +106,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 
 		@Override
 		public <T> T supports(Callable<T> work) throws TransactionException {
-			checkExceptions();
+			checkValid();
 			
 			boolean endTransaction = false;
 
@@ -124,7 +130,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 		@Override
 		public <T> T notSupported(Callable<T> work)
 				throws TransactionException {
-			checkExceptions();
+			checkValid();
 			
 			boolean endTransaction = false;
 
@@ -219,6 +225,8 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 	}
 
 	private final ThreadLocal<AbstractTransactionContextImpl> existingTx = new ThreadLocal<>();
+	
+	private final AtomicBoolean closed = new AtomicBoolean();
 
 	protected abstract AbstractTransactionContextImpl startTransaction(boolean readOnly);
 
@@ -291,4 +299,7 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 
 	}
 
+	public void close() {
+		closed.set(true);
+	}
 }
