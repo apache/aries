@@ -206,23 +206,21 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 				try {
 					JDBCConnectionProviderImpl provider = new JDBCConnectionProviderFactoryImpl().getProviderFor(service,
 							jdbcProperties, providerProperties);
-					reg = context
-							.registerService(JDBCConnectionProvider.class, provider, getServiceProperties());
-
-					
 					String recoveryId = (String) providerProperties.get(OSGI_RECOVERY_IDENTIFIER);
 					if(recoveryId !=null) {
 						if(toBoolean(providerProperties, XA_ENLISTMENT_ENABLED, true)) {
 							LOG.warn("A JDBCResourceProvider has been configured with a recovery identifier {} but it has also been configured not to use XA transactions. No recovery will be available.", recoveryId);
 						} else {
 							reg2 = context.registerService(RecoverableXAResource.class, 
-											new RecoverableXAResourceImpl(recoveryId, provider, 
-													(String) providerProperties.get("recovery.user"),
-													(String) providerProperties.get(".recovery.password)")), 
-													getServiceProperties());
+									new RecoverableXAResourceImpl(recoveryId, provider, 
+											(String) providerProperties.get("recovery.user"),
+											(String) providerProperties.get(".recovery.password)")), 
+									getServiceProperties());
 						}
 					}
-					
+					reg = context
+							.registerService(JDBCConnectionProvider.class, provider, getServiceProperties());
+
 					ServiceRegistration<JDBCConnectionProvider> oldReg;
 					ServiceRegistration<RecoverableXAResource> oldReg2;
 					
