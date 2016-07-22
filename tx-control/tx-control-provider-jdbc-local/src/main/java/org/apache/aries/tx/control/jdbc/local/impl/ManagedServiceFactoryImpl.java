@@ -45,6 +45,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -150,6 +151,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 
 		private final AtomicReference<DataSourceFactory> activeDsf = new AtomicReference<>();
 		private final AtomicReference<ServiceRegistration<JDBCConnectionProvider>> serviceReg = new AtomicReference<>();
+		private final AtomicReference<AbstractJDBCConnectionProvider> providerObject = new AtomicReference<>();
 
 		public ManagedJDBCResourceProvider(BundleContext context, String pid, Properties jdbcProperties,
 				Map<String, Object> providerProperties) throws InvalidSyntaxException, ConfigurationException {
@@ -197,17 +199,24 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 			}
 
 			if (setDsf) {
+				AbstractJDBCConnectionProvider provider = null;
+				ServiceRegistration<JDBCConnectionProvider> reg = null;
 				try {
-					JDBCConnectionProvider provider = new JDBCConnectionProviderFactoryImpl().getProviderFor(service,
+					provider = new JDBCConnectionProviderFactoryImpl().getProviderFor(service,
 							jdbcProperties, providerProperties);
-					ServiceRegistration<JDBCConnectionProvider> reg = context
-							.registerService(JDBCConnectionProvider.class, provider, getServiceProperties());
-					if (!serviceReg.compareAndSet(null, reg)) {
-						throw new IllegalStateException("Unable to set the JDBC connection provider registration");
+					reg = context.registerService(JDBCConnectionProvider.class, 
+							provider, getServiceProperties());
+					synchronized (this) {
+						if (!serviceReg.compareAndSet(null, reg)) {
+							throw new IllegalStateException("Unable to set the JDBC connection provider registration");
+						} else {
+							providerObject.set(provider);
+						}
 					}
 				} catch (Exception e) {
-					LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
 					activeDsf.compareAndSet(service, null);
+					safeUnregister(reg, provider);
+					LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
 				}
 			}
 		}
@@ -229,13 +238,27 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 		public void removedService(ServiceReference<DataSourceFactory> reference, DataSourceFactory service) {
 			boolean dsfLeft;
 			ServiceRegistration<JDBCConnectionProvider> oldReg = null;
+			AbstractJDBCConnectionProvider oldProvider = null;
 			synchronized (this) {
 				dsfLeft = activeDsf.compareAndSet(service, null);
 				if (dsfLeft) {
 					oldReg = serviceReg.getAndSet(null);
+					oldProvider = providerObject.getAndSet(null);
 				}
 			}
+			
+			safeUnregister(oldReg, oldProvider);
 
+			if (dsfLeft) {
+				DataSourceFactory newDSF = dsfTracker.getService();
+				if (newDSF != null) {
+					updateService(dsfTracker.getService());
+				}
+			}
+		}
+
+		private void safeUnregister(ServiceRegistration<?> oldReg, 
+				AbstractJDBCConnectionProvider provider) {
 			if (oldReg != null) {
 				try {
 					oldReg.unregister();
@@ -243,11 +266,11 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 					LOG.debug("An exception occurred when unregistering a service for {}", pid);
 				}
 			}
-
-			if (dsfLeft) {
-				DataSourceFactory newDSF = dsfTracker.getService();
-				if (newDSF != null) {
-					updateService(dsfTracker.getService());
+			if(provider != null) {
+				try {
+					provider.close();
+				} catch (Exception e) {
+					LOG.debug("An exception occurred when closing a provider for {}", pid, e);
 				}
 			}
 		}

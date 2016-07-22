@@ -76,7 +76,7 @@ public abstract class AbstractTransactionTest {
 
 	private Server server;
 	
-	private final List<ServiceTracker<?,?>> trackers = new ArrayList<>();
+	protected final List<ServiceTracker<?,?>> trackers = new ArrayList<>();
 
 	@Before
 	public void setUp() throws Exception {
@@ -100,7 +100,7 @@ public abstract class AbstractTransactionTest {
 		
 		jdbc.setProperty(DataSourceFactory.JDBC_URL, jdbcUrl);
 		
-		boolean configuredProvider = System.getProperties().containsKey(CONFIGURED_PROVIDER_PROPERTY);
+		boolean configuredProvider = isConfigured();
 		
 		connection = configuredProvider ? configuredConnection(jdbc) : programaticConnection(jdbc);
 		
@@ -114,7 +114,11 @@ public abstract class AbstractTransactionTest {
 			});
 	}
 
-	private <T> T getService(Class<T> clazz, long timeout) {
+	public boolean isConfigured() {
+		return System.getProperties().containsKey(CONFIGURED_PROVIDER_PROPERTY);
+	}
+
+	protected <T> T getService(Class<T> clazz, long timeout) {
 		try {
 			return getService(clazz, null, timeout);
 		} catch (InvalidSyntaxException e) {
@@ -169,7 +173,7 @@ public abstract class AbstractTransactionTest {
 		System.out.println("Configuring connection provider with pid " + pid);
 		
 		org.osgi.service.cm.Configuration config = cm.createFactoryConfiguration(
-				pid, null);
+				pid, "?");
 		config.update((Hashtable)jdbc);
 		
 		return getService(JDBCConnectionProvider.class, 5000).getResource(txControl);
@@ -178,11 +182,7 @@ public abstract class AbstractTransactionTest {
 	@After
 	public void tearDown() {
 
-		txControl.required(() -> connection.createStatement()
-				.execute("DROP TABLE TEST_TABLE"));
-		
-		
-		if(System.getProperties().containsKey(CONFIGURED_PROVIDER_PROPERTY)) {
+		if(isConfigured()) {
 			clearConfiguration();
 		}
 		

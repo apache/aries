@@ -32,19 +32,20 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.apache.aries.tx.control.jdbc.common.impl.DriverDataSource;
+import org.apache.aries.tx.control.jdbc.common.impl.InternalJDBCConnectionProviderFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProviderFactory {
+public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProviderFactory, InternalJDBCConnectionProviderFactory {
 
 	@Override
-	public JDBCConnectionProvider getProviderFor(DataSourceFactory dsf, Properties jdbcProperties,
+	public AbstractJDBCConnectionProvider getProviderFor(DataSourceFactory dsf, Properties jdbcProperties,
 			Map<String, Object> resourceProviderProperties) {
 
 		checkEnlistment(resourceProviderProperties);
@@ -67,7 +68,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProvider getProviderFor(DataSource ds, Map<String, Object> resourceProviderProperties) {
+	public AbstractJDBCConnectionProvider getProviderFor(DataSource ds, Map<String, Object> resourceProviderProperties) {
 		checkEnlistment(resourceProviderProperties);
 		DataSource toUse = poolIfNecessary(resourceProviderProperties, ds);
 
@@ -75,7 +76,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProvider getProviderFor(Driver driver, Properties jdbcProperties, 
+	public AbstractJDBCConnectionProvider getProviderFor(Driver driver, Properties jdbcProperties, 
 			Map<String, Object> resourceProviderProperties) {
 		checkEnlistment(resourceProviderProperties);
 		DataSource toUse = poolIfNecessary(resourceProviderProperties, 
@@ -85,7 +86,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProvider getProviderFor(XADataSource ds, Map<String, Object> resourceProviderProperties) {
+	public AbstractJDBCConnectionProvider getProviderFor(XADataSource ds, Map<String, Object> resourceProviderProperties) {
 		checkEnlistment(resourceProviderProperties);
 		
 		DataSource unpooled;

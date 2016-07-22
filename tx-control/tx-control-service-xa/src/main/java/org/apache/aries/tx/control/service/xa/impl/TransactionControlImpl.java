@@ -140,7 +140,7 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 				recoverableResources = null;
 			}
 		} catch (Exception e) {
-			destroy();
+			close();
 			throw e;
 		}
 	}
@@ -200,7 +200,9 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 		return o instanceof Integer ? (Integer) o : Integer.valueOf(o.toString());
 	}
 	
-	public void destroy() {
+	@Override
+	public void close() {
+		super.close();
 		if(recoverableResources != null) {
 			recoverableResources.close();
 		}

@@ -23,16 +23,14 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 
-public class JDBCConnectionProviderImpl implements JDBCConnectionProvider {
+public class JDBCConnectionProviderImpl extends AbstractJDBCConnectionProvider {
 
 	private final UUID			uuid	= UUID.randomUUID();
 
-	private final DataSource dataSource;
-	
 	private final boolean xaEnabled;
 	
 	private final boolean localEnabled;
@@ -41,7 +39,7 @@ public class JDBCConnectionProviderImpl implements JDBCConnectionProvider {
 	
 	public JDBCConnectionProviderImpl(DataSource dataSource, boolean xaEnabled,
 			boolean localEnabled, String recoveryIdentifier) {
-		this.dataSource = dataSource;
+		super(dataSource);
 		this.xaEnabled = xaEnabled;
 		this.localEnabled = localEnabled;
 		this.recoveryIdentifier = recoveryIdentifier;

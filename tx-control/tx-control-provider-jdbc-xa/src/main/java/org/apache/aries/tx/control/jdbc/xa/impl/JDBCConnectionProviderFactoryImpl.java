@@ -33,10 +33,10 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 import org.apache.aries.tx.control.jdbc.common.impl.DriverDataSource;
+import org.apache.aries.tx.control.jdbc.common.impl.InternalJDBCConnectionProviderFactory;
 import org.apache.aries.tx.control.jdbc.xa.connection.impl.XADataSourceMapper;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProviderFactory {
+public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProviderFactory, InternalJDBCConnectionProviderFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ManagedServiceFactoryImpl.class);
 	
@@ -91,7 +91,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProvider getProviderFor(DataSource ds, Map<String, Object> resourceProviderProperties) {
+	public JDBCConnectionProviderImpl getProviderFor(DataSource ds, Map<String, Object> resourceProviderProperties) {
 		boolean xaEnabled = toBoolean(resourceProviderProperties, XA_ENLISTMENT_ENABLED, true);
 		boolean localEnabled = toBoolean(resourceProviderProperties, LOCAL_ENLISTMENT_ENABLED, true);
 		
@@ -108,7 +108,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProvider getProviderFor(Driver driver, Properties jdbcProperties, 
+	public JDBCConnectionProviderImpl getProviderFor(Driver driver, Properties jdbcProperties, 
 			Map<String, Object> resourceProviderProperties) {
 		
 		boolean xaEnabled = toBoolean(resourceProviderProperties, XA_ENLISTMENT_ENABLED, false);
@@ -124,7 +124,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProvider getProviderFor(XADataSource ds, Map<String, Object> resourceProviderProperties) {
+	public JDBCConnectionProviderImpl getProviderFor(XADataSource ds, Map<String, Object> resourceProviderProperties) {
 		
 		boolean xaEnabled = toBoolean(resourceProviderProperties, XA_ENLISTMENT_ENABLED, true);
 		boolean localEnabled = toBoolean(resourceProviderProperties, LOCAL_ENLISTMENT_ENABLED, true);

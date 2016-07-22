@@ -16,28 +16,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jdbc.local.impl;
+package org.apache.aries.tx.control.jdbc.common.impl;
 
 import java.sql.Connection;
-import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
+import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class JDBCConnectionProviderImpl extends AbstractJDBCConnectionProvider {
+public abstract class AbstractJDBCConnectionProvider implements JDBCConnectionProvider {
 
-	private final UUID			uuid	= UUID.randomUUID();
-
-	public JDBCConnectionProviderImpl(DataSource dataSource) {
-		super(dataSource);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractJDBCConnectionProvider.class);
+	
+	protected final DataSource dataSource;
+	
+	public AbstractJDBCConnectionProvider(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	@Override
-	public Connection getResource(TransactionControl txControl)
-			throws TransactionException {
-		return new TxContextBindingConnection(txControl, dataSource , uuid);
+	public abstract Connection getResource(TransactionControl txControl)
+			throws TransactionException;
+
+	
+	public void close() {
+		if(dataSource instanceof AutoCloseable) {
+			try {
+				((AutoCloseable) dataSource).close();
+			} catch (Exception e) {
+				LOG.warn("An error occurred shutting down the JDBCConnectionProvider {}", dataSource, e);
+			}
+		}
 	}
 }
