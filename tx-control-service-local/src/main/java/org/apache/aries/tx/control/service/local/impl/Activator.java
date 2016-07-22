@@ -24,24 +24,35 @@ import java.util.Hashtable;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
 
-private static final Logger logger = LoggerFactory.getLogger(Activator.class);
+	private static final Logger logger = LoggerFactory.getLogger(Activator.class);
+	private TransactionControlImpl service;
+	private ServiceRegistration<TransactionControl> reg;
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Dictionary<String, Object> properties = getProperties();
 		logger.info("Registering a new Local TransactionControl service with properties {}", properties);
-		context.registerService(TransactionControl.class, 
-				new TransactionControlImpl(), properties);
+		service = new TransactionControlImpl();
+		reg = context.registerService(TransactionControl.class, 
+				service, properties);
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception { }
+	public void stop(BundleContext context) throws Exception {
+		if(reg != null) {
+			try {
+				reg.unregister();
+			} catch (IllegalStateException ise) { }
+		}
+		service.close();
+	}
 
 	private Dictionary<String, Object> getProperties() {
 		Dictionary<String, Object> props = new Hashtable<>();

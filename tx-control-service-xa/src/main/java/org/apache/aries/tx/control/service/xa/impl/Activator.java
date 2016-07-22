@@ -138,7 +138,7 @@ public class Activator implements BundleActivator {
 									safeUnregister(newReg);
 								} 
 								if (impl != null) {
-									impl.destroy();
+									impl.close();
 								}
 							}
 							boolean cleanUp = true;
@@ -168,7 +168,7 @@ public class Activator implements BundleActivator {
 			TransactionControlImpl toClose) {
 		safeUnregister(toUnregister);
 		if(toClose != null) {
-			toClose.destroy();
+			toClose.close();
 		}
 	}
 	
