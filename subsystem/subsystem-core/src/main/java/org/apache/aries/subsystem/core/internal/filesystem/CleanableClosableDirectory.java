@@ -14,6 +14,7 @@
 package org.apache.aries.subsystem.core.internal.filesystem;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.impl.CloseableDirectory;
@@ -27,17 +28,10 @@ public class CleanableClosableDirectory extends CloseableDirectory {
 		this.tempDirectory = tempDirectory;
 	}
 
+	@Override
 	protected void cleanup() {
-		deleteRecursively(this.tempDirectory);
+		try {
+			FileUtils.deleteDirectory(this.tempDirectory);
+		} catch (IOException e) {}
 	}
-
-	void deleteRecursively(File file) {
-		if (file.isDirectory()) {
-			for (File content : file.listFiles()) {
-				deleteRecursively(content);
-			}
-		}
-		file.delete();
-	}
-
 }

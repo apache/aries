@@ -115,8 +115,12 @@ public class UnpackingFileSystemImpl {
 	}
 
 	/**
-	 * Implementation taken from Google Guava 19.0
+	 * Implementation taken from Google Guava 19.0 Files::createTempDir, licensed under Apache License, version 2
 	 * https://github.com/google/guava
+	 *
+	 * You may obtain a copy of the License at
+	 *
+	 *      http://www.apache.org/licenses/LICENSE-2.0
 	 *
 	 * Atomically creates a new directory somewhere beneath the system's temporary directory (as
 	 * defined by the {@code java.io.tmpdir} system property), and returns its name.
