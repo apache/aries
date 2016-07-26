@@ -29,11 +29,10 @@ import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.impl.DirectoryImpl;
 import org.apache.aries.util.filesystem.impl.ZipDirectory;
 
-import com.google.common.io.Files;
-
 public class UnpackingFileSystemImpl {
 
 	private static final int BUFFER_SIZE = 4096;
+	private static final int TEMP_DIR_ATTEMPTS = 10000;
 
 	public static IDirectory getFSRoot(File fs, IDirectory parent)
 	{
@@ -69,7 +68,7 @@ public class UnpackingFileSystemImpl {
 	public static ICloseableDirectory getFSRoot(InputStream is) {
 		File tempFile = null;
 		try {
-			tempFile = Files.createTempDir();
+			tempFile = createTempDir();
 			unzip(is, tempFile.getAbsolutePath());
 		} catch (IOException e1) {
 			throw new IORuntimeException("IOException in IDirectory.getFSRoot", e1);
@@ -113,5 +112,36 @@ public class UnpackingFileSystemImpl {
 			readByte = zipInputStream.read(bytesIn);
 		}
 		bos.close();
+	}
+
+	/**
+	 * Implementation taken from Google Guava 19.0
+	 * https://github.com/google/guava
+	 *
+	 * Atomically creates a new directory somewhere beneath the system's temporary directory (as
+	 * defined by the {@code java.io.tmpdir} system property), and returns its name.
+	 *
+	 * @return the newly-created directory
+	 * @throws IllegalStateException if the directory could not be created
+	 */
+	private static File createTempDir(){
+		File baseDir = new File(System.getProperty("java.io.tmpdir"));
+		String baseName = System.currentTimeMillis() + "-";
+
+		for (int counter = 0; counter < TEMP_DIR_ATTEMPTS; counter++) {
+			File tempDir = new File(baseDir, baseName + counter);
+			if (tempDir.mkdir()) {
+				return tempDir;
+			}
+		}
+		throw new IllegalStateException(
+				"Failed to create directory within "
+						+ TEMP_DIR_ATTEMPTS
+						+ " attempts (tried "
+						+ baseName
+						+ "0 to "
+						+ baseName
+						+ (TEMP_DIR_ATTEMPTS - 1)
+						+ ')');
 	}
 }
