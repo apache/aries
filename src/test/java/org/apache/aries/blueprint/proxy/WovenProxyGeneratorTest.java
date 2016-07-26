@@ -46,6 +46,7 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.AsmProxyManager;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
+import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
 import org.apache.aries.proxy.impl.weaving.WovenProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
@@ -95,7 +96,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
-  protected static final ClassLoader weavingLoader = new ClassLoader() {
+  protected static final ClassLoader weavingLoader = new SystemModuleClassLoader() {
     public Class<?> loadClass(String className)  throws ClassNotFoundException
     {
       return loadClass(className, false);

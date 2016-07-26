@@ -37,6 +37,7 @@ import java.util.concurrent.Callable;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.NLS;
+import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.apache.aries.proxy.impl.gen.Constants;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.objectweb.asm.ClassReader;
@@ -674,11 +675,15 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    * @throws IOException
    */
   public static void readClass(Class<?> c, ClassVisitor adapter) throws IOException {
-    String className = c.getName();
-    className = className.substring(className.lastIndexOf('.') + 1) + ".class";
-        
+    String className = c.getName().replace(".", "/") + ".class";
+
     //Load the class bytes and copy methods across
-    ClassReader cReader = new ClassReader(c.getResourceAsStream(className));
+    ClassLoader loader = c.getClassLoader();
+    if (loader == null) {
+      //system class, use SystemModuleClassLoader as fallback
+      loader = new SystemModuleClassLoader();
+    }
+    ClassReader cReader = new ClassReader(loader.getResourceAsStream(className));
 
     cReader.accept(adapter, ClassReader.SKIP_CODE | 
         ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
