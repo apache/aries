@@ -57,7 +57,7 @@
         <aries.osgi.import.pkg>
             org.apache.aries.proxy.weavinghook;resolution:=optional;provide:=true,
             org.apache.aries.proxy*;provide:=true,
-            org.objectweb.asm*;resolution:=optional,
+            org.objectweb.asm*;resolution:=optional;version="[5,7)",
             sun.reflect*;resolution:=optional,
             org.osgi.framework;version="[1.5,2)",
             org.osgi.framework.hooks.weaving;resolution:=optional,
@@ -79,7 +79,7 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-debug-all</artifactId>
             <optional>true</optional>
-            <version>5.0.3</version>
+            <version>6.0_ALPHA</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

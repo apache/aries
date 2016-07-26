@@ -19,12 +19,14 @@
 package org.apache.aries.proxy.impl.gen;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Modifier;
 
 import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.ProxyUtils;
+import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -274,9 +276,17 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
         if (loader == null) {
           loader = this.loader;
         }
-        ClassReader cr = new ClassReader(loader.getResourceAsStream(currentlyAnalysedClass
-            .getName().replaceAll("\\.", "/")
-            + ".class"));
+        InputStream is = loader.getResourceAsStream(currentlyAnalysedClass
+                                                    .getName().replaceAll("\\.", "/")
+                                                    + ".class");
+        if (is == null) {
+              //use SystemModuleClassLoader as fallback
+              ClassLoader classLoader = new SystemModuleClassLoader();
+              is = classLoader.getResourceAsStream(currentlyAnalysedClass
+                                              .getName().replaceAll("\\.", "/")
+                                              + ".class");
+        }
+        ClassReader cr = new ClassReader(is);
         ClassVisitor hierarchyAdapter = new ProxySubclassHierarchyAdapter(this, setOfFoundMethods);
         cr.accept(hierarchyAdapter, ClassReader.SKIP_DEBUG);
       } catch (IOException e) {
