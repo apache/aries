@@ -56,6 +56,7 @@
             org.osgi.service.blueprint.container
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg />
+	<lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <dependencies>

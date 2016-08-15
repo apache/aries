@@ -55,6 +55,7 @@
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg />
+	<lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <dependencies>

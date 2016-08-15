@@ -51,6 +51,7 @@
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg />
         <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
+        <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 
     <dependencies>
