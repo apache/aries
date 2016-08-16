@@ -33,12 +33,15 @@ public class JPAEntityManagerProviderImpl implements JPAEntityManagerProvider {
 
 	private final EntityManagerFactory 	emf;
 
-	public JPAEntityManagerProviderImpl(EntityManagerFactory emf) {
+	private final ThreadLocal<TransactionControl> tx;
+
+	public JPAEntityManagerProviderImpl(EntityManagerFactory emf, ThreadLocal<TransactionControl> tx) {
 		this.emf = emf;
+		this.tx = tx;
 	}
 
 	@Override
 	public EntityManager getResource(TransactionControl txControl) throws TransactionException {
-		return new XATxContextBindingEntityManager(txControl, emf, uuid);
+		return new XATxContextBindingEntityManager(txControl, emf, uuid, tx);
 	}
 }

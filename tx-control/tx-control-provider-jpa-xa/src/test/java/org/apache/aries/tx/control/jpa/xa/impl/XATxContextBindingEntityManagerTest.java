@@ -18,10 +18,11 @@
  */
 package org.apache.aries.tx.control.jpa.xa.impl;
 
-
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.withSettings;
 import static org.osgi.service.transaction.control.TransactionStatus.ACTIVE;
+import static org.osgi.service.transaction.control.TransactionStatus.COMMITTED;
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
 
 import java.sql.Connection;
@@ -29,6 +30,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -39,12 +41,14 @@ import org.apache.aries.tx.control.jdbc.xa.connection.impl.XAConnectionWrapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
+import org.osgi.service.transaction.control.TransactionStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class XATxContextBindingEntityManagerTest {
@@ -70,6 +74,8 @@ public class XATxContextBindingEntityManagerTest {
 	
 	XATxContextBindingEntityManager em;
 	
+	ThreadLocal<TransactionControl> commonTxControl = new ThreadLocal<>();
+	
 	@Before
 	public void setUp() throws SQLException {
 		Mockito.when(emf.createEntityManager()).thenReturn(rawEm).thenReturn(null);
@@ -79,7 +85,7 @@ public class XATxContextBindingEntityManagerTest {
 		Mockito.when(context.getScopedValue(Mockito.any()))
 			.thenAnswer(i -> variables.get(i.getArguments()[0]));
 		
-		em = new XATxContextBindingEntityManager(control, emf, id);
+		em = new XATxContextBindingEntityManager(control, emf, id, commonTxControl);
 	}
 	
 	private void setupNoTransaction() {
@@ -110,7 +116,18 @@ public class XATxContextBindingEntityManagerTest {
 		Mockito.verify(rawEm, times(0)).getTransaction();
 		Mockito.verify(context, times(0)).registerXAResource(Mockito.any(), Mockito.anyString());
 		
-		Mockito.verify(context).postCompletion(Mockito.any());
+		checkPostCompletion(null);
+	}
+
+	private void checkPostCompletion(TransactionControl expectedAfter) {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		ArgumentCaptor<Consumer<TransactionStatus>> captor = 
+				(ArgumentCaptor)ArgumentCaptor.forClass(Consumer.class);
+		Mockito.verify(context).postCompletion(captor.capture());
+		
+		captor.getValue().accept(COMMITTED);
+		
+		assertEquals(expectedAfter, commonTxControl.get());
 	}
 
 	@Test
@@ -129,7 +146,7 @@ public class XATxContextBindingEntityManagerTest {
 		Mockito.verify(rawEm, times(2)).isOpen();
 		Mockito.verify(rawEm).joinTransaction();
 		
-		Mockito.verify(context).postCompletion(Mockito.any());
+		checkPostCompletion(null);
 	}
 
 	@Test
@@ -152,7 +169,7 @@ public class XATxContextBindingEntityManagerTest {
 		Mockito.verify(rawEm, times(2)).isOpen();
 		Mockito.verify(rawEm).joinTransaction();
 		
-		Mockito.verify(context).postCompletion(Mockito.any());
+		checkPostCompletion(null);
 	}
 
 	@Test
@@ -174,7 +191,7 @@ public class XATxContextBindingEntityManagerTest {
 		Mockito.verify(rawEm, times(2)).isOpen();
 		Mockito.verify(rawEm).joinTransaction();
 		
-		Mockito.verify(context).postCompletion(Mockito.any());
+		checkPostCompletion(null);
 	}
 
 	@Test
@@ -197,7 +214,7 @@ public class XATxContextBindingEntityManagerTest {
 		Mockito.verify(rawEm, times(2)).isOpen();
 		Mockito.verify(rawEm).joinTransaction();
 		
-		Mockito.verify(context).postCompletion(Mockito.any());
+		checkPostCompletion(null);
 	}
 
 	@Test(expected=TransactionException.class)
@@ -208,4 +225,24 @@ public class XATxContextBindingEntityManagerTest {
 		em.isOpen();
 	}
 
+	@Test
+	public void testActiveTransactionWithPreviousCommonTxControl() throws SQLException {
+		
+		TransactionControl previous = Mockito.mock(TransactionControl.class);
+		Connection con = Mockito.mock(Connection.class, withSettings().extraInterfaces(XAConnection.class));
+		Mockito.when(((XAConnection)con).getXAResource()).thenReturn(xaResource);
+		
+		Mockito.when(rawEm.unwrap(Connection.class)).thenReturn(con);
+		
+		setupActiveTransaction();
+		commonTxControl.set(previous);
+		
+		em.isOpen();
+		em.isOpen();
+		
+		Mockito.verify(rawEm, times(2)).isOpen();
+		Mockito.verify(rawEm).joinTransaction();
+		
+		checkPostCompletion(previous);
+	}
 }

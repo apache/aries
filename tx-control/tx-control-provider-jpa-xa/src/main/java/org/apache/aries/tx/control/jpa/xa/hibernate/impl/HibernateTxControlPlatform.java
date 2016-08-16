@@ -36,6 +36,7 @@ import javax.transaction.Synchronization;
 import org.hibernate.ConnectionAcquisitionMode;
 import org.hibernate.ConnectionReleaseMode;
 import org.hibernate.HibernateException;
+import org.hibernate.TransactionException;
 import org.hibernate.engine.transaction.spi.IsolationDelegate;
 import org.hibernate.engine.transaction.spi.TransactionObserver;
 import org.hibernate.jdbc.WorkExecutor;
@@ -50,15 +51,23 @@ import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionStatus;
 
-public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder {
+public class HibernateTxControlPlatform implements 
+	TransactionCoordinatorBuilder {
 	
 	private static final long serialVersionUID = 1L;
 
-	private final TransactionControl control;
+	private final ThreadLocal<TransactionControl> txControlToUse;
 	
+	public HibernateTxControlPlatform(ThreadLocal<TransactionControl> txControlToUse) {
+		this.txControlToUse = txControlToUse;
+	}
 	
-	public HibernateTxControlPlatform(TransactionControl control) {
-		this.control = control;
+	public TransactionControl getTxControl() {
+		TransactionControl transactionControl = txControlToUse.get();
+		if(transactionControl == null) {
+			throw new TransactionException("A No Transaction Context could not be created because there is no associated Transaction Control");
+		}
+		return transactionControl;
 	}
 
 	@Override
@@ -102,7 +111,7 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 		@Override
 		public void explicitJoin() {
 			if(!joined) {
-				if(!control.activeTransaction()) {
+				if(!getTxControl().activeTransaction()) {
 					throw new TransactionRequiredException("There is no transaction active to join");
 				}
 				
@@ -111,7 +120,7 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 		}
 
 		private void internalJoin() {
-			TransactionContext currentContext = control.getCurrentContext();
+			TransactionContext currentContext = getTxControl().getCurrentContext();
 			currentContext.preCompletion(this::beforeCompletion);
 			currentContext.postCompletion(this::afterCompletion);
 			joined = true;
@@ -124,7 +133,7 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 
 		@Override
 		public void pulse() {
-			if (autoJoin && !joined && control.activeTransaction()) {
+			if (autoJoin && !joined && getTxControl().activeTransaction()) {
 				internalJoin();
 			}
 		}
@@ -141,7 +150,7 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 
 		@Override
 		public boolean isActive() {
-			return control.activeTransaction();
+			return getTxControl().activeTransaction();
 		}
 
 		@Override
@@ -176,7 +185,7 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 	
 		@Override
 		public void registerSynchronization(Synchronization synchronization) {
-			TransactionContext currentContext = control.getCurrentContext();
+			TransactionContext currentContext = getTxControl().getCurrentContext();
 			currentContext.preCompletion(synchronization::beforeCompletion);
 			currentContext.postCompletion(status -> synchronization.afterCompletion(toIntStatus(status)));
 		}
@@ -186,7 +195,7 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 				owner.beforeTransactionCompletion();
 			}
 			catch (RuntimeException re) {
-				control.setRollbackOnly();
+				getTxControl().setRollbackOnly();
 				throw re;
 			}
 			finally {
@@ -218,29 +227,29 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 
 		@Override
 		public void begin() {
-			if(!control.activeTransaction()) {
+			if(!getTxControl().activeTransaction()) {
 				throw new IllegalStateException("There is no existing active transaction scope");
 			}
 		}
 
 		@Override
 		public void commit() {
-			if(!control.activeTransaction()) {
+			if(!getTxControl().activeTransaction()) {
 				throw new IllegalStateException("There is no existing active transaction scope");
 			}
 		}
 
 		@Override
 		public void rollback() {
-			if(!control.activeTransaction()) {
+			if(!getTxControl().activeTransaction()) {
 				throw new IllegalStateException("There is no existing active transaction scope");
 			}
-			control.setRollbackOnly();
+			getTxControl().setRollbackOnly();
 		}
 
 		@Override
 		public org.hibernate.resource.transaction.spi.TransactionStatus getStatus() {
-			TransactionStatus status = control.getCurrentContext().getTransactionStatus();
+			TransactionStatus status = getTxControl().getCurrentContext().getTransactionStatus();
 			switch(status) {
 				case ACTIVE:
 					return org.hibernate.resource.transaction.spi.TransactionStatus.ACTIVE;
@@ -265,7 +274,7 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 
 		@Override
 		public void markRollbackOnly() {
-			control.setRollbackOnly();
+			getTxControl().setRollbackOnly();
 		}
 
 		@Override
@@ -283,9 +292,9 @@ public class HibernateTxControlPlatform implements TransactionCoordinatorBuilder
 			};
 			
 			if(transacted) {
-				return control.requiresNew(c);
+				return getTxControl().requiresNew(c);
 			} else {
-				return control.notSupported(c);
+				return getTxControl().notSupported(c);
 			}
 				
 		}
