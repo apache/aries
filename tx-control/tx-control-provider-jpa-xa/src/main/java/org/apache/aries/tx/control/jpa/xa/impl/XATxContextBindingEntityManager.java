@@ -38,13 +38,15 @@ public class XATxContextBindingEntityManager extends EntityManagerWrapper {
 	private final TransactionControl	txControl;
 	private final UUID					resourceId;
 	private final EntityManagerFactory	emf;
+	private final ThreadLocal<TransactionControl> commonTxStore;
 	
 
 	public XATxContextBindingEntityManager(TransactionControl txControl,
-			EntityManagerFactory emf, UUID resourceId) {
+			EntityManagerFactory emf, UUID resourceId, ThreadLocal<TransactionControl> commonTxStore) {
 		this.txControl = txControl;
 		this.emf = emf;
 		this.resourceId = resourceId;
+		this.commonTxStore = commonTxStore;
 	}
 
 	@Override
@@ -63,6 +65,9 @@ public class XATxContextBindingEntityManager extends EntityManagerWrapper {
 			return existing;
 		}
 
+		TransactionControl previous = commonTxStore.get();
+		commonTxStore.set(txControl);
+		
 		EntityManager toReturn;
 		EntityManager toClose;
 
@@ -79,6 +84,7 @@ public class XATxContextBindingEntityManager extends EntityManagerWrapper {
 						"There is a transaction active, but it does not support local participants");
 			}
 		} catch (Exception sqle) {
+			commonTxStore.set(previous);
 			throw new TransactionException(
 					"There was a problem getting hold of a database connection",
 					sqle);
@@ -91,6 +97,7 @@ public class XATxContextBindingEntityManager extends EntityManagerWrapper {
 				} catch (PersistenceException sqle) {
 					// TODO log this
 				}
+				commonTxStore.set(previous);
 			});
 		
 		txContext.putScopedValue(resourceId, toReturn);

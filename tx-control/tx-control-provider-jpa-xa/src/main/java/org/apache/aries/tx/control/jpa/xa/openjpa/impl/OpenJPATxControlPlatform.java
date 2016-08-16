@@ -43,19 +43,33 @@ import javax.transaction.xa.XAResource;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionControl;
+import org.osgi.service.transaction.control.TransactionException;
 import org.osgi.service.transaction.control.TransactionStatus;
 
-public class OpenJPATxControlPlatform implements ManagedRuntime, TransactionManager, Transaction {
+public class OpenJPATxControlPlatform implements ManagedRuntime, 
+	TransactionManager, Transaction {
 
-	private final TransactionControl txControl;
+	private final ThreadLocal<TransactionControl> txControlToUse;
 	
-	public OpenJPATxControlPlatform(TransactionControl txControl) {
-		this.txControl = txControl;
+	public OpenJPATxControlPlatform(ThreadLocal<TransactionControl> txControlToUse) {
+		this.txControlToUse = txControlToUse;
 	}
+	
+	public TransactionControl getTxControl() {
+		TransactionControl transactionControl = txControlToUse.get();
+		if(transactionControl == null) {
+			throw new TransactionException("A No Transaction Context could not be created because there is no associated Transaction Control");
+		}
+		return transactionControl;
+	}
+
 
 	@Override
 	public void doNonTransactionalWork(Runnable arg0) throws NotSupportedException {
-		txControl.notSupported(() -> {
+		
+		TransactionControl transactionControl = getTxControl();
+		
+		transactionControl.notSupported(() -> {
 			arg0.run();
 			return null;
 		});
@@ -68,7 +82,7 @@ public class OpenJPATxControlPlatform implements ManagedRuntime, TransactionMana
 
 	@Override
 	public Object getTransactionKey() throws Exception, SystemException {
-		return txControl.getCurrentContext().getTransactionKey();
+		return getTxControl().getCurrentContext().getTransactionKey();
 	}
 
 	@Override
@@ -78,17 +92,17 @@ public class OpenJPATxControlPlatform implements ManagedRuntime, TransactionMana
 
 	@Override
 	public void setRollbackOnly(Throwable arg0) throws Exception {
-		txControl.setRollbackOnly();
+		getTxControl().setRollbackOnly();
 	}
 
 	@Override
 	public void setRollbackOnly() throws IllegalStateException, SystemException {
-		txControl.setRollbackOnly();
+		getTxControl().setRollbackOnly();
 	}
 
 	@Override
 	public int getStatus() throws SystemException {
-		TransactionContext currentContext = txControl.getCurrentContext();
+		TransactionContext currentContext = getTxControl().getCurrentContext();
 		if(currentContext != null) {
 			return toIntStatus(currentContext.getTransactionStatus());
 		}
@@ -132,14 +146,14 @@ public class OpenJPATxControlPlatform implements ManagedRuntime, TransactionMana
 
 	@Override
 	public boolean enlistResource(XAResource xaRes) throws IllegalStateException, RollbackException, SystemException {
-		txControl.getCurrentContext().registerXAResource(xaRes, null);
+		getTxControl().getCurrentContext().registerXAResource(xaRes, null);
 		return true;
 	}
 
 	@Override
 	public void registerSynchronization(Synchronization synch)
 			throws IllegalStateException, RollbackException, SystemException {
-		TransactionContext currentContext = txControl.getCurrentContext();
+		TransactionContext currentContext = getTxControl().getCurrentContext();
 		currentContext.preCompletion(synch::beforeCompletion);
 		currentContext.postCompletion(status -> synch.afterCompletion(toIntStatus(status)));
 	}

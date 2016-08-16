@@ -92,7 +92,7 @@ public abstract class AbstractJPATransactionTest {
 		em = configuredEntityManager(jdbcUrl);
 	}
 
-	private <T> T getService(Class<T> clazz, long timeout) {
+	protected <T> T getService(Class<T> clazz, long timeout) {
 		try {
 			return getService(clazz, null, timeout);
 		} catch (InvalidSyntaxException e) {
@@ -100,7 +100,7 @@ public abstract class AbstractJPATransactionTest {
 		}
 	}
 
-	private <T> T getService(Class<T> clazz, String filter, long timeout) throws InvalidSyntaxException {
+	protected <T> T getService(Class<T> clazz, String filter, long timeout) throws InvalidSyntaxException {
 		Filter f = FrameworkUtil.createFilter(filter == null ? "(|(foo=bar)(!(foo=bar)))" : filter); 
 		
 		ServiceTracker<T, T> tracker = new ServiceTracker<T, T>(context, clazz, null) {

@@ -18,15 +18,21 @@
  */
 package org.apache.aries.tx.control.itests;
 
+import static java.util.Arrays.stream;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.apache.aries.tx.control.itests.entity.Message;
+import org.junit.Assume;
 import org.junit.Test;
+import org.osgi.framework.Bundle;
+import org.osgi.service.transaction.control.TransactionControl;
+import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
 
 public abstract class AbstractSimpleTransactionTest extends AbstractJPATransactionTest {
 
@@ -230,5 +236,24 @@ public abstract class AbstractSimpleTransactionTest extends AbstractJPATransacti
 				
 				return null;
 			});
+	}
+	
+	@Test
+	public void reassignTxControl() throws Exception {
+		
+		Optional<Bundle> bundle = stream(context.getBundles())
+				.filter(b -> b.getSymbolicName().equals("tx-control-provider-jpa-xa"))
+				.findAny();
+		Assume.assumeTrue(bundle.isPresent());
+		
+		bundle.get().stop();
+		bundle.get().start();
+		
+		txControl = getService(TransactionControl.class, 
+				System.getProperty(TX_CONTROL_FILTER), 5000);
+		
+		em = getService(JPAEntityManagerProvider.class, 5000).getResource(txControl); 
+		
+		testTx();
 	}
 }

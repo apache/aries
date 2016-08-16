@@ -59,11 +59,11 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 				} else {
 					toUse = jpaProperties;
 				}
-				return tx.notSupported(() -> internalBuilderCreate(emfb, toUse));
+				return tx.get().notSupported(() -> internalBuilderCreate(emfb, toUse, tx));
 			});
 	}
 
-	private Map<String, Object> enlistDataSource(TransactionControl tx, Map<String, Object> jpaProperties) {
+	private Map<String, Object> enlistDataSource(ThreadLocal<TransactionControl> tx, Map<String, Object> jpaProperties) {
 		Map<String, Object> toReturn = new HashMap<>(jpaProperties);
 		
 		DataSource ds = (DataSource) jpaProperties.get("javax.persistence.jtaDataSource");
@@ -78,12 +78,12 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 	}
 
 	private JPAEntityManagerProvider internalBuilderCreate(EntityManagerFactoryBuilder emfb,
-			Map<String, Object> jpaProperties) {
+			Map<String, Object> jpaProperties, ThreadLocal<TransactionControl> tx) {
 		EntityManagerFactory emf = emfb.createEntityManagerFactory(jpaProperties);
 		
 		validateEMF(emf);
 		
-		return new JPAEntityManagerProviderImpl(emf);
+		return new JPAEntityManagerProviderImpl(emf, tx);
 	}
 
 	private void validateEMF(EntityManagerFactory emf) {
@@ -110,7 +110,7 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 		checkEnlistment(resourceProviderProperties);
 		validateEMF(emf);
 		
-		return new JPAEntityManagerProviderImpl(emf);
+		return new JPAEntityManagerProviderImpl(emf, new ThreadLocal<>());
 	}
 
 	private boolean checkEnlistment(Map<String, Object> resourceProviderProperties) {
@@ -138,17 +138,25 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 		}
 	}
 	
-	public class EnlistingDataSource implements DataSource {
-		
-		private final TransactionControl txControl;
+	public static class EnlistingDataSource implements DataSource {
 		
 		private final DataSource delegate;
 
 		private final UUID resourceId = UUID.randomUUID();
 		
-		public EnlistingDataSource(TransactionControl txControl, DataSource delegate) {
-			this.txControl = txControl;
+		private final ThreadLocal<TransactionControl> txControlToUse;
+		
+		public EnlistingDataSource(ThreadLocal<TransactionControl> txControlToUse, DataSource delegate) {
+			this.txControlToUse = txControlToUse;
 			this.delegate = delegate;
+		}
+		
+		public TransactionControl getTxControl() {
+			TransactionControl transactionControl = txControlToUse.get();
+			if(transactionControl == null) {
+				throw new TransactionException("A No Transaction Context could not be created because there is no associated Transaction Control");
+			}
+			return transactionControl;
 		}
 
 		public PrintWriter getLogWriter() throws SQLException {
@@ -188,7 +196,7 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 		}
 		
 		private Connection enlistedConnection(Callable<Connection> supplier) {
-			TransactionContext txContext = txControl.getCurrentContext();
+			TransactionContext txContext = getTxControl().getCurrentContext();
 
 			if (txContext == null) {
 				throw new TransactionException("The resource " + resourceId

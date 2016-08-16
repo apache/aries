@@ -56,8 +56,8 @@ import org.osgi.service.transaction.control.TransactionStatus;
 
 public class EclipseTxControlPlatform extends ServerPlatformBase {
 
-	public static void setTransactionControl(TransactionControl txControl) {
-		TxControlAdapter.txControl = txControl;
+	public static void setTransactionControl(ThreadLocal<TransactionControl> txControl) {
+		TxControlAdapter.txControlToUse = txControl;
 	}
 	
 	public EclipseTxControlPlatform(DatabaseSession newDatabaseSession) {
@@ -76,7 +76,15 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 		 *  to be configured and passed in as instances. It is safe because
 		 *  we use a separate ClassLoader every time we create the resource.
 		 */
-		private static TransactionControl txControl;
+		private static ThreadLocal<TransactionControl> txControlToUse;
+		
+		public TransactionControl getTxControl() {
+			TransactionControl transactionControl = txControlToUse.get();
+			if(transactionControl == null) {
+				throw new TransactionException("A No Transaction Context could not be created because there is no associated Transaction Control");
+			}
+			return transactionControl;
+		}
 		
 		public TxControlAdapter() {
 			this.listenerFactory = new TxControlListenerFactory();
@@ -97,7 +105,7 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 
 		@Override
 		protected Object getTransaction_impl() throws Exception {
-			TransactionContext currentContext = txControl.getCurrentContext();
+			TransactionContext currentContext = getTxControl().getCurrentContext();
 			if(currentContext == null || currentContext.getTransactionStatus() == NO_TRANSACTION) {
 				return null;
 			} else {
@@ -114,7 +122,7 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 
 		@Override
 		protected Object getTransactionStatus_impl() throws Exception {
-			TransactionContext currentContext = txControl.getCurrentContext();
+			TransactionContext currentContext = getTxControl().getCurrentContext();
 			return currentContext == null ? null : currentContext.getTransactionStatus();
 		}
 
@@ -135,7 +143,7 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 
 		@Override
 		protected void markTransactionForRollback_impl() throws Exception {
-			txControl.setRollbackOnly();
+			getTxControl().setRollbackOnly();
 		}
 
 		@Override

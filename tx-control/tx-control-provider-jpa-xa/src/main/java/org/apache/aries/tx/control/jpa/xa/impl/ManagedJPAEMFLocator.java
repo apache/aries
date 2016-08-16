@@ -134,7 +134,7 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 	}
 
 	private void setupTransactionManager(Map<String, Object> props, Map<String, Object> providerProps, 
-			TransactionControl txControl, ServiceReference<EntityManagerFactoryBuilder> reference) {
+			ThreadLocal<TransactionControl> t, ServiceReference<EntityManagerFactoryBuilder> reference) {
 		String provider = (String) reference.getProperty(JPA_UNIT_PROVIDER);
 		
 		ServiceReference<PersistenceProvider> providerRef = getPersistenceProvider(provider);
@@ -164,8 +164,8 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
 				
 				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.hibernate.impl.HibernateTxControlPlatform");
-				Object plugin = pluginClazz.getConstructor(TransactionControl.class)
-					.newInstance(txControl);
+				Object plugin = pluginClazz.getConstructor(ThreadLocal.class)
+					.newInstance(t);
 				
 				props.put("hibernate.transaction.coordinator_class", plugin);
 				
@@ -174,8 +174,8 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
 					
 				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.openjpa.impl.OpenJPATxControlPlatform");
-				Object plugin = pluginClazz.getConstructor(TransactionControl.class)
-						.newInstance(txControl);
+				Object plugin = pluginClazz.getConstructor(ThreadLocal.class)
+						.newInstance(t);
 					
 				props.put("openjpa.ManagedRuntime", plugin);
 					
@@ -185,8 +185,8 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 				
 				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.eclipse.impl.EclipseTxControlPlatform");
 				
-				pluginClazz.getMethod("setTransactionControl", TransactionControl.class)
-						.invoke(null, txControl);
+				pluginClazz.getMethod("setTransactionControl", ThreadLocal.class)
+						.invoke(null, t);
 				
 				props.put("eclipselink.target-server", pluginClazz.getName());
 				props.put("org.apache.aries.jpa.eclipselink.plugin.types", pluginClazz);
