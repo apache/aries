@@ -20,7 +20,8 @@ Bundle-Activator: org.apache.aries.tx.control.jpa.local.impl.Activator
 # Export the APIs we use so that this is an easily deployable bundle 
 # We keep the dual versions provided by Geronimo to keep things maximally happy
 
-Export-Package: org.osgi.service.transaction.control.jpa, \
+Export-Package: org.osgi.service.transaction.control.jdbc, \
+                org.osgi.service.transaction.control.jpa, \
                 org.osgi.service.cm, \
                 org.osgi.service.jdbc, \
                 org.osgi.service.jpa, \
@@ -57,6 +58,7 @@ Import-Package: !com.codahale.*, \
                 javax.persistence.metamodel;version="0.0.0", \
                 javax.persistence.spi;version="0.0.0", \
                 org.osgi.service.transaction.control, \
+                org.osgi.service.transaction.control.jdbc, \
                 org.osgi.service.transaction.control.jpa, \
                 org.osgi.service.cm, \
                 org.osgi.service.jdbc, \
