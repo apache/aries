@@ -342,6 +342,44 @@ public class TransactionControlRunningTest {
 	}
 	
 	@Test
+	public void testTwoRequiredsNestedInnerThrowsExceptionOuterDoesNotCatch() {
+		
+		AtomicReference<TransactionStatus> finalStatusOuter = new AtomicReference<>();
+		AtomicReference<TransactionStatus> finalStatusInner = new AtomicReference<>();
+		
+		Exception userEx = new Exception("Bang!");
+		
+		try {
+			txControl.required(() -> {
+				
+				assertTrue(txControl.activeTransaction());
+				
+				Object key = txControl.getCurrentContext().getTransactionKey();
+				
+				txControl.getCurrentContext().postCompletion(finalStatusOuter::set);
+				
+				txControl.requiresNew(() -> {
+					assertFalse(key.equals(txControl.getCurrentContext().getTransactionKey()));
+					
+					txControl.getCurrentContext().postCompletion(finalStatusInner::set);
+					
+					txControl.setRollbackOnly();
+					
+					throw userEx;
+				});
+				fail("Should not be reached!");
+				return null;
+			});
+		} catch (ScopedWorkException swe) {
+			assertSame(userEx, swe.getCause());
+		}
+		
+		assertEquals(ROLLED_BACK, finalStatusOuter.get());
+		assertEquals(ROLLED_BACK, finalStatusInner.get());
+		
+	}
+	
+	@Test
 	public void testTwoRequiredsNestedNoRollbackForInnerException() {
 		
 		AtomicReference<TransactionStatus> finalStatusOuter = new AtomicReference<>();

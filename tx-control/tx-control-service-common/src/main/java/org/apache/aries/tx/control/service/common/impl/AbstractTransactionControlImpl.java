@@ -172,8 +172,20 @@ public abstract class AbstractTransactionControlImpl implements TransactionContr
 						currentTran.recordFailure(e);
 					}
 				}
-				ScopedWorkException workException = new ScopedWorkException("The scoped work threw an exception", t, 
-						endTransaction ? null : currentTran);
+				
+				TransactionContext toPropagate = endTransaction ? null : currentTran;
+				
+				ScopedWorkException workException;
+				
+				if(t instanceof ScopedWorkException) {
+					workException = new ScopedWorkException("A nested piece of scoped work threw an exception", 
+							t.getCause(), toPropagate);
+					workException.addSuppressed(t);
+				} else {
+					workException = new ScopedWorkException("The scoped work threw an exception", 
+							t, toPropagate);
+				}
+				
 				Throwable throwable = currentTran.firstUnexpectedException.get();
 				if(throwable != null) {
 					workException.addSuppressed(throwable);
