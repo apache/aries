@@ -119,7 +119,7 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 					setupTransactionManager(jpaProps, providerProps, t, reference);
 					
 					return new JPAEntityManagerProviderFactoryImpl().getProviderFor(service,
-							jpaProps, providerProps);
+							jpaProps, providerProps, t);
 				});
 				ServiceRegistration<JPAEntityManagerProvider> reg = context
 						.registerService(JPAEntityManagerProvider.class, jpaEM, getServiceProperties());

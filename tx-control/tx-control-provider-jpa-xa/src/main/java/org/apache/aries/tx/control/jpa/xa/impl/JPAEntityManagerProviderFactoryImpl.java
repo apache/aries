@@ -52,15 +52,18 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 	@Override
 	public JPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, Map<String, Object> jpaProperties,
 			Map<String, Object> resourceProviderProperties) {
-		return new DelayedJPAEntityManagerProvider(tx -> {
-				Map<String, Object> toUse;
-				if(checkEnlistment(resourceProviderProperties)) {
-					toUse = enlistDataSource(tx, jpaProperties);
-				} else {
-					toUse = jpaProperties;
-				}
-				return tx.get().notSupported(() -> internalBuilderCreate(emfb, toUse, tx));
-			});
+		return new DelayedJPAEntityManagerProvider(tx -> getProviderFor(emfb, jpaProperties, resourceProviderProperties, tx));
+	}
+
+	public JPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, Map<String, Object> jpaProperties,
+		Map<String, Object> resourceProviderProperties, ThreadLocal<TransactionControl> localStore) {
+		Map<String, Object> toUse;
+		if(checkEnlistment(resourceProviderProperties)) {
+			toUse = enlistDataSource(localStore, jpaProperties);
+		} else {
+			toUse = jpaProperties;
+		}
+		return localStore.get().notSupported(() -> internalBuilderCreate(emfb, toUse, localStore));
 	}
 
 	private Map<String, Object> enlistDataSource(ThreadLocal<TransactionControl> tx, Map<String, Object> jpaProperties) {

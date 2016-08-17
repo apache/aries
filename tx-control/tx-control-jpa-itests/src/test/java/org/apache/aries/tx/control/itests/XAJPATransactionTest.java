@@ -71,6 +71,7 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionRolledBackException;
 import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
+import org.osgi.util.promise.Deferred;
 import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(PaxExam.class)
@@ -243,6 +244,8 @@ public abstract class XAJPATransactionTest {
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-service-xa").versionAsInProject(),
 				mavenBundle("com.h2database", "h2").versionAsInProject(),
+				mavenBundle("org.osgi", "org.osgi.util.function").versionAsInProject(),
+				mavenBundle("org.osgi", "org.osgi.util.promise").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jpa-xa").versionAsInProject(),
 				jpaProvider(),
 				ariesJPAVersion(),
@@ -349,6 +352,50 @@ public abstract class XAJPATransactionTest {
 			
 			return em2.createQuery(query).getResultList();
 		}));
+	}
+	
+	@Test
+	public void testSeparateThreadActivation() throws Exception {
+		Object m1 = getMessageEntityFrom(XA_TEST_UNIT_1);
+		Object m2 = getMessageEntityFrom(XA_TEST_UNIT_2);
+
+		txControl.required(() -> {
+			setMessage(m1, "Hello World!");
+			
+			em1.persist(m1);
+
+			setMessage(m2, "Hello 1!");
+			
+			em2.persist(m2);
+			
+			return null;
+		});
+		
+		Deferred<String> d = new Deferred<>();
+		
+		new Thread(() -> {
+				try {
+					d.resolve(txControl.notSupported(() -> 
+						getMessage(em1.find(m1.getClass(), getId(m1)))));
+				} catch (Exception e) {
+					d.fail(e);
+				}
+			}).start();
+		
+		assertEquals("Hello World!", d.getPromise().getValue());
+
+		Deferred<String> d2 = new Deferred<>();
+		
+		new Thread(() -> {
+				try {
+					d2.resolve(txControl.notSupported(() -> 
+						getMessage(em2.find(m2.getClass(), getId(m2)))));
+				} catch (Exception e) {
+					d2.fail(e);
+				}
+			}).start();
+		
+		assertEquals("Hello 1!", d2.getPromise().getValue());
 	}
 	
 	Object getMessageEntityFrom(String unit) throws Exception {
