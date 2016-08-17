@@ -19,7 +19,9 @@
 package org.apache.aries.tx.control.itests;
 
 import static org.ops4j.pax.exam.CoreOptions.bootClasspathLibrary;
+import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.repository;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
@@ -28,8 +30,12 @@ import org.ops4j.pax.exam.Option;
 
 public class XAHibernate_5_0_9_Test extends XAJPATransactionTest {
 
-	protected String ariesJPAVersion() {
-		return "2.5.0-SNAPSHOT";
+	protected Option ariesJPAVersion() {
+		return composite(
+				    repository("https://repository.apache.org/content/repositories/snapshots/")
+				    	.allowSnapshots().disableReleases().id("Apache Snapshots"),
+				    mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container", "2.5.0-SNAPSHOT")
+				);
 	}
 	
 	@Override

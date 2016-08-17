@@ -245,7 +245,7 @@ public abstract class XAJPATransactionTest {
 				mavenBundle("com.h2database", "h2").versionAsInProject(),
 				mavenBundle("org.apache.aries.tx-control", "tx-control-provider-jpa-xa").versionAsInProject(),
 				jpaProvider(),
-				mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container", ariesJPAVersion()),
+				ariesJPAVersion(),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
@@ -271,8 +271,8 @@ public abstract class XAJPATransactionTest {
 			.build();
 	}
 
-	protected String ariesJPAVersion() {
-		return "2.3.0";
+	protected Option ariesJPAVersion() {
+		return mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container", "2.3.0");
 	}
 	
 	protected abstract Option jpaProvider();
