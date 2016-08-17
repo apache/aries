@@ -32,8 +32,8 @@ import org.ops4j.pax.exam.Option;
 public class XAOpenJPA_2_4_1_Test extends XAJPATransactionTest {
 
 	@Override
-	protected String ariesJPAVersion() {
-		return "2.4.0";
+	protected Option ariesJPAVersion() {
+		return mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container", "2.4.0");
 	}
 	
 	@Override
