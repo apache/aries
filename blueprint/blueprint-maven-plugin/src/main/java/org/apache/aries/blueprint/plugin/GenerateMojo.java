@@ -45,7 +45,7 @@ import java.util.Set;
 /**
  * Generates blueprint from CDI annotations
  */
-@Mojo(name="blueprint-generate", requiresDependencyResolution=ResolutionScope.COMPILE, 
+@Mojo(name="blueprint-generate", requiresDependencyResolution=ResolutionScope.COMPILE,
     defaultPhase=LifecyclePhase.PROCESS_CLASSES, inheritByDefault=false)
 public class GenerateMojo extends AbstractMojo {
 
@@ -54,7 +54,7 @@ public class GenerateMojo extends AbstractMojo {
 
     @Parameter(required=true)
     protected List<String> scanPaths;
-    
+
     /**
      * Which extension namespaces should the plugin support
      */
@@ -71,6 +71,13 @@ public class GenerateMojo extends AbstractMojo {
     protected String generatedFileName;
 
     /**
+     * Base directory to generate into
+     * (relative to ${project.build.directory}/generated-resources).
+     */
+    @Parameter(defaultValue="OSGI-INF/blueprint/")
+    private String generatedDir;
+
+    /**
      * Specifies the default activation setting that will be defined for components.
      * Default is null, which indicates eager (blueprint default).
      * If LAZY then default-activation will be set to lazy.
@@ -79,6 +86,7 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter
     protected Activation defaultActivation;
 
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
             throw new MojoExecutionException("Configuration scanPaths must be set");
@@ -86,10 +94,10 @@ public class GenerateMojo extends AbstractMojo {
         if (!buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()))) {
             return;
         }
-        
+
         try {
             ClassFinder finder = createProjectScopeFinder();
-            
+
             Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, scanPaths);
             Context context = new Context(classes);
             context.resolve();
@@ -103,12 +111,13 @@ public class GenerateMojo extends AbstractMojo {
 
     private void writeBlueprint(Context context) throws Exception {
         String buildDir = project.getBuild().getDirectory();
-        String generatedDir = buildDir + "/generated-resources";
+        String generatedBaseDir = buildDir + "/generated-resources";
         Resource resource = new Resource();
-        resource.setDirectory(generatedDir);
+        resource.setDirectory(generatedBaseDir);
         project.addResource(resource);
 
-        File file = new File(generatedDir, "OSGI-INF/blueprint/" + generatedFileName);
+        File dir = new File(generatedBaseDir, generatedDir);
+        File file = new File(dir, generatedFileName);
         file.getParentFile().mkdirs();
         System.out.println("Generating blueprint to " + file);
 
@@ -118,7 +127,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private ClassFinder createProjectScopeFinder() throws MalformedURLException {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
 
         urls.add(new File(project.getBuild().getOutputDirectory()).toURI().toURL());
         for (Object artifactO : project.getArtifacts()) {
