@@ -197,7 +197,7 @@ public class ZipFileImpl implements IFile
   {
     URL result;
 
-    if(name.equals(zipPathToRoot))
+    if(name.equals(zipPathToRoot) || (entry == null && zipPathToRoot.equals(name+'/')))
       result = new URL(url);
     else {
 
