@@ -53,7 +53,9 @@
         </aries.osgi.import>
         <aries.osgi.export.pkg />
         <aries.osgi.private.pkg>
-            org.apache.aries.subsystem.core.*
+            org.apache.aries.subsystem.core.*,
+            org.apache.aries.util.filesystem.impl,
+            org.apache.aries.util.internal
         </aries.osgi.private.pkg>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
         <aries.osgi.provide.capability>
@@ -76,7 +78,7 @@
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
