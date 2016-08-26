@@ -91,11 +91,12 @@ public class UnpackingFileSystemImpl {
 		ZipEntry entry = zipInputStream.getNextEntry();
 		while (entry != null) {
 			String filePath = directoryLocation + File.separator + entry.getName();
+			File file = new File(filePath);
 			if (!entry.isDirectory()) {
-				extractFile(zipInputStream, filePath);
+				file.getParentFile().mkdirs();
+				extractFile(zipInputStream, file);
 			} else {
-				File dir = new File(filePath);
-				dir.mkdir();
+				file.mkdirs();
 			}
 			zipInputStream.closeEntry();
 			entry = zipInputStream.getNextEntry();
@@ -103,7 +104,7 @@ public class UnpackingFileSystemImpl {
 		zipInputStream.close();
 	}
 
-	private static void extractFile(ZipInputStream zipInputStream, String path) throws IOException {
+	private static void extractFile(ZipInputStream zipInputStream, File path) throws IOException {
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(path));
 		byte[] bytesIn = new byte[BUFFER_SIZE];
 		int readByte = zipInputStream.read(bytesIn);
