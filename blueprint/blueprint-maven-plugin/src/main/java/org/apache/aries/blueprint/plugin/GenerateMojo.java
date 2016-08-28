@@ -72,7 +72,7 @@ public class GenerateMojo extends AbstractMojo {
 
     /**
      * Base directory to generate into
-     * (relative to ${project.build.directory}/generated-resources).
+     * (relative to ${project.build.directory}/generated-sources/blueprint).
      */
     @Parameter(defaultValue="OSGI-INF/blueprint/")
     private String generatedDir;
@@ -111,7 +111,7 @@ public class GenerateMojo extends AbstractMojo {
 
     private void writeBlueprint(Context context) throws Exception {
         String buildDir = project.getBuild().getDirectory();
-        String generatedBaseDir = buildDir + "/generated-resources";
+        String generatedBaseDir = buildDir + "/generated-sources/blueprint";
         Resource resource = new Resource();
         resource.setDirectory(generatedBaseDir);
         project.addResource(resource);
