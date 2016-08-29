@@ -19,6 +19,8 @@
 package org.apache.aries.blueprint.plugin;
 
 import org.apache.aries.blueprint.plugin.model.Context;
+import org.apache.aries.blueprint.plugin.spi.Activation;
+import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
@@ -99,17 +101,20 @@ public class GenerateMojo extends AbstractMojo {
             ClassFinder finder = createProjectScopeFinder();
 
             Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, scanPaths);
-            Context context = new Context(classes);
+
+            BlueprintConfiguration blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation);
+
+            Context context = new Context(blueprintConfiguration, classes);
             context.resolve();
             if (context.getBeans().size() > 0) {
-                writeBlueprint(context);
+                writeBlueprint(context, blueprintConfiguration);
             }
         } catch (Exception e) {
             throw new MojoExecutionException("Error building commands help", e);
         }
     }
 
-    private void writeBlueprint(Context context) throws Exception {
+    private void writeBlueprint(Context context, BlueprintConfiguration blueprintConfiguration) throws Exception {
         String buildDir = project.getBuild().getDirectory();
         String generatedBaseDir = buildDir + "/generated-sources/blueprint";
         Resource resource = new Resource();
@@ -122,7 +127,7 @@ public class GenerateMojo extends AbstractMojo {
         System.out.println("Generating blueprint to " + file);
 
         OutputStream fos = buildContext.newFileOutputStream(file);
-        new Generator(context, fos, namespaces, defaultActivation).generate();
+        new Generator(context, fos, blueprintConfiguration).generate();
         fos.close();
     }
 

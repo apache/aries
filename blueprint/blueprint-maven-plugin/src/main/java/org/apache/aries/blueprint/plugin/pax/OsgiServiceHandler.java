@@ -18,9 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.pax;
 
-import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import org.ops4j.pax.cdi.api.OsgiService;
 
 import javax.xml.stream.XMLStreamException;
@@ -42,7 +42,7 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
         final Class<?> clazz = getClass(annotatedElement);
 
         contextEnricher.addBean(id, getClass(annotatedElement));
-        contextEnricher.addBlueprintWriter(id, new BlueprintWriter() {
+        contextEnricher.addBlueprintContentWriter("osgiService/" + clazz.getName() + "/" + id, new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
                 writer.writeEmptyElement("reference");
@@ -66,7 +66,7 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
         final String id = name != null ? name : generateReferenceId(clazz, serviceFilter);
 
         contextEnricher.addBean(id, clazz);
-        contextEnricher.addBlueprintWriter(id, new BlueprintWriter() {
+        contextEnricher.addBlueprintContentWriter("osgiService/" + clazz.getName() + "/" + id, new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
                 writer.writeEmptyElement("reference");

@@ -19,14 +19,14 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.Extensions;
-import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
-import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
+import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
@@ -46,21 +46,20 @@ import java.util.TreeSet;
 
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 
-public class Bean extends BeanRef implements ContextEnricher, BeanEnricher {
+public class Bean extends BeanRef implements BeanEnricher {
     public SortedSet<Property> properties = new TreeSet<>();
     public List<Argument> constructorArguments = new ArrayList<>();
     public List<Field> persistenceFields;
-    public Set<TransactionalDef> transactionDefs = new HashSet<>();
     public boolean isPrototype;
     public final Map<String, String> attributes = new HashMap<>();
     public final Set<BeanRef> refs = new HashSet<>();
-    public final Map<String, BlueprintWriter> blueprintWriters = new HashMap<>();
+    public final Map<String, XmlWriter> beanContentWriters = new HashMap<>();
+    protected final ContextEnricher contextEnricher;
 
-    public Bean(Class<?> clazz) {
+    public Bean(Class<?> clazz, ContextEnricher contextEnricher) {
         super(clazz, BeanRef.getBeanName(clazz));
+        this.contextEnricher = contextEnricher;
         Introspector introspector = new Introspector(clazz);
-
-        interpretTransactionalMethods(clazz);
 
         this.isPrototype = isPrototype(clazz);
         this.persistenceFields = findPersistenceFields(introspector);
@@ -72,11 +71,17 @@ public class Bean extends BeanRef implements ContextEnricher, BeanEnricher {
         handleMethodsAnnotation(introspector);
     }
 
+    public void resolve(BlueprinRegister blueprinRegister) {
+        resolveArguments(blueprinRegister);
+        resolveFields(blueprinRegister);
+        resolveMethods(blueprinRegister);
+    }
+
     private void handleMethodsAnnotation(Introspector introspector) {
         for (MethodAnnotationHandler methodAnnotationHandler : Extensions.methodAnnotationHandlers) {
             List<Method> methods = introspector.methodsWith(methodAnnotationHandler.getAnnotation());
             if (methods.size() > 0) {
-                methodAnnotationHandler.handleMethodAnnotation(clazz, methods, this);
+                methodAnnotationHandler.handleMethodAnnotation(clazz, methods, contextEnricher, this);
             }
         }
     }
@@ -85,19 +90,13 @@ public class Bean extends BeanRef implements ContextEnricher, BeanEnricher {
         for (BeanAnnotationHandler beanAnnotationHandler : Extensions.BEAN_ANNOTATION_HANDLERs) {
             Object annotation = AnnotationHelper.findAnnotation(clazz.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
-                beanAnnotationHandler.handleBeanAnnotation(clazz, id, this, this);
+                beanAnnotationHandler.handleBeanAnnotation(clazz, id, contextEnricher, this);
             }
         }
     }
 
     private List<Field> findPersistenceFields(Introspector introspector) {
         return introspector.fieldsWith(PersistenceContext.class, PersistenceUnit.class);
-    }
-
-    private void interpretTransactionalMethods(Class<?> clazz) {
-        for (AbstractTransactionalFactory transactionalFactory : Extensions.transactionalFactories) {
-            transactionDefs.addAll(transactionalFactory.create(clazz));
-        }
     }
 
     private boolean isPrototype(Class<?> clazz) {
@@ -113,11 +112,6 @@ public class Bean extends BeanRef implements ContextEnricher, BeanEnricher {
         return false;
     }
 
-    public void resolve(BlueprinRegister matcher) {
-        resolveArguments(matcher);
-        resolveFields(matcher);
-        resolveMethods(matcher);
-    }
 
     private void resolveMethods(BlueprinRegister blueprinRegister) {
         for (Method method : new Introspector(clazz).methodsWith(AnnotationHelper.injectDependencyAnnotations)) {
@@ -233,17 +227,12 @@ public class Bean extends BeanRef implements ContextEnricher, BeanEnricher {
     }
 
     @Override
-    public void addBean(String id, Class<?> clazz) {
-        refs.add(new BeanRef(clazz, id));
-    }
-
-    @Override
-    public void addBlueprintWriter(String id, BlueprintWriter blueprintWriter) {
-        blueprintWriters.put(id, blueprintWriter);
-    }
-
-    @Override
     public void addAttribute(String key, String value) {
         attributes.put(key, value);
+    }
+
+    @Override
+    public void addBeanContentWriter(String id, XmlWriter blueprintWriter) {
+        beanContentWriters.put(id, blueprintWriter);
     }
 }

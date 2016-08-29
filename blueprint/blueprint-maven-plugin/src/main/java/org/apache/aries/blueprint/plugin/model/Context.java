@@ -19,9 +19,10 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.Extensions;
-import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
+import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
@@ -39,13 +40,15 @@ import java.util.TreeSet;
 public class Context implements BlueprinRegister, ContextEnricher {
 
     SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
-    private final Map<String, BlueprintWriter> blueprintWriters = new HashMap<>();
+    private final Map<String, XmlWriter> blueprintWriters = new HashMap<>();
+    private final BlueprintConfiguration blueprintConfiguration;
 
-    public Context(Class<?>... beanClasses) {
-        this(Arrays.asList(beanClasses));
+    public Context(BlueprintConfiguration blueprintConfiguration, Class<?>... beanClasses) {
+        this(blueprintConfiguration, Arrays.asList(beanClasses));
     }
 
-    public Context(Collection<Class<?>> beanClasses) {
+    public Context(BlueprintConfiguration blueprintConfiguration, Collection<Class<?>> beanClasses) {
+        this.blueprintConfiguration = blueprintConfiguration;
         addBlueprintRefs();
         addBeans(beanClasses);
     }
@@ -64,10 +67,9 @@ public class Context implements BlueprinRegister, ContextEnricher {
     }
 
     private void addBean(Class<?> clazz) {
-        Bean bean = new Bean(clazz);
+        Bean bean = new Bean(clazz, this);
         reg.add(bean);
         reg.addAll(bean.refs);
-        blueprintWriters.putAll(bean.blueprintWriters);
         addProducedBeans(bean);
     }
 
@@ -79,9 +81,9 @@ public class Context implements BlueprinRegister, ContextEnricher {
                 Class<?> producedClass = method.getReturnType();
                 ProducedBean producedBean;
                 if (name != null) {
-                    producedBean = new ProducedBean(producedClass, name, factoryBean, method);
+                    producedBean = new ProducedBean(producedClass, name, factoryBean, method, this);
                 } else {
-                    producedBean = new ProducedBean(producedClass, factoryBean, method);
+                    producedBean = new ProducedBean(producedClass, factoryBean, method, this);
                 }
                 if (AnnotationHelper.findSingletons(method.getAnnotations())) {
                     producedBean.setSingleton();
@@ -121,7 +123,7 @@ public class Context implements BlueprinRegister, ContextEnricher {
         return beans;
     }
 
-    public Map<String, BlueprintWriter> getBlueprintWriters() {
+    public Map<String, XmlWriter> getBlueprintWriters() {
         return blueprintWriters;
     }
 
@@ -132,7 +134,12 @@ public class Context implements BlueprinRegister, ContextEnricher {
     }
 
     @Override
-    public void addBlueprintWriter(String id, BlueprintWriter blueprintWriter) {
+    public void addBlueprintContentWriter(String id, XmlWriter blueprintWriter) {
         blueprintWriters.put(id, blueprintWriter);
+    }
+
+    @Override
+    public BlueprintConfiguration getBlueprintConfiguration() {
+        return blueprintConfiguration;
     }
 }

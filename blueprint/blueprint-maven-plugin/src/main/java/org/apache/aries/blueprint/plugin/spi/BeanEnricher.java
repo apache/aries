@@ -20,4 +20,5 @@ package org.apache.aries.blueprint.plugin.spi;
 
 public interface BeanEnricher {
     void addAttribute(String key, String value);
+    void addBeanContentWriter(String id, XmlWriter blueprintWriter);
 }

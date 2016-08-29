@@ -18,3 +18,5 @@
 org.apache.aries.blueprint.plugin.pax.OsgiServiceProviderHandler
 org.apache.aries.blueprint.plugin.spring.LazyAttributeResolver
 org.apache.aries.blueprint.plugin.spring.DependsOnAttributeResolver
+org.apache.aries.blueprint.plugin.spring.SpringTransactionalFactory
+org.apache.aries.blueprint.plugin.javax.JavaxTransactionFactory

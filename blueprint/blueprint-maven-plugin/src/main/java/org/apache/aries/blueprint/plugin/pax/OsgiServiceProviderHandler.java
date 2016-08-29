@@ -21,7 +21,7 @@ package org.apache.aries.blueprint.plugin.pax;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
-import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
@@ -60,7 +60,7 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
 
         final Map<String, String> propertiesAsMap = extractProperties(properties);
 
-        contextEnricher.addBlueprintWriter("OsgiServiceProvider/" + annotatedElement + "/" + id, new BlueprintWriter() {
+        contextEnricher.addBlueprintContentWriter("OsgiServiceProvider/" + annotatedElement + "/" + id, new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
                 writeService(writer, propertiesAsMap, interfaceNames, id);

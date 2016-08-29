@@ -18,8 +18,6 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.model.AbstractTransactionalFactory;
-import org.apache.aries.blueprint.plugin.model.ExtensionTransactionFactory;
 import org.apache.aries.blueprint.plugin.spi.BeanFinder;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
@@ -27,7 +25,6 @@ import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandle
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
-import org.apache.aries.blueprint.plugin.spi.TransactionalFactory;
 import org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler;
 
 import java.lang.annotation.Annotation;
@@ -38,7 +35,6 @@ import java.util.ServiceLoader;
 public class Extensions {
     public static final List<Class<? extends Annotation>> beanMarkingAnnotationClasses = new ArrayList<>();
     public static final List<Class<? extends Annotation>> singletons = new ArrayList<>();
-    public static final List<AbstractTransactionalFactory> transactionalFactories = new ArrayList<>();
     public static final List<InjectLikeHandler<? extends Annotation>> beanInjectLikeHandlers = new ArrayList<>();
     public static final List<NamedLikeHandler> namedLikeHandlers = new ArrayList<>();
     public static final List<ValueInjectionHandler<? extends Annotation>> valueInjectionHandlers = new ArrayList<>();
@@ -53,10 +49,6 @@ public class Extensions {
             if (beanFinder.isSingleton()) {
                 singletons.add(beanFinder.beanAnnotation());
             }
-        }
-
-        for (TransactionalFactory transactionalFactory : ServiceLoader.load(TransactionalFactory.class)) {
-            transactionalFactories.add(new ExtensionTransactionFactory(transactionalFactory));
         }
 
         for (InjectLikeHandler<? extends Annotation> injectLikeHandler : ServiceLoader.load(InjectLikeHandler.class)) {

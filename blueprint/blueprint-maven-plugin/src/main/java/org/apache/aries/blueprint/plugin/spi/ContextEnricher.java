@@ -20,5 +20,6 @@ package org.apache.aries.blueprint.plugin.spi;
 
 public interface ContextEnricher {
     void addBean(String id, Class<?> clazz);
-    void addBlueprintWriter(String id, BlueprintWriter blueprintWriter);
+    void addBlueprintContentWriter(String id, XmlWriter blueprintWriter);
+    BlueprintConfiguration getBlueprintConfiguration();
 }
