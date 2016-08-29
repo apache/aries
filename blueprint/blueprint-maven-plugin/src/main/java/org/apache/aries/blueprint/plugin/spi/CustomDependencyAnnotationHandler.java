@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -16,8 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.spi;
 
-public interface Matcher {
-    BeanRef getMatching(BeanRef template);
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+
+public interface CustomDependencyAnnotationHandler<A extends Annotation> {
+    Class<A> getAnnotation();
+
+    String handleDependencyAnnotation(AnnotatedElement annotatedElement, String name, ContextEnricher contextEnricher);
+
+    String handleDependencyAnnotation(Class<?> clazz, A annotation, String name, ContextEnricher contextEnricher);
 }

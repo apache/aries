@@ -57,7 +57,7 @@ public class ProducedBean extends Bean {
     }
 
     @Override
-    protected void resolveArguments(Matcher matcher) {
+    protected void resolveArguments(BlueprinRegister matcher) {
         resolveArguments(matcher, producingMethod.getParameterTypes(), producingMethod.getParameterAnnotations());
     }
 }

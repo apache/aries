@@ -75,10 +75,8 @@ public class BeanWithSetters {
     }
 
     @Inject
-    @OsgiService(filter = "(type=B1Ref)")
-    public void setServiceBRef(ServiceB serviceBRef) {
+    public void setServiceBRef(@OsgiService(filter = "(type=B1Ref)") ServiceB serviceBRef) {
     }
-
 
     @Inject
     @Named("serviceB2IdRef")
