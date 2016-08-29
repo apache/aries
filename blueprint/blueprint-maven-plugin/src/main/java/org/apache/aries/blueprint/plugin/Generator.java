@@ -43,8 +43,6 @@ public class Generator implements PropertyWriter, ArgumentWriter {
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
     public static final String NS_JPA = "http://aries.apache.org/xmlns/jpa/v1.1.0";
     public static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
-    public static final String NS_TX = "http://aries.apache.org/xmlns/transactions/v1.2.0";
-    public static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
 
     private final Context context;
     private final BlueprintConfiguration blueprintConfiguration;

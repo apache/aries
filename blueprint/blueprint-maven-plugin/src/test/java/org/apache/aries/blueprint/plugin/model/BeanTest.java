@@ -28,6 +28,7 @@ import org.apache.aries.blueprint.plugin.bad.BadFieldBean1;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean2;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean3;
 import org.apache.aries.blueprint.plugin.bad.FieldBean4;
+import org.apache.aries.blueprint.plugin.javax.JavaxTransactionFactory;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BeanTest {
-    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, Generator.NS_TX));
+    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, JavaxTransactionFactory.NS_TX));
     private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null);
     private final Context context = new Context(blueprintConfiguration);
 

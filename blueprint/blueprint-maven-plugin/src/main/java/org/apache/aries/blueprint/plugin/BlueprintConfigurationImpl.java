@@ -8,9 +8,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.apache.aries.blueprint.plugin.Generator.NS_JPA2;
-import static org.apache.aries.blueprint.plugin.Generator.NS_TX2;
 
 public class BlueprintConfigurationImpl implements BlueprintConfiguration {
+    public static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
+
     private final Set<String> namespaces;
     private final Activation defaultActivation;
 
