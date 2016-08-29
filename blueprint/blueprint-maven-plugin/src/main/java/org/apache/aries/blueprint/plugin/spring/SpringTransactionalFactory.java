@@ -34,8 +34,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 public class SpringTransactionalFactory implements BeanAnnotationHandler<Transactional>, MethodAnnotationHandler<Transactional> {
-    private static final String NS_TX = "http://aries.apache.org/xmlns/transactions/v1.2.0";
-    private static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
+    public static final String NS_TX = "http://aries.apache.org/xmlns/transactions/v1.2.0";
+    public static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
 
     private String getTransactionTypeName(Transactional transactional) {
         Propagation propagation = transactional.propagation();
