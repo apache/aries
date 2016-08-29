@@ -20,7 +20,7 @@ package org.apache.aries.blueprint.plugin.model;
 
 
 import org.apache.aries.blueprint.plugin.Extensions;
-import org.apache.aries.blueprint.plugin.spi.BeanAttributesResolver;
+import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 
 import java.lang.reflect.Method;
 
@@ -41,13 +41,14 @@ public class ProducedBean extends Bean {
         this.factoryBean = factoryBean;
         this.factoryMethod = factoryMethod.getName();
         this.producingMethod = factoryMethod;
-        resolveBeanAttributes();
+        handleCustomBeanAnnotations();
     }
 
-    private void resolveBeanAttributes() {
-        for (BeanAttributesResolver beanAttributesResolver : Extensions.beanAttributesResolvers) {
-            if (producingMethod.getAnnotation(beanAttributesResolver.getAnnotation()) != null) {
-                attributes.putAll(beanAttributesResolver.resolveAttributes(clazz, producingMethod));
+    private void handleCustomBeanAnnotations() {
+        for (BeanAnnotationHandler beanAnnotationHandler : Extensions.BEAN_ANNOTATION_HANDLERs) {
+            Object annotation = AnnotationHelper.findAnnotation(producingMethod.getAnnotations(), beanAnnotationHandler.getAnnotation());
+            if (annotation != null) {
+                beanAnnotationHandler.handleBeanAnnotation(producingMethod, id, this, this);
             }
         }
     }

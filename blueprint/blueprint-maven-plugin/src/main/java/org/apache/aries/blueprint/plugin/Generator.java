@@ -163,12 +163,6 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         if (bean instanceof ProducedBean) {
             writeFactory((ProducedBean) bean);
         }
-        if (bean.initMethod != null) {
-            writer.writeAttribute("init-method", bean.initMethod);
-        }
-        if (bean.destroyMethod != null) {
-            writer.writeAttribute("destroy-method", bean.destroyMethod);
-        }
         writer.writeCharacters("\n");
 
         if (namespaces.contains(NS_TX)) {

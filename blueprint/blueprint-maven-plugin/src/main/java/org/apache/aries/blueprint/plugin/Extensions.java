@@ -20,12 +20,12 @@ package org.apache.aries.blueprint.plugin;
 
 import org.apache.aries.blueprint.plugin.model.AbstractTransactionalFactory;
 import org.apache.aries.blueprint.plugin.model.ExtensionTransactionFactory;
-import org.apache.aries.blueprint.plugin.spi.BeanAttributesResolver;
 import org.apache.aries.blueprint.plugin.spi.BeanFinder;
-import org.apache.aries.blueprint.plugin.spi.CustomBeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
+import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.TransactionalFactory;
 import org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler;
@@ -39,13 +39,13 @@ public class Extensions {
     public static final List<Class<? extends Annotation>> beanMarkingAnnotationClasses = new ArrayList<>();
     public static final List<Class<? extends Annotation>> singletons = new ArrayList<>();
     public static final List<AbstractTransactionalFactory> transactionalFactories = new ArrayList<>();
-    public static final List<BeanAttributesResolver> beanAttributesResolvers = new ArrayList<>();
     public static final List<InjectLikeHandler<? extends Annotation>> beanInjectLikeHandlers = new ArrayList<>();
     public static final List<NamedLikeHandler> namedLikeHandlers = new ArrayList<>();
     public static final List<ValueInjectionHandler<? extends Annotation>> valueInjectionHandlers = new ArrayList<>();
-    public static final List<CustomBeanAnnotationHandler<? extends Annotation>> customBeanAnnotationHandlers = new ArrayList<>();
+    public static final List<BeanAnnotationHandler<? extends Annotation>> BEAN_ANNOTATION_HANDLERs = new ArrayList<>();
     public static final List<CustomFactoryMethodAnnotationHandler<? extends Annotation>> customFactoryMethodAnnotationHandlers = new ArrayList<>();
     public static final List<CustomDependencyAnnotationHandler<? extends Annotation>> customDependencyAnnotationHandlers = new ArrayList<>();
+    public static final List<MethodAnnotationHandler<? extends Annotation>> methodAnnotationHandlers = new ArrayList<>();
 
     static {
         for (BeanFinder beanFinder : ServiceLoader.load(BeanFinder.class)) {
@@ -57,10 +57,6 @@ public class Extensions {
 
         for (TransactionalFactory transactionalFactory : ServiceLoader.load(TransactionalFactory.class)) {
             transactionalFactories.add(new ExtensionTransactionFactory(transactionalFactory));
-        }
-
-        for (BeanAttributesResolver beanAttributesResolverExtenstion : ServiceLoader.load(BeanAttributesResolver.class)) {
-            beanAttributesResolvers.add(beanAttributesResolverExtenstion);
         }
 
         for (InjectLikeHandler<? extends Annotation> injectLikeHandler : ServiceLoader.load(InjectLikeHandler.class)) {
@@ -75,8 +71,8 @@ public class Extensions {
             valueInjectionHandlers.add(valueInjectionHandler);
         }
 
-        for (CustomBeanAnnotationHandler<? extends Annotation> customBeanAnnotationHandler : ServiceLoader.load(CustomBeanAnnotationHandler.class)) {
-            customBeanAnnotationHandlers.add(customBeanAnnotationHandler);
+        for (BeanAnnotationHandler<? extends Annotation> beanAnnotationHandler : ServiceLoader.load(BeanAnnotationHandler.class)) {
+            BEAN_ANNOTATION_HANDLERs.add(beanAnnotationHandler);
         }
 
         for (CustomFactoryMethodAnnotationHandler<? extends Annotation> customFactoryMethodAnnotationHandler : ServiceLoader.load(CustomFactoryMethodAnnotationHandler.class)) {
@@ -85,6 +81,10 @@ public class Extensions {
 
         for (CustomDependencyAnnotationHandler<? extends Annotation> customDependencyAnnotationHandler : ServiceLoader.load(CustomDependencyAnnotationHandler.class)) {
             customDependencyAnnotationHandlers.add(customDependencyAnnotationHandler);
+        }
+
+        for (MethodAnnotationHandler<? extends Annotation> methodAnnotationHandler : ServiceLoader.load(MethodAnnotationHandler.class)) {
+            methodAnnotationHandlers.add(methodAnnotationHandler);
         }
     }
 }

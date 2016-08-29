@@ -39,7 +39,6 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class BeanTest {
@@ -50,8 +49,6 @@ public class BeanTest {
         bean.resolve(new Context());
         assertEquals(MyBean1.class, bean.clazz);
         assertEquals("myBean1", bean.id); // Name derived from class name
-        assertEquals("init", bean.initMethod);
-        assertEquals("destroy", bean.destroyMethod);
         Assert.assertEquals(2, bean.persistenceFields.size());
         assertEquals("em", bean.persistenceFields.get(0).getName());
         assertEquals("emf", bean.persistenceFields.get(1).getName());
@@ -77,8 +74,6 @@ public class BeanTest {
         bean.resolve(new Context());
         assertEquals(MyBean3.class, bean.clazz);
         assertEquals("myBean3", bean.id); // Name derived from class name
-        assertNull("There should be no initMethod", bean.initMethod);
-        assertNull("There should be no destroyMethod", bean.destroyMethod);
         assertEquals("There should be no persistence fields", 0, bean.persistenceFields.size());
         assertEquals(5, bean.properties.size());
         assertTrue(bean.isPrototype);
@@ -100,8 +95,6 @@ public class BeanTest {
         String definedName = ServiceAImpl1.class.getAnnotation(Named.class).value();
         assertEquals("my1", definedName);
         assertEquals("Name should be defined using @Named", definedName, bean.id);
-        assertNull("There should be no initMethod", bean.initMethod);
-        assertNull("There should be no destroyMethod", bean.destroyMethod);
         assertEquals("There should be no persistence fields", 0, bean.persistenceFields.size());
         assertTrue("There should be no transaction definition", bean.transactionDefs.isEmpty());
         assertEquals("There should be no properties", 0, bean.properties.size());
@@ -162,8 +155,6 @@ public class BeanTest {
         bean.resolve(new Context());
         assertEquals(MyBean5.class, bean.clazz);
         assertEquals("myBean5", bean.id); // Name derived from class name
-        assertNull("There should be no initMethod", bean.initMethod);
-        assertNull("There should be no destroyMethod", bean.destroyMethod);
         assertTrue("There should be no persistenceUnit", bean.persistenceFields.isEmpty());
         assertEquals(0, bean.properties.size());
         assertEquals(8, bean.constructorArguments.size());
