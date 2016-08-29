@@ -66,6 +66,7 @@ public class Generator implements PropertyWriter, ArgumentWriter {
 
             for (XmlWriter bw : context.getBlueprintWriters().values()) {
                 bw.write(writer);
+                writer.writeCharacters("\n");
             }
 
             writer.writeEndElement();
@@ -108,7 +109,9 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         writer.writeCharacters("\n");
 
         for (XmlWriter xmlWriter : bean.beanContentWriters.values()) {
+            writer.writeCharacters("    ");
             xmlWriter.write(writer);
+            writer.writeCharacters("\n");
         }
     }
 

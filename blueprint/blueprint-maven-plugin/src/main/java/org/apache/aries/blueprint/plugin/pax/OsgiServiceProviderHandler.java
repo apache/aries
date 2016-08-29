@@ -20,11 +20,11 @@ package org.apache.aries.blueprint.plugin.pax;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
+import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
 import org.ops4j.pax.cdi.api.Property;
@@ -88,15 +88,12 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
             writeInterfacesElement(writer, interfaceNames);
         }
 
-        writer.writeCharacters("\n");
-
         if (!propertiesAsMap.isEmpty()) {
             writeProperties(writer, propertiesAsMap);
         }
 
         if (!writeEmptyElement) {
             writer.writeEndElement();
-            writer.writeCharacters("\n");
         }
     }
 
@@ -132,6 +129,7 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
         }
         writer.writeCharacters("    ");
         writer.writeEndElement();
+        writer.writeCharacters("\n");
     }
 
     private void writeProperties(XMLStreamWriter writer, Map<String, String> properties) throws XMLStreamException {

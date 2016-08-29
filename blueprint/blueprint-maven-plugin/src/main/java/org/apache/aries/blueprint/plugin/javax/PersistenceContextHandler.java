@@ -47,7 +47,8 @@ public class PersistenceContextHandler implements FieldAnnotationHandler<Persist
                 beanEnricher.addBeanContentWriter("javax.persistence.field.context/" + name, new XmlWriter() {
                     @Override
                     public void write(XMLStreamWriter writer) throws XMLStreamException {
-                        writer.writeEmptyElement("jpa", "context", NS_JPA);
+                        writer.writeEmptyElement("context");
+                        writer.writeDefaultNamespace(NS_JPA);
                         writer.writeAttribute("unitname", persistenceContext.unitName());
                         writer.writeAttribute("property", name);
                     }
@@ -58,7 +59,8 @@ public class PersistenceContextHandler implements FieldAnnotationHandler<Persist
             contextEnricher.addBlueprintContentWriter("javax.persistence.enableJpa2", new XmlWriter() {
                 @Override
                 public void write(XMLStreamWriter writer) throws XMLStreamException {
-                    writer.writeEmptyElement("jpa", "enable", NS_JPA2);
+                    writer.writeEmptyElement("enable");
+                    writer.writeDefaultNamespace(NS_JPA2);
                 }
             });
         }

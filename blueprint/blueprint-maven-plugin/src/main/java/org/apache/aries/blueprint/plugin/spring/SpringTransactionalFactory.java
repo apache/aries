@@ -61,10 +61,10 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
                 beanEnricher.addBeanContentWriter("javax.transactional.method/" + clazz.getName() + "/" + name + "/" + transactionTypeName, new XmlWriter() {
                     @Override
                     public void write(XMLStreamWriter writer) throws XMLStreamException {
-                        writer.writeEmptyElement("tx", "transaction", NS_TX);
+                        writer.writeEmptyElement("transaction");
+                        writer.writeDefaultNamespace(NS_TX);
                         writer.writeAttribute("method", name);
                         writer.writeAttribute("value", transactionTypeName);
-                        writer.writeCharacters("\n");
                     }
                 });
             }
@@ -78,7 +78,8 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
         contextEnricher.addBlueprintContentWriter("transaction/ennable-annotation", new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
-                writer.writeEmptyElement("tx", "enable-annotations", NS_TX);
+                writer.writeEmptyElement("enable-annotations");
+                writer.writeDefaultNamespace(NS_TX);
             }
         });
     }
@@ -92,10 +93,10 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
             beanEnricher.addBeanContentWriter("javax.transactional.method/" + annotatedElement + "/*/" + transactionTypeName, new XmlWriter() {
                 @Override
                 public void write(XMLStreamWriter writer) throws XMLStreamException {
-                    writer.writeEmptyElement("tx", "transaction", NS_TX);
+                    writer.writeEmptyElement("transaction");
+                    writer.writeDefaultNamespace(NS_TX);
                     writer.writeAttribute("method", "*");
                     writer.writeAttribute("value", transactionTypeName);
-                    writer.writeCharacters("\n");
                 }
             });
         }
@@ -108,7 +109,8 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
         contextEnricher.addBlueprintContentWriter("transaction/ennable-annotation", new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
-                writer.writeEmptyElement("tx", "enable", NS_TX2);
+                writer.writeEmptyElement("enable");
+                writer.writeDefaultNamespace(NS_TX2);
             }
         });
     }

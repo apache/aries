@@ -54,7 +54,6 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
                 if (serviceFilter.compName != null && !"".equals(serviceFilter.compName)) {
                     writer.writeAttribute("component-name", serviceFilter.compName);
                 }
-                writer.writeCharacters("\n");
             }
         });
         return id;
@@ -78,7 +77,6 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
                 if (serviceFilter.compName != null && !"".equals(serviceFilter.compName)) {
                     writer.writeAttribute("component-name", serviceFilter.compName);
                 }
-                writer.writeCharacters("\n");
             }
         });
         return id;
