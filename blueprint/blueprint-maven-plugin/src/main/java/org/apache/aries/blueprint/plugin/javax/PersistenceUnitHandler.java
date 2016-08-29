@@ -47,7 +47,8 @@ public class PersistenceUnitHandler implements FieldAnnotationHandler<Persistenc
                 beanEnricher.addBeanContentWriter("javax.persistence.field.unit/" + name, new XmlWriter() {
                     @Override
                     public void write(XMLStreamWriter writer) throws XMLStreamException {
-                        writer.writeEmptyElement("jpa", "unit", NS_JPA);
+                        writer.writeEmptyElement("unit");
+                        writer.writeDefaultNamespace(NS_JPA);
                         writer.writeAttribute("unitname", persistenceUnit.unitName());
                         writer.writeAttribute("property", name);
                     }
@@ -58,7 +59,8 @@ public class PersistenceUnitHandler implements FieldAnnotationHandler<Persistenc
             contextEnricher.addBlueprintContentWriter("javax.persistence.enableJpa2", new XmlWriter() {
                 @Override
                 public void write(XMLStreamWriter writer) throws XMLStreamException {
-                    writer.writeEmptyElement("jpa", "enable", NS_JPA2);
+                    writer.writeEmptyElement("enable");
+                    writer.writeDefaultNamespace(NS_JPA2);
                 }
             });
         }
