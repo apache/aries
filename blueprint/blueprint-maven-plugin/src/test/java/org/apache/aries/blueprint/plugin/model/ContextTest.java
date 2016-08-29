@@ -18,14 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import static org.junit.Assert.assertEquals;
-
-import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyFactoryBean;
 import org.apache.aries.blueprint.plugin.test.MyProduced;
-import org.apache.aries.blueprint.plugin.test.ServiceB;
-import org.apache.aries.blueprint.plugin.test.ServiceReferences;
-import org.apache.aries.blueprint.plugin.test.ServiceReferencesParent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -33,30 +27,32 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
 
+import static org.junit.Assert.assertEquals;
+
 public class ContextTest {
 
-    @Test
-    public void testLists()  {
-        Context context = new Context(MyBean3.class);
-        Assert.assertEquals(1, context.getBeans().size());
-        Assert.assertEquals(0, context.getServiceRefs().size());
-    }
+//    @Test
+//    public void testLists()  {
+//        Context context = new Context(MyBean3.class);
+//        Assert.assertEquals(1, context.getBeans().size());
+//        Assert.assertEquals(0, context.getServiceRefs().size());
+//    }
+//
+//    @Test
+//    public void testLists2()  {
+//        Context context = new Context(ServiceReferences.class);
+//        Assert.assertEquals(1, context.getBeans().size());
+//        Assert.assertEquals(3, context.getServiceRefs().size());
+//    }
 
-    @Test
-    public void testLists2()  {
-        Context context = new Context(ServiceReferences.class);
-        Assert.assertEquals(1, context.getBeans().size());
-        Assert.assertEquals(3, context.getServiceRefs().size());
-    }
-
-    @Test
-    public void testMatching() throws NoSuchFieldException, SecurityException  {
-        Context context = new Context(ServiceReferences.class);
-        BeanRef matching = context.getMatching(new BeanRef(ServiceReferencesParent.class.getDeclaredField("serviceB")));
-        Assert.assertEquals(OsgiServiceRef.class, matching.getClass());
-        Assert.assertEquals(ServiceB.class, matching.clazz);
-        Assert.assertEquals("serviceB-typeB1", matching.id);
-    }
+//    @Test
+//    public void testMatching() throws NoSuchFieldException, SecurityException  {
+//        Context context = new Context(ServiceReferences.class);
+//        BeanRef matching = context.getMatching(new BeanRef(ServiceReferencesParent.class.getDeclaredField("serviceB")));
+//        Assert.assertEquals(OsgiServiceRef.class, matching.getClass());
+//        Assert.assertEquals(ServiceB.class, matching.clazz);
+//        Assert.assertEquals("serviceB-typeB1", matching.id);
+//    }
 
     private void assertSpecialRef(String expectedId, Class<?> clazz) {
         Context context = new Context();

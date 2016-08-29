@@ -18,27 +18,28 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.model.service.ServiceProvider;
-import org.ops4j.pax.cdi.api.OsgiService;
+import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
+import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
 
 import javax.enterprise.inject.Produces;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Context implements Matcher {
+public class Context implements BlueprinRegister, ContextEnricher {
 
     SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
-    private final List<ServiceProvider> serviceProviders = new ArrayList<>();
+    private final Map<String, BlueprintWriter> blueprintWriters = new HashMap<>();
 
     public Context(Class<?>... beanClasses) {
         this(Arrays.asList(beanClasses));
@@ -65,13 +66,9 @@ public class Context implements Matcher {
     private void addBean(Class<?> clazz) {
         Bean bean = new Bean(clazz);
         reg.add(bean);
-        addServiceRefs(clazz);
+        reg.addAll(bean.refs);
+        blueprintWriters.putAll(bean.blueprintWriters);
         addProducedBeans(bean);
-        addServiceProviders(bean);
-    }
-
-    private void addServiceProviders(Bean bean) {
-        serviceProviders.addAll(bean.serviceProviders);
     }
 
     private void addProducedBeans(BeanRef factoryBean) {
@@ -90,32 +87,19 @@ public class Context implements Matcher {
                     producedBean.setSingleton();
                 }
                 reg.add(producedBean);
-                ServiceProvider serviceProvider = ServiceProvider.fromMethod(producedBean, method);
-                if (serviceProvider != null) {
-                    serviceProviders.add(serviceProvider);
+                for (CustomFactoryMethodAnnotationHandler customFactoryMethodAnnotationHandler : Extensions.customFactoryMethodAnnotationHandlers) {
+                    if (AnnotationHelper.findAnnotation(method.getAnnotations(), customFactoryMethodAnnotationHandler.getAnnotation()) != null) {
+                        customFactoryMethodAnnotationHandler.handleFactoryMethodAnnotation(method, producedBean.id, this);
+                    }
                 }
             }
-        }
-    }
-
-    private void addServiceRefs(Class<?> clazz) {
-        for (Field field : new Introspector(clazz).fieldsWith(OsgiService.class)) {
-            reg.add(new OsgiServiceRef(field));
-        }
-        for (Method method : new Introspector(clazz).methodsWith(OsgiService.class)) {
-            reg.add(new OsgiServiceRef(method));
         }
     }
 
     public void resolve() {
         for (Bean bean : getBeans()) {
             bean.resolve(this);
-            addServiceRefs(bean);
         }
-    }
-
-    private void addServiceRefs(Bean bean) {
-        reg.addAll(bean.serviceRefs);
     }
 
     public BeanRef getMatching(BeanRef template) {
@@ -137,17 +121,18 @@ public class Context implements Matcher {
         return beans;
     }
 
-    public SortedSet<OsgiServiceRef> getServiceRefs() {
-        TreeSet<OsgiServiceRef> serviceRefs = new TreeSet<OsgiServiceRef>();
-        for (BeanRef ref : reg) {
-            if (ref instanceof OsgiServiceRef) {
-                serviceRefs.add((OsgiServiceRef) ref);
-            }
-        }
-        return serviceRefs;
+    public Map<String, BlueprintWriter> getBlueprintWriters() {
+        return blueprintWriters;
     }
 
-    public List<ServiceProvider> getServiceProviders() {
-        return serviceProviders;
+    @Override
+    public void addBean(String id, Class<?> clazz) {
+        reg.add(new BeanRef(clazz, id));
+
+    }
+
+    @Override
+    public void addBlueprintWriter(String id, BlueprintWriter blueprintWriter) {
+        blueprintWriters.put(id, blueprintWriter);
     }
 }

@@ -19,8 +19,10 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -38,14 +40,28 @@ public class Property implements Comparable<Property> {
         this.isField = isField;
     }
 
-    public static Property create(Matcher matcher, Field field) {
+    public static Property create(BlueprinRegister blueprinRegister, Field field) {
         if (needsInject(field)) {
             String value = AnnotationHelper.findValue(field.getAnnotations());
             if (value != null) {
                 return new Property(field.getName(), null, value, true);
             }
-            BeanRef matching = matcher.getMatching(new BeanRef(field));
-            String ref = (matching == null) ? getRefName(field) : matching.id;
+            String ref = getForcedRefName(field);
+            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
+                Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(field.getAnnotations(), customDependencyAnnotationHandler.getAnnotation());
+                if (annotation != null) {
+                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(field, ref, blueprinRegister);
+                    if (generatedRef != null) {
+                        ref = generatedRef;
+                        break;
+                    }
+                }
+            }
+            if (ref != null) {
+                return new Property(field.getName(), ref, null, true);
+            }
+            BeanRef matching = blueprinRegister.getMatching(new BeanRef(field));
+            ref = (matching == null) ? getDefaultRefName(field) : matching.id;
             return new Property(field.getName(), ref, null, true);
         } else {
             // Field is not a property
@@ -53,7 +69,7 @@ public class Property implements Comparable<Property> {
         }
     }
 
-    public static Property create(Matcher matcher, Method method) {
+    public static Property create(BlueprinRegister blueprinRegister, Method method) {
         String propertyName = resolveProperty(method);
         if (propertyName == null) {
             return null;
@@ -65,9 +81,41 @@ public class Property implements Comparable<Property> {
         }
 
         if (needsInject(method)) {
+            String ref = getForcedRefName(method);
+            if (ref == null) {
+                ref = getForcedRefName(method.getParameterAnnotations()[0]);
+            }
+            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
+                Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(method.getAnnotations(), customDependencyAnnotationHandler.getAnnotation());
+                if (annotation != null) {
+                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(method, ref, blueprinRegister);
+                    if (generatedRef != null) {
+                        ref = generatedRef;
+                        break;
+                    }
+                }
+            }
+            if (ref != null) {
+                return new Property(propertyName, ref, null, false);
+            }
+
+            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
+                Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(method.getParameterAnnotations()[0], customDependencyAnnotationHandler.getAnnotation());
+                if (annotation != null) {
+                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(method.getParameterTypes()[0], annotation, ref, blueprinRegister);
+                    if (generatedRef != null) {
+                        ref = generatedRef;
+                        break;
+                    }
+                }
+            }
+            if (ref != null) {
+                return new Property(propertyName, ref, null, false);
+            }
+
             BeanRef beanRef = new BeanRef(method);
-            BeanRef matching = matcher.getMatching(beanRef);
-            String ref = (matching == null) ? beanRef.id : matching.id;
+            BeanRef matching = blueprinRegister.getMatching(beanRef);
+            ref = (matching == null) ? beanRef.id : matching.id;
             return new Property(propertyName, ref, null, false);
         }
 
@@ -88,7 +136,11 @@ public class Property implements Comparable<Property> {
      * @param field
      * @return
      */
-    private static String getRefName(Field field) {
+    private static String getDefaultRefName(Field field) {
+        return Bean.getBeanName(field.getType());
+    }
+
+    private static String getForcedRefName(Field field) {
         for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
             if (field.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
                 String name = namedLikeHandler.getName(field.getType(), field);
@@ -97,7 +149,32 @@ public class Property implements Comparable<Property> {
                 }
             }
         }
-        return Bean.getBeanName(field.getType());
+        return null;
+    }
+
+    private static String getForcedRefName(Method method) {
+        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+            if (method.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
+                String name = namedLikeHandler.getName(method.getParameterTypes()[0], method);
+                if (name != null) {
+                    return name;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String getForcedRefName(Annotation[] annotations) {
+        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+            Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(annotations, namedLikeHandler.getAnnotation());
+            if (annotation != null) {
+                String name = namedLikeHandler.getName(annotation);
+                if (name != null) {
+                    return name;
+                }
+            }
+        }
+        return null;
     }
 
     private static boolean needsInject(AnnotatedElement annotatedElement) {

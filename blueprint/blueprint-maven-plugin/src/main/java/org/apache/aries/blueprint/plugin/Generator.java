@@ -26,7 +26,7 @@ import org.apache.aries.blueprint.plugin.model.ProducedBean;
 import org.apache.aries.blueprint.plugin.model.Property;
 import org.apache.aries.blueprint.plugin.model.PropertyWriter;
 import org.apache.aries.blueprint.plugin.model.TransactionalDef;
-import org.apache.aries.blueprint.plugin.model.service.ServiceProviderWriter;
+import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
 
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
@@ -89,8 +89,9 @@ public class Generator implements PropertyWriter, ArgumentWriter {
                 writer.writeCharacters("\n");
             }
 
-            new OsgiServiceRefWriter(writer).write(context.getServiceRefs());
-            new ServiceProviderWriter(writer).write(context.getServiceProviders());
+            for (BlueprintWriter bw : context.getBlueprintWriters().values()) {
+                bw.write(writer);
+            }
 
             writer.writeEndElement();
             writer.writeCharacters("\n");

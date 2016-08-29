@@ -277,7 +277,7 @@ public class GeneratorTest {
 
         assertXpathEquals(bean1, "property[@name='myValue']/@value", "test");
         assertXpathEquals(bean1, "property[@name='serviceA1']/@ref", "my1");
-        assertXpathEquals(bean1, "property[@name='serviceA2']/@ref", "my1");
+        assertXpathEquals(bean1, "property[@name='serviceA2']/@ref", "my2");
         assertXpathEquals(bean1, "property[@name='serviceB']/@ref", "serviceABImpl");
         assertXpathEquals(bean1, "property[@name='serviceB2']/@ref", "serviceB2Id");
         assertXpathEquals(bean1, "property[@name='serviceBRef']/@ref", "serviceB-typeB1Ref");
