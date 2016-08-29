@@ -28,21 +28,15 @@ import org.apache.aries.blueprint.plugin.model.PropertyWriter;
 import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 
 public class Generator implements PropertyWriter, ArgumentWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
-    public static final String NS_JPA = "http://aries.apache.org/xmlns/jpa/v1.1.0";
-    public static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
 
     private final Context context;
     private final BlueprintConfiguration blueprintConfiguration;
@@ -62,10 +56,6 @@ public class Generator implements PropertyWriter, ArgumentWriter {
             writeBlueprint();
             writer.writeCharacters("\n");
 
-            if (blueprintConfiguration.getNamespaces().contains(NS_JPA2) && isJpaUsed()) {
-                writer.writeEmptyElement(NS_JPA2, "enable");
-                writer.writeCharacters("\n");
-            }
             for (Bean bean : context.getBeans()) {
                 writeBeanStart(bean);
                 bean.writeArguments(this);
@@ -88,37 +78,13 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         }
     }
 
-    private boolean isJpaUsed() {
-        boolean jpaUsed = false;
-        for (Bean bean : context.getBeans()) {
-            if (bean.persistenceFields.size() > 0) {
-                jpaUsed = true;
-            }
-        }
-        return jpaUsed;
-    }
-
     private void writeBlueprint() throws XMLStreamException {
         writer.writeStartElement("blueprint");
         writer.writeDefaultNamespace(NS_BLUEPRINT);
         writer.writeNamespace("ext", NS_EXT);
-        for (String namespace : blueprintConfiguration.getNamespaces()) {
-            String prefix = getPrefixForNamesapace(namespace);
-            writer.writeNamespace(prefix, namespace);
-        }
         if (blueprintConfiguration.getDefaultActivation() != null) {
             writer.writeAttribute("default-activation", blueprintConfiguration.getDefaultActivation().name().toLowerCase());
         }
-    }
-
-    private String getPrefixForNamesapace(String namespace) {
-        if (namespace.contains("jpa")) {
-            return "jpa";
-        }
-        if (namespace.contains("transactions")) {
-            return "tx";
-        }
-        return "other";
     }
 
     public void writeBeanStart(Bean bean) throws XMLStreamException {
@@ -144,39 +110,11 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         for (XmlWriter xmlWriter : bean.beanContentWriters.values()) {
             xmlWriter.write(writer);
         }
-        if (blueprintConfiguration.getNamespaces().contains(NS_JPA)) {
-            writePersistenceFields(bean.persistenceFields);
-        }
     }
 
     private void writeFactory(ProducedBean bean) throws XMLStreamException {
         writer.writeAttribute("factory-ref", bean.factoryBean.id);
         writer.writeAttribute("factory-method", bean.factoryMethod);
-    }
-
-    private void writePersistenceFields(List<Field> fields) throws XMLStreamException {
-        for (Field field : fields) {
-            writePersistenceField(field);
-        }
-    }
-
-    private void writePersistenceField(Field field) throws XMLStreamException {
-        PersistenceContext persistenceContext = field.getAnnotation(PersistenceContext.class);
-        if (persistenceContext != null) {
-            writer.writeCharacters("    ");
-            writer.writeEmptyElement("jpa", "context", NS_JPA);
-            writer.writeAttribute("unitname", persistenceContext.unitName());
-            writer.writeAttribute("property", field.getName());
-            writer.writeCharacters("\n");
-        }
-        PersistenceUnit persistenceUnit = field.getAnnotation(PersistenceUnit.class);
-        if (persistenceUnit != null) {
-            writer.writeCharacters("    ");
-            writer.writeEmptyElement("jpa", "unit", NS_JPA);
-            writer.writeAttribute("unitname", persistenceUnit.unitName());
-            writer.writeAttribute("property", field.getName());
-            writer.writeCharacters("\n");
-        }
     }
 
     @Override

@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.plugin;
 
 import com.google.common.collect.Sets;
+import org.apache.aries.blueprint.plugin.javax.PersistenceContextHandler;
 import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.model.TransactionalDef;
 import org.apache.aries.blueprint.plugin.spring.SpringTransactionalFactory;
@@ -63,7 +64,7 @@ public class GeneratorTest {
         ClassFinder classFinder = new ClassFinder(GeneratorTest.class.getClassLoader());
         String packageName = MyBean1.class.getPackage().getName();
         Set<Class<?>> beanClasses = findClasses(classFinder, Collections.singletonList(packageName));
-        Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, SpringTransactionalFactory.NS_TX));
+        Set<String> namespaces = new HashSet<String>(Arrays.asList(PersistenceContextHandler.NS_JPA, SpringTransactionalFactory.NS_TX));
         BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null);
         Context context = new Context(blueprintConfiguration, beanClasses);
         context.resolve();

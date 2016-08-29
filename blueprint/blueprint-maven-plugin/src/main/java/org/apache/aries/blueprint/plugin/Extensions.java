@@ -22,6 +22,7 @@ import org.apache.aries.blueprint.plugin.spi.BeanFinder;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
@@ -42,6 +43,7 @@ public class Extensions {
     public static final List<CustomFactoryMethodAnnotationHandler<? extends Annotation>> customFactoryMethodAnnotationHandlers = new ArrayList<>();
     public static final List<CustomDependencyAnnotationHandler<? extends Annotation>> customDependencyAnnotationHandlers = new ArrayList<>();
     public static final List<MethodAnnotationHandler<? extends Annotation>> methodAnnotationHandlers = new ArrayList<>();
+    public static final List<FieldAnnotationHandler<? extends Annotation>> fieldAnnotationHandlers = new ArrayList<>();
 
     static {
         for (BeanFinder beanFinder : ServiceLoader.load(BeanFinder.class)) {
@@ -77,6 +79,10 @@ public class Extensions {
 
         for (MethodAnnotationHandler<? extends Annotation> methodAnnotationHandler : ServiceLoader.load(MethodAnnotationHandler.class)) {
             methodAnnotationHandlers.add(methodAnnotationHandler);
+        }
+
+        for (FieldAnnotationHandler<? extends Annotation> fieldAnnotationHandler : ServiceLoader.load(FieldAnnotationHandler.class)) {
+            fieldAnnotationHandlers.add(fieldAnnotationHandler);
         }
     }
 }
