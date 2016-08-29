@@ -25,8 +25,8 @@ import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.model.ProducedBean;
 import org.apache.aries.blueprint.plugin.model.Property;
 import org.apache.aries.blueprint.plugin.model.PropertyWriter;
-import org.apache.aries.blueprint.plugin.model.TransactionalDef;
-import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
+import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
@@ -35,11 +35,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Generator implements PropertyWriter, ArgumentWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
@@ -50,14 +47,12 @@ public class Generator implements PropertyWriter, ArgumentWriter {
     public static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
 
     private final Context context;
+    private final BlueprintConfiguration blueprintConfiguration;
     private final XMLStreamWriter writer;
-    private final Set<String> namespaces;
-    private final Activation defaultActivation;
 
-    public Generator(Context context, OutputStream os, Set<String> namespaces, Activation defaultActivation) throws XMLStreamException {
+    public Generator(Context context, OutputStream os, BlueprintConfiguration blueprintConfiguration) throws XMLStreamException {
         this.context = context;
-        this.namespaces = namespaces != null ? namespaces : new HashSet<>(Arrays.asList(NS_TX2, NS_JPA2));
-        this.defaultActivation = defaultActivation;
+        this.blueprintConfiguration = blueprintConfiguration;
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         writer = factory.createXMLStreamWriter(os);
     }
@@ -69,16 +64,8 @@ public class Generator implements PropertyWriter, ArgumentWriter {
             writeBlueprint();
             writer.writeCharacters("\n");
 
-            if (namespaces.contains(NS_JPA2) && isJpaUsed()) {
+            if (blueprintConfiguration.getNamespaces().contains(NS_JPA2) && isJpaUsed()) {
                 writer.writeEmptyElement(NS_JPA2, "enable");
-                writer.writeCharacters("\n");
-            }
-            if (namespaces.contains(NS_TX) && isJtaUsed()) {
-                writer.writeEmptyElement(NS_TX, "enable-annotations");
-                writer.writeCharacters("\n");
-            }
-            if (namespaces.contains(NS_TX2) && isJtaUsed()) {
-                writer.writeEmptyElement(NS_TX2, "enable");
                 writer.writeCharacters("\n");
             }
             for (Bean bean : context.getBeans()) {
@@ -89,7 +76,7 @@ public class Generator implements PropertyWriter, ArgumentWriter {
                 writer.writeCharacters("\n");
             }
 
-            for (BlueprintWriter bw : context.getBlueprintWriters().values()) {
+            for (XmlWriter bw : context.getBlueprintWriters().values()) {
                 bw.write(writer);
             }
 
@@ -113,25 +100,16 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         return jpaUsed;
     }
 
-    private boolean isJtaUsed() {
-        for (Bean bean : context.getBeans()) {
-            if (!bean.transactionDefs.isEmpty()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void writeBlueprint() throws XMLStreamException {
         writer.writeStartElement("blueprint");
         writer.writeDefaultNamespace(NS_BLUEPRINT);
         writer.writeNamespace("ext", NS_EXT);
-        for (String namespace : namespaces) {
+        for (String namespace : blueprintConfiguration.getNamespaces()) {
             String prefix = getPrefixForNamesapace(namespace);
             writer.writeNamespace(prefix, namespace);
         }
-        if (defaultActivation != null) {
-            writer.writeAttribute("default-activation", defaultActivation.name().toLowerCase());
+        if (blueprintConfiguration.getDefaultActivation() != null) {
+            writer.writeAttribute("default-activation", blueprintConfiguration.getDefaultActivation().name().toLowerCase());
         }
     }
 
@@ -165,12 +143,10 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         }
         writer.writeCharacters("\n");
 
-        if (namespaces.contains(NS_TX)) {
-            for (TransactionalDef transactionalDef : bean.transactionDefs) {
-                writeTransactional(transactionalDef);
-            }
+        for (XmlWriter xmlWriter : bean.beanContentWriters.values()) {
+            xmlWriter.write(writer);
         }
-        if (namespaces.contains(NS_JPA)) {
+        if (blueprintConfiguration.getNamespaces().contains(NS_JPA)) {
             writePersistenceFields(bean.persistenceFields);
         }
     }
@@ -179,18 +155,6 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         writer.writeAttribute("factory-ref", bean.factoryBean.id);
         writer.writeAttribute("factory-method", bean.factoryMethod);
     }
-
-    private void writeTransactional(TransactionalDef transactionDef)
-        throws XMLStreamException {
-        if (transactionDef != null) {
-            writer.writeCharacters("    ");
-            writer.writeEmptyElement("tx", "transaction", NS_TX);
-            writer.writeAttribute("method", transactionDef.getMethod());
-            writer.writeAttribute("value", transactionDef.getType());
-            writer.writeCharacters("\n");
-        }
-    }
-
 
     private void writePersistenceFields(List<Field> fields) throws XMLStreamException {
         for (Field field : fields) {

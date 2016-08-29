@@ -18,17 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.spi;
 
-import java.lang.annotation.Annotation;
+public enum Activation {
+    EAGER,
+    LAZY;
 
-public interface TransactionalFactory<A extends Annotation> {
-    /**
-     * @param transactional the transactional annotation.
-     * @return the blueprint-compatible name of the transaction type.
-     */
-    String getTransactionTypeName(A transactional);
-
-    /**
-     * @return the annotation class to search for.
-     */
-    Class<A> getTransactionalClass();
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }

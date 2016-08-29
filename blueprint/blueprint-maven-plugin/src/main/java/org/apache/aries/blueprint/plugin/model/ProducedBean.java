@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.Extensions;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 
 import java.lang.reflect.Method;
 
@@ -29,12 +30,12 @@ public class ProducedBean extends Bean {
     public BeanRef factoryBean;
     private Method producingMethod;
 
-    public ProducedBean(Class<?> clazz, BeanRef factoryBean, Method factoryMethod) {
-        this(clazz, null, factoryBean, factoryMethod);
+    public ProducedBean(Class<?> clazz, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+        this(clazz, null, factoryBean, factoryMethod, contextEnricher);
     }
 
-    public ProducedBean(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod) {
-        super(clazz);
+    public ProducedBean(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+        super(clazz, contextEnricher);
         if (id != null) {
             this.id = id;
         }
@@ -48,7 +49,7 @@ public class ProducedBean extends Bean {
         for (BeanAnnotationHandler beanAnnotationHandler : Extensions.BEAN_ANNOTATION_HANDLERs) {
             Object annotation = AnnotationHelper.findAnnotation(producingMethod.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
-                beanAnnotationHandler.handleBeanAnnotation(producingMethod, id, this, this);
+                beanAnnotationHandler.handleBeanAnnotation(producingMethod, id, contextEnricher, this);
             }
         }
     }

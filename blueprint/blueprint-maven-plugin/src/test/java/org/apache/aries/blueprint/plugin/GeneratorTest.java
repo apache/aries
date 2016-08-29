@@ -62,11 +62,12 @@ public class GeneratorTest {
         ClassFinder classFinder = new ClassFinder(GeneratorTest.class.getClassLoader());
         String packageName = MyBean1.class.getPackage().getName();
         Set<Class<?>> beanClasses = findClasses(classFinder, Collections.singletonList(packageName));
-        Context context = new Context(beanClasses);
+        Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, Generator.NS_TX));
+        BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null);
+        Context context = new Context(blueprintConfiguration, beanClasses);
         context.resolve();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, Generator.NS_TX));
-        new Generator(context, os, namespaces, null).generate();
+        new Generator(context, os, blueprintConfiguration).generate();
         System.out.println(os.toString("UTF-8"));
 
         document = readToDocument(os);

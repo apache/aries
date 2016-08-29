@@ -19,6 +19,8 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import com.google.common.collect.Sets;
+import org.apache.aries.blueprint.plugin.BlueprintConfigurationImpl;
+import org.apache.aries.blueprint.plugin.Generator;
 import org.apache.aries.blueprint.plugin.bad.BadBean1;
 import org.apache.aries.blueprint.plugin.bad.BadBean2;
 import org.apache.aries.blueprint.plugin.bad.BadBean3;
@@ -31,25 +33,29 @@ import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
 import org.apache.aries.blueprint.plugin.test.MyBean5;
 import org.apache.aries.blueprint.plugin.test.ServiceAImpl1;
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.inject.Named;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class BeanTest {
+    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, Generator.NS_TX));
+    private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null);
+    private final Context context = new Context(blueprintConfiguration);
 
     @Test
     public void testParseMyBean1() {
-        Bean bean = new Bean(MyBean1.class);
-        bean.resolve(new Context());
+        Bean bean = new Bean(MyBean1.class, context);
+        bean.resolve(context);
         assertEquals(MyBean1.class, bean.clazz);
         assertEquals("myBean1", bean.id); // Name derived from class name
-        Assert.assertEquals(2, bean.persistenceFields.size());
+        assertEquals(2, bean.persistenceFields.size());
         assertEquals("em", bean.persistenceFields.get(0).getName());
         assertEquals("emf", bean.persistenceFields.get(1).getName());
         assertEquals(1, bean.properties.size());
@@ -59,19 +65,19 @@ public class BeanTest {
         assertEquals("serviceA", prop.ref);
 
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-                new TransactionalDef("txNotSupported", "NotSupported"),
-                new TransactionalDef("txMandatory", "Mandatory"),
-                new TransactionalDef("txNever", "Never"),
-                new TransactionalDef("txRequired", "Required"),
-                new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
-                new TransactionalDef("txSupports", "Supports"));
-        assertEquals(expectedTxs, bean.transactionDefs);
+            new TransactionalDef("txNotSupported", "NotSupported"),
+            new TransactionalDef("txMandatory", "Mandatory"),
+            new TransactionalDef("txNever", "Never"),
+            new TransactionalDef("txRequired", "Required"),
+            new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+            new TransactionalDef("txSupports", "Supports"));
+        assertEquals(expectedTxs, getTransactionalDefs(bean));
     }
 
     @Test
     public void testParseMyBean3() {
-        Bean bean = new Bean(MyBean3.class);
-        bean.resolve(new Context());
+        Bean bean = new Bean(MyBean3.class, context);
+        bean.resolve(context);
         assertEquals(MyBean3.class, bean.clazz);
         assertEquals("myBean3", bean.id); // Name derived from class name
         assertEquals("There should be no persistence fields", 0, bean.persistenceFields.size());
@@ -79,80 +85,93 @@ public class BeanTest {
         assertTrue(bean.isPrototype);
 
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-                new TransactionalDef("txNotSupported", "NotSupported"),
-                new TransactionalDef("txMandatory", "Mandatory"),
-                new TransactionalDef("txNever", "Never"),
-                new TransactionalDef("txRequired", "Required"),
-                new TransactionalDef("txRequiresNew", "RequiresNew"),
-                new TransactionalDef("txSupports", "Supports"));
-        assertEquals(expectedTxs, bean.transactionDefs);
+            new TransactionalDef("txNotSupported", "NotSupported"),
+            new TransactionalDef("txMandatory", "Mandatory"),
+            new TransactionalDef("txNever", "Never"),
+            new TransactionalDef("txRequired", "Required"),
+            new TransactionalDef("txRequiresNew", "RequiresNew"),
+            new TransactionalDef("txSupports", "Supports"));
+        assertEquals(expectedTxs, getTransactionalDefs(bean));
     }
 
     @Test
     public void testParseNamedBean() {
-        Bean bean = new Bean(ServiceAImpl1.class);
-        bean.resolve(new Context());
+        Bean bean = new Bean(ServiceAImpl1.class, context);
+        bean.resolve(context);
         String definedName = ServiceAImpl1.class.getAnnotation(Named.class).value();
         assertEquals("my1", definedName);
         assertEquals("Name should be defined using @Named", definedName, bean.id);
         assertEquals("There should be no persistence fields", 0, bean.persistenceFields.size());
-        assertTrue("There should be no transaction definition", bean.transactionDefs.isEmpty());
+        assertTrue("There should be no transaction definition", getTransactionalDefs(bean).isEmpty());
         assertEquals("There should be no properties", 0, bean.properties.size());
         assertTrue(bean.isPrototype);
     }
 
     @Test
     public void testBlueprintBundleContext() {
-        Bean bean = new Bean(MyBean4.class);
-        bean.resolve(new Context());
+        Bean bean = new Bean(MyBean4.class, context);
+        bean.resolve(context);
         Property bcProp = bean.properties.iterator().next();
         assertEquals("bundleContext", bcProp.name);
         assertEquals("blueprintBundleContext", bcProp.ref);
         assertFalse(bean.isPrototype);
 
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("txWithoutClassAnnotation", "Supports"));
-        assertEquals(expectedTxs, bean.transactionDefs);
+        assertEquals(expectedTxs, getTransactionalDefs(bean));
     }
+
+    private Set<TransactionalDef> getTransactionalDefs(Bean bean) {
+        Set<String> beanWriters = bean.beanContentWriters.keySet();
+        Set<TransactionalDef> transactionalDefs = new HashSet<>();
+        for (String beanWriter : beanWriters) {
+            if (beanWriter.startsWith("javax.transactional.method/")) {
+                String[] splitId = beanWriter.split("/");
+                transactionalDefs.add(new TransactionalDef(splitId[2], splitId[3]));
+            }
+        }
+        return transactionalDefs;
+    }
+
 
     @Test(expected = IllegalArgumentException.class)
     public void testMultipleInitMethods() {
-        new Bean(BadBean1.class);
+        new Bean(BadBean1.class, context);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testMultipleDestroyMethods() {
-        new Bean(BadBean2.class);
+        new Bean(BadBean2.class, context);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testSpringNestedTransactionNotSupported() {
-        new Bean(BadBean3.class);
+        new Bean(BadBean3.class, context);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean1() {
-        new Context(BadFieldBean1.class).resolve();
+        new Context(blueprintConfiguration, BadFieldBean1.class).resolve();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean2() {
-        new Context(BadFieldBean2.class).resolve();
+        new Context(blueprintConfiguration, BadFieldBean2.class).resolve();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean3() {
-        new Context(BadFieldBean3.class).resolve();
+        new Context(blueprintConfiguration, BadFieldBean3.class).resolve();
     }
 
     @Test
     public void testFieldBean4() {
-        new Context(FieldBean4.class).resolve();
+        new Context(blueprintConfiguration, FieldBean4.class).resolve();
     }
 
     @Test
     public void testParseBeanWithConstructorInject() {
-        Bean bean = new Bean(MyBean5.class);
-        bean.resolve(new Context());
+        Bean bean = new Bean(MyBean5.class, context);
+        bean.resolve(context);
         assertEquals(MyBean5.class, bean.clazz);
         assertEquals("myBean5", bean.id); // Name derived from class name
         assertTrue("There should be no persistenceUnit", bean.persistenceFields.isEmpty());
@@ -167,5 +186,4 @@ public class BeanTest {
         assertEquals("serviceA", bean.constructorArguments.get(6).getRef());
         assertEquals("produced2", bean.constructorArguments.get(7).getRef());
     }
-
 }

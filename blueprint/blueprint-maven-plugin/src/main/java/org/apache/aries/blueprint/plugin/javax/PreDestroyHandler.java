@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.plugin.javax;
 
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
+import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 
 import javax.annotation.PreDestroy;
@@ -32,7 +33,7 @@ public class PreDestroyHandler implements MethodAnnotationHandler<PreDestroy> {
     }
 
     @Override
-    public void handleMethodAnnotation(Class<?> clazz, List<Method> methods, BeanEnricher beanEnricher) {
+    public void handleMethodAnnotation(Class<?> clazz, List<Method> methods, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         if(methods.size() > 1){
             throw new IllegalArgumentException("There can be only one method annotated with @PreDestroy in bean");
         }
