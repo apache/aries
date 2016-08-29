@@ -16,25 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.spring;
+package org.apache.aries.blueprint.plugin.spi;
 
-import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.springframework.context.annotation.Lazy;
-
-import java.lang.reflect.AnnotatedElement;
-
-public class LazyAttributeResolver implements BeanAnnotationHandler<Lazy> {
-    @Override
-    public Class<Lazy> getAnnotation() {
-        return Lazy.class;
-    }
-
-    @Override
-    public void handleBeanAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
-        Lazy lazy = annotatedElement.getAnnotation(Lazy.class);
-        beanEnricher.addAttribute("activation", lazy.value() ? "lazy" : "eager");
-    }
-
+public interface BeanEnricher {
+    void addAttribute(String key, String value);
 }

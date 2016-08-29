@@ -19,16 +19,15 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.Extensions;
-import org.apache.aries.blueprint.plugin.spi.BeanAttributesResolver;
+import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.CustomBeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
+import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import java.lang.annotation.Annotation;
@@ -47,9 +46,7 @@ import java.util.TreeSet;
 
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 
-public class Bean extends BeanRef implements ContextEnricher {
-    public final String initMethod;
-    public String destroyMethod;
+public class Bean extends BeanRef implements ContextEnricher, BeanEnricher {
     public SortedSet<Property> properties = new TreeSet<>();
     public List<Argument> constructorArguments = new ArrayList<>();
     public List<Field> persistenceFields;
@@ -63,9 +60,6 @@ public class Bean extends BeanRef implements ContextEnricher {
         super(clazz, BeanRef.getBeanName(clazz));
         Introspector introspector = new Introspector(clazz);
 
-        initMethod = findMethodAnnotatedWith(introspector, PostConstruct.class);
-        destroyMethod = findMethodAnnotatedWith(introspector, PreDestroy.class);
-
         interpretTransactionalMethods(clazz);
 
         this.isPrototype = isPrototype(clazz);
@@ -73,24 +67,25 @@ public class Bean extends BeanRef implements ContextEnricher {
 
         setQualifiersFromAnnotations(clazz.getAnnotations());
 
-        resolveBeanAttributes();
-
         handleCustomBeanAnnotations();
+
+        handleMethodsAnnotation(introspector);
     }
 
-    private void resolveBeanAttributes() {
-        for (BeanAttributesResolver beanAttributesResolver : Extensions.beanAttributesResolvers) {
-            if (clazz.getAnnotation(beanAttributesResolver.getAnnotation()) != null) {
-                attributes.putAll(beanAttributesResolver.resolveAttributes(clazz, clazz));
+    private void handleMethodsAnnotation(Introspector introspector) {
+        for (MethodAnnotationHandler methodAnnotationHandler : Extensions.methodAnnotationHandlers) {
+            List<Method> methods = introspector.methodsWith(methodAnnotationHandler.getAnnotation());
+            if (methods.size() > 0) {
+                methodAnnotationHandler.handleMethodAnnotation(clazz, methods, this);
             }
         }
     }
 
     private void handleCustomBeanAnnotations() {
-        for (CustomBeanAnnotationHandler customBeanAnnotationHandler : Extensions.customBeanAnnotationHandlers) {
-            Object annotation = AnnotationHelper.findAnnotation(clazz.getAnnotations(), customBeanAnnotationHandler.getAnnotation());
+        for (BeanAnnotationHandler beanAnnotationHandler : Extensions.BEAN_ANNOTATION_HANDLERs) {
+            Object annotation = AnnotationHelper.findAnnotation(clazz.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
-                customBeanAnnotationHandler.handleBeanAnnotation(clazz, id, this);
+                beanAnnotationHandler.handleBeanAnnotation(clazz, id, this, this);
             }
         }
     }
@@ -103,14 +98,6 @@ public class Bean extends BeanRef implements ContextEnricher {
         for (AbstractTransactionalFactory transactionalFactory : Extensions.transactionalFactories) {
             transactionDefs.addAll(transactionalFactory.create(clazz));
         }
-    }
-
-    private String findMethodAnnotatedWith(Introspector introspector, Class<? extends Annotation> annotation) {
-        Method initMethod = introspector.methodWith(annotation);
-        if (initMethod == null) {
-            return null;
-        }
-        return initMethod.getName();
     }
 
     private boolean isPrototype(Class<?> clazz) {
@@ -253,5 +240,10 @@ public class Bean extends BeanRef implements ContextEnricher {
     @Override
     public void addBlueprintWriter(String id, BlueprintWriter blueprintWriter) {
         blueprintWriters.put(id, blueprintWriter);
+    }
+
+    @Override
+    public void addAttribute(String key, String value) {
+        attributes.put(key, value);
     }
 }

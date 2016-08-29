@@ -15,5 +15,6 @@
 # limitations under the License.
 #
 
+org.apache.aries.blueprint.plugin.pax.OsgiServiceProviderHandler
 org.apache.aries.blueprint.plugin.spring.LazyAttributeResolver
 org.apache.aries.blueprint.plugin.spring.DependsOnAttributeResolver

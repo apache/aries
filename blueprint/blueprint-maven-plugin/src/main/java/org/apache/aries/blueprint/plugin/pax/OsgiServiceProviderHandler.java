@@ -20,9 +20,10 @@ package org.apache.aries.blueprint.plugin.pax;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.BlueprintWriter;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.CustomBeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
@@ -35,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OsgiServiceProviderHandler implements CustomBeanAnnotationHandler<OsgiServiceProvider>, CustomFactoryMethodAnnotationHandler<OsgiServiceProvider> {
+public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiServiceProvider>, CustomFactoryMethodAnnotationHandler<OsgiServiceProvider> {
     @Override
     public Class<OsgiServiceProvider> getAnnotation() {
         return OsgiServiceProvider.class;
@@ -47,7 +48,7 @@ public class OsgiServiceProviderHandler implements CustomBeanAnnotationHandler<O
     }
 
     @Override
-    public void handleBeanAnnotation(AnnotatedElement annotatedElement, final String id, ContextEnricher contextEnricher) {
+    public void handleBeanAnnotation(AnnotatedElement annotatedElement, final String id, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         handleAnnotation(annotatedElement, id, contextEnricher);
     }
 
