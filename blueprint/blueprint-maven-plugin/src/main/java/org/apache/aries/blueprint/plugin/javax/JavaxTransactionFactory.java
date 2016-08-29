@@ -35,6 +35,7 @@ import java.util.List;
 public class JavaxTransactionFactory implements BeanAnnotationHandler<Transactional>, MethodAnnotationHandler<Transactional> {
     public static final String NS_TX = "http://aries.apache.org/xmlns/transactions/v1.2.0";
     public static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
+
     private String getTransactionTypeName(Transactional transactional) {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());
     }
@@ -56,7 +57,7 @@ public class JavaxTransactionFactory implements BeanAnnotationHandler<Transactio
                 beanEnricher.addBeanContentWriter("javax.transactional.method/" + clazz.getName() + "/" + name + "/" + transactionTypeName, new XmlWriter() {
                     @Override
                     public void write(XMLStreamWriter writer) throws XMLStreamException {
-                        writer.writeEmptyElement(NS_TX, "transaction");
+                        writer.writeEmptyElement("tx", "transaction", NS_TX);
                         writer.writeAttribute("method", name);
                         writer.writeAttribute("value", transactionTypeName);
                         writer.writeCharacters("\n");
@@ -87,7 +88,7 @@ public class JavaxTransactionFactory implements BeanAnnotationHandler<Transactio
             beanEnricher.addBeanContentWriter("javax.transactional.method/" + annotatedElement + "/*/" + transactionTypeName, new XmlWriter() {
                 @Override
                 public void write(XMLStreamWriter writer) throws XMLStreamException {
-                    writer.writeEmptyElement(NS_TX, "transaction");
+                    writer.writeEmptyElement("tx", "transaction", NS_TX);
                     writer.writeAttribute("method", "*");
                     writer.writeAttribute("value", transactionTypeName);
                     writer.writeCharacters("\n");
@@ -103,7 +104,7 @@ public class JavaxTransactionFactory implements BeanAnnotationHandler<Transactio
         contextEnricher.addBlueprintContentWriter("transaction/ennable-annotation", new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
-                writer.writeEmptyElement(NS_TX2, "enable");
+                writer.writeEmptyElement("tx", "enable", NS_TX2);
             }
         });
     }

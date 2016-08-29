@@ -23,13 +23,12 @@ import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -49,7 +48,6 @@ import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue
 public class Bean extends BeanRef implements BeanEnricher {
     public SortedSet<Property> properties = new TreeSet<>();
     public List<Argument> constructorArguments = new ArrayList<>();
-    public List<Field> persistenceFields;
     public boolean isPrototype;
     public final Map<String, String> attributes = new HashMap<>();
     public final Set<BeanRef> refs = new HashSet<>();
@@ -62,11 +60,12 @@ public class Bean extends BeanRef implements BeanEnricher {
         Introspector introspector = new Introspector(clazz);
 
         this.isPrototype = isPrototype(clazz);
-        this.persistenceFields = findPersistenceFields(introspector);
 
         setQualifiersFromAnnotations(clazz.getAnnotations());
 
         handleCustomBeanAnnotations();
+
+        handleFieldsAnnotation(introspector);
 
         handleMethodsAnnotation(introspector);
     }
@@ -86,6 +85,15 @@ public class Bean extends BeanRef implements BeanEnricher {
         }
     }
 
+    private void handleFieldsAnnotation(Introspector introspector) {
+        for (FieldAnnotationHandler fieldAnnotationHandler : Extensions.fieldAnnotationHandlers) {
+            List<Field> fields = introspector.fieldsWith(fieldAnnotationHandler.getAnnotation());
+            if (fields.size() > 0) {
+                fieldAnnotationHandler.handleMethodAnnotation(clazz, fields, contextEnricher, this);
+            }
+        }
+    }
+
     private void handleCustomBeanAnnotations() {
         for (BeanAnnotationHandler beanAnnotationHandler : Extensions.BEAN_ANNOTATION_HANDLERs) {
             Object annotation = AnnotationHelper.findAnnotation(clazz.getAnnotations(), beanAnnotationHandler.getAnnotation());
@@ -93,10 +101,6 @@ public class Bean extends BeanRef implements BeanEnricher {
                 beanAnnotationHandler.handleBeanAnnotation(clazz, id, contextEnricher, this);
             }
         }
-    }
-
-    private List<Field> findPersistenceFields(Introspector introspector) {
-        return introspector.fieldsWith(PersistenceContext.class, PersistenceUnit.class);
     }
 
     private boolean isPrototype(Class<?> clazz) {

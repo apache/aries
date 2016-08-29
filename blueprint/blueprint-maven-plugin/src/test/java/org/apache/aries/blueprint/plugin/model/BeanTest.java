@@ -20,7 +20,6 @@ package org.apache.aries.blueprint.plugin.model;
 
 import com.google.common.collect.Sets;
 import org.apache.aries.blueprint.plugin.BlueprintConfigurationImpl;
-import org.apache.aries.blueprint.plugin.Generator;
 import org.apache.aries.blueprint.plugin.bad.BadBean1;
 import org.apache.aries.blueprint.plugin.bad.BadBean2;
 import org.apache.aries.blueprint.plugin.bad.BadBean3;
@@ -29,6 +28,7 @@ import org.apache.aries.blueprint.plugin.bad.BadFieldBean2;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean3;
 import org.apache.aries.blueprint.plugin.bad.FieldBean4;
 import org.apache.aries.blueprint.plugin.javax.JavaxTransactionFactory;
+import org.apache.aries.blueprint.plugin.javax.PersistenceUnitHandler;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BeanTest {
-    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, JavaxTransactionFactory.NS_TX));
+    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(PersistenceUnitHandler.NS_JPA, JavaxTransactionFactory.NS_TX));
     private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null);
     private final Context context = new Context(blueprintConfiguration);
 
@@ -56,9 +56,8 @@ public class BeanTest {
         bean.resolve(context);
         assertEquals(MyBean1.class, bean.clazz);
         assertEquals("myBean1", bean.id); // Name derived from class name
-        assertEquals(2, bean.persistenceFields.size());
-        assertEquals("em", bean.persistenceFields.get(0).getName());
-        assertEquals("emf", bean.persistenceFields.get(1).getName());
+        assertEquals(2, getPersistenceFields(bean).size());
+        assertEquals(Sets.newHashSet("em", "emf"), getPersistenceFields(bean));
         assertEquals(1, bean.properties.size());
         assertFalse(bean.isPrototype);
         Property prop = bean.properties.iterator().next();
@@ -81,7 +80,7 @@ public class BeanTest {
         bean.resolve(context);
         assertEquals(MyBean3.class, bean.clazz);
         assertEquals("myBean3", bean.id); // Name derived from class name
-        assertEquals("There should be no persistence fields", 0, bean.persistenceFields.size());
+        assertEquals("There should be no persistence fields", 0, getPersistenceFields(bean).size());
         assertEquals(5, bean.properties.size());
         assertTrue(bean.isPrototype);
 
@@ -102,7 +101,7 @@ public class BeanTest {
         String definedName = ServiceAImpl1.class.getAnnotation(Named.class).value();
         assertEquals("my1", definedName);
         assertEquals("Name should be defined using @Named", definedName, bean.id);
-        assertEquals("There should be no persistence fields", 0, bean.persistenceFields.size());
+        assertEquals("There should be no persistence fields", 0,getPersistenceFields(bean).size());
         assertTrue("There should be no transaction definition", getTransactionalDefs(bean).isEmpty());
         assertEquals("There should be no properties", 0, bean.properties.size());
         assertTrue(bean.isPrototype);
@@ -133,6 +132,16 @@ public class BeanTest {
         return transactionalDefs;
     }
 
+    private Set<String> getPersistenceFields(Bean bean) {
+        Set<String> beanWriters = bean.beanContentWriters.keySet();
+        Set<String> persistenceFields = new HashSet<>();
+        for (String beanWriter : beanWriters) {
+            if (beanWriter.startsWith("javax.persistence.field.")) {
+                persistenceFields.add(beanWriter.split("/")[1]);
+            }
+        }
+        return persistenceFields;
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testMultipleInitMethods() {
@@ -175,7 +184,7 @@ public class BeanTest {
         bean.resolve(context);
         assertEquals(MyBean5.class, bean.clazz);
         assertEquals("myBean5", bean.id); // Name derived from class name
-        assertTrue("There should be no persistenceUnit", bean.persistenceFields.isEmpty());
+        assertTrue("There should be no persistenceUnit", getPersistenceFields(bean).isEmpty());
         assertEquals(0, bean.properties.size());
         assertEquals(8, bean.constructorArguments.size());
         assertEquals("my2", bean.constructorArguments.get(0).getRef());

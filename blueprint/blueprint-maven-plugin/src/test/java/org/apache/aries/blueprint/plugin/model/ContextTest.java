@@ -19,7 +19,7 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.BlueprintConfigurationImpl;
-import org.apache.aries.blueprint.plugin.Generator;
+import org.apache.aries.blueprint.plugin.javax.PersistenceUnitHandler;
 import org.apache.aries.blueprint.plugin.spring.SpringTransactionalFactory;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyFactoryBean;
@@ -39,7 +39,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 public class ContextTest {
-    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(Generator.NS_JPA, SpringTransactionalFactory.NS_TX));
+    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(PersistenceUnitHandler.NS_JPA, SpringTransactionalFactory.NS_TX));
     private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null);
 
     @Test
