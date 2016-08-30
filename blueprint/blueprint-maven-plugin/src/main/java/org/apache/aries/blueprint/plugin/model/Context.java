@@ -28,7 +28,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
 
-import javax.enterprise.inject.Produces;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Context implements BlueprinRegister, ContextEnricher {
+public class Context implements BlueprintRegister, ContextEnricher {
 
     SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
     private final Map<String, XmlWriter> blueprintWriters = new HashMap<>();
@@ -70,32 +70,44 @@ public class Context implements BlueprinRegister, ContextEnricher {
         Bean bean = new Bean(clazz, this);
         reg.add(bean);
         reg.addAll(bean.refs);
-        addProducedBeans(bean);
+        addBeansFromFactories(bean);
     }
 
-    private void addProducedBeans(BeanRef factoryBean) {
+    private void addBeansFromFactories(BeanRef factoryBean) {
         for (Method method : factoryBean.clazz.getMethods()) {
-            Produces produces = method.getAnnotation(Produces.class);
+            if (!isFactoryMethod(method)) {
+                continue;
+            }
             String name = AnnotationHelper.findName(method.getAnnotations());
-            if (produces != null) {
-                Class<?> producedClass = method.getReturnType();
-                ProducedBean producedBean;
-                if (name != null) {
-                    producedBean = new ProducedBean(producedClass, name, factoryBean, method, this);
-                } else {
-                    producedBean = new ProducedBean(producedClass, factoryBean, method, this);
-                }
-                if (AnnotationHelper.findSingletons(method.getAnnotations())) {
-                    producedBean.setSingleton();
-                }
-                reg.add(producedBean);
-                for (CustomFactoryMethodAnnotationHandler customFactoryMethodAnnotationHandler : Extensions.customFactoryMethodAnnotationHandlers) {
-                    if (AnnotationHelper.findAnnotation(method.getAnnotations(), customFactoryMethodAnnotationHandler.getAnnotation()) != null) {
-                        customFactoryMethodAnnotationHandler.handleFactoryMethodAnnotation(method, producedBean.id, this);
-                    }
+            Class<?> beanClass = method.getReturnType();
+            BeanFromFactory beanFromFactory;
+            if (name != null) {
+                beanFromFactory = new BeanFromFactory(beanClass, name, factoryBean, method, this);
+            } else {
+                beanFromFactory = new BeanFromFactory(beanClass, factoryBean, method, this);
+            }
+            if (AnnotationHelper.findSingletons(method.getAnnotations())) {
+                beanFromFactory.setSingleton();
+            }
+            reg.add(beanFromFactory);
+            for (CustomFactoryMethodAnnotationHandler customFactoryMethodAnnotationHandler : Extensions.customFactoryMethodAnnotationHandlers) {
+                if (AnnotationHelper.findAnnotation(method.getAnnotations(), customFactoryMethodAnnotationHandler.getAnnotation()) != null) {
+                    customFactoryMethodAnnotationHandler.handleFactoryMethodAnnotation(method, beanFromFactory.id, this);
                 }
             }
         }
+    }
+
+    private boolean isFactoryMethod(Method method) {
+        boolean isFactoryMethod = false;
+        for (Class<? extends Annotation> factoryMethodAnnotationClass : Extensions.factoryMethodAnnotationClasses) {
+            Annotation annotation = AnnotationHelper.findAnnotation(method.getAnnotations(), factoryMethodAnnotationClass);
+            if (annotation != null) {
+                isFactoryMethod = true;
+                break;
+            }
+        }
+        return isFactoryMethod;
     }
 
     public void resolve() {

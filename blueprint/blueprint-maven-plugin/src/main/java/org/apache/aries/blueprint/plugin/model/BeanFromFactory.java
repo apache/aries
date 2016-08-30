@@ -25,16 +25,16 @@ import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 
 import java.lang.reflect.Method;
 
-public class ProducedBean extends Bean {
+public class BeanFromFactory extends Bean {
     public String factoryMethod;
     public BeanRef factoryBean;
     private Method producingMethod;
 
-    public ProducedBean(Class<?> clazz, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+    public BeanFromFactory(Class<?> clazz, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
         this(clazz, null, factoryBean, factoryMethod, contextEnricher);
     }
 
-    public ProducedBean(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+    public BeanFromFactory(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
         super(clazz, contextEnricher);
         if (id != null) {
             this.id = id;
@@ -59,7 +59,7 @@ public class ProducedBean extends Bean {
     }
 
     @Override
-    protected void resolveArguments(BlueprinRegister matcher) {
+    protected void resolveArguments(BlueprintRegister matcher) {
         resolveArguments(matcher, producingMethod.getParameterTypes(), producingMethod.getParameterAnnotations());
     }
 }

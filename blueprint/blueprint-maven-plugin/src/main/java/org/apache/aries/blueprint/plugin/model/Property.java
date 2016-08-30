@@ -40,7 +40,7 @@ public class Property implements Comparable<Property> {
         this.isField = isField;
     }
 
-    public static Property create(BlueprinRegister blueprinRegister, Field field) {
+    public static Property create(BlueprintRegister blueprintRegister, Field field) {
         if (needsInject(field)) {
             String value = AnnotationHelper.findValue(field.getAnnotations());
             if (value != null) {
@@ -50,7 +50,7 @@ public class Property implements Comparable<Property> {
             for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(field.getAnnotations(), customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
-                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(field, ref, blueprinRegister);
+                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(field, ref, blueprintRegister);
                     if (generatedRef != null) {
                         ref = generatedRef;
                         break;
@@ -60,7 +60,7 @@ public class Property implements Comparable<Property> {
             if (ref != null) {
                 return new Property(field.getName(), ref, null, true);
             }
-            BeanRef matching = blueprinRegister.getMatching(new BeanRef(field));
+            BeanRef matching = blueprintRegister.getMatching(new BeanRef(field));
             ref = (matching == null) ? getDefaultRefName(field) : matching.id;
             return new Property(field.getName(), ref, null, true);
         } else {
@@ -69,7 +69,7 @@ public class Property implements Comparable<Property> {
         }
     }
 
-    public static Property create(BlueprinRegister blueprinRegister, Method method) {
+    public static Property create(BlueprintRegister blueprintRegister, Method method) {
         String propertyName = resolveProperty(method);
         if (propertyName == null) {
             return null;
@@ -88,7 +88,7 @@ public class Property implements Comparable<Property> {
             for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(method.getAnnotations(), customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
-                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(method, ref, blueprinRegister);
+                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(method, ref, blueprintRegister);
                     if (generatedRef != null) {
                         ref = generatedRef;
                         break;
@@ -102,7 +102,7 @@ public class Property implements Comparable<Property> {
             for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(method.getParameterAnnotations()[0], customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
-                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(method.getParameterTypes()[0], annotation, ref, blueprinRegister);
+                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(method.getParameterTypes()[0], annotation, ref, blueprintRegister);
                     if (generatedRef != null) {
                         ref = generatedRef;
                         break;
@@ -114,7 +114,7 @@ public class Property implements Comparable<Property> {
             }
 
             BeanRef beanRef = new BeanRef(method);
-            BeanRef matching = blueprinRegister.getMatching(beanRef);
+            BeanRef matching = blueprintRegister.getMatching(beanRef);
             ref = (matching == null) ? beanRef.id : matching.id;
             return new Property(propertyName, ref, null, false);
         }
