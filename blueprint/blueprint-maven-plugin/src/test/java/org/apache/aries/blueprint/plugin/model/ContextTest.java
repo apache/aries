@@ -86,7 +86,7 @@ public class ContextTest {
     public void testProduced() throws NoSuchFieldException, SecurityException {
         Context context = new Context(blueprintConfiguration, MyFactoryBean.class);
         context.resolve();
-        ProducedBean matching = (ProducedBean) context.getMatching(new BeanRef(MyProduced.class));
+        BeanFromFactory matching = (BeanFromFactory) context.getMatching(new BeanRef(MyProduced.class));
         Assert.assertEquals(MyProduced.class, matching.clazz);
         Assert.assertEquals("myFactoryBean", matching.factoryBean.id);
         Assert.assertEquals("create", matching.factoryMethod);

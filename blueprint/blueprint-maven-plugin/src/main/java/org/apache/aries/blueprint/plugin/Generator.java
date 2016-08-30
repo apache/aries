@@ -22,7 +22,7 @@ import org.apache.aries.blueprint.plugin.model.Argument;
 import org.apache.aries.blueprint.plugin.model.ArgumentWriter;
 import org.apache.aries.blueprint.plugin.model.Bean;
 import org.apache.aries.blueprint.plugin.model.Context;
-import org.apache.aries.blueprint.plugin.model.ProducedBean;
+import org.apache.aries.blueprint.plugin.model.BeanFromFactory;
 import org.apache.aries.blueprint.plugin.model.Property;
 import org.apache.aries.blueprint.plugin.model.PropertyWriter;
 import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
@@ -103,8 +103,8 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         for (Map.Entry<String, String> entry : attributes.entrySet()) {
             writer.writeAttribute(entry.getKey(), entry.getValue());
         }
-        if (bean instanceof ProducedBean) {
-            writeFactory((ProducedBean) bean);
+        if (bean instanceof BeanFromFactory) {
+            writeFactory((BeanFromFactory) bean);
         }
         writer.writeCharacters("\n");
 
@@ -115,7 +115,7 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         }
     }
 
-    private void writeFactory(ProducedBean bean) throws XMLStreamException {
+    private void writeFactory(BeanFromFactory bean) throws XMLStreamException {
         writer.writeAttribute("factory-ref", bean.factoryBean.id);
         writer.writeAttribute("factory-method", bean.factoryMethod);
     }

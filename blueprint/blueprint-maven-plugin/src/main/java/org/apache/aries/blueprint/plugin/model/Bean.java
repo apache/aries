@@ -70,10 +70,10 @@ public class Bean extends BeanRef implements BeanEnricher {
         handleMethodsAnnotation(introspector);
     }
 
-    public void resolve(BlueprinRegister blueprinRegister) {
-        resolveArguments(blueprinRegister);
-        resolveFields(blueprinRegister);
-        resolveMethods(blueprinRegister);
+    public void resolve(BlueprintRegister blueprintRegister) {
+        resolveArguments(blueprintRegister);
+        resolveFields(blueprintRegister);
+        resolveMethods(blueprintRegister);
     }
 
     private void handleMethodsAnnotation(Introspector introspector) {
@@ -117,16 +117,16 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
 
-    private void resolveMethods(BlueprinRegister blueprinRegister) {
+    private void resolveMethods(BlueprintRegister blueprintRegister) {
         for (Method method : new Introspector(clazz).methodsWith(AnnotationHelper.injectDependencyAnnotations)) {
-            Property prop = Property.create(blueprinRegister, method);
+            Property prop = Property.create(blueprintRegister, method);
             if (prop != null) {
                 properties.add(prop);
             }
         }
     }
 
-    private void resolveFields(BlueprinRegister matcher) {
+    private void resolveFields(BlueprintRegister matcher) {
         for (Field field : new Introspector(clazz).fieldsWith(AnnotationHelper.injectDependencyAnnotations)) {
             Property prop = Property.create(matcher, field);
             if (prop != null) {
@@ -135,7 +135,7 @@ public class Bean extends BeanRef implements BeanEnricher {
         }
     }
 
-    protected void resolveArguments(BlueprinRegister matcher) {
+    protected void resolveArguments(BlueprintRegister matcher) {
         Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
         for (Constructor constructor : declaredConstructors) {
             if (declaredConstructors.length == 1 || shouldInject(constructor)) {
@@ -154,7 +154,7 @@ public class Bean extends BeanRef implements BeanEnricher {
         return false;
     }
 
-    protected void resolveArguments(BlueprinRegister blueprinRegister, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
+    protected void resolveArguments(BlueprintRegister blueprintRegister, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
         for (int i = 0; i < parameterTypes.length; ++i) {
             Annotation[] annotations = parameterAnnotations[i];
             String value = findValue(annotations);
@@ -163,7 +163,7 @@ public class Bean extends BeanRef implements BeanEnricher {
             for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(annotations, customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
-                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(parameterTypes[i], annotation, ref, blueprinRegister);
+                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(parameterTypes[i], annotation, ref, blueprintRegister);
                     if (generatedRef != null) {
                         ref = generatedRef;
                         break;
@@ -174,7 +174,7 @@ public class Bean extends BeanRef implements BeanEnricher {
             if (ref == null && value == null) {
                 BeanRef template = new BeanRef(parameterTypes[i]);
                 template.setQualifiersFromAnnotations(annotations);
-                BeanRef bean = blueprinRegister.getMatching(template);
+                BeanRef bean = blueprintRegister.getMatching(template);
                 if (bean != null) {
                     ref = bean.id;
                 } else {
