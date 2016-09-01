@@ -31,8 +31,11 @@ public class XAConnectionWrapper extends ConnectionWrapper {
 	private final Connection connection;
 	
 	private final XAResource xaResource;
+
+	private final XAConnection xaConnection;
 	
 	public XAConnectionWrapper(XAConnection xaConnection) throws SQLException {
+		this.xaConnection = xaConnection;
 		this.connection = xaConnection.getConnection();
 		this.xaResource = xaConnection.getXAResource();
 	}
@@ -45,4 +48,11 @@ public class XAConnectionWrapper extends ConnectionWrapper {
 	public XAResource getXaResource() {
 		return xaResource;
 	}
+
+	@Override
+	public void close() throws SQLException {
+		xaConnection.close();
+	}
+	
+	
 }

@@ -30,8 +30,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
@@ -114,6 +116,11 @@ public abstract class AbstractTransactionTest {
 			});
 	}
 
+	protected Map<String, Object> resourceProviderConfig() {
+		// No extra information by default
+		return new HashMap<>();
+	}
+
 	public boolean isConfigured() {
 		return System.getProperties().containsKey(CONFIGURED_PROVIDER_PROPERTY);
 	}
@@ -156,7 +163,8 @@ public abstract class AbstractTransactionTest {
 		
 		DataSourceFactory dsf = getService(DataSourceFactory.class, 5000);
 		
-		return resourceProviderFactory.getProviderFor(dsf, jdbc, null).getResource(txControl);
+		return resourceProviderFactory.getProviderFor(dsf, jdbc, resourceProviderConfig())
+				.getResource(txControl);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -171,6 +179,9 @@ public abstract class AbstractTransactionTest {
 				: "org.apache.aries.tx.control.jdbc.xa";
 		
 		System.out.println("Configuring connection provider with pid " + pid);
+		
+		resourceProviderConfig().entrySet().stream()
+			.forEach(e -> jdbc.put(e.getKey(), e.getValue()));
 		
 		org.osgi.service.cm.Configuration config = cm.createFactoryConfiguration(
 				pid, "?");
