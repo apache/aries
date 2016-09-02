@@ -318,6 +318,12 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         // TODO: we need to handle escapes on the prefix / suffix
         Matcher matcher = getPattern().matcher(str);
         while (matcher.find()) {
+            String n = matcher.group(1);
+            int idx = n.indexOf(placeholderPrefix);
+            if (idx >= 0) {
+                matcher.region(matcher.start(1) + idx, str.length());
+                continue;
+            }
             String rep = retrieveValue(matcher.group(1));
             if (rep != null) {
                 str = str.replace(matcher.group(0), rep);
