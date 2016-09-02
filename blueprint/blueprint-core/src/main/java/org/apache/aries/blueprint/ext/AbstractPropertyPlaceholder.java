@@ -21,8 +21,6 @@ package org.apache.aries.blueprint.ext;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
@@ -38,6 +36,8 @@ import org.apache.aries.blueprint.mutable.MutableReferenceListener;
 import org.apache.aries.blueprint.mutable.MutableRegistrationListener;
 import org.apache.aries.blueprint.mutable.MutableServiceMetadata;
 import org.apache.aries.blueprint.mutable.MutableServiceReferenceMetadata;
+import org.apache.aries.blueprint.utils.StrLookup;
+import org.apache.aries.blueprint.utils.StrSubstitutor;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanArgument;
@@ -66,23 +66,42 @@ import org.slf4j.LoggerFactory;
  * @version $Rev$, $Date$
  */
 public abstract class AbstractPropertyPlaceholder implements ComponentDefinitionRegistryProcessor {
+    public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
+    public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholder.class);
 
-    private String placeholderPrefix = "${";
-    private String placeholderSuffix = "}";
-    private Pattern pattern;
+    private final StrSubstitutor substitutor;
 
+    private String placeholderPrefix;
+    private String placeholderSuffix;
     private LinkedList<String> processingStack = new LinkedList<String>();
-
     private Bundle blueprintBundle;
-    
+
+    public AbstractPropertyPlaceholder() {
+        this.placeholderPrefix = DEFAULT_PLACEHOLDER_PREFIX;
+        this.placeholderSuffix = DEFAULT_PLACEHOLDER_SUFFIX;
+
+        this.substitutor = new StrSubstitutor();
+        this.substitutor.setEnableSubstitutionInVariables(true);
+        this.substitutor.setVariablePrefix(this.placeholderPrefix);
+        this.substitutor.setVariableSuffix(this.placeholderSuffix);
+        this.substitutor.setVariableResolver(new StrLookup<String>() {
+            @Override
+            public String lookup(String value) {
+                String result = retrieveValue(value);
+                return result != null ? result : value;
+            }
+        });
+    }
+
     public String getPlaceholderPrefix() {
         return placeholderPrefix;
     }
 
     public void setPlaceholderPrefix(String placeholderPrefix) {
         this.placeholderPrefix = placeholderPrefix;
+        this.substitutor.setVariablePrefix(this.placeholderPrefix);
     }
 
     public String getPlaceholderSuffix() {
@@ -91,6 +110,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     public void setPlaceholderSuffix(String placeholderSuffix) {
         this.placeholderSuffix = placeholderSuffix;
+        this.substitutor.setVariableSuffix(this.placeholderSuffix);
     }
 
     public void process(ComponentDefinitionRegistry registry) throws ComponentDefinitionException {
@@ -407,15 +427,15 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     protected ValueMetadata doProcessValueMetadata(ValueMetadata metadata) {
-        return new LateBindingValueMetadata(metadata);
+        return new LateBindingValueMetadata(substitutor, metadata);
     }
 
     private void printWarning(Object immutable, String processingType) {
         StringBuilder sb = new StringBuilder("The property placeholder processor for ");
         sb.append(placeholderPrefix).append(',').append(" ").append(placeholderSuffix)
-        .append(" in bundle ").append(blueprintBundle.getSymbolicName()).append("/")
-        .append(blueprintBundle.getVersion()).append(" found an immutable ").append(processingType)
-        .append(" at location ");
+          .append(" in bundle ").append(blueprintBundle.getSymbolicName()).append("/")
+          .append(blueprintBundle.getVersion()).append(" found an immutable ").append(processingType)
+          .append(" at location ");
         
         for(String s : processingStack) {
             sb.append(s);
@@ -429,49 +449,36 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     protected String retrieveValue(String expression) {
         return getProperty(expression);
     }
-    
-    protected String processString(String str) {
-        // TODO: we need to handle escapes on the prefix / suffix
-        Matcher matcher = getPattern().matcher(str);
-        while (matcher.find()) {
-            String rep = retrieveValue(matcher.group(1));
-            if (rep != null) {
-                str = str.replace(matcher.group(0), rep);
-                matcher.reset(str);
-            }
-        }
-        return str;
-    }
 
     protected String getProperty(String val) {
         return null;
     }
 
-    protected Pattern getPattern() {
-        if (pattern == null) {
-            pattern = Pattern.compile("\\Q" + placeholderPrefix + "\\E(.+?)\\Q" + placeholderSuffix + "\\E");
-        }
-        return pattern;
-    }
-
     public class LateBindingValueMetadata implements ValueMetadata {
 
+        private final StrSubstitutor substitutor;
         private final ValueMetadata metadata;
         private boolean retrieved;
         private String retrievedValue;
 
-        public LateBindingValueMetadata(ValueMetadata metadata) {
+        public LateBindingValueMetadata(StrSubstitutor substitutor, ValueMetadata metadata) {
+            this.substitutor = substitutor;
             this.metadata = metadata;
         }
 
         public String getStringValue() {
             if (!retrieved) {
-                String v = metadata.getStringValue();
-                LOGGER.debug("Before process: {}", v);
-                retrievedValue = processString(v);
+                String value = metadata.getStringValue();
+                StringBuilder result = new StringBuilder(value);
+                LOGGER.debug("Before process: {}", result);
+                retrieved = this.substitutor.replaceIn(result);
                 LOGGER.debug("After process: {}", retrievedValue);
                 
-                retrieved = true;
+                if (retrieved) {
+                    retrievedValue = result.toString();
+                } else {
+                    retrievedValue = value;
+                }
             }
             return retrievedValue;
         }
