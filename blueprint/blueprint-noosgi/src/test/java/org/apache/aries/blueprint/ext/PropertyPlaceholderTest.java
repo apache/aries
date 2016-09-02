@@ -30,7 +30,7 @@ import org.osgi.service.blueprint.reflect.ValueMetadata;
 public class PropertyPlaceholderTest extends PropertyPlaceholder {
     private final Map<String,String> values = new HashMap<String,String>();
     private LateBindingValueMetadata sut;
-    
+
     @Before
     public void setup() {
         values.clear();
@@ -50,13 +50,13 @@ public class PropertyPlaceholderTest extends PropertyPlaceholder {
         bind("animal.2", "mouse");
         bind("species", "2");
     }
-    
+
     @Test
     public void singleProp() {
         sut = makeProperty("${prop1}");
         assertEquals("hello", sut.getStringValue());
     }
-    
+
     @Test
     public void multipleProps() {
         sut = makeProperty("say ${prop1} ${prop2}");
@@ -93,40 +93,40 @@ public class PropertyPlaceholderTest extends PropertyPlaceholder {
         sut = makeProperty("plain text");
         assertEquals("plain text", sut.getStringValue());
     }
-    
+
 //    @Test
 //    public void evaluateStringProps() {
 //        sut = makeProperty("${prop1+prop2}");
 //        assertEquals("helloworld", sut.getStringValue());
 //    }
-//    
+//
 //    @Test
 //    public void evaluateIntProps() {
 //        sut = makeProperty("${prop3+prop4}");
 //        assertEquals("30", sut.getStringValue());
 //    }
-    
-    
-    
+
+
+
     /*
      * Test helper methods
      */
-    
+
     // Override to simulate actual property retrieval
     protected String getProperty(String prop) {
         return values.get(prop);
     }
-    
+
     private void bind(String prop, String val) {
         values.put(prop, val);
     }
-    
+
     private LateBindingValueMetadata makeProperty(final String prop) {
         return new LateBindingValueMetadata(new ValueMetadata() {
             public String getType() {
                 return null;
             }
-            
+
             public String getStringValue() {
                 return prop;
             }
