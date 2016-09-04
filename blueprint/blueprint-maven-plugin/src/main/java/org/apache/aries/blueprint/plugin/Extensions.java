@@ -27,6 +27,7 @@ import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
+import org.apache.aries.blueprint.plugin.spi.QualifingAnnotationFinder;
 import org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler;
 
 import java.lang.annotation.Annotation;
@@ -46,6 +47,7 @@ public class Extensions {
     public static final List<MethodAnnotationHandler<? extends Annotation>> methodAnnotationHandlers = new ArrayList<>();
     public static final List<FieldAnnotationHandler<? extends Annotation>> fieldAnnotationHandlers = new ArrayList<>();
     public static final List<Class<? extends Annotation>> factoryMethodAnnotationClasses = new ArrayList<>();
+    public static final List<Class<? extends Annotation>> qualifingAnnotationClasses = new ArrayList<>();
 
     static {
         for (BeanFinder beanFinder : ServiceLoader.load(BeanFinder.class)) {
@@ -89,6 +91,10 @@ public class Extensions {
 
         for (FactoryMethodFinder<? extends Annotation> factoryMethodFinder : ServiceLoader.load(FactoryMethodFinder.class)) {
             factoryMethodAnnotationClasses.add((Class<? extends Annotation>) factoryMethodFinder.factoryMethodAnnotation());
+        }
+
+        for (QualifingAnnotationFinder<? extends Annotation> qualifingAnnotationFinder : ServiceLoader.load(QualifingAnnotationFinder.class)) {
+            qualifingAnnotationClasses.add((Class<? extends Annotation>) qualifingAnnotationFinder.getAnnotation());
         }
     }
 }

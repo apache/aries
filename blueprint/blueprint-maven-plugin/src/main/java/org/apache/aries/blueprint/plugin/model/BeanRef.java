@@ -21,7 +21,6 @@ package org.apache.aries.blueprint.plugin.model;
 import org.apache.aries.blueprint.plugin.Extensions;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 
-import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -69,8 +68,14 @@ public class BeanRef implements Comparable<BeanRef> {
         }
     }
 
-    private Qualifier isQualifier(Annotation ann) {
-        return ann.annotationType().getAnnotation(Qualifier.class);
+    private Object isQualifier(Annotation ann) {
+        for (Class<? extends Annotation> qualifingAnnotationClass : Extensions.qualifingAnnotationClasses) {
+            Object annotation = ann.annotationType().getAnnotation(qualifingAnnotationClass);
+            if (annotation != null) {
+                return annotation;
+            }
+        }
+        return null;
     }
 
     public static String getBeanName(Class<?> clazz) {
