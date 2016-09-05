@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.core.internal.filesystem;
+package org.apache.aries.util.filesystem.impl;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,8 +26,6 @@ import java.util.zip.ZipInputStream;
 import org.apache.aries.util.IORuntimeException;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
-import org.apache.aries.util.filesystem.impl.DirectoryImpl;
-import org.apache.aries.util.filesystem.impl.ZipDirectory;
 
 public class UnpackingFileSystemImpl {
 

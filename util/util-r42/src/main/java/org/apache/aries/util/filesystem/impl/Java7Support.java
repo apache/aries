@@ -1,4 +1,4 @@
-package org.apache.aries.subsystem.core.internal.filesystem;
+package org.apache.aries.util.filesystem.impl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

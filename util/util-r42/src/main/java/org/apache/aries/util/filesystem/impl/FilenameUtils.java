@@ -26,7 +26,7 @@
  * the removal of unused methods and fields.
  *
  */
-package org.apache.aries.subsystem.core.internal.filesystem;
+package org.apache.aries.util.filesystem.impl;
 
 import java.io.File;
 

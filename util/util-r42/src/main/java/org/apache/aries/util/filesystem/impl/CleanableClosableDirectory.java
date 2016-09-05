@@ -11,15 +11,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.aries.subsystem.core.internal.filesystem;
+package org.apache.aries.util.filesystem.impl;
 
-import java.io.InputStream;
+import java.io.File;
+import java.io.IOException;
 
-import org.apache.aries.util.filesystem.ICloseableDirectory;
+import org.apache.aries.util.filesystem.IDirectory;
 
-public class UnpackingFileSystem {
+public class CleanableClosableDirectory extends CloseableDirectory {
 
-	public static ICloseableDirectory getFSRoot(InputStream is) {
-		return UnpackingFileSystemImpl.getFSRoot(is);
+	private final File tempDirectory;
+
+	public CleanableClosableDirectory(IDirectory delegate, File tempDirectory) {
+		super(delegate);
+		this.tempDirectory = tempDirectory;
+	}
+
+	@Override
+	protected void cleanup() {
+		try {
+			FileUtils.deleteDirectory(this.tempDirectory);
+		} catch (IOException e) {}
 	}
 }
