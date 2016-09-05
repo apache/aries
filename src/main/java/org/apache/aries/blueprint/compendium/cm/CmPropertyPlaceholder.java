@@ -46,6 +46,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
     private String updateStrategy;
     private ManagedObjectManager managedObjectManager;
     private Dictionary<String,Object> properties;
+    private boolean initialized;
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
         return blueprintContainer;
@@ -89,10 +90,6 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
 
     public void init() throws Exception {
         LOGGER.debug("Initializing CmPropertyPlaceholder");
-        Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
-        if (config != null) {
-            properties = config.getProperties();
-        }
         Properties props = new Properties();
         props.put(Constants.SERVICE_PID, persistentId);
         Bundle bundle = blueprintContainer.getBundleContext().getBundle();
@@ -128,6 +125,11 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
     }
 
     public void updated(Dictionary props) {
+        if (!initialized) {
+            properties = props;
+            initialized = true;
+            return;
+        }
         if ("reload".equalsIgnoreCase(updateStrategy) && !equals(properties, props)) {
             LOGGER.debug("Configuration updated for pid={}", persistentId);
             // Run in a separate thread to avoid re-entrance

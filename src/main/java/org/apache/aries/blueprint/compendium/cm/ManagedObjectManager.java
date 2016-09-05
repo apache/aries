@@ -25,6 +25,8 @@ import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.aries.util.AriesFrameworkUtil;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
@@ -51,6 +53,13 @@ public class ManagedObjectManager {
             map.put(key, reg);
         }
         reg.add(cm);
+
+        try {
+            Dictionary<String, Object> config = CmUtils.getProperties(reg.getRegistration().getReference(), key);
+            cm.updated(config);
+        } catch (Throwable t) {
+            // Ignore
+        }
     }
 
     public synchronized void unregister(ManagedObject cm) {
