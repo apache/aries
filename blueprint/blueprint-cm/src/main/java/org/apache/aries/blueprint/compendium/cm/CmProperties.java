@@ -50,6 +50,7 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
     private final Object lock = new Object();
     private final Set<ServicePropertiesUpdater> services = new HashSet<ServicePropertiesUpdater>();
     private final Properties properties = new Properties();
+    private boolean initialized;
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
         return blueprintContainer;
@@ -118,11 +119,6 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
                 
         synchronized (lock) {
             managedObjectManager.register(this, props);
-            Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
-            if (config != null) {
-                properties.clear();
-                JavaUtils.copy(properties, config.getProperties());
-            }
         }
     }
 
@@ -135,10 +131,12 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
     }
 
     public void updated(Dictionary props) {
-        if (serviceId != null) {
-            LOGGER.debug("Service properties updated for service={} / pid={}, {}", new Object[] {serviceId, persistentId, props});
-        } else {
-            LOGGER.debug("Service properties updated for pid={}, {}", new Object[] {persistentId, props});
+        if (initialized) {
+            if (serviceId != null) {
+                LOGGER.debug("Service properties updated for service={} / pid={}, {}", new Object[]{serviceId, persistentId, props});
+            } else {
+                LOGGER.debug("Service properties updated for pid={}, {}", new Object[]{persistentId, props});
+            }
         }
         
         synchronized (lock) {
@@ -146,7 +144,9 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
             if (props != null) {
                 JavaUtils.copy(properties, props);
             }
-            if (update) {
+            if (!initialized) {
+                initialized = true;
+            } else if (update) {
                 for (ServicePropertiesUpdater service : services) {
                     service.updateProperties(props);
                 }
@@ -163,9 +163,7 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
         
         synchronized (lock) {
             services.add(service);
-            if (properties != null) {
-                JavaUtils.copy(props, properties);
-            }
+            JavaUtils.copy(props, properties);
         }
     }
 
