@@ -117,6 +117,13 @@ public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
         assertEquals("Multiple services were registered for the same pid.", 1, refs.length);
     }
 
+    @Test
+    public void testPlaceholder() throws Exception {
+        Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
+        cf.update(getConfig3());
+        startTestBundle();
+    }
+
     private Hashtable<String, String> getConfig1() {
         Hashtable<String,String> props = new Hashtable<String,String>();
         props.put("a", "5");
@@ -129,6 +136,13 @@ public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
         props = new Hashtable<String,String>();
         props.put("a", "10");
         props.put("currency", "USD");
+        return props;
+    }
+
+    private Hashtable<String, String> getConfig3() {
+        Hashtable<String, String> props;
+        props = new Hashtable<String,String>();
+        props.put("key.b", "10");
         return props;
     }
 

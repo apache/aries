@@ -65,6 +65,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
     private final Object lock = new Object();
     private final Set<Object> beans = new HashSet<Object>();
     private Dictionary<String,Object> properties;
+    private boolean initialized;
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
         return blueprintContainer;
@@ -137,11 +138,6 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
                 
         synchronized (lock) {
             managedObjectManager.register(this, props);
-            Configuration config = CmUtils.getConfiguration(configAdmin, persistentId);
-            if (config != null) {
-                properties = config.getProperties();
-            }
-            updated(properties);
         }
     }
 
@@ -150,6 +146,11 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
     }
 
     public void updated(final Dictionary props) {
+        if (!initialized) {
+            properties = props;
+            initialized = true;
+            return;
+        }
         LOGGER.debug("Configuration updated for bean={} / pid={}", beanName, persistentId);
         synchronized (lock) {
             properties = props;
