@@ -32,7 +32,7 @@
     <artifactId>async-index</artifactId>
     <name>Apache Aries Async Index</name>
     <packaging>pom</packaging>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <description>
        An index for the Apache Aries Async Service
     </description>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.apache.aries.async</groupId>
             <artifactId>org.apache.aries.async.impl</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>1.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

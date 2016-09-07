@@ -23,18 +23,18 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.osgi.util.promise.Deferred;
+import org.apache.aries.async.promise.PromiseImpl;
 
 public class FireAndForgetWork implements Runnable {
 
 	private final MethodCall methodCall;
 	
-	private final Deferred<Void> cleanup;
-	private final Deferred<Void> started;
+	private final PromiseImpl<Void> cleanup;
+	private final PromiseImpl<Void> started;
 
 	private final AccessControlContext acc;
 	
-	public FireAndForgetWork(MethodCall methodCall, Deferred<Void> cleanup, Deferred<Void> started) {
+	public FireAndForgetWork(MethodCall methodCall, PromiseImpl<Void> cleanup, PromiseImpl<Void> started) {
 		this.methodCall = methodCall;
 		this.cleanup = cleanup;
 		this.started = started;

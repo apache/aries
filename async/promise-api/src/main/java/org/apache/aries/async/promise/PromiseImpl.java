@@ -18,23 +18,24 @@
  */
 package org.apache.aries.async.promise;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+
 import org.osgi.util.function.Function;
 import org.osgi.util.function.Predicate;
 import org.osgi.util.promise.Failure;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.promise.Success;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class PromiseImpl<T> implements Promise<T> {
 
-    private final ExecutorService exec;
+    private final Executor exec;
     private final List<Runnable> tasks = new ArrayList<Runnable>();
     private final CountDownLatch resolved = new CountDownLatch(1);
 
@@ -47,7 +48,13 @@ public class PromiseImpl<T> implements Promise<T> {
     public PromiseImpl() {
         // Executor for onResolve() callbacks
         // We could use an Executor that runs tasks in current thread
-        exec = Executors.newSingleThreadExecutor();
+        this(Executors.newSingleThreadExecutor());
+    }
+
+    public PromiseImpl(Executor executor) {
+    	// Executor for onResolve() callbacks
+    	// We could use an Executor that runs tasks in current thread
+    	exec = executor;
     }
 
     public void fail(Throwable failure) {
@@ -63,7 +70,7 @@ public class PromiseImpl<T> implements Promise<T> {
     public Promise<Void> resolveWith(final Promise<? extends T> with) {
         if (with == null)
             throw new NullPointerException();
-        final PromiseImpl<Void> result = new PromiseImpl<Void>();
+        final PromiseImpl<Void> result = new PromiseImpl<Void>(exec);
 
         with.then(new Success<T, T>() {
             @Override
@@ -108,7 +115,11 @@ public class PromiseImpl<T> implements Promise<T> {
 
         // run onResolve() callbacks
         for (Runnable task : tasks) {
-            exec.submit(task);
+            try{
+            	exec.execute(task);
+            } catch (RejectedExecutionException ree) {
+            	task.run();
+            }
         }
     }
 
@@ -181,7 +192,11 @@ public class PromiseImpl<T> implements Promise<T> {
             throw new NullPointerException();
 
         if (isDone()) {
-            exec.submit(callback);
+        	try {
+        		exec.execute(callback);
+        	} catch (RejectedExecutionException ree) {
+        		callback.run();
+        	}
         } else {
             tasks.add(callback);
         }
@@ -190,7 +205,7 @@ public class PromiseImpl<T> implements Promise<T> {
 
     @Override
     public <R> Promise<R> then(Success<? super T, ? extends R> success, Failure failure) {
-        PromiseImpl<R> result = new PromiseImpl<R>();
+        PromiseImpl<R> result = new PromiseImpl<R>(exec);
         result.onSuccess = success;
         result.onFailure = failure;
         synchronized (this) {
@@ -214,7 +229,7 @@ public class PromiseImpl<T> implements Promise<T> {
     public Promise<T> filter(final Predicate<? super T> predicate) {
         if (predicate == null)
             throw new NullPointerException();
-        final PromiseImpl<T> result = new PromiseImpl<T>();
+        final PromiseImpl<T> result = new PromiseImpl<T>(exec);
 
         then(new Success<T, T>() {
             @Override
@@ -244,7 +259,7 @@ public class PromiseImpl<T> implements Promise<T> {
     public <R> Promise<R> map(final Function<? super T, ? extends R> mapper) {
         if (mapper == null)
             throw new NullPointerException();
-        final PromiseImpl<R> result = new PromiseImpl<R>();
+        final PromiseImpl<R> result = new PromiseImpl<R>(exec);
 
         then(new Success<T, T>() {
             @Override
@@ -271,7 +286,7 @@ public class PromiseImpl<T> implements Promise<T> {
     public <R> Promise<R> flatMap(final Function<? super T, Promise<? extends R>> mapper) {
         if (mapper == null)
             throw new NullPointerException();
-        final PromiseImpl<R> result = new PromiseImpl<R>();
+        final PromiseImpl<R> result = new PromiseImpl<R>(exec);
 
         then(new Success<T, T>() {
             @Override
@@ -299,7 +314,7 @@ public class PromiseImpl<T> implements Promise<T> {
         if (recovery == null)
             throw new NullPointerException();
 
-        final PromiseImpl<T> result = new PromiseImpl<T>();
+        final PromiseImpl<T> result = new PromiseImpl<T>(exec);
 
         then(new Success<T, T>() {
             @Override
@@ -331,7 +346,7 @@ public class PromiseImpl<T> implements Promise<T> {
         if (recovery == null)
             throw new NullPointerException();
 
-        final PromiseImpl<T> result = new PromiseImpl<T>();
+        final PromiseImpl<T> result = new PromiseImpl<T>(exec);
 
         then(new Success<T, T>() {
             @Override
@@ -363,7 +378,7 @@ public class PromiseImpl<T> implements Promise<T> {
         if (fallback == null)
             throw new NullPointerException();
 
-        final PromiseImpl<T> result = new PromiseImpl<T>();
+        final PromiseImpl<T> result = new PromiseImpl<T>(exec);
 
         then(new Success<T, T>() {
             @Override
