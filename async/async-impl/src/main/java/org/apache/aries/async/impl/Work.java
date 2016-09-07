@@ -24,19 +24,19 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
-import org.osgi.util.promise.Deferred;
+import org.apache.aries.async.promise.PromiseImpl;
 
 public class Work<T> implements Runnable {
 
 	private final MethodCall methodCall;
 	
-	private final Deferred<T> deferred;
+	private final PromiseImpl<T> promiseImpl;
 
 	private final AccessControlContext acc;
 	
-	public Work(MethodCall methodCall, Deferred<T> deferred) {
+	public Work(MethodCall methodCall, PromiseImpl<T> promiseImpl) {
 		this.methodCall = methodCall;
-		this.deferred = deferred;
+		this.promiseImpl = promiseImpl;
 		this.acc = AccessController.getContext();
 	}
 
@@ -55,16 +55,16 @@ public class Work<T> implements Runnable {
 				}
 			}, acc);
 			
-			deferred.resolve(returnValue);
+			promiseImpl.resolve(returnValue);
 			
 		} catch (PrivilegedActionException pae) {
 			Throwable targetException = pae.getCause();
 			if(targetException instanceof InvocationTargetException) {
 				targetException = ((InvocationTargetException) targetException).getTargetException();
 			}
-			deferred.fail(targetException);
+			promiseImpl.fail(targetException);
 		} catch (Exception e) {
-			deferred.fail(e);
+			promiseImpl.fail(e);
 		} finally {
 			methodCall.releaseService();
 		}

@@ -22,16 +22,15 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
+import org.apache.aries.async.promise.PromiseImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.async.delegate.AsyncDelegate;
 import org.osgi.service.log.LogService;
-import org.osgi.util.promise.Deferred;
 import org.osgi.util.promise.Failure;
 import org.osgi.util.promise.Promise;
-import org.osgi.util.promise.Promises;
 import org.osgi.util.tracker.ServiceTracker;
 
 
@@ -89,14 +88,14 @@ public class MethodCall {
 	
 	public <V> Promise<V> invokeAsynchronously(Bundle clientBundle, ExecutorService executor) {
 		
-		Deferred<V> deferred = new Deferred<V>();
+		PromiseImpl<V> promiseImpl = new PromiseImpl<V>(executor);
 
 		Object svc;
 		try {
 			svc = getService();
 		} catch (Exception e) {
-			deferred.fail(e);
-			return deferred.getPromise();
+			promiseImpl.fail(e);
+			return promiseImpl;
 		}
 		
 		if(svc instanceof AsyncDelegate) {
@@ -105,16 +104,16 @@ public class MethodCall {
 				Promise<V> p = (Promise<V>) ((AsyncDelegate) svc).async(method, arguments);
 				if(p != null) {
 					try {
-						deferred.resolveWith(p);
-						return deferred.getPromise();
+						promiseImpl.resolveWith(p);
+						return promiseImpl;
 					} finally {
 						releaseService();
 					}
 				}
 			} catch (Exception e) {
 				try {
-					deferred.fail(e);
-					return deferred.getPromise();
+					promiseImpl.fail(e);
+					return promiseImpl;
 				} finally {
 					releaseService();
 				}
@@ -123,50 +122,52 @@ public class MethodCall {
 		//If we get here then svc is either not an async delegate, or it rejected the call
 		
 		try {
-			executor.execute(new Work<V>(this, deferred));
+			executor.execute(new Work<V>(this, promiseImpl));
 		} catch (RejectedExecutionException ree) {
-			deferred.fail(new ServiceException("The Async service is unable to accept new requests", 7, ree));
+			promiseImpl.fail(new ServiceException("The Async service is unable to accept new requests", 7, ree));
 		}
-		Promise<V> promise = deferred.getPromise();
 		
 		//Release the service we got at the start of this method
-		promise.onResolve(new Runnable() {
+		promiseImpl.onResolve(new Runnable() {
 			public void run() {
 				releaseService();
 			}
 		});
 		
-		return promise;
+		return promiseImpl;
 	}
 
 	public Promise<Void> fireAndForget(Bundle clientBundle, ExecutorService executor) {
+		PromiseImpl<Void> started = new PromiseImpl<Void>(executor);
 		Object svc;
 		try {
 			svc = getService();
 		} catch (Exception e) {
 			logError("Unable to obtain the service object", e);
-			return Promises.failed(e);
+			started.fail(e);
+			return started;
 		}
 		
 		if(svc instanceof AsyncDelegate) {
 			try {
 				if(((AsyncDelegate) svc).execute(method, arguments)) {
 					releaseService();
-					return Promises.resolved(null);
+					started.resolve(null);
+					return started;
 				}
 			} catch (Exception e) {
 				releaseService();
 				logError("The AsyncDelegate rejected the fire-and-forget invocation with an exception", e);
-				return Promises.failed(e);
+				started.fail(e);
+				return started;
 			}
 		}
 		//If we get here then svc is either not an async delegate, or it rejected the call
 		
-		Deferred<Void> cleanup = new Deferred<Void>();
-		Deferred<Void> started = new Deferred<Void>();
+		PromiseImpl<Void> cleanup = new PromiseImpl<Void>();
 		try {
 			executor.execute(new FireAndForgetWork(this, cleanup, started));
-			cleanup.getPromise().onResolve(new Runnable() {
+			cleanup.onResolve(new Runnable() {
 				public void run() {
 					releaseService();
 				}
@@ -175,11 +176,11 @@ public class MethodCall {
 					logError("The fire-and-forget invocation failed", resolved.getFailure());
 				}
 			});
-			return started.getPromise();
 		} catch (RejectedExecutionException ree) {
 			logError("The Async Service threadpool rejected the fire-and-forget invocation", ree);
-			return Promises.failed(new ServiceException("Unable to enqueue the fire-and forget task", 7, ree));
+			started.fail(new ServiceException("Unable to enqueue the fire-and forget task", 7, ree));
 		}
+		return started;
 	}
 
 	void logError(String message, Throwable e) {
