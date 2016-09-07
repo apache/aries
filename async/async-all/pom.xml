@@ -142,7 +142,7 @@
 		        <artifactId>maven-bundle-plugin</artifactId>
 	            <configuration>
 	              	<instructions>
-	              		<Provide-Capability>osgi.service;objectClass:List&lt;String&gt;=org.osgi.service.async.Async;uses:=org.osgi.service.async,osgi.implementation;osgi.implementation=osgi.async;version:Version=1.0.0;uses:=org.osgi.service.async</Provide-Capability>
+	              		<Provide-Capability>osgi.service;objectClass:List&lt;String&gt;=org.osgi.service.async.Async;uses:=org.osgi.service.async,osgi.implementation;osgi.implementation=osgi.async;version:Version=1.0.0;uses:="org.osgi.service.async,org.osgi.service.async.delegate"</Provide-Capability>
 	              	</instructions>
 	            </configuration>
 	        </plugin>
