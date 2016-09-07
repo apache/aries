@@ -580,7 +580,45 @@
                     </execution>
 
                     <!-- End of new pom for hello tests, part 1 -->
-                    
+
+                    <execution>
+                        <id>aries1608provider</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/aries1608provider/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/aries1608provider/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/aries1608</outputDirectory>
+                            <finalName>aries1608provider</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
+                    <execution>
+                        <id>aries.bundlearies1608required</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestFile>src/test/bundles/aries1608required/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <includes>
+                                <include>org/apache/aries/subsystem/itests/aries1608required/**</include>
+                            </includes>
+                            <outputDirectory>${project.build.directory}/test-classes/aries1608</outputDirectory>
+                            <finalName>aries1608required</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
+
                     <execution>
                         <id>aries1523host</id>
                         <goals>
@@ -717,7 +755,32 @@
                     </execution>
 
                     <!-- End of new pom for hello tests, part 2 -->
-                    
+                    <execution>
+                        <id>add-source-aries1608provider</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/aries1608provider</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>add-source-aries1608required</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/test/bundles/aries1608required</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <id>add-source-aries1523host</id>
                         <phase>generate-sources</phase>
