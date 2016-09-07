@@ -38,8 +38,10 @@ public class FelixCapabilityAdapter extends AbstractCapability {
 		String namespace = getNamespace();
 		if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
 			result.put(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, result.get(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE.toLowerCase()));
-		else if (BundleNamespace.BUNDLE_NAMESPACE.equals(namespace))
+		else if (BundleNamespace.BUNDLE_NAMESPACE.equals(namespace)) {
 			result.put(BundleNamespace.BUNDLE_NAMESPACE, result.get(org.apache.felix.bundlerepository.Resource.SYMBOLIC_NAME));
+			result.put(BundleNamespace.CAPABILITY_BUNDLE_VERSION_ATTRIBUTE, result.get(org.apache.felix.bundlerepository.Resource.VERSION));
+		}
 		else
 			result.put(namespace, result.get(capability.getName()));
 		return result;
