@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 public class Activator implements BundleActivator, ServiceTrackerCustomizer<Object, Object> {
     private static final Logger logger = LoggerFactory.getLogger(Activator.class);
     public static final String MODELLED_RESOURCE_MANAGER = "org.apache.aries.application.modelling.ModelledResourceManager";
+    private static final String LOCK_TIMEOUT = "org.apache.aries.subsystem.lock.timeout";
 
     public static final String LOG_ENTRY = "Method entry: {}, args {}";
     public static final String LOG_EXIT = "Method exit: {}, returning {}";
@@ -59,6 +60,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	}
 	
 	private volatile BundleContext bundleContext;
+	private volatile LockingStrategy lockingStrategy;
     private volatile ConfigAdminContentHandler configAdminHandler;
 	private volatile Coordinator coordinator;
     private volatile Object modelledResourceManager;
@@ -77,6 +79,10 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	
 	public BundleContext getBundleContext() {
 		return bundleContext;
+	}
+
+	public LockingStrategy getLockingStrategy() {
+		return lockingStrategy;
 	}
 
 	public Coordinator getCoordinator() {
@@ -118,6 +124,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	public synchronized void start(BundleContext context) throws Exception {
 		logger.debug(LOG_ENTRY, "start", context);
 		bundleContext = context;
+		lockingStrategy = new LockingStrategy(bundleContext.getProperty(LOCK_TIMEOUT));
 		serviceTracker = new ServiceTracker<Object, Object>(bundleContext, generateServiceFilter(), this);
 		serviceTracker.open();
 		logger.debug(LOG_EXIT, "start");

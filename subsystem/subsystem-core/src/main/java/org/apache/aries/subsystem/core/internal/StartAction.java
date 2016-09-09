@@ -197,7 +197,7 @@ public class StartAction extends AbstractAction {
 	@Override
 	public Object run() {
 		// Protect against re-entry now that cycles are supported.
-		if (!LockingStrategy.set(State.STARTING, target)) {
+		if (!Activator.getInstance().getLockingStrategy().set(State.STARTING, target)) {
 			return null;
 		}
 		try {
@@ -206,7 +206,7 @@ public class StartAction extends AbstractAction {
 			// If necessary, install the dependencies.
 	    	if (State.INSTALLING.equals(target.getState()) && !Utils.isProvisionDependenciesInstall(target)) {
 	    		// Acquire the global write lock while installing dependencies.
-				LockingStrategy.writeLock();
+				Activator.getInstance().getLockingStrategy().writeLock();
 				try {
 					// We are now protected against installs, starts, stops, and uninstalls.
 		    		// We need a separate coordination when installing 
@@ -228,7 +228,7 @@ public class StartAction extends AbstractAction {
 						}
 						// Downgrade to the read lock in order to prevent 
 		    			// installs and uninstalls but allow starts and stops.
-						LockingStrategy.readLock();
+						Activator.getInstance().getLockingStrategy().readLock();
 		    		}
 		    		catch (Throwable t) {
 		    			c.fail(t);
@@ -241,13 +241,13 @@ public class StartAction extends AbstractAction {
 				}
 				finally {
 					// Release the global write lock as soon as possible.
-					LockingStrategy.writeUnlock();
+					Activator.getInstance().getLockingStrategy().writeUnlock();
 				}
 	    	}
 	    	else {
 	    		// Acquire the read lock in order to prevent installs and
 	    		// uninstalls but allow starts and stops.
-	    		LockingStrategy.readLock();
+	    		Activator.getInstance().getLockingStrategy().readLock();
 	    	}
 	    	try {
 	    		// We now hold the read lock and are protected against installs
@@ -263,15 +263,15 @@ public class StartAction extends AbstractAction {
 	    		affectedResources = computeAffectedResources(target);
 				// Acquire the global mutual exclusion lock while acquiring the
 				// state change locks of affected subsystems.
-				LockingStrategy.lock();
+				Activator.getInstance().getLockingStrategy().lock();
 				try {
 					// We are now protected against cycles.
 					// Acquire the state change locks of affected subsystems.
-					LockingStrategy.lock(affectedResources.subsystems());
+					Activator.getInstance().getLockingStrategy().lock(affectedResources.subsystems());
 				}
 				finally {
 					// Release the global mutual exclusion lock as soon as possible.
-					LockingStrategy.unlock();
+					Activator.getInstance().getLockingStrategy().unlock();
 				}
 				Coordination coordination = this.coordination;
 				try {
@@ -323,13 +323,13 @@ public class StartAction extends AbstractAction {
 					}
 					finally {
 						// Release the state change locks of affected subsystems.
-						LockingStrategy.unlock(affectedResources.subsystems());
+						Activator.getInstance().getLockingStrategy().unlock(affectedResources.subsystems());
 					}
 				}
 	    	}
 	    	finally {
 				// Release the read lock.
-				LockingStrategy.readUnlock();
+				Activator.getInstance().getLockingStrategy().readUnlock();
 			}
 		}
 		catch (CoordinationException e) {
@@ -347,7 +347,7 @@ public class StartAction extends AbstractAction {
 		}
 		finally {
 			// Protection against re-entry no longer required.
-			LockingStrategy.unset(State.STARTING, target);
+			Activator.getInstance().getLockingStrategy().unset(State.STARTING, target);
 		}
 		return null;
 	}

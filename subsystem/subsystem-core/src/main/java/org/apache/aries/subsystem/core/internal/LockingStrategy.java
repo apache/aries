@@ -15,20 +15,32 @@ import org.osgi.service.subsystem.Subsystem;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class LockingStrategy {
-	private static final int TRY_LOCK_TIME = 30000;
-	private static final TimeUnit TRY_LOCK_TIME_UNIT = TimeUnit.MILLISECONDS;
-	
+	private final int TRY_LOCK_TIME;
+	private final TimeUnit TRY_LOCK_TIME_UNIT = TimeUnit.SECONDS;
+
+	public LockingStrategy(String tryLockTime) {
+		int value = 600; // ten mins by default
+		if (tryLockTime != null) {
+			try {
+				value = Integer.parseInt(tryLockTime);
+			} catch (NumberFormatException e) {
+				// ignore, the default will be used
+			}
+		}
+		TRY_LOCK_TIME = value;
+	}
+
 	/*
 	 * A mutual exclusion lock used when acquiring the state change locks of
 	 * a collection of subsystems in order to prevent cycle deadlocks.
 	 */
-	private static final ReentrantLock lock = new ReentrantLock();
+	private final ReentrantLock lock = new ReentrantLock();
 	/*
 	 * Used when the state change lock of a subsystem cannot be acquired. All
 	 * other state change locks are released while waiting. The condition is met
 	 * whenever the state change lock of one or more subsystems is released.
 	 */
-	private static final Condition condition = lock.newCondition();
+	private final Condition condition = lock.newCondition();
 	
 	/*
 	 * Allow only one of the following operations to be executing at the same 
@@ -45,16 +57,16 @@ public class LockingStrategy {
 	 * (2) Start
 	 * (3) Stop
 	 */
-	private static final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
+	private final ReentrantReadWriteLock rwlock = new ReentrantReadWriteLock();
 	
-	private static final ThreadLocal<Map<Subsystem.State, Set<BasicSubsystem>>> local = new ThreadLocal<Map<Subsystem.State, Set<BasicSubsystem>>>() {
+	private final ThreadLocal<Map<Subsystem.State, Set<BasicSubsystem>>> local = new ThreadLocal<Map<Subsystem.State, Set<BasicSubsystem>>>() {
 		@Override
 		protected Map<Subsystem.State, Set<BasicSubsystem>> initialValue() {
 			return new HashMap<Subsystem.State, Set<BasicSubsystem>>();
 		}
 	};
 	
-	public static void lock() {
+	public void lock() {
 		try {
 			if (!lock.tryLock(TRY_LOCK_TIME, TRY_LOCK_TIME_UNIT)) {
 				throw new SubsystemException("Unable to acquire the global mutual exclusion lock in time.");
@@ -65,11 +77,11 @@ public class LockingStrategy {
 		}
 	}
 	
-	public static void unlock() {
+	public void unlock() {
 		lock.unlock();
 	}
 	
-	public static void lock(Collection<BasicSubsystem> subsystems) {
+	public void lock(Collection<BasicSubsystem> subsystems) {
 		Collection<BasicSubsystem> locked = new ArrayList<BasicSubsystem>(subsystems.size());
 		try {
 			while (locked.size() < subsystems.size()) {
@@ -77,7 +89,7 @@ public class LockingStrategy {
 					if (!subsystem.stateChangeLock().tryLock()) {
 						unlock(locked);
 						locked.clear();
-						if (!LockingStrategy.condition.await(TRY_LOCK_TIME, TimeUnit.SECONDS)) {
+						if (!condition.await(TRY_LOCK_TIME, TimeUnit.SECONDS)) {
 							throw new SubsystemException("Unable to acquire the state change lock in time: " + subsystem);
 						}
 						break;
@@ -92,14 +104,14 @@ public class LockingStrategy {
 		}
 	}
 	
-	public static void unlock(Collection<BasicSubsystem> subsystems) {
+	public void unlock(Collection<BasicSubsystem> subsystems) {
 		for (BasicSubsystem subsystem : subsystems) {
 			subsystem.stateChangeLock().unlock();
 		}
 		signalAll();
 	}
 	
-	private static void signalAll() {
+	private void signalAll() {
 		lock();
 		try {
 			condition.signalAll();
@@ -109,7 +121,7 @@ public class LockingStrategy {
 		}
 	}
 	
-	public static boolean set(Subsystem.State state, BasicSubsystem subsystem) {
+	public boolean set(Subsystem.State state, BasicSubsystem subsystem) {
 		Map<Subsystem.State, Set<BasicSubsystem>> map = local.get();
 		Set<BasicSubsystem> subsystems = map.get(state);
 		if (subsystems == null) {
@@ -124,7 +136,7 @@ public class LockingStrategy {
 		return true;
 	}
 	
-	public static void unset(Subsystem.State state, BasicSubsystem subsystem) {
+	public void unset(Subsystem.State state, BasicSubsystem subsystem) {
 		Map<Subsystem.State, Set<BasicSubsystem>> map = local.get();
 		Set<BasicSubsystem> subsystems = map.get(state);
 		if (subsystems != null) {
@@ -132,7 +144,7 @@ public class LockingStrategy {
 		}
 	}
 	
-	public static void readLock() {
+	public void readLock() {
 		try {
 			if (!rwlock.readLock().tryLock(TRY_LOCK_TIME, TRY_LOCK_TIME_UNIT)) {
 				throw new SubsystemException("Unable to acquire the global read lock in time.");
@@ -143,11 +155,11 @@ public class LockingStrategy {
 		}
 	}
 	
-	public static void readUnlock() {
+	public void readUnlock() {
 		rwlock.readLock().unlock();
 	}
 	
-	public static void writeLock() {
+	public void writeLock() {
 		try {
 			if (!rwlock.writeLock().tryLock(TRY_LOCK_TIME, TRY_LOCK_TIME_UNIT)) {
 				throw new SubsystemException("Unable to acquire the global write lock in time.");
@@ -158,7 +170,7 @@ public class LockingStrategy {
 		}
 	}
 	
-	public static void writeUnlock() {
+	public void writeUnlock() {
 		rwlock.writeLock().unlock();
 	}
 }
