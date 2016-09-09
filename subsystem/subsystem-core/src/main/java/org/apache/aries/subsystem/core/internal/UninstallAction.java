@@ -25,14 +25,14 @@ public class UninstallAction extends AbstractAction {
 	@Override
 	public Object run() {
 		// Protect against re-entry now that cycles are supported.
-		if (!LockingStrategy.set(State.UNINSTALLING, target)) {
+		if (!Activator.getInstance().getLockingStrategy().set(State.UNINSTALLING, target)) {
 			return null;
 		}
 		try {
 			// Acquire the global write lock to prevent all other operations 
 			// until the uninstall is complete. There is no need to hold any 
 			// other locks.
-			LockingStrategy.writeLock();
+			Activator.getInstance().getLockingStrategy().writeLock();
 			try {
 				checkRoot();
 				checkValid();
@@ -47,12 +47,12 @@ public class UninstallAction extends AbstractAction {
 			}
 			finally {
 				// Release the global write lock.
-				LockingStrategy.writeUnlock();
+				Activator.getInstance().getLockingStrategy().writeUnlock();
 			}
 		}
 		finally {
 			// Protection against re-entry no longer required.
-			LockingStrategy.unset(State.UNINSTALLING, target);
+			Activator.getInstance().getLockingStrategy().unset(State.UNINSTALLING, target);
 		}
 		return null;
 	}
