@@ -46,7 +46,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 		BasicSubsystem result = null;
 		// Acquire the global write lock to prevent all other operations until
 		// the installation is complete. There is no need to hold any other locks.
-		LockingStrategy.writeLock();
+		Activator.getInstance().getLockingStrategy().writeLock();
 		try {
 			State state = parent.getState();
 			if (State.INSTALLING.equals(state)) {
@@ -101,7 +101,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 		}
 		finally {
 			// Release the global write lock.
-			LockingStrategy.writeUnlock();
+			Activator.getInstance().getLockingStrategy().writeUnlock();
 		}
 		return result;
 	}

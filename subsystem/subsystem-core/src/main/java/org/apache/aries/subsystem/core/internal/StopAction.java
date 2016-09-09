@@ -44,14 +44,14 @@ public class StopAction extends AbstractAction {
 	@Override
 	public Object run() {
 		// Protect against re-entry now that cycles are supported.
-		if (!LockingStrategy.set(State.STOPPING, target)) {
+		if (!Activator.getInstance().getLockingStrategy().set(State.STOPPING, target)) {
 			return null;
 		}
 		try {
 			// We are now protected against re-entry.
 			// Acquire the global read lock to prevent installs and uninstalls
 			// but allow starts and stops.
-			LockingStrategy.readLock();
+			Activator.getInstance().getLockingStrategy().readLock();
 			try {
 				// We are now protected against installs and uninstalls.
 				checkRoot();
@@ -68,15 +68,15 @@ public class StopAction extends AbstractAction {
 				}
 				// Acquire the global mutual exclusion lock while acquiring the
 				// state change locks of affected subsystems.
-				LockingStrategy.lock();
+				Activator.getInstance().getLockingStrategy().lock();
 				try {
 					// We are now protected against cycles.
 					// Acquire the state change locks of affected subsystems.
-					LockingStrategy.lock(subsystems);
+					Activator.getInstance().getLockingStrategy().lock(subsystems);
 				}
 				finally {
 					// Release the global mutual exclusion lock as soon as possible.
-					LockingStrategy.unlock();
+					Activator.getInstance().getLockingStrategy().unlock();
 				}
 				try {
 					// We are now protected against other starts and stops of the affected subsystems.
@@ -128,17 +128,17 @@ public class StopAction extends AbstractAction {
 				}
 				finally {
 					// Release the state change locks of affected subsystems.
-					LockingStrategy.unlock(subsystems);
+					Activator.getInstance().getLockingStrategy().unlock(subsystems);
 				}
 			}
 			finally {
 				// Release the read lock.
-				LockingStrategy.readUnlock();
+				Activator.getInstance().getLockingStrategy().readUnlock();
 			}
 		}
 		finally {
 			// Protection against re-entry no longer required.
-			LockingStrategy.unset(State.STOPPING, target);
+			Activator.getInstance().getLockingStrategy().unset(State.STOPPING, target);
 		}
 		return null;
 	}
