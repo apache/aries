@@ -109,6 +109,26 @@ public class GeneratorTest {
     }
 
     @Test
+    public void testGenerateCDITransactional() throws Exception {
+        Node bean1 = getBeanById("cdiTransactionalAnnotatedBean");
+
+        NodeList txs = (NodeList) xpath.evaluate("transaction", bean1, XPathConstants.NODESET);
+        Set<TransactionalDef> defs = new HashSet<TransactionalDef>();
+        for (int i = 0; i < txs.getLength(); ++i) {
+            Node tx = txs.item(i);
+            defs.add(new TransactionalDef(xpath.evaluate("@method", tx), xpath.evaluate("@value", tx)));
+        }
+        Set<TransactionalDef> expectedDefs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
+            new TransactionalDef("txNotSupported", "NotSupported"),
+            new TransactionalDef("txMandatory", "Mandatory"),
+            new TransactionalDef("txNever", "Never"),
+            new TransactionalDef("txRequired", "Required"),
+            new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+            new TransactionalDef("txSupports", "Supports"));
+        assertEquals(expectedDefs, defs);
+    }
+
+    @Test
     public void testGeneratePersistenceContext() throws Exception {
         Node bean1 = getBeanById("myBean1");
 
