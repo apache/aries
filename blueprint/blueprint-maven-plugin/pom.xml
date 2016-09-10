@@ -244,6 +244,13 @@
             <version>3.1.4.RELEASE</version>
         </dependency>
 
+        <!-- For the CDI annotations -->
+        <dependency>
+            <groupId>javax.transaction.cdi</groupId>
+            <artifactId>javax.transaction.cdi-api</artifactId>
+            <version>1.2-b03</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
