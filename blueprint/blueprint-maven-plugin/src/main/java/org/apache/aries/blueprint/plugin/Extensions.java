@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.plugin;
 
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanFinder;
+import org.apache.aries.blueprint.plugin.spi.ContextInitializationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.FactoryMethodFinder;
@@ -48,6 +49,7 @@ public class Extensions {
     public static final List<FieldAnnotationHandler<? extends Annotation>> fieldAnnotationHandlers = new ArrayList<>();
     public static final List<Class<? extends Annotation>> factoryMethodAnnotationClasses = new ArrayList<>();
     public static final List<Class<? extends Annotation>> qualifingAnnotationClasses = new ArrayList<>();
+    public static final List<ContextInitializationHandler> contextInitializationHandlers = new ArrayList<>();
 
     static {
         for (BeanFinder beanFinder : ServiceLoader.load(BeanFinder.class)) {
@@ -95,6 +97,10 @@ public class Extensions {
 
         for (QualifingAnnotationFinder<? extends Annotation> qualifingAnnotationFinder : ServiceLoader.load(QualifingAnnotationFinder.class)) {
             qualifingAnnotationClasses.add((Class<? extends Annotation>) qualifingAnnotationFinder.getAnnotation());
+        }
+
+        for (ContextInitializationHandler contextInitializationHandler : ServiceLoader.load(ContextInitializationHandler.class)) {
+            contextInitializationHandlers.add(contextInitializationHandler);
         }
     }
 }

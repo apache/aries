@@ -42,6 +42,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -88,6 +89,12 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter
     protected Activation defaultActivation;
 
+    /**
+     * Specifies additional parameters which could be used in extensions
+     */
+    @Parameter
+    protected Map<String, String> customParameters;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
@@ -102,7 +109,7 @@ public class GenerateMojo extends AbstractMojo {
 
             Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, scanPaths);
 
-            BlueprintConfiguration blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation);
+            BlueprintConfiguration blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters);
 
             Context context = new Context(blueprintConfiguration, classes);
             context.resolve();

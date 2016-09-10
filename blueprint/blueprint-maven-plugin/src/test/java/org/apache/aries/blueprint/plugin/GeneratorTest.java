@@ -46,7 +46,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
@@ -66,7 +68,11 @@ public class GeneratorTest {
         String packageName = MyBean1.class.getPackage().getName();
         Set<Class<?>> beanClasses = findClasses(classFinder, Collections.singletonList(packageName));
         Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA, NS_TX1));
-        BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null);
+        Map<String,String> customParameters = new HashMap<>();
+        customParameters.put("ex.t", "1");
+        customParameters.put("example.p1", "v1");
+        customParameters.put("example.p2", "v2");
+        BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, customParameters);
         Context context = new Context(blueprintConfiguration, beanClasses);
         context.resolve();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -389,6 +395,15 @@ public class GeneratorTest {
         Node bean = getBeanById("produced2");
 
         assertXpathEquals(bean, "@depends-on", "produced1");
+    }
+
+    @Test
+    public void testInitContextHandler() throws Exception {
+        Node example1 = (Node) xpath.evaluate("/blueprint/example[@id='p1']", document, XPathConstants.NODE);
+        Node example2 = (Node) xpath.evaluate("/blueprint/example[@id='p2']", document, XPathConstants.NODE);
+
+        assertXpathEquals(example1, "@value", "v1");
+        assertXpathEquals(example2, "@value", "v2");
     }
 
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {

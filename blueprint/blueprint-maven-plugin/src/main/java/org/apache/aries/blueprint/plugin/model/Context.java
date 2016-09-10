@@ -21,12 +21,9 @@ package org.apache.aries.blueprint.plugin.model;
 import org.apache.aries.blueprint.plugin.Extensions;
 import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import org.apache.aries.blueprint.plugin.spi.ContextInitializationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-import org.osgi.service.blueprint.container.Converter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -49,15 +46,14 @@ public class Context implements BlueprintRegister, ContextEnricher {
 
     public Context(BlueprintConfiguration blueprintConfiguration, Collection<Class<?>> beanClasses) {
         this.blueprintConfiguration = blueprintConfiguration;
-        addBlueprintRefs();
+        initContext();
         addBeans(beanClasses);
     }
 
-    private void addBlueprintRefs() {
-        reg.add(new BeanRef(BundleContext.class, "blueprintBundleContext"));
-        reg.add(new BeanRef(Bundle.class, "blueprintBundle"));
-        reg.add(new BeanRef(BlueprintContainer.class, "blueprintContainer"));
-        reg.add(new BeanRef(Converter.class, "blueprintConverter"));
+    private void initContext() {
+        for (ContextInitializationHandler contextInitializationHandler : Extensions.contextInitializationHandlers) {
+            contextInitializationHandler.initContext(this);
+        }
     }
 
     private void addBeans(Collection<Class<?>> beanClasses) {
