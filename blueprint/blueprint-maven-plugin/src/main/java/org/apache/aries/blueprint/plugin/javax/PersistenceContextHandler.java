@@ -29,9 +29,11 @@ import javax.xml.stream.XMLStreamWriter;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static org.apache.aries.blueprint.plugin.javax.Namespaces.PATTERN_NS_JPA1;
+import static org.apache.aries.blueprint.plugin.javax.Namespaces.PATTERN_NS_JPA2;
+import static org.apache.aries.blueprint.plugin.javax.Namespaces.getNamespaceByPattern;
+
 public class PersistenceContextHandler implements FieldAnnotationHandler<PersistenceContext> {
-    public static final String NS_JPA = "http://aries.apache.org/xmlns/jpa/v1.1.0";
-    public static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
 
     @Override
     public Class<PersistenceContext> getAnnotation() {
@@ -40,7 +42,8 @@ public class PersistenceContextHandler implements FieldAnnotationHandler<Persist
 
     @Override
     public void handleMethodAnnotation(Class<?> clazz, List<Field> fields, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
-        if (contextEnricher.getBlueprintConfiguration().getNamespaces().contains(NS_JPA)) {
+        final String nsJpa1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_JPA1);
+        if (nsJpa1 != null) {
             for (final Field field : fields) {
                 final String name = field.getName();
                 final PersistenceContext persistenceContext = field.getAnnotation(PersistenceContext.class);
@@ -48,19 +51,20 @@ public class PersistenceContextHandler implements FieldAnnotationHandler<Persist
                     @Override
                     public void write(XMLStreamWriter writer) throws XMLStreamException {
                         writer.writeEmptyElement("context");
-                        writer.writeDefaultNamespace(NS_JPA);
+                        writer.writeDefaultNamespace(nsJpa1);
                         writer.writeAttribute("unitname", persistenceContext.unitName());
                         writer.writeAttribute("property", name);
                     }
                 });
             }
         }
-        if (contextEnricher.getBlueprintConfiguration().getNamespaces().contains(NS_JPA2)) {
+        final String nsJpa2 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_JPA2);
+        if (nsJpa2 != null) {
             contextEnricher.addBlueprintContentWriter("javax.persistence.enableJpa2", new XmlWriter() {
                 @Override
                 public void write(XMLStreamWriter writer) throws XMLStreamException {
                     writer.writeEmptyElement("enable");
-                    writer.writeDefaultNamespace(NS_JPA2);
+                    writer.writeDefaultNamespace(nsJpa2);
                 }
             });
         }

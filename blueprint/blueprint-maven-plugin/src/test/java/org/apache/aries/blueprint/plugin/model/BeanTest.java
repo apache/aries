@@ -27,8 +27,6 @@ import org.apache.aries.blueprint.plugin.bad.BadFieldBean1;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean2;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean3;
 import org.apache.aries.blueprint.plugin.bad.FieldBean4;
-import org.apache.aries.blueprint.plugin.javax.JavaxTransactionFactory;
-import org.apache.aries.blueprint.plugin.javax.PersistenceUnitHandler;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
@@ -46,7 +44,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BeanTest {
-    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(PersistenceUnitHandler.NS_JPA, JavaxTransactionFactory.NS_TX));
+    private static final String NS_JPA1 = "http://aries.apache.org/xmlns/jpa/v1.1.0";
+    private static final String NS_TX1 = "http://aries.apache.org/xmlns/transactions/v1.1.0";
+    
+    private final Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA1, NS_TX1));
     private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null);
     private final Context context = new Context(blueprintConfiguration);
 
