@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
-import org.apache.aries.blueprint.NamespaceHandler2;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.ext.PlaceholdersUtils;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
@@ -78,7 +77,7 @@ import org.w3c.dom.NodeList;
  *
  * @version $Rev$, $Date$
  */
-public class CmNamespaceHandler implements NamespaceHandler2 {
+public class CmNamespaceHandler implements NamespaceHandler {
 
     public static final String BLUEPRINT_NAMESPACE = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
     public static final String BLUEPRINT_CM_NAMESPACE_1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0";
@@ -152,16 +151,6 @@ public class CmNamespaceHandler implements NamespaceHandler2 {
 
     public void setConfigAdmin(ConfigurationAdmin configAdmin) {
         CmNamespaceHandler.configAdmin = configAdmin;
-    }
-
-    public boolean usePsvi() {
-        return false;
-    }
-
-    public boolean mayResolve(String namespace) {
-        return namespace != null
-                && (namespace.startsWith("http://aries.apache.org/blueprint/xmlns/blueprint-cm")
-                || namespace.startsWith("http://aries.apache.org/blueprint/xmlns/blueprint-ext"));
     }
 
     public URL getSchemaLocation(String namespace) {
