@@ -122,7 +122,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         LOGGER.debug("Retrieving property {}", val);
         Object v = null;
         if (v == null && systemProperties == SystemProperties.override) {
-            v = System.getProperty(val);
+            v = getSystemProperty(val);
             if (v != null) {
                 LOGGER.debug("Found system property {} with value {}", val, v);
             }
@@ -134,7 +134,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
             }
         }
         if (v == null && systemProperties == SystemProperties.fallback) {
-            v = System.getProperty(val);
+            v = getSystemProperty(val);
             if (v != null) {
                 LOGGER.debug("Found system property {} with value {}", val, v);
             }
@@ -149,6 +149,13 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
             LOGGER.debug("Property {} not found", val);
         }
         return v != null ? v.toString() : null;
+    }
+
+    protected String getSystemProperty(String val) {
+        if (val.startsWith("env:")) {
+            return System.getenv(val.substring("env:".length()));
+        }
+        return System.getProperty(val);
     }
 
     @Override
