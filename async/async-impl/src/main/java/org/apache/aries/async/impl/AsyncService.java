@@ -18,16 +18,17 @@
  */
 package org.apache.aries.async.impl;
 
+import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
-
-import net.sf.cglib.proxy.Enhancer;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
@@ -36,6 +37,8 @@ import org.osgi.service.async.Async;
 import org.osgi.service.log.LogService;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.tracker.ServiceTracker;
+
+import net.sf.cglib.proxy.Enhancer;
 
 
 public class AsyncService implements Async {
@@ -62,6 +65,21 @@ public class AsyncService implements Async {
 		}
 	}
 
+	/**
+	 * It is important to use both weak keys *and* values in this map. The
+	 * key must be weakly held because it is typically a type from another 
+	 * bundle, and would represent a classloader leak if held after that 
+	 * bundle was uninstalled. The value must be weak because it either 
+	 * extends or implements the type that is the key, and so holds a strong 
+	 * reference to the key, which again would cause a leak.
+	 * 
+	 * This cache may drop the value type if no mediators are held, however in
+	 * this situation we can simply create a new value without risking exploding
+	 * the heap.
+	 */
+	private final WeakHashMap<Class<?>, WeakReference<Class<?>>> proxyLoaderCache
+		= new WeakHashMap<Class<?>, WeakReference<Class<?>>>();
+	
 	private final Bundle clientBundle;
 	
 	private final ConcurrentMap<Thread, MethodCall> invocations = new ConcurrentHashMap<Thread, MethodCall>();
@@ -75,6 +93,10 @@ public class AsyncService implements Async {
 		this.clientBundle = clientBundle;
 		this.executor = executor;
 		this.logServiceTracker = logServiceTracker;
+	}
+	
+	void clear() {
+		proxyLoaderCache.clear();
 	}
 
 	public <T> T mediate(final T service, final Class<T> iface) {
@@ -91,7 +113,11 @@ public class AsyncService implements Async {
 		TrackingInvocationHandler handler = new TrackingInvocationHandler(this, 
 				clientBundle, logServiceTracker, service);
 		
-		if(iface.isInterface()) {
+		T toReturn = cachedMediate(iface, handler);
+		
+		if(toReturn != null) {
+			return toReturn;
+		} else if(iface.isInterface()) {
 			return (T) Proxy.newProxyInstance(
 					new ClassLoader(service.getClass().getClassLoader()){}, 
 					new Class[] {iface}, handler);
@@ -99,6 +125,25 @@ public class AsyncService implements Async {
 			return (T) proxyClass(iface, handler, 
 					new CGLibAwareClassLoader(service.getClass().getClassLoader()));
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T cachedMediate(Class<T> iface, TrackingInvocationHandler handler) {
+		WeakReference<Class<?>> weakReference = proxyLoaderCache.get(iface);
+		Class<?> cached = weakReference == null ? null : weakReference.get();
+		if(cached != null) {
+			if(iface.isInterface()) {
+				try {
+					return (T) cached.getConstructor(InvocationHandler.class)
+							.newInstance(handler);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Unable to mediate interface: " + iface, e);
+				}
+			} else {
+				return (T) Enhancer.create(cached, handler);
+			}
+		}
+		return null;
 	}
 
 	public <T> T mediate(final ServiceReference<? extends T> ref, final Class<T> iface) {
@@ -115,7 +160,11 @@ public class AsyncService implements Async {
 		TrackingInvocationHandler handler = new TrackingInvocationHandler(this, 
 				clientBundle, logServiceTracker, ref);
 		
-		if(iface.isInterface()) {
+		T toReturn = cachedMediate(iface, handler);
+		
+		if(toReturn != null) {
+			return toReturn;
+		} else if(iface.isInterface()) {
 			return (T) Proxy.newProxyInstance(
 					new ClassLoader(iface.getClassLoader()){}, 
 					new Class[] {iface}, handler);

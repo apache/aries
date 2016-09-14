@@ -45,6 +45,8 @@ public class AsyncServiceFactory implements ServiceFactory<Async> {
 	}
 
 	public void ungetService(Bundle bundle,
-			ServiceRegistration<Async> registration, Async service) {}
+			ServiceRegistration<Async> registration, Async service) {
+		((AsyncService) service).clear();
+	}
 
 }
