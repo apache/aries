@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.cdi;
+package org.apache.aries.blueprint.plugin.javax.cdi;
 
 import com.google.common.base.CaseFormat;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
