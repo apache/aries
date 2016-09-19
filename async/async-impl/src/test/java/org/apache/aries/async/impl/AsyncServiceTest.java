@@ -18,6 +18,7 @@
  */
 package org.apache.aries.async.impl;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
@@ -103,4 +104,28 @@ public class AsyncServiceTest {
 		assertTrue(latch.await(5, TimeUnit.SECONDS));
 	}
 
+    @Test
+    public void testMultipleMediationsCacheClassLoader() throws Exception {
+        DelayedEcho raw = new DelayedEcho();
+        
+        AsyncService service = new AsyncService(null, es,
+                                                serviceTracker);
+        
+        DelayedEcho mediated = service.mediate(raw, DelayedEcho.class);
+        
+        assertSame(mediated.getClass(), service.mediate(raw, DelayedEcho.class).getClass());
+    }
+
+    @Test
+    public void testMultipleMediationsCacheClassLoaderInterface() throws Exception {
+    	CharSequence raw = "test";
+    	
+    	AsyncService service = new AsyncService(null, es,
+    			serviceTracker);
+    	
+    	CharSequence mediated = service.mediate(raw, CharSequence.class);
+    	
+    	assertSame(mediated.getClass(), service.mediate(raw, CharSequence.class).getClass());
+    }
+    
 }
