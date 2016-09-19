@@ -38,7 +38,9 @@ import org.osgi.service.log.LogService;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.tracker.ServiceTracker;
 
+import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.Factory;
 
 
 public class AsyncService implements Async {
@@ -113,18 +115,23 @@ public class AsyncService implements Async {
 		TrackingInvocationHandler handler = new TrackingInvocationHandler(this, 
 				clientBundle, logServiceTracker, service);
 		
-		T toReturn = cachedMediate(iface, handler);
+        synchronized(proxyLoaderCache) {
+            T toReturn = cachedMediate(iface, handler);
 		
-		if(toReturn != null) {
-			return toReturn;
-		} else if(iface.isInterface()) {
-			return (T) Proxy.newProxyInstance(
+            if(toReturn != null) {
+                return toReturn;
+            } else if(iface.isInterface()) {
+                toReturn = (T) Proxy.newProxyInstance(
 					new ClassLoader(service.getClass().getClassLoader()){}, 
 					new Class[] {iface}, handler);
-		} else {
-			return (T) proxyClass(iface, handler, 
+            } else {
+                toReturn = (T) proxyClass(iface, handler,
 					new CGLibAwareClassLoader(service.getClass().getClassLoader()));
-		}
+            }
+            proxyLoaderCache.put(iface, new WeakReference<Class<?>>(toReturn.getClass()));
+        
+            return toReturn;
+        }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -140,7 +147,13 @@ public class AsyncService implements Async {
 					throw new IllegalArgumentException("Unable to mediate interface: " + iface, e);
 				}
 			} else {
-				return (T) Enhancer.create(cached, handler);
+                try {
+                    T t = (T) cached.getConstructor().newInstance();
+                    ((Factory)t).setCallbacks(new Callback[] {handler});
+                    return t;
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Unable to mediate class: " + iface, e);
+                }
 			}
 		}
 		return null;
@@ -160,18 +173,23 @@ public class AsyncService implements Async {
 		TrackingInvocationHandler handler = new TrackingInvocationHandler(this, 
 				clientBundle, logServiceTracker, ref);
 		
-		T toReturn = cachedMediate(iface, handler);
-		
-		if(toReturn != null) {
-			return toReturn;
-		} else if(iface.isInterface()) {
-			return (T) Proxy.newProxyInstance(
+        synchronized(proxyLoaderCache) {
+            T toReturn = cachedMediate(iface, handler);
+            
+            if(toReturn != null) {
+                return toReturn;
+            } else if(iface.isInterface()) {
+                toReturn = (T) Proxy.newProxyInstance(
 					new ClassLoader(iface.getClassLoader()){}, 
 					new Class[] {iface}, handler);
-		} else {
-			return (T) proxyClass(iface, handler, 
+            } else {
+                toReturn = (T) proxyClass(iface, handler,
 					new CGLibAwareClassLoader(iface.getClassLoader()));
-		}
+            }
+            proxyLoaderCache.put(iface, new WeakReference<Class<?>>(toReturn.getClass()));
+            
+            return toReturn;
+        }
 	}
 
 	private Object proxyClass(Class<?> mostSpecificClass, 
