@@ -103,7 +103,7 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 					LOG.warn("The configuration {} contains raw JDBC configuration, but no osgi.jdbc.driver.class or aries.dsf.target.filter properties. No DataSourceFactory will be used byt this bundle, so the JPA provider must be able to directly create the datasource, and these configuration properties will likely be ignored. {}",
 								pid, jdbcProps.stringPropertyNames());
 				}
-				worker = new ManagedJPAEMFLocator(context, pid, jpaProps, propsMap);
+				worker = new ManagedJPAEMFLocator(context, pid, jpaProps, propsMap, null);
 			}
 			ofNullable(managedInstances.put(pid, worker)).ifPresent(LifecycleAware::stop);
 			worker.start();

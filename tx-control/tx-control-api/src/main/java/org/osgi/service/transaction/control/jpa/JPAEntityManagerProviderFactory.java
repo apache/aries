@@ -24,9 +24,9 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 
 /**
- * A factory for creating JDBCConnectionProvider instances
+ * A factory for creating JPAEntityManagerProvider instances
  * <p>
- * This factory can be used if the {@link JDBCConnectionProvider} should not be
+ * This factory can be used if the {@link JPAEntityManagerProvider} should not be
  * a public service, for example to protect a username/password.
  */
 public interface JPAEntityManagerProviderFactory {

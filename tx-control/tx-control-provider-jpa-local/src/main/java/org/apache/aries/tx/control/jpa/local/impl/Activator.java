@@ -23,6 +23,8 @@ import static org.osgi.framework.Constants.SERVICE_PID;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import org.apache.aries.tx.control.jpa.common.impl.InternalJPAEntityManagerProviderFactory;
+import org.apache.aries.tx.control.jpa.common.impl.JPAEntityManagerProviderFactoryServiceFactory;
 import org.apache.geronimo.specs.jpa.PersistenceActivator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -34,7 +36,10 @@ public class Activator implements BundleActivator {
 
 	private final BundleActivator geronimoActivator;
 	
-	private ServiceRegistration<JPAEntityManagerProviderFactory> reg;
+	private JPAEntityManagerProviderFactoryServiceFactory service;
+	private ManagedServiceFactoryImpl msf;
+	
+	private ServiceRegistration<?> reg;
 	private ServiceRegistration<ManagedServiceFactory> factoryReg;
 	
 	public Activator() {
@@ -45,18 +50,45 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		geronimoActivator.start(context);
 		
-		reg = context.registerService(JPAEntityManagerProviderFactory.class, 
-				new JPAEntityManagerProviderFactoryImpl(), getProperties());
+		InternalJPAEntityManagerProviderFactory ijempf = new JPAEntityManagerProviderFactoryImpl();
 		
+		service = new JPAEntityManagerProviderFactoryServiceFactory() {
+			@Override
+			protected InternalJPAEntityManagerProviderFactory getInternalJPAEntityManagerProviderFactory() {
+				return ijempf;
+			}
+		};
+		reg = context.registerService(JPAEntityManagerProviderFactory.class.getName(), 
+				service, getProperties());
+		
+		msf  = new ManagedServiceFactoryImpl(context);
 		factoryReg = context.registerService(ManagedServiceFactory.class, 
-				new ManagedServiceFactoryImpl(context), getMSFProperties());
+				msf, getMSFProperties());
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		reg.unregister();
-		factoryReg.unregister();
+		safeUnregister(reg);
+		safeUnregister(factoryReg);
+		try {
+			msf.stop();
+		} catch (Exception e) {
+			// TODO log this
+		}
+		try {
+			service.close();
+		} catch (Exception e) {
+			// TODO log this
+		}
 		geronimoActivator.stop(context);
+	}
+
+	private void safeUnregister(ServiceRegistration<?> reg) {
+		try {
+			reg.unregister();
+		} catch (IllegalStateException ise) {
+			// Ignore this
+		}
 	}
 
 	private Dictionary<String, Object> getProperties() {

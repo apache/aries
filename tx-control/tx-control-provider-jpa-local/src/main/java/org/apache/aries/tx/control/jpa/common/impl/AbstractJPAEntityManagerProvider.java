@@ -16,27 +16,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jpa.local.impl;
-
-import java.util.UUID;
+package org.apache.aries.tx.control.jpa.common.impl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
+import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class JPAEntityManagerProviderImpl extends AbstractJPAEntityManagerProvider {
+public abstract class AbstractJPAEntityManagerProvider implements JPAEntityManagerProvider {
 
-	private final UUID					uuid	= UUID.randomUUID();
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractJPAEntityManagerProvider.class);
+	
+	protected final EntityManagerFactory emf;
 
-	public JPAEntityManagerProviderImpl(EntityManagerFactory emf, Runnable onClose) {
-		super(emf, onClose);
+	private final Runnable onClose;
+	
+	public AbstractJPAEntityManagerProvider(EntityManagerFactory emf, Runnable onClose) {
+		this.emf = emf;
+		this.onClose = onClose;
 	}
 
 	@Override
-	public EntityManager getResource(TransactionControl txControl) throws TransactionException {
-		return new TxContextBindingEntityManager(txControl, emf, uuid);
+	public abstract EntityManager getResource(TransactionControl txControl)
+			throws TransactionException;
+
+	
+	public void close() {
+		if(onClose != null) {
+			try {
+				onClose.run();
+			} catch (Exception e) {
+				LOG.warn("An error occurred shutting down the JPAEntityManagerProvider {}", emf, e);
+			}
+		}
 	}
 }
