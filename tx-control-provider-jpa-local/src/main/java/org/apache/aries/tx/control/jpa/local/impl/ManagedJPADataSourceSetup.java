@@ -58,6 +58,8 @@ import com.zaxxer.hikari.HikariDataSource;
 public class ManagedJPADataSourceSetup implements LifecycleAware,
 		ServiceTrackerCustomizer<DataSourceFactory, ManagedJPAEMFLocator> {
 
+	private static final String JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE = "javax.persistence.nonJtaDataSource";
+	
 	private final BundleContext context;
 	private final String pid;
 	private final Properties jdbcProperties;
@@ -105,7 +107,12 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 		ManagedJPAEMFLocator toReturn;
 		try {
 			toReturn = new ManagedJPAEMFLocator(context, pid, 
-					getJPAProperties(service), providerProperties);
+					getJPAProperties(service), providerProperties, () -> {
+						Object o = providerProperties.get(JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE);
+						if (o instanceof HikariDataSource) {
+							((HikariDataSource)o).close();
+						}
+					});
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -149,7 +156,7 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 
 		DataSource toUse = poolIfNecessary(providerProperties, unpooled);
 		
-		props.put("javax.persistence.nonJtaDataSource", toUse);
+		props.put(JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE, toUse);
 		
 		return props;
 	}
