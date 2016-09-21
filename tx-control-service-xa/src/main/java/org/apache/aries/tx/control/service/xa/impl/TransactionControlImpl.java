@@ -24,6 +24,7 @@ import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.D
 import static org.apache.aries.tx.control.service.xa.impl.LocalResourceSupport.ENFORCE_SINGLE;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -202,16 +203,54 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 	
 	@Override
 	public void close() {
-		super.close();
-		if(recoverableResources != null) {
-			recoverableResources.close();
-		}
-		if(log != null) {
-			try {
-				log.doStop();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		try {
+			super.close();
+			if(recoverableResources != null) {
+				recoverableResources.close();
+			}
+		} finally {
+			if(log != null) {
+				try {
+					log.doStop();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				// The HOWL log does not reliably close the FlushManager
+				// and the project hasn't been updated in ten years...
+				// Do some horrible reflection to force it closed so that
+				// we don't leak classloaders and memory.
+				// Note that the thread is daemon, so it won't stop shutdown
+				try {
+					Field f = HOWLLog.class.getDeclaredField("logger");
+					f.setAccessible(true);
+					org.objectweb.howl.log.Logger howlLogger = (org.objectweb.howl.log.Logger) f.get(log);
+					
+					f = org.objectweb.howl.log.Logger.class.getDeclaredField("bmgr");
+					f.setAccessible(true);
+					Object logBufferManager = f.get(howlLogger);
+					
+					f = logBufferManager.getClass().getDeclaredField("flushManager");
+					f.setAccessible(true);
+					Thread flushThread = (Thread) f.get(logBufferManager);
+					
+					if(flushThread.isAlive()) {
+						// Briefly Join this thread in case it is going to stop properly.
+						// Pick the shorter of 250 milliseconds or twice the flush interval.
+						int toWait = Math.min(250, 2* log.getFlushSleepTimeMilliseconds());
+						flushThread.join(toWait);
+
+						if(flushThread.isAlive()) {
+							// Still alive after waiting, time to pull the trigger ourselves
+							flushThread.interrupt();
+							
+							// Let the thread react to interruption
+							flushThread.join(toWait);
+						}
+					}
+				} catch (Exception e) {
+					logger.error("An error ocurred while trying to close the HOWL flush thread.", e);
+				}
 			}
 		}
 	}
