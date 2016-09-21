@@ -143,7 +143,7 @@ public class Activator implements BundleActivator {
 							}
 							boolean cleanUp = true;
 							synchronized (Activator.this) {
-								if(configuration == newConfig) {
+								if(configuration == newConfig && open) {
 									txControlImpl = impl;
 									txControlReg = newReg;
 									cleanUp = false;
