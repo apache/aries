@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.osgi.service.transaction.control.TransactionStatus.ROLLED_BACK;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ import java.util.function.BiConsumer;
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
 
+import org.apache.geronimo.transaction.log.HOWLLog;
 import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.Server;
 import org.junit.After;
@@ -106,8 +108,10 @@ public class TransactionLogTest {
 	}
 	
 	@After
-	public void destroy() {
+	public void destroy() throws Exception {
 		txControl.close();
+		
+		checkLogClosed(txControl);
 		try (Connection conn = dataSource.getConnection()) {
 			conn.createStatement().execute("shutdown immediately");
 		} catch (SQLException e) {
@@ -116,6 +120,37 @@ public class TransactionLogTest {
 		}
 		
 		delete(new File("target/recovery-test"));
+	}
+
+	private void checkLogClosed(TransactionControlImpl toCheck) throws Exception {
+		
+		Field f = TransactionControlImpl.class.getDeclaredField("log");
+		f.setAccessible(true);
+		HOWLLog log = (HOWLLog) f.get(toCheck);
+		
+		f = HOWLLog.class.getDeclaredField("logger");
+		f.setAccessible(true);
+		org.objectweb.howl.log.Logger howlLogger = (org.objectweb.howl.log.Logger) f.get(log);
+		
+		f = org.objectweb.howl.log.Logger.class.getDeclaredField("bmgr");
+		f.setAccessible(true);
+		Object logBufferManager = f.get(howlLogger);
+		
+		f = logBufferManager.getClass().getDeclaredField("flushManager");
+		f.setAccessible(true);
+		Thread flushThread = (Thread) f.get(logBufferManager);
+		
+		assertFalse(flushThread.isAlive());
+		
+		f = org.objectweb.howl.log.Logger.class.getDeclaredField("lfmgr");
+		f.setAccessible(true);
+		Object logFileManager = f.get(howlLogger);
+		
+		f = logFileManager.getClass().getDeclaredField("eventManagerThread");
+		f.setAccessible(true);
+		Thread eventManagerThread = (Thread) f.get(logFileManager);
+		
+		assertFalse(eventManagerThread.isAlive());
 	}
 
 	private void delete(File file) {
