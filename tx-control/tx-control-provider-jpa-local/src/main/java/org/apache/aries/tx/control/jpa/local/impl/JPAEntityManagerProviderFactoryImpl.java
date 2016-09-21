@@ -26,15 +26,15 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
+import org.apache.aries.tx.control.jpa.common.impl.InternalJPAEntityManagerProviderFactory;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
-import org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory;
 
-public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProviderFactory {
+public class JPAEntityManagerProviderFactoryImpl implements InternalJPAEntityManagerProviderFactory {
 
 	@Override
-	public JPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, Map<String, Object> jpaProperties,
+	public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, Map<String, Object> jpaProperties,
 			Map<String, Object> resourceProviderProperties) {
 		checkEnlistment(resourceProviderProperties);
 		
@@ -42,8 +42,29 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 		
 		validateEMF(emf);
 		
-		return new JPAEntityManagerProviderImpl(emf);
+		return new JPAEntityManagerProviderImpl(emf, () -> emf.close());
 	}
+
+	@Override
+		public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, 
+				Map<String, Object> jpaProperties, Map<String, Object> resourceProviderProperties, 
+				Runnable onClose) {
+			checkEnlistment(resourceProviderProperties);
+			
+			EntityManagerFactory emf = emfb.createEntityManagerFactory(jpaProperties);
+			
+			validateEMF(emf);
+			
+			return new JPAEntityManagerProviderImpl(emf, () -> {
+				try {
+					emf.close();
+				} catch (Exception e) {
+				}
+				if (onClose != null) {
+					onClose.run();
+				}
+			});
+		}
 
 	private void validateEMF(EntityManagerFactory emf) {
 		Object o = emf.getProperties().get("javax.persistence.transactionType");
@@ -64,12 +85,12 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 	}
 
 	@Override
-	public JPAEntityManagerProvider getProviderFor(EntityManagerFactory emf,
+	public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactory emf,
 			Map<String, Object> resourceProviderProperties) {
 		checkEnlistment(resourceProviderProperties);
 		validateEMF(emf);
 		
-		return new JPAEntityManagerProviderImpl(emf);
+		return new JPAEntityManagerProviderImpl(emf, null);
 	}
 
 	private void checkEnlistment(Map<String, Object> resourceProviderProperties) {
