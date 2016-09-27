@@ -56,7 +56,7 @@
         <aries.osgi.private.pkg>
             org.objectweb.howl.log*,
             org.apache.aries.transaction.internal,
-            org.apache.aries.util*
+            org.apache.aries.util.nls
         </aries.osgi.private.pkg>
         <aries.osgi.activator>
             org.apache.aries.transaction.internal.Activator
