@@ -100,41 +100,40 @@ public class ParserServiceImportXSDsBetweenNamespaceHandlersTest extends Abstrac
 
     @Test
     public void testXSDImports() throws Exception {
-    	waitForConfig();
+        waitForConfig();
         ParserService parserService = context().getService(ParserService.class);
         URL blueprintXML = context().getBundleByName(TEST_BUNDLE).getEntry("OSGI-INF/blueprint/ImportNamespacesTest.xml");
         ComponentDefinitionRegistry cdr = parserService.parse(blueprintXML, context().getBundleByName(TEST_BUNDLE));
         assertNotNull(cdr.getComponentDefinition("aries-1503"));
     }
-    
+
     private void waitForConfig() throws InterruptedException {
-    	final AtomicBoolean ready = new AtomicBoolean();
-    	@SuppressWarnings("rawtypes")
-		ServiceRegistration reg = context().registerService(
-    			BlueprintListener.class, 
-    			new BlueprintListener() {
-    				@Override
-    				public void blueprintEvent(BlueprintEvent event) {
-    					if ("org.apache.aries.blueprint.aries1503b".equals(event.getBundle().getSymbolicName())
-    							&& BlueprintEvent.CREATED == event.getType()) {
-    						synchronized (ready) {
-    							ready.set(true);
-    							ready.notify();
-    						}
-    					}
-    				}
-    			}, 
-    			null);
-    	try {
-	    	synchronized (ready) {
-	    		if (!ready.get()) {
-	    			ready.wait(3000);
-	    		}
-	    	}
-    	}
-    	finally {
-    		reg.unregister();
-    	}
+        final AtomicBoolean ready = new AtomicBoolean();
+        @SuppressWarnings("rawtypes")
+        ServiceRegistration reg = context().registerService(
+                BlueprintListener.class,
+                new BlueprintListener() {
+                    @Override
+                    public void blueprintEvent(BlueprintEvent event) {
+                        if ("org.apache.aries.blueprint.aries1503b".equals(event.getBundle().getSymbolicName())
+                                && BlueprintEvent.CREATED == event.getType()) {
+                            synchronized (ready) {
+                                ready.set(true);
+                                ready.notify();
+                            }
+                        }
+                    }
+                },
+                null);
+        try {
+            synchronized (ready) {
+                if (!ready.get()) {
+                    ready.wait(3000);
+                }
+            }
+        } finally {
+            reg.unregister();
+        }
     }
 
 }
