@@ -31,39 +31,38 @@ import java.lang.ref.SoftReference;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.aries.blueprint.NamespaceHandler;
+import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXException;
@@ -541,19 +540,6 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                             return createLSInput(url, id, namespaceURI);
                         }
                     }
-                    // Find a compatible namespace handler
-                    h = findCompatibleNamespaceHandler(nsUri);
-                    if (h != null) {
-                        URL url = h.getSchemaLocation(namespaceURI);
-                        if (url == null) {
-                            url = h.getSchemaLocation(rid);
-                        }
-                        if (isCorrectUrl(url)) {
-                            LOGGER.warn("Dynamically adding namespace handler {} to bundle {}/{}",
-                                    nsUri, bundle.getSymbolicName(), bundle.getVersion());
-                            return createLSInput(url, id, namespaceURI);
-                        }
-                    }
                 }
                 LOGGER.warn("Unable to find namespace handler for {}", namespaceURI);
                 return null;
@@ -720,12 +706,86 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     }
                     if (compat) {
                         namespaces.add(ns);
-                        handlers.put(ns, h);
+                        handlers.put(ns, wrapIfNeeded(h));
                         return h;
                     }
                 }
             }
             return null;
+        }
+    }
+
+    /**
+     * Wrap the handler if needed to fix its behavior.
+     * When asked for a schema location, some simple handlers always return
+     * the same url, whatever the asked location is.  This can lead to lots
+     * of problems, so we need to verify and fix those behaviors.
+     */
+    private static NamespaceHandler wrapIfNeeded(final NamespaceHandler handler) {
+        URL result = null;
+        try {
+            result = handler.getSchemaLocation("");
+        } catch (Throwable t) {
+            // Ignore
+        }
+        if (result != null) {
+            LOGGER.warn("NamespaceHandler " + handler.getClass().getName() + " is behaving badly and should be fixed");
+            final URL res = result;
+            return new NamespaceHandler() {
+                final ConcurrentMap<String, Boolean> cache = new ConcurrentHashMap<String, Boolean>();
+                @Override
+                public URL getSchemaLocation(String s) {
+                    URL url = handler.getSchemaLocation(s);
+                    if (url != null && url.equals(res)) {
+                        Boolean v, newValue;
+                        Boolean valid = ((v = cache.get(s)) == null &&
+                                (newValue = isValidSchema(s, url)) != null &&
+                                (v = cache.putIfAbsent(s, newValue)) == null) ? newValue : v;
+                        return valid ? url : null;
+                    }
+                    return url;
+                }
+                @Override
+                public Set<Class> getManagedClasses() {
+                    return handler.getManagedClasses();
+                }
+                @Override
+                public Metadata parse(Element element, ParserContext parserContext) {
+                    return handler.parse(element, parserContext);
+                }
+                @Override
+                public ComponentMetadata decorate(Node node, ComponentMetadata componentMetadata, ParserContext parserContext) {
+                    return handler.decorate(node, componentMetadata, parserContext);
+                }
+                private boolean isValidSchema(String ns, URL url) {
+                    try {
+                        InputStream is = url.openStream();
+                        try {
+                            XMLStreamReader reader = XMLInputFactory.newFactory().createXMLStreamReader(is);
+                            try {
+                                reader.nextTag();
+                                String nsuri = reader.getNamespaceURI();
+                                String name = reader.getLocalName();
+                                if ("http://www.w3.org/2001/XMLSchema".equals(nsuri) && "schema".equals(name)) {
+                                    String target = reader.getAttributeValue(null, "targetNamespace");
+                                    if (ns.equals(target)) {
+                                        return true;
+                                    }
+                                }
+                            } finally {
+                                reader.close();
+                            }
+                        } finally {
+                            is.close();
+                        }
+                    } catch (Throwable t) {
+                        // Ignore
+                    }
+                    return false;
+                }
+            };
+        } else {
+            return handler;
         }
     }
 
