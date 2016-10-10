@@ -61,6 +61,8 @@ import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 import org.osgi.util.tracker.ServiceTracker;
 
+import junit.framework.AssertionFailedError;
+
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractTransactionTest {
@@ -195,6 +197,25 @@ public abstract class AbstractTransactionTest {
 
 		if(isConfigured()) {
 			clearConfiguration();
+			ServiceTracker<JDBCConnectionProvider, JDBCConnectionProvider> tracker = new ServiceTracker<>(context, JDBCConnectionProvider.class, null);
+			tracker.open();
+			for(int i = 0;; i++) {
+				if(i == 10) {
+					throw new AssertionFailedError("The JDBCConnectionProvider was not unregistered");
+				}
+				
+				if(tracker.getService() == null) {
+					break;
+				} else {
+					try {
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			tracker.close();
 		}
 		
 		if(server != null) {
