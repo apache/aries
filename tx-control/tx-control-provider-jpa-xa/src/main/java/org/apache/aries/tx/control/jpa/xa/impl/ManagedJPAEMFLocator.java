@@ -37,6 +37,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.persistence.spi.PersistenceProvider;
 
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
+import org.apache.aries.tx.control.resource.common.impl.LifecycleAware;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -58,17 +60,21 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 	private final String pid;
 	private final Map<String, Object> jpaProperties;
 	private final Map<String, Object> providerProperties;
+	private final Runnable onClose;
 	private final ServiceTracker<EntityManagerFactoryBuilder, EntityManagerFactoryBuilder> emfBuilderTracker;
 
-	private final AtomicReference<EntityManagerFactoryBuilder> activeDsf = new AtomicReference<>();
+	private final AtomicReference<EntityManagerFactoryBuilder> activeEMFB = new AtomicReference<>();
+	private final AtomicReference<AbstractJPAEntityManagerProvider> providerObject = new AtomicReference<>();
+	
 	private final AtomicReference<ServiceRegistration<JPAEntityManagerProvider>> serviceReg = new AtomicReference<>();
 
 	public ManagedJPAEMFLocator(BundleContext context, String pid, Map<String, Object> jpaProperties,
-			Map<String, Object> providerProperties) throws InvalidSyntaxException, ConfigurationException {
+			Map<String, Object> providerProperties, Runnable onClose) throws InvalidSyntaxException, ConfigurationException {
 		this.context = context;
 		this.pid = pid;
 		this.jpaProperties = jpaProperties;
 		this.providerProperties = providerProperties;
+		this.onClose = onClose;
 
 		String unitName = (String) providerProperties.get(JPA_UNIT_NAME);
 		if (unitName == null) {
@@ -106,12 +112,13 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 	private void updateService(ServiceReference<EntityManagerFactoryBuilder> reference, EntityManagerFactoryBuilder service) {
 		boolean setEMFB;
 		synchronized (this) {
-			setEMFB = activeDsf.compareAndSet(null, service);
+			setEMFB = activeEMFB.compareAndSet(null, service);
 		}
 
 		if (setEMFB) {
+			AbstractJPAEntityManagerProvider jpaEM = null;
 			try {
-				JPAEntityManagerProvider jpaEM = new DelayedJPAEntityManagerProvider(t -> {
+				jpaEM = new DelayedJPAEntityManagerProvider(t -> {
 					
 					Map<String, Object> jpaProps = new HashMap<String, Object>(jpaProperties);
 					Map<String, Object> providerProps = new HashMap<String, Object>(providerProperties);
@@ -119,8 +126,9 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 					setupTransactionManager(jpaProps, providerProps, t, reference);
 					
 					return new JPAEntityManagerProviderFactoryImpl().getProviderFor(service,
-							jpaProps, providerProps, t);
+							jpaProps, providerProps, t, onClose);
 				});
+				providerObject.set(jpaEM);
 				ServiceRegistration<JPAEntityManagerProvider> reg = context
 						.registerService(JPAEntityManagerProvider.class, jpaEM, getServiceProperties());
 				if (!serviceReg.compareAndSet(null, reg)) {
@@ -128,7 +136,10 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 				}
 			} catch (Exception e) {
 				ManagedServiceFactoryImpl.LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
-				activeDsf.compareAndSet(service, null);
+				activeEMFB.compareAndSet(service, null);
+				if(jpaEM != null) {
+					jpaEM.close();
+				}
 			}
 		}
 	}
@@ -279,11 +290,13 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 
 	@Override
 	public void removedService(ServiceReference<EntityManagerFactoryBuilder> reference, EntityManagerFactoryBuilder service) {
-		boolean dsfLeft;
+		boolean emfbLeft;
 		ServiceRegistration<JPAEntityManagerProvider> oldReg = null;
+		AbstractJPAEntityManagerProvider toClose = null;
 		synchronized (this) {
-			dsfLeft = activeDsf.compareAndSet(service, null);
-			if (dsfLeft) {
+			emfbLeft = activeEMFB.compareAndSet(service, null);
+			if (emfbLeft) {
+				toClose = providerObject.get();
 				oldReg = serviceReg.getAndSet(null);
 			}
 		}
@@ -295,13 +308,22 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 				ManagedServiceFactoryImpl.LOG.debug("An exception occurred when unregistering a service for {}", pid);
 			}
 		}
+		
+		if(toClose != null) {
+			try {
+				toClose.close();
+			} catch (Exception e) {
+				ManagedServiceFactoryImpl.LOG.debug("An Exception occured when closing the Resource provider for {}", pid, e);
+			}
+		}
+		
 		try {
 			context.ungetService(reference);
 		} catch (IllegalStateException ise) {
 			ManagedServiceFactoryImpl.LOG.debug("An exception occurred when ungetting the service for {}", reference);
 		}
 
-		if (dsfLeft) {
+		if (emfbLeft) {
 			EntityManagerFactoryBuilder newEMFBuilder = emfBuilderTracker.getService();
 			if (newEMFBuilder != null) {
 				updateService(reference, newEMFBuilder);

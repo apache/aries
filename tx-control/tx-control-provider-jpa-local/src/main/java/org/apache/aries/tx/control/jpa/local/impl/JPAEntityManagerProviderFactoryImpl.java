@@ -45,26 +45,25 @@ public class JPAEntityManagerProviderFactoryImpl implements InternalJPAEntityMan
 		return new JPAEntityManagerProviderImpl(emf, () -> emf.close());
 	}
 
-	@Override
-		public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, 
-				Map<String, Object> jpaProperties, Map<String, Object> resourceProviderProperties, 
-				Runnable onClose) {
-			checkEnlistment(resourceProviderProperties);
-			
-			EntityManagerFactory emf = emfb.createEntityManagerFactory(jpaProperties);
-			
-			validateEMF(emf);
-			
-			return new JPAEntityManagerProviderImpl(emf, () -> {
-				try {
-					emf.close();
-				} catch (Exception e) {
-				}
-				if (onClose != null) {
-					onClose.run();
-				}
-			});
-		}
+	public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, 
+			Map<String, Object> jpaProperties, Map<String, Object> resourceProviderProperties, 
+			Runnable onClose) {
+		checkEnlistment(resourceProviderProperties);
+		
+		EntityManagerFactory emf = emfb.createEntityManagerFactory(jpaProperties);
+		
+		validateEMF(emf);
+		
+		return new JPAEntityManagerProviderImpl(emf, () -> {
+			try {
+				emf.close();
+			} catch (Exception e) {
+			}
+			if (onClose != null) {
+				onClose.run();
+			}
+		});
+	}
 
 	private void validateEMF(EntityManagerFactory emf) {
 		Object o = emf.getProperties().get("javax.persistence.transactionType");

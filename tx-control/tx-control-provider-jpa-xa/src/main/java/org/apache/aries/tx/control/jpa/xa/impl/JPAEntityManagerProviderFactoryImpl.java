@@ -40,30 +40,30 @@ import javax.transaction.xa.XAResource;
 import org.apache.aries.tx.control.jdbc.common.impl.ScopedConnectionWrapper;
 import org.apache.aries.tx.control.jdbc.common.impl.TxConnectionWrapper;
 import org.apache.aries.tx.control.jdbc.xa.connection.impl.XAConnectionWrapper;
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
+import org.apache.aries.tx.control.jpa.common.impl.InternalJPAEntityManagerProviderFactory;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
-import org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory;
 
-public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProviderFactory {
+public class JPAEntityManagerProviderFactoryImpl implements InternalJPAEntityManagerProviderFactory {
 
 	@Override
-	public JPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, Map<String, Object> jpaProperties,
+	public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, Map<String, Object> jpaProperties,
 			Map<String, Object> resourceProviderProperties) {
-		return new DelayedJPAEntityManagerProvider(tx -> getProviderFor(emfb, jpaProperties, resourceProviderProperties, tx));
+		return new DelayedJPAEntityManagerProvider(tx -> getProviderFor(emfb, jpaProperties, resourceProviderProperties, tx, null));
 	}
 
-	public JPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, Map<String, Object> jpaProperties,
-		Map<String, Object> resourceProviderProperties, ThreadLocal<TransactionControl> localStore) {
+	public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, Map<String, Object> jpaProperties,
+		Map<String, Object> resourceProviderProperties, ThreadLocal<TransactionControl> localStore, Runnable onClose) {
 		Map<String, Object> toUse;
 		if(checkEnlistment(resourceProviderProperties)) {
 			toUse = enlistDataSource(localStore, jpaProperties);
 		} else {
 			toUse = jpaProperties;
 		}
-		return localStore.get().notSupported(() -> internalBuilderCreate(emfb, toUse, localStore));
+		return localStore.get().notSupported(() -> internalBuilderCreate(emfb, toUse, localStore, onClose));
 	}
 
 	private Map<String, Object> enlistDataSource(ThreadLocal<TransactionControl> tx, Map<String, Object> jpaProperties) {
@@ -80,13 +80,21 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 		return toReturn;
 	}
 
-	private JPAEntityManagerProvider internalBuilderCreate(EntityManagerFactoryBuilder emfb,
-			Map<String, Object> jpaProperties, ThreadLocal<TransactionControl> tx) {
+	private AbstractJPAEntityManagerProvider internalBuilderCreate(EntityManagerFactoryBuilder emfb,
+			Map<String, Object> jpaProperties, ThreadLocal<TransactionControl> tx, Runnable onClose) {
 		EntityManagerFactory emf = emfb.createEntityManagerFactory(jpaProperties);
 		
 		validateEMF(emf);
 		
-		return new JPAEntityManagerProviderImpl(emf, tx);
+		return new JPAEntityManagerProviderImpl(emf, tx, () -> {
+			try {
+				emf.close();
+			} catch (Exception e) {
+			}
+			if (onClose != null) {
+				onClose.run();
+			}
+		});
 	}
 
 	private void validateEMF(EntityManagerFactory emf) {
@@ -108,12 +116,12 @@ public class JPAEntityManagerProviderFactoryImpl implements JPAEntityManagerProv
 	}
 
 	@Override
-	public JPAEntityManagerProvider getProviderFor(EntityManagerFactory emf,
+	public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactory emf,
 			Map<String, Object> resourceProviderProperties) {
 		checkEnlistment(resourceProviderProperties);
 		validateEMF(emf);
 		
-		return new JPAEntityManagerProviderImpl(emf, new ThreadLocal<>());
+		return new JPAEntityManagerProviderImpl(emf, new ThreadLocal<>(), null);
 	}
 
 	private boolean checkEnlistment(Map<String, Object> resourceProviderProperties) {

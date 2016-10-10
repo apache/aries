@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.sql.DataSource;
 
 import org.apache.aries.tx.control.jdbc.xa.connection.impl.XADataSourceMapper;
+import org.apache.aries.tx.control.resource.common.impl.LifecycleAware;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -57,6 +58,8 @@ import com.zaxxer.hikari.HikariDataSource;
 public class ManagedJPADataSourceSetup implements LifecycleAware,
 		ServiceTrackerCustomizer<DataSourceFactory, ManagedJPAEMFLocator> {
 
+	private static final String JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE = "javax.persistence.nonJtaDataSource";
+	
 	private final BundleContext context;
 	private final String pid;
 	private final Properties jdbcProperties;
@@ -104,7 +107,12 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 		ManagedJPAEMFLocator toReturn;
 		try {
 			toReturn = new ManagedJPAEMFLocator(context, pid, 
-					getJPAProperties(service), providerProperties);
+					getJPAProperties(service), providerProperties, () -> {
+						Object o = providerProperties.get(JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE);
+						if (o instanceof HikariDataSource) {
+							((HikariDataSource)o).close();
+						}
+					});
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

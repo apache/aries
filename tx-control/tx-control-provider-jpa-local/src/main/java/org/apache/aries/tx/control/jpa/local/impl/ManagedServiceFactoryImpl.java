@@ -75,7 +75,6 @@ public class ManagedServiceFactoryImpl extends ConfigurationDefinedResourceFacto
 	protected LifecycleAware getConfigurationDrivenResource(BundleContext context, String pid,
 			Map<String, Object> properties) throws Exception {
 
-
 		Properties jdbcProps = getJdbcProps(pid, properties);
 		Map<String, Object> jpaProps = getJPAProps(pid, properties);
 
@@ -149,7 +148,6 @@ public class ManagedServiceFactoryImpl extends ConfigurationDefinedResourceFacto
 		return result;
 	}
 
-	
 	private static class AllCollection implements Collection<String> {
 
 		@Override

@@ -178,7 +178,6 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 		}
 	}
 	
-	
 	private DataSource poolIfNecessary(Map<String, Object> resourceProviderProperties, DataSource unpooled) {
 		DataSource toUse;
 
