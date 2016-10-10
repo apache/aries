@@ -58,6 +58,7 @@
 				<module>tx-control-provider-jdbc-common</module>
 				<module>tx-control-provider-jdbc-local</module>
 				<module>tx-control-provider-jdbc-xa</module>
+				<module>tx-control-provider-jpa-common</module>
 				<module>tx-control-provider-jpa-local</module>
 				<module>tx-control-provider-jpa-xa</module>
 				<module>tx-control-itests</module>
