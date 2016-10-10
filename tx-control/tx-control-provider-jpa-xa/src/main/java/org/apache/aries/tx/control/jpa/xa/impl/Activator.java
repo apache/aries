@@ -18,57 +18,49 @@
  */
 package org.apache.aries.tx.control.jpa.xa.impl;
 
-import static org.osgi.framework.Constants.SERVICE_PID;
-
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import org.apache.geronimo.specs.jpa.PersistenceActivator;
-import org.osgi.framework.BundleActivator;
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
+import org.apache.aries.tx.control.jpa.common.impl.InternalJPAEntityManagerProviderFactory;
+import org.apache.aries.tx.control.jpa.common.impl.JPAResourceActivator;
+import org.apache.aries.tx.control.jpa.common.impl.ResourceTrackingJPAEntityManagerProviderFactory;
+import org.apache.aries.tx.control.resource.common.impl.ConfigurationDefinedResourceFactory;
+import org.apache.aries.tx.control.resource.common.impl.ResourceProviderFactoryServiceFactory;
+import org.apache.aries.tx.control.resource.common.impl.TrackingResourceProviderFactory;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ManagedServiceFactory;
-import org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory;
 
-public class Activator implements BundleActivator {
+public class Activator extends JPAResourceActivator {
 
-	private final BundleActivator geronimoActivator;
-	
-	private ServiceRegistration<JPAEntityManagerProviderFactory> reg;
-	private ServiceRegistration<ManagedServiceFactory> factoryReg;
-	
-	public Activator() {
-		geronimoActivator = new PersistenceActivator();
-	}
-	
 	@Override
-	public void start(BundleContext context) throws Exception {
-		geronimoActivator.start(context);
+	protected ResourceProviderFactoryServiceFactory<AbstractJPAEntityManagerProvider, ResourceTrackingJPAEntityManagerProviderFactory> getServiceFactory(
+			BundleContext context) {
 		
-		reg = context.registerService(JPAEntityManagerProviderFactory.class, 
-				new JPAEntityManagerProviderFactoryImpl(), getProperties());
-		
-		factoryReg = context.registerService(ManagedServiceFactory.class, 
-				new ManagedServiceFactoryImpl(context), getMSFProperties());
+		InternalJPAEntityManagerProviderFactory ijempf = new JPAEntityManagerProviderFactoryImpl();
+		return new ResourceProviderFactoryServiceFactory<AbstractJPAEntityManagerProvider, ResourceTrackingJPAEntityManagerProviderFactory>() {
+			@Override
+			protected TrackingResourceProviderFactory<AbstractJPAEntityManagerProvider> getTrackingResourceManagerProviderFactory() {
+				return new ResourceTrackingJPAEntityManagerProviderFactory(ijempf);
+			}
+			
+		};
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception {
-		reg.unregister();
-		factoryReg.unregister();
-		geronimoActivator.stop(context);
-	}
-
-	private Dictionary<String, Object> getProperties() {
+	protected Dictionary<String, Object> getServiceProperties() {
 		Dictionary<String, Object> props = new Hashtable<>();
 		props.put("osgi.xa.enabled", Boolean.TRUE);
 		return props;
 	}
 
-	private Dictionary<String, ?> getMSFProperties() {
-		Dictionary<String, Object> props = new Hashtable<>();
-		props.put(SERVICE_PID, "org.apache.aries.tx.control.jpa.xa");
-		return props;
+	@Override
+	protected ConfigurationDefinedResourceFactory getConfigurationDefinedResourceFactory(BundleContext context) {
+		return new ManagedServiceFactoryImpl(context);
+	}
+
+	@Override
+	protected String getMSFPid() {
+		return "org.apache.aries.tx.control.jpa.xa";
 	}
 
 }

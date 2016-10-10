@@ -22,26 +22,32 @@ import java.util.function.Function;
 
 import javax.persistence.EntityManager;
 
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
 
-public class DelayedJPAEntityManagerProvider implements JPAEntityManagerProvider {
+public class DelayedJPAEntityManagerProvider extends AbstractJPAEntityManagerProvider {
 	
-	private final Function<ThreadLocal<TransactionControl>, JPAEntityManagerProvider> wireToTransactionControl;
+	private final Function<ThreadLocal<TransactionControl>, AbstractJPAEntityManagerProvider> wireToTransactionControl;
 	
 	private final ThreadLocal<TransactionControl> commonStore = new ThreadLocal<>();
 	
-	private JPAEntityManagerProvider delegate;
+	private AbstractJPAEntityManagerProvider delegate;
+	
+	private boolean closed;
 	
 	public DelayedJPAEntityManagerProvider(Function<ThreadLocal<TransactionControl>, 
-			JPAEntityManagerProvider> wireToTransactionControl) {
+			AbstractJPAEntityManagerProvider> wireToTransactionControl) {
+		super(null, null);
 		this.wireToTransactionControl = wireToTransactionControl;
 	}
 
 	@Override
 	public EntityManager getResource(TransactionControl txControl) throws TransactionException {
 		synchronized (wireToTransactionControl) {
+			if(closed) {
+				throw new IllegalStateException("This XA JPA resource provider has been closed");
+			}
 			if(delegate == null) {
 				commonStore.set(txControl);
 				delegate = wireToTransactionControl.apply(commonStore);
@@ -50,6 +56,19 @@ public class DelayedJPAEntityManagerProvider implements JPAEntityManagerProvider
 		return delegate.getResource(txControl);
 	}
 	
-	
+	public void close() {
+		AbstractJPAEntityManagerProvider toClose = null;
+		synchronized (wireToTransactionControl) {
+			if(!closed) {
+				closed = true;
+				toClose = delegate;
+				delegate = null;
+			}
+		}
+		
+		if(toClose != null) {
+			toClose.close();
+		}
+	}
 
 }

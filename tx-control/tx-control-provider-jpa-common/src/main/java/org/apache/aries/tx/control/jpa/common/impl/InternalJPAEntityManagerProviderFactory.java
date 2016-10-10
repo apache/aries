@@ -13,10 +13,6 @@ public interface InternalJPAEntityManagerProviderFactory extends JPAEntityManage
 	AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, 
 			Map<String, Object> jpaProperties, Map<String, Object> resourceProviderProperties);
 
-	AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, 
-	Map<String, Object> jpaProperties, Map<String, Object> resourceProviderProperties, 
-	Runnable onClose);
-
 	@Override
 	AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactory emf,
 			Map<String, Object> resourceProviderProperties);

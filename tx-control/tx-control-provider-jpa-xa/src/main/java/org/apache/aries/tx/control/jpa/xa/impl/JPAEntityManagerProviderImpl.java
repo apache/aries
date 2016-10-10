@@ -23,20 +23,19 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
 
-public class JPAEntityManagerProviderImpl implements JPAEntityManagerProvider {
+public class JPAEntityManagerProviderImpl extends AbstractJPAEntityManagerProvider {
 
 	private final UUID					uuid	= UUID.randomUUID();
 
-	private final EntityManagerFactory 	emf;
-
 	private final ThreadLocal<TransactionControl> tx;
 
-	public JPAEntityManagerProviderImpl(EntityManagerFactory emf, ThreadLocal<TransactionControl> tx) {
-		this.emf = emf;
+	public JPAEntityManagerProviderImpl(EntityManagerFactory emf, ThreadLocal<TransactionControl> tx,
+			Runnable onClose) {
+		super(emf, onClose);
 		this.tx = tx;
 	}
 
