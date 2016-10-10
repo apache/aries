@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.sql.DataSource;
 
-import org.apache.aries.tx.control.jpa.common.impl.DriverDataSource;
+import org.apache.aries.tx.control.resource.common.impl.LifecycleAware;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

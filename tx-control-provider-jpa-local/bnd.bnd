@@ -39,6 +39,7 @@ Export-Package: org.osgi.service.transaction.control.jdbc, \
 # to avoid dependency fanout
 
 Private-Package: org.apache.aries.tx.control.jpa.*, \
+                 org.apache.aries.tx.control.resource.common.impl, \
                  org.apache.geronimo.osgi.locator, \
                  org.apache.geronimo.specs.jpa, \
                  com.zaxxer.hikari, \
