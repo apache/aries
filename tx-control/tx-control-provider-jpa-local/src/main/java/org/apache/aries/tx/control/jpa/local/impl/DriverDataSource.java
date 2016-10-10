@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jpa.common.impl;
+package org.apache.aries.tx.control.jpa.local.impl;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

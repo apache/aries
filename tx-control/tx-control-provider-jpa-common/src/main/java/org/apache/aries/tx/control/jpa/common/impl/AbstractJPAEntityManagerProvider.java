@@ -27,7 +27,7 @@ import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractJPAEntityManagerProvider implements JPAEntityManagerProvider {
+public abstract class AbstractJPAEntityManagerProvider implements JPAEntityManagerProvider, AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractJPAEntityManagerProvider.class);
 	

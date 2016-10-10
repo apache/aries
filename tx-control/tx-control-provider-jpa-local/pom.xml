@@ -47,13 +47,23 @@
         </url>
 	</scm>
 
-
-
 	<dependencies>
 		<!-- Internal Aries project dependencies -->
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-api</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.tx-control</groupId>
+			<artifactId>tx-control-provider-common</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.tx-control</groupId>
+			<artifactId>tx-control-provider-jpa-common</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
