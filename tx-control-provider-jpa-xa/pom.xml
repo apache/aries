@@ -57,6 +57,18 @@
 		</dependency>
 		<dependency>
             <groupId>org.apache.aries.tx-control</groupId>
+            <artifactId>tx-control-provider-common</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.apache.aries.tx-control</groupId>
+            <artifactId>tx-control-provider-jpa-common</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.apache.aries.tx-control</groupId>
             <artifactId>tx-control-provider-jdbc-common</artifactId>
             <version>0.0.2-SNAPSHOT</version>
             <scope>provided</scope>

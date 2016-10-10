@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.apache.aries.tx.control.itests.entity.Message;
-import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
@@ -104,18 +103,12 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 
 	@Test
 	public void testStopOfTxControlBundle() {
-		// Do not run for XA tests yet
-		Assume.assumeFalse(Boolean.getBoolean(IS_XA));
-		
 		doBundleStoppingTest(b -> b.getSymbolicName().contains("tx-control-service"),
 				"The transaction control service is closed");
 	}
 
 	@Test
 	public void testStopOfJPABundle() {
-		// Do not run for XA tests yet
-		Assume.assumeFalse(Boolean.getBoolean(IS_XA));
-		
 		doBundleStoppingTest(b -> b.getSymbolicName().contains("tx-control-provider-jpa"),
 				"There was a problem getting hold of a database connection");
 	}
@@ -142,7 +135,7 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 
 			try {
 				assertEquals(m.message, txControl.notSupported(() -> em.find(Message.class, m.id).message));
-				fail("Should not be accessible");
+				fail("Should not be accessible " + (Boolean.getBoolean(IS_XA) ? "xa" : "local"));
 			} catch (ScopedWorkException swe) {
 				assertTrue(swe.getCause().toString(), swe.getCause() instanceof TransactionException);
 				assertEquals(exceptionMessage, swe.getCause().getMessage());
@@ -164,9 +157,6 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 	@Test
 	public void testDeleteOfConfig() throws Exception {
 		
-		// Do not run for XA tests yet
-		Assume.assumeFalse(Boolean.getBoolean(IS_XA));
-
 		Message m = new Message();
 		m.message = "Hello World";
 		txControl.required(() -> {em.persist(m); return null;});
@@ -187,7 +177,7 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 
 		try {
 			assertEquals(m.message, txControl.notSupported(() -> em.find(Message.class, m.id).message));
-			fail("Should not be accessible");
+			fail("Should not be accessible " + (Boolean.getBoolean(IS_XA) ? "xa" : "local"));
 		} catch (ScopedWorkException swe) {
 			assertTrue(swe.getCause().toString(), swe.getCause() instanceof TransactionException);
 			assertEquals("There was a problem getting hold of a database connection", swe.getCause().getMessage());
@@ -196,8 +186,6 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 
 	@Test
 	public void testUpdateOfConfig() throws Exception {
-		// Do not run for XA tests yet
-		Assume.assumeFalse(Boolean.getBoolean(IS_XA));
 		
 		Message m = new Message();
 		m.message = "Hello World";
@@ -219,7 +207,7 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 
 		try {
 			assertEquals(m.message, txControl.notSupported(() -> em.find(Message.class, m.id).message));
-			fail("Should not be accessible");
+			fail("Should not be accessible " + (Boolean.getBoolean(IS_XA) ? "xa" : "local"));
 		} catch (ScopedWorkException swe) {
 			assertTrue(swe.getCause().toString(), swe.getCause() instanceof TransactionException);
 			assertEquals("There was a problem getting hold of a database connection", swe.getCause().getMessage());
