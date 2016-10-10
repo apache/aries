@@ -28,6 +28,7 @@ Export-Package: org.osgi.service.transaction.control.jdbc, \
 # as a single bundle. We also embed Hikari CP to avoid dependency fanout
 
 Private-Package: org.apache.aries.tx.control.jdbc.*, \
+                 org.apache.aries.tx.control.resource.common.impl, \
                  com.zaxxer.hikari, \
                  com.zaxxer.hikari.metrics, \
                  com.zaxxer.hikari.pool, \

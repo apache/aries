@@ -182,4 +182,7 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<modules>
+		<module>tx-control-provider-common</module>
+	</modules>
 </project>

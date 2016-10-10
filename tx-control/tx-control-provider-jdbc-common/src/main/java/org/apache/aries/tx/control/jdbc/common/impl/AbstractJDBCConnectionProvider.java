@@ -28,7 +28,7 @@ import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractJDBCConnectionProvider implements JDBCConnectionProvider {
+public abstract class AbstractJDBCConnectionProvider implements JDBCConnectionProvider, AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractJDBCConnectionProvider.class);
 	

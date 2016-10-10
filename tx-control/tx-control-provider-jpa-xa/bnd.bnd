@@ -40,6 +40,7 @@ Export-Package: org.osgi.service.transaction.control.jdbc, \
 
 Private-Package: org.apache.aries.tx.control.jdbc.common.impl, \
                  org.apache.aries.tx.control.jdbc.xa.connection.impl, \
+                 org.apache.aries.tx.control.resource.common.impl, \
                  org.apache.aries.tx.control.jpa.*, \
                  org.apache.geronimo.osgi.locator, \
                  org.apache.geronimo.specs.jpa, \
