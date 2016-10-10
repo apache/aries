@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jpa.local.impl;
+package org.apache.aries.tx.control.jpa.common.impl;
 
-import static org.apache.aries.tx.control.jpa.local.impl.ManagedServiceFactoryImpl.EMF_BUILDER_TARGET_FILTER;
+import static org.apache.aries.tx.control.jpa.common.impl.AbstractJPAManagedServiceFactory.EMF_BUILDER_TARGET_FILTER;
 import static org.osgi.framework.Constants.OBJECTCLASS;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_PASSWORD;
 import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_NAME;
@@ -39,10 +39,14 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ManagedJPAEMFLocator implements LifecycleAware,
+public abstract class AbstractManagedJPAEMFLocator implements LifecycleAware,
 	ServiceTrackerCustomizer<EntityManagerFactoryBuilder, EntityManagerFactoryBuilder> {
 
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractJPAEntityManagerProvider.class);
+	
 	private final BundleContext context;
 	private final String pid;
 	private final Map<String, Object> jpaProperties;
@@ -55,7 +59,7 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 	
 	private final AtomicReference<ServiceRegistration<JPAEntityManagerProvider>> serviceReg = new AtomicReference<>();
 
-	public ManagedJPAEMFLocator(BundleContext context, String pid, Map<String, Object> jpaProperties,
+	public AbstractManagedJPAEMFLocator(BundleContext context, String pid, Map<String, Object> jpaProperties,
 			Map<String, Object> providerProperties, Runnable onClose) throws InvalidSyntaxException, ConfigurationException {
 		this.context = context;
 		this.pid = pid;
@@ -65,7 +69,7 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 
 		String unitName = (String) providerProperties.get(JPA_UNIT_NAME);
 		if (unitName == null) {
-			ManagedServiceFactoryImpl.LOG.error("The configuration {} must specify a persistence unit name", pid);
+			LOG.error("The configuration {} must specify a persistence unit name", pid);
 			throw new ConfigurationException(JPA_UNIT_NAME,
 					"The configuration must specify a persistence unit name");
 		}
@@ -92,11 +96,11 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 	public EntityManagerFactoryBuilder addingService(ServiceReference<EntityManagerFactoryBuilder> reference) {
 		EntityManagerFactoryBuilder service = context.getService(reference);
 
-		updateService(service);
+		updateService(reference, service);
 		return service;
 	}
 
-	private void updateService(EntityManagerFactoryBuilder service) {
+	private void updateService(ServiceReference<EntityManagerFactoryBuilder> reference, EntityManagerFactoryBuilder service) {
 		boolean setEMFB;
 		synchronized (this) {
 			setEMFB = activeEMFB.compareAndSet(null, service);
@@ -105,8 +109,7 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 		if (setEMFB) {
 			AbstractJPAEntityManagerProvider provider = null;
 			try {
-				provider = new JPAEntityManagerProviderFactoryImpl().getProviderFor(service,
-						jpaProperties, providerProperties, onClose);
+				provider = getResourceProvider(context, service, reference, jpaProperties, providerProperties, onClose);
 				providerObject.set(provider);
 				ServiceRegistration<JPAEntityManagerProvider> reg = context
 						.registerService(JPAEntityManagerProvider.class, provider, getServiceProperties());
@@ -114,7 +117,7 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 					throw new IllegalStateException("Unable to set the JDBC connection provider registration");
 				}
 			} catch (Exception e) {
-				ManagedServiceFactoryImpl.LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
+				LOG.error("An error occurred when creating the resource provider for {}.", pid, e);
 				activeEMFB.compareAndSet(service, null);
 				if(provider != null) {
 					provider.close();
@@ -123,6 +126,10 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 			}
 		}
 	}
+
+	protected abstract AbstractJPAEntityManagerProvider getResourceProvider(BundleContext context, 
+			EntityManagerFactoryBuilder service, ServiceReference<EntityManagerFactoryBuilder> reference, 
+			Map<String, Object> jpaProperties, Map<String, Object> providerProperties, Runnable onClose);
 
 	private Dictionary<String, ?> getServiceProperties() {
 		Hashtable<String, Object> props = new Hashtable<>();
@@ -152,7 +159,7 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 			try {
 				oldReg.unregister();
 			} catch (IllegalStateException ise) {
-				ManagedServiceFactoryImpl.LOG.debug("An exception occurred when unregistering a service for {}", pid);
+				LOG.debug("An exception occurred when unregistering a service for {}", pid);
 			}
 		}
 		
@@ -160,20 +167,24 @@ public class ManagedJPAEMFLocator implements LifecycleAware,
 			try {
 				toClose.close();
 			} catch (Exception e) {
-				ManagedServiceFactoryImpl.LOG.debug("An Exception occured when closing the Resource provider for {}", pid, e);
+				LOG.debug("An Exception occured when closing the Resource provider for {}", pid, e);
 			}
 		}
 		
 		try {
 			context.ungetService(reference);
 		} catch (IllegalStateException ise) {
-			ManagedServiceFactoryImpl.LOG.debug("An exception occurred when ungetting the service for {}", reference);
+			LOG.debug("An exception occurred when ungetting the service for {}", reference);
 		}
 
 		if (emfbLeft) {
-			EntityManagerFactoryBuilder newEMFBuilder = emfBuilderTracker.getService();
-			if (newEMFBuilder != null) {
-				updateService(newEMFBuilder);
+			ServiceReference<EntityManagerFactoryBuilder> newEMFBuilderRef = emfBuilderTracker
+					.getServiceReference();
+			if (newEMFBuilderRef != null) {
+				EntityManagerFactoryBuilder newEMFBuilder = emfBuilderTracker.getService(newEMFBuilderRef);
+				if(newEMFBuilder != null) {
+					updateService(newEMFBuilderRef, newEMFBuilder);
+				}
 			}
 		}
 	}

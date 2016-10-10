@@ -16,13 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jpa.xa.impl;
+package org.apache.aries.tx.control.jpa.common.impl;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static javax.persistence.spi.PersistenceUnitTransactionType.JTA;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATABASE_NAME;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATASOURCE_NAME;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DESCRIPTION;
@@ -42,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.persistence.spi.PersistenceUnitTransactionType;
+
 import org.apache.aries.tx.control.resource.common.impl.ConfigurationDefinedResourceFactory;
 import org.apache.aries.tx.control.resource.common.impl.LifecycleAware;
 import org.osgi.framework.BundleContext;
@@ -50,25 +51,20 @@ import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ManagedServiceFactoryImpl extends ConfigurationDefinedResourceFactory {
+public abstract class AbstractJPAManagedServiceFactory extends ConfigurationDefinedResourceFactory {
 
-	static final Logger LOG = LoggerFactory.getLogger(ManagedServiceFactoryImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractJPAManagedServiceFactory.class);
 	
-	static final String DSF_TARGET_FILTER = "aries.dsf.target.filter";
-	static final String EMF_BUILDER_TARGET_FILTER = "aries.emf.builder.target.filter";
-	static final String JDBC_PROP_NAMES = "aries.jdbc.property.names";
-	static final List<String> JDBC_PROPERTIES = asList(JDBC_DATABASE_NAME, JDBC_DATASOURCE_NAME,
+	public static final String DSF_TARGET_FILTER = "aries.dsf.target.filter";
+	public static final String EMF_BUILDER_TARGET_FILTER = "aries.emf.builder.target.filter";
+	public static final String JDBC_PROP_NAMES = "aries.jdbc.property.names";
+	public static final List<String> JDBC_PROPERTIES = asList(JDBC_DATABASE_NAME, JDBC_DATASOURCE_NAME,
 			JDBC_DESCRIPTION, JDBC_NETWORK_PROTOCOL, JDBC_PASSWORD, JDBC_PORT_NUMBER, JDBC_ROLE_NAME, JDBC_SERVER_NAME,
 			JDBC_URL, JDBC_USER);
-	static final String JPA_PROP_NAMES = "aries.jpa.property.names";
+	public static final String JPA_PROP_NAMES = "aries.jpa.property.names";
 
-	public ManagedServiceFactoryImpl(BundleContext context) {
+	public AbstractJPAManagedServiceFactory(BundleContext context) {
 		super(context);
-	}
-
-	@Override
-	public String getName() {
-		return "Aries JPAEntityManagerProvider (XA only) service";
 	}
 
 	@Override
@@ -82,13 +78,13 @@ public class ManagedServiceFactoryImpl extends ConfigurationDefinedResourceFacto
 			LifecycleAware worker;
 			if(properties.containsKey(OSGI_JDBC_DRIVER_CLASS) ||
 					properties.containsKey(DSF_TARGET_FILTER)) {
-				worker = new ManagedJPADataSourceSetup(context, pid, jdbcProps, jpaProps, properties);
+				worker = dataSourceTracking(context, pid, properties, jdbcProps, jpaProps);
 			} else {
 				if(!jdbcProps.isEmpty()) {
 					LOG.warn("The configuration {} contains raw JDBC configuration, but no osgi.jdbc.driver.class or aries.dsf.target.filter properties. No DataSourceFactory will be used byt this bundle, so the JPA provider must be able to directly create the datasource, and these configuration properties will likely be ignored. {}",
 								pid, jdbcProps.stringPropertyNames());
 				}
-				worker = new ManagedJPAEMFLocator(context, pid, jpaProps, properties, null);
+				worker = emfTracking(context, pid, properties, jpaProps);
 			}
 			return worker;
 		} catch (InvalidSyntaxException e) {
@@ -96,6 +92,13 @@ public class ManagedServiceFactoryImpl extends ConfigurationDefinedResourceFacto
 			throw new ConfigurationException(DSF_TARGET_FILTER, "The target filter was invalid", e);
 		}
 	}
+
+	protected abstract LifecycleAware dataSourceTracking(BundleContext context, String pid,
+			Map<String, Object> properties, Properties jdbcProps, Map<String, Object> jpaProps)
+			throws InvalidSyntaxException, ConfigurationException;
+
+	protected abstract LifecycleAware emfTracking(BundleContext context, String pid, Map<String, Object> properties,
+			Map<String, Object> jpaProps) throws InvalidSyntaxException, ConfigurationException;
 
 	@SuppressWarnings("unchecked")
 	private Properties getJdbcProps(String pid, Map<String, Object> properties) throws ConfigurationException {
@@ -143,11 +146,13 @@ public class ManagedServiceFactoryImpl extends ConfigurationDefinedResourceFacto
 			.filter(propnames::contains)
 			.collect(toMap(identity(), properties::get));
 		
-		result.putIfAbsent("javax.persistence.transactionType", JTA.name());
+		result.putIfAbsent("javax.persistence.transactionType", getTransactionType().name());
 		
 		return result;
 	}
 
+	protected abstract PersistenceUnitTransactionType getTransactionType();
+	
 	private static class AllCollection implements Collection<String> {
 
 		@Override
