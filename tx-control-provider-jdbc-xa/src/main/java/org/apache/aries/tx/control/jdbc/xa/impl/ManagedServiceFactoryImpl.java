@@ -19,7 +19,6 @@
 package org.apache.aries.tx.control.jdbc.xa.impl;
 
 import static java.util.Arrays.asList;
-import static java.util.Optional.ofNullable;
 import static org.apache.aries.tx.control.jdbc.xa.impl.JDBCConnectionProviderFactoryImpl.toBoolean;
 import static org.osgi.framework.Constants.OBJECTCLASS;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATABASE_NAME;
@@ -39,21 +38,19 @@ import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFa
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
+import org.apache.aries.tx.control.resource.common.impl.ConfigurationDefinedResourceFactory;
+import org.apache.aries.tx.control.resource.common.impl.LifecycleAware;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProvider;
 import org.osgi.service.transaction.control.recovery.RecoverableXAResource;
@@ -62,7 +59,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
+public class ManagedServiceFactoryImpl extends ConfigurationDefinedResourceFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ManagedServiceFactoryImpl.class);
 	
@@ -72,12 +69,8 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 			JDBC_DESCRIPTION, JDBC_NETWORK_PROTOCOL, JDBC_PASSWORD, JDBC_PORT_NUMBER, JDBC_ROLE_NAME, JDBC_SERVER_NAME,
 			JDBC_URL, JDBC_USER);
 
-	private final Map<String, ManagedJDBCResourceProvider> managedInstances = new ConcurrentHashMap<>();
-
-	private final BundleContext context;
-
 	public ManagedServiceFactoryImpl(BundleContext context) {
-		this.context = context;
+		super(context);
 	}
 
 	@Override
@@ -86,30 +79,16 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 	}
 
 	@Override
-	public void updated(String pid, Dictionary<String, ?> properties) throws ConfigurationException {
-
-		Map<String, Object> propsMap = new HashMap<>();
-
-		Enumeration<String> keys = properties.keys();
-		while (keys.hasMoreElements()) {
-			String key = keys.nextElement();
-			propsMap.put(key, properties.get(key));
-		}
-
-		Properties jdbcProps = getJdbcProps(pid, propsMap);
-
+	protected LifecycleAware getConfigurationDrivenResource(BundleContext context, 
+			String pid, Map<String, Object> properties) throws Exception {
+		Properties jdbcProps = getJdbcProps(pid, properties);
+	
 		try {
-			ManagedJDBCResourceProvider mjrp = new ManagedJDBCResourceProvider(context, pid, jdbcProps, propsMap);
-			ofNullable(managedInstances.put(pid, mjrp)).ifPresent(ManagedJDBCResourceProvider::stop);
-			mjrp.start();
+			return new ManagedJDBCResourceProvider(context, pid, jdbcProps, properties);
 		} catch (InvalidSyntaxException e) {
 			LOG.error("The configuration {} contained an invalid target filter {}", pid, e.getFilter());
 			throw new ConfigurationException(DSF_TARGET_FILTER, "The target filter was invalid", e);
 		}
-	}
-
-	public void stop() {
-		managedInstances.values().forEach(ManagedJDBCResourceProvider::stop);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -137,14 +116,8 @@ public class ManagedServiceFactoryImpl implements ManagedServiceFactory {
 		return p;
 	}
 
-	@Override
-	public void deleted(String pid) {
-		ofNullable(managedInstances.remove(pid))
-			.ifPresent(ManagedJDBCResourceProvider::stop);
-	}
-
 	private static class ManagedJDBCResourceProvider
-			implements ServiceTrackerCustomizer<DataSourceFactory, DataSourceFactory> {
+			implements ServiceTrackerCustomizer<DataSourceFactory, DataSourceFactory>, LifecycleAware {
 
 		private final BundleContext context;
 		private final String pid;

@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.apache.aries.tx-control</groupId>
+		<artifactId>tx-control</artifactId>
+		<version>0.0.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	<groupId>org.apache.aries.tx-control</groupId>
+	<artifactId>tx-control-provider-common</artifactId>
+	<packaging>jar</packaging>
+	<name>OSGi Transaction Control Resource Provider - Common Code</name>
+	<version>0.0.2-SNAPSHOT</version>
+	
+	<description>
+        This jar contains a common code for building OSGi Transaction Control ResourceProvider 
+        implementations. It is not complete and should not be deployed at runtime, instead it should 
+        be repackaged inside a complete implementation.
+    </description>
+    
+    <scm>
+        <connection>
+            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-common
+        </connection>
+        <developerConnection>
+            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-common
+        </developerConnection>
+        <url>
+            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-provider-common
+        </url>
+    </scm>
+
+    <dependencies>
+        <!-- Internal Aries project dependencies -->
+        <dependency>
+            <groupId>org.apache.aries.tx-control</groupId>
+            <artifactId>tx-control-api</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- OSGi dependencies -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.util.tracker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.cm</artifactId>
+        </dependency>
+        
+        <!-- Logging dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+        </dependency>
+    </dependencies>
+</project>

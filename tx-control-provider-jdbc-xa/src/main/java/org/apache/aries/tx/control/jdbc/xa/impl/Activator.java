@@ -18,70 +18,53 @@
  */
 package org.apache.aries.tx.control.jdbc.xa.impl;
 
-import static org.osgi.framework.Constants.SERVICE_PID;
-
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import org.apache.aries.tx.control.jdbc.common.impl.InternalJDBCConnectionProviderFactory;
-import org.apache.aries.tx.control.jdbc.common.impl.JDBCConnectionProviderFactoryServiceFactory;
-import org.osgi.framework.BundleActivator;
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
+import org.apache.aries.tx.control.jdbc.common.impl.ResourceTrackingJDBCConnectionProviderFactory;
+import org.apache.aries.tx.control.resource.common.impl.ConfigurationDefinedResourceFactory;
+import org.apache.aries.tx.control.resource.common.impl.ResourceActivator;
+import org.apache.aries.tx.control.resource.common.impl.ResourceProviderFactoryServiceFactory;
+import org.apache.aries.tx.control.resource.common.impl.TrackingResourceProviderFactory;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 
-public class Activator implements BundleActivator {
+public class Activator extends ResourceActivator<AbstractJDBCConnectionProvider, ResourceTrackingJDBCConnectionProviderFactory> {
 
-	private ServiceRegistration<JDBCConnectionProviderFactory> reg;
-	private ServiceRegistration<ManagedServiceFactory> factoryReg;
-	private JDBCConnectionProviderFactoryServiceFactory service;
-	private ManagedServiceFactoryImpl msf;
 	
 	@Override
-	public void start(BundleContext context) throws Exception {
-		InternalJDBCConnectionProviderFactory ijcpf = new JDBCConnectionProviderFactoryImpl();
-		
-		service = new JDBCConnectionProviderFactoryServiceFactory() {
+	protected ResourceProviderFactoryServiceFactory<AbstractJDBCConnectionProvider, ResourceTrackingJDBCConnectionProviderFactory> getServiceFactory(
+			BundleContext context) {
+		return new ResourceProviderFactoryServiceFactory<AbstractJDBCConnectionProvider, ResourceTrackingJDBCConnectionProviderFactory>() {
 			@Override
-			protected InternalJDBCConnectionProviderFactory getInternalJDBCConnectionProviderFactory() {
-				return ijcpf;
+			protected TrackingResourceProviderFactory<AbstractJDBCConnectionProvider> getTrackingResourceManagerProviderFactory() {
+				return new ResourceTrackingJDBCConnectionProviderFactory(
+						new JDBCConnectionProviderFactoryImpl());
 			}
 		};
-		
-		reg = context.registerService(JDBCConnectionProviderFactory.class, 
-				new JDBCConnectionProviderFactoryImpl(), getProperties());
-		
-		msf = new ManagedServiceFactoryImpl(context);
-		factoryReg = context.registerService(ManagedServiceFactory.class, 
-				msf, getMSFProperties());
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception {
-		safeUnregister(reg);
-		safeUnregister(factoryReg);
-		service.close();
-		msf.stop();
+	protected Class<? super ResourceTrackingJDBCConnectionProviderFactory> getAdvertisedInterface() {
+		return JDBCConnectionProviderFactory.class;
 	}
 
-	private void safeUnregister(ServiceRegistration<?> reg) {
-		try {
-			reg.unregister();
-		} catch (IllegalStateException ise) {}
-	}
-	
-	private Dictionary<String, Object> getProperties() {
+	@Override
+	protected Dictionary<String, Object> getServiceProperties() {
 		Dictionary<String, Object> props = new Hashtable<>();
 		props.put("osgi.local.enabled", Boolean.TRUE);
 		props.put("osgi.xa.enabled", Boolean.TRUE);
 		return props;
 	}
 
-	private Dictionary<String, ?> getMSFProperties() {
-		Dictionary<String, Object> props = new Hashtable<>();
-		props.put(SERVICE_PID, "org.apache.aries.tx.control.jdbc.xa");
-		return props;
+	@Override
+	protected ConfigurationDefinedResourceFactory getConfigurationDefinedResourceFactory(BundleContext context) {
+		return new ManagedServiceFactoryImpl(context);
 	}
 
+	@Override
+	protected String getMSFPid() {
+		return "org.apache.aries.tx.control.jdbc.xa";
+	}
 }
