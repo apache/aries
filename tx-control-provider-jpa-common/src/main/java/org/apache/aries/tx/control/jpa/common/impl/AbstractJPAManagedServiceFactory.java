@@ -93,11 +93,11 @@ public abstract class AbstractJPAManagedServiceFactory extends ConfigurationDefi
 		}
 	}
 
-	protected abstract LifecycleAware dataSourceTracking(BundleContext context, String pid,
+	protected abstract AbstractManagedJPADataSourceSetup dataSourceTracking(BundleContext context, String pid,
 			Map<String, Object> properties, Properties jdbcProps, Map<String, Object> jpaProps)
 			throws InvalidSyntaxException, ConfigurationException;
 
-	protected abstract LifecycleAware emfTracking(BundleContext context, String pid, Map<String, Object> properties,
+	protected abstract AbstractManagedJPAEMFLocator emfTracking(BundleContext context, String pid, Map<String, Object> properties,
 			Map<String, Object> jpaProps) throws InvalidSyntaxException, ConfigurationException;
 
 	@SuppressWarnings("unchecked")
