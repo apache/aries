@@ -55,7 +55,7 @@ public class Activator extends JPAResourceActivator {
 
 	@Override
 	protected ConfigurationDefinedResourceFactory getConfigurationDefinedResourceFactory(BundleContext context) {
-		return new ManagedServiceFactoryImpl(context);
+		return new XAJPAManagedServiceFactory(context);
 	}
 
 	@Override
