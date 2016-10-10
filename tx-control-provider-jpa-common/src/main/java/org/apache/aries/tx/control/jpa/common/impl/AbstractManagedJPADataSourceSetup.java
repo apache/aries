@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jpa.local.impl;
+package org.apache.aries.tx.control.jpa.common.impl;
 
+import static java.util.Collections.unmodifiableMap;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.osgi.framework.Constants.OBJECTCLASS;
-import static org.osgi.service.jdbc.DataSourceFactory.JDBC_URL;
 import static org.osgi.service.jdbc.DataSourceFactory.OSGI_JDBC_DRIVER_CLASS;
 import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_LIFETIME;
 import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_POOLING_ENABLED;
@@ -30,9 +30,7 @@ import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFa
 import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.IDLE_TIMEOUT;
 import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.MAX_CONNECTIONS;
 import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.MIN_CONNECTIONS;
-import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.USE_DRIVER;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,17 +46,18 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.jdbc.DataSourceFactory;
-import org.osgi.service.transaction.control.TransactionException;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class ManagedJPADataSourceSetup implements LifecycleAware,
-		ServiceTrackerCustomizer<DataSourceFactory, ManagedJPAEMFLocator> {
+public abstract class AbstractManagedJPADataSourceSetup implements LifecycleAware,
+		ServiceTrackerCustomizer<DataSourceFactory, AbstractManagedJPAEMFLocator> {
 
-	private static final String JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE = "javax.persistence.nonJtaDataSource";
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractManagedJPADataSourceSetup.class);
 	
 	private final BundleContext context;
 	private final String pid;
@@ -66,10 +65,10 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 	private final Map<String, Object> baseJPAProperties;
 	private final Map<String, Object> providerProperties;
 	
-	private final ServiceTracker<DataSourceFactory, ManagedJPAEMFLocator> dsfTracker;
+	private final ServiceTracker<DataSourceFactory, AbstractManagedJPAEMFLocator> dsfTracker;
 	private final AtomicReference<ServiceReference<DataSourceFactory>> activeDsf = new AtomicReference<>();
 
-	public ManagedJPADataSourceSetup(BundleContext context, String pid, Properties jdbcProperties,
+	public AbstractManagedJPADataSourceSetup(BundleContext context, String pid, Properties jdbcProperties,
 			Map<String, Object> baseJPAProperties, Map<String, Object> providerProperties) throws InvalidSyntaxException, ConfigurationException {
 		this.context = context;
 		this.pid = pid;
@@ -77,11 +76,11 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 		this.baseJPAProperties = baseJPAProperties;
 		this.providerProperties = providerProperties;
 
-		String targetFilter = (String) providerProperties.get(ManagedServiceFactoryImpl.DSF_TARGET_FILTER);
+		String targetFilter = (String) providerProperties.get(AbstractJPAManagedServiceFactory.DSF_TARGET_FILTER);
 		if (targetFilter == null) {
 			String driver = (String) providerProperties.get(OSGI_JDBC_DRIVER_CLASS);
 			if (driver == null) {
-				ManagedServiceFactoryImpl.LOG.error("The configuration {} must specify a target filter or a JDBC driver class", pid);
+				LOG.error("The configuration {} must specify a target filter or a JDBC driver class", pid);
 				throw new ConfigurationException(OSGI_JDBC_DRIVER_CLASS,
 						"The configuration must specify either a target filter or a JDBC driver class");
 			}
@@ -102,20 +101,17 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 	}
 
 	@Override
-	public ManagedJPAEMFLocator addingService(ServiceReference<DataSourceFactory> reference) {
+	public AbstractManagedJPAEMFLocator addingService(ServiceReference<DataSourceFactory> reference) {
 		DataSourceFactory service = context.getService(reference);
-		ManagedJPAEMFLocator toReturn;
+		AbstractManagedJPAEMFLocator toReturn;
 		try {
-			toReturn = new ManagedJPAEMFLocator(context, pid, 
-					getJPAProperties(service), providerProperties, () -> {
-						Object o = providerProperties.get(JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE);
-						if (o instanceof HikariDataSource) {
-							((HikariDataSource)o).close();
-						}
-					});
+			Map<String, Object> jpaProps = decorateJPAProperties(service, 
+					unmodifiableMap(providerProperties), (Properties) jdbcProperties.clone(), 
+					new HashMap<>(baseJPAProperties));
+			toReturn = getManagedJPAEMFLocator(context, pid, jpaProps, providerProperties, 
+					() -> cleanupOnClose(jpaProps));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("An error occured creating the Resource provider for pid {}", pid, e);
 			return null;
 		}
 		updateService(reference, toReturn);
@@ -123,7 +119,16 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 		return toReturn;
 	}
 
-	private void updateService(ServiceReference<DataSourceFactory> reference, ManagedJPAEMFLocator locator) {
+	protected abstract Map<String, Object> decorateJPAProperties(DataSourceFactory dsf, 
+			Map<String, Object> providerProperties, Properties jdbcProperties,
+			Map<String, Object> jpaProperties) throws Exception;
+	
+	protected abstract void cleanupOnClose(Map<String, Object> jpaProperties);
+
+	protected abstract AbstractManagedJPAEMFLocator getManagedJPAEMFLocator(BundleContext context, String pid, 
+			Map<String, Object> jpaProps, Map<String, Object> providerProperties, Runnable onClose) throws Exception;
+
+	private void updateService(ServiceReference<DataSourceFactory> reference, AbstractManagedJPAEMFLocator locator) {
 		boolean setDsf;
 		synchronized (this) {
 			setDsf = activeDsf.compareAndSet(null, reference);
@@ -133,52 +138,30 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 				locator.start();
 			}
 		} catch (Exception e) {
-			ManagedServiceFactoryImpl.LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
+			LOG.error("An error occurred when creating the connection provider for {}.", pid, e);
 			activeDsf.compareAndSet(reference, null);
 			throw new IllegalStateException("An error occurred when creating the connection provider", e);
 		}
 	}
 
-	private Map<String, Object> getJPAProperties(DataSourceFactory dsf) {
-		Map<String, Object> props = new HashMap<>(baseJPAProperties);
-		
-		DataSource unpooled;
-		try {
-			if (toBoolean(providerProperties, USE_DRIVER, false)) {
-				unpooled = new DriverDataSource(dsf.createDriver(null), jdbcProperties.getProperty(JDBC_URL),
-						jdbcProperties);
-			} else {
-				unpooled = dsf.createDataSource(jdbcProperties);
-			}
-		} catch (SQLException sqle) {
-			throw new TransactionException("Unable to create the JDBC resource provider", sqle);
-		}
-
-		DataSource toUse = poolIfNecessary(providerProperties, unpooled);
-		
-		props.put(JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE, toUse);
-		
-		return props;
-	}
-	
 	@Override
-	public void modifiedService(ServiceReference<DataSourceFactory> reference, ManagedJPAEMFLocator service) {
+	public void modifiedService(ServiceReference<DataSourceFactory> reference, AbstractManagedJPAEMFLocator service) {
 	}
 
 	@Override
-	public void removedService(ServiceReference<DataSourceFactory> reference, ManagedJPAEMFLocator service) {
+	public void removedService(ServiceReference<DataSourceFactory> reference, AbstractManagedJPAEMFLocator service) {
 		service.stop();
 
 		if (activeDsf.compareAndSet(reference, null)) {
-			Map<ServiceReference<DataSourceFactory>,ManagedJPAEMFLocator> tracked = dsfTracker.getTracked();
+			Map<ServiceReference<DataSourceFactory>,AbstractManagedJPAEMFLocator> tracked = dsfTracker.getTracked();
 			if (!tracked.isEmpty()) {
-				Entry<ServiceReference<DataSourceFactory>, ManagedJPAEMFLocator> e = tracked.entrySet().iterator().next();
+				Entry<ServiceReference<DataSourceFactory>, AbstractManagedJPAEMFLocator> e = tracked.entrySet().iterator().next();
 				updateService(e.getKey(), e.getValue());
 			}
 		}
 	}
 	
-	private DataSource poolIfNecessary(Map<String, Object> resourceProviderProperties, DataSource unpooled) {
+	protected DataSource poolIfNecessary(Map<String, Object> resourceProviderProperties, DataSource unpooled) {
 		DataSource toUse;
 
 		if (toBoolean(resourceProviderProperties, CONNECTION_POOLING_ENABLED, true)) {
@@ -202,7 +185,7 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 		return toUse;
 	}
 
-	private boolean toBoolean(Map<String, Object> props, String key, boolean defaultValue) {
+	protected boolean toBoolean(Map<String, Object> props, String key, boolean defaultValue) {
 		Object o =  ofNullable(props)
 			.map(m -> m.get(key))
 			.orElse(defaultValue);
@@ -216,7 +199,7 @@ public class ManagedJPADataSourceSetup implements LifecycleAware,
 		}
 	}
 
-	private int toInt(Map<String, Object> props, String key, int defaultValue) {
+	protected int toInt(Map<String, Object> props, String key, int defaultValue) {
 		
 		Object o =  ofNullable(props)
 				.map(m -> m.get(key))
