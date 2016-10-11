@@ -47,6 +47,7 @@ import org.apache.aries.subsystem.core.archive.SubsystemTypeHeader;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
+import org.apache.aries.util.filesystem.UnpackingFileSystem;
 import org.apache.aries.util.io.IOUtils;
 import org.eclipse.equinox.region.Region;
 import org.osgi.framework.Bundle;
@@ -785,7 +786,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 				AccessController.doPrivileged(new PrivilegedAction<IDirectory>() {
 					@Override
 					public IDirectory run() {
-						return FileSystem.getFSRoot(content);
+						return UnpackingFileSystem.getFSRoot(content);
 					}
 				});
 			result = install(location, directory, deploymentManifest);
