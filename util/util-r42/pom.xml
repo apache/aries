@@ -30,7 +30,7 @@
 
     <artifactId>org.apache.aries.util-r42</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
     <name>Apache Aries Util classes compiled under r 42 framework</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries classes that need to be compiled under r 4.2
@@ -98,4 +98,10 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-1.1.2/org.apache.aries.util-r42</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-1.1.2/org.apache.aries.util-r42</developerConnection>
+    <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-1.1.2/org.apache.aries.util-r42</url>
+  </scm>
 </project>
