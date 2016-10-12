@@ -170,6 +170,20 @@ public class ServiceStateTest {
     }
 
     @Test
+    public void testNotificationsForServiceEventsDisabled() throws Exception {
+        StateConfig stateConfig = new StateConfig();
+        stateConfig.setServiceChangeNotificationEnabled(false);
+
+        //holders for Notifications captured
+        List<Notification> received = new LinkedList<Notification>();
+        List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
+
+        createService(stateConfig, received, attributeChanges);
+
+        assertEquals(0, received.size());
+    }
+
+    @Test
     public void testLifeCycleOfNotificationSupport() throws Exception {
 
         BundleContext context = mock(BundleContext.class);
@@ -222,7 +236,8 @@ public class ServiceStateTest {
 
     @Test
     public void testAttributeNotificationDisabled() throws Exception {
-        StateConfig stateConfig = new StateConfig(false);
+        StateConfig stateConfig = new StateConfig();
+        stateConfig.setAttributeChangeNotificationEnabled(false);
 
         //holders for Notifications captured
         List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();

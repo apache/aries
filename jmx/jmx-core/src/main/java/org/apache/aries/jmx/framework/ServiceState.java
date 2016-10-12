@@ -254,6 +254,9 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
             if (serviceListener == null) {
                 serviceListener = new AllServiceListener() {
                     public void serviceChanged(ServiceEvent serviceevent) {
+                        if (stateConfig != null && !stateConfig.isServiceChangeNotificationEnabled()) {
+                            return;
+                        }
                         try {
                             // Create a notification for the event
                             final Notification notification = new Notification(EVENT, OBJECTNAME,

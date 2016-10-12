@@ -402,6 +402,9 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
             if (bundleListener == null) {
                 bundleListener = new BundleListener() {
                     public void bundleChanged(BundleEvent event) {
+                        if (stateConfig != null && !stateConfig.isBundleChangeNotificationEnabled()) {
+                            return;
+                        }
                         try {
                             final Notification notification = new Notification(EVENT, OBJECTNAME,
                                     notificationSequenceNumber.getAndIncrement());
