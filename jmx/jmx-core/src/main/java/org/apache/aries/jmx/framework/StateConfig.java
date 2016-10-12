@@ -39,14 +39,26 @@ public class StateConfig implements ManagedService {
     private static final String ATTRIBUTE_CHANGE_NOTIFICATION_ENABLED = "attributeChangeNotificationEnabled";
     private static final boolean DEFAULT_ATTRIBUTE_CHANGE_NOTIFICATION_ENABLED = true;
 
-    private boolean attributeChangeNotificationEnabled;
+    private static final String SERVICE_CHANGE_NOTIFICATION_ENABLED = "serviceChangeNotificationEnabled";
+    private static final boolean DEFAULT_SERVICE_CHANGE_NOTIFICATION_ENABLED = true;
 
-    public StateConfig() {
-        this(DEFAULT_ATTRIBUTE_CHANGE_NOTIFICATION_ENABLED);
+    private static final String BUNDLE_CHANGE_NOTIFICATION_ENABLED = "bundleChangeNotificationEnabled";
+    private static final boolean DEFAULT_BUNDLE_CHANGE_NOTIFICATION_ENABLED = true;
+
+    private volatile boolean attributeChangeNotificationEnabled = DEFAULT_ATTRIBUTE_CHANGE_NOTIFICATION_ENABLED;
+    private volatile boolean serviceChangeNotificationEnabled = DEFAULT_SERVICE_CHANGE_NOTIFICATION_ENABLED;
+    private volatile boolean bundleChangeNotificationEnabled = DEFAULT_BUNDLE_CHANGE_NOTIFICATION_ENABLED;
+
+    void setAttributeChangeNotificationEnabled(boolean attributeChangeNotificationEnabled) {
+        this.attributeChangeNotificationEnabled = attributeChangeNotificationEnabled;
     }
 
-    StateConfig(boolean attributeChangeNotificationEnabled) {
-        this.attributeChangeNotificationEnabled = attributeChangeNotificationEnabled;
+    void setServiceChangeNotificationEnabled(boolean serviceChangeNotificationEnabled) {
+        this.serviceChangeNotificationEnabled = serviceChangeNotificationEnabled;
+    }
+
+    void setBundleChangeNotificationEnabled(boolean bundleChangeNotificationEnabled) {
+        this.bundleChangeNotificationEnabled = bundleChangeNotificationEnabled;
     }
 
     /**
@@ -69,6 +81,10 @@ public class StateConfig implements ManagedService {
     public void updated(Dictionary<String, ?> dictionary) throws ConfigurationException {
         attributeChangeNotificationEnabled = getBoolean(dictionary, ATTRIBUTE_CHANGE_NOTIFICATION_ENABLED,
                 DEFAULT_ATTRIBUTE_CHANGE_NOTIFICATION_ENABLED);
+        serviceChangeNotificationEnabled = getBoolean(dictionary, SERVICE_CHANGE_NOTIFICATION_ENABLED,
+                DEFAULT_SERVICE_CHANGE_NOTIFICATION_ENABLED);
+        bundleChangeNotificationEnabled = getBoolean(dictionary, BUNDLE_CHANGE_NOTIFICATION_ENABLED,
+                DEFAULT_BUNDLE_CHANGE_NOTIFICATION_ENABLED);
     }
 
     /**
@@ -78,6 +94,24 @@ public class StateConfig implements ManagedService {
      */
     public boolean isAttributeChangeNotificationEnabled() {
         return attributeChangeNotificationEnabled;
+    }
+
+    /**
+     * Whether or not JMX OSGi service change notifications should be triggered when OSGi service change.
+     *
+     * @return <code>true</code> if OSGi service change notifications are enabled
+     */
+    public boolean isServiceChangeNotificationEnabled() {
+        return serviceChangeNotificationEnabled;
+    }
+
+    /**
+     * Whether or not JMX bundle change notifications should be triggered when bundle change.
+     *
+     * @return <code>true</code> if bundle change notifications are enabled
+     */
+    public boolean isBundleChangeNotificationEnabled() {
+        return bundleChangeNotificationEnabled;
     }
 
     private static boolean getBoolean(Dictionary<String, ?> dictionary, String propertyName, boolean defaultValue) {
