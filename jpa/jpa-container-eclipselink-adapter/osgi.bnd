@@ -1,2 +1,3 @@
 Export-Package: !*
 Bundle-Activator: org.apache.aries.jpa.eclipselink.adapter.Activator
+Provide-Capability: osgi.service; effective:=active; objectClass=javax.persistence.spi.PersistenceProvider
