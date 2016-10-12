@@ -30,16 +30,16 @@
 
     <artifactId>org.apache.aries.util-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.2</version>
     <name>Apache Aries Util</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/util</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/util</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/util</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-1.1.2</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.util-1.1.2</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.util-1.1.2</url>
     </scm>
 
     <modules>
