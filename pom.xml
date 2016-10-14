@@ -55,6 +55,7 @@
 				<module>tx-control-service-common</module>
 				<module>tx-control-service-local</module>
 				<module>tx-control-service-xa</module>
+				<module>tx-control-provider-common</module>
 				<module>tx-control-provider-jdbc-common</module>
 				<module>tx-control-provider-jdbc-local</module>
 				<module>tx-control-provider-jdbc-xa</module>
@@ -183,7 +184,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<modules>
-		<module>tx-control-provider-common</module>
-	</modules>
 </project>

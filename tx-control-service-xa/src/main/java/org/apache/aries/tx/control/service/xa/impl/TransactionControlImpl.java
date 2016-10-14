@@ -274,8 +274,8 @@ public class TransactionControlImpl extends AbstractTransactionControlImpl {
 	 * This method can be used to define config changes that should not trigger
 	 * the service to be unregistered and recreated
 	 * 
-	 * @param original
-	 * @param isRegistered
+	 * @param updated - the updated config
+	 * @param isRegistered true if the service is currently registered
 	 * @return
 	 */
 	public synchronized ChangeType changed(Map<String, Object> updated, boolean isRegistered) {
