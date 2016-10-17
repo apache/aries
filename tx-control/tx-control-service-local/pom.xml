@@ -22,13 +22,13 @@
 	<parent>
 		<groupId>org.apache.aries.tx-control</groupId>
 		<artifactId>tx-control</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-service-local</artifactId>
 	<name>OSGi Transaction Control Service - Local Transactions</name>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 
 	<description>
         This bundle contains an OSGi Transaction Control Service implementation suitable for local resources.
@@ -36,13 +36,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.2/tx-control-service-local
+            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-service-local
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.2/tx-control-service-local
+            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-service-local
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/tags/tx-control-0.0.2/tx-control-service-local
+            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-service-local
         </url>
 	</scm>
 
