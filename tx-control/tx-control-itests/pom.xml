@@ -22,12 +22,12 @@
     <parent>
         <groupId>org.apache.aries.tx-control</groupId>
         <artifactId>tx-control</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>org.apache.aries.tx-control-itests</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>Apache Aries Transaction Control iTests</name>
 	<description>
         Integration tests using for the Transaction Control service
@@ -62,19 +62,19 @@
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-api</artifactId>
 			<scope>provided</scope>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-service-local</artifactId>
 			<scope>test</scope>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-service-xa</artifactId>
 			<scope>test</scope>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
@@ -92,13 +92,13 @@
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-provider-jdbc-local</artifactId>
 			<scope>test</scope>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.tx-control</groupId>
 			<artifactId>tx-control-provider-jdbc-xa</artifactId>
 			<scope>test</scope>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>

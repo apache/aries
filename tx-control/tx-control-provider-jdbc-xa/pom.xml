@@ -22,13 +22,13 @@
     <parent>
         <groupId>org.apache.aries.tx-control</groupId>
         <artifactId>tx-control</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-provider-jdbc-xa</artifactId>
 	<name>OSGi Transaction Control JDBC Resource Provider - XA Transactions</name>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<description>
         This bundle contains a JDBC resource provider for use with the OSGi Transaction Control Service that supports XA and Local transactions.
@@ -51,19 +51,19 @@
         <dependency>
             <groupId>org.apache.aries.tx-control</groupId>
             <artifactId>tx-control-api</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.tx-control</groupId>
             <artifactId>tx-control-provider-common</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.tx-control</groupId>
             <artifactId>tx-control-provider-jdbc-common</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
