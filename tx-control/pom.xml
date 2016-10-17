@@ -28,7 +28,7 @@
 
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Transaction Control service, including Resource Provider implementations.</description>
 	<scm>
