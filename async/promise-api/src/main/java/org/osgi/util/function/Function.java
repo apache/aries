@@ -30,6 +30,7 @@ public interface Function<T, R> {
      * Applies this function to the specified argument.
      * @param t The input to this function.
      * @return The output of this function.
+     * @throws An Exception
      */
-    R apply(T t);
+    R apply(T t) throws Exception;
 }

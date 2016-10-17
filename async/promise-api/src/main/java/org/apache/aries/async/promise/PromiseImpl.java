@@ -18,6 +18,8 @@
  */
 package org.apache.aries.async.promise;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +28,21 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import org.osgi.util.function.Callback;
 import org.osgi.util.function.Function;
 import org.osgi.util.function.Predicate;
 import org.osgi.util.promise.Failure;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.promise.Success;
+import org.osgi.util.promise.TimeoutException;
 
 public class PromiseImpl<T> implements Promise<T> {
 
     private final Executor exec;
+    private final ScheduledExecutorService ses;
     private final List<Runnable> tasks = new ArrayList<Runnable>();
     private final CountDownLatch resolved = new CountDownLatch(1);
 
@@ -46,15 +53,18 @@ public class PromiseImpl<T> implements Promise<T> {
     private T value;
 
     public PromiseImpl() {
-        // Executor for onResolve() callbacks
-        // We could use an Executor that runs tasks in current thread
         this(Executors.newSingleThreadExecutor());
     }
 
     public PromiseImpl(Executor executor) {
+    	this(executor, Executors.newSingleThreadScheduledExecutor());
+    }
+
+    public PromiseImpl(Executor executor, ScheduledExecutorService ses) {
     	// Executor for onResolve() callbacks
     	// We could use an Executor that runs tasks in current thread
     	exec = executor;
+    	this.ses = ses;
     }
 
     public void fail(Throwable failure) {
@@ -70,7 +80,7 @@ public class PromiseImpl<T> implements Promise<T> {
     public Promise<Void> resolveWith(final Promise<? extends T> with) {
         if (with == null)
             throw new NullPointerException();
-        final PromiseImpl<Void> result = new PromiseImpl<Void>(exec);
+        final PromiseImpl<Void> result = new PromiseImpl<Void>(exec, ses);
 
         with.then(new Success<T, T>() {
             @Override
@@ -205,7 +215,7 @@ public class PromiseImpl<T> implements Promise<T> {
 
     @Override
     public <R> Promise<R> then(Success<? super T, ? extends R> success, Failure failure) {
-        PromiseImpl<R> result = new PromiseImpl<R>(exec);
+        PromiseImpl<R> result = new PromiseImpl<R>(exec, ses);
         result.onSuccess = success;
         result.onFailure = failure;
         synchronized (this) {
@@ -224,12 +234,30 @@ public class PromiseImpl<T> implements Promise<T> {
     public <R> Promise<R> then(Success<? super T, ? extends R> success) {
         return then(success, null);
     }
-
+    
     @Override
+	public Promise<T> then(final Callback callback) {
+    	if (callback == null)
+            throw new NullPointerException();
+    	return then(new Success<T,T>() {
+			@Override
+			public Promise<T> call(Promise<T> resolved) throws Exception {
+				callback.run();
+				return resolved;
+			}
+    	}, new Failure(){
+			@Override
+			public void fail(Promise<?> resolved) throws Exception {
+				callback.run();
+			}
+    	});
+	}
+
+	@Override
     public Promise<T> filter(final Predicate<? super T> predicate) {
         if (predicate == null)
             throw new NullPointerException();
-        final PromiseImpl<T> result = new PromiseImpl<T>(exec);
+        final PromiseImpl<T> result = new PromiseImpl<T>(exec, ses);
 
         then(new Success<T, T>() {
             @Override
@@ -259,7 +287,7 @@ public class PromiseImpl<T> implements Promise<T> {
     public <R> Promise<R> map(final Function<? super T, ? extends R> mapper) {
         if (mapper == null)
             throw new NullPointerException();
-        final PromiseImpl<R> result = new PromiseImpl<R>(exec);
+        final PromiseImpl<R> result = new PromiseImpl<R>(exec, ses);
 
         then(new Success<T, T>() {
             @Override
@@ -286,7 +314,7 @@ public class PromiseImpl<T> implements Promise<T> {
     public <R> Promise<R> flatMap(final Function<? super T, Promise<? extends R>> mapper) {
         if (mapper == null)
             throw new NullPointerException();
-        final PromiseImpl<R> result = new PromiseImpl<R>(exec);
+        final PromiseImpl<R> result = new PromiseImpl<R>(exec, ses);
 
         then(new Success<T, T>() {
             @Override
@@ -314,7 +342,7 @@ public class PromiseImpl<T> implements Promise<T> {
         if (recovery == null)
             throw new NullPointerException();
 
-        final PromiseImpl<T> result = new PromiseImpl<T>(exec);
+        final PromiseImpl<T> result = new PromiseImpl<T>(exec, ses);
 
         then(new Success<T, T>() {
             @Override
@@ -346,7 +374,7 @@ public class PromiseImpl<T> implements Promise<T> {
         if (recovery == null)
             throw new NullPointerException();
 
-        final PromiseImpl<T> result = new PromiseImpl<T>(exec);
+        final PromiseImpl<T> result = new PromiseImpl<T>(exec, ses);
 
         then(new Success<T, T>() {
             @Override
@@ -378,7 +406,7 @@ public class PromiseImpl<T> implements Promise<T> {
         if (fallback == null)
             throw new NullPointerException();
 
-        final PromiseImpl<T> result = new PromiseImpl<T>(exec);
+        final PromiseImpl<T> result = new PromiseImpl<T>(exec, ses);
 
         then(new Success<T, T>() {
             @Override
@@ -401,4 +429,66 @@ public class PromiseImpl<T> implements Promise<T> {
 
         return result;
     }
+
+	@Override
+	public Promise<T> timeout(long milliseconds) {
+		final PromiseImpl<T> p = new PromiseImpl<T>();
+		
+		p.resolveWith(this);
+		
+		ses.schedule(new Runnable(){
+			@Override
+			public void run() {
+				if(!p.isDone()) {
+					try {
+						p.fail(new TimeoutException());
+					} catch (Exception e) {
+						// Already resolved
+					}
+				}
+			}
+		}, milliseconds, MILLISECONDS);
+		
+		return p;
+	}
+
+	@Override
+	public Promise<T> delay(final long milliseconds) {
+		final PromiseImpl<T> p = new PromiseImpl<T>();
+		then(new Success<T,T>() {
+			@Override
+			public Promise<T> call(final Promise<T> resolved) throws Exception {
+				ses.schedule(new Runnable(){
+					@Override
+					public void run() {
+						try {
+							p.resolve(resolved.getValue());
+						} catch (IllegalStateException ise) {
+							// Someone else resolved our promise?
+						} catch (Exception e) {
+							p.fail(e);
+						}
+					}
+				}, milliseconds, MILLISECONDS);
+				return null;
+			}
+    	}, new Failure(){
+			@Override
+			public void fail(final Promise<?> resolved) throws Exception {
+				ses.schedule(new Runnable(){
+					@Override
+					public void run() {
+						try {
+							p.fail(resolved.getFailure());
+						} catch (Exception e) {
+							p.fail(e);
+						}
+					}
+				}, milliseconds, MILLISECONDS);
+			}
+    	});
+		return p;
+	}
+    
+    
 }

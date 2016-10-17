@@ -21,6 +21,7 @@ package org.apache.aries.async.impl;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.aries.async.promise.PromiseImpl;
 import org.osgi.framework.Bundle;
@@ -86,9 +87,9 @@ public class MethodCall {
 		}
 	}
 	
-	public <V> Promise<V> invokeAsynchronously(Bundle clientBundle, ExecutorService executor) {
+	public <V> Promise<V> invokeAsynchronously(Bundle clientBundle, ExecutorService executor, ScheduledExecutorService ses) {
 		
-		PromiseImpl<V> promiseImpl = new PromiseImpl<V>(executor);
+		PromiseImpl<V> promiseImpl = new PromiseImpl<V>(executor, ses);
 
 		Object svc;
 		try {
@@ -137,8 +138,8 @@ public class MethodCall {
 		return promiseImpl;
 	}
 
-	public Promise<Void> fireAndForget(Bundle clientBundle, ExecutorService executor) {
-		PromiseImpl<Void> started = new PromiseImpl<Void>(executor);
+	public Promise<Void> fireAndForget(Bundle clientBundle, ExecutorService executor, ScheduledExecutorService ses) {
+		PromiseImpl<Void> started = new PromiseImpl<Void>(executor, ses);
 		Object svc;
 		try {
 			svc = getService();

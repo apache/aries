@@ -29,6 +29,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
@@ -88,12 +89,15 @@ public class AsyncService implements Async {
 	
 	private final ExecutorService executor;
 	
+	private final ScheduledExecutorService ses;
+
 	private final ServiceTracker<LogService, LogService> logServiceTracker;
 	
-	public AsyncService(Bundle clientBundle, ExecutorService executor, ServiceTracker<LogService, LogService> logServiceTracker) {
+	public AsyncService(Bundle clientBundle, ExecutorService executor, ScheduledExecutorService ses, ServiceTracker<LogService, LogService> logServiceTracker) {
 		super();
 		this.clientBundle = clientBundle;
 		this.executor = executor;
+		this.ses = ses;
 		this.logServiceTracker = logServiceTracker;
 	}
 	
@@ -231,7 +235,7 @@ public class AsyncService implements Async {
 	public <T> Promise<T> call(T call) throws IllegalStateException {
 		MethodCall currentInvocation = consumeCurrentInvocation();
 		if(currentInvocation == null) throw new IllegalStateException("Incorrect API usage - this thread has no pending method calls");
-		return currentInvocation.invokeAsynchronously(clientBundle, executor);
+		return currentInvocation.invokeAsynchronously(clientBundle, executor, ses);
 	}
 
 	public Promise<?> call() throws IllegalStateException {
@@ -241,7 +245,7 @@ public class AsyncService implements Async {
 	public Promise<Void> execute() throws IllegalStateException {
 		MethodCall currentInvocation = consumeCurrentInvocation();
 		if(currentInvocation == null) throw new IllegalStateException("Incorrect API usage - this thread has no pending method calls");
-		return currentInvocation.fireAndForget(clientBundle, executor);
+		return currentInvocation.fireAndForget(clientBundle, executor, ses);
 	}
 
 	void registerInvocation(MethodCall invocation) {

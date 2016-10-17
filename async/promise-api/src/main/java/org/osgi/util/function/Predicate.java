@@ -29,6 +29,7 @@ public interface Predicate<T> {
      *
      * @param t The input to this predicate.
      * @return true if the specified argument is accepted by this predicate; false otherwise.
+     * @throws an Exception
      */
-    boolean test(T t);
+    boolean test(T t) throws Exception;
 }

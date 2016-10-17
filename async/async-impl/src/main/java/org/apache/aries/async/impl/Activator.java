@@ -23,6 +23,7 @@ import java.security.PrivilegedAction;
 import java.util.Hashtable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -52,6 +53,25 @@ public class Activator implements BundleActivator {
 			return t;
 		}
 	});
+
+	private final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+		
+		private final AtomicInteger count = new AtomicInteger();
+		
+		public Thread newThread(final Runnable r) {
+			Thread t = new Thread(new Runnable(){
+				public void run() {
+					AccessController.doPrivileged(new PrivilegedAction<Void>() {
+						public Void run() {
+							r.run();
+							return null;
+						}
+					});
+				}
+			}, "Asynchronous Execution Service Timing Thread " + count.incrementAndGet());
+			return t;
+		}
+	});
 	
 	private volatile ServiceTracker<LogService, LogService> logServiceTracker;
 	
@@ -59,10 +79,11 @@ public class Activator implements BundleActivator {
 		logServiceTracker = new ServiceTracker<LogService, LogService>(context, LogService.class, null);
 		logServiceTracker.open();
 		
-		context.registerService(Async.class.getName(), new AsyncServiceFactory(executor, logServiceTracker), new Hashtable<String, Object>());
+		context.registerService(Async.class.getName(), new AsyncServiceFactory(executor, ses, logServiceTracker), new Hashtable<String, Object>());
 	}
 
 	public void stop(BundleContext context) throws Exception {
+		ses.shutdownNow();
 		executor.shutdownNow();
 		logServiceTracker.close();
 	}
