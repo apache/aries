@@ -19,6 +19,7 @@
 package org.apache.aries.async.impl;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
@@ -31,17 +32,21 @@ public class AsyncServiceFactory implements ServiceFactory<Async> {
 
 	private final ExecutorService executor;
 	
+	private final ScheduledExecutorService ses;
+	
 	private final ServiceTracker<LogService, LogService> logServiceTracker;
 	
-	public AsyncServiceFactory(ExecutorService executor, ServiceTracker<LogService, LogService> logServiceTracker) {
+	public AsyncServiceFactory(ExecutorService executor, ScheduledExecutorService ses, 
+			ServiceTracker<LogService, LogService> logServiceTracker) {
 		this.logServiceTracker = logServiceTracker;
 		this.executor = executor;
+		this.ses = ses;
 	}
 
 	public Async getService(Bundle bundle,
 			ServiceRegistration<Async> registration) {
 		
-		return new AsyncService(bundle, executor, logServiceTracker);
+		return new AsyncService(bundle, executor, ses, logServiceTracker);
 	}
 
 	public void ungetService(Bundle bundle,

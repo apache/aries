@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
@@ -55,12 +56,15 @@ public class AsyncServiceTest {
 	
 	private ExecutorService es;
 	
+	private ScheduledExecutorService ses;
+	
 	@Mock
 	ServiceTracker<LogService, LogService> serviceTracker;
 	
 	@Before
 	public void start() {
 		es = Executors.newFixedThreadPool(3);
+		ses = Executors.newSingleThreadScheduledExecutor();
 	}
 
 	@After
@@ -71,6 +75,13 @@ public class AsyncServiceTest {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
+		ses.shutdownNow();
+		try {
+			ses.awaitTermination(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -78,7 +89,7 @@ public class AsyncServiceTest {
 	public void test() throws InterruptedException {
 		DelayedEcho raw = new DelayedEcho();
 		
-		AsyncService service = new AsyncService(null, es, 
+		AsyncService service = new AsyncService(null, es, ses,
 				serviceTracker);
 		
 		DelayedEcho mediated = service.mediate(raw, DelayedEcho.class);
@@ -108,7 +119,7 @@ public class AsyncServiceTest {
     public void testMultipleMediationsCacheClassLoader() throws Exception {
         DelayedEcho raw = new DelayedEcho();
         
-        AsyncService service = new AsyncService(null, es,
+        AsyncService service = new AsyncService(null, es, ses,
                                                 serviceTracker);
         
         DelayedEcho mediated = service.mediate(raw, DelayedEcho.class);
@@ -120,7 +131,7 @@ public class AsyncServiceTest {
     public void testMultipleMediationsCacheClassLoaderInterface() throws Exception {
     	CharSequence raw = "test";
     	
-    	AsyncService service = new AsyncService(null, es,
+    	AsyncService service = new AsyncService(null, es, ses,
     			serviceTracker);
     	
     	CharSequence mediated = service.mediate(raw, CharSequence.class);

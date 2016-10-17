@@ -18,10 +18,28 @@
  */
 package org.apache.aries.async.promise.test;
 
-import org.junit.Test;
-import org.osgi.util.promise.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.junit.Test;
+import org.osgi.util.function.Callback;
+import org.osgi.util.promise.Deferred;
+import org.osgi.util.promise.Failure;
+import org.osgi.util.promise.Promise;
+import org.osgi.util.promise.Promises;
+import org.osgi.util.promise.Success;
+import org.osgi.util.promise.TimeoutException;
 
 public class ChainTest {
 
@@ -124,7 +142,7 @@ public class ChainTest {
         Deferred<String> def = new Deferred<String>();
         final Promise<String> promise = def.getPromise();
 
-        Promise<String> chain = promise.then(null);
+        Promise<String> chain = promise.then((Success)null);
         assertFalse("chain not resolved", chain.isDone());
 
         Throwable failure = new Throwable("fail!");
@@ -156,7 +174,7 @@ public class ChainTest {
     public void testThenNull() throws Exception {
         Deferred<String> def = new Deferred<String>();
         final Promise<String> promise = def.getPromise();
-        Promise<String> chain = promise.then(null);
+        Promise<String> chain = promise.then((Success)null);
         assertFalse("chain not resolved", chain.isDone());
 
         def.resolve("ok");
@@ -168,7 +186,7 @@ public class ChainTest {
     public void testThenNullResolved() throws Exception {
         Deferred<String> def = new Deferred<String>();
         def.resolve("ok");
-        Promise<String> chain = def.getPromise().then(null);
+        Promise<String> chain = def.getPromise().then((Success)null);
 
         assertTrue("chain resolved", chain.isDone());
         assertNull("chain value null", chain.getValue());
@@ -268,5 +286,185 @@ public class ChainTest {
         assertTrue("chain resolved", chain.isDone());
 
         assertEquals("chain value matches", "success2", chain.getValue());
+    }
+    
+    @Test
+    public void testThenCallbackSuccess() throws Exception {
+    	Deferred<String> def = new Deferred<String>();
+
+    	final AtomicBoolean run = new AtomicBoolean(false);
+    	
+        Promise<String> chain = def.getPromise().then(new Callback() {
+            @Override
+            public void run() throws Exception {
+                run.set(true);
+            }
+        });
+        assertFalse("chain should not be resolved", chain.isDone());
+        assertFalse("callback should not have been run", run.get());
+
+        def.resolve("ok");
+        assertTrue("chain resolved", chain.isDone());
+        assertEquals("chain value matches", "ok", chain.getValue());
+        assertTrue("callback should have been run", run.get());
+    	
+    }
+
+    @Test
+    public void testThenCallbackFail() throws Exception {
+    	Deferred<String> def = new Deferred<String>();
+    	
+    	final AtomicBoolean run = new AtomicBoolean(false);
+    	
+    	Promise<String> chain = def.getPromise().then(new Callback() {
+    		@Override
+    		public void run() throws Exception {
+    			run.set(true);
+    		}
+    	});
+    	
+    	Exception failure = new Exception("bang!");
+    	
+    	assertFalse("chain should not be resolved", chain.isDone());
+    	assertFalse("callback should not have been run", run.get());
+    	
+    	def.fail(failure);
+    	assertTrue("chain resolved", chain.isDone());
+    	assertSame("chain value matches", failure, chain.getFailure());
+    	assertTrue("callback should have been run", run.get());
+    	
+    }
+
+    @Test
+    public void testThenCallbackThrowsExceptionSuccess() throws Exception {
+    	Deferred<String> def = new Deferred<String>();
+    	
+    	final Exception failure = new Exception("bang!");
+    	
+    	Promise<String> chain = def.getPromise().then(new Callback() {
+    		@Override
+    		public void run() throws Exception {
+    			throw failure;
+    		}
+    	});
+    	
+    	assertFalse("chain should not be resolved", chain.isDone());
+    	
+    	def.resolve("ok");
+    	assertTrue("chain resolved", chain.isDone());
+    	assertSame("chain value matches", failure, chain.getFailure());
+    	
+    }
+
+    @Test
+    public void testThenCallbackThrowsExceptionFail() throws Exception {
+    	Deferred<String> def = new Deferred<String>();
+    	
+    	final Exception failure = new Exception("bang!");
+    	
+    	Promise<String> chain = def.getPromise().then(new Callback() {
+    		@Override
+    		public void run() throws Exception {
+    			throw failure;
+    		}
+    	});
+    	
+    	assertFalse("chain should not be resolved", chain.isDone());
+    	
+    	def.fail(new IllegalStateException());
+    	assertTrue("chain resolved", chain.isDone());
+    	assertSame("chain value matches", failure, chain.getFailure());
+    	
+    }
+    
+    @Test
+    public void testTimeout() throws Exception {
+    	Deferred<String> def = new Deferred<String>();
+
+        Promise<String> promise = def.getPromise();
+        
+        long start = System.nanoTime();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicLong finish = new AtomicLong();
+        
+		Promise<String> chain = promise.timeout(500)
+				.onResolve(new Runnable() {
+					@Override
+					public void run() {
+						finish.set(System.nanoTime());
+						latch.countDown();
+					}
+				});
+		
+		assertFalse("promise should not be resolved", promise.isDone());
+		assertFalse("chain should not be resolved", chain.isDone());
+		
+		assertTrue("Did not time out!", latch.await(1, SECONDS));
+		assertTrue("Finished too fast", NANOSECONDS.toMillis(finish.get() - start) > 450);
+
+		assertFalse("promise should not be resolved", promise.isDone());
+		assertTrue("chain should now be resolved", chain.isDone());
+		
+        assertTrue("Should fail with a timeout exception", chain.getFailure() instanceof TimeoutException);
+    }
+
+    @Test
+    public void testTimeoutSuccess() throws Exception {
+    	Deferred<String> def = new Deferred<String>();
+    	
+    	Promise<String> promise = def.getPromise();
+    	
+    	final CountDownLatch latch = new CountDownLatch(1);
+    	
+    	Promise<String> chain = promise.timeout(500)
+    			.onResolve(new Runnable() {
+    				@Override
+    				public void run() {
+    					latch.countDown();
+    				}
+    			});
+    	
+    	assertFalse("promise should not be resolved", promise.isDone());
+    	assertFalse("chain should not be resolved", chain.isDone());
+    	
+    	def.resolve("ok");
+    	
+    	assertTrue("Did not eagerly complete!", latch.await(100, MILLISECONDS));
+    	
+    	assertTrue("promise should not be resolved", promise.isDone());
+    	assertTrue("chain should now be resolved", chain.isDone());
+    	
+    	assertEquals(promise.getValue(), chain.getValue());
+    }
+    
+    @Test
+    public void testTimeoutFailure() throws Exception{
+    	Deferred<String> def = new Deferred<String>();
+    	
+    	Promise<String> promise = def.getPromise();
+    	
+    	final CountDownLatch latch = new CountDownLatch(1);
+    	
+    	Promise<String> chain = promise.timeout(500)
+    			.onResolve(new Runnable() {
+    				@Override
+    				public void run() {
+    					latch.countDown();
+    				}
+    			});
+    	
+    	assertFalse("promise should not be resolved", promise.isDone());
+    	assertFalse("chain should not be resolved", chain.isDone());
+    	
+    	Exception failure = new Exception("bang!");
+    	
+    	def.fail(failure);
+    	
+    	assertTrue("Did not eagerly complete!", latch.await(100, MILLISECONDS));
+    	
+    	assertTrue("promise should not be resolved", promise.isDone());
+    	assertTrue("chain should now be resolved", chain.isDone());
+    	
+    	assertSame(promise.getFailure(), chain.getFailure());
     }
 }
