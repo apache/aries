@@ -22,13 +22,13 @@
 	<parent>
 		<groupId>org.apache.aries.tx-control</groupId>
 		<artifactId>tx-control</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-provider-jdbc-local</artifactId>
 	<name>OSGi Transaction Control JDBC Resource Provider - Local Transactions</name>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 
 	<description>
         This bundle contains a JDBC resource provider for use with the OSGi Transaction Control Service that supports local transactions.
@@ -36,13 +36,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jdbc-local
+            scm:svn:http://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.2/tx-control-provider-jdbc-local
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jdbc-local
+            scm:svn:https://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.2/tx-control-provider-jdbc-local
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-provider-jdbc-local
+            http://svn.apache.org/viewvc/aries/tags/tx-control-0.0.2/tx-control-provider-jdbc-local
         </url>
 	</scm>
 
