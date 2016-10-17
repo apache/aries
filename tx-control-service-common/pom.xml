@@ -22,13 +22,13 @@
 	<parent>
 		<groupId>org.apache.aries.tx-control</groupId>
 		<artifactId>tx-control</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-service-common</artifactId>
 	<name>OSGi Transaction Control Service - Common Code</name>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 
 	<description>
         This jar contains a common code for building OSGi Transaction Control Service implementations.
@@ -38,13 +38,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-service-common
+            scm:svn:http://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.2/tx-control-service-common
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-service-common
+            scm:svn:https://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.2/tx-control-service-common
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-service-common
+            http://svn.apache.org/viewvc/aries/tags/tx-control-0.0.2/tx-control-service-common
         </url>
 	</scm>
 
