@@ -46,6 +46,7 @@
         <module>blueprint-compatibility</module>
         <module>blueprint-core-compatibility</module>
         <module>blueprint-maven-plugin-spi</module>
+        <module>blueprint-maven-plugin-annotation</module>
         <module>blueprint-maven-plugin</module>
         <module>blueprint-noosgi</module>
         <module>blueprint-web</module>

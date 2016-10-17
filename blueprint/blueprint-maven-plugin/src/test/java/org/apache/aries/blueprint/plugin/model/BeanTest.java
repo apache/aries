@@ -18,7 +18,16 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import com.google.common.collect.Sets;
+import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.inject.Named;
+
 import org.apache.aries.blueprint.plugin.BlueprintConfigurationImpl;
 import org.apache.aries.blueprint.plugin.bad.BadBean1;
 import org.apache.aries.blueprint.plugin.bad.BadBean2;
@@ -27,6 +36,7 @@ import org.apache.aries.blueprint.plugin.bad.BadFieldBean1;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean2;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean3;
 import org.apache.aries.blueprint.plugin.bad.FieldBean4;
+import org.apache.aries.blueprint.plugin.test.BeanWithConfig;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
@@ -34,14 +44,7 @@ import org.apache.aries.blueprint.plugin.test.MyBean5;
 import org.apache.aries.blueprint.plugin.test.ServiceAImpl1;
 import org.junit.Test;
 
-import javax.inject.Named;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import static junit.framework.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.Sets;
 
 public class BeanTest {
     private static final String NS_JPA1 = "http://aries.apache.org/xmlns/jpa/v1.1.0";
@@ -196,5 +199,15 @@ public class BeanTest {
         assertEquals("ser2", bean.constructorArguments.get(5).getRef());
         assertEquals("serviceA", bean.constructorArguments.get(6).getRef());
         assertEquals("produced2", bean.constructorArguments.get(7).getRef());
+    }
+    
+    @Test
+    public void testParseBeanWithConfig() {
+        Bean bean = new Bean(BeanWithConfig.class, context);
+        bean.resolve(context);
+        assertEquals("There should be a property", 1, bean.properties.size());
+        Property prop = bean.properties.iterator().next();
+        assertEquals("title", prop.name);
+        assertEquals("${title}", prop.value);
     }
 }
