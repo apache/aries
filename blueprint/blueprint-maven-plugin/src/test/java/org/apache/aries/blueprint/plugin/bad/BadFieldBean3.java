@@ -25,5 +25,6 @@ import org.apache.aries.blueprint.plugin.test.MyBean1;
 @Singleton
 public class BadFieldBean3 extends ParentWithInjectedField
 {
+    @SuppressWarnings("unused")
     private MyBean1 field;
 }

@@ -24,6 +24,7 @@ import org.apache.aries.blueprint.plugin.test.MyBean1;
 
 public class ParentWithInjectedField
 {
+    @SuppressWarnings("unused")
     @Inject
     private MyBean1 field;
 }
