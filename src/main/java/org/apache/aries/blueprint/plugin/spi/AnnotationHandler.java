@@ -19,10 +19,13 @@
 package org.apache.aries.blueprint.plugin.spi;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
-public interface CustomFactoryMethodAnnotationHandler<A extends Annotation> {
+/**
+ * Base annotation handler interface
+ */
+public interface AnnotationHandler<A extends Annotation> {
+    /**
+     * @return annotation class
+     */
     Class<A> getAnnotation();
-
-    void handleFactoryMethodAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher);
 }

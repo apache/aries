@@ -22,8 +22,16 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public interface FieldAnnotationHandler<A extends Annotation> {
-    Class<A> getAnnotation();
-
-    void handleMethodAnnotation(Class<?> clazz, List<Field> fields, ContextEnricher contextEnricher, BeanEnricher beanEnricher);
+/**
+ * Annotation A on field could write custom XML in blueprint or add bean to blueprint context
+ */
+public interface FieldAnnotationHandler<A extends Annotation> extends AnnotationHandler<A> {
+    /**
+     * Handle annotations A on methods
+     * @param clazz class which contains annotated fields\
+     * @param fields fields annotated with annotation A
+     * @param contextEnricher context enricher
+     * @param beanEnricher bean enricher
+     */
+    void handleFieldAnnotation(Class<?> clazz, List<Field> fields, ContextEnricher contextEnricher, BeanEnricher beanEnricher);
 }

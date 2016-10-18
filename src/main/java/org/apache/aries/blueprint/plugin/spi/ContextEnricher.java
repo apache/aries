@@ -18,8 +18,27 @@
  */
 package org.apache.aries.blueprint.plugin.spi;
 
+/**
+ * Interface allows for adding custom XML or adding beans to bean search context
+ * Instance of this interface is provided by plugin.
+ */
 public interface ContextEnricher {
+    /**
+     * Add bean to search context (id should be unique)
+     * @param id name of bean
+     * @param clazz class of bean
+     */
     void addBean(String id, Class<?> clazz);
+
+    /**
+     * Add custom XML to blueprint
+     * @param id identifier of writer instance (should be unique)
+     * @param blueprintWriter callback used to write custom XML
+     */
     void addBlueprintContentWriter(String id, XmlWriter blueprintWriter);
+
+    /**
+     * @return plugin configuration from pom.xml
+     */
     BlueprintConfiguration getBlueprintConfiguration();
 }

@@ -18,7 +18,22 @@
  */
 package org.apache.aries.blueprint.plugin.spi;
 
+/**
+ * Interface allows for adding custom XML or adding attributes to bean element
+ * Instance of this interface is provided by plugin.
+ */
 public interface BeanEnricher {
+    /**
+     * Add attribute to bean element
+     * @param key name of attribute
+     * @param value value of attribute
+     */
     void addAttribute(String key, String value);
+
+    /**
+     * Add custom XML inside bean element
+     * @param id identifier of writer instance (should be unique)
+     * @param blueprintWriter callback used to write custom XML
+     */
     void addBeanContentWriter(String id, XmlWriter blueprintWriter);
 }

@@ -21,8 +21,15 @@ package org.apache.aries.blueprint.plugin.spi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public interface BeanAnnotationHandler<A extends Annotation> {
-    Class<A> getAnnotation();
-
+/**
+ * Annotation A allows for enriching blueprint XML or add new bean to context when bean class or factory method is marked with such annotation
+ */
+public interface BeanAnnotationHandler<A extends Annotation> extends AnnotationHandler<A> {
+    /**
+     * Handle annotation A on bean or factory method
+     * @param annotatedElement bean class or factory method
+     * @param id id of bean
+     * @param contextEnricher context enricher
+     */
     void handleBeanAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher, BeanEnricher beanEnricher);
 }
