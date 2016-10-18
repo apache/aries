@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,12 +19,16 @@
 package org.apache.aries.blueprint.plugin.spi;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
-public interface ValueInjectionHandler<A extends Annotation> {
-    Class<A> getAnnotation();
-
-    String getValue(Class clazz, AnnotatedElement annotatedElement);
-
+/**
+ * Annotation on field, setter or constructor argument is used to generate argument or property elements with value attribute inside bean
+ */
+public interface ValueInjectionHandler<A extends Annotation> extends AnnotationHandler<A> {
+    /**
+     * Interpret annotation instance and create value of argument's or property's value attribute
+     *
+     * @param annotation instance of annotation A
+     * @return value of
+     */
     String getValue(Object annotation);
 }

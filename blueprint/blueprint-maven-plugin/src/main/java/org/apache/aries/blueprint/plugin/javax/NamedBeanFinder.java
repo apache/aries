@@ -22,7 +22,7 @@ import javax.inject.Named;
 
 public class NamedBeanFinder implements org.apache.aries.blueprint.plugin.spi.BeanFinder<Named> {
     @Override
-    public Class<Named> beanAnnotation() {
+    public Class<Named> getAnnotation() {
         return Named.class;
     }
 

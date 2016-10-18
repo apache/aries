@@ -41,7 +41,7 @@ public class PersistenceUnitHandler implements FieldAnnotationHandler<Persistenc
     }
 
     @Override
-    public void handleMethodAnnotation(Class<?> clazz, List<Field> fields, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
+    public void handleFieldAnnotation(Class<?> clazz, List<Field> fields, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         final String nsJpa1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_JPA1);
         if (nsJpa1 != null) {
             for (final Field field : fields) {

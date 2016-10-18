@@ -26,7 +26,6 @@ import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import java.lang.annotation.Annotation;
@@ -43,6 +42,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 
 public class Bean extends BeanRef implements BeanEnricher {
@@ -89,7 +89,7 @@ public class Bean extends BeanRef implements BeanEnricher {
         for (FieldAnnotationHandler fieldAnnotationHandler : Extensions.fieldAnnotationHandlers) {
             List<Field> fields = introspector.fieldsWith(fieldAnnotationHandler.getAnnotation());
             if (fields.size() > 0) {
-                fieldAnnotationHandler.handleMethodAnnotation(clazz, fields, contextEnricher, this);
+                fieldAnnotationHandler.handleFieldAnnotation(clazz, fields, contextEnricher, this);
             }
         }
     }
@@ -189,19 +189,6 @@ public class Bean extends BeanRef implements BeanEnricher {
 
             constructorArguments.add(new Argument(ref, value));
         }
-    }
-
-    private String findName(Annotation[] annotations) {
-        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
-            Object annotation = AnnotationHelper.findAnnotation(annotations, namedLikeHandler.getAnnotation());
-            if (annotation != null) {
-                String name = namedLikeHandler.getName(annotation);
-                if (name != null) {
-                    return name;
-                }
-            }
-        }
-        return null;
     }
 
     @Override

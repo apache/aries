@@ -18,6 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.spi;
 
+/**
+ * Activation mode for bean
+ */
 public enum Activation {
     EAGER,
     LAZY;

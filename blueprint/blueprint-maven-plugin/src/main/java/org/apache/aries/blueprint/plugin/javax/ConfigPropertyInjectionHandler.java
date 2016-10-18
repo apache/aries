@@ -18,8 +18,6 @@
  */
 package org.apache.aries.blueprint.plugin.javax;
 
-import java.lang.reflect.AnnotatedElement;
-
 import org.apache.aries.blueprint.api.config.ConfigProperty;
 
 public class ConfigPropertyInjectionHandler implements org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler<ConfigProperty> {
@@ -27,13 +25,6 @@ public class ConfigPropertyInjectionHandler implements org.apache.aries.blueprin
     @Override
     public Class<ConfigProperty> getAnnotation() {
         return ConfigProperty.class;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public String getValue(Class clazz, AnnotatedElement annotatedElement) {
-        ConfigProperty annotation = annotatedElement.getAnnotation(ConfigProperty.class);
-        return annotation.value();
     }
 
     @Override
