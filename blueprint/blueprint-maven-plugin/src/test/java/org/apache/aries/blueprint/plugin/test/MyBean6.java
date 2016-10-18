@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 @DependsOn
 public class MyBean6 {
 
+    @SuppressWarnings("unused")
     private final ServiceA serviceA1;
 
     public MyBean6(@Named("my2") ServiceA serviceA1) {
