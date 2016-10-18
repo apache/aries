@@ -14,4 +14,7 @@ import java.lang.annotation.Target;
 public @interface Config {
     String pid();
     String updatePolicy() default "reload"; 
+    String placeholderPrefix() default "${";
+    String placeholderSuffix() default "}";
+    Property[] defaults() default {};
 }

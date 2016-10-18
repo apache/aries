@@ -208,6 +208,6 @@ public class BeanTest {
         assertEquals("There should be a property", 1, bean.properties.size());
         Property prop = bean.properties.iterator().next();
         assertEquals("title", prop.name);
-        assertEquals("${title}", prop.value);
+        assertEquals("$[title]", prop.value);
     }
 }
