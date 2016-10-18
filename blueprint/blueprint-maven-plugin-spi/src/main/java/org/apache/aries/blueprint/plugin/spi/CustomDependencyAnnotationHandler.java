@@ -21,10 +21,24 @@ package org.apache.aries.blueprint.plugin.spi;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public interface CustomDependencyAnnotationHandler<A extends Annotation> {
-    Class<A> getAnnotation();
-
+/**
+ * Annotation A allows for enriching blueprint XML or add new bean to context when injecting bean, e. g. for generating in bean which could be injected
+ */
+public interface CustomDependencyAnnotationHandler<A extends Annotation> extends AnnotationHandler<A> {
+    /**
+     * @param annotatedElement field or setter method
+     * @param name name of bean to inject (null if bean name is not provided)
+     * @param contextEnricher context enricher
+     * @return name of generated bean which should be injected or null
+     */
     String handleDependencyAnnotation(AnnotatedElement annotatedElement, String name, ContextEnricher contextEnricher);
 
+    /**
+     * @param clazz class of constructor parameter or setter parameter
+     * @param annotation instance of annotation A
+     * @param name name of bean to inject (null if bean name is not provided)
+     * @param contextEnricher context enricher
+     * @return name of generated bean which should be injected or null
+     */
     String handleDependencyAnnotation(Class<?> clazz, A annotation, String name, ContextEnricher contextEnricher);
 }

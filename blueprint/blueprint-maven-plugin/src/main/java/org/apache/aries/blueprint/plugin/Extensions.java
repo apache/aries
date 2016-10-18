@@ -22,7 +22,6 @@ import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanFinder;
 import org.apache.aries.blueprint.plugin.spi.ContextInitializationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.FactoryMethodFinder;
 import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
@@ -43,7 +42,6 @@ public class Extensions {
     public static final List<NamedLikeHandler> namedLikeHandlers = new ArrayList<>();
     public static final List<ValueInjectionHandler<? extends Annotation>> valueInjectionHandlers = new ArrayList<>();
     public static final List<BeanAnnotationHandler<? extends Annotation>> BEAN_ANNOTATION_HANDLERs = new ArrayList<>();
-    public static final List<CustomFactoryMethodAnnotationHandler<? extends Annotation>> customFactoryMethodAnnotationHandlers = new ArrayList<>();
     public static final List<CustomDependencyAnnotationHandler<? extends Annotation>> customDependencyAnnotationHandlers = new ArrayList<>();
     public static final List<MethodAnnotationHandler<? extends Annotation>> methodAnnotationHandlers = new ArrayList<>();
     public static final List<FieldAnnotationHandler<? extends Annotation>> fieldAnnotationHandlers = new ArrayList<>();
@@ -53,9 +51,9 @@ public class Extensions {
 
     static {
         for (BeanFinder beanFinder : ServiceLoader.load(BeanFinder.class)) {
-            beanMarkingAnnotationClasses.add(beanFinder.beanAnnotation());
+            beanMarkingAnnotationClasses.add(beanFinder.getAnnotation());
             if (beanFinder.isSingleton()) {
-                singletons.add(beanFinder.beanAnnotation());
+                singletons.add(beanFinder.getAnnotation());
             }
         }
 
@@ -75,10 +73,6 @@ public class Extensions {
             BEAN_ANNOTATION_HANDLERs.add(beanAnnotationHandler);
         }
 
-        for (CustomFactoryMethodAnnotationHandler<? extends Annotation> customFactoryMethodAnnotationHandler : ServiceLoader.load(CustomFactoryMethodAnnotationHandler.class)) {
-            customFactoryMethodAnnotationHandlers.add(customFactoryMethodAnnotationHandler);
-        }
-
         for (CustomDependencyAnnotationHandler<? extends Annotation> customDependencyAnnotationHandler : ServiceLoader.load(CustomDependencyAnnotationHandler.class)) {
             customDependencyAnnotationHandlers.add(customDependencyAnnotationHandler);
         }
@@ -92,7 +86,7 @@ public class Extensions {
         }
 
         for (FactoryMethodFinder<? extends Annotation> factoryMethodFinder : ServiceLoader.load(FactoryMethodFinder.class)) {
-            factoryMethodAnnotationClasses.add((Class<? extends Annotation>) factoryMethodFinder.factoryMethodAnnotation());
+            factoryMethodAnnotationClasses.add((Class<? extends Annotation>) factoryMethodFinder.getAnnotation());
         }
 
         for (QualifingAnnotationFinder<? extends Annotation> qualifingAnnotationFinder : ServiceLoader.load(QualifingAnnotationFinder.class)) {

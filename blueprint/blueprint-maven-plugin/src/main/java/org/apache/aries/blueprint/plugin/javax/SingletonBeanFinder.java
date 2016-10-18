@@ -22,7 +22,7 @@ import javax.inject.Singleton;
 
 public class SingletonBeanFinder implements org.apache.aries.blueprint.plugin.spi.BeanFinder<Singleton> {
     @Override
-    public Class<Singleton> beanAnnotation() {
+    public Class<Singleton> getAnnotation() {
         return Singleton.class;
     }
 

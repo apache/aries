@@ -24,7 +24,7 @@ import javax.enterprise.inject.Produces;
 
 public class ProducesHandler implements FactoryMethodFinder<Produces> {
     @Override
-    public Class<Produces> factoryMethodAnnotation() {
+    public Class<Produces> getAnnotation() {
         return Produces.class;
     }
 }

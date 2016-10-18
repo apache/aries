@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class ComponentBeanFinder implements BeanFinder<Component> {
 
     @Override
-    public Class<Component> beanAnnotation() {
+    public Class<Component> getAnnotation() {
         return Component.class;
     }
 

@@ -27,6 +27,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
+
 public class Property implements Comparable<Property> {
     public final String name;
     public final String ref;
@@ -83,7 +85,7 @@ public class Property implements Comparable<Property> {
         if (needsInject(method)) {
             String ref = getForcedRefName(method);
             if (ref == null) {
-                ref = getForcedRefName(method.getParameterAnnotations()[0]);
+                ref = findName(method.getParameterAnnotations()[0]);
             }
             for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(method.getAnnotations(), customDependencyAnnotationHandler.getAnnotation());
@@ -156,19 +158,6 @@ public class Property implements Comparable<Property> {
         for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
             if (method.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
                 String name = namedLikeHandler.getName(method.getParameterTypes()[0], method);
-                if (name != null) {
-                    return name;
-                }
-            }
-        }
-        return null;
-    }
-
-    private static String getForcedRefName(Annotation[] annotations) {
-        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
-            Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(annotations, namedLikeHandler.getAnnotation());
-            if (annotation != null) {
-                String name = namedLikeHandler.getName(annotation);
                 if (name != null) {
                     return name;
                 }

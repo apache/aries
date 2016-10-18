@@ -20,19 +20,11 @@ package org.apache.aries.blueprint.plugin.spring;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.lang.reflect.AnnotatedElement;
-
 public class ValueInjectionHandler implements org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler<Value> {
 
     @Override
     public Class<Value> getAnnotation() {
         return Value.class;
-    }
-
-    @Override
-    public String getValue(Class clazz, AnnotatedElement annotatedElement) {
-        Value annotation = annotatedElement.getAnnotation(Value.class);
-        return annotation.value().replaceAll("\\:.*\\}", "}");
     }
 
     @Override

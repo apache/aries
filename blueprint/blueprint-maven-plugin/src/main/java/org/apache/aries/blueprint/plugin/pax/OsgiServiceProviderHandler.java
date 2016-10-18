@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
@@ -36,15 +35,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiServiceProvider>, CustomFactoryMethodAnnotationHandler<OsgiServiceProvider> {
+public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiServiceProvider> {
     @Override
     public Class<OsgiServiceProvider> getAnnotation() {
         return OsgiServiceProvider.class;
-    }
-
-    @Override
-    public void handleFactoryMethodAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher) {
-        handleAnnotation(annotatedElement, id, contextEnricher);
     }
 
     @Override

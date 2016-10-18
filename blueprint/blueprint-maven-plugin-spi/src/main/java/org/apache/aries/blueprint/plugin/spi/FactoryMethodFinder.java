@@ -20,6 +20,8 @@ package org.apache.aries.blueprint.plugin.spi;
 
 import java.lang.annotation.Annotation;
 
-public interface FactoryMethodFinder<A extends Annotation> {
-    Class<A> factoryMethodAnnotation();
+/**
+ * Annotation A on method marks this method as factory method
+ */
+public interface FactoryMethodFinder<A extends Annotation> extends AnnotationHandler<A> {
 }

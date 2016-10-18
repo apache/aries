@@ -22,7 +22,6 @@ import org.apache.aries.blueprint.plugin.Extensions;
 import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextInitializationHandler;
-import org.apache.aries.blueprint.plugin.spi.CustomFactoryMethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import java.lang.annotation.Annotation;
@@ -86,11 +85,6 @@ public class Context implements BlueprintRegister, ContextEnricher {
                 beanFromFactory.setSingleton();
             }
             reg.add(beanFromFactory);
-            for (CustomFactoryMethodAnnotationHandler customFactoryMethodAnnotationHandler : Extensions.customFactoryMethodAnnotationHandlers) {
-                if (AnnotationHelper.findAnnotation(method.getAnnotations(), customFactoryMethodAnnotationHandler.getAnnotation()) != null) {
-                    customFactoryMethodAnnotationHandler.handleFactoryMethodAnnotation(method, beanFromFactory.id, this);
-                }
-            }
         }
     }
 
