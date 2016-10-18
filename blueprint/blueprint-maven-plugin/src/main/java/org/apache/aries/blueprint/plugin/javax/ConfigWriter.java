@@ -22,6 +22,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.aries.blueprint.api.config.Config;
+import org.apache.aries.blueprint.api.config.Property;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 public class ConfigWriter implements XmlWriter {
@@ -38,8 +39,28 @@ public class ConfigWriter implements XmlWriter {
         writer.writeStartElement("property-placeholder");
         writer.writeDefaultNamespace(CONFIG_NS);
         writer.writeAttribute("persistent-id", config.pid());
+        if (!"${".equals(config.placeholderPrefix())) {
+            writer.writeAttribute("placeholder-prefix", config.updatePolicy());
+        }
+        if (!"}".equals(config.placeholderSuffix())) {
+            writer.writeAttribute("placeholder-suffix", config.updatePolicy());
+        }
         writer.writeAttribute("update-strategy", config.updatePolicy());
         writer.writeCharacters("\n");
+        
+        Property[] defaults = config.defaults();
+        if (defaults.length > 0) {
+            writer.writeStartElement("default-properties");
+            writer.writeCharacters("\n");
+            for (Property defaultProp : defaults) {
+                writer.writeEmptyElement("property");
+                writer.writeAttribute("name", defaultProp.key());
+                writer.writeAttribute("value", defaultProp.value());
+                writer.writeCharacters("\n");
+            }
+            writer.writeEndElement();
+            writer.writeCharacters("\n");
+        }
         writer.writeEndElement();
     }
 
