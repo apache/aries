@@ -17,19 +17,14 @@
     limitations under the License.
 -->
 <features name="aries-jpa-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
-    <feature name="persistence-api" description="Persistence API" version="2.0.0">
-        <details>Persistence API</details>
-        <bundle start-level="30">mvn:org.apache.geronimo.specs/geronimo-jpa_2.0_spec/1.1</bundle>
-    </feature>
-    
-    <feature name="persistence-api" description="Persistence API" version="2.1.0">
-        <details>Persistence API</details>
-        <bundle start-level="30">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
-    </feature>
-    
+
     <feature name="jpa" description="OSGi Persistence Container" version="${project.version}">
         <details>JPA implementation provided by Apache Aries JPA 2.x. NB: this feature doesn't provide the JPA engine, you have to install one by yourself (OpenJPA for instance)</details>
-        <feature version="[2.0.0,2.2.0)">persistence-api</feature>
+        <capability>
+            osgi.service;effective:=active;objectClass=javax.persistence.spi.PersistenceProvider
+        </capability>
+        
+        <bundle dependency="true">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
         <bundle dependency="true">mvn:org.osgi/org.osgi.service.jdbc/1.0.0</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.felix/org.apache.felix.coordinator/1.0.2</bundle>
