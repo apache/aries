@@ -59,6 +59,7 @@
         <module>esa-maven-plugin</module>
         <module>async</module>
         <module>tx-control</module>
+        <module>pushstream</module>
     </modules>
 
     <build>
