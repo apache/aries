@@ -16,4 +16,4 @@
 #
 
 org.apache.aries.blueprint.plugin.spring.ValueInjectionHandler
-org.apache.aries.blueprint.plugin.javax.ConfigPropertyInjectionHandler
+org.apache.aries.blueprint.plugin.config.ConfigPropertyInjectionHandler

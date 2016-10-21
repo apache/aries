@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.javax;
+package org.apache.aries.blueprint.plugin.config;
 
 import org.apache.aries.blueprint.api.config.ConfigProperty;
 
