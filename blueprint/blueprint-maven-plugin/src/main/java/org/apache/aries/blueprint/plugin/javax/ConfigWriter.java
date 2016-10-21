@@ -22,7 +22,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.aries.blueprint.api.config.Config;
-import org.apache.aries.blueprint.api.config.Property;
+import org.apache.aries.blueprint.api.config.DefaultProperty;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 public class ConfigWriter implements XmlWriter {
@@ -48,11 +48,11 @@ public class ConfigWriter implements XmlWriter {
         writer.writeAttribute("update-strategy", config.updatePolicy());
         writer.writeCharacters("\n");
         
-        Property[] defaults = config.defaults();
+        DefaultProperty[] defaults = config.defaults();
         if (defaults.length > 0) {
             writer.writeStartElement("default-properties");
             writer.writeCharacters("\n");
-            for (Property defaultProp : defaults) {
+            for (DefaultProperty defaultProp : defaults) {
                 writer.writeEmptyElement("property");
                 writer.writeAttribute("name", defaultProp.key());
                 writer.writeAttribute("value", defaultProp.value());
