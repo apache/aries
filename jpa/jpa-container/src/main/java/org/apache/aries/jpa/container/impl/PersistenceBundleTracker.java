@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.aries.jpa.container.parser.impl.PersistenceUnit;
 import org.apache.aries.jpa.container.parser.impl.PersistenceUnitParser;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 import org.slf4j.Logger;
@@ -40,11 +39,9 @@ import org.slf4j.LoggerFactory;
 public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceBundleTracker.class);
     private final Map<Bundle, Collection<PersistenceProviderTracker>> trackers;
-    private final BundleContext containerContext;
     private Map<Integer, String> typeMap;
 
-    public PersistenceBundleTracker(BundleContext context) {
-        this.containerContext = context;
+    public PersistenceBundleTracker() {
         trackers = new HashMap<Bundle, Collection<PersistenceProviderTracker>>();
         this.typeMap = new HashMap<Integer, String>();
         this.typeMap.put(BundleEvent.INSTALLED, "INSTALLED");
@@ -102,7 +99,7 @@ public class PersistenceBundleTracker implements BundleTrackerCustomizer<Bundle>
         LOGGER.info(String.format("Found persistence unit %s in bundle %s with provider %s.",
                                   punit.getPersistenceUnitName(), bundle.getSymbolicName(),
                                   punit.getPersistenceProviderClassName()));
-        PersistenceProviderTracker tracker = new PersistenceProviderTracker(containerContext, punit);
+        PersistenceProviderTracker tracker = new PersistenceProviderTracker(bundle.getBundleContext(), punit);
         tracker.open();
         getTrackers(bundle).add(tracker);
     }
