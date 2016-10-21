@@ -79,7 +79,7 @@ public class JpaNsHandler implements NamespaceHandler {
         } else if (NAMESPACE_JPA_20.equals(namespace)) {
             return this.getClass().getResource("/jpa20.xsd");
         } else {
-            throw new IllegalArgumentException("Unknown namespace for jpa: " + namespace);
+            return null;
         }
     }
 
