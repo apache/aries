@@ -4,7 +4,7 @@ import javax.inject.Singleton;
 
 import org.apache.aries.blueprint.api.config.Config;
 import org.apache.aries.blueprint.api.config.ConfigProperty;
-import org.apache.aries.blueprint.api.config.Property;
+import org.apache.aries.blueprint.api.config.DefaultProperty;
 
 @Config//
 ( //
@@ -12,7 +12,7 @@ import org.apache.aries.blueprint.api.config.Property;
     placeholderPrefix = "$[", //
     placeholderSuffix = "]", //
     defaults = { 
-                @Property(key="title", value="My Title")
+                @DefaultProperty(key="title", value="My Title")
     }
 )
 @Singleton

@@ -16,5 +16,5 @@ public @interface Config {
     String updatePolicy() default "reload"; 
     String placeholderPrefix() default "${";
     String placeholderSuffix() default "}";
-    Property[] defaults() default {};
+    DefaultProperty[] defaults() default {};
 }
