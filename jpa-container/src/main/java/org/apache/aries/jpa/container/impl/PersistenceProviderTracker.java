@@ -81,8 +81,7 @@ public class PersistenceProviderTracker extends ServiceTracker<PersistenceProvid
         StoredPerProvider stored = new StoredPerProvider();
         LOGGER.info("Found provider for " + punit.getPersistenceUnitName() + " " + punit.getPersistenceProviderClassName());
         
-        // This get must happen using the persistence bundle's context to avoid ARIES-1575
-        PersistenceProvider provider = punit.getBundle().getBundleContext().getService(reference);
+        PersistenceProvider provider = context.getService(reference);
 
         createAndCloseDummyEMF(provider);
 
