@@ -24,9 +24,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 
 import javax.sql.DataSource;
 
@@ -61,6 +63,9 @@ public final class DummyDataSource implements DataSource {
             }
             if (type == ResultSet.class) {
                 return createProxy(classLoader, ResultSet.class);
+            }
+            if (type == Statement.class) {
+                return createProxy(classLoader, PreparedStatement.class);
             }
             return null;
         }
