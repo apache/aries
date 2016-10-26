@@ -16,12 +16,8 @@
  */
 package org.apache.aries.jmx.agent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
