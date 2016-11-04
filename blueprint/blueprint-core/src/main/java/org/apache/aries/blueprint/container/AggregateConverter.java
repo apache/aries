@@ -455,7 +455,15 @@ public class AggregateConverter implements Converter {
         if (target.size() == 0) {
             return unwrap(target.getRawClass()).isAssignableFrom(unwrap(source.getClass()));
         } else {
-            return isTypeAssignable(new GenericType(source.getClass()), target);
+            return isTypeAssignable(getType(source), target);
+        }
+    }
+
+    private static ReifiedType getType(Object source) {
+        if (source instanceof Class) {
+            return new GenericType(Class.class, new GenericType((Class) source));
+        } else {
+            return new GenericType(source.getClass());
         }
     }
 
