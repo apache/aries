@@ -218,6 +218,9 @@ public class AggregateConverterTest extends TestCase {
             // Ignore
         }
 
+        assertTrue(Iterable.class.isAssignableFrom(RegionIterable.class));
+        // note that method signature is fromType, toType - reverse than above
+        assertTrue("Type should be assignable.", AggregateConverter.isTypeAssignable(new GenericType(RegionIterable.class), new GenericType(Iterable.class)));
     }
 
     public void testGenericCollection() throws Exception {
