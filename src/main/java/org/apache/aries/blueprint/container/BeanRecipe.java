@@ -297,9 +297,9 @@ public class BeanRecipe extends AbstractRecipe {
                 throw wrapAsCompDefEx(e);
             }
         } else if (matches.size() == 0) {
-            throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass().getName() + " for arguments " + args + " when instanciating bean " + getName());
+            throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass().getName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName());
         } else {
-            throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass().getName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
+            throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass().getName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName() + ": " + matches.keySet());
         }
     }
 
@@ -331,9 +331,9 @@ public class BeanRecipe extends AbstractRecipe {
                 throw wrapAsCompDefEx(e);
             }
         } else if (matches.size() == 0) {
-            throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName());
+            throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getTypeName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName());
         } else {
-            throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
+            throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getTypeName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName() + ": " + matches.keySet());
         }
     }
 
@@ -351,9 +351,9 @@ public class BeanRecipe extends AbstractRecipe {
                 throw wrapAsCompDefEx(e);
             }
         } else if (matches.size() == 0) {
-            throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName());
+            throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getTypeName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName());
         } else {
-            throw new ComponentDefinitionException("Multiple matching constructors found on class " + getTypeName() + " for arguments " + args + " when instanciating bean " + getName() + ": " + matches.keySet());
+            throw new ComponentDefinitionException("Multiple matching constructors found on class " + getTypeName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName() + ": " + matches.keySet());
         }
     }
 
@@ -402,11 +402,11 @@ public class BeanRecipe extends AbstractRecipe {
                         found = false;
                         break;
                     }
-                    //If the arg is an Unwrappered bean then we need to do the assignment check against the
-                    //unwrappered bean itself.
+                    // If the arg is an Unwrappered bean then we need to do the assignment
+                    // check against the unwrappered bean itself.
                     Object arg = args.get(i);
                     Object argToTest = arg;
-                    if(arg instanceof UnwrapperedBeanHolder)
+                    if (arg instanceof UnwrapperedBeanHolder)
                     	argToTest = ((UnwrapperedBeanHolder)arg).unwrapperedBean;
                     if (!AggregateConverter.isAssignable(argToTest, argType)) {
                         found = false;
@@ -549,11 +549,11 @@ public class BeanRecipe extends AbstractRecipe {
                         found = false;
                         break;
                     }
-                    //If the arg is an Unwrappered bean then we need to do the assignment check against the
-                    //unwrappered bean itself.
+                    // If the arg is an Unwrappered bean then we need to do the assignment
+                    // check against the unwrappered bean itself.
                     Object arg = args.get(i);
                     Object argToTest = arg;
-                    if(arg instanceof UnwrapperedBeanHolder)
+                    if (arg instanceof UnwrapperedBeanHolder)
                     	argToTest = ((UnwrapperedBeanHolder)arg).unwrapperedBean;
                     if (!AggregateConverter.isAssignable(argToTest, argType)) {
                         found = false;
@@ -982,6 +982,24 @@ public class BeanRecipe extends AbstractRecipe {
     
     private Object newInstance(Constructor constructor, Object... args) throws Exception {
         return ReflectionUtils.newInstance(blueprintContainer.getAccessControlContext(), constructor, args);         
+    }
+
+    private String argsToString(List<Object> args) {
+        Iterator<Object> it = args.iterator();
+        if (!it.hasNext())
+            return "[]";
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for (;;) {
+            Object e = it.next();
+            if (e instanceof UnwrapperedBeanHolder) {
+                e = ((UnwrapperedBeanHolder) e).unwrapperedBean;
+            }
+            sb.append(e).append(" (").append(e.getClass()).append(")");
+            if (!it.hasNext())
+                return sb.append(']').toString();
+            sb.append(',').append(' ');
+        }
     }
     
     private static Object UNMATCHED = new Object();
