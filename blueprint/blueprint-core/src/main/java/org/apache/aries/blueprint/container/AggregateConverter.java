@@ -464,6 +464,9 @@ public class AggregateConverter implements Converter {
             return true;
         }
         if (from.getRawClass() == to.getRawClass()) {
+            if (to.size() == 0) {
+                return true;
+            }
             if (from.size() == to.size()) {
                 boolean ok = true;
                 for (int i = 0; i < from.size(); i++) {
