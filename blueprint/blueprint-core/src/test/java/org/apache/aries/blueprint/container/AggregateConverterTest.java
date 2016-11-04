@@ -149,6 +149,8 @@ public class AggregateConverterTest extends TestCase {
         assertEquals(this, service.convert(this, AggregateConverterTest.class));
         assertEquals(AggregateConverterTest.class, service.convert(this.getClass().getName(), Class.class));
         assertEquals(int[].class, service.convert("int[]", Class.class));
+        assertEquals(RegionIterable.class, service.convert(RegionIterable.class.getName(), new GenericType(Class.class, new GenericType(RegionIterable.class))));
+        assertTrue(AggregateConverter.isAssignable(RegionIterable.class, new GenericType(Class.class, new GenericType(RegionIterable.class))));
     }
 
     public void testConvertArray() throws Exception {
