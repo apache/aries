@@ -894,6 +894,9 @@ public class BlueprintContainerImpl
         cancelFutureIfPresent();
 
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundle(), getExtenderBundle()));
+
+        AriesFrameworkUtil.safeUnregisterService(registration);
+
         executors.shutdownNow();
         if (handlerSet != null) {
             handlerSet.removeListener(this);
