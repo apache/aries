@@ -146,22 +146,48 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 		Filter filter;
 
+		String string = buildFilterString(filterString, clazz);
+
 		try {
-			if (filterString == null) {
-				filter = bundleContext.createFilter(
-					"(objectClass=" + clazz.getName() + ")");
-			}
-			else {
-				filter = bundleContext.createFilter(
-					"(&(objectClass=" + clazz.getName() + ")" +
-						filterString + ")");
-			}
+			filter = bundleContext.createFilter(string);
 		}
 		catch (InvalidSyntaxException e) {
 			throw new RuntimeException(e);
 		}
 
 		return filter;
+	}
+
+	static String buildFilterString(String filterString, Class<?> clazz) {
+		if (filterString == null && clazz == null) {
+			throw new IllegalArgumentException(
+				"Both filterString and clazz can't be null");
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		if (filterString != null) {
+			stringBuilder.append(filterString);
+		}
+
+		if (clazz != null) {
+			boolean extend = !(stringBuilder.length() == 0);
+			if (extend) {
+				stringBuilder.insert(0, "(&");
+			}
+
+			stringBuilder.
+				append("(objectClass=").
+				append(clazz.getName()).
+				append(")");
+
+			if (extend) {
+				stringBuilder.append(")");
+			}
+
+		}
+
+		return stringBuilder.toString();
 	}
 
 }

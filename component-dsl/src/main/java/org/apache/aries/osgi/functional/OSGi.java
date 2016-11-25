@@ -89,6 +89,10 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new JustOSGiImpl<>(s);
 	}
 
+	static MOSGi<ServiceObjects<Object>> prototypes(String filterString) {
+		return prototypes(null, filterString);
+	}
+
 	static <T> MOSGi<ServiceObjects<T>> prototypes(Class<T> clazz) {
 		return prototypes(clazz, null);
 	}
@@ -110,8 +114,24 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return services(clazz, null);
 	}
 
+	static <T> MOSGi<Object> services(String filterString) {
+		return services(null, filterString);
+	}
+
 	static <T> MOSGi<T> services(Class<T> clazz, String filterString) {
 		return new ServicesMOSGi<>(clazz, filterString);
+	}
+
+	static <T> OSGi<ServiceReference<T>> serviceReferences(
+		Class<T> clazz) {
+
+		return new ServiceReferenceOSGi<>(null, clazz);
+	}
+
+	static OSGi<ServiceReference<Object>> serviceReferences(
+		String filterString) {
+
+		return new ServiceReferenceOSGi<>(filterString, null);
 	}
 
 	static <T> OSGi<ServiceReference<T>> serviceReferences(
