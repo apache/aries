@@ -33,7 +33,7 @@ class Tuple<T> {
 		this.t = t;
 	}
 
-	public <S> Tuple<S> map(Function<T, S> fun) {
+	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
 		return new Tuple<>(original, fun.apply(t));
 	}
 

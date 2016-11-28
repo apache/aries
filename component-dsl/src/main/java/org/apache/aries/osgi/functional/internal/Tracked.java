@@ -25,7 +25,7 @@ import org.apache.aries.osgi.functional.OSGiResult;
 class Tracked<T, S> {
 
 	T service = null;
-	OSGiResult<S> program = null;
+	OSGiResult<? extends S> program = null;
 
 	Tuple<S> result = null;
 
