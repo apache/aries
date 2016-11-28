@@ -23,11 +23,16 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author Carlos Sierra Andrés
@@ -41,10 +46,11 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
-	public <S> OSGiImpl<S> flatMap(Function<T, OSGi<S>> fun) {
+	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
 		return new OSGiImpl<>(
 			((bundleContext) -> {
-				Map<Object, OSGiResult<S>> identities = new IdentityHashMap<>();
+				Map<Object, OSGiResult<? extends S>> identities =
+					new IdentityHashMap<>();
 
 				AtomicReference<Runnable> closeReference =
 					new AtomicReference<>(NOOP);
@@ -69,9 +75,9 @@ public class OSGiImpl<T> implements OSGi<T> {
 					closeReference.set(or1.close);
 
 					or1.added.map(t -> {
-						OSGi<S> program = fun.apply(t.t);
+						OSGi<? extends S> program = fun.apply(t.t);
 
-						OSGiResult<S> or2 = program.run(
+						OSGiResult<? extends S> or2 = program.run(
 							bundleContext,
 							s -> addedSource.accept(Tuple.create(s)));
 
@@ -82,8 +88,8 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 					or1.removed.map(t -> {
 						synchronized (identities) {
-							OSGiResult<S> osgiResult1 = identities.remove(
-								t.original);
+							OSGiResult<? extends S> osgiResult1 =
+								identities.remove(t.original);
 
 							if (osgiResult1 != null) {
 								osgiResult1.close();
@@ -102,12 +108,12 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
-	public <S> OSGi<Void> foreach(Function<T, OSGi<S>> fun) {
-		return this.flatMap(fun).map(x -> null);
+	public OSGi<Void> foreach(Consumer<? super T> consumer) {
+		return this.map(f ->  {consumer.accept(f); return null;});
 	}
 
 	@Override
-	public <S> OSGi<S> map(Function<T, S> function) {
+	public <S> OSGi<S> map(Function<? super T, ? extends S> function) {
 		return new OSGiImpl<>(((bundleContext) -> {
 			OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
 
@@ -190,6 +196,43 @@ public class OSGiImpl<T> implements OSGi<T> {
 		return stringBuilder.toString();
 	}
 
+	@Override
+	public OSGi<T> filter(Predicate<T> predicate) {
+		return flatMap(t -> {
+			if (predicate.test(t)) {
+				return OSGi.just(t);
+			}
+			else {
+				return OSGi.nothing();
+			}
+		});
+	}
+
+	@Override
+	public OSGi<Void> distribute(Function<T, OSGi<?>>... funs) {
+		return new OSGiImpl<>(bundleContext -> {
+			ArrayList<OSGiResult> results = new ArrayList<>();
+
+			Pipe<Tuple<Void>, Tuple<Void>> added = Pipe.create();
+
+			Consumer<Tuple<Void>> addedSource = added.getSource();
+
+			return new OSGiResultImpl<>(
+				added, Pipe.create(),
+				() -> {
+					List<OSGiResult> results2 = Arrays.stream(funs).
+						map(this::flatMap).
+						map(o -> o.run(bundleContext)).
+						collect(Collectors.toList());
+
+					results.addAll(results2);
+
+					addedSource.accept(Tuple.create(null));
+				},
+				() -> results.stream().forEach(OSGiResult::close)
+			);
+		});
+	}
 }
 
 

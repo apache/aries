@@ -19,17 +19,17 @@
 package org.apache.aries.osgi.functional;
 
 import org.apache.aries.osgi.functional.internal.BundleContextOSGiImpl;
-import org.apache.aries.osgi.functional.internal.BundleMOSGi;
+import org.apache.aries.osgi.functional.internal.BundleOSGi;
 import org.apache.aries.osgi.functional.internal.ChangeContextOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationsOSGiImpl;
 import org.apache.aries.osgi.functional.internal.JustOSGiImpl;
 import org.apache.aries.osgi.functional.internal.NothingOSGiImpl;
 import org.apache.aries.osgi.functional.internal.OnCloseOSGiImpl;
-import org.apache.aries.osgi.functional.internal.PrototypesMOSGi;
+import org.apache.aries.osgi.functional.internal.PrototypesOSGi;
 import org.apache.aries.osgi.functional.internal.ServiceReferenceOSGi;
 import org.apache.aries.osgi.functional.internal.ServiceRegistrationOSGiImpl;
-import org.apache.aries.osgi.functional.internal.ServicesMOSGi;
+import org.apache.aries.osgi.functional.internal.ServicesOSGi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceObjects;
@@ -38,7 +38,9 @@ import org.osgi.framework.ServiceRegistration;
 
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * @author Carlos Sierra Andrés
@@ -46,21 +48,21 @@ import java.util.function.Function;
 public interface OSGi<T> extends OSGiRunnable<T> {
 	Runnable NOOP = () -> {};
 
-	<S> OSGi<S> map(Function<T, S> function);
+	<S> OSGi<S> map(Function<? super T, ? extends S> function);
 
-	<S> OSGi<S> flatMap(Function<T, OSGi<S>> fun);
+	<S> OSGi<S> flatMap(Function<? super T, OSGi<? extends S>> fun);
 
 	<S> OSGi<S> then(OSGi<S> next);
 
-	<S> OSGi<Void> foreach(Function<T, OSGi<S>> fun);
+	OSGi<Void> foreach(Consumer<? super T> action);
 
 	static OSGi<BundleContext> bundleContext() {
 
 		return new BundleContextOSGiImpl();
 	}
 
-	static MOSGi<Bundle> bundles(int stateMask) {
-		return new BundleMOSGi(stateMask);
+	static OSGi<Bundle> bundles(int stateMask) {
+		return new BundleOSGi(stateMask);
 	}
 
 	static <T> OSGi<T> changeContext(
@@ -77,6 +79,10 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ConfigurationsOSGiImpl(factoryPid);
 	}
 
+	static <S> OSGi<S> just(S s) {
+		return new JustOSGiImpl<>(s);
+	}
+
 	static <S> OSGi<S> nothing() {
 		return new NothingOSGiImpl<>();
 	}
@@ -85,22 +91,18 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new OnCloseOSGiImpl(action);
 	}
 
-	static <S> OSGi<S> just(S s) {
-		return new JustOSGiImpl<>(s);
-	}
-
-	static MOSGi<ServiceObjects<Object>> prototypes(String filterString) {
+	static OSGi<ServiceObjects<Object>> prototypes(String filterString) {
 		return prototypes(null, filterString);
 	}
 
-	static <T> MOSGi<ServiceObjects<T>> prototypes(Class<T> clazz) {
+	static <T> OSGi<ServiceObjects<T>> prototypes(Class<T> clazz) {
 		return prototypes(clazz, null);
 	}
 
-	static <T> MOSGi<ServiceObjects<T>> prototypes(
+	static <T> OSGi<ServiceObjects<T>> prototypes(
 		Class<T> clazz, String filterString) {
 
-		return new PrototypesMOSGi<>(clazz, filterString);
+		return new PrototypesOSGi<>(clazz, filterString);
 	}
 
 	static <T, S extends T> OSGi<ServiceRegistration<T>> register(
@@ -110,16 +112,16 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 			clazz, service, properties);
 	}
 
-	static <T> MOSGi<T> services(Class<T> clazz) {
+	static <T> OSGi<T> services(Class<T> clazz) {
 		return services(clazz, null);
 	}
 
-	static <T> MOSGi<Object> services(String filterString) {
+	static <T> OSGi<Object> services(String filterString) {
 		return services(null, filterString);
 	}
 
-	static <T> MOSGi<T> services(Class<T> clazz, String filterString) {
-		return new ServicesMOSGi<>(clazz, filterString);
+	static <T> OSGi<T> services(Class<T> clazz, String filterString) {
+		return new ServicesOSGi<>(clazz, filterString);
 	}
 
 	static <T> OSGi<ServiceReference<T>> serviceReferences(
@@ -140,4 +142,7 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ServiceReferenceOSGi<>(filterString, clazz);
 	}
 
+	OSGi<T> filter(Predicate<T> predicate);
+
+	OSGi<Void> distribute(Function<T, OSGi<?>>... funs);
 }

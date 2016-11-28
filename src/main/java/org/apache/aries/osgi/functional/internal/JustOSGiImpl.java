@@ -19,24 +19,56 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
+import org.apache.aries.osgi.functional.OSGiResult;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
  */
-public class JustOSGiImpl<S> extends OSGiImpl<S> {
+public class JustOSGiImpl<T> extends OSGiImpl<T> {
 
-	public JustOSGiImpl(S s) {
+	private T _t;
+
+	public JustOSGiImpl(T t) {
 		super(((bundleContext) -> {
 
-			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+			Pipe<Tuple<T>, Tuple<T>> added = Pipe.create();
 
-			Consumer<Tuple<S>> source = added.getSource();
+			Consumer<Tuple<T>> source = added.getSource();
 
 			return new OSGiResultImpl<>(
 				added, Pipe.create(),
-				() -> source.accept(Tuple.create(s)), OSGi.NOOP);
+				() -> source.accept(Tuple.create(t)), OSGi.NOOP);
 		}));
+
+		_t = t;
+	}
+
+	@Override
+	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
+		return new OSGiImpl<>(bundleContext -> {
+			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+
+			Consumer<Tuple<S>> addedSource = added.getSource();
+
+			AtomicReference<OSGiResult<? extends S>> atomicReference =
+				new AtomicReference<>(null);
+
+			return new OSGiResultImpl<>(
+				added, Pipe.create(),
+				() -> {
+					OSGi<? extends S> next = fun.apply(_t);
+
+					atomicReference.set(
+						next.run(
+							bundleContext,
+							s -> addedSource.accept(Tuple.create(s))));
+
+				},
+				() -> atomicReference.get().close());
+		});
 	}
 }

@@ -29,11 +29,11 @@ import java.util.function.Function;
 /**
  * @author Carlos Sierra Andrés
  */
-public class BundleMOSGi extends MOSGiImpl<Bundle> {
+public class BundleOSGi extends OSGiImpl<Bundle> {
 
 	private final int _stateMask;
 
-	public BundleMOSGi(int stateMask) {
+	public BundleOSGi(int stateMask) {
 		super(bundleContext -> {
 			Pipe<Tuple<Bundle>, Tuple<Bundle>> added = Pipe.create();
 
@@ -85,7 +85,7 @@ public class BundleMOSGi extends MOSGiImpl<Bundle> {
 	}
 
 	@Override
-	public <S> OSGiImpl<S> flatMap(Function<Bundle, OSGi<S>> fun) {
+	public <S> OSGiImpl<S> flatMap(Function<? super Bundle, OSGi<? extends S>> fun) {
 		return new OSGiImpl<>(bundleContext -> {
 			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
 

@@ -39,7 +39,7 @@ class Pipe<I, O> {
 		return i -> pipe.apply(i);
 	}
 
-	<U> Pipe<I, U> map(Function<O, U> fun) {
+	<U> Pipe<I, U> map(Function<? super O, ? extends U> fun) {
 		this.pipe = (Function)this.pipe.andThen(fun);
 
 		return (Pipe<I, U>)this;

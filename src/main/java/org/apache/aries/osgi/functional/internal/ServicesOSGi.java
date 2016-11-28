@@ -30,13 +30,13 @@ import java.util.function.Function;
 /**
  * @author Carlos Sierra Andrés
  */
-public class ServicesMOSGi<T> extends MOSGiImpl<T> {
+public class ServicesOSGi<T> extends OSGiImpl<T> {
 
 	private final String _filterString;
 
 	private final Class<T> _clazz;
 
-	public ServicesMOSGi(Class<T> clazz, String filterString) {
+	public ServicesOSGi(Class<T> clazz, String filterString) {
 		super(bundleContext -> {
 			Pipe<Tuple<T>, Tuple<T>> added = Pipe.create();
 
@@ -102,7 +102,7 @@ public class ServicesMOSGi<T> extends MOSGiImpl<T> {
 	}
 
 	@Override
-	public <S> OSGiImpl<S> flatMap(Function<T, OSGi<S>> fun) {
+	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
 		return new OSGiImpl<>(bundleContext -> {
 			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
 
@@ -128,11 +128,11 @@ public class ServicesMOSGi<T> extends MOSGiImpl<T> {
 
 							T service = serviceObjects.getService();
 
-							OSGi<S> program = fun.apply(service);
+							OSGi<? extends S> program = fun.apply(service);
 
 							Tracked<T, S> tracked = new Tracked<>();
 
-							OSGiResult<S> result = program.run(
+							OSGiResult<? extends S> result = program.run(
 								bundleContext, s -> {
 									Tuple<S> tuple = Tuple.create(s);
 
