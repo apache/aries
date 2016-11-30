@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotate fields with this to inject configuration like:
- * @ConfigProperty("${mykey}")
+ * <code>@ConfigProperty("${mykey}")</code>
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
