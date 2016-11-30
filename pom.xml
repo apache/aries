@@ -43,9 +43,9 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-maven-plugin</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-maven-plugin</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-maven-plugin</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/plugin/blueprint-maven-plugin</url>
     </scm>
 
     <build>
@@ -80,7 +80,7 @@
         </plugins>
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build 
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
                     itself. -->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
