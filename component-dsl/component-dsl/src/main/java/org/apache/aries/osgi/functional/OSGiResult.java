@@ -20,6 +20,8 @@ package org.apache.aries.osgi.functional;
 /**
  * @author Carlos Sierra Andrés
  */
-public interface OSGiResult<T> {
+public interface OSGiResult<T> extends AutoCloseable {
+
+	@Override
 	public void close();
 }
