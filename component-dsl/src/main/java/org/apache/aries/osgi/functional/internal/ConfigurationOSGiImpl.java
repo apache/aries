@@ -68,14 +68,14 @@ public class ConfigurationOSGiImpl
 							Tuple<Dictionary<String, ?>> old =
 								tupleAtomicReference.get();
 
-							if (old != null) {
+							if (old.t != null) {
 								removedSource.accept(old);
 							}
 
 							Tuple<Dictionary<String, ?>> tuple =
 								Tuple.create(properties);
 
-							if (old != null) {
+							if (properties != null) {
 								addedSource.accept(tuple);
 							}
 
