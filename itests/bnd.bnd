@@ -1,0 +1,5 @@
+Bundle-Description: Integration Test bundle for component DSL
+
+Test-Cases: \
+    ${classes;CONCRETE;EXTENDS;junit.framework.TestCase},\
+    ${classes;CONCRETE;ANNOTATED;org.junit.Test}
