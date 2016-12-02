@@ -1,0 +1,30 @@
+-standalone:
+
+-plugin.integration.test = \
+  aQute.bnd.repository.maven.pom.provider.BndPomRepository; \
+    snapshotUrls=https://oss.sonatype.org/content/repositories/osgi/; \
+    releaseUrls=https://repo1.maven.org/maven2/; \
+    pom=${.}/pom.xml; \
+    name=integration.test; \
+    location=${.}/target/cached.xml
+
+-runrequires: \
+    osgi.identity;filter:='(osgi.identity=org.apache.aries.component-dsl.itests)'
+
+-runfw: org.eclipse.osgi;version='[3.10.100.v20150529-1857,3.10.100.v20150529-1857]'
+
+#-runtrace: true
+
+-runee: JavaSE-1.8
+-resolve.effective: resolve, active
+  
+-runsystempackages.eqnx: javax.script
+-runsystemcapabilities.dflt: ${native_capability}
+-runproperties:
+-runbundles: \
+  org.apache.aries.component-dsl.itests; version='[0.0.1,0.0.2)',\
+  org.apache.aries.component-dsl.component-dsl; version='[0.0.1,0.0.2)',\
+  org.apache.felix.configadmin; version='[1.8.8,1.8.9)',\
+  osgi.enroute.hamcrest.wrapper; version='[1.3.0,1.3.1)',\
+  osgi.enroute.junit.wrapper; version='[4.12.0,4.12.1)'
+#-runvm: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
