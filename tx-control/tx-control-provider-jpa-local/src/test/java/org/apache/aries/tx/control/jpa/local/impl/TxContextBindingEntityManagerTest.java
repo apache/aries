@@ -32,6 +32,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,6 +67,8 @@ public class TxContextBindingEntityManagerTest {
 	
 	UUID id = UUID.randomUUID();
 	
+	AbstractJPAEntityManagerProvider provider;
+	
 	TxContextBindingEntityManager em;
 	
 	@Before
@@ -79,7 +82,9 @@ public class TxContextBindingEntityManagerTest {
 		Mockito.when(context.getScopedValue(Mockito.any()))
 			.thenAnswer(i -> variables.get(i.getArguments()[0]));
 		
-		em = new TxContextBindingEntityManager(control, emf, id);
+		provider = new JPAEntityManagerProviderImpl(emf, null);
+		
+		em = new TxContextBindingEntityManager(control, provider, id);
 	}
 	
 	private void setupNoTransaction() {
@@ -164,6 +169,15 @@ public class TxContextBindingEntityManagerTest {
 		setupActiveTransaction();
 		
 		Mockito.when(context.supportsLocal()).thenReturn(false);
+		em.isOpen();
+	}
+
+	@Test(expected=TransactionException.class)
+	public void testClosedProvider() throws SQLException {
+		setupActiveTransaction();
+		
+		provider.close();
+		
 		em.isOpen();
 	}
 

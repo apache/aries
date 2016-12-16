@@ -18,8 +18,10 @@
  */
 package org.apache.aries.tx.control.resource.common.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import static java.util.Collections.newSetFromMap;
+
+import java.util.IdentityHashMap;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.osgi.framework.ServiceException;
@@ -30,7 +32,7 @@ public abstract class TrackingResourceProviderFactory<T extends AutoCloseable> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TrackingResourceProviderFactory.class);
 	
-	private final List<T> toClose = new ArrayList<>();
+	private final Set<T> toClose = newSetFromMap(new IdentityHashMap<>());
 	
 	private boolean closed;
 	
@@ -78,5 +80,20 @@ public abstract class TrackingResourceProviderFactory<T extends AutoCloseable> {
 		});
 		
 		toClose.clear();
+	}
+	
+	protected void release(T t) {
+		synchronized (toClose) {
+			if(closed) {
+				throw new IllegalStateException("This resource factory is closed");
+			}
+			
+			if (!toClose.remove(t)) {
+				throw new IllegalArgumentException("The resource " + t + " is not managed by this factory");
+			}
+		}
+		try {
+			t.close();
+		} catch (Exception e) {}
 	}
 }

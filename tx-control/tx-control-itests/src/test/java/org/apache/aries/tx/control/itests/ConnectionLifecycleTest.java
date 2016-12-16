@@ -234,6 +234,39 @@ public class ConnectionLifecycleTest extends AbstractTransactionTest {
 	}
 
 	@Test
+	public void testReleaseOfFactoryCreatedService() {
+		Assume.assumeFalse("Not a factory test", isConfigured());
+		
+		txControl.required(
+				() -> connection.createStatement().execute("Insert into TEST_TABLE values ( 'Hello World!' )"));
+		
+		assertEquals("Hello World!", txControl.notSupported(() -> {
+			ResultSet rs = connection.createStatement().executeQuery("Select * from TEST_TABLE");
+			rs.next();
+			return rs.getString(1);
+		}));
+		
+		JDBCConnectionProviderFactory factory = (JDBCConnectionProviderFactory) trackers.stream()
+				.filter(t -> t.getService() instanceof JDBCConnectionProviderFactory)
+				.findFirst()
+				.get().getService();
+
+		factory.releaseProvider(provider);
+		
+		try {
+			assertEquals("Hello World!", txControl.notSupported(() -> {
+				ResultSet rs = connection.createStatement().executeQuery("Select * from TEST_TABLE");
+				rs.next();
+				return rs.getString(1);
+			}));
+			fail("Should not be accessible");
+		} catch (ScopedWorkException swe) {
+			assertTrue(swe.getCause().toString(), swe.getCause() instanceof TransactionException);
+			assertEquals("There was a problem getting hold of a database connection", swe.getCause().getMessage());
+		}
+	}
+
+	@Test
 	public void testPoolLifecycle() throws Exception {
 		Set<String> allIds = new TreeSet<>();
 

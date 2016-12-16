@@ -41,6 +41,6 @@ public class JPAEntityManagerProviderImpl extends AbstractJPAEntityManagerProvid
 
 	@Override
 	public EntityManager getResource(TransactionControl txControl) throws TransactionException {
-		return new XATxContextBindingEntityManager(txControl, emf, uuid, tx);
+		return new XATxContextBindingEntityManager(txControl, this, uuid, tx);
 	}
 }

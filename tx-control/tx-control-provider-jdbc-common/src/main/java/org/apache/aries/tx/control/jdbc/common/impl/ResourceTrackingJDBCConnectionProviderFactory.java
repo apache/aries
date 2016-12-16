@@ -65,4 +65,14 @@ public class ResourceTrackingJDBCConnectionProviderFactory extends
 		return doGetResult(() -> factory.getProviderFor(ds, 
 				resourceProviderProperties));
 	}
+
+	@Override
+	public void releaseProvider(JDBCConnectionProvider provider) {
+		if(provider instanceof AbstractJDBCConnectionProvider) {
+			release((AbstractJDBCConnectionProvider)provider);
+		} else {
+			throw new IllegalArgumentException(
+					"The supplied JDBCConnectionProvider was not created by this JDBCConnectionProviderFactory");
+		}
+	}
 }

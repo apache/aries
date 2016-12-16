@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +63,8 @@ public class TxContextBindingConnectionTest {
 	UUID id = UUID.randomUUID();
 	
 	TxContextBindingConnection conn;
+
+	private AbstractJDBCConnectionProvider provider;
 	
 	@Before
 	public void setUp() throws SQLException {
@@ -72,7 +75,9 @@ public class TxContextBindingConnectionTest {
 		Mockito.when(context.getScopedValue(Mockito.any()))
 			.thenAnswer(i -> variables.get(i.getArguments()[0]));
 		
-		conn = new TxContextBindingConnection(control, dataSource, id);
+		provider = new JDBCConnectionProviderImpl(dataSource);
+		
+		conn = new TxContextBindingConnection(control, provider, id);
 	}
 	
 	private void setupNoTransaction() {
@@ -148,6 +153,14 @@ public class TxContextBindingConnectionTest {
 		setupActiveTransaction();
 		
 		Mockito.when(context.supportsLocal()).thenReturn(false);
+		conn.isValid(500);
+	}
+
+	@Test(expected=TransactionException.class)
+	public void testActiveTransactionClosedProvider() throws SQLException {
+		setupActiveTransaction();
+		
+		provider.close();
 		conn.isValid(500);
 	}
 

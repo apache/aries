@@ -22,6 +22,16 @@ import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_URL;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_LIFETIME;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_POOLING_ENABLED;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_TIMEOUT;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.IDLE_TIMEOUT;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.LOCAL_ENLISTMENT_ENABLED;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.MAX_CONNECTIONS;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.MIN_CONNECTIONS;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.OSGI_RECOVERY_IDENTIFIER;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.USE_DRIVER;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.XA_ENLISTMENT_ENABLED;
 
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -32,19 +42,19 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.apache.aries.tx.control.jdbc.common.impl.DriverDataSource;
 import org.apache.aries.tx.control.jdbc.common.impl.InternalJDBCConnectionProviderFactory;
 import org.apache.aries.tx.control.jdbc.xa.connection.impl.XADataSourceMapper;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProviderFactory, InternalJDBCConnectionProviderFactory {
+public class JDBCConnectionProviderFactoryImpl implements InternalJDBCConnectionProviderFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ManagedServiceFactoryImpl.class);
 	
@@ -91,7 +101,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProviderImpl getProviderFor(DataSource ds, Map<String, Object> resourceProviderProperties) {
+	public AbstractJDBCConnectionProvider getProviderFor(DataSource ds, Map<String, Object> resourceProviderProperties) {
 		boolean xaEnabled = toBoolean(resourceProviderProperties, XA_ENLISTMENT_ENABLED, true);
 		boolean localEnabled = toBoolean(resourceProviderProperties, LOCAL_ENLISTMENT_ENABLED, true);
 		
@@ -108,7 +118,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProviderImpl getProviderFor(Driver driver, Properties jdbcProperties, 
+	public AbstractJDBCConnectionProvider getProviderFor(Driver driver, Properties jdbcProperties, 
 			Map<String, Object> resourceProviderProperties) {
 		
 		boolean xaEnabled = toBoolean(resourceProviderProperties, XA_ENLISTMENT_ENABLED, false);
@@ -124,7 +134,7 @@ public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProvider
 	}
 
 	@Override
-	public JDBCConnectionProviderImpl getProviderFor(XADataSource ds, Map<String, Object> resourceProviderProperties) {
+	public AbstractJDBCConnectionProvider getProviderFor(XADataSource ds, Map<String, Object> resourceProviderProperties) {
 		
 		boolean xaEnabled = toBoolean(resourceProviderProperties, XA_ENLISTMENT_ENABLED, true);
 		boolean localEnabled = toBoolean(resourceProviderProperties, LOCAL_ENLISTMENT_ENABLED, true);

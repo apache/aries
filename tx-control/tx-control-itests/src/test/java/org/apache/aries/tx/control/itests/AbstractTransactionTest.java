@@ -76,6 +76,8 @@ public abstract class AbstractTransactionTest {
 	
 	protected TransactionControl txControl;
 
+	protected JDBCConnectionProvider provider;
+	
 	protected Connection connection;
 
 	private Server server;
@@ -165,8 +167,8 @@ public abstract class AbstractTransactionTest {
 		
 		DataSourceFactory dsf = getService(DataSourceFactory.class, 5000);
 		
-		return resourceProviderFactory.getProviderFor(dsf, jdbc, resourceProviderConfig())
-				.getResource(txControl);
+		provider = resourceProviderFactory.getProviderFor(dsf, jdbc, resourceProviderConfig());
+		return provider.getResource(txControl);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -189,7 +191,8 @@ public abstract class AbstractTransactionTest {
 				pid, "?");
 		config.update((Hashtable)jdbc);
 		
-		return getService(JDBCConnectionProvider.class, 5000).getResource(txControl);
+		provider = getService(JDBCConnectionProvider.class, 5000);
+		return provider.getResource(txControl);
 	}
 	
 	@After
