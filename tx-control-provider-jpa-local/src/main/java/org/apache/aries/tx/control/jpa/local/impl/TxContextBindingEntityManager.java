@@ -23,9 +23,9 @@ import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACT
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.apache.aries.tx.control.jpa.common.impl.EntityManagerWrapper;
 import org.apache.aries.tx.control.jpa.common.impl.ScopedEntityManagerWrapper;
 import org.apache.aries.tx.control.jpa.common.impl.TxEntityManagerWrapper;
@@ -36,14 +36,14 @@ import org.osgi.service.transaction.control.TransactionException;
 
 public class TxContextBindingEntityManager extends EntityManagerWrapper {
 
-	private final TransactionControl	txControl;
-	private final UUID					resourceId;
-	private final EntityManagerFactory	emf;
+	private final TransactionControl				txControl;
+	private final UUID								resourceId;
+	private final AbstractJPAEntityManagerProvider	provider;
 
 	public TxContextBindingEntityManager(TransactionControl txControl,
-			EntityManagerFactory emf, UUID resourceId) {
+			AbstractJPAEntityManagerProvider provider, UUID resourceId) {
 		this.txControl = txControl;
-		this.emf = emf;
+		this.provider = provider;
 		this.resourceId = resourceId;
 	}
 
@@ -53,7 +53,7 @@ public class TxContextBindingEntityManager extends EntityManagerWrapper {
 		TransactionContext txContext = txControl.getCurrentContext();
 
 		if (txContext == null) {
-			throw new TransactionException("The resource " + emf
+			throw new TransactionException("The resource " + provider
 					+ " cannot be accessed outside of an active Transaction Context");
 		}
 
@@ -68,10 +68,10 @@ public class TxContextBindingEntityManager extends EntityManagerWrapper {
 
 		try {
 			if (txContext.getTransactionStatus() == NO_TRANSACTION) {
-				toClose = emf.createEntityManager();
+				toClose = provider.createEntityManager();
 				toReturn = new ScopedEntityManagerWrapper(toClose);
 			} else if (txContext.supportsLocal()) {
-				toClose = emf.createEntityManager();
+				toClose = provider.createEntityManager();
 				toReturn = new TxEntityManagerWrapper(toClose);
 				txContext.registerLocalResource(getLocalResource(toClose));
 				toClose.getTransaction().begin();

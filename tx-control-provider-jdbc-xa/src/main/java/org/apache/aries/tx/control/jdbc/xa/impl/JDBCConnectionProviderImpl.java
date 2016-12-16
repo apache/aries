@@ -48,12 +48,7 @@ public class JDBCConnectionProviderImpl extends AbstractJDBCConnectionProvider {
 	@Override
 	public Connection getResource(TransactionControl txControl)
 			throws TransactionException {
-		return new XAEnabledTxContextBindingConnection(txControl, dataSource , uuid,
+		return new XAEnabledTxContextBindingConnection(txControl, this, uuid,
 				xaEnabled, localEnabled, recoveryIdentifier);
 	}
-
-	public DataSource getRawDataSource() {
-		return dataSource;
-	}
-
 }

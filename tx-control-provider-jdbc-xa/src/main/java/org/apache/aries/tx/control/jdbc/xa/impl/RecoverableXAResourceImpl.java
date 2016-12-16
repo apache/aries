@@ -21,7 +21,6 @@ package org.apache.aries.tx.control.jdbc.xa.impl;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -53,13 +52,11 @@ public class RecoverableXAResourceImpl implements RecoverableXAResource {
 
 	@Override
 	public XAResource getXAResource() throws Exception {
-		DataSource rawDataSource = providerImpl.getRawDataSource();
-
 		Connection recoveryConn;
 		if(recoveryUser != null) {
-			recoveryConn = rawDataSource.getConnection(recoveryUser, recoveryPw);
+			recoveryConn = providerImpl.getConnection(recoveryUser, recoveryPw);
 		} else {
-			recoveryConn = rawDataSource.getConnection();
+			recoveryConn = providerImpl.getConnection();
 		}
 		
 		return new CloseableXAResource(recoveryConn);

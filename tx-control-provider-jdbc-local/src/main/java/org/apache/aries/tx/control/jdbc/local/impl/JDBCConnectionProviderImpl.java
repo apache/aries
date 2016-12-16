@@ -38,6 +38,6 @@ public class JDBCConnectionProviderImpl extends AbstractJDBCConnectionProvider {
 	@Override
 	public Connection getResource(TransactionControl txControl)
 			throws TransactionException {
-		return new TxContextBindingConnection(txControl, dataSource , uuid);
+		return new TxContextBindingConnection(txControl, this , uuid);
 	}
 }

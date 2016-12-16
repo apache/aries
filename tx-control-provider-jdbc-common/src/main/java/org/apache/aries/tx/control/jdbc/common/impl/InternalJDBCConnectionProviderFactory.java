@@ -26,17 +26,14 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 import org.osgi.service.jdbc.DataSourceFactory;
-import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 
-public interface InternalJDBCConnectionProviderFactory extends JDBCConnectionProviderFactory {
+public interface InternalJDBCConnectionProviderFactory {
 
-	@Override
 	AbstractJDBCConnectionProvider getProviderFor(DataSourceFactory dsf, Properties jdbcProperties,
 			Map<String, Object> resourceProviderProperties);
 
 	AbstractJDBCConnectionProvider getProviderFor(DataSource ds, Map<String, Object> resourceProviderProperties);
 
-	@Override
 	AbstractJDBCConnectionProvider getProviderFor(Driver driver, Properties jdbcProperties,
 			Map<String, Object> resourceProviderProperties);
 

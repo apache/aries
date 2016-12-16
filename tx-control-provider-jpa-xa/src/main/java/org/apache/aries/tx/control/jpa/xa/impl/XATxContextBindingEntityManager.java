@@ -23,9 +23,9 @@ import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACT
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.apache.aries.tx.control.jpa.common.impl.EntityManagerWrapper;
 import org.apache.aries.tx.control.jpa.common.impl.ScopedEntityManagerWrapper;
 import org.apache.aries.tx.control.jpa.common.impl.TxEntityManagerWrapper;
@@ -35,16 +35,17 @@ import org.osgi.service.transaction.control.TransactionException;
 
 public class XATxContextBindingEntityManager extends EntityManagerWrapper {
 
-	private final TransactionControl	txControl;
-	private final UUID					resourceId;
-	private final EntityManagerFactory	emf;
-	private final ThreadLocal<TransactionControl> commonTxStore;
+	private final TransactionControl				txControl;
+	private final UUID								resourceId;
+	private final AbstractJPAEntityManagerProvider	provider;
+	private final ThreadLocal<TransactionControl>	commonTxStore;
 	
 
 	public XATxContextBindingEntityManager(TransactionControl txControl,
-			EntityManagerFactory emf, UUID resourceId, ThreadLocal<TransactionControl> commonTxStore) {
+			AbstractJPAEntityManagerProvider provider, UUID resourceId, 
+			ThreadLocal<TransactionControl> commonTxStore) {
 		this.txControl = txControl;
-		this.emf = emf;
+		this.provider = provider;
 		this.resourceId = resourceId;
 		this.commonTxStore = commonTxStore;
 	}
@@ -55,7 +56,7 @@ public class XATxContextBindingEntityManager extends EntityManagerWrapper {
 		TransactionContext txContext = txControl.getCurrentContext();
 
 		if (txContext == null) {
-			throw new TransactionException("The resource " + emf
+			throw new TransactionException("The resource " + provider
 					+ " cannot be accessed outside of an active Transaction Context");
 		}
 
@@ -73,10 +74,10 @@ public class XATxContextBindingEntityManager extends EntityManagerWrapper {
 
 		try {
 			if (txContext.getTransactionStatus() == NO_TRANSACTION) {
-				toClose = emf.createEntityManager();
+				toClose = provider.createEntityManager();
 				toReturn = new ScopedEntityManagerWrapper(toClose);
 			} else if (txContext.supportsXA()) {
-				toClose = emf.createEntityManager();
+				toClose = provider.createEntityManager();
 				toReturn = new TxEntityManagerWrapper(toClose);
 				toClose.joinTransaction();
 			} else {

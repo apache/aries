@@ -19,6 +19,8 @@
 package org.apache.aries.tx.control.jdbc.common.impl;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sql.DataSource;
 
@@ -32,7 +34,9 @@ public abstract class AbstractJDBCConnectionProvider implements JDBCConnectionPr
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractJDBCConnectionProvider.class);
 	
-	protected final DataSource dataSource;
+	private final DataSource dataSource;
+	
+	private final AtomicBoolean closed = new AtomicBoolean(false);
 	
 	public AbstractJDBCConnectionProvider(DataSource dataSource) {
 		this.dataSource = dataSource;
@@ -43,7 +47,18 @@ public abstract class AbstractJDBCConnectionProvider implements JDBCConnectionPr
 			throws TransactionException;
 
 	
+	public Connection getConnection() throws SQLException {
+		if(closed.get()) throw new IllegalStateException("This resource provider is no longer in use");
+		return dataSource.getConnection();
+	}
+	
+	public Connection getConnection(String recoveryUser, String recoveryPw) throws SQLException {
+		if(closed.get()) throw new IllegalStateException("This resource provider is no longer in use");
+		return dataSource.getConnection(recoveryUser, recoveryPw);
+	}
+
 	public void close() {
+		closed.set(true);
 		if(dataSource instanceof AutoCloseable) {
 			try {
 				((AutoCloseable) dataSource).close();

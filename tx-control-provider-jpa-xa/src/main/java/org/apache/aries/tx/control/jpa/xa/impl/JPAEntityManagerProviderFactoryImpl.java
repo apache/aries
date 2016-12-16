@@ -21,6 +21,9 @@ package org.apache.aries.tx.control.jpa.xa.impl;
 import static java.util.Optional.ofNullable;
 import static javax.persistence.spi.PersistenceUnitTransactionType.JTA;
 import static org.osgi.service.transaction.control.TransactionStatus.NO_TRANSACTION;
+import static org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory.LOCAL_ENLISTMENT_ENABLED;
+import static org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory.PRE_ENLISTED_DB_CONNECTION;
+import static org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory.XA_ENLISTMENT_ENABLED;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

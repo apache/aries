@@ -33,6 +33,7 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
 
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.apache.aries.tx.control.jdbc.xa.connection.impl.XADataSourceMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +75,9 @@ public class XAEnabledTxContextBindingConnectionTest {
 	
 	UUID id = UUID.randomUUID();
 	
+	
+	AbstractJDBCConnectionProvider localProvider;
+	AbstractJDBCConnectionProvider xaProvider;
 	XAEnabledTxContextBindingConnection localConn;
 	XAEnabledTxContextBindingConnection xaConn;
 	
@@ -90,8 +94,13 @@ public class XAEnabledTxContextBindingConnectionTest {
 		Mockito.when(xaMock.getConnection()).thenReturn(rawConnection);
 		Mockito.when(xaMock.getXAResource()).thenReturn(xaResource);
 		
-		localConn = new XAEnabledTxContextBindingConnection(control, dataSource, id, false, true, null);
-		xaConn = new XAEnabledTxContextBindingConnection(control, new XADataSourceMapper(xaDataSource), 
+		localProvider = new JDBCConnectionProviderImpl(dataSource, false, true, null);
+		xaProvider = new JDBCConnectionProviderImpl(new XADataSourceMapper(xaDataSource), 
+				true, false, null);
+		
+		localConn = new XAEnabledTxContextBindingConnection(control, localProvider, 
+				id, false, true, null);
+		xaConn = new XAEnabledTxContextBindingConnection(control, xaProvider, 
 				id, true, false, null);
 	}
 	
@@ -194,6 +203,14 @@ public class XAEnabledTxContextBindingConnectionTest {
 		Mockito.when(context.supportsLocal()).thenReturn(false);
 		localConn.isValid(500);
 	}
+
+	@Test(expected=TransactionException.class)
+	public void testLocalResourceProviderClosed() throws SQLException {
+		setupLocalTransaction();
+		
+		localProvider.close();
+		localConn.isValid(500);
+	}
 	
 	@Test(expected=TransactionException.class)
 	public void testLocalConnWithXATransaction() throws SQLException {
@@ -236,6 +253,15 @@ public class XAEnabledTxContextBindingConnectionTest {
 	@Test(expected=TransactionException.class)
 	public void testXAConnTransactionWithLocal() throws SQLException {
 		setupLocalTransaction();
+		
+		xaConn.isValid(500);
+	}
+
+	@Test(expected=TransactionException.class)
+	public void testRemoteResourceProviderClosed() throws SQLException {
+		setupXATransaction();
+		
+		xaProvider.close();
 		
 		xaConn.isValid(500);
 	}

@@ -49,4 +49,14 @@ public class ResourceTrackingJPAEntityManagerProviderFactory extends
 		return doGetResult(() -> factory.getProviderFor(emf, 
 				resourceProviderProperties));
 	}
+
+	@Override
+	public void releaseProvider(JPAEntityManagerProvider provider) {
+		if(provider instanceof AbstractJPAEntityManagerProvider) {
+			release((AbstractJPAEntityManagerProvider)provider);
+		} else {
+			throw new IllegalArgumentException(
+					"The supplied JPAEntityManagerProvider was not created by this JPAEntityManagerProviderFactory");
+		}
+	}
 }

@@ -34,4 +34,34 @@ public class TrackingResourceProviderFactoryTest {
 		
 		Mockito.verify(result).close();
 	}
+
+	@Test
+	public void testReleaseResource() throws Exception {
+		TrackingResourceProviderFactory<AutoCloseable> trpf = new TrackingResourceProviderFactory<AutoCloseable>(){};
+		
+		AutoCloseable result = trpf.doGetResult(() -> Mockito.mock(AutoCloseable.class));
+		
+		trpf.release(result);
+		
+		Mockito.verify(result).close();
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testReleaseResourceNotFromThisFactory() throws Exception {
+		TrackingResourceProviderFactory<AutoCloseable> trpf = new TrackingResourceProviderFactory<AutoCloseable>(){};
+		
+		AutoCloseable result = Mockito.mock(AutoCloseable.class);
+		
+		trpf.release(result);
+	}
+
+	@Test(expected=IllegalStateException.class)
+	public void testReleaseAfterFactoryClosed() throws Exception {
+		TrackingResourceProviderFactory<AutoCloseable> trpf = new TrackingResourceProviderFactory<AutoCloseable>(){};
+		trpf.closeAll();
+		
+		AutoCloseable result = Mockito.mock(AutoCloseable.class);
+		
+		trpf.release(result);
+	}
 }
