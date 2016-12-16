@@ -18,6 +18,8 @@
  */
 package org.apache.aries.tx.control.jpa.common.impl;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -31,9 +33,11 @@ public abstract class AbstractJPAEntityManagerProvider implements JPAEntityManag
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractJPAEntityManagerProvider.class);
 	
-	protected final EntityManagerFactory emf;
+	private final EntityManagerFactory emf;
 
 	private final Runnable onClose;
+	
+	private final AtomicBoolean closed = new AtomicBoolean(false);
 	
 	public AbstractJPAEntityManagerProvider(EntityManagerFactory emf, Runnable onClose) {
 		this.emf = emf;
@@ -45,7 +49,13 @@ public abstract class AbstractJPAEntityManagerProvider implements JPAEntityManag
 			throws TransactionException;
 
 	
+	public EntityManager createEntityManager() {
+		if(closed.get()) throw new IllegalStateException("This resource provider is no longer in use");
+		return emf.createEntityManager();
+	}
+
 	public void close() {
+		closed.set(true);
 		if(onClose != null) {
 			try {
 				onClose.run();

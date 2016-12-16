@@ -22,6 +22,15 @@ import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_URL;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_LIFETIME;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_POOLING_ENABLED;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_TIMEOUT;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.IDLE_TIMEOUT;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.LOCAL_ENLISTMENT_ENABLED;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.MAX_CONNECTIONS;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.MIN_CONNECTIONS;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.USE_DRIVER;
+import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.XA_ENLISTMENT_ENABLED;
 
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -37,12 +46,11 @@ import org.apache.aries.tx.control.jdbc.common.impl.DriverDataSource;
 import org.apache.aries.tx.control.jdbc.common.impl.InternalJDBCConnectionProviderFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.transaction.control.TransactionException;
-import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class JDBCConnectionProviderFactoryImpl implements JDBCConnectionProviderFactory, InternalJDBCConnectionProviderFactory {
+public class JDBCConnectionProviderFactoryImpl implements InternalJDBCConnectionProviderFactory {
 
 	@Override
 	public AbstractJDBCConnectionProvider getProviderFor(DataSourceFactory dsf, Properties jdbcProperties,

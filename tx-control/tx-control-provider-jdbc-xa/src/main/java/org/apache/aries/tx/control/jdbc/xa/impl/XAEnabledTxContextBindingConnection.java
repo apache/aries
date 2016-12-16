@@ -24,9 +24,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import javax.sql.DataSource;
 import javax.transaction.xa.XAResource;
 
+import org.apache.aries.tx.control.jdbc.common.impl.AbstractJDBCConnectionProvider;
 import org.apache.aries.tx.control.jdbc.common.impl.ConnectionWrapper;
 import org.apache.aries.tx.control.jdbc.common.impl.ScopedConnectionWrapper;
 import org.apache.aries.tx.control.jdbc.common.impl.TxConnectionWrapper;
@@ -38,18 +38,18 @@ import org.osgi.service.transaction.control.TransactionException;
 
 public class XAEnabledTxContextBindingConnection extends ConnectionWrapper {
 
-	private final TransactionControl	txControl;
-	private final UUID					resourceId;
-	private final DataSource			dataSource;
-	private final boolean				xaEnabled;
-	private final boolean				localEnabled;
-	private final String				recoveryIdentifier;
+	private final TransactionControl				txControl;
+	private final UUID								resourceId;
+	private final AbstractJDBCConnectionProvider	provider;
+	private final boolean							xaEnabled;
+	private final boolean							localEnabled;
+	private final String							recoveryIdentifier;
 
 	public XAEnabledTxContextBindingConnection(TransactionControl txControl,
-			DataSource dataSource, UUID resourceId, boolean xaEnabled, boolean localEnabled,
+			AbstractJDBCConnectionProvider provider, UUID resourceId, boolean xaEnabled, boolean localEnabled,
 			String recoveryIdentifier) {
 		this.txControl = txControl;
-		this.dataSource = dataSource;
+		this.provider = provider;
 		this.resourceId = resourceId;
 		this.xaEnabled = xaEnabled;
 		this.localEnabled = localEnabled;
@@ -62,7 +62,7 @@ public class XAEnabledTxContextBindingConnection extends ConnectionWrapper {
 		TransactionContext txContext = txControl.getCurrentContext();
 
 		if (txContext == null) {
-			throw new TransactionException("The resource " + dataSource
+			throw new TransactionException("The resource " + provider
 					+ " cannot be accessed outside of an active Transaction Context");
 		}
 
@@ -77,14 +77,14 @@ public class XAEnabledTxContextBindingConnection extends ConnectionWrapper {
 
 		try {
 			if (txContext.getTransactionStatus() == NO_TRANSACTION) {
-				toClose = dataSource.getConnection();
+				toClose = provider.getConnection();
 				toReturn = new ScopedConnectionWrapper(toClose);
 			} else if (txContext.supportsXA() && xaEnabled) {
-				toClose = dataSource.getConnection();
+				toClose = provider.getConnection();
 				toReturn = new TxConnectionWrapper(toClose);
 				txContext.registerXAResource(getXAResource(toClose), recoveryIdentifier);
 			} else if (txContext.supportsLocal() && localEnabled) {
-				toClose = dataSource.getConnection();
+				toClose = provider.getConnection();
 				toReturn = new TxConnectionWrapper(toClose);
 				txContext.registerLocalResource(getLocalResource(toClose));
 			} else {

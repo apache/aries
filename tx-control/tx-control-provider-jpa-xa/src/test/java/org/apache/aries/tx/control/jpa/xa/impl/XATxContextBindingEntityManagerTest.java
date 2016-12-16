@@ -38,6 +38,7 @@ import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
 
 import org.apache.aries.tx.control.jdbc.xa.connection.impl.XAConnectionWrapper;
+import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +77,8 @@ public class XATxContextBindingEntityManagerTest {
 	
 	ThreadLocal<TransactionControl> commonTxControl = new ThreadLocal<>();
 	
+	AbstractJPAEntityManagerProvider provider;
+	
 	@Before
 	public void setUp() throws SQLException {
 		Mockito.when(emf.createEntityManager()).thenReturn(rawEm).thenReturn(null);
@@ -85,7 +88,9 @@ public class XATxContextBindingEntityManagerTest {
 		Mockito.when(context.getScopedValue(Mockito.any()))
 			.thenAnswer(i -> variables.get(i.getArguments()[0]));
 		
-		em = new XATxContextBindingEntityManager(control, emf, id, commonTxControl);
+		provider = new JPAEntityManagerProviderImpl(emf, commonTxControl, null);
+		
+		em = new XATxContextBindingEntityManager(control, provider, id, commonTxControl);
 	}
 	
 	private void setupNoTransaction() {
@@ -222,6 +227,14 @@ public class XATxContextBindingEntityManagerTest {
 		setupActiveTransaction();
 		
 		Mockito.when(context.supportsXA()).thenReturn(false);
+		em.isOpen();
+	}
+
+	@Test(expected=TransactionException.class)
+	public void testResourceProviderClosed() throws SQLException {
+		setupActiveTransaction();
+		
+		provider.close();
 		em.isOpen();
 	}
 

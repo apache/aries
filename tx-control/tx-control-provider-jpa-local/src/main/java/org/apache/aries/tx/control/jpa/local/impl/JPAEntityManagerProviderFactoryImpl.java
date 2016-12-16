@@ -20,6 +20,8 @@ package org.apache.aries.tx.control.jpa.local.impl;
 
 import static java.util.Optional.ofNullable;
 import static javax.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCAL;
+import static org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory.LOCAL_ENLISTMENT_ENABLED;
+import static org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory.XA_ENLISTMENT_ENABLED;
 
 import java.util.Map;
 
