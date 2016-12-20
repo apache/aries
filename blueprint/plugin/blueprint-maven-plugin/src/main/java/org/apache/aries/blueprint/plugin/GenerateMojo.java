@@ -131,7 +131,7 @@ public class GenerateMojo extends AbstractMojo {
         File dir = new File(generatedBaseDir, generatedDir);
         File file = new File(dir, generatedFileName);
         file.getParentFile().mkdirs();
-        System.out.println("Generating blueprint to " + file);
+        getLog().info("Generating blueprint to " + file);
 
         OutputStream fos = buildContext.newFileOutputStream(file);
         new Generator(context, fos, blueprintConfiguration).generate();
