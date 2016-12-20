@@ -191,6 +191,18 @@ public class GeneratorTest {
     }
 
     @Test
+    public void testGenerateServiceWithRanking() throws Exception {
+        Node serviceWithRanking = getServiceByRef("serviceWithRanking");
+
+        assertXpathDoesNotExist(serviceWithRanking, "@interface");
+        assertXpathEquals(serviceWithRanking, "@auto-export", "interfaces");
+        assertXpathDoesNotExist(serviceWithRanking, "interfaces");
+        assertXpathEquals(serviceWithRanking, "@ranking", "100");
+        assertXpathEquals(serviceWithRanking, "count(service-properties/entry)", "0");
+        assertXpathDoesNotExist(serviceWithRanking, "service-properties/entry[@key='service.ranking']");
+    }
+
+    @Test
     public void testGenerateBeanWithConstructorInjection() throws Exception {
         // Bean with constructor injection
         Node myBean5 = getBeanById("myBean5");
@@ -289,9 +301,11 @@ public class GeneratorTest {
         assertXpathEquals(service, "@auto-export", "interfaces");
         assertXpathDoesNotExist(service, "@interface");
         assertXpathDoesNotExist(service, "interfaces");
+        assertXpathEquals(service, "@ranking", "100");
         assertXpathEquals(service, "count(service-properties/entry)", "2");
         assertXpathEquals(service, "service-properties/entry[@key='n1']/@value", "v1");
         assertXpathEquals(service, "service-properties/entry[@key='n2']/@value", "v2");
+        assertXpathDoesNotExist(service, "service-properties/entry[@key='service.ranking']");
     }
 
     @Test

@@ -54,7 +54,8 @@ public class MyFactoryBeanAsService {
     @OsgiServiceProvider
     @Properties({
         @Property(name = "n1", value = "v1"),
-        @Property(name = "n2", value = "v2")
+        @Property(name = "n2", value = "v2"),
+        @Property(name = "service.ranking", value = "100")
     })
     public MyProduced createBeanWithServiceExpose4() {
         return new MyProduced("My message");
