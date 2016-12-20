@@ -31,11 +31,15 @@ import org.ops4j.pax.cdi.api.Property;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiServiceProvider> {
+
+    private static final List<String> SPECIAL_PROPERTIES = Collections.singletonList("service.ranking");
+
     @Override
     public Class<OsgiServiceProvider> getAnnotation() {
         return OsgiServiceProvider.class;
@@ -83,6 +87,7 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
         }
 
         if (!propertiesAsMap.isEmpty()) {
+            writeRanking(writer, propertiesAsMap);
             writeProperties(writer, propertiesAsMap);
         }
 
@@ -126,16 +131,29 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
         writer.writeCharacters("\n");
     }
 
+    private void writeRanking(XMLStreamWriter writer, Map<String, String> propertiesAsMap) throws XMLStreamException {
+        if (propertiesAsMap.containsKey("service.ranking")) {
+            try {
+                Integer ranking = Integer.parseInt(propertiesAsMap.get("service.ranking"));
+                writer.writeAttribute("ranking", ranking.toString());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("service.ranking property must be an integer!");
+            }
+        }
+    }
+
     private void writeProperties(XMLStreamWriter writer, Map<String, String> properties) throws XMLStreamException {
         writer.writeCharacters("    ");
         writer.writeStartElement("service-properties");
         writer.writeCharacters("\n");
         for (Map.Entry<String, String> property : properties.entrySet()) {
-            writer.writeCharacters("        ");
-            writer.writeEmptyElement("entry");
-            writer.writeAttribute("key", property.getKey());
-            writer.writeAttribute("value", property.getValue());
-            writer.writeCharacters("\n");
+            if (!SPECIAL_PROPERTIES.contains(property.getKey())) {
+                writer.writeCharacters("        ");
+                writer.writeEmptyElement("entry");
+                writer.writeAttribute("key", property.getKey());
+                writer.writeAttribute("value", property.getValue());
+                writer.writeCharacters("\n");
+            }
         }
         writer.writeCharacters("    ");
         writer.writeEndElement();
