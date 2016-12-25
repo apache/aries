@@ -56,6 +56,12 @@
             <artifactId>org.apache.aries.blueprint</artifactId>
             <scope>test</scope>
         </dependency>
+        
+	<dependency>
+            <groupId>biz.aQute</groupId>
+            <artifactId>bndlib</artifactId>
+            <version>0.0.357</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
