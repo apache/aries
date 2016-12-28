@@ -41,6 +41,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,14 +49,14 @@ import java.util.Set;
 /**
  * Generates blueprint from CDI annotations
  */
-@Mojo(name="blueprint-generate", requiresDependencyResolution=ResolutionScope.COMPILE,
-    defaultPhase=LifecyclePhase.PROCESS_CLASSES, inheritByDefault=false)
+@Mojo(name = "blueprint-generate", requiresDependencyResolution = ResolutionScope.COMPILE,
+    defaultPhase = LifecyclePhase.PROCESS_CLASSES, inheritByDefault = false)
 public class GenerateMojo extends AbstractMojo {
 
-    @Parameter(defaultValue="${project}", required=true)
+    @Parameter(defaultValue = "${project}", required = true)
     protected MavenProject project;
 
-    @Parameter(required=true)
+    @Parameter
     protected List<String> scanPaths;
 
     /**
@@ -70,14 +71,14 @@ public class GenerateMojo extends AbstractMojo {
     /**
      * Name of file to generate
      */
-    @Parameter(defaultValue="autowire.xml")
+    @Parameter(defaultValue = "autowire.xml")
     protected String generatedFileName;
 
     /**
      * Base directory to generate into
      * (relative to ${project.build.directory}/generated-sources/blueprint).
      */
-    @Parameter(defaultValue="OSGI-INF/blueprint/")
+    @Parameter(defaultValue = "OSGI-INF/blueprint/")
     private String generatedDir;
 
     /**
@@ -97,8 +98,19 @@ public class GenerateMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
-            throw new MojoExecutionException("Configuration scanPaths must be set");
+        List<String> toScan = scanPaths;
+        if (scanPaths == null || scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
+            getLog().info("Scan paths not specified - searching for packages");
+            Set<String> packages = PackageFinder.findPackagesInSources(project.getCompileSourceRoots());
+            if (packages.contains(null)) {
+                throw new MojoExecutionException("Found file without package");
+            }
+            toScan = new ArrayList<>(packages);
+            Collections.sort(toScan);
+
+        }
+        for (String aPackage : toScan) {
+            getLog().info("Package " + aPackage + " will be scan");
         }
         if (!buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()))) {
             return;
@@ -107,7 +119,7 @@ public class GenerateMojo extends AbstractMojo {
         try {
             ClassFinder finder = createProjectScopeFinder();
 
-            Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, scanPaths);
+            Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, toScan);
 
             BlueprintConfiguration blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters);
 
