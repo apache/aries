@@ -34,6 +34,13 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>jpa-repository</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
+        
+        <dependency>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
             <version>3.10.100.v20150529-1857</version>
@@ -60,6 +67,7 @@
             <version>1.8.4</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
@@ -96,38 +104,6 @@
             <scope>test</scope>
         </dependency>
         
-        <!-- Dependencies to aries jpa modules -->
-        <dependency>
-            <artifactId>org.apache.aries.jpa.api</artifactId>
-            <groupId>org.apache.aries.jpa</groupId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.container</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.support</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.blueprint</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jpa</groupId>
-            <artifactId>org.apache.aries.jpa.eclipselink.adapter</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Openjpa  -->
         <!-- Aries jndi is only needed for openjpa -->
         <dependency>
@@ -313,19 +289,9 @@
 
         <!--  JTA 1.2 -->
         <dependency>
-            <groupId>javax.interceptor</groupId>
-            <artifactId>javax.interceptor-api</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
             <version>1_2</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
@@ -364,10 +330,6 @@
             <artifactId>derby</artifactId>
             <version>10.10.2.0</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.service.jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.jdbc</groupId>
