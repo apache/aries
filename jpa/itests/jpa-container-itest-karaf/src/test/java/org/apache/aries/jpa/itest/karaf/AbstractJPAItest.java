@@ -17,22 +17,21 @@ package org.apache.aries.jpa.itest.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.when;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureSecurity;
+import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.features;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.keepRuntimeFolder;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.logLevel;
+import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.replaceConfigurationFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
@@ -49,30 +48,16 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.tracker.ServiceTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractJPAItest {
-    private static Logger LOG = LoggerFactory.getLogger(AbstractJPAItest.class);
+    private static final String DS_CONFIG = "etc/org.ops4j.datasource-tasklist.cfg";
 
-    /*
-     *  The @Inject annotations below currently do not work as the transaction-api/1.2 feature installs an atinject bundle that 
-     *  confuses pax exam. As a workaround the services are set below in the @Before method
-     */
-    
     @Inject
-    BundleContext bundleContext;
-    
-    @Inject
-    ConfigurationAdmin configAdmin;
-    
-    private static Configuration config;
+    private BundleContext bundleContext;
     
     /**
      * Helps to diagnose bundles that are not resolved as it will throw a detailed exception
@@ -137,7 +122,7 @@ public abstract class AbstractJPAItest {
         if (localRepo == null) {
             localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
         }
-        MavenArtifactUrlReference karafUrl = maven().groupId("org.apache.karaf").artifactId("apache-karaf").version("4.0.1").type("tar.gz");
+        MavenArtifactUrlReference karafUrl = maven().groupId("org.apache.karaf").artifactId("apache-karaf").version("4.0.8").type("tar.gz");
         UrlReference enterpriseFeatureUrl = maven().groupId("org.apache.karaf.features").artifactId("enterprise").versionAsInProject().type("xml").classifier("features");
         UrlReference jpaFeatureUrl = maven().groupId("org.apache.aries.jpa").artifactId("jpa-features").versionAsInProject().type("xml").classifier("features");
         UrlReference paxJdbcFeatureUrl = maven().groupId("org.ops4j.pax.jdbc").artifactId("pax-jdbc-features").version("0.7.0").type("xml").classifier("features");
@@ -145,50 +130,20 @@ public abstract class AbstractJPAItest {
             //KarafDistributionOption.debugConfiguration("8000", true),
             karafDistributionConfiguration().frameworkUrl(karafUrl).name("Apache Karaf").unpackDirectory(new File("target/exam")).useDeployFolder(false),
             configureSecurity().disableKarafMBeanServerBuilder(),
+            systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
             keepRuntimeFolder(),
             logLevel(LogLevel.INFO),
             when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
             features(paxJdbcFeatureUrl, "pax-jdbc-config", "pax-jdbc-h2", "pax-jdbc-pool-dbcp2"),
             features(enterpriseFeatureUrl, "transaction", "http-whiteboard", "hibernate/4.3.6.Final", "scr"),
             features(jpaFeatureUrl, "jpa"),
-            mavenBundle("org.apache.aries.jpa.example", "org.apache.aries.jpa.example.tasklist.model").versionAsInProject()
+            mavenBundle("org.apache.aries.jpa.example", "org.apache.aries.jpa.example.tasklist.model").versionAsInProject(),
+            editConfigurationFilePut(DS_CONFIG, DataSourceFactory.OSGI_JDBC_DRIVER_NAME, "H2-pool-xa"),
+            editConfigurationFilePut(DS_CONFIG, DataSourceFactory.JDBC_DATABASE_NAME, "tasklist;create=true"),
+            editConfigurationFilePut(DS_CONFIG, DataSourceFactory.JDBC_DATASOURCE_NAME, "tasklist"),
+            replaceConfigurationFile("etc/org.ops4j.pax.logging.cfg", new File("src/test/resources/org.ops4j.pax.logging.cfg"))
 //            replaceConfigurationFile("etc/org.ops4j.pax.logging.cfg", getConfigFile("/etc/org.ops4j.pax.logging.cfg")),
         );
-
-    }
-
-    @Before
-    public void createConfigs() throws Exception {
-        if (config == null) {
-            bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-            configAdmin = getService(ConfigurationAdmin.class, null);
-            createConfigForLogging();
-            createConfigForDS();
-
-        }
-    }
-
-    private void createConfigForDS() throws IOException {
-        config = configAdmin.createFactoryConfiguration("org.ops4j.datasource", null);
-        Dictionary<String, String> props = new Hashtable<String, String>();
-        props.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, "H2-pool-xa");
-        props.put(DataSourceFactory.JDBC_DATABASE_NAME, "tasklist;create=true");
-        props.put(DataSourceFactory.JDBC_DATASOURCE_NAME, "tasklist");
-        config.update(props);
-        LOG.info("Created DataSource config tasklist");
-    }
-    
-    private void createConfigForLogging() throws IOException {
-        Configuration logConfig = configAdmin.getConfiguration("org.ops4j.pax.logging", null);
-        Dictionary<String, String> props = new Hashtable<String, String>();
-        props.put("log4j.rootLogger", "INFO, stdout");
-        props.put("log4j.logger.org.apache.aries.transaction", "DEBUG");
-        props.put("log4j.logger.org.apache.aries.transaction.parsing", "DEBUG");
-        props.put("log4j.logger.org.apache.aries.jpa.blueprint.impl", "DEBUG");
-        props.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-        props.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-        props.put("log4j.appender.stdout.layout.ConversionPattern", "%d{ISO8601} | %-5.5p | %-16.16t | %c | %m%n");
-        logConfig.update(props);
     }
 
 }
