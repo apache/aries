@@ -101,7 +101,7 @@ public enum TransactionAttribute {
         if (tranToken.isCompletionAllowed()) {
           if (man.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
             man.rollback();
-          } else {
+          } else if (man.getStatus() != Status.STATUS_NO_TRANSACTION) {
             man.commit();
           }
         }
@@ -144,7 +144,7 @@ public enum TransactionAttribute {
         if (tranToken.isCompletionAllowed()) {
           if (man.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
             man.rollback();
-          } else {
+          } else if (man.getStatus() != Status.STATUS_NO_TRANSACTION) {
             man.commit();
           }
         }
