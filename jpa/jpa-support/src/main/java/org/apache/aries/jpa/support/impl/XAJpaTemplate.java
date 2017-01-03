@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.support.impl;
 
 import javax.persistence.EntityManager;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -61,6 +62,9 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
             R result = (R)code.apply(em);
             safeFinish(tranToken, ta, coord);
             return result;
+        } catch (RollbackException ex) {
+            safeRollback(tranToken, ta, coord, ex);
+            throw wrapThrowable(ex, "RollbackException is propagating");  
         } catch (Exception ex) {
             safeRollback(tranToken, ta, coord, ex);
             throw wrapThrowable(ex, "Exception occured in transactional code");
@@ -76,9 +80,12 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
         }
     }
 
-    private void safeFinish(TransactionToken tranToken, TransactionAttribute ta, Coordination coord) {
+    private void safeFinish(TransactionToken tranToken, TransactionAttribute ta, Coordination coord) throws RollbackException {
         try {
             ta.finish(tm, tranToken);
+        } catch (RollbackException e) {
+            // just rethrow these as they indicate a very special case
+            throw e;
         } catch (Exception e) {
             // We are throwing an exception, so we don't error it out
             LOGGER.debug("Exception during finish of transaction", e);
@@ -88,9 +95,11 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
     }
 
     private void safeRollback(TransactionToken token, TransactionAttribute ta, Coordination coord, Throwable ex) {
+        LOGGER.warn("Beginning rollback logic due to exception", ex);
         try {
             Transaction tran = token.getActiveTransaction();
             if (tran != null && shouldRollback(ex)) {
+                LOGGER.info("Rolling back TX due to exception", ex);
                 tran.setRollbackOnly();
             }
         } catch (Exception e) {
@@ -98,7 +107,12 @@ public class XAJpaTemplate extends AbstractJpaTemplate {
             // need to log it
             LOGGER.warn("Exception during transaction rollback", e);
         }
-        safeFinish(token, ta, coord);
+        
+        try {
+            safeFinish(token, ta, coord);
+        } catch (RollbackException e) {
+            LOGGER.warn("RollbackException during safeFinish attempt for already running safeRollback", e);
+        }
     }
 
     private static boolean shouldRollback(Throwable ex) {
