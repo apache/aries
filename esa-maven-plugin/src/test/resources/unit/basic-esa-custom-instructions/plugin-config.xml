@@ -33,6 +33,7 @@ under the License.
           </instructions>
           <addMavenDescriptor>false</addMavenDescriptor>
           <includeEmptyDirs>true</includeEmptyDirs>
+          <includeNonBundleJars>true</includeNonBundleJars>
           <workDirectory>${basedir}/target/unit/basic-esa-custom-instructions/target/esa-test-custom-instructions</workDirectory>
           <sharedResources>${basedir}/target/unit/basic-esa-custom-instructions/target/maven-shared-archive-resources</sharedResources>
           <outputDirectory>${basedir}/target/unit/basic-esa-custom-instructions/target</outputDirectory>

@@ -31,6 +31,7 @@ under the License.
           </instructions>
           <addMavenDescriptor>true</addMavenDescriptor>
           <includeEmptyDirs>true</includeEmptyDirs>
+		  <includeNonBundleJars>true</includeNonBundleJars>
 		  <workDirectory>${basedir}/target/unit/basic-esa-without-manifest/target/esa-test-without-manifest</workDirectory>
           <sharedResources>${basedir}/target/unit/basic-esa-without-manifest/target/maven-shared-archive-resources</sharedResources>
 		  <outputDirectory>${basedir}/target/unit/basic-esa-without-manifest/target</outputDirectory>

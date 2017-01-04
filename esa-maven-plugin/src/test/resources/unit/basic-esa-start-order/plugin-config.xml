@@ -29,6 +29,7 @@ under the License.
           <instructions>
           </instructions>
           <includeEmptyDirs>true</includeEmptyDirs>
+		  <includeNonBundleJars>true</includeNonBundleJars>
 		  <workDirectory>${basedir}/target/unit/basic-esa-start-order/target/esa-test-start-order</workDirectory>
           <sharedResources>${basedir}/target/unit/basic-esa-start-order/target/maven-shared-archive-resources</sharedResources>
 		  <outputDirectory>${basedir}/target/unit/basic-esa-start-order/target</outputDirectory>

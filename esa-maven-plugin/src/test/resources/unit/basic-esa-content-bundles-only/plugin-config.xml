@@ -22,6 +22,7 @@
 					</instructions>
 					<addMavenDescriptor>true</addMavenDescriptor>
 					<includeEmptyDirs>true</includeEmptyDirs>
+					<includeNonBundleJars>true</includeNonBundleJars>
 					<workDirectory>${basedir}/target/unit/basic-esa-content-bundles-only/target/esa-test-content-bundles-only
 					</workDirectory>
 					<sharedResources>${basedir}/target/unit/basic-esa-content-bundles-only/target/maven-shared-archive-resources
