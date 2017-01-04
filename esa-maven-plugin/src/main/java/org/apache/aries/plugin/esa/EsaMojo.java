@@ -558,6 +558,8 @@ public class EsaMojo
         for (Artifact artifact : artifacts) {
             if (isNonJarOrOSGiBundle(artifact)) {
                 selected.add(artifact);
+            } else {
+                getLog().warn("Found dependency on non-bundle JAR! groupId: " + artifact.getGroupId() + " artifactId:" + artifact.getArtifactId());
             }
         }
         return selected;
