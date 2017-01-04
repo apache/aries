@@ -419,13 +419,15 @@ public class EsaMojo
             }
 
             // Write the SUBSYSTEM-CONTENT
-            // TODO: check that the dependencies are bundles (currently, the converter
-            // will throw an exception)
             Set<Artifact> artifacts = null;
             // only include the direct dependencies in the content
             artifacts = project.getDependencyArtifacts();                   
 
             artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
+            if(!includeNonBundleJars){
+                artifacts = selectNonJarArtifactsAndBundles(artifacts);
+            }
+
             Iterator<Artifact> iter = artifacts.iterator();
 
             FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_CONTENT + ": ");
