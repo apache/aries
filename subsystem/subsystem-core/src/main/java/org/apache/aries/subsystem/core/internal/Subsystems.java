@@ -27,12 +27,14 @@ import java.util.Set;
 
 import org.apache.aries.subsystem.core.archive.DeploymentManifest;
 import org.apache.aries.subsystem.core.internal.BundleResourceInstaller.BundleConstituent;
+import org.apache.aries.util.io.IOUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.subsystem.Subsystem;
+import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class Subsystems {
@@ -143,8 +145,13 @@ public class Subsystems {
 				try {
 					for (File f : fileList) {
 						BasicSubsystem s = new BasicSubsystem(f);
-						subsystems.add(s);
-						addSubsystem(s);
+						if (State.UNINSTALLED.equals(s.getState())) {
+							// left over cache, delete this
+							IOUtils.deleteRecursive(f);
+						} else {
+							subsystems.add(s);
+							addSubsystem(s);
+						}
 					}
 					root = getSubsystemById(0);
 					SubsystemIdentifier.setLastId(
