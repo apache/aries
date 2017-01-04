@@ -32,3 +32,5 @@ Private-Package: org.apache.aries.tx.control.service.common.*,\
 
 Import-Package: org.osgi.service.transaction.control, \
                 *
+                
+Provide-Capability: osgi.service;objectClass="org.osgi.service.transaction.control.TransactionControl";osgi.local.enabled="true";uses:="org.osgi.service.transaction.control"
