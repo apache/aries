@@ -113,6 +113,7 @@
                     <instructions>
                         <Bundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</Bundle-Activator>
                         <Import-Package>
+                            org.objectweb.asm*;version="[5,7)",
                             *
                         </Import-Package>
                         <Export-Package>
