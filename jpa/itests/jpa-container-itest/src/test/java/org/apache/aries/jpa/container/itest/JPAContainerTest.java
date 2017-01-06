@@ -201,7 +201,7 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
         DataSourceFactory dsf = getService(DataSourceFactory.class, 
                         "(" + OSGI_JDBC_DRIVER_CLASS + "=org.apache.derby.jdbc.EmbeddedDriver)");
         Properties jdbcProps = new Properties();
-        jdbcProps.setProperty("url", "jdbc:derby:memory:TEST1;create=true");
+        jdbcProps.setProperty("url", "jdbc:derby:memory:TESTNOJTA;create=true");
         props.put("javax.persistence.dataSource", dsf.createDataSource(jdbcProps));
 
         
