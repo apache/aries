@@ -189,4 +189,24 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
     	EntityManagerFactory emf = emfBuilder.createEntityManagerFactory(props);
     	carLifecycleXA(ut, emf.createEntityManager());
     }
+    
+    @Test
+    public void testCarEMFBuilderNoNonJTADataSource() throws Exception {
+        EntityManagerFactoryBuilder emfBuilder = getService(EntityManagerFactoryBuilder.class,
+                        "(osgi.unit.name=" + EXTERNAL_TEST_UNIT + ")");
+        
+        
+        Map<String, Object> props = new HashMap<String, Object>();
+        //EclipseLink also needs a non-jta-datasource
+        DataSourceFactory dsf = getService(DataSourceFactory.class, 
+                        "(" + OSGI_JDBC_DRIVER_CLASS + "=org.apache.derby.jdbc.EmbeddedDriver)");
+        Properties jdbcProps = new Properties();
+        jdbcProps.setProperty("url", "jdbc:derby:memory:TEST1;create=true");
+        props.put("javax.persistence.dataSource", dsf.createDataSource(jdbcProps));
+
+        
+        EntityManagerFactory emf = emfBuilder.createEntityManagerFactory(props);
+        carLifecycleRL(emf.createEntityManager());
+    }
+
 }
