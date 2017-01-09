@@ -29,40 +29,19 @@
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
-    <artifactId>blueprint</artifactId>
-    <name>Apache Aries Blueprint</name>
+    <artifactId>blueprint-examples</artifactId>
+    <name>Apache Aries Blueprint Examples</name>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
     <description>
-        Implementation of the Blueprint Container Specification
+        Examples for blueprint
     </description>
 
     <modules>
-        <module>blueprint-api</module>
-        <module>blueprint-parser</module>
-        <module>blueprint-core</module>
-        <module>blueprint-cm</module>
-        <module>blueprint-bundle</module>
-        <module>blueprint-compatibility</module>
-        <module>blueprint-core-compatibility</module>
-        <module>blueprint-noosgi</module>
-        <module>blueprint-web</module>
-        <module>blueprint-web-osgi</module>
-        <module>blueprint-jexl-evaluator</module>
-        <module>blueprint-repository</module>
-        <module>blueprint-annotation-api</module>
-        <module>blueprint-annotation-impl</module>
-        <module>blueprint-authz</module>
-        <module>blueprint-spring</module>
-        <module>blueprint-spring-extender</module>
-        <module>plugin</module>
-        <module>examples</module>
-        <module>blueprint-testbundlea</module>
-        <module>blueprint-testbundleb</module>
-        <module>blueprint-testbundlee</module>
-        <module>blueprint-testbundles</module>
-        <module>blueprint-testquiescebundle</module>
-        <module>blueprint-itests</module>
+        <module>blueprint-sample</module>
+        <module>blueprint-sample-annotation</module>
+        <module>blueprint-sample-fragment</module>
+        <module>blueprint-sample-war</module>
     </modules>
 
 </project>
