@@ -23,6 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,6 +35,7 @@ import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClas
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.junit.Test;
+import org.osgi.framework.wiring.BundleWiring;
 
 public abstract class AbstractProxyTest {
 
@@ -374,5 +377,11 @@ public abstract class AbstractProxyTest {
     
     Method m = ptca.getClass().getDeclaredMethod("getMessage");
     assertEquals("Working", m.invoke(ptca));
+  }
+  
+  public static BundleWiring getWiring(ClassLoader loader) throws Exception {
+      BundleWiring wiring = mock(BundleWiring.class);
+      when(wiring.getClassLoader()).thenReturn(loader);
+      return wiring;
   }
 }

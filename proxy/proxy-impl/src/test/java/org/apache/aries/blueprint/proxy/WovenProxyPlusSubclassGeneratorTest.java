@@ -21,6 +21,8 @@ package org.apache.aries.blueprint.proxy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -36,11 +38,8 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
-import org.apache.aries.proxy.impl.interfaces.ClassLoaderProxy;
 import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -57,17 +56,13 @@ public class WovenProxyPlusSubclassGeneratorTest extends WovenProxyGeneratorTest
   private Callable<Object> testCallable = null;
   
   private static Bundle testBundle;
-  private static BundleWiring testBundleWiring;
 
   @BeforeClass
-  public static void createTestBundle() {
-	  testBundle = (Bundle) Skeleton.newMock(new Class<?>[] {Bundle.class, ClassLoaderProxy.class});
-	  testBundleWiring = (BundleWiring) Skeleton.newMock(BundleWiring.class);
-
-	    Skeleton.getSkeleton(testBundle).setReturnValue(new MethodCall(
-	        ClassLoaderProxy.class, "getClassLoader"), weavingLoader);
-	    Skeleton.getSkeleton(testBundle).setReturnValue(new MethodCall(
-	        ClassLoaderProxy.class, "adapt", BundleWiring.class), testBundleWiring);
+  public static void createTestBundle() throws Exception {
+    testBundle = mock(Bundle.class);
+    BundleWiring wiring = AbstractProxyTest.getWiring(weavingLoader);
+    when(testBundle.adapt(BundleWiring.class))
+        .thenReturn(wiring);
   }
 
   //Avoid running four weaving tests that don't apply to us
