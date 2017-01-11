@@ -50,19 +50,11 @@
         <aries.osgi.activator>
             org.apache.aries.proxy.impl.ProxyManagerActivator
         </aries.osgi.activator>
-        <!-- 
-          We override the import versions for org.osgi.framework because we can operate on
-          a 4.2 framework (we only need 4.3 for weaving which is optional). 
-        -->
         <aries.osgi.import.pkg>
             org.apache.aries.proxy.weavinghook;resolution:=optional;provide:=true,
             org.apache.aries.proxy*;provide:=true,
             org.objectweb.asm*;resolution:=optional;version="[5,7)",
             sun.reflect*;resolution:=optional,
-            org.osgi.framework;version="[1.5,2)",
-            org.osgi.framework.hooks.weaving;resolution:=optional,
-            org.osgi.framework.wiring;resolution:=optional,
-            org.slf4j;version="[1.6,2)";resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
