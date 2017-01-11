@@ -29,7 +29,7 @@
     </parent>
 
     <groupId>org.apache.aries.proxy</groupId>
-    <artifactId>org.apache.aries.proxy.impl</artifactId>
+    <artifactId>org.apache.aries.proxy</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Proxy Service</name>
     <version>1.0.7-SNAPSHOT</version>
@@ -45,7 +45,9 @@
 
     <properties>
         <aries.osgi.export.pkg>
-            org.apache.aries.proxy.weaving;
+            org.apache.aries.proxy;,
+            org.apache.aries.proxy.weaving;,
+            org.apache.aries.proxy.weavinghook;
         </aries.osgi.export.pkg>
         <aries.osgi.activator>
             org.apache.aries.proxy.impl.ProxyManagerActivator
@@ -63,7 +65,7 @@
         <aries.osgi.export.service>
             org.apache.aries.proxy.ProxyManager
         </aries.osgi.export.service>
-        <lastReleaseVersion>1.0.2</lastReleaseVersion>
+        <lastReleaseVersion>1.0.1</lastReleaseVersion>
     </properties>
 
     <dependencies>

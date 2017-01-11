@@ -28,10 +28,20 @@ import java.util.concurrent.Callable;
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.junit.Test;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 
-public abstract class AbstractBasicProxyTest extends AbstractProxyTest
+public class BasicProxyTest extends AbstractProxyTest
 {
+  @Configuration
+  public Option[] configuration() {
+    return new Option[] //
+    {
+     proxyOptions()
+    };
+  }
+    
   /**
    * This test does two things. First of all it checks that we throw a FinalModifierException if we
    * try to proxy a final class. It also validates that the message and toString in the exception
