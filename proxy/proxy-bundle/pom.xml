@@ -56,15 +56,10 @@
         <aries.osgi.import.pkg>
             org.objectweb.asm*;resolution:=optional,
             sun.reflect*;resolution:=optional,
-            org.osgi.framework;version="[1.5,2)",
-            org.osgi.framework.hooks.weaving;resolution:=optional,
-            org.osgi.framework.wiring;resolution:=optional,
-            org.slf4j;version="[1.6,2)";resolution:=optional,
             *
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg>
             org.apache.aries.proxy.impl*,
-            org.apache.aries.proxy.nls
         </aries.osgi.private.pkg>
         <lastReleaseVersion>1.0.1</lastReleaseVersion>
     </properties>
