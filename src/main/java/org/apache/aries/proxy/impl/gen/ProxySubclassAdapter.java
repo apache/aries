@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Modifier;
 
-import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.ProxyUtils;
 import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.objectweb.asm.AnnotationVisitor;

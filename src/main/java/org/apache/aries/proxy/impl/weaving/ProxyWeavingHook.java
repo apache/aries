@@ -18,6 +18,8 @@
  */
 package org.apache.aries.proxy.impl.weaving;
 
+import static java.lang.String.format;
+
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -25,7 +27,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.aries.proxy.UnableToProxyException;
-import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.apache.aries.proxy.weavinghook.ProxyWeavingController;
 import org.apache.aries.proxy.weavinghook.WeavingHelper;
@@ -60,9 +61,13 @@ public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
 
   private final List<Pattern> enabled;
   private final List<Pattern> disabled;
+  @SuppressWarnings("rawtypes")
   private final ServiceTracker controllers;
 
-  public ProxyWeavingHook(BundleContext context) {
+  @SuppressWarnings({
+ "unchecked", "rawtypes"
+})
+public ProxyWeavingHook(BundleContext context) {
     String enabledProp = context != null ? context.getProperty(WEAVING_ENABLED_CLASSES) : null;
     enabled = parseMatchers(enabledProp, WEAVING_ENABLED_CLASSES_DEFAULT);
     disabled = parseMatchers(context != null ? context.getProperty(WEAVING_DISABLED_CLASSES) : null, WEAVING_DISABLED_CLASSES_DEFAULT);
@@ -109,12 +114,10 @@ public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
             e.getCause() instanceof UnableToProxyException){
           //This is a weaving failure that should be logged, but the class
           //can still be loaded
-          LOGGER.trace(NLS.MESSAGES.getMessage("cannot.weave", wovenClass.getClassName()), e);
+          LOGGER.trace(String.format("The class %s cannot be woven, it may not be possible for the runtime to proxy this class.",
+                                     wovenClass.getClassName()), e);
         } else {
-          String failureMessage = NLS.MESSAGES.getMessage("fatal.weaving.failure", wovenClass.getClassName());
-          //This is a failure that should stop the class loading!
-          LOGGER.error(failureMessage, e);
-          throw new WeavingException(failureMessage, e);
+          throw weavingException(wovenClass, e);
         }
       }
       
@@ -126,6 +129,7 @@ public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
       }
     }
   }
+
 
     private List<Pattern> parseMatchers(String matchers, String def) {
         String[] strings = (matchers != null ? matchers : def).split(",");
@@ -172,10 +176,7 @@ public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
                   wovenClass.getBundleWiring().getClassLoader());
           return WovenProxy.class.isAssignableFrom(superClass);
       } catch (ClassNotFoundException e) {
-          String failureMessage = NLS.MESSAGES.getMessage("fatal.weaving.failure", wovenClass.getClassName());
-          //This is a failure that should stop the class loading!
-          LOGGER.error(failureMessage, e);
-          throw new WeavingException(failureMessage, e);
+          throw weavingException(wovenClass, e);
       }
     }
     
@@ -201,4 +202,11 @@ public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
     return result;
   }
 
+  private WeavingException weavingException(WovenClass wovenClass, Exception e) {
+    String msg = format("There was a serious error trying to weave the class %s. See the associated exception for more information.",
+                            wovenClass.getClassName());
+    // This is a failure that should stop the class loading!
+    LOGGER.error(msg, e);
+    return new WeavingException(msg, e);
+  }
 }

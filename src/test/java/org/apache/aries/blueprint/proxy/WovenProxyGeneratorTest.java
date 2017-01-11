@@ -48,17 +48,18 @@ import org.apache.aries.proxy.impl.AsmProxyManager;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
+import org.apache.aries.proxy.impl.interfaces.ClassLoaderProxy;
 import org.apache.aries.proxy.impl.weaving.WovenProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
-import org.apache.aries.util.ClassLoaderProxy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
 
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class WovenProxyGeneratorTest extends AbstractProxyTest
 {
   private static final String hexPattern = "[0-9_a-f]";
@@ -140,7 +141,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @BeforeClass
   public static void setUp() throws Exception
   {
-    List<Class<?>> classes = new ArrayList(CLASSES.size() + OTHER_CLASSES.size());
+    List<Class<?>> classes = new ArrayList<Class<?>>(CLASSES.size() + OTHER_CLASSES.size());
     
     classes.addAll(CLASSES);
     classes.addAll(OTHER_CLASSES);

@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.proxy;
 
+@SuppressWarnings("serial")
 public class ProxyTestClassSerializableChild extends ProxyTestClassSerializable {
 
 }

@@ -18,6 +18,7 @@
  */
 package org.apache.aries.util;
 
+import org.apache.aries.proxy.impl.interfaces.ClassLoaderProxy;
 import org.osgi.framework.Bundle;
 
 /**
