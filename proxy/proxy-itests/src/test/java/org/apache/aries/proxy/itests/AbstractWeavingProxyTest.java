@@ -89,7 +89,7 @@ public abstract class AbstractWeavingProxyTest extends AbstractProxyTest
   public void checkProxyController() throws Exception
   {
 
-    context().registerService(ProxyWeavingController.class.getName(), new ProxyWeavingController() {
+    bundleContext.registerService(ProxyWeavingController.class.getName(), new ProxyWeavingController() {
 
       public boolean shouldWeave(WovenClass arg0, WeavingHelper arg1)
       {

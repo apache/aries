@@ -24,13 +24,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -39,13 +36,11 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
-import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
+import org.apache.aries.proxy.impl.interfaces.ClassLoaderProxy;
 import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
-import org.apache.aries.util.ClassLoaderProxy;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -54,14 +49,11 @@ import org.osgi.framework.wiring.BundleWiring;
 /**
  * This class uses the {@link ProxySubclassGenerator} to test
  */
+@SuppressWarnings("unchecked")
 public class WovenProxyPlusSubclassGeneratorTest extends WovenProxyGeneratorTest
 {
   private static final Class<?> FINAL_METHOD_CLASS = ProxyTestClassFinalMethod.class;
   private static final Class<?> FINAL_CLASS = ProxyTestClassFinal.class;
-  private static final Class<?> GENERIC_CLASS = ProxyTestClassGeneric.class;
-  private static final Class<?> COVARIANT_CLASS = ProxyTestClassCovariantOverride.class;
-  private static ProxySubclassMethodHashSet<String> expectedMethods = new ProxySubclassMethodHashSet<String>(
-      12);
   private Callable<Object> testCallable = null;
   
   private static Bundle testBundle;
@@ -203,7 +195,7 @@ public class WovenProxyPlusSubclassGeneratorTest extends WovenProxyGeneratorTest
   {
     try {
       InterfaceProxyGenerator.getProxyInstance(null, FINAL_CLASS, Collections.EMPTY_SET, 
-          new Callable() {
+          new Callable<Object>() {
         public Object call() throws Exception {
           return null;
         }} , null).getClass();

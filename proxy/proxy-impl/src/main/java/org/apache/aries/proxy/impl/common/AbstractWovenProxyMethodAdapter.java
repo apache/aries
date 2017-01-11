@@ -18,6 +18,7 @@
  */
 package org.apache.aries.proxy.impl.common;
 
+import static java.lang.String.format;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_FIELD;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.DISPATCHER_TYPE;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.LISTENER_FIELD;
@@ -34,13 +35,13 @@ import static org.objectweb.asm.Opcodes.ASM5;
 import java.util.Arrays;
 
 import org.apache.aries.proxy.InvocationListener;
-import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
+
 /**
  * This class weaves dispatch and listener code into a method, there are two known
  * subclasses {@link WovenProxyConcreteMethodAdapter} is used for weaving instance methods
@@ -477,7 +478,8 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
       ilMethod = clazz.getMethod(name, argTypes);
     } catch (Exception e) {
       //Should be impossible!
-      throw new RuntimeException(NLS.MESSAGES.getMessage("error.finding.invocation.listener.method", name, Arrays.toString(argTypes)), e);
+      throw new RuntimeException(format("Error finding InvocationListener method %s with argument types %s.", 
+                                        name, Arrays.toString(argTypes)), e);
     }
     //get the ASM method
     return new Method(name, Type.getReturnType(ilMethod), Type.getArgumentTypes(ilMethod));

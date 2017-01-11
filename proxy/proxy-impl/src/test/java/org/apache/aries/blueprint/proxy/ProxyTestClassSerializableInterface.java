@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 
+@SuppressWarnings("serial")
 public class ProxyTestClassSerializableInterface implements
     ProxyTestSerializableInterface {
 

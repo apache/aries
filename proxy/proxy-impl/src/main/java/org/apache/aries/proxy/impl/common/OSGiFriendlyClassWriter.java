@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.aries.proxy.UnableToProxyException;
-import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 /**
@@ -115,10 +114,11 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
         }
       }
 
+      String msg = String.format("The class %s and %s do not have a common super class.", arg0, arg1);
       if (unable == null) {
-          throw new RuntimeException(NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1));
+          throw new RuntimeException(msg);
       } else {
-          throw new RuntimeException(new UnableToProxyException(unable, NLS.MESSAGES.getMessage("no.common.superclass", arg0, arg1)));
+          throw new RuntimeException(new UnableToProxyException(unable, msg));
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
