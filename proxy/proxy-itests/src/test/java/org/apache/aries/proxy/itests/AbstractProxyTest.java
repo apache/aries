@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
@@ -289,7 +288,7 @@ public abstract class AbstractProxyTest {
     assertEquals(ex, listener.postInvokeExceptionalReturn);
   }
   
-  protected Option generalOptions() {
+  protected Option proxyOptions() {
 	  String localRepo = System.getProperty("maven.repo.local");
       if (localRepo == null) {
           localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
@@ -300,26 +299,11 @@ public abstract class AbstractProxyTest {
               when(localRepo != null).useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
               mavenBundle("org.ow2.asm", "asm-debug-all").versionAsInProject(),
               mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
-              mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+              mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
+              mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()
               /* vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
               waitForFrameworkStartup(),*/
      );
   }
-
-  protected Option[] proxyBundles()
-  {
-    return options(
-      generalOptions(),
-      mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
-      mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl").versionAsInProject()
-    );
-  }
-
-    protected Option[] proxyUberBundle() {
-      return options(
-        generalOptions(),
-        mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()
-      );
-    }
 
 }

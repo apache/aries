@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.proxy</groupId>
     <artifactId>proxy</artifactId>
-    <name>Apache Aries Class Proxy</name>
+    <name>Apache Aries Proxy Parent</name>
     <packaging>pom</packaging>
     <version>1.0.1-SNAPSHOT</version>
     <description>
@@ -40,7 +40,6 @@
     <modules>
         <module>proxy-api</module>
         <module>proxy-impl</module>
-        <module>proxy-bundle</module>
         <module>proxy-itests</module>
     </modules>
 
