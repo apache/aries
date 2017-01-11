@@ -48,7 +48,8 @@ public class ProxyTestClassSuper
     return null;
   }
   
-  private void doTarget() {
+  @SuppressWarnings("unused")
+private void doTarget() {
     Object o = getTargetObject();
     if(this != o)
       ((ProxyTestClassSuper)o).doTarget();

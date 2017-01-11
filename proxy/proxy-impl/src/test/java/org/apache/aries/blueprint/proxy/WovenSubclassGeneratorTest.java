@@ -42,12 +42,12 @@ import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
 import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
  * This class uses the {@link ProxySubclassGenerator} to test
  */
+@SuppressWarnings("unchecked")
 public class WovenSubclassGeneratorTest extends AbstractProxyTest
 {
   private static final Class<?> FINAL_METHOD_CLASS = ProxyTestClassFinalMethod.class;

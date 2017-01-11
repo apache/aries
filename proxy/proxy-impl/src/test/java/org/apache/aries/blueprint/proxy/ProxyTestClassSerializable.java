@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class ProxyTestClassSerializable implements Serializable {
   
   public int value = 0;

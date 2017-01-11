@@ -37,8 +37,8 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.weaving.WovenProxy;
-import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleWiring;
 
 /** An implementation of ClassLoader that will be used to define our proxy class */
 final class ProxyClassLoader extends ClassLoader {
@@ -63,7 +63,15 @@ final class ProxyClassLoader extends ClassLoader {
   private final ReadWriteLock ifacesLock = new ReentrantReadWriteLock();
   
   public ProxyClassLoader(Bundle bundle) {
-    super(AriesFrameworkUtil.getClassLoader(bundle));
+//    super(AriesFrameworkUtil.getClassLoader(bundle));
+    super(getClassloader(bundle));
+  }
+
+  private static ClassLoader getClassloader(Bundle bundle) {
+    if (bundle == null) return ProxyClassLoader.class.getClassLoader();
+    if (bundle instanceof ClassLoaderProxy) return ((ClassLoaderProxy) bundle).getClassLoader();
+    BundleWiring wiring = bundle != null ? bundle.adapt(BundleWiring.class) : null;
+    return wiring != null ? wiring.getClassLoader() : null;
   }
 
   @Override

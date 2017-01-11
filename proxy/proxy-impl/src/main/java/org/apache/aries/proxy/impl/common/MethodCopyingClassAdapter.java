@@ -18,12 +18,13 @@
  */
 package org.apache.aries.proxy.impl.common;
 
+import static java.lang.String.format;
+
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.UnableToProxyException;
-import org.apache.aries.proxy.impl.NLS;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -115,9 +116,9 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
       // We can't call up to a default access method if we aren't in the same
       // package
       if((access & (ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE)) == 0) {
-        if(!!!samePackage)
-          throw new RuntimeException(NLS.MESSAGES.getMessage("method.from.superclass.is.hidden", name, superToCopy.getName(), overridingClassType.getClassName()),
-                                     new UnableToProxyException(superToCopy));
+        if(!!!samePackage) {
+            methodHiddenException(name);
+        }
       }
       //Safe to copy a call to this method!
       Type superType = Type.getType(superToCopy);
@@ -140,9 +141,9 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
         //odd, but if class Super has a protected method foo(), then class Sub, that extends Super, cannot
         //call ((Super)o).foo() in code (it can call super.foo()). If we are in the same package then this
     	//gets around the problem, but if not the class will fail verification.
-        if(!samePackage && (access & ACC_PROTECTED) != 0)
-          throw new RuntimeException(NLS.MESSAGES.getMessage("method.from.superclass.is.hidden", name, superToCopy.getName(), overridingClassType.getClassName()),
-                new UnableToProxyException(superToCopy));
+        if(!samePackage && (access & ACC_PROTECTED) != 0) {
+            methodHiddenException(name);
+        }
         mv = new CopyingMethodAdapter((GeneratorAdapter) weaver, superType, currentTransformMethod);
       }
       else {
@@ -154,6 +155,13 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
     
     return mv;
   }
+
+private void methodHiddenException(String name) {
+    String msg = format("The method %s in class %s cannot be called by %s because it is in a different package.",
+                        name, superToCopy.getName(), overridingClassType.getClassName());
+    throw new RuntimeException(msg,
+                                 new UnableToProxyException(superToCopy));
+}
   
   /**
    * This class is used to prevent any method body being copied, instead replacing

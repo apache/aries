@@ -27,7 +27,6 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,18 +39,18 @@ import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.proxy.AbstractProxyTest.TestListener;
 import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.proxy.impl.interfaces.ClassLoaderProxy;
 import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
-import org.apache.aries.util.ClassLoaderProxy;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 
 
+@SuppressWarnings("unchecked")
 public class InterfaceProxyingTest {
 
   public final static class TestCallable implements Callable<Object> {
@@ -116,8 +115,7 @@ public class InterfaceProxyingTest {
   @Test
   public void testGetProxyInstance2() throws Exception{
     
-    Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class,
-        Iterable.class, Map.class));
+    Collection<Class<? extends Object>> classes = Arrays.asList(Closeable.class, Iterable.class, Map.class);
     
     Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
     
@@ -137,7 +135,7 @@ public class InterfaceProxyingTest {
     TestListener tl = new TestListener();
     TestCallable tc = new TestCallable();
     
-    Callable o = (Callable) InterfaceProxyGenerator.getProxyInstance(testBundle, 
+    Callable<Object> o = (Callable<Object>) InterfaceProxyGenerator.getProxyInstance(testBundle, 
         null, classes, tc, tl);
     
     assertCalled(tl, false, false, false);
@@ -213,7 +211,7 @@ public class InterfaceProxyingTest {
     
     assertTrue(o instanceof Callable);
     
-    assertEquals(5, ((Callable)o).call());
+    assertEquals(5, ((Callable<Object>)o).call());
   }
   
   @Test
