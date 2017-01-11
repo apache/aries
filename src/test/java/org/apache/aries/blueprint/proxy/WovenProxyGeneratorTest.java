@@ -23,6 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -48,11 +50,8 @@ import org.apache.aries.proxy.impl.AsmProxyManager;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
-import org.apache.aries.proxy.impl.interfaces.ClassLoaderProxy;
 import org.apache.aries.proxy.impl.weaving.WovenProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -498,13 +497,9 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
    */
   @Test
   public void testWovenClassPlusInterfaces() throws Exception {
-    Bundle b = (Bundle) Skeleton.newMock(new Class<?>[] {Bundle.class, ClassLoaderProxy.class});
-    BundleWiring bw = (BundleWiring) Skeleton.newMock(BundleWiring.class);
-
-    Skeleton.getSkeleton(b).setReturnValue(new MethodCall(
-        ClassLoaderProxy.class, "getClassLoader"), weavingLoader);
-    Skeleton.getSkeleton(b).setReturnValue(new MethodCall(
-        ClassLoaderProxy.class, "adapt", BundleWiring.class), bw);
+    Bundle b = mock(Bundle.class);
+    BundleWiring wiring = getWiring(weavingLoader);
+    when(b.adapt(BundleWiring.class)).thenReturn(wiring);
 
     Object toCall = new AsmProxyManager().createDelegatingProxy(b, Arrays.asList(
         getProxyClass(ProxyTestClassAbstract.class), Callable.class), new Callable() {

@@ -69,7 +69,6 @@ final class ProxyClassLoader extends ClassLoader {
 
   private static ClassLoader getClassloader(Bundle bundle) {
     if (bundle == null) return ProxyClassLoader.class.getClassLoader();
-    if (bundle instanceof ClassLoaderProxy) return ((ClassLoaderProxy) bundle).getClassLoader();
     BundleWiring wiring = bundle != null ? bundle.adapt(BundleWiring.class) : null;
     return wiring != null ? wiring.getClassLoader() : null;
   }
