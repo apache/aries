@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.aries.util.AriesFrameworkUtil;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
@@ -69,11 +66,11 @@ public class ManagedObjectManager {
             reg.remove(cm);
             if (reg.isEmpty()) {
                 map.remove(key);
-                AriesFrameworkUtil.safeUnregisterService(reg.getRegistration());
+                ServiceUtil.safeUnregister(reg.getRegistration());
             }
         }
     }
-            
+
     private static class ConfigurationWatcher implements ManagedService {
 
         private ServiceRegistration registration;

@@ -34,7 +34,6 @@ import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ServiceListener;
-import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -83,7 +82,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     }
 
     public void destroy() {
-        AriesFrameworkUtil.safeUnregisterService(registration);
+        ServiceUtil.safeUnregister(registration);
         super.destroy();
     }
 
