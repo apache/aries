@@ -80,7 +80,8 @@
             org.apache.aries.blueprint.namespace,
             org.apache.aries.blueprint.proxy,
             org.apache.aries.blueprint.services,
-            org.apache.aries.blueprint.utils.*
+            org.apache.aries.blueprint.utils.*,
+            org.apache.aries.util.tracker*
         </aries.osgi.private.pkg>
         <aries.osgi.export.service>
             org.apache.aries.blueprint.services.ParserService
@@ -92,7 +93,7 @@
         <blueprint.annotation.api.version>1.0.0</blueprint.annotation.api.version>
         <blueprint.api.version>1.0.0</blueprint.api.version>
         <blueprint.parser.version>1.4.0</blueprint.parser.version>
-        <proxy.api.version>1.0.0</proxy.api.version>
+        <proxy.api.version>1.1.0-SNAPSHOT</proxy.api.version>
         <proxy.impl.version>1.0.3</proxy.impl.version>
         <quiesce.api.version>1.0.0</quiesce.api.version>
         <util.version>1.0.0</util.version>
@@ -136,6 +137,7 @@
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <version>${util.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
