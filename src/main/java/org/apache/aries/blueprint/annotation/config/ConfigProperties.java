@@ -18,8 +18,15 @@
  */
 package org.apache.aries.blueprint.annotation.config;
 
-public @interface DefaultProperty {
-    String key();
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    String value();
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ConfigProperties {
+    String pid();
+
+    boolean update() default false;
 }
