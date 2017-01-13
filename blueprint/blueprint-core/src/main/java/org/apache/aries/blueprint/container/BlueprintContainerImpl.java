@@ -66,6 +66,7 @@ import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
 import org.apache.aries.blueprint.utils.JavaUtils;
+import org.apache.aries.blueprint.utils.ServiceUtil;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
@@ -917,7 +918,7 @@ public class BlueprintContainerImpl
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundle(), getExtenderBundle()));
 
         cancelFutureIfPresent();
-        AriesFrameworkUtil.safeUnregisterService(registration);
+        ServiceUtil.safeUnregisterService(registration);
         if (handlerSet != null) {
             handlerSet.removeListener(this);
             handlerSet.destroy();

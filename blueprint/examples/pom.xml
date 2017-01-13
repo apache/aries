@@ -39,7 +39,6 @@
 
     <modules>
         <module>blueprint-sample</module>
-        <module>blueprint-sample-annotation</module>
         <module>blueprint-sample-fragment</module>
         <module>blueprint-sample-war</module>
     </modules>
