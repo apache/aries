@@ -420,6 +420,79 @@ public class GeneratorTest {
         assertXpathEquals(example2, "@value", "v2");
     }
 
+    @Test
+    public void testProducesWithConfigProperty() throws Exception {
+        Node bean = getBeanById("producedWithConfigProperty");
+        assertXpathEquals(bean, "@class", "org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor");
+        assertXpathEquals(bean, "@factory-ref", "beanWithConfig");
+        assertXpathEquals(bean, "@factory-method", "createBean");
+        assertXpathEquals(bean, "@scope", "prototype");
+        assertXpathEquals(bean, "argument/@value", "1000");
+    }
+
+    @Test
+    public void testConfigPropertiesInjection() throws Exception {
+        Node bean = getBeanById("beanWithConfigurationProperties");
+        assertXpathEquals(bean, "@class", "org.apache.aries.blueprint.plugin.test.BeanWithConfigurationProperties");
+        assertXpathEquals(bean, "argument[1]/@ref", "testProps5");
+        assertXpathEquals(bean, "argument[2]/@ref", "properties-aries-test6-false");
+        assertXpathEquals(bean, "property[@name='prop1']/@ref", "properties-aries-test1-true");
+        assertXpathEquals(bean, "property[@name='prop2']/@ref", "testProps2");
+        assertXpathEquals(bean, "property[@name='prop3']/@ref", "properties-aries-test3-true");
+        assertXpathEquals(bean, "property[@name='prop4']/@ref", "testProps4");
+        assertXpathEquals(bean, "property[@name='prop7']/@ref", "properties-aries-test7-false");
+    }
+
+    @Test
+    public void testGenerateCmConfigProperties() throws Exception {
+        Node testProps5 = getCmPropertiesById("testProps5");
+        assertXpathEquals(testProps5, "@persistent-id", "aries.test5");
+        assertXpathEquals(testProps5, "@update", "true");
+
+        Node testProps6 = getCmPropertiesById("properties-aries-test6-false");
+        assertXpathEquals(testProps6, "@persistent-id", "aries.test6");
+        assertXpathEquals(testProps6, "@update", "false");
+
+        Node testProps1 = getCmPropertiesById("properties-aries-test1-true");
+        assertXpathEquals(testProps1, "@persistent-id", "aries.test1");
+        assertXpathEquals(testProps1, "@update", "true");
+
+        Node testProps2 = getCmPropertiesById("testProps2");
+        assertXpathEquals(testProps2, "@persistent-id", "aries.test2");
+        assertXpathEquals(testProps2, "@update", "false");
+
+        Node testProps3 = getCmPropertiesById("properties-aries-test3-true");
+        assertXpathEquals(testProps3, "@persistent-id", "aries.test3");
+        assertXpathEquals(testProps3, "@update", "true");
+
+        Node testProps4 = getCmPropertiesById("testProps4");
+        assertXpathEquals(testProps4, "@persistent-id", "aries.test4");
+        assertXpathEquals(testProps4, "@update", "false");
+
+        Node testProps7 = getCmPropertiesById("properties-aries-test7-false");
+        assertXpathEquals(testProps7, "@persistent-id", "aries.test7");
+        assertXpathEquals(testProps7, "@update", "false");
+    }
+
+    @Test
+    public void testProducesWithConfigProperties() throws Exception {
+        Node withProperties8 = getBeanById("withProperties8");
+        assertXpathEquals(withProperties8, "@class", "org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor");
+        assertXpathEquals(withProperties8, "argument/@ref", "properties-aries-test8-false");
+
+        Node testProps8 = getCmPropertiesById("properties-aries-test8-false");
+        assertXpathEquals(testProps8, "@persistent-id", "aries.test8");
+        assertXpathEquals(testProps8, "@update", "false");
+
+        Node withProperties9 = getBeanById("withProperties9");
+        assertXpathEquals(withProperties9, "@class", "org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor");
+        assertXpathEquals(withProperties9, "argument/@ref", "testProps9");
+
+        Node testProps9 = getCmPropertiesById("testProps9");
+        assertXpathEquals(testProps9, "@persistent-id", "aries.test9");
+        assertXpathEquals(testProps9, "@update", "true");
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }
@@ -438,6 +511,10 @@ public class GeneratorTest {
 
     private static Node getBeanById(String id) throws XPathExpressionException {
         return (Node) xpath.evaluate("/blueprint/bean[@id='" + id + "']", document, XPathConstants.NODE);
+    }
+
+    private static Node getCmPropertiesById(String id) throws XPathExpressionException {
+        return (Node) xpath.evaluate("/blueprint/cm-properties[@id='" + id + "']", document, XPathConstants.NODE);
     }
 
     private static Node getServiceByRef(String id) throws XPathExpressionException {
