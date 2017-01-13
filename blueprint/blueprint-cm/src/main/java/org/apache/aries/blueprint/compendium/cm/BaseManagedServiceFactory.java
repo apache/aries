@@ -34,6 +34,7 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("rawtypes")
 public abstract class BaseManagedServiceFactory<T> implements ManagedServiceFactory {
 
     public static final long DEFAULT_TIMEOUT_BEFORE_INTERRUPT = 30000;

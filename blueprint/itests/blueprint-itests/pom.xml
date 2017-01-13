@@ -86,8 +86,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy.impl</artifactId>
-            <version>1.0.3</version>
+            <artifactId>org.apache.aries.proxy</artifactId>
+            <version>1.0.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -160,12 +160,6 @@
                     <artifactId>org.apache.aries.blueprint.core</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries</groupId>
-            <artifactId>org.apache.aries.util</artifactId>
-            <scope>test</scope>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>

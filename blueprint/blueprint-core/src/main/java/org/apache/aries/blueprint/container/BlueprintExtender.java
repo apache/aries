@@ -38,10 +38,10 @@ import org.apache.aries.blueprint.services.BlueprintExtenderService;
 import org.apache.aries.blueprint.services.ParserService;
 import org.apache.aries.blueprint.utils.HeaderParser;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
+import org.apache.aries.blueprint.utils.ServiceUtil;
 import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper;
 import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper.ScheduledExecutorServiceFactory;
 import org.apache.aries.proxy.ProxyManager;
-import org.apache.aries.util.AriesFrameworkUtil;
 import org.apache.aries.util.tracker.RecursiveBundleTracker;
 import org.apache.aries.util.tracker.SingleServiceTracker;
 import org.apache.aries.util.tracker.SingleServiceTracker.SingleServiceListener;
@@ -170,9 +170,9 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
 
         stopping = true;
 
-        AriesFrameworkUtil.safeUnregisterService(parserServiceReg);
-        AriesFrameworkUtil.safeUnregisterService(blueprintServiceReg);
-        AriesFrameworkUtil.safeUnregisterService(quiesceParticipantReg);
+        ServiceUtil.safeUnregisterService(parserServiceReg);
+        ServiceUtil.safeUnregisterService(blueprintServiceReg);
+        ServiceUtil.safeUnregisterService(quiesceParticipantReg);
 
         // Orderly shutdown of containers
         while (!containers.isEmpty()) {
