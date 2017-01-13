@@ -58,7 +58,8 @@ public class SingleInterceptorCollaborator implements InvocationListener, Serial
         try {
               callToken = interceptor.preCall(cm, m, parameters);
         } catch (Throwable t) {
-            postInvokeExceptionalReturn(callToken, o, m, t);
+        	// using null token here to be consistent with what Collaborator does
+            postInvokeExceptionalReturn(null, o, m, t);
             throw t;
         }
         return callToken;
