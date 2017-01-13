@@ -16,3 +16,4 @@
 #
 
 org.apache.aries.blueprint.plugin.pax.OsgiServiceHandler
+org.apache.aries.blueprint.plugin.config.ConfigPropertiesHandler
