@@ -6,7 +6,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
         <version>2.0.1</version>
-        <relativePath>../../../parent/pom.xml</relativePath>
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -31,5 +31,5 @@
         </plugins>
     </build>
 
-    <name>Apache Aries Blueprint Plugin Spi</name>
+    <name>Apache Aries Blueprint Maven Plugin SPI</name>
 </project>
