@@ -18,11 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin;
 
+import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
 import org.apache.aries.blueprint.plugin.model.Argument;
 import org.apache.aries.blueprint.plugin.model.ArgumentWriter;
 import org.apache.aries.blueprint.plugin.model.Bean;
-import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.model.BeanFromFactory;
+import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.model.Property;
 import org.apache.aries.blueprint.plugin.model.PropertyWriter;
 import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
@@ -33,6 +34,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.OutputStream;
 import java.util.Map;
+
 
 public class Generator implements PropertyWriter, ArgumentWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
@@ -45,34 +47,31 @@ public class Generator implements PropertyWriter, ArgumentWriter {
     public Generator(Context context, OutputStream os, BlueprintConfiguration blueprintConfiguration) throws XMLStreamException {
         this.context = context;
         this.blueprintConfiguration = blueprintConfiguration;
-        XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        writer = factory.createXMLStreamWriter(os);
+        writer = createWriter(os);
+    }
+
+    private XMLStreamWriter createWriter(OutputStream os) throws XMLStreamException {
+        return new IndentingXMLStreamWriter(XMLOutputFactory.newInstance().createXMLStreamWriter(os));
     }
 
     public void generate() {
         try {
             writer.writeStartDocument();
-            writer.writeCharacters("\n");
             writeBlueprint();
-            writer.writeCharacters("\n");
 
             for (Bean bean : context.getBeans()) {
                 writeBeanStart(bean);
                 bean.writeArguments(this);
                 bean.writeProperties(this);
                 writer.writeEndElement();
-                writer.writeCharacters("\n");
             }
 
             for (XmlWriter bw : context.getBlueprintWriters().values()) {
                 bw.write(writer);
-                writer.writeCharacters("\n");
             }
 
             writer.writeEndElement();
-            writer.writeCharacters("\n");
             writer.writeEndDocument();
-            writer.writeCharacters("\n");
             writer.close();
         } catch (XMLStreamException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -106,12 +105,8 @@ public class Generator implements PropertyWriter, ArgumentWriter {
         if (bean instanceof BeanFromFactory) {
             writeFactory((BeanFromFactory) bean);
         }
-        writer.writeCharacters("\n");
-
         for (XmlWriter xmlWriter : bean.beanContentWriters.values()) {
-            writer.writeCharacters("    ");
             xmlWriter.write(writer);
-            writer.writeCharacters("\n");
         }
     }
 
@@ -123,7 +118,6 @@ public class Generator implements PropertyWriter, ArgumentWriter {
     @Override
     public void writeProperty(Property property) {
         try {
-            writer.writeCharacters("    ");
             writer.writeEmptyElement("property");
             writer.writeAttribute("name", property.name);
             if (property.ref != null) {
@@ -131,7 +125,6 @@ public class Generator implements PropertyWriter, ArgumentWriter {
             } else if (property.value != null) {
                 writer.writeAttribute("value", property.value);
             }
-            writer.writeCharacters("\n");
         } catch (XMLStreamException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -140,14 +133,12 @@ public class Generator implements PropertyWriter, ArgumentWriter {
     @Override
     public void writeArgument(Argument argument) {
         try {
-            writer.writeCharacters("    ");
             writer.writeEmptyElement("argument");
             if (argument.getRef() != null) {
                 writer.writeAttribute("ref", argument.getRef());
             } else if (argument.getValue() != null) {
                 writer.writeAttribute("value", argument.getValue());
             }
-            writer.writeCharacters("\n");
         } catch (XMLStreamException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
