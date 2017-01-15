@@ -115,20 +115,13 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
     }
 
     private void writeInterfacesElement(XMLStreamWriter writer, Iterable<String> interfaceNames) throws XMLStreamException {
-        writer.writeCharacters("\n");
-        writer.writeCharacters("    ");
         writer.writeStartElement("interfaces");
-        writer.writeCharacters("\n");
         for (String interfaceName : interfaceNames) {
-            writer.writeCharacters("        ");
             writer.writeStartElement("value");
             writer.writeCharacters(interfaceName);
             writer.writeEndElement();
-            writer.writeCharacters("\n");
         }
-        writer.writeCharacters("    ");
         writer.writeEndElement();
-        writer.writeCharacters("\n");
     }
 
     private void writeRanking(XMLStreamWriter writer, Map<String, String> propertiesAsMap) throws XMLStreamException {
@@ -143,20 +136,14 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
     }
 
     private void writeProperties(XMLStreamWriter writer, Map<String, String> properties) throws XMLStreamException {
-        writer.writeCharacters("    ");
         writer.writeStartElement("service-properties");
-        writer.writeCharacters("\n");
         for (Map.Entry<String, String> property : properties.entrySet()) {
             if (!SPECIAL_PROPERTIES.contains(property.getKey())) {
-                writer.writeCharacters("        ");
                 writer.writeEmptyElement("entry");
                 writer.writeAttribute("key", property.getKey());
                 writer.writeAttribute("value", property.getValue());
-                writer.writeCharacters("\n");
             }
         }
-        writer.writeCharacters("    ");
         writer.writeEndElement();
-        writer.writeCharacters("\n");
     }
 }
