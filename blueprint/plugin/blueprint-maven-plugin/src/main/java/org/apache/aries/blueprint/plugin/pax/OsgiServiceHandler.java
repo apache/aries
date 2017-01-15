@@ -141,7 +141,7 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
         final public String compName;
 
         public ServiceFilter(String filterValue) {
-            if (filterValue == null) {
+            if (filterValue == null || filterValue.isEmpty()) {
                 filter = null;
                 compName = null;
             } else if (filterValue.contains("(")) {

@@ -25,6 +25,7 @@ import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.ServiceA;
 import org.apache.aries.blueprint.plugin.test.ServiceB;
+import org.apache.aries.blueprint.plugin.test.ServiceD;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.xbean.finder.ClassFinder;
 import org.junit.BeforeClass;
@@ -68,7 +69,7 @@ public class GeneratorTest {
         String packageName = MyBean1.class.getPackage().getName();
         Set<Class<?>> beanClasses = findClasses(classFinder, Collections.singletonList(packageName));
         Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA, NS_TX1));
-        Map<String,String> customParameters = new HashMap<>();
+        Map<String, String> customParameters = new HashMap<>();
         customParameters.put("ex.t", "1");
         customParameters.put("example.p1", "v1");
         customParameters.put("example.p2", "v2");
@@ -105,12 +106,12 @@ public class GeneratorTest {
             defs.add(new TransactionalDef(xpath.evaluate("@method", tx), xpath.evaluate("@value", tx)));
         }
         Set<TransactionalDef> expectedDefs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-            new TransactionalDef("txNotSupported", "NotSupported"),
-            new TransactionalDef("txMandatory", "Mandatory"),
-            new TransactionalDef("txNever", "Never"),
-            new TransactionalDef("txRequired", "Required"),
-            new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
-            new TransactionalDef("txSupports", "Supports"));
+                new TransactionalDef("txNotSupported", "NotSupported"),
+                new TransactionalDef("txMandatory", "Mandatory"),
+                new TransactionalDef("txNever", "Never"),
+                new TransactionalDef("txRequired", "Required"),
+                new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+                new TransactionalDef("txSupports", "Supports"));
         assertEquals(expectedDefs, defs);
     }
 
@@ -125,12 +126,12 @@ public class GeneratorTest {
             defs.add(new TransactionalDef(xpath.evaluate("@method", tx), xpath.evaluate("@value", tx)));
         }
         Set<TransactionalDef> expectedDefs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-            new TransactionalDef("txNotSupported", "NotSupported"),
-            new TransactionalDef("txMandatory", "Mandatory"),
-            new TransactionalDef("txNever", "Never"),
-            new TransactionalDef("txRequired", "Required"),
-            new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
-            new TransactionalDef("txSupports", "Supports"));
+                new TransactionalDef("txNotSupported", "NotSupported"),
+                new TransactionalDef("txMandatory", "Mandatory"),
+                new TransactionalDef("txNever", "Never"),
+                new TransactionalDef("txRequired", "Required"),
+                new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+                new TransactionalDef("txSupports", "Supports"));
         assertEquals(expectedDefs, defs);
     }
 
@@ -187,7 +188,7 @@ public class GeneratorTest {
             interfaceNames.add(interfaceValue.getTextContent());
         }
         assertEquals(Sets.newHashSet(ServiceA.class.getName(), ServiceB.class.getName()),
-            interfaceNames);
+                interfaceNames);
     }
 
     @Test
@@ -339,6 +340,14 @@ public class GeneratorTest {
         Node reference3 = getReferenceById("serviceB-B3Ref");
         assertXpathEquals(reference3, "@interface", ServiceB.class.getName());
         assertXpathEquals(reference3, "@component-name", "B3Ref");
+    }
+
+    @Test
+    public void testGenerateReferenceWithoutFilterAndComponentName() throws Exception {
+        Node reference = getReferenceById("serviceD");
+        assertXpathEquals(reference, "@interface", ServiceD.class.getName());
+        assertXpathDoesNotExist(reference, "@filter");
+        assertXpathDoesNotExist(reference, "@component-name");
     }
 
     @Test
@@ -502,7 +511,7 @@ public class GeneratorTest {
     }
 
     private static Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
-        SAXException, IOException {
+            SAXException, IOException {
         InputStream is = new ByteArrayInputStream(os.toByteArray());
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = builderFactory.newDocumentBuilder();
