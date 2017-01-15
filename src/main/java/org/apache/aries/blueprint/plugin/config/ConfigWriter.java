@@ -46,20 +46,16 @@ public class ConfigWriter implements XmlWriter {
             writer.writeAttribute("placeholder-suffix", config.updatePolicy());
         }
         writer.writeAttribute("update-strategy", config.updatePolicy());
-        writer.writeCharacters("\n");
-        
+
         DefaultProperty[] defaults = config.defaults();
         if (defaults.length > 0) {
             writer.writeStartElement("default-properties");
-            writer.writeCharacters("\n");
             for (DefaultProperty defaultProp : defaults) {
                 writer.writeEmptyElement("property");
                 writer.writeAttribute("name", defaultProp.key());
                 writer.writeAttribute("value", defaultProp.value());
-                writer.writeCharacters("\n");
             }
             writer.writeEndElement();
-            writer.writeCharacters("\n");
         }
         writer.writeEndElement();
     }
