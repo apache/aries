@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import com.sun.xml.txw2.output.IndentingXMLStreamWriter;
 import org.apache.aries.blueprint.plugin.model.Argument;
 import org.apache.aries.blueprint.plugin.model.ArgumentWriter;
 import org.apache.aries.blueprint.plugin.model.Bean;
@@ -32,6 +31,14 @@ import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
@@ -43,18 +50,22 @@ public class Generator implements PropertyWriter, ArgumentWriter {
     private final Context context;
     private final BlueprintConfiguration blueprintConfiguration;
     private final XMLStreamWriter writer;
+    private final OutputStream os;
+    private final ByteArrayOutputStream temp = new ByteArrayOutputStream();
 
-    public Generator(Context context, OutputStream os, BlueprintConfiguration blueprintConfiguration) throws XMLStreamException {
+    public Generator(Context context, OutputStream os, BlueprintConfigurationImpl blueprintConfiguration) throws XMLStreamException {
         this.context = context;
         this.blueprintConfiguration = blueprintConfiguration;
-        writer = createWriter(os);
-    }
-
-    private XMLStreamWriter createWriter(OutputStream os) throws XMLStreamException {
-        return new IndentingXMLStreamWriter(XMLOutputFactory.newInstance().createXMLStreamWriter(os));
+        this.writer = XMLOutputFactory.newFactory().createXMLStreamWriter(temp);
+        this.os = os;
     }
 
     public void generate() {
+        generateXml();
+        printFormatted();
+    }
+
+    private void generateXml() {
         try {
             writer.writeStartDocument();
             writeBlueprint();
@@ -75,6 +86,23 @@ public class Generator implements PropertyWriter, ArgumentWriter {
             writer.close();
         } catch (XMLStreamException e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private void printFormatted() {
+        try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+
+            Transformer transformer = factory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+
+
+            transformer.transform(
+                    new StreamSource(new ByteArrayInputStream(temp.toByteArray())),
+                    new StreamResult(os));
+        } catch (TransformerException e) {
+            throw new RuntimeException("Cannot print file", e);
         }
     }
 
