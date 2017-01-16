@@ -121,7 +121,7 @@ public class GenerateMojo extends AbstractMojo {
 
             Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, toScan);
 
-            BlueprintConfiguration blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters);
+            BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters);
 
             Context context = new Context(blueprintConfiguration, classes);
             context.resolve();
@@ -133,7 +133,7 @@ public class GenerateMojo extends AbstractMojo {
         }
     }
 
-    private void writeBlueprint(Context context, BlueprintConfiguration blueprintConfiguration) throws Exception {
+    private void writeBlueprint(Context context, BlueprintConfigurationImpl blueprintConfiguration) throws Exception {
         String buildDir = project.getBuild().getDirectory();
         String generatedBaseDir = buildDir + "/generated-sources/blueprint";
         Resource resource = new Resource();
