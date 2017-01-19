@@ -639,6 +639,9 @@ public class SubsystemResource implements Resource {
 		// Always provide visibility to this subsystem's service registration.
 		addSubsystemServiceImportToSharingPolicy(builder, to);
 		for (Resource resource : resolution.keySet()) {
+			if (!contentHeader.contains(resource)) {
+				continue;
+			}
 			// If the resource is content but the wire provider is not,
 			// the sharing policy must be updated.
 			List<Wire> wires = resolution.get(resource);
