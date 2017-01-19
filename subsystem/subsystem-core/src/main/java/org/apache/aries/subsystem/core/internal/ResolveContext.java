@@ -130,8 +130,9 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	}
 	
 	private void processWire(Wire wire, Requirement requirement, List<Capability> capabilities) {
-		Capability capability = wire.getCapability();
-		processCapability(capability, requirement, capabilities);
+		if (requirement.equals(wire.getRequirement())) {
+			capabilities.add(wire.getCapability());
+		}
 	}
 	
 	private void processCapability(Capability capability, Requirement requirement, List<Capability> capabilities) {
