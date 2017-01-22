@@ -23,10 +23,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotating any parameter with this will create a
+ * cm:cm-properties element in blueprint and inject such
+ * properties into annotated place
+ */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigProperties {
+    /**
+     * @return persistent id of configuration
+     */
     String pid();
 
+    /**
+     * @return should update on each properties change
+     */
     boolean update() default false;
 }
