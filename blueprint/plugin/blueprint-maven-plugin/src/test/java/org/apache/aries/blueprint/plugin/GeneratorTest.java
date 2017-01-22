@@ -36,9 +36,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -49,6 +56,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,6 +71,7 @@ public class GeneratorTest {
 
     private static XPath xpath;
     private static Document document;
+    private static byte[] xmlAsBytes;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -83,7 +92,8 @@ public class GeneratorTest {
         new Generator(context, os, blueprintConfiguration).generate();
         System.out.println(os.toString("UTF-8"));
 
-        document = readToDocument(os);
+        xmlAsBytes = os.toByteArray();
+        document = readToDocument(xmlAsBytes, false);
         xpath = XPathFactory.newInstance().newXPath();
     }
 
@@ -515,22 +525,22 @@ public class GeneratorTest {
         assertXpathEquals(referenceList, "@availability", "mandatory");
         assertXpathEquals(referenceList, "@interface", ServiceA.class.getName());
         assertXpathEquals(referenceList, "reference-listener/@ref", "referenceListenerListBean");
-        assertXpathEquals(referenceList, "reference-listener/@bind", "add");
-        assertXpathEquals(referenceList, "reference-listener/@unbind", "remove");
+        assertXpathEquals(referenceList, "reference-listener/@bind-method", "add");
+        assertXpathEquals(referenceList, "reference-listener/@unbind-method", "remove");
     }
 
     @Test
     public void referenceListnerForReference() throws Exception {
         assertNotNull(getBeanById("referenceListenerBeanWithNameWithoutMethods"));
 
-        Node reference = getReferenceById("serviceAReference");
+        Node reference = getReferenceById("serviceAReferenceWithoutMethods");
         assertXpathDoesNotExist(reference, "@filter");
         assertXpathDoesNotExist(reference, "@component-name");
         assertXpathEquals(reference, "@availability", "optional");
         assertXpathEquals(reference, "@interface", ServiceA.class.getName());
         assertXpathEquals(reference, "reference-listener/@ref", "referenceListenerBeanWithNameWithoutMethods");
-        assertXpathDoesNotExist(reference, "reference-listener/@bind");
-        assertXpathDoesNotExist(reference, "reference-listener/@unbind");
+        assertXpathDoesNotExist(reference, "reference-listener/@bind-method");
+        assertXpathDoesNotExist(reference, "reference-listener/@unbind-method");
     }
 
     @Test
@@ -543,8 +553,8 @@ public class GeneratorTest {
         assertXpathEquals(reference, "@availability", "optional");
         assertXpathEquals(reference, "@interface", ServiceA.class.getName());
         assertXpathEquals(reference, "reference-listener/@ref", "referenceListenerBeanWithoutMethodsAnnotation");
-        assertXpathEquals(reference, "reference-listener/@bind", "addMe");
-        assertXpathEquals(reference, "reference-listener/@unbind", "removeMe");
+        assertXpathEquals(reference, "reference-listener/@bind-method", "addMe");
+        assertXpathEquals(reference, "reference-listener/@unbind-method", "removeMe");
     }
 
     @Test
@@ -561,8 +571,8 @@ public class GeneratorTest {
         assertXpathEquals(reference, "@availability", "optional");
         assertXpathEquals(reference, "@interface", ServiceB.class.getName());
         assertXpathEquals(reference, "reference-listener/@ref", "referenceListenerToProduceForSingle");
-        assertXpathEquals(reference, "reference-listener/@bind", "register");
-        assertXpathEquals(reference, "reference-listener/@unbind", "unregister");
+        assertXpathEquals(reference, "reference-listener/@bind-method", "register");
+        assertXpathEquals(reference, "reference-listener/@unbind-method", "unregister");
     }
 
     @Test
@@ -579,8 +589,8 @@ public class GeneratorTest {
         assertXpathEquals(referenceList, "@availability", "optional");
         assertXpathEquals(referenceList, "@interface", ServiceB.class.getName());
         assertXpathEquals(referenceList, "reference-listener/@ref", "referenceListenerToProduceForList");
-        assertXpathEquals(referenceList, "reference-listener/@bind", "addMe");
-        assertXpathEquals(referenceList, "reference-listener/@unbind", "removeMe");
+        assertXpathEquals(referenceList, "reference-listener/@bind-method", "addMe");
+        assertXpathEquals(referenceList, "reference-listener/@unbind-method", "removeMe");
     }
 
     @Test
@@ -597,8 +607,19 @@ public class GeneratorTest {
         assertXpathEquals(referenceList, "@availability", "mandatory");
         assertXpathEquals(referenceList, "@interface", ServiceB.class.getName());
         assertXpathEquals(referenceList, "reference-listener/@ref", "referenceListenerToProduceWithBindingMethodsByName");
-        assertXpathEquals(referenceList, "reference-listener/@bind", "addMe");
-        assertXpathEquals(referenceList, "reference-listener/@unbind", "removeMe");
+        assertXpathEquals(referenceList, "reference-listener/@bind-method", "addMe");
+        assertXpathEquals(referenceList, "reference-listener/@unbind-method", "removeMe");
+    }
+
+    @Test
+    public void generatedXmlIsValid() throws Exception {
+        Document document = readToDocument(xmlAsBytes, true);
+
+        Source xmlFile = new DOMSource(document);
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = schemaFactory.newSchema(new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/blueprint.xsd")));
+        Validator validator = schema.newValidator();
+        validator.validate(xmlFile);
     }
 
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
@@ -609,10 +630,12 @@ public class GeneratorTest {
         assertEquals(expected, xpath.evaluate(xpathExpression, node));
     }
 
-    private static Document readToDocument(ByteArrayOutputStream os) throws ParserConfigurationException,
+    private static Document readToDocument(byte[] xmlAsBytes, boolean nameSpaceAware) throws ParserConfigurationException,
             SAXException, IOException {
-        InputStream is = new ByteArrayInputStream(os.toByteArray());
+
+        InputStream is = new ByteArrayInputStream(xmlAsBytes);
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(nameSpaceAware);
         DocumentBuilder builder = builderFactory.newDocumentBuilder();
         return builder.parse(is);
     }
