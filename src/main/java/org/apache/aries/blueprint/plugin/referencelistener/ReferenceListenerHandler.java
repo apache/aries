@@ -103,10 +103,10 @@ public class ReferenceListenerHandler implements BeanAnnotationHandler<Reference
         xmlStreamWriter.writeStartElement("reference-listener");
         xmlStreamWriter.writeAttribute("ref", referenceListenerDefinition.ref);
         if (referenceListenerDefinition.bind != null) {
-            xmlStreamWriter.writeAttribute("bind", referenceListenerDefinition.bind);
+            xmlStreamWriter.writeAttribute("bind-method", referenceListenerDefinition.bind);
         }
         if (referenceListenerDefinition.unbind != null) {
-            xmlStreamWriter.writeAttribute("unbind", referenceListenerDefinition.unbind);
+            xmlStreamWriter.writeAttribute("unbind-method", referenceListenerDefinition.unbind);
         }
         xmlStreamWriter.writeEndElement();
     }
