@@ -22,3 +22,4 @@ org.apache.aries.blueprint.plugin.spring.SpringTransactionalFactory
 org.apache.aries.blueprint.plugin.javax.JavaxTransactionFactory
 org.apache.aries.blueprint.plugin.javax.cdi.CdiTransactionFactory
 org.apache.aries.blueprint.plugin.config.ConfigAnnotationHandler
+org.apache.aries.blueprint.plugin.referencelistener.ReferenceListenerHandler

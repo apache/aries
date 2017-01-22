@@ -26,6 +26,7 @@ import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.ServiceA;
 import org.apache.aries.blueprint.plugin.test.ServiceB;
 import org.apache.aries.blueprint.plugin.test.ServiceD;
+import org.apache.aries.blueprint.plugin.test.referencelistener.ReferenceListenerToProduceWithoutAnnotation;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.xbean.finder.ClassFinder;
 import org.junit.BeforeClass;
@@ -46,7 +47,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -54,6 +54,7 @@ import java.util.Set;
 
 import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class GeneratorTest {
 
@@ -66,8 +67,10 @@ public class GeneratorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         ClassFinder classFinder = new ClassFinder(GeneratorTest.class.getClassLoader());
-        String packageName = MyBean1.class.getPackage().getName();
-        Set<Class<?>> beanClasses = findClasses(classFinder, Collections.singletonList(packageName));
+        Set<Class<?>> beanClasses = findClasses(classFinder, Arrays.asList(
+                MyBean1.class.getPackage().getName(),
+                ReferenceListenerToProduceWithoutAnnotation.class.getPackage().getName()
+        ));
         Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA, NS_TX1));
         Map<String, String> customParameters = new HashMap<>();
         customParameters.put("ex.t", "1");
@@ -502,6 +505,102 @@ public class GeneratorTest {
         assertXpathEquals(testProps9, "@update", "true");
     }
 
+    @Test
+    public void referenceListnerForReferenceList() throws Exception {
+        assertNotNull(getBeanById("referenceListenerListBean"));
+
+        Node referenceList = getReferenceListById("serviceAList-a-bc");
+        assertXpathEquals(referenceList, "@filter", "(b=c)");
+        assertXpathEquals(referenceList, "@component-name", "a");
+        assertXpathEquals(referenceList, "@availability", "mandatory");
+        assertXpathEquals(referenceList, "@interface", ServiceA.class.getName());
+        assertXpathEquals(referenceList, "reference-listener/@ref", "referenceListenerListBean");
+        assertXpathEquals(referenceList, "reference-listener/@bind", "add");
+        assertXpathEquals(referenceList, "reference-listener/@unbind", "remove");
+    }
+
+    @Test
+    public void referenceListnerForReference() throws Exception {
+        assertNotNull(getBeanById("referenceListenerBeanWithNameWithoutMethods"));
+
+        Node reference = getReferenceById("serviceAReference");
+        assertXpathDoesNotExist(reference, "@filter");
+        assertXpathDoesNotExist(reference, "@component-name");
+        assertXpathEquals(reference, "@availability", "optional");
+        assertXpathEquals(reference, "@interface", ServiceA.class.getName());
+        assertXpathEquals(reference, "reference-listener/@ref", "referenceListenerBeanWithNameWithoutMethods");
+        assertXpathDoesNotExist(reference, "reference-listener/@bind");
+        assertXpathDoesNotExist(reference, "reference-listener/@unbind");
+    }
+
+    @Test
+    public void referenceListnerForReferenceWithouMethodAnnotations() throws Exception {
+        assertNotNull(getBeanById("referenceListenerBeanWithoutMethodsAnnotation"));
+
+        Node reference = getReferenceListById("serviceAReference");
+        assertXpathDoesNotExist(reference, "@filter");
+        assertXpathDoesNotExist(reference, "@component-name");
+        assertXpathEquals(reference, "@availability", "optional");
+        assertXpathEquals(reference, "@interface", ServiceA.class.getName());
+        assertXpathEquals(reference, "reference-listener/@ref", "referenceListenerBeanWithoutMethodsAnnotation");
+        assertXpathEquals(reference, "reference-listener/@bind", "addMe");
+        assertXpathEquals(reference, "reference-listener/@unbind", "removeMe");
+    }
+
+    @Test
+    public void produceReferenceListnerForReference() throws Exception {
+        assertNotNull(getBeanById("referenceListenerProducer"));
+
+        Node referenceListenerToProduceForSingle = getBeanById("referenceListenerToProduceForSingle");
+        assertXpathEquals(referenceListenerToProduceForSingle, "@factory-ref", "referenceListenerProducer");
+        assertXpathEquals(referenceListenerToProduceForSingle, "@factory-method", "single");
+
+        Node reference = getReferenceById("serviceB-producer123-b123");
+        assertXpathEquals(reference, "@filter", "(b=123)");
+        assertXpathEquals(reference, "@component-name", "producer123");
+        assertXpathEquals(reference, "@availability", "optional");
+        assertXpathEquals(reference, "@interface", ServiceB.class.getName());
+        assertXpathEquals(reference, "reference-listener/@ref", "referenceListenerToProduceForSingle");
+        assertXpathEquals(reference, "reference-listener/@bind", "register");
+        assertXpathEquals(reference, "reference-listener/@unbind", "unregister");
+    }
+
+    @Test
+    public void produceReferenceListnerForReferenceList() throws Exception {
+        assertNotNull(getBeanById("referenceListenerProducer"));
+
+        Node referenceListenerToProduceForList = getBeanById("referenceListenerToProduceForList");
+        assertXpathEquals(referenceListenerToProduceForList, "@factory-ref", "referenceListenerProducer");
+        assertXpathEquals(referenceListenerToProduceForList, "@factory-method", "list");
+
+        Node referenceList = getReferenceListById("referenceListForProducer");
+        assertXpathEquals(referenceList, "@filter", "(b=456)");
+        assertXpathEquals(referenceList, "@component-name", "producer456");
+        assertXpathEquals(referenceList, "@availability", "optional");
+        assertXpathEquals(referenceList, "@interface", ServiceB.class.getName());
+        assertXpathEquals(referenceList, "reference-listener/@ref", "referenceListenerToProduceForList");
+        assertXpathEquals(referenceList, "reference-listener/@bind", "addMe");
+        assertXpathEquals(referenceList, "reference-listener/@unbind", "removeMe");
+    }
+
+    @Test
+    public void produceReferenceListnerForReferenceListWithOverrideAnnotatedMethods() throws Exception {
+        assertNotNull(getBeanById("referenceListenerProducer"));
+
+        Node referenceListenerToProduceWithBindingMethodsByName = getBeanById("referenceListenerToProduceWithBindingMethodsByName");
+        assertXpathEquals(referenceListenerToProduceWithBindingMethodsByName, "@factory-ref", "referenceListenerProducer");
+        assertXpathEquals(referenceListenerToProduceWithBindingMethodsByName, "@factory-method", "listWithDefinedMethods");
+
+        Node referenceList = getReferenceListById("serviceBList");
+        assertXpathDoesNotExist(referenceList, "@filter");
+        assertXpathDoesNotExist(referenceList, "@component-name");
+        assertXpathEquals(referenceList, "@availability", "mandatory");
+        assertXpathEquals(referenceList, "@interface", ServiceB.class.getName());
+        assertXpathEquals(referenceList, "reference-listener/@ref", "referenceListenerToProduceWithBindingMethodsByName");
+        assertXpathEquals(referenceList, "reference-listener/@bind", "addMe");
+        assertXpathEquals(referenceList, "reference-listener/@unbind", "removeMe");
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }
@@ -532,6 +631,10 @@ public class GeneratorTest {
 
     private static Node getReferenceById(String id) throws XPathExpressionException {
         return (Node) xpath.evaluate("/blueprint/reference[@id='" + id + "']", document, XPathConstants.NODE);
+    }
+
+    private static Node getReferenceListById(String id) throws XPathExpressionException {
+        return (Node) xpath.evaluate("/blueprint/reference-list[@id='" + id + "']", document, XPathConstants.NODE);
     }
 
 }
