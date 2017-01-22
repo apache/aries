@@ -25,7 +25,7 @@ import org.apache.aries.blueprint.plugin.test.ServiceA;
 
 import javax.inject.Named;
 
-@ReferenceListener(referenceInterface = ServiceA.class, cardinality = Cardinality.SINGLE, referenceName = "serviceAReference")
+@ReferenceListener(referenceInterface = ServiceA.class, cardinality = Cardinality.SINGLE, referenceName = "serviceAReferenceWithoutMethods")
 @Singleton
 @Named("referenceListenerBeanWithNameWithoutMethods")
 public class ReferenceListenerBeanWithName {

@@ -62,11 +62,11 @@ class PackageFinder {
         return packages;
     }
 
-    static class SearchFile {
+    private static class SearchFile {
         String prefix;
         File f;
 
-        public SearchFile(String prefix, File f) {
+        SearchFile(String prefix, File f) {
             this.prefix = prefix;
             this.f = f;
         }
