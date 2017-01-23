@@ -56,7 +56,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -615,9 +614,26 @@ public class GeneratorTest {
     public void generatedXmlIsValid() throws Exception {
         Document document = readToDocument(xmlAsBytes, true);
 
+        Source[] schemas = new StreamSource[]{
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/example.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/blueprint.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.1.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.3.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.4.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.5.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/transaction/parsing/transactionv12.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/jpa/blueprint/namespace/jpa_110.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.0.0.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.3.0.xsd")),
+                new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.2.0.xsd"))
+        };
+
         Source xmlFile = new DOMSource(document);
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(new StreamSource(GeneratorTest.class.getResourceAsStream("/schema/blueprint.xsd")));
+        Schema schema = schemaFactory.newSchema(schemas);
         Validator validator = schema.newValidator();
         validator.validate(xmlFile);
     }
