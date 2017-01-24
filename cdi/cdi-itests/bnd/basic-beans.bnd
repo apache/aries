@@ -1,0 +1,5 @@
+Export-Package: ${p}.beans.*
+Require-Capability:\
+	osgi.extender;filter:='(&(osgi.extender=osgi.cdi)(version>=0.0.1)(!(version>=1.0.0)))',\
+	osgi.cdi.extension;filter:='(&(osgi.cdi.extension=jndi)(version>=0.0.1)(!(version>=1.0.0)))'
+-includeresource: META-INF/beans.xml=bnd/basic-beans.xml

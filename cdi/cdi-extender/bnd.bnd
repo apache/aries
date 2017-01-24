@@ -1,0 +1,13 @@
+Bundle-Activator: org.apache.aries.cdi.container.internal.Activator
+Conditional-Package: \
+	org.apache.felix.converter.impl,\
+	org.apache.felix.utils.extender,\
+	org.osgi.util.converter,\
+	org.osgi.util.function
+Export-Package: org.apache.aries.cdi.provider;cdi-api-bundle=true;mandatory:=cdi-api-bundle
+Provide-Capability: \
+	osgi.extender; \
+		osgi.extender='osgi.cdi'; \
+		uses:="org.osgi.service.cdi,javax.enterprise.inject.spi"; \
+		version:Version="0.0.1"
+-includeresource: META-INF/=LICENSE, META-INF/=NOTICE
