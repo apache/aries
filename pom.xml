@@ -94,7 +94,7 @@
                         <configuration>
                             <!--<includeArtifactIds>org.apache.aries.blueprint.api</includeArtifactIds>-->
                             <includes>**/aries/**/*.xsd</includes>
-                            <outputDirectory>${project.build.directory}/classes/schema</outputDirectory>
+                            <outputDirectory>${project.build.directory}/test-classes/schema</outputDirectory>
                             <outputAbsoluteArtifactFilename>true</outputAbsoluteArtifactFilename>
                         </configuration>
                     </execution>
