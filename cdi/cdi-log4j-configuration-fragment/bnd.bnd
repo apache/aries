@@ -1,0 +1,3 @@
+Fragment-Host: log4j
+-includeresource: META-INF/=LICENSE, META-INF/=NOTICE
+-resourceonly: true
