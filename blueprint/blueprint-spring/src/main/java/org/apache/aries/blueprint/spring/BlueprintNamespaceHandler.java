@@ -139,7 +139,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
         if (applicationContext == null) {
             applicationContext = new SpringApplicationContext(container);
             registry.registerComponentDefinition(createPassThrough(parserContext,
-                    SPRING_APPLICATION_CONTEXT_ID, applicationContext
+                    SPRING_APPLICATION_CONTEXT_ID, applicationContext, "destroy"
             ));
         }
         // Create registry
@@ -184,6 +184,30 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
         pt.setId(id);
         pt.setObject(o);
         return pt;
+    }
+
+    private ComponentMetadata createPassThrough(ParserContext parserContext, String id, Object o, String destroy) {
+        MutablePassThroughMetadata pt = parserContext.createMetadata(MutablePassThroughMetadata.class);
+        pt.setId(id + ".factory");
+        pt.setObject(new Holder(o));
+        MutableBeanMetadata b = parserContext.createMetadata(MutableBeanMetadata.class);
+        b.setId(id);
+        b.setFactoryComponent(pt);
+        b.setFactoryMethod("getObject");
+        b.setDestroyMethod(destroy);
+        return b;
+    }
+
+    public static class Holder {
+        private final Object object;
+
+        public Holder(Object object) {
+            this.object = object;
+        }
+
+        public Object getObject() {
+            return object;
+        }
     }
 
     private Metadata createRef(ParserContext parserContext, String id) {
