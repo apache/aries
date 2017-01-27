@@ -53,7 +53,7 @@ public class SpringBeanProcessor implements BeanProcessor, ComponentDefinitionRe
 
     @Override
     public void process(ComponentDefinitionRegistry componentDefinitionRegistry) {
-        applicationContext.process();
+        applicationContext.refresh();
     }
 
     @Override
@@ -83,11 +83,6 @@ public class SpringBeanProcessor implements BeanProcessor, ComponentDefinitionRe
 
     @Override
     public void beforeDestroy(Object o, String s) {
-        for (BeanPostProcessor processor : applicationContext.getBeanFactory().getBeanPostProcessors()) {
-            if (processor instanceof DestructionAwareBeanPostProcessor) {
-                ((DestructionAwareBeanPostProcessor) processor).postProcessBeforeDestruction(o, s);
-            }
-        }
     }
 
     @Override
