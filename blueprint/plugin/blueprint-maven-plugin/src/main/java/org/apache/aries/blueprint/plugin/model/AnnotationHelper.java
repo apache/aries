@@ -27,8 +27,8 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnnotationHelper {
-    public static Class<? extends Annotation>[] injectDependencyAnnotations = findInjectDependencyAnnotations();
+class AnnotationHelper {
+    static Class<? extends Annotation>[] injectDependencyAnnotations = findInjectDependencyAnnotations();
 
     private static Class<? extends Annotation>[] findInjectDependencyAnnotations() {
         List<Class<? extends Annotation>> classes = new ArrayList<>();
@@ -41,7 +41,7 @@ public class AnnotationHelper {
         return classes.toArray(new Class[classes.size()]);
     }
 
-    public static String findValue(Annotation[] annotations) {
+    static String findValue(Annotation[] annotations) {
         for (ValueInjectionHandler valueInjectionHandler : Handlers.valueInjectionHandlers) {
             Object annotation = findAnnotation(annotations, valueInjectionHandler.getAnnotation());
             if (annotation != null) {
@@ -54,7 +54,7 @@ public class AnnotationHelper {
         return null;
     }
 
-    public static String findName(Annotation[] annotations) {
+    static String findName(Annotation[] annotations) {
         for (NamedLikeHandler namedLikeHandler : Handlers.namedLikeHandlers) {
             Object annotation = findAnnotation(annotations, namedLikeHandler.getAnnotation());
             if (annotation != null) {
@@ -67,7 +67,7 @@ public class AnnotationHelper {
         return null;
     }
 
-    public static <T> T findAnnotation(Annotation[] annotations, Class<T> annotation) {
+    static <T> T findAnnotation(Annotation[] annotations, Class<T> annotation) {
         for (Annotation a : annotations) {
             if (a.annotationType() == annotation) {
                 return annotation.cast(a);
@@ -76,7 +76,7 @@ public class AnnotationHelper {
         return null;
     }
 
-    public static boolean findSingletons(Annotation[] annotations) {
+    static boolean findSingletons(Annotation[] annotations) {
         for (Class<? extends Annotation> singletonAnnotation : Handlers.singletons) {
             Object annotation = findAnnotation(annotations, singletonAnnotation);
             if (annotation != null) {

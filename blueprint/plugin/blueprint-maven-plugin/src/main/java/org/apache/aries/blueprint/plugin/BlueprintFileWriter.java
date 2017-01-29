@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin;
 
+import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -33,24 +33,19 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.Map;
 
-public class BlueprintWriter {
-    private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
-    private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
+class BlueprintFileWriter {
 
-    private final BlueprintConfiguration blueprintConfiguration;
     private final XMLStreamWriter writer;
     private final OutputStream os;
     private final ByteArrayOutputStream temp = new ByteArrayOutputStream();
 
-    public BlueprintWriter(OutputStream os, BlueprintConfiguration blueprintConfiguration) throws XMLStreamException {
-        this.blueprintConfiguration = blueprintConfiguration;
+    BlueprintFileWriter(OutputStream os) throws XMLStreamException {
         this.writer = XMLOutputFactory.newFactory().createXMLStreamWriter(temp);
         this.os = os;
     }
 
-    public void generate(Context context) {
+    void generate(Context context) {
         generateXml(context);
         printFormatted();
     }
@@ -58,20 +53,7 @@ public class BlueprintWriter {
     private void generateXml(Context context) {
         try {
             writer.writeStartDocument();
-            writeBlueprint();
-
-            for (Bean bean : context.getBeans()) {
-                writeBeanStart(bean);
-                bean.writeArguments(writer);
-                bean.writeProperties(writer);
-                writer.writeEndElement();
-            }
-
-            for (XmlWriter bw : context.getBlueprintWriters().values()) {
-                bw.write(writer);
-            }
-
-            writer.writeEndElement();
+            context.write(writer);
             writer.writeEndDocument();
             writer.close();
         } catch (XMLStreamException e) {
@@ -92,42 +74,5 @@ public class BlueprintWriter {
         } catch (TransformerException e) {
             throw new RuntimeException("Cannot print file", e);
         }
-    }
-
-    private void writeBlueprint() throws XMLStreamException {
-        writer.writeStartElement("blueprint");
-        writer.writeDefaultNamespace(NS_BLUEPRINT);
-        writer.writeNamespace("ext", NS_EXT);
-        if (blueprintConfiguration.getDefaultActivation() != null) {
-            writer.writeAttribute("default-activation", blueprintConfiguration.getDefaultActivation().name().toLowerCase());
-        }
-    }
-
-    private void writeBeanStart(Bean bean) throws XMLStreamException {
-        writer.writeStartElement("bean");
-        writer.writeAttribute("id", bean.id);
-        writer.writeAttribute("class", bean.clazz.getName());
-        if (bean.needFieldInjection()) {
-            writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
-        }
-        if (bean.isPrototype) {
-            writer.writeAttribute("scope", "prototype");
-        }
-
-        Map<String, String> attributes = bean.attributes;
-        for (Map.Entry<String, String> entry : attributes.entrySet()) {
-            writer.writeAttribute(entry.getKey(), entry.getValue());
-        }
-        if (bean instanceof BeanFromFactory) {
-            writeFactory((BeanFromFactory) bean);
-        }
-        for (XmlWriter xmlWriter : bean.beanContentWriters.values()) {
-            xmlWriter.write(writer);
-        }
-    }
-
-    private void writeFactory(BeanFromFactory bean) throws XMLStreamException {
-        writer.writeAttribute("factory-ref", bean.factoryBean.id);
-        writer.writeAttribute("factory-method", bean.factoryMethod);
     }
 }

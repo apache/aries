@@ -36,13 +36,13 @@ import java.util.Set;
 /**
  * Class to find uniquely-named fields declared in a class hierarchy with specified annotations.
  */
-public final class Introspector {
+final class Introspector {
     private Class<?> originalClazz;
 
     /**
      * @param clazz the class to introspect (including those defined in parent classes).
      */
-    public Introspector(Class<?> clazz) {
+    Introspector(Class<?> clazz) {
         this.originalClazz = clazz;
     }
 
@@ -53,7 +53,7 @@ public final class Introspector {
      * field declared elsewhere in the class hierarchy.
      */
     @SafeVarargs
-    public final List<Field> fieldsWith(Class<? extends Annotation>... requiredAnnotations) {
+    final List<Field> fieldsWith(Class<? extends Annotation>... requiredAnnotations) {
         Multimap<String, Field> fieldsByName = HashMultimap.create();
         Set<String> acceptedFieldNames = Sets.newHashSet();
         Class<?> clazz = originalClazz;
@@ -122,7 +122,7 @@ public final class Introspector {
     }
 
     @SafeVarargs
-    public final List<Method> methodsWith(Class<? extends Annotation>... annotationClasses) {
+    final List<Method> methodsWith(Class<? extends Annotation>... annotationClasses) {
         List<Method> methods = new ArrayList<>();
         for (Method method : originalClazz.getMethods()) {
             for(Class<? extends Annotation> annotationClass : annotationClasses) {

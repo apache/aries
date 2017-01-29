@@ -32,20 +32,20 @@ import java.lang.reflect.Method;
 
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 
-public class Property implements Comparable<Property>, XmlWriter {
+class Property implements Comparable<Property>, XmlWriter {
     public final String name;
     public final String ref;
     public final String value;
-    public final boolean isField;
+    final boolean isField;
 
-    public Property(String name, String ref, String value, boolean isField) {
+    private Property(String name, String ref, String value, boolean isField) {
         this.name = name;
         this.ref = ref;
         this.value = value;
         this.isField = isField;
     }
 
-    public static Property create(BlueprintRegister blueprintRegister, Field field) {
+    static Property create(BlueprintRegister blueprintRegister, Field field) {
         if (needsInject(field)) {
             String value = AnnotationHelper.findValue(field.getAnnotations());
             if (value != null) {
@@ -74,7 +74,7 @@ public class Property implements Comparable<Property>, XmlWriter {
         }
     }
 
-    public static Property create(BlueprintRegister blueprintRegister, Method method) {
+    static Property create(BlueprintRegister blueprintRegister, Method method) {
         String propertyName = resolveProperty(method);
         if (propertyName == null) {
             return null;
