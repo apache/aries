@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin;
 
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.xbean.finder.ClassFinder;
 
 import java.lang.annotation.Annotation;
@@ -25,14 +26,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FilteredClassFinder {
+class FilteredClassFinder {
 
     @SuppressWarnings("unchecked")
-    public static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames) {
-        return findClasses(finder, packageNames, Extensions.beanMarkingAnnotationClasses.toArray(new Class[Extensions.beanMarkingAnnotationClasses.size()]));
+    static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames) {
+        return findClasses(finder, packageNames, Handlers.beanMarkingAnnotationClasses.toArray(new Class[Handlers.beanMarkingAnnotationClasses.size()]));
     }
 
-    public static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames, Class<? extends Annotation>[] annotations) {
+    private static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames, Class<? extends Annotation>[] annotations) {
         Set<Class<?>> rawClasses = new HashSet<Class<?>>();
         for (Class<? extends Annotation> annotation : annotations) {
             rawClasses.addAll(finder.findAnnotatedClasses(annotation));

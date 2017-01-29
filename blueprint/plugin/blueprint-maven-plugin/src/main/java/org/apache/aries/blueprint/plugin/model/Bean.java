@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
@@ -28,6 +28,8 @@ import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -77,7 +79,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private void handleMethodsAnnotation(Introspector introspector) {
-        for (MethodAnnotationHandler methodAnnotationHandler : Extensions.methodAnnotationHandlers) {
+        for (MethodAnnotationHandler methodAnnotationHandler : Handlers.methodAnnotationHandlers) {
             List<Method> methods = introspector.methodsWith(methodAnnotationHandler.getAnnotation());
             if (methods.size() > 0) {
                 methodAnnotationHandler.handleMethodAnnotation(clazz, methods, contextEnricher, this);
@@ -86,7 +88,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private void handleFieldsAnnotation(Introspector introspector) {
-        for (FieldAnnotationHandler fieldAnnotationHandler : Extensions.fieldAnnotationHandlers) {
+        for (FieldAnnotationHandler fieldAnnotationHandler : Handlers.fieldAnnotationHandlers) {
             List<Field> fields = introspector.fieldsWith(fieldAnnotationHandler.getAnnotation());
             if (fields.size() > 0) {
                 fieldAnnotationHandler.handleFieldAnnotation(clazz, fields, contextEnricher, this);
@@ -95,7 +97,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private void handleCustomBeanAnnotations() {
-        for (BeanAnnotationHandler beanAnnotationHandler : Extensions.BEAN_ANNOTATION_HANDLERs) {
+        for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERs) {
             Object annotation = AnnotationHelper.findAnnotation(clazz.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
                 beanAnnotationHandler.handleBeanAnnotation(clazz, id, contextEnricher, this);
@@ -108,7 +110,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private boolean findSingleton(Class clazz) {
-        for (Class<?> singletonAnnotation : Extensions.singletons) {
+        for (Class<?> singletonAnnotation : Handlers.singletons) {
             if (clazz.getAnnotation(singletonAnnotation) != null) {
                 return true;
             }
@@ -146,7 +148,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private boolean shouldInject(AnnotatedElement annotatedElement) {
-        for (InjectLikeHandler injectLikeHandler : Extensions.beanInjectLikeHandlers) {
+        for (InjectLikeHandler injectLikeHandler : Handlers.beanInjectLikeHandlers) {
             if (annotatedElement.getAnnotation(injectLikeHandler.getAnnotation()) != null) {
                 return true;
             }
@@ -160,7 +162,7 @@ public class Bean extends BeanRef implements BeanEnricher {
             String value = findValue(annotations);
             String ref = findName(annotations);
 
-            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
+            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(annotations, customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
                     String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(parameterTypes[i], annotation, ref, blueprintRegister);
@@ -196,15 +198,15 @@ public class Bean extends BeanRef implements BeanEnricher {
         return clazz.getName();
     }
 
-    public void writeProperties(PropertyWriter writer) {
+    public void writeProperties(XMLStreamWriter writer) throws XMLStreamException {
         for (Property property : properties) {
-            writer.writeProperty(property);
+            property.write(writer);
         }
     }
 
-    public void writeArguments(ArgumentWriter writer) {
+    public void writeArguments(XMLStreamWriter writer) throws XMLStreamException {
         for (Argument argument : constructorArguments) {
-            writer.writeArgument(argument);
+            argument.write(writer);
         }
     }
 

@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.javax.PersistenceContextHandler
-org.apache.aries.blueprint.plugin.javax.PersistenceUnitHandler
+org.apache.aries.blueprint.plugin.handlers.javax.PersistenceContextHandler
+org.apache.aries.blueprint.plugin.handlers.javax.PersistenceUnitHandler
