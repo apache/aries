@@ -18,8 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.model.Context;
-import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
+import org.apache.aries.blueprint.plugin.model.Blueprint;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -45,15 +44,15 @@ class BlueprintFileWriter {
         this.os = os;
     }
 
-    void generate(Context context) {
-        generateXml(context);
+    void write(Blueprint blueprint) {
+        generateXml(blueprint);
         printFormatted();
     }
 
-    private void generateXml(Context context) {
+    private void generateXml(Blueprint blueprint) {
         try {
             writer.writeStartDocument();
-            context.write(writer);
+            blueprint.write(writer);
             writer.writeEndDocument();
             writer.close();
         } catch (XMLStreamException e) {
@@ -64,7 +63,6 @@ class BlueprintFileWriter {
     private void printFormatted() {
         try {
             TransformerFactory factory = TransformerFactory.newInstance();
-
             Transformer transformer = factory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");

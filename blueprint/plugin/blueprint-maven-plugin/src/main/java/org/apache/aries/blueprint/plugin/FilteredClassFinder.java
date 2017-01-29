@@ -30,7 +30,7 @@ class FilteredClassFinder {
 
     @SuppressWarnings("unchecked")
     static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames) {
-        return findClasses(finder, packageNames, Handlers.beanMarkingAnnotationClasses.toArray(new Class[Handlers.beanMarkingAnnotationClasses.size()]));
+        return findClasses(finder, packageNames, Handlers.BEAN_MARKING_ANNOTATION_CLASSES.toArray(new Class[Handlers.BEAN_MARKING_ANNOTATION_CLASSES.size()]));
     }
 
     private static Set<Class<?>> findClasses(ClassFinder finder, Collection<String> packageNames, Class<? extends Annotation>[] annotations) {

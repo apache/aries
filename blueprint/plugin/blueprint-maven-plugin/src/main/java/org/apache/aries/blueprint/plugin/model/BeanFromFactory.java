@@ -46,7 +46,7 @@ class BeanFromFactory extends Bean {
     }
 
     private void handleCustomBeanAnnotations() {
-        for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERs) {
+        for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERS) {
             Object annotation = AnnotationHelper.findAnnotation(producingMethod.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
                 beanAnnotationHandler.handleBeanAnnotation(producingMethod, id, contextEnricher, this);
@@ -59,7 +59,7 @@ class BeanFromFactory extends Bean {
     }
 
     @Override
-    protected void resolveArguments(BlueprintRegister matcher) {
+    protected void resolveArguments(BlueprintRegistry matcher) {
         resolveArguments(matcher, producingMethod.getParameterTypes(), producingMethod.getParameterAnnotations());
     }
 }

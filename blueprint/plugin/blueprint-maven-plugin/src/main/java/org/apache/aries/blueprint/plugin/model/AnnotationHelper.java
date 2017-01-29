@@ -32,17 +32,17 @@ class AnnotationHelper {
 
     private static Class<? extends Annotation>[] findInjectDependencyAnnotations() {
         List<Class<? extends Annotation>> classes = new ArrayList<>();
-        for (InjectLikeHandler<? extends Annotation> injectLikeHandler : Handlers.beanInjectLikeHandlers) {
+        for (InjectLikeHandler<? extends Annotation> injectLikeHandler : Handlers.BEAN_INJECT_LIKE_HANDLERS) {
             classes.add(injectLikeHandler.getAnnotation());
         }
-        for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : Handlers.valueInjectionHandlers) {
+        for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : Handlers.VALUE_INJECTION_HANDLERS) {
             classes.add(valueInjectionHandler.getAnnotation());
         }
         return classes.toArray(new Class[classes.size()]);
     }
 
     static String findValue(Annotation[] annotations) {
-        for (ValueInjectionHandler valueInjectionHandler : Handlers.valueInjectionHandlers) {
+        for (ValueInjectionHandler valueInjectionHandler : Handlers.VALUE_INJECTION_HANDLERS) {
             Object annotation = findAnnotation(annotations, valueInjectionHandler.getAnnotation());
             if (annotation != null) {
                 String value = valueInjectionHandler.getValue(annotation);
@@ -55,7 +55,7 @@ class AnnotationHelper {
     }
 
     static String findName(Annotation[] annotations) {
-        for (NamedLikeHandler namedLikeHandler : Handlers.namedLikeHandlers) {
+        for (NamedLikeHandler namedLikeHandler : Handlers.NAMED_LIKE_HANDLERS) {
             Object annotation = findAnnotation(annotations, namedLikeHandler.getAnnotation());
             if (annotation != null) {
                 String value = namedLikeHandler.getName(annotation);
@@ -77,7 +77,7 @@ class AnnotationHelper {
     }
 
     static boolean findSingletons(Annotation[] annotations) {
-        for (Class<? extends Annotation> singletonAnnotation : Handlers.singletons) {
+        for (Class<? extends Annotation> singletonAnnotation : Handlers.SINGLETONS) {
             Object annotation = findAnnotation(annotations, singletonAnnotation);
             if (annotation != null) {
                 return true;

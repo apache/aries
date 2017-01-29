@@ -52,12 +52,12 @@ public class BeanTest {
     
     private final Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA1, NS_TX1));
     private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, null);
-    private final Context context = new Context(blueprintConfiguration);
+    private final Blueprint blueprint = new Blueprint(blueprintConfiguration);
 
     @Test
     public void testParseMyBean1() {
-        Bean bean = new Bean(MyBean1.class, context);
-        bean.resolve(context);
+        Bean bean = new Bean(MyBean1.class, blueprint);
+        bean.resolve(blueprint);
         assertEquals(MyBean1.class, bean.clazz);
         assertEquals("myBean1", bean.id); // Name derived from class name
         assertEquals(2, getPersistenceFields(bean).size());
@@ -80,8 +80,8 @@ public class BeanTest {
 
     @Test
     public void testParseMyBean3() {
-        Bean bean = new Bean(MyBean3.class, context);
-        bean.resolve(context);
+        Bean bean = new Bean(MyBean3.class, blueprint);
+        bean.resolve(blueprint);
         assertEquals(MyBean3.class, bean.clazz);
         assertEquals("myBean3", bean.id); // Name derived from class name
         assertEquals("There should be no persistence fields", 0, getPersistenceFields(bean).size());
@@ -100,8 +100,8 @@ public class BeanTest {
 
     @Test
     public void testParseNamedBean() {
-        Bean bean = new Bean(ServiceAImpl1.class, context);
-        bean.resolve(context);
+        Bean bean = new Bean(ServiceAImpl1.class, blueprint);
+        bean.resolve(blueprint);
         String definedName = ServiceAImpl1.class.getAnnotation(Named.class).value();
         assertEquals("my1", definedName);
         assertEquals("Name should be defined using @Named", definedName, bean.id);
@@ -113,8 +113,8 @@ public class BeanTest {
 
     @Test
     public void testBlueprintBundleContext() {
-        Bean bean = new Bean(MyBean4.class, context);
-        bean.resolve(context);
+        Bean bean = new Bean(MyBean4.class, blueprint);
+        bean.resolve(blueprint);
         Property bcProp = bean.properties.iterator().next();
         assertEquals("bundleContext", bcProp.name);
         assertEquals("blueprintBundleContext", bcProp.ref);
@@ -149,43 +149,43 @@ public class BeanTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testMultipleInitMethods() {
-        new Bean(BadBean1.class, context);
+        new Bean(BadBean1.class, blueprint);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testMultipleDestroyMethods() {
-        new Bean(BadBean2.class, context);
+        new Bean(BadBean2.class, blueprint);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testSpringNestedTransactionNotSupported() {
-        new Bean(BadBean3.class, context);
+        new Bean(BadBean3.class, blueprint);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean1() {
-        new Context(blueprintConfiguration, BadFieldBean1.class);
+        new Blueprint(blueprintConfiguration, BadFieldBean1.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean2() {
-        new Context(blueprintConfiguration, BadFieldBean2.class);
+        new Blueprint(blueprintConfiguration, BadFieldBean2.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean3() {
-        new Context(blueprintConfiguration, BadFieldBean3.class);
+        new Blueprint(blueprintConfiguration, BadFieldBean3.class);
     }
 
     @Test
     public void testFieldBean4() {
-        new Context(blueprintConfiguration, FieldBean4.class);
+        new Blueprint(blueprintConfiguration, FieldBean4.class);
     }
 
     @Test
     public void testParseBeanWithConstructorInject() {
-        Bean bean = new Bean(MyBean5.class, context);
-        bean.resolve(context);
+        Bean bean = new Bean(MyBean5.class, blueprint);
+        bean.resolve(blueprint);
         assertEquals(MyBean5.class, bean.clazz);
         assertEquals("myBean5", bean.id); // Name derived from class name
         assertTrue("There should be no persistenceUnit", getPersistenceFields(bean).isEmpty());
@@ -203,8 +203,8 @@ public class BeanTest {
     
     @Test
     public void testParseBeanWithConfig() {
-        Bean bean = new Bean(BeanWithConfig.class, context);
-        bean.resolve(context);
+        Bean bean = new Bean(BeanWithConfig.class, blueprint);
+        bean.resolve(blueprint);
         assertEquals("There should be a property", 1, bean.properties.size());
         Property prop = bean.properties.iterator().next();
         assertEquals("title", prop.name);

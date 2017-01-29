@@ -19,7 +19,7 @@
 package org.apache.aries.blueprint.plugin;
 
 import com.google.common.collect.Sets;
-import org.apache.aries.blueprint.plugin.model.Context;
+import org.apache.aries.blueprint.plugin.model.Blueprint;
 import org.apache.aries.blueprint.plugin.model.TransactionalDef;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyProduced;
@@ -85,9 +85,9 @@ public class BlueprintFileWriterTest {
         customParameters.put("example.p1", "v1");
         customParameters.put("example.p2", "v2");
         BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, customParameters);
-        Context context = new Context(blueprintConfiguration, beanClasses);
+        Blueprint blueprint = new Blueprint(blueprintConfiguration, beanClasses);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        new BlueprintFileWriter(os).generate(context);
+        new BlueprintFileWriter(os).write(blueprint);
         System.out.println(os.toString("UTF-8"));
 
         xmlAsBytes = os.toByteArray();
