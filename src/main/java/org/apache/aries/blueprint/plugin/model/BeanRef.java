@@ -69,7 +69,7 @@ class BeanRef implements Comparable<BeanRef> {
     }
 
     private Object isQualifier(Annotation ann) {
-        for (Class<? extends Annotation> qualifingAnnotationClass : Handlers.qualifingAnnotationClasses) {
+        for (Class<? extends Annotation> qualifingAnnotationClass : Handlers.QUALIFING_ANNOTATION_CLASSES) {
             Object annotation = ann.annotationType().getAnnotation(qualifingAnnotationClass);
             if (annotation != null) {
                 return annotation;
@@ -82,8 +82,8 @@ class BeanRef implements Comparable<BeanRef> {
         return getBeanName(clazz, clazz);
     }
 
-    static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
-        for (NamedLikeHandler namedLikeHandler : Handlers.namedLikeHandlers) {
+    private static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
+        for (NamedLikeHandler namedLikeHandler : Handlers.NAMED_LIKE_HANDLERS) {
             if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
                 String name = namedLikeHandler.getName(clazz, annotatedElement);
                 if (name != null) {
@@ -95,7 +95,7 @@ class BeanRef implements Comparable<BeanRef> {
         return getBeanNameFromSimpleName(name);
     }
 
-    protected static String getBeanNameFromSimpleName(String name) {
+    private static String getBeanNameFromSimpleName(String name) {
         return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
     }
 

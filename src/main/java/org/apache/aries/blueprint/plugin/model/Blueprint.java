@@ -35,19 +35,19 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Context implements BlueprintRegister, ContextEnricher, XmlWriter {
+public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
 
-    SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
+    private Registry registry = new Registry();
     private final Map<String, XmlWriter> blueprintWriters = new HashMap<>();
     private final BlueprintConfiguration blueprintConfiguration;
 
-    Context(BlueprintConfiguration blueprintConfiguration, Class<?>... beanClasses) {
+    Blueprint(BlueprintConfiguration blueprintConfiguration, Class<?>... beanClasses) {
         this(blueprintConfiguration, Arrays.asList(beanClasses));
     }
 
-    public Context(BlueprintConfiguration blueprintConfiguration, Collection<Class<?>> beanClasses) {
+    public Blueprint(BlueprintConfiguration blueprintConfiguration, Collection<Class<?>> beanClasses) {
         this.blueprintConfiguration = blueprintConfiguration;
         initContext();
         addBeans(beanClasses);
@@ -55,7 +55,7 @@ public class Context implements BlueprintRegister, ContextEnricher, XmlWriter {
     }
 
     private void initContext() {
-        for (ContextInitializationHandler contextInitializationHandler : Handlers.contextInitializationHandlers) {
+        for (ContextInitializationHandler contextInitializationHandler : Handlers.CONTEXT_INITIALIZATION_HANDLERS) {
             contextInitializationHandler.initContext(this);
         }
     }
@@ -68,8 +68,7 @@ public class Context implements BlueprintRegister, ContextEnricher, XmlWriter {
 
     private void addBean(Class<?> clazz) {
         Bean bean = new Bean(clazz, this);
-        reg.add(bean);
-        reg.addAll(bean.refs);
+        registry.addBean(bean);
         addBeansFromFactories(bean);
     }
 
@@ -89,13 +88,13 @@ public class Context implements BlueprintRegister, ContextEnricher, XmlWriter {
             if (AnnotationHelper.findSingletons(method.getAnnotations())) {
                 beanFromFactory.setSingleton();
             }
-            reg.add(beanFromFactory);
+            registry.addBean(beanFromFactory);
         }
     }
 
     private boolean isFactoryMethod(Method method) {
         boolean isFactoryMethod = false;
-        for (Class<? extends Annotation> factoryMethodAnnotationClass : Handlers.factoryMethodAnnotationClasses) {
+        for (Class<? extends Annotation> factoryMethodAnnotationClass : Handlers.FACTORY_METHOD_ANNOTATION_CLASSES) {
             Annotation annotation = AnnotationHelper.findAnnotation(method.getAnnotations(), factoryMethodAnnotationClass);
             if (annotation != null) {
                 isFactoryMethod = true;
@@ -112,7 +111,7 @@ public class Context implements BlueprintRegister, ContextEnricher, XmlWriter {
     }
 
     public BeanRef getMatching(BeanRef template) {
-        for (BeanRef bean : reg) {
+        for (BeanRef bean : registry.getBeans()) {
             if (bean.matches(template)) {
                 return bean;
             }
@@ -120,9 +119,9 @@ public class Context implements BlueprintRegister, ContextEnricher, XmlWriter {
         return null;
     }
 
-    public SortedSet<Bean> getBeans() {
+    SortedSet<Bean> getBeans() {
         TreeSet<Bean> beans = new TreeSet<Bean>();
-        for (BeanRef ref : reg) {
+        for (BeanRef ref : registry.getBeans()) {
             if (ref instanceof Bean) {
                 beans.add((Bean) ref);
             }
@@ -130,13 +129,13 @@ public class Context implements BlueprintRegister, ContextEnricher, XmlWriter {
         return beans;
     }
 
-    public Map<String, XmlWriter> getBlueprintWriters() {
+    Map<String, XmlWriter> getBlueprintWriters() {
         return blueprintWriters;
     }
 
     @Override
     public void addBean(String id, Class<?> clazz) {
-        reg.add(new BeanRef(clazz, id));
+        registry.addBean(new BeanRef(clazz, id));
 
     }
 
@@ -202,5 +201,9 @@ public class Context implements BlueprintRegister, ContextEnricher, XmlWriter {
     private void writeFactory(XMLStreamWriter writer, BeanFromFactory bean) throws XMLStreamException {
         writer.writeAttribute("factory-ref", bean.factoryBean.id);
         writer.writeAttribute("factory-method", bean.factoryMethod);
+    }
+
+    public boolean shouldBeGenerated() {
+        return !getBeans().isEmpty();
     }
 }

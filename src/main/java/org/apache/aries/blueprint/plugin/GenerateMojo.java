@@ -18,9 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.model.Context;
+import org.apache.aries.blueprint.plugin.model.Blueprint;
 import org.apache.aries.blueprint.plugin.spi.Activation;
-import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -48,7 +47,7 @@ import java.util.Set;
 /**
  * Generates blueprint from CDI annotations
  */
-@Mojo(name = "blueprint-generate", requiresDependencyResolution = ResolutionScope.COMPILE,
+@Mojo(name = "blueprint-write", requiresDependencyResolution = ResolutionScope.COMPILE,
         defaultPhase = LifecyclePhase.PROCESS_CLASSES, inheritByDefault = false)
 public class GenerateMojo extends AbstractMojo {
 
@@ -68,13 +67,13 @@ public class GenerateMojo extends AbstractMojo {
     private BuildContext buildContext;
 
     /**
-     * Name of file to generate
+     * Name of file to write
      */
     @Parameter(defaultValue = "autowire.xml")
     protected String generatedFileName;
 
     /**
-     * Base directory to generate into
+     * Base directory to write into
      * (relative to ${project.build.directory}/generated-sources/blueprint).
      */
     @Parameter(defaultValue = "OSGI-INF/blueprint/")
@@ -109,27 +108,26 @@ public class GenerateMojo extends AbstractMojo {
         try {
             ClassFinder classFinder = createProjectScopeFinder();
             Set<Class<?>> classes = FilteredClassFinder.findClasses(classFinder, toScan);
-            Context context = new Context(blueprintConfiguration, classes);
-            writeBlueprint(blueprintConfiguration, context);
+            Blueprint blueprint = new Blueprint(blueprintConfiguration, classes);
+            writeBlueprintIfNeeded(blueprint);
         } catch (Exception e) {
             throw new MojoExecutionException("Error building commands help", e);
         }
     }
 
-    private void writeBlueprint(BlueprintConfigurationImpl blueprintConfiguration, Context context) throws Exception {
-        if (context.getBeans().size() > 0) {
-            writeBlueprint(context, blueprintConfiguration);
+    private void writeBlueprintIfNeeded(Blueprint blueprint) throws Exception {
+        if (blueprint.shouldBeGenerated()) {
+            writeBlueprint(blueprint);
         } else {
             getLog().warn("Skipping blueprint generation because beans were not found");
         }
     }
 
-
     private boolean sourcesChanged() {
         return !buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()));
     }
 
-    private void writeBlueprint(Context context, BlueprintConfiguration blueprintConfiguration) throws Exception {
+    private void writeBlueprint(Blueprint blueprint) throws Exception {
         String generatedBaseDir = ResourceInitializer.generateResourceEntry(project);
 
         File dir = new File(generatedBaseDir, generatedDir);
@@ -138,7 +136,7 @@ public class GenerateMojo extends AbstractMojo {
         getLog().info("Generating blueprint to " + file);
 
         OutputStream fos = buildContext.newFileOutputStream(file);
-        new BlueprintFileWriter(fos).generate(context);
+        new BlueprintFileWriter(fos).write(blueprint);
         fos.close();
     }
 

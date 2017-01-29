@@ -36,7 +36,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
-public class ContextTest {
+public class BlueprintTest {
     private static final String NS_JPA1 = "http://aries.apache.org/xmlns/jpa/v1.0.0";
     private static final String NS_TX1 = "http://aries.apache.org/xmlns/transactions/v1.0.0";
 
@@ -45,20 +45,20 @@ public class ContextTest {
 
     @Test
     public void testLists() {
-        Context context = new Context(blueprintConfiguration, MyBean3.class);
-        Assert.assertEquals(1, context.getBeans().size());
-        Assert.assertEquals(0, getOsgiServices(context).size());
+        Blueprint blueprint = new Blueprint(blueprintConfiguration, MyBean3.class);
+        Assert.assertEquals(1, blueprint.getBeans().size());
+        Assert.assertEquals(0, getOsgiServices(blueprint).size());
     }
 
     @Test
     public void testLists2() {
-        Context context = new Context(blueprintConfiguration, ServiceReferences.class);
-        Assert.assertEquals(1, context.getBeans().size());
-        Assert.assertEquals(3, getOsgiServices(context).size());
+        Blueprint blueprint = new Blueprint(blueprintConfiguration, ServiceReferences.class);
+        Assert.assertEquals(1, blueprint.getBeans().size());
+        Assert.assertEquals(3, getOsgiServices(blueprint).size());
     }
 
-    private Set<String> getOsgiServices(Context context) {
-        Set<String> blueprintWritersKeys = context.getBlueprintWriters().keySet();
+    private Set<String> getOsgiServices(Blueprint blueprint) {
+        Set<String> blueprintWritersKeys = blueprint.getBlueprintWriters().keySet();
         Set<String> osgiServices = new HashSet<>();
         for (String blueprintWritersKey : blueprintWritersKeys) {
             if (blueprintWritersKey.startsWith("osgiService/")) {
@@ -69,8 +69,8 @@ public class ContextTest {
     }
 
     private void assertSpecialRef(String expectedId, Class<?> clazz) {
-        Context context = new Context(blueprintConfiguration);
-        BeanRef ref = context.getMatching(new BeanRef(clazz));
+        Blueprint blueprint = new Blueprint(blueprintConfiguration);
+        BeanRef ref = blueprint.getMatching(new BeanRef(clazz));
         assertEquals(expectedId, ref.id);
     }
 
@@ -84,8 +84,8 @@ public class ContextTest {
 
     @Test
     public void testProduced() throws NoSuchFieldException, SecurityException {
-        Context context = new Context(blueprintConfiguration, MyFactoryBean.class);
-        BeanFromFactory matching = (BeanFromFactory) context.getMatching(new BeanRef(MyProduced.class));
+        Blueprint blueprint = new Blueprint(blueprintConfiguration, MyFactoryBean.class);
+        BeanFromFactory matching = (BeanFromFactory) blueprint.getMatching(new BeanRef(MyProduced.class));
         Assert.assertEquals(MyProduced.class, matching.clazz);
         Assert.assertEquals("myFactoryBean", matching.factoryBean.id);
         Assert.assertEquals("create", matching.factoryMethod);

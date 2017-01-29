@@ -37,26 +37,23 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 
-public class Bean extends BeanRef implements BeanEnricher {
+class Bean extends BeanRef implements BeanEnricher {
     public SortedSet<Property> properties = new TreeSet<>();
     public List<Argument> constructorArguments = new ArrayList<>();
     public boolean isPrototype;
     public final Map<String, String> attributes = new HashMap<>();
-    public final Set<BeanRef> refs = new HashSet<>();
     public final Map<String, XmlWriter> beanContentWriters = new HashMap<>();
     protected final ContextEnricher contextEnricher;
 
-    public Bean(Class<?> clazz, ContextEnricher contextEnricher) {
+    Bean(Class<?> clazz, ContextEnricher contextEnricher) {
         super(clazz, BeanRef.getBeanName(clazz));
         this.contextEnricher = contextEnricher;
         Introspector introspector = new Introspector(clazz);
@@ -72,14 +69,14 @@ public class Bean extends BeanRef implements BeanEnricher {
         handleMethodsAnnotation(introspector);
     }
 
-    public void resolve(BlueprintRegister blueprintRegister) {
-        resolveArguments(blueprintRegister);
-        resolveFields(blueprintRegister);
-        resolveMethods(blueprintRegister);
+    void resolve(BlueprintRegistry blueprintRegistry) {
+        resolveArguments(blueprintRegistry);
+        resolveFields(blueprintRegistry);
+        resolveMethods(blueprintRegistry);
     }
 
     private void handleMethodsAnnotation(Introspector introspector) {
-        for (MethodAnnotationHandler methodAnnotationHandler : Handlers.methodAnnotationHandlers) {
+        for (MethodAnnotationHandler methodAnnotationHandler : Handlers.METHOD_ANNOTATION_HANDLERS) {
             List<Method> methods = introspector.methodsWith(methodAnnotationHandler.getAnnotation());
             if (methods.size() > 0) {
                 methodAnnotationHandler.handleMethodAnnotation(clazz, methods, contextEnricher, this);
@@ -88,7 +85,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private void handleFieldsAnnotation(Introspector introspector) {
-        for (FieldAnnotationHandler fieldAnnotationHandler : Handlers.fieldAnnotationHandlers) {
+        for (FieldAnnotationHandler fieldAnnotationHandler : Handlers.FIELD_ANNOTATION_HANDLERS) {
             List<Field> fields = introspector.fieldsWith(fieldAnnotationHandler.getAnnotation());
             if (fields.size() > 0) {
                 fieldAnnotationHandler.handleFieldAnnotation(clazz, fields, contextEnricher, this);
@@ -97,7 +94,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private void handleCustomBeanAnnotations() {
-        for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERs) {
+        for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERS) {
             Object annotation = AnnotationHelper.findAnnotation(clazz.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
                 beanAnnotationHandler.handleBeanAnnotation(clazz, id, contextEnricher, this);
@@ -110,7 +107,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private boolean findSingleton(Class clazz) {
-        for (Class<?> singletonAnnotation : Handlers.singletons) {
+        for (Class<?> singletonAnnotation : Handlers.SINGLETONS) {
             if (clazz.getAnnotation(singletonAnnotation) != null) {
                 return true;
             }
@@ -119,16 +116,16 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
 
-    private void resolveMethods(BlueprintRegister blueprintRegister) {
+    private void resolveMethods(BlueprintRegistry blueprintRegistry) {
         for (Method method : new Introspector(clazz).methodsWith(AnnotationHelper.injectDependencyAnnotations)) {
-            Property prop = Property.create(blueprintRegister, method);
+            Property prop = Property.create(blueprintRegistry, method);
             if (prop != null) {
                 properties.add(prop);
             }
         }
     }
 
-    private void resolveFields(BlueprintRegister matcher) {
+    private void resolveFields(BlueprintRegistry matcher) {
         for (Field field : new Introspector(clazz).fieldsWith(AnnotationHelper.injectDependencyAnnotations)) {
             Property prop = Property.create(matcher, field);
             if (prop != null) {
@@ -137,7 +134,7 @@ public class Bean extends BeanRef implements BeanEnricher {
         }
     }
 
-    protected void resolveArguments(BlueprintRegister matcher) {
+    protected void resolveArguments(BlueprintRegistry matcher) {
         Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
         for (Constructor constructor : declaredConstructors) {
             if (declaredConstructors.length == 1 || shouldInject(constructor)) {
@@ -148,7 +145,7 @@ public class Bean extends BeanRef implements BeanEnricher {
     }
 
     private boolean shouldInject(AnnotatedElement annotatedElement) {
-        for (InjectLikeHandler injectLikeHandler : Handlers.beanInjectLikeHandlers) {
+        for (InjectLikeHandler injectLikeHandler : Handlers.BEAN_INJECT_LIKE_HANDLERS) {
             if (annotatedElement.getAnnotation(injectLikeHandler.getAnnotation()) != null) {
                 return true;
             }
@@ -156,16 +153,16 @@ public class Bean extends BeanRef implements BeanEnricher {
         return false;
     }
 
-    protected void resolveArguments(BlueprintRegister blueprintRegister, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
+    protected void resolveArguments(BlueprintRegistry blueprintRegistry, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
         for (int i = 0; i < parameterTypes.length; ++i) {
             Annotation[] annotations = parameterAnnotations[i];
             String value = findValue(annotations);
             String ref = findName(annotations);
 
-            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.customDependencyAnnotationHandlers) {
+            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.CUSTOM_DEPENDENCY_ANNOTATION_HANDLERS) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(annotations, customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
-                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(parameterTypes[i], annotation, ref, blueprintRegister);
+                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(parameterTypes[i], annotation, ref, blueprintRegistry);
                     if (generatedRef != null) {
                         ref = generatedRef;
                         break;
@@ -176,7 +173,7 @@ public class Bean extends BeanRef implements BeanEnricher {
             if (ref == null && value == null) {
                 BeanRef template = new BeanRef(parameterTypes[i]);
                 template.setQualifiersFromAnnotations(annotations);
-                BeanRef bean = blueprintRegister.getMatching(template);
+                BeanRef bean = blueprintRegistry.getMatching(template);
                 if (bean != null) {
                     ref = bean.id;
                 } else {
