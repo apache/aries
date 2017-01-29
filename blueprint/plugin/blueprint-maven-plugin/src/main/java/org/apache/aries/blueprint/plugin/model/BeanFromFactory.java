@@ -25,16 +25,16 @@ import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 
 import java.lang.reflect.Method;
 
-public class BeanFromFactory extends Bean {
-    public String factoryMethod;
-    public BeanRef factoryBean;
+class BeanFromFactory extends Bean {
+    String factoryMethod;
+     BeanRef factoryBean;
     private Method producingMethod;
 
-    public BeanFromFactory(Class<?> clazz, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+    BeanFromFactory(Class<?> clazz, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
         this(clazz, null, factoryBean, factoryMethod, contextEnricher);
     }
 
-    public BeanFromFactory(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+    BeanFromFactory(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
         super(clazz, contextEnricher);
         if (id != null) {
             this.id = id;
@@ -54,7 +54,7 @@ public class BeanFromFactory extends Bean {
         }
     }
 
-    public void setSingleton() {
+    void setSingleton() {
         this.isPrototype = false;
     }
 
