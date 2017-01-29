@@ -20,7 +20,6 @@ package org.apache.aries.blueprint.plugin;
 
 import com.google.common.collect.Sets;
 import org.apache.aries.blueprint.plugin.model.Context;
-import org.apache.aries.blueprint.plugin.model.BlueprintWriter;
 import org.apache.aries.blueprint.plugin.model.TransactionalDef;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyProduced;
@@ -64,7 +63,7 @@ import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class BlueprintWriterTest {
+public class BlueprintFileWriterTest {
 
     private static final String NS_JPA = "http://aries.apache.org/xmlns/jpa/v1.1.0";
     private static final String NS_TX1 = "http://aries.apache.org/xmlns/transactions/v1.2.0";
@@ -75,7 +74,7 @@ public class BlueprintWriterTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        ClassFinder classFinder = new ClassFinder(BlueprintWriterTest.class.getClassLoader());
+        ClassFinder classFinder = new ClassFinder(BlueprintFileWriterTest.class.getClassLoader());
         Set<Class<?>> beanClasses = findClasses(classFinder, Arrays.asList(
                 MyBean1.class.getPackage().getName(),
                 ReferenceListenerToProduceWithoutAnnotation.class.getPackage().getName()
@@ -88,7 +87,7 @@ public class BlueprintWriterTest {
         BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, customParameters);
         Context context = new Context(blueprintConfiguration, beanClasses);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        new BlueprintWriter(os, blueprintConfiguration).generate(context);
+        new BlueprintFileWriter(os).generate(context);
         System.out.println(os.toString("UTF-8"));
 
         xmlAsBytes = os.toByteArray();
@@ -615,20 +614,20 @@ public class BlueprintWriterTest {
         Document document = readToDocument(xmlAsBytes, true);
 
         Source[] schemas = new StreamSource[]{
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/example.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/blueprint.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.1.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.3.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.4.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.5.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/transaction/parsing/transactionv12.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/jpa/blueprint/namespace/jpa_110.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.0.0.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.3.0.xsd")),
-                new StreamSource(BlueprintWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.2.0.xsd"))
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/example.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/blueprint.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.1.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.3.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.4.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.5.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/transaction/parsing/transactionv12.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/jpa/blueprint/namespace/jpa_110.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.0.0.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.3.0.xsd")),
+                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.2.0.xsd"))
         };
 
         Source xmlFile = new DOMSource(document);

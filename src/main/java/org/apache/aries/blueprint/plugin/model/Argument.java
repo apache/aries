@@ -23,20 +23,20 @@ import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-public class Argument implements XmlWriter{
+class Argument implements XmlWriter{
     private final String ref;
     private final String value;
 
-    public Argument(String ref, String value) {
+    Argument(String ref, String value) {
         this.ref = ref;
         this.value = value;
     }
 
-    public String getRef() {
+    String getRef() {
         return this.ref;
     }
 
-    public String getValue() {
+    String getValue() {
         return this.value;
     }
 

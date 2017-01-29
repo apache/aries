@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.model.BlueprintWriter;
 import org.apache.aries.blueprint.plugin.model.Context;
 import org.apache.aries.blueprint.plugin.spi.Activation;
 import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
@@ -139,7 +138,7 @@ public class GenerateMojo extends AbstractMojo {
         getLog().info("Generating blueprint to " + file);
 
         OutputStream fos = buildContext.newFileOutputStream(file);
-        new BlueprintWriter(fos, blueprintConfiguration).generate(context);
+        new BlueprintFileWriter(fos).generate(context);
         fos.close();
     }
 

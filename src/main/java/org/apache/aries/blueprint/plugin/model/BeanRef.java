@@ -28,29 +28,29 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BeanRef implements Comparable<BeanRef> {
+class BeanRef implements Comparable<BeanRef> {
     public String id;
     public Class<?> clazz;
-    public Map<Class<? extends Annotation>, Annotation> qualifiers = new HashMap<>();
+    Map<Class<? extends Annotation>, Annotation> qualifiers = new HashMap<>();
 
     /**
      * @param clazz interface or implementation class
      */
-    public BeanRef(Class<?> clazz) {
+    BeanRef(Class<?> clazz) {
         this.clazz = clazz;
     }
 
-    public BeanRef(Class<?> clazz, String id) {
+    BeanRef(Class<?> clazz, String id) {
         this(clazz);
         this.id = id;
     }
 
-    public BeanRef(Field field) {
+    BeanRef(Field field) {
         this(field.getType());
         parseQualifiers(field);
     }
 
-    public BeanRef(Method method) {
+    BeanRef(Method method) {
         this(method.getParameterTypes()[0]);
         parseQualifiers(method);
     }
@@ -78,11 +78,11 @@ public class BeanRef implements Comparable<BeanRef> {
         return null;
     }
 
-    public static String getBeanName(Class<?> clazz) {
+    static String getBeanName(Class<?> clazz) {
         return getBeanName(clazz, clazz);
     }
 
-    public static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
+    static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
         for (NamedLikeHandler namedLikeHandler : Handlers.namedLikeHandlers) {
             if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
                 String name = namedLikeHandler.getName(clazz, annotatedElement);
@@ -99,7 +99,7 @@ public class BeanRef implements Comparable<BeanRef> {
         return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
     }
 
-    public boolean matches(BeanRef template) {
+    boolean matches(BeanRef template) {
         boolean assignable = template.clazz.isAssignableFrom(this.clazz);
         if (template.id != null) {
             return template.id.equals(id);
