@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler;
@@ -32,17 +32,17 @@ public class AnnotationHelper {
 
     private static Class<? extends Annotation>[] findInjectDependencyAnnotations() {
         List<Class<? extends Annotation>> classes = new ArrayList<>();
-        for (InjectLikeHandler<? extends Annotation> injectLikeHandler : Extensions.beanInjectLikeHandlers) {
+        for (InjectLikeHandler<? extends Annotation> injectLikeHandler : Handlers.beanInjectLikeHandlers) {
             classes.add(injectLikeHandler.getAnnotation());
         }
-        for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : Extensions.valueInjectionHandlers) {
+        for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : Handlers.valueInjectionHandlers) {
             classes.add(valueInjectionHandler.getAnnotation());
         }
         return classes.toArray(new Class[classes.size()]);
     }
 
     public static String findValue(Annotation[] annotations) {
-        for (ValueInjectionHandler valueInjectionHandler : Extensions.valueInjectionHandlers) {
+        for (ValueInjectionHandler valueInjectionHandler : Handlers.valueInjectionHandlers) {
             Object annotation = findAnnotation(annotations, valueInjectionHandler.getAnnotation());
             if (annotation != null) {
                 String value = valueInjectionHandler.getValue(annotation);
@@ -55,7 +55,7 @@ public class AnnotationHelper {
     }
 
     public static String findName(Annotation[] annotations) {
-        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+        for (NamedLikeHandler namedLikeHandler : Handlers.namedLikeHandlers) {
             Object annotation = findAnnotation(annotations, namedLikeHandler.getAnnotation());
             if (annotation != null) {
                 String value = namedLikeHandler.getName(annotation);
@@ -77,7 +77,7 @@ public class AnnotationHelper {
     }
 
     public static boolean findSingletons(Annotation[] annotations) {
-        for (Class<? extends Annotation> singletonAnnotation : Extensions.singletons) {
+        for (Class<? extends Annotation> singletonAnnotation : Handlers.singletons) {
             Object annotation = findAnnotation(annotations, singletonAnnotation);
             if (annotation != null) {
                 return true;

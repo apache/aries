@@ -19,7 +19,7 @@
 package org.apache.aries.blueprint.plugin.model;
 
 
-import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 
@@ -46,7 +46,7 @@ public class BeanFromFactory extends Bean {
     }
 
     private void handleCustomBeanAnnotations() {
-        for (BeanAnnotationHandler beanAnnotationHandler : Extensions.BEAN_ANNOTATION_HANDLERs) {
+        for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERs) {
             Object annotation = AnnotationHelper.findAnnotation(producingMethod.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
                 beanAnnotationHandler.handleBeanAnnotation(producingMethod, id, contextEnricher, this);

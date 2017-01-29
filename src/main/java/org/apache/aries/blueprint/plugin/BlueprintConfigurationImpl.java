@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class BlueprintConfigurationImpl implements BlueprintConfiguration {
-    public static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
-    public static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
+    private static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";
+    private static final String NS_JPA2 = "http://aries.apache.org/xmlns/jpa/v2.0.0";
 
     private final Set<String> namespaces;
     private final Activation defaultActivation;

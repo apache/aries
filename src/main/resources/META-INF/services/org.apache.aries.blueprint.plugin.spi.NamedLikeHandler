@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.spring.ComponentAsNamed
-org.apache.aries.blueprint.plugin.spring.QualifierAsNamed
-org.apache.aries.blueprint.plugin.javax.NamedHandler
+org.apache.aries.blueprint.plugin.handlers.spring.ComponentAsNamed
+org.apache.aries.blueprint.plugin.handlers.spring.QualifierAsNamed
+org.apache.aries.blueprint.plugin.handlers.javax.NamedHandler

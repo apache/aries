@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 
 import java.lang.annotation.Annotation;
@@ -69,7 +69,7 @@ public class BeanRef implements Comparable<BeanRef> {
     }
 
     private Object isQualifier(Annotation ann) {
-        for (Class<? extends Annotation> qualifingAnnotationClass : Extensions.qualifingAnnotationClasses) {
+        for (Class<? extends Annotation> qualifingAnnotationClass : Handlers.qualifingAnnotationClasses) {
             Object annotation = ann.annotationType().getAnnotation(qualifingAnnotationClass);
             if (annotation != null) {
                 return annotation;
@@ -83,7 +83,7 @@ public class BeanRef implements Comparable<BeanRef> {
     }
 
     public static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
-        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+        for (NamedLikeHandler namedLikeHandler : Handlers.namedLikeHandlers) {
             if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
                 String name = namedLikeHandler.getName(clazz, annotatedElement);
                 if (name != null) {

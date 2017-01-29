@@ -18,10 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -29,7 +32,7 @@ import java.lang.reflect.Method;
 
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 
-public class Property implements Comparable<Property> {
+public class Property implements Comparable<Property>, XmlWriter {
     public final String name;
     public final String ref;
     public final String value;
@@ -49,7 +52,7 @@ public class Property implements Comparable<Property> {
                 return new Property(field.getName(), null, value, true);
             }
             String ref = getForcedRefName(field);
-            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
+            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(field.getAnnotations(), customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
                     String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(field, ref, blueprintRegister);
@@ -87,7 +90,7 @@ public class Property implements Comparable<Property> {
             if (ref == null) {
                 ref = findName(method.getParameterAnnotations()[0]);
             }
-            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
+            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(method.getAnnotations(), customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
                     String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(method, ref, blueprintRegister);
@@ -101,7 +104,7 @@ public class Property implements Comparable<Property> {
                 return new Property(propertyName, ref, null, false);
             }
 
-            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Extensions.customDependencyAnnotationHandlers) {
+            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.customDependencyAnnotationHandlers) {
                 Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(method.getParameterAnnotations()[0], customDependencyAnnotationHandler.getAnnotation());
                 if (annotation != null) {
                     String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(method.getParameterTypes()[0], annotation, ref, blueprintRegister);
@@ -143,7 +146,7 @@ public class Property implements Comparable<Property> {
     }
 
     private static String getForcedRefName(Field field) {
-        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+        for (NamedLikeHandler namedLikeHandler : Handlers.namedLikeHandlers) {
             if (field.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
                 String name = namedLikeHandler.getName(field.getType(), field);
                 if (name != null) {
@@ -155,7 +158,7 @@ public class Property implements Comparable<Property> {
     }
 
     private static String getForcedRefName(Method method) {
-        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+        for (NamedLikeHandler namedLikeHandler : Handlers.namedLikeHandlers) {
             if (method.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
                 String name = namedLikeHandler.getName(method.getParameterTypes()[0], method);
                 if (name != null) {
@@ -182,5 +185,16 @@ public class Property implements Comparable<Property> {
 
     private static String makeFirstLetterLower(String name) {
         return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
+    }
+
+    @Override
+    public void write(XMLStreamWriter writer) throws XMLStreamException {
+        writer.writeEmptyElement("property");
+        writer.writeAttribute("name", name);
+        if (ref != null) {
+            writer.writeAttribute("ref", ref);
+        } else if (value != null) {
+            writer.writeAttribute("value", value);
+        }
     }
 }
