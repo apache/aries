@@ -15,11 +15,11 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.pax.OsgiServiceProviderHandler
-org.apache.aries.blueprint.plugin.spring.LazyAttributeResolver
-org.apache.aries.blueprint.plugin.spring.DependsOnAttributeResolver
-org.apache.aries.blueprint.plugin.spring.SpringTransactionalFactory
-org.apache.aries.blueprint.plugin.javax.JavaxTransactionFactory
-org.apache.aries.blueprint.plugin.javax.cdi.CdiTransactionFactory
-org.apache.aries.blueprint.plugin.config.ConfigAnnotationHandler
-org.apache.aries.blueprint.plugin.referencelistener.ReferenceListenerHandler
+org.apache.aries.blueprint.plugin.handlers.pax.OsgiServiceProviderHandler
+org.apache.aries.blueprint.plugin.handlers.spring.LazyAttributeResolver
+org.apache.aries.blueprint.plugin.handlers.spring.DependsOnAttributeResolver
+org.apache.aries.blueprint.plugin.handlers.spring.SpringTransactionalFactory
+org.apache.aries.blueprint.plugin.handlers.javax.JavaxTransactionFactory
+org.apache.aries.blueprint.plugin.handlers.javax.cdi.CdiTransactionFactory
+org.apache.aries.blueprint.plugin.handlers.config.ConfigAnnotationHandler
+org.apache.aries.blueprint.plugin.handlers.referencelistener.ReferenceListenerHandler

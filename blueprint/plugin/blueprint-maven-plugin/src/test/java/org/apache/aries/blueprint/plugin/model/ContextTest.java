@@ -53,7 +53,6 @@ public class ContextTest {
     @Test
     public void testLists2() {
         Context context = new Context(blueprintConfiguration, ServiceReferences.class);
-        context.resolve();
         Assert.assertEquals(1, context.getBeans().size());
         Assert.assertEquals(3, getOsgiServices(context).size());
     }
@@ -86,7 +85,6 @@ public class ContextTest {
     @Test
     public void testProduced() throws NoSuchFieldException, SecurityException {
         Context context = new Context(blueprintConfiguration, MyFactoryBean.class);
-        context.resolve();
         BeanFromFactory matching = (BeanFromFactory) context.getMatching(new BeanRef(MyProduced.class));
         Assert.assertEquals(MyProduced.class, matching.clazz);
         Assert.assertEquals("myFactoryBean", matching.factoryBean.id);

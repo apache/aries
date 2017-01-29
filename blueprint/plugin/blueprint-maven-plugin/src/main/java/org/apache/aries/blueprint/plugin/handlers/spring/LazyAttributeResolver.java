@@ -16,37 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.handlers.spring;
 
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
+import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
+import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import org.springframework.context.annotation.Lazy;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import java.lang.reflect.AnnotatedElement;
 
-public class Argument implements XmlWriter{
-    private final String ref;
-    private final String value;
-
-    public Argument(String ref, String value) {
-        this.ref = ref;
-        this.value = value;
-    }
-
-    public String getRef() {
-        return this.ref;
-    }
-
-    public String getValue() {
-        return this.value;
+public class LazyAttributeResolver implements BeanAnnotationHandler<Lazy> {
+    @Override
+    public Class<Lazy> getAnnotation() {
+        return Lazy.class;
     }
 
     @Override
-    public void write(XMLStreamWriter writer) throws XMLStreamException {
-        writer.writeEmptyElement("argument");
-        if (ref != null) {
-            writer.writeAttribute("ref", ref);
-        } else if (value != null) {
-            writer.writeAttribute("value", value);
-        }
+    public void handleBeanAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
+        Lazy lazy = annotatedElement.getAnnotation(Lazy.class);
+        beanEnricher.addAttribute("activation", lazy.value() ? "lazy" : "eager");
     }
+
 }

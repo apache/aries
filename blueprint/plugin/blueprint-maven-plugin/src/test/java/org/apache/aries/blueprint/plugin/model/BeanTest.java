@@ -164,22 +164,22 @@ public class BeanTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean1() {
-        new Context(blueprintConfiguration, BadFieldBean1.class).resolve();
+        new Context(blueprintConfiguration, BadFieldBean1.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean2() {
-        new Context(blueprintConfiguration, BadFieldBean2.class).resolve();
+        new Context(blueprintConfiguration, BadFieldBean2.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testBadFieldBean3() {
-        new Context(blueprintConfiguration, BadFieldBean3.class).resolve();
+        new Context(blueprintConfiguration, BadFieldBean3.class);
     }
 
     @Test
     public void testFieldBean4() {
-        new Context(blueprintConfiguration, FieldBean4.class).resolve();
+        new Context(blueprintConfiguration, FieldBean4.class);
     }
 
     @Test

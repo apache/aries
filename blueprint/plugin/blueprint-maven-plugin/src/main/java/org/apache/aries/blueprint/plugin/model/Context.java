@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextInitializationHandler;
@@ -47,10 +47,11 @@ public class Context implements BlueprintRegister, ContextEnricher {
         this.blueprintConfiguration = blueprintConfiguration;
         initContext();
         addBeans(beanClasses);
+        resolve();
     }
 
     private void initContext() {
-        for (ContextInitializationHandler contextInitializationHandler : Extensions.contextInitializationHandlers) {
+        for (ContextInitializationHandler contextInitializationHandler : Handlers.contextInitializationHandlers) {
             contextInitializationHandler.initContext(this);
         }
     }
@@ -90,7 +91,7 @@ public class Context implements BlueprintRegister, ContextEnricher {
 
     private boolean isFactoryMethod(Method method) {
         boolean isFactoryMethod = false;
-        for (Class<? extends Annotation> factoryMethodAnnotationClass : Extensions.factoryMethodAnnotationClasses) {
+        for (Class<? extends Annotation> factoryMethodAnnotationClass : Handlers.factoryMethodAnnotationClasses) {
             Annotation annotation = AnnotationHelper.findAnnotation(method.getAnnotations(), factoryMethodAnnotationClass);
             if (annotation != null) {
                 isFactoryMethod = true;
@@ -100,7 +101,7 @@ public class Context implements BlueprintRegister, ContextEnricher {
         return isFactoryMethod;
     }
 
-    public void resolve() {
+    private void resolve() {
         for (Bean bean : getBeans()) {
             bean.resolve(this);
         }

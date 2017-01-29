@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.spring.ValueInjectionHandler
-org.apache.aries.blueprint.plugin.config.ConfigPropertyInjectionHandler
+org.apache.aries.blueprint.plugin.handlers.spring.ValueInjectionHandler
+org.apache.aries.blueprint.plugin.handlers.config.ConfigPropertyInjectionHandler
