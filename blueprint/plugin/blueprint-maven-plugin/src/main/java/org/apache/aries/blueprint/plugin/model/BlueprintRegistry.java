@@ -20,6 +20,6 @@ package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 
-public interface BlueprintRegister extends ContextEnricher {
+interface BlueprintRegistry extends ContextEnricher {
     BeanRef getMatching(BeanRef template);
 }

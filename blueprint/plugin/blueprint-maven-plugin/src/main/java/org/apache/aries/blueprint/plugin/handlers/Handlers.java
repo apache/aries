@@ -36,65 +36,65 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 public class Handlers {
-    public static final List<Class<? extends Annotation>> beanMarkingAnnotationClasses = new ArrayList<>();
-    public static final List<Class<? extends Annotation>> singletons = new ArrayList<>();
-    public static final List<InjectLikeHandler<? extends Annotation>> beanInjectLikeHandlers = new ArrayList<>();
-    public static final List<NamedLikeHandler> namedLikeHandlers = new ArrayList<>();
-    public static final List<ValueInjectionHandler<? extends Annotation>> valueInjectionHandlers = new ArrayList<>();
-    public static final List<BeanAnnotationHandler<? extends Annotation>> BEAN_ANNOTATION_HANDLERs = new ArrayList<>();
-    public static final List<CustomDependencyAnnotationHandler<? extends Annotation>> customDependencyAnnotationHandlers = new ArrayList<>();
-    public static final List<MethodAnnotationHandler<? extends Annotation>> methodAnnotationHandlers = new ArrayList<>();
-    public static final List<FieldAnnotationHandler<? extends Annotation>> fieldAnnotationHandlers = new ArrayList<>();
-    public static final List<Class<? extends Annotation>> factoryMethodAnnotationClasses = new ArrayList<>();
-    public static final List<Class<? extends Annotation>> qualifingAnnotationClasses = new ArrayList<>();
-    public static final List<ContextInitializationHandler> contextInitializationHandlers = new ArrayList<>();
+    public static final List<Class<? extends Annotation>> BEAN_MARKING_ANNOTATION_CLASSES = new ArrayList<>();
+    public static final List<Class<? extends Annotation>> SINGLETONS = new ArrayList<>();
+    public static final List<InjectLikeHandler<? extends Annotation>> BEAN_INJECT_LIKE_HANDLERS = new ArrayList<>();
+    public static final List<NamedLikeHandler> NAMED_LIKE_HANDLERS = new ArrayList<>();
+    public static final List<ValueInjectionHandler<? extends Annotation>> VALUE_INJECTION_HANDLERS = new ArrayList<>();
+    public static final List<BeanAnnotationHandler<? extends Annotation>> BEAN_ANNOTATION_HANDLERS = new ArrayList<>();
+    public static final List<CustomDependencyAnnotationHandler<? extends Annotation>> CUSTOM_DEPENDENCY_ANNOTATION_HANDLERS = new ArrayList<>();
+    public static final List<MethodAnnotationHandler<? extends Annotation>> METHOD_ANNOTATION_HANDLERS = new ArrayList<>();
+    public static final List<FieldAnnotationHandler<? extends Annotation>> FIELD_ANNOTATION_HANDLERS = new ArrayList<>();
+    public static final List<Class<? extends Annotation>> FACTORY_METHOD_ANNOTATION_CLASSES = new ArrayList<>();
+    public static final List<Class<? extends Annotation>> QUALIFING_ANNOTATION_CLASSES = new ArrayList<>();
+    public static final List<ContextInitializationHandler> CONTEXT_INITIALIZATION_HANDLERS = new ArrayList<>();
 
     static {
         for (BeanFinder beanFinder : ServiceLoader.load(BeanFinder.class)) {
-            beanMarkingAnnotationClasses.add(beanFinder.getAnnotation());
+            BEAN_MARKING_ANNOTATION_CLASSES.add(beanFinder.getAnnotation());
             if (beanFinder.isSingleton()) {
-                singletons.add(beanFinder.getAnnotation());
+                SINGLETONS.add(beanFinder.getAnnotation());
             }
         }
 
         for (InjectLikeHandler<? extends Annotation> injectLikeHandler : ServiceLoader.load(InjectLikeHandler.class)) {
-            beanInjectLikeHandlers.add(injectLikeHandler);
+            BEAN_INJECT_LIKE_HANDLERS.add(injectLikeHandler);
         }
 
         for (NamedLikeHandler namedLikeHandler : ServiceLoader.load(NamedLikeHandler.class)) {
-            namedLikeHandlers.add(namedLikeHandler);
+            NAMED_LIKE_HANDLERS.add(namedLikeHandler);
         }
 
         for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : ServiceLoader.load(ValueInjectionHandler.class)) {
-            valueInjectionHandlers.add(valueInjectionHandler);
+            VALUE_INJECTION_HANDLERS.add(valueInjectionHandler);
         }
 
         for (BeanAnnotationHandler<? extends Annotation> beanAnnotationHandler : ServiceLoader.load(BeanAnnotationHandler.class)) {
-            BEAN_ANNOTATION_HANDLERs.add(beanAnnotationHandler);
+            BEAN_ANNOTATION_HANDLERS.add(beanAnnotationHandler);
         }
 
         for (CustomDependencyAnnotationHandler<? extends Annotation> customDependencyAnnotationHandler : ServiceLoader.load(CustomDependencyAnnotationHandler.class)) {
-            customDependencyAnnotationHandlers.add(customDependencyAnnotationHandler);
+            CUSTOM_DEPENDENCY_ANNOTATION_HANDLERS.add(customDependencyAnnotationHandler);
         }
 
         for (MethodAnnotationHandler<? extends Annotation> methodAnnotationHandler : ServiceLoader.load(MethodAnnotationHandler.class)) {
-            methodAnnotationHandlers.add(methodAnnotationHandler);
+            METHOD_ANNOTATION_HANDLERS.add(methodAnnotationHandler);
         }
 
         for (FieldAnnotationHandler<? extends Annotation> fieldAnnotationHandler : ServiceLoader.load(FieldAnnotationHandler.class)) {
-            fieldAnnotationHandlers.add(fieldAnnotationHandler);
+            FIELD_ANNOTATION_HANDLERS.add(fieldAnnotationHandler);
         }
 
         for (FactoryMethodFinder<? extends Annotation> factoryMethodFinder : ServiceLoader.load(FactoryMethodFinder.class)) {
-            factoryMethodAnnotationClasses.add((Class<? extends Annotation>) factoryMethodFinder.getAnnotation());
+            FACTORY_METHOD_ANNOTATION_CLASSES.add((Class<? extends Annotation>) factoryMethodFinder.getAnnotation());
         }
 
         for (QualifingAnnotationFinder<? extends Annotation> qualifingAnnotationFinder : ServiceLoader.load(QualifingAnnotationFinder.class)) {
-            qualifingAnnotationClasses.add((Class<? extends Annotation>) qualifingAnnotationFinder.getAnnotation());
+            QUALIFING_ANNOTATION_CLASSES.add((Class<? extends Annotation>) qualifingAnnotationFinder.getAnnotation());
         }
 
         for (ContextInitializationHandler contextInitializationHandler : ServiceLoader.load(ContextInitializationHandler.class)) {
-            contextInitializationHandlers.add(contextInitializationHandler);
+            CONTEXT_INITIALIZATION_HANDLERS.add(contextInitializationHandler);
         }
     }
 }
