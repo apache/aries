@@ -16,3 +16,4 @@
 #
 
 org.apache.aries.blueprint.plugin.handlers.javax.ProducesHandler
+org.apache.aries.blueprint.plugin.handlers.bean.BeanHandler

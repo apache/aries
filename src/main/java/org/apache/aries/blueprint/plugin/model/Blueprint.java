@@ -182,7 +182,7 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
         if (bean.needFieldInjection()) {
             writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
         }
-        if (bean.isPrototype) {
+        if (bean.isPrototype && !bean.attributes.containsKey("scope")) {
             writer.writeAttribute("scope", "prototype");
         }
 

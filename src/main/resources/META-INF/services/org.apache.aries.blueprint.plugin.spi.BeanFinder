@@ -18,3 +18,4 @@
 org.apache.aries.blueprint.plugin.handlers.spring.ComponentBeanFinder
 org.apache.aries.blueprint.plugin.handlers.javax.SingletonBeanFinder
 org.apache.aries.blueprint.plugin.handlers.javax.NamedBeanFinder
+org.apache.aries.blueprint.plugin.handlers.bean.BeanHandler
