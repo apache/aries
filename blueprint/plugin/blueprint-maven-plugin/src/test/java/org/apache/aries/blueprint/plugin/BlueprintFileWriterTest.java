@@ -26,6 +26,10 @@ import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.ServiceA;
 import org.apache.aries.blueprint.plugin.test.ServiceB;
 import org.apache.aries.blueprint.plugin.test.ServiceD;
+import org.apache.aries.blueprint.plugin.test.bean.BasicBean;
+import org.apache.aries.blueprint.plugin.test.bean.BeanWithCallbackMethods;
+import org.apache.aries.blueprint.plugin.test.bean.NamedBean;
+import org.apache.aries.blueprint.plugin.test.bean.SimpleProducedBean;
 import org.apache.aries.blueprint.plugin.test.referencelistener.ReferenceListenerToProduceWithoutAnnotation;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.xbean.finder.ClassFinder;
@@ -635,6 +639,84 @@ public class BlueprintFileWriterTest {
         Schema schema = schemaFactory.newSchema(schemas);
         Validator validator = schema.newValidator();
         validator.validate(xmlFile);
+    }
+
+    @Test
+    public void beanAnnotationCreatesBasicBean() throws Exception {
+        Node bean = getBeanById("basicBean");
+        assertXpathEquals(bean, "@class", BasicBean.class.getName());
+        assertXpathDoesNotExist(bean, "@scope");
+        assertXpathDoesNotExist(bean, "@activation");
+        assertXpathDoesNotExist(bean, "@depends-on");
+        assertXpathDoesNotExist(bean, "@init-method");
+        assertXpathDoesNotExist(bean, "@destroy-method");
+        assertXpathDoesNotExist(bean, "@factory-ref");
+        assertXpathDoesNotExist(bean, "@factory-method");
+    }
+
+    @Test
+    public void beanAnnotationCreatesNamedBean() throws Exception {
+        Node bean = getBeanById("namedBean1");
+        assertXpathEquals(bean, "@class", NamedBean.class.getName());
+        assertXpathEquals(bean, "@activation", "eager");
+        assertXpathEquals(bean, "@scope", "prototype");
+        assertXpathDoesNotExist(bean, "@depends-on");
+        assertXpathDoesNotExist(bean, "@init-method");
+        assertXpathDoesNotExist(bean, "@destroy-method");
+        assertXpathDoesNotExist(bean, "@factory-ref");
+        assertXpathDoesNotExist(bean, "@factory-method");
+    }
+
+    @Test
+    public void beanAnnotationCreatesBeanWithCallbackMethods() throws Exception {
+        Node bean = getBeanById("beanWithCallbackMethods");
+        assertXpathEquals(bean, "@class", BeanWithCallbackMethods.class.getName());
+        assertXpathEquals(bean, "@scope", "prototype");
+        assertXpathEquals(bean, "@activation", "lazy");
+        assertXpathEquals(bean, "@depends-on", "basicBean namedBean1");
+        assertXpathEquals(bean, "@init-method", "init");
+        assertXpathEquals(bean, "@destroy-method", "destroy");
+        assertXpathDoesNotExist(bean, "@factory-ref");
+        assertXpathDoesNotExist(bean, "@factory-method");
+    }
+
+    @Test
+    public void beanAnnotationProducesSimpleBean() throws Exception {
+        Node bean = getBeanById("simpleProducedBean1");
+        assertXpathEquals(bean, "@class", SimpleProducedBean.class.getName());
+        assertXpathDoesNotExist(bean, "@scope");
+        assertXpathDoesNotExist(bean, "@activation");
+        assertXpathDoesNotExist(bean, "@depends-on");
+        assertXpathDoesNotExist(bean, "@init-method");
+        assertXpathDoesNotExist(bean, "@destroy-method");
+        assertXpathEquals(bean, "@factory-ref", "basicBean");
+        assertXpathEquals(bean, "@factory-method", "getBean1");
+    }
+
+    @Test
+    public void beanAnnotationProducesPrototypeBean() throws Exception {
+        Node bean = getBeanById("simpleProducedBean2");
+        assertXpathEquals(bean, "@class", SimpleProducedBean.class.getName());
+        assertXpathEquals(bean, "@activation", "eager");
+        assertXpathEquals(bean, "@scope", "prototype");
+        assertXpathDoesNotExist(bean, "@depends-on");
+        assertXpathDoesNotExist(bean, "@init-method");
+        assertXpathDoesNotExist(bean, "@destroy-method");
+        assertXpathEquals(bean, "@factory-ref", "basicBean");
+        assertXpathEquals(bean, "@factory-method", "getBean2");
+    }
+
+    @Test
+    public void beanAnnotationProducesMethodWithCallbacks() throws Exception {
+        Node bean = getBeanById("simpleProducedBean3");
+        assertXpathEquals(bean, "@class", SimpleProducedBean.class.getName());
+        assertXpathEquals(bean, "@scope", "prototype");
+        assertXpathEquals(bean, "@activation", "lazy");
+        assertXpathEquals(bean, "@depends-on", "simpleProducedBean1 simpleProducedBean2");
+        assertXpathEquals(bean, "@init-method", "init1");
+        assertXpathEquals(bean, "@destroy-method", "destroy1");
+        assertXpathEquals(bean, "@factory-ref", "basicBean");
+        assertXpathEquals(bean, "@factory-method", "getBean3");
     }
 
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
