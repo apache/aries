@@ -41,6 +41,7 @@
 
     <properties>
         <aries.osgi.export.pkg>
+            org.apache.aries.blueprint.annotation.bean,
             org.apache.aries.blueprint.annotation.config,
             org.apache.aries.blueprint.annotation.referencelistener
         </aries.osgi.export.pkg>
