@@ -45,11 +45,13 @@ import java.util.TreeSet;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 
-class Bean extends BeanRef implements BeanEnricher {
-    public SortedSet<Property> properties = new TreeSet<>();
+class Bean extends BeanRef implements BeanEnricher, XmlWriter {
+
+    static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
+
+    SortedSet<Property> properties = new TreeSet<>();
     List<Argument> constructorArguments = new ArrayList<>();
-    public boolean isPrototype;
-    public final Map<String, String> attributes = new HashMap<>();
+    final Map<String, String> attributes = new HashMap<>();
     final Map<String, XmlWriter> beanContentWriters = new HashMap<>();
     protected final ContextEnricher contextEnricher;
 
@@ -58,7 +60,7 @@ class Bean extends BeanRef implements BeanEnricher {
         this.contextEnricher = contextEnricher;
         Introspector introspector = new Introspector(clazz);
 
-        this.isPrototype = isPrototype(clazz);
+        setScope(clazz);
 
         setQualifiersFromAnnotations(clazz.getAnnotations());
 
@@ -67,6 +69,10 @@ class Bean extends BeanRef implements BeanEnricher {
         handleFieldsAnnotation(introspector);
 
         handleMethodsAnnotation(introspector);
+    }
+
+    private void setScope(Class<?> clazz) {
+        attributes.put("scope", findSingleton(clazz) ? "singleton" : "prototype");
     }
 
     void resolve(BlueprintRegistry blueprintRegistry) {
@@ -100,10 +106,6 @@ class Bean extends BeanRef implements BeanEnricher {
                 beanAnnotationHandler.handleBeanAnnotation(clazz, id, contextEnricher, this);
             }
         }
-    }
-
-    private boolean isPrototype(Class<?> clazz) {
-        return !findSingleton(clazz);
     }
 
     private boolean findSingleton(Class clazz) {
@@ -153,7 +155,7 @@ class Bean extends BeanRef implements BeanEnricher {
         return false;
     }
 
-    protected void resolveArguments(BlueprintRegistry blueprintRegistry, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
+    void resolveArguments(BlueprintRegistry blueprintRegistry, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
         for (int i = 0; i < parameterTypes.length; ++i) {
             Annotation[] annotations = parameterAnnotations[i];
             String value = findValue(annotations);
@@ -195,19 +197,19 @@ class Bean extends BeanRef implements BeanEnricher {
         return clazz.getName();
     }
 
-    void writeProperties(XMLStreamWriter writer) throws XMLStreamException {
+    private void writeProperties(XMLStreamWriter writer) throws XMLStreamException {
         for (Property property : properties) {
             property.write(writer);
         }
     }
 
-    void writeArguments(XMLStreamWriter writer) throws XMLStreamException {
+    private void writeArguments(XMLStreamWriter writer) throws XMLStreamException {
         for (Argument argument : constructorArguments) {
             argument.write(writer);
         }
     }
 
-    boolean needFieldInjection() {
+    private boolean needFieldInjection() {
         for (Property property : properties) {
             if (property.isField) {
                 return true;
@@ -226,9 +228,37 @@ class Bean extends BeanRef implements BeanEnricher {
         beanContentWriters.put(id, blueprintWriter);
     }
 
-    void writeCustomContent(XMLStreamWriter writer) throws XMLStreamException {
+    private void writeCustomContent(XMLStreamWriter writer) throws XMLStreamException {
         for (XmlWriter xmlWriter : beanContentWriters.values()) {
             xmlWriter.write(writer);
         }
+    }
+
+    private void writeAttributes(XMLStreamWriter writer) throws XMLStreamException {
+        for (Map.Entry<String, String> entry : attributes.entrySet()) {
+            if ("scope".equals(entry.getKey()) && "singleton".equals(entry.getValue())) {
+                continue;
+            }
+            writer.writeAttribute(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Override
+    public void write(XMLStreamWriter writer) throws XMLStreamException {
+        writeBeanStart(writer);
+        writeCustomContent(writer);
+        writeArguments(writer);
+        writeProperties(writer);
+        writer.writeEndElement();
+    }
+
+    private void writeBeanStart(XMLStreamWriter writer) throws XMLStreamException {
+        writer.writeStartElement("bean");
+        writer.writeAttribute("id", id);
+        writer.writeAttribute("class", clazz.getName());
+        if (needFieldInjection()) {
+            writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
+        }
+        writeAttributes(writer);
     }
 }

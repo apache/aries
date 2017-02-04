@@ -18,16 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import static junit.framework.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.inject.Named;
-
+import com.google.common.collect.Sets;
 import org.apache.aries.blueprint.plugin.BlueprintConfigurationImpl;
 import org.apache.aries.blueprint.plugin.bad.BadBean1;
 import org.apache.aries.blueprint.plugin.bad.BadBean2;
@@ -44,12 +35,19 @@ import org.apache.aries.blueprint.plugin.test.MyBean5;
 import org.apache.aries.blueprint.plugin.test.ServiceAImpl1;
 import org.junit.Test;
 
-import com.google.common.collect.Sets;
+import javax.inject.Named;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class BeanTest {
     private static final String NS_JPA1 = "http://aries.apache.org/xmlns/jpa/v1.1.0";
     private static final String NS_TX1 = "http://aries.apache.org/xmlns/transactions/v1.1.0";
-    
+
     private final Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA1, NS_TX1));
     private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, null);
     private final Blueprint blueprint = new Blueprint(blueprintConfiguration);
@@ -63,18 +61,18 @@ public class BeanTest {
         assertEquals(2, getPersistenceFields(bean).size());
         assertEquals(Sets.newHashSet("em", "emf"), getPersistenceFields(bean));
         assertEquals(1, bean.properties.size());
-        assertFalse(bean.isPrototype);
+        assertEquals("singleton", bean.attributes.get("scope"));
         Property prop = bean.properties.iterator().next();
         assertEquals("bean2", prop.name);
         assertEquals("serviceA", prop.ref);
 
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-            new TransactionalDef("txNotSupported", "NotSupported"),
-            new TransactionalDef("txMandatory", "Mandatory"),
-            new TransactionalDef("txNever", "Never"),
-            new TransactionalDef("txRequired", "Required"),
-            new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
-            new TransactionalDef("txSupports", "Supports"));
+                new TransactionalDef("txNotSupported", "NotSupported"),
+                new TransactionalDef("txMandatory", "Mandatory"),
+                new TransactionalDef("txNever", "Never"),
+                new TransactionalDef("txRequired", "Required"),
+                new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+                new TransactionalDef("txSupports", "Supports"));
         assertEquals(expectedTxs, getTransactionalDefs(bean));
     }
 
@@ -86,15 +84,15 @@ public class BeanTest {
         assertEquals("myBean3", bean.id); // Name derived from class name
         assertEquals("There should be no persistence fields", 0, getPersistenceFields(bean).size());
         assertEquals(5, bean.properties.size());
-        assertTrue(bean.isPrototype);
+        assertEquals("prototype", bean.attributes.get("scope"));
 
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
-            new TransactionalDef("txNotSupported", "NotSupported"),
-            new TransactionalDef("txMandatory", "Mandatory"),
-            new TransactionalDef("txNever", "Never"),
-            new TransactionalDef("txRequired", "Required"),
-            new TransactionalDef("txRequiresNew", "RequiresNew"),
-            new TransactionalDef("txSupports", "Supports"));
+                new TransactionalDef("txNotSupported", "NotSupported"),
+                new TransactionalDef("txMandatory", "Mandatory"),
+                new TransactionalDef("txNever", "Never"),
+                new TransactionalDef("txRequired", "Required"),
+                new TransactionalDef("txRequiresNew", "RequiresNew"),
+                new TransactionalDef("txSupports", "Supports"));
         assertEquals(expectedTxs, getTransactionalDefs(bean));
     }
 
@@ -105,10 +103,10 @@ public class BeanTest {
         String definedName = ServiceAImpl1.class.getAnnotation(Named.class).value();
         assertEquals("my1", definedName);
         assertEquals("Name should be defined using @Named", definedName, bean.id);
-        assertEquals("There should be no persistence fields", 0,getPersistenceFields(bean).size());
+        assertEquals("There should be no persistence fields", 0, getPersistenceFields(bean).size());
         assertTrue("There should be no transaction definition", getTransactionalDefs(bean).isEmpty());
         assertEquals("There should be no properties", 0, bean.properties.size());
-        assertTrue(bean.isPrototype);
+        assertEquals("prototype", bean.attributes.get("scope"));
     }
 
     @Test
@@ -118,7 +116,7 @@ public class BeanTest {
         Property bcProp = bean.properties.iterator().next();
         assertEquals("bundleContext", bcProp.name);
         assertEquals("blueprintBundleContext", bcProp.ref);
-        assertFalse(bean.isPrototype);
+        assertEquals("singleton", bean.attributes.get("scope"));
 
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("txWithoutClassAnnotation", "Supports"));
         assertEquals(expectedTxs, getTransactionalDefs(bean));
@@ -200,7 +198,7 @@ public class BeanTest {
         assertEquals("serviceA", bean.constructorArguments.get(6).getRef());
         assertEquals("produced2", bean.constructorArguments.get(7).getRef());
     }
-    
+
     @Test
     public void testParseBeanWithConfig() {
         Bean bean = new Bean(BeanWithConfig.class, blueprint);

@@ -87,8 +87,8 @@ public class BlueprintTest {
         Blueprint blueprint = new Blueprint(blueprintConfiguration, MyFactoryBean.class);
         BeanFromFactory matching = (BeanFromFactory) blueprint.getMatching(new BeanRef(MyProduced.class));
         Assert.assertEquals(MyProduced.class, matching.clazz);
-        Assert.assertEquals("myFactoryBean", matching.factoryBean.id);
-        Assert.assertEquals("create", matching.factoryMethod);
+        Assert.assertEquals("myFactoryBean", matching.attributes.get("factory-ref"));
+        Assert.assertEquals("create", matching.attributes.get("factory-method"));
     }
 
 }
