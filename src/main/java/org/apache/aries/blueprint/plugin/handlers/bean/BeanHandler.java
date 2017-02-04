@@ -19,7 +19,7 @@ public class BeanHandler implements
         BeanAnnotationHandler<Bean> {
     @Override
     public boolean isSingleton() {
-        return true;
+        return false;
     }
 
     @Override
@@ -52,9 +52,7 @@ public class BeanHandler implements
         if (annotation.activation() != Activation.DEFAULT) {
             beanEnricher.addAttribute("activation", annotation.activation().name().toLowerCase());
         }
-        if (annotation.scope() != Scope.SINGLETON) {
-            beanEnricher.addAttribute("scope", "prototype");
-        }
+        beanEnricher.addAttribute("scope", annotation.scope() == Scope.SINGLETON ? "singleton" : "prototype");
         if (annotation.dependsOn().length > 0) {
             StringBuilder dependsOn = new StringBuilder();
             for (int i = 0; i < annotation.dependsOn().length; i++) {
@@ -65,10 +63,10 @@ public class BeanHandler implements
             }
             beanEnricher.addAttribute("depends-on", dependsOn.toString());
         }
-        if(!annotation.initMethod().isEmpty()){
+        if (!annotation.initMethod().isEmpty()) {
             beanEnricher.addAttribute("init-method", annotation.initMethod());
         }
-        if(!annotation.destroyMethod().isEmpty()){
+        if (!annotation.destroyMethod().isEmpty()) {
             beanEnricher.addAttribute("destroy-method", annotation.destroyMethod());
         }
     }
