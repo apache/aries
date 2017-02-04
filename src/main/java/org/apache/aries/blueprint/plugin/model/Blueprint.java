@@ -35,8 +35,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.apache.aries.blueprint.plugin.model.Bean.NS_EXT;
-
 public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
 
@@ -167,7 +165,6 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
     private void writeBlueprint(XMLStreamWriter writer) throws XMLStreamException {
         writer.writeStartElement("blueprint");
         writer.writeDefaultNamespace(NS_BLUEPRINT);
-        writer.writeNamespace("ext", NS_EXT);
         if (blueprintConfiguration.getDefaultActivation() != null) {
             writer.writeAttribute("default-activation", blueprintConfiguration.getDefaultActivation().name().toLowerCase());
         }

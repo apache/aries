@@ -47,7 +47,7 @@ import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue
 
 class Bean extends BeanRef implements BeanEnricher, XmlWriter {
 
-    static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
+    private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
 
     SortedSet<Property> properties = new TreeSet<>();
     List<Argument> constructorArguments = new ArrayList<>();
@@ -257,6 +257,7 @@ class Bean extends BeanRef implements BeanEnricher, XmlWriter {
         writer.writeAttribute("id", id);
         writer.writeAttribute("class", clazz.getName());
         if (needFieldInjection()) {
+            writer.writeNamespace("ext", NS_EXT);
             writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
         }
         writeAttributes(writer);
