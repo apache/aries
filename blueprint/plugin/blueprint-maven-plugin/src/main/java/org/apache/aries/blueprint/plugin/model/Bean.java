@@ -47,10 +47,10 @@ import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue
 
 class Bean extends BeanRef implements BeanEnricher {
     public SortedSet<Property> properties = new TreeSet<>();
-    public List<Argument> constructorArguments = new ArrayList<>();
+    List<Argument> constructorArguments = new ArrayList<>();
     public boolean isPrototype;
     public final Map<String, String> attributes = new HashMap<>();
-    public final Map<String, XmlWriter> beanContentWriters = new HashMap<>();
+    final Map<String, XmlWriter> beanContentWriters = new HashMap<>();
     protected final ContextEnricher contextEnricher;
 
     Bean(Class<?> clazz, ContextEnricher contextEnricher) {
@@ -195,19 +195,19 @@ class Bean extends BeanRef implements BeanEnricher {
         return clazz.getName();
     }
 
-    public void writeProperties(XMLStreamWriter writer) throws XMLStreamException {
+    void writeProperties(XMLStreamWriter writer) throws XMLStreamException {
         for (Property property : properties) {
             property.write(writer);
         }
     }
 
-    public void writeArguments(XMLStreamWriter writer) throws XMLStreamException {
+    void writeArguments(XMLStreamWriter writer) throws XMLStreamException {
         for (Argument argument : constructorArguments) {
             argument.write(writer);
         }
     }
 
-    public boolean needFieldInjection() {
+    boolean needFieldInjection() {
         for (Property property : properties) {
             if (property.isField) {
                 return true;
@@ -224,5 +224,11 @@ class Bean extends BeanRef implements BeanEnricher {
     @Override
     public void addBeanContentWriter(String id, XmlWriter blueprintWriter) {
         beanContentWriters.put(id, blueprintWriter);
+    }
+
+    void writeCustomContent(XMLStreamWriter writer) throws XMLStreamException {
+        for (XmlWriter xmlWriter : beanContentWriters.values()) {
+            xmlWriter.write(writer);
+        }
     }
 }
