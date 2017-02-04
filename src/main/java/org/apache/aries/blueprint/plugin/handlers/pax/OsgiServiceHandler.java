@@ -42,20 +42,7 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
         final Class<?> clazz = getClass(annotatedElement);
 
         contextEnricher.addBean(id, getClass(annotatedElement));
-        contextEnricher.addBlueprintContentWriter("osgiService/" + clazz.getName() + "/" + id, new XmlWriter() {
-            @Override
-            public void write(XMLStreamWriter writer) throws XMLStreamException {
-                writer.writeEmptyElement("reference");
-                writer.writeAttribute("id", id);
-                writer.writeAttribute("interface", clazz.getName());
-                if (serviceFilter.filter != null && !"".equals(serviceFilter.filter)) {
-                    writer.writeAttribute("filter", serviceFilter.filter);
-                }
-                if (serviceFilter.compName != null && !"".equals(serviceFilter.compName)) {
-                    writer.writeAttribute("component-name", serviceFilter.compName);
-                }
-            }
-        });
+        contextEnricher.addBlueprintContentWriter(getWriterId(id, clazz), getXmlWriter(id, clazz, serviceFilter));
         return id;
     }
 
@@ -65,7 +52,12 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
         final String id = name != null ? name : generateReferenceId(clazz, serviceFilter);
 
         contextEnricher.addBean(id, clazz);
-        contextEnricher.addBlueprintContentWriter("osgiService/" + clazz.getName() + "/" + id, new XmlWriter() {
+        contextEnricher.addBlueprintContentWriter(getWriterId(id, clazz), getXmlWriter(id, clazz, serviceFilter));
+        return id;
+    }
+
+    private XmlWriter getXmlWriter(final String id, final Class<?> clazz, final ServiceFilter serviceFilter) {
+        return new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
                 writer.writeEmptyElement("reference");
@@ -78,8 +70,11 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
                     writer.writeAttribute("component-name", serviceFilter.compName);
                 }
             }
-        });
-        return id;
+        };
+    }
+
+    private String getWriterId(String id, Class<?> clazz) {
+        return "osgiService/" + clazz.getName() + "/" + id;
     }
 
     private Class<?> getClass(AnnotatedElement annotatedElement) {
@@ -111,7 +106,7 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
         return prefix + suffix;
     }
 
-    protected static String getBeanNameFromSimpleName(String name) {
+    private static String getBeanNameFromSimpleName(String name) {
         return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
     }
 
@@ -137,10 +132,10 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
     }
 
     private static class ServiceFilter {
-        final public String filter;
-        final public String compName;
+        final String filter;
+        final String compName;
 
-        public ServiceFilter(String filterValue) {
+        ServiceFilter(String filterValue) {
             if (filterValue == null || filterValue.isEmpty()) {
                 filter = null;
                 compName = null;

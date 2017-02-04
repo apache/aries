@@ -719,6 +719,39 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(bean, "@factory-method", "getBean3");
     }
 
+    @Test
+    public void typedProperties() throws Exception {
+        Node service = getServiceByRef("serviceWithTypedParameters");
+        assertXpathEquals(service, "count(service-properties/entry)", "6");
+        assertXpathEquals(service, "service-properties/entry[@key='test1']/@value", "test");
+
+        assertXpathDoesNotExist(service, "service-properties/entry[@key='test2']/@value");
+        assertXpathEquals(service, "service-properties/entry[@key='test2']/value", "15");
+        assertXpathEquals(service, "service-properties/entry[@key='test2']/value/@type", "java.lang.Integer");
+
+        assertXpathDoesNotExist(service, "service-properties/entry[@key='test3']/@value");
+        assertXpathEquals(service, "service-properties/entry[@key='test3']/value", "true");
+        assertXpathEquals(service, "service-properties/entry[@key='test3']/value/@type", "java.lang.Boolean");
+
+        assertXpathDoesNotExist(service, "service-properties/entry[@key='test4']/@value");
+        assertXpathEquals(service, "service-properties/entry[@key='test4']/array/value[1]", "val1");
+        assertXpathEquals(service, "service-properties/entry[@key='test4']/array/value[2]", "val2");
+        assertXpathDoesNotExist(service, "service-properties/entry[@key='test4']/array/@value-type");
+
+        assertXpathDoesNotExist(service, "service-properties/entry[@key='test5']/@value");
+        assertXpathEquals(service, "service-properties/entry[@key='test5']/array/value[1]", "1");
+        assertXpathEquals(service, "service-properties/entry[@key='test5']/array/value[2]", "2");
+        assertXpathEquals(service, "service-properties/entry[@key='test5']/array/value[3]", "3");
+        assertXpathEquals(service, "service-properties/entry[@key='test5']/array/@value-type", "java.lang.Short");
+
+        assertXpathDoesNotExist(service, "service-properties/entry[@key='test6']/@value");
+        assertXpathEquals(service, "service-properties/entry[@key='test6']/array/value[1]", "1.5");
+        assertXpathEquals(service, "service-properties/entry[@key='test6']/array/value[2]", "0.8");
+        assertXpathEquals(service, "service-properties/entry[@key='test6']/array/value[3]", "-7.1");
+        assertXpathEquals(service, "service-properties/entry[@key='test6']/array/@value-type", "java.lang.Double");
+
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }
