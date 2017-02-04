@@ -26,9 +26,7 @@ import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import java.lang.reflect.Method;
 
 class BeanFromFactory extends Bean {
-    String factoryMethod;
-     BeanRef factoryBean;
-    private Method producingMethod;
+    private final Method producingMethod;
 
     BeanFromFactory(Class<?> clazz, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
         this(clazz, null, factoryBean, factoryMethod, contextEnricher);
@@ -39,10 +37,10 @@ class BeanFromFactory extends Bean {
         if (id != null) {
             this.id = id;
         }
-        this.factoryBean = factoryBean;
-        this.factoryMethod = factoryMethod.getName();
         this.producingMethod = factoryMethod;
         handleCustomBeanAnnotations();
+        attributes.put("factory-ref", factoryBean.id);
+        attributes.put("factory-method", producingMethod.getName());
     }
 
     private void handleCustomBeanAnnotations() {
@@ -55,7 +53,7 @@ class BeanFromFactory extends Bean {
     }
 
     void setSingleton() {
-        this.isPrototype = false;
+        attributes.put("scope", "singleton");
     }
 
     @Override

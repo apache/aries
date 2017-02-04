@@ -31,7 +31,7 @@ import java.util.Map;
 class BeanRef implements Comparable<BeanRef> {
     public String id;
     public Class<?> clazz;
-    Map<Class<? extends Annotation>, Annotation> qualifiers = new HashMap<>();
+    private Map<Class<? extends Annotation>, Annotation> qualifiers = new HashMap<>();
 
     /**
      * @param clazz interface or implementation class
@@ -60,7 +60,7 @@ class BeanRef implements Comparable<BeanRef> {
         setQualifiersFromAnnotations(annotations);
     }
 
-    protected void setQualifiersFromAnnotations(Annotation[] annotations) {
+    void setQualifiersFromAnnotations(Annotation[] annotations) {
         for (Annotation ann : annotations) {
             if (isQualifier(ann) != null) {
                 this.qualifiers.put(ann.annotationType(), ann);

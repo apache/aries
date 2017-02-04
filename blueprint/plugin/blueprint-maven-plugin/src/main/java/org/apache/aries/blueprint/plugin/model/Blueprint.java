@@ -35,9 +35,10 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.apache.aries.blueprint.plugin.model.Bean.NS_EXT;
+
 public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
-    private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
 
     private Registry registry = new Registry();
     private final Map<String, XmlWriter> blueprintWriters = new HashMap<>();
@@ -153,11 +154,7 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
         writeBlueprint(writer);
 
         for (Bean bean : getBeans()) {
-            writeBeanStart(writer, bean);
-            bean.writeCustomContent(writer);
-            bean.writeArguments(writer);
-            bean.writeProperties(writer);
-            writer.writeEndElement();
+            bean.write(writer);
         }
 
         for (XmlWriter bw : getBlueprintWriters().values()) {
@@ -174,31 +171,6 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
         if (blueprintConfiguration.getDefaultActivation() != null) {
             writer.writeAttribute("default-activation", blueprintConfiguration.getDefaultActivation().name().toLowerCase());
         }
-    }
-
-    private void writeBeanStart(XMLStreamWriter writer, Bean bean) throws XMLStreamException {
-        writer.writeStartElement("bean");
-        writer.writeAttribute("id", bean.id);
-        writer.writeAttribute("class", bean.clazz.getName());
-        if (bean.needFieldInjection()) {
-            writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
-        }
-        if (bean.isPrototype && !bean.attributes.containsKey("scope")) {
-            writer.writeAttribute("scope", "prototype");
-        }
-
-        Map<String, String> attributes = bean.attributes;
-        for (Map.Entry<String, String> entry : attributes.entrySet()) {
-            writer.writeAttribute(entry.getKey(), entry.getValue());
-        }
-        if (bean instanceof BeanFromFactory) {
-            writeFactory(writer, (BeanFromFactory) bean);
-        }
-    }
-
-    private void writeFactory(XMLStreamWriter writer, BeanFromFactory bean) throws XMLStreamException {
-        writer.writeAttribute("factory-ref", bean.factoryBean.id);
-        writer.writeAttribute("factory-method", bean.factoryMethod);
     }
 
     public boolean shouldBeGenerated() {
