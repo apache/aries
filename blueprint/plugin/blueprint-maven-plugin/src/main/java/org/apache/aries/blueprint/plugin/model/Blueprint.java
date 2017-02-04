@@ -154,6 +154,7 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
 
         for (Bean bean : getBeans()) {
             writeBeanStart(writer, bean);
+            bean.writeCustomContent(writer);
             bean.writeArguments(writer);
             bean.writeProperties(writer);
             writer.writeEndElement();
@@ -192,9 +193,6 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
         }
         if (bean instanceof BeanFromFactory) {
             writeFactory(writer, (BeanFromFactory) bean);
-        }
-        for (XmlWriter xmlWriter : bean.beanContentWriters.values()) {
-            xmlWriter.write(writer);
         }
     }
 

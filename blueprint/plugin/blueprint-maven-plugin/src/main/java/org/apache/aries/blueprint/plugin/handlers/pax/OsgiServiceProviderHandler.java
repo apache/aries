@@ -31,10 +31,9 @@ import org.ops4j.pax.cdi.api.Property;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiServiceProvider> {
 
@@ -56,21 +55,18 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
 
         final List<String> interfaceNames = extractServiceInterfaces(serviceProvider);
 
-        final Map<String, String> propertiesAsMap = extractProperties(properties);
+        final List<ServiceProperty> serviceProperties = extractProperties(properties);
 
         contextEnricher.addBlueprintContentWriter("OsgiServiceProvider/" + annotatedElement + "/" + id, new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
-                writeService(writer, propertiesAsMap, interfaceNames, id);
+                writeService(writer, serviceProperties, interfaceNames, id);
             }
         });
     }
 
-    private void writeService(XMLStreamWriter writer, Map<String, String> propertiesAsMap, List<String> interfaceNames, String id) throws XMLStreamException {
-        // If there are no properties to write and only one service attribute (either
-        // interface="MyServiceInterface" or auto-export="interfaces") then create an
-        // empty element
-        boolean writeEmptyElement = propertiesAsMap.isEmpty() && interfaceNames.size() < 2;
+    private void writeService(XMLStreamWriter writer, List<ServiceProperty> serviceProperties, List<String> interfaceNames, String id) throws XMLStreamException {
+        boolean writeEmptyElement = serviceProperties.isEmpty() && interfaceNames.size() < 2;
         if (writeEmptyElement) {
             writer.writeEmptyElement("service");
         } else {
@@ -86,9 +82,9 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
             writeInterfacesElement(writer, interfaceNames);
         }
 
-        if (!propertiesAsMap.isEmpty()) {
-            writeRanking(writer, propertiesAsMap);
-            writeProperties(writer, propertiesAsMap);
+        if (!serviceProperties.isEmpty()) {
+            writeRanking(writer, serviceProperties);
+            writeProperties(writer, serviceProperties);
         }
 
         if (!writeEmptyElement) {
@@ -96,14 +92,14 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
         }
     }
 
-    private static Map<String, String> extractProperties(Properties properties) {
-        Map<String, String> propertiesAsMap = new HashMap<>();
+    private static List<ServiceProperty> extractProperties(Properties properties) {
+        List<ServiceProperty> serviceProperties = new ArrayList<>();
         if (properties != null) {
             for (Property property : properties.value()) {
-                propertiesAsMap.put(property.name(), property.value());
+                serviceProperties.add(new ServiceProperty(property.name(), property.value()));
             }
         }
-        return propertiesAsMap;
+        return serviceProperties;
     }
 
     private static List<String> extractServiceInterfaces(OsgiServiceProvider serviceProvider) {
@@ -124,24 +120,24 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
         writer.writeEndElement();
     }
 
-    private void writeRanking(XMLStreamWriter writer, Map<String, String> propertiesAsMap) throws XMLStreamException {
-        if (propertiesAsMap.containsKey("service.ranking")) {
-            try {
-                Integer ranking = Integer.parseInt(propertiesAsMap.get("service.ranking"));
-                writer.writeAttribute("ranking", ranking.toString());
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("service.ranking property must be an integer!");
+    private void writeRanking(XMLStreamWriter writer, List<ServiceProperty> serviceProperties) throws XMLStreamException {
+        for (ServiceProperty serviceProperty : serviceProperties) {
+            if ("service.ranking".equals(serviceProperty.name)) {
+                try {
+                    Integer ranking = Integer.parseInt(serviceProperty.getSingleValue());
+                    writer.writeAttribute("ranking", ranking.toString());
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("service.ranking property must be an integer!");
+                }
             }
         }
     }
 
-    private void writeProperties(XMLStreamWriter writer, Map<String, String> properties) throws XMLStreamException {
+    private void writeProperties(XMLStreamWriter writer, List<ServiceProperty> serviceProperties) throws XMLStreamException {
         writer.writeStartElement("service-properties");
-        for (Map.Entry<String, String> property : properties.entrySet()) {
-            if (!SPECIAL_PROPERTIES.contains(property.getKey())) {
-                writer.writeEmptyElement("entry");
-                writer.writeAttribute("key", property.getKey());
-                writer.writeAttribute("value", property.getValue());
+        for (ServiceProperty serviceProperty : serviceProperties) {
+            if (!SPECIAL_PROPERTIES.contains(serviceProperty.name)) {
+                serviceProperty.write(writer);
             }
         }
         writer.writeEndElement();
