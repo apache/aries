@@ -46,10 +46,12 @@ import java.util.TreeSet;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 
-class Bean extends BeanRef implements BeanEnricher, XmlWriter {
+class Bean implements BeanEnricher, XmlWriter {
 
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
 
+    String id;
+    final Class<?> clazz;
     SortedSet<Property> properties = new TreeSet<>();
     List<Argument> constructorArguments = new ArrayList<>();
     final Map<String, String> attributes = new HashMap<>();
@@ -57,7 +59,8 @@ class Bean extends BeanRef implements BeanEnricher, XmlWriter {
     protected final ContextEnricher contextEnricher;
 
     Bean(Class<?> clazz, ContextEnricher contextEnricher) {
-        super(clazz, getBeanName(clazz), clazz.getAnnotations());
+        this.clazz = clazz;
+        this.id = getBeanName(clazz);
         this.contextEnricher = contextEnricher;
         Introspector introspector = new Introspector(clazz);
 
@@ -172,7 +175,7 @@ class Bean extends BeanRef implements BeanEnricher, XmlWriter {
             }
 
             if (ref == null && value == null) {
-                BeanRef template = new BeanRef(parameterTypes[i], annotations);
+                BeanTemplate template = new BeanTemplate(parameterTypes[i], annotations);
                 BeanRef bean = blueprintRegistry.getMatching(template);
                 if (bean != null) {
                     ref = bean.id;
@@ -262,7 +265,7 @@ class Bean extends BeanRef implements BeanEnricher, XmlWriter {
     }
 
     BeanRef toBeanRef() {
-        return this;
+        return new BeanRef(clazz, id, clazz.getAnnotations());
     }
 
     static String getBeanName(Class<?> clazz) {

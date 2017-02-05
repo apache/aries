@@ -15,7 +15,7 @@ class BeanRefStore {
         return reg;
     }
 
-    BeanRef getMatching(BeanRef template) {
+    BeanRef getMatching(BeanTemplate template) {
         for (BeanRef bean : reg) {
             if (bean.matches(template)) {
                 return bean;

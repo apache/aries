@@ -28,11 +28,11 @@ import java.lang.reflect.Method;
 class BeanFromFactory extends Bean {
     private final Method producingMethod;
 
-    BeanFromFactory(Class<?> clazz, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+    BeanFromFactory(Class<?> clazz, Bean factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
         this(clazz, null, factoryBean, factoryMethod, contextEnricher);
     }
 
-    BeanFromFactory(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+    BeanFromFactory(Class<?> clazz, String id, Bean factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
         super(clazz, contextEnricher);
         if (id != null) {
             this.id = id;

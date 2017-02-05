@@ -71,7 +71,7 @@ public class BlueprintTest {
 
     private void assertSpecialRef(String expectedId, Class<?> clazz) {
         Blueprint blueprint = new Blueprint(blueprintConfiguration);
-        BeanRef ref = blueprint.getMatching(new BeanRef(clazz, new Annotation[]{}));
+        BeanRef ref = blueprint.getMatching(new BeanTemplate(clazz, new Annotation[]{}));
         assertEquals(expectedId, ref.id);
     }
 
@@ -81,15 +81,6 @@ public class BlueprintTest {
         assertSpecialRef("blueprintBundle", Bundle.class);
         assertSpecialRef("blueprintContainer", BlueprintContainer.class);
         assertSpecialRef("blueprintConverter", Converter.class);
-    }
-
-    @Test
-    public void testProduced() throws NoSuchFieldException, SecurityException {
-        Blueprint blueprint = new Blueprint(blueprintConfiguration, MyFactoryBean.class);
-        BeanFromFactory matching = (BeanFromFactory) blueprint.getMatching(new BeanRef(MyProduced.class, new Annotation[]{}));
-        Assert.assertEquals(MyProduced.class, matching.clazz);
-        Assert.assertEquals("myFactoryBean", matching.attributes.get("factory-ref"));
-        Assert.assertEquals("create", matching.attributes.get("factory-method"));
     }
 
 }
