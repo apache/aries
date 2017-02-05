@@ -18,28 +18,31 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
+
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Set;
 
-class BeanRef implements Comparable<BeanRef> {
-    final String id;
-    private final Class<?> clazz;
-    private final Set<Annotation> qualifiers;
-
-    BeanRef(Class<?> clazz, String id, Annotation[] qualifiers) {
-        this.clazz = clazz;
-        this.id = id;
-        this.qualifiers = QualifierHelper.getQualifiers(qualifiers);
+class QualifierHelper {
+    static Set<Annotation> getQualifiers(Annotation[] annotations) {
+        final Set<Annotation> qualifiers = new HashSet<>();
+        for (Annotation ann : annotations) {
+            if (isQualifier(ann) != null) {
+                qualifiers.add(ann);
+            }
+        }
+        return qualifiers;
     }
 
-    boolean matches(BeanTemplate template) {
-        boolean assignable = template.clazz.isAssignableFrom(this.clazz);
-        return assignable && qualifiers.containsAll(template.qualifiers);
-    }
-
-    @Override
-    public int compareTo(BeanRef other) {
-        return this.id.compareTo(other.id);
+    private static Object isQualifier(Annotation ann) {
+        for (Class<? extends Annotation> qualifingAnnotationClass : Handlers.QUALIFING_ANNOTATION_CLASSES) {
+            Object annotation = ann.annotationType().getAnnotation(qualifingAnnotationClass);
+            if (annotation != null) {
+                return annotation;
+            }
+        }
+        return null;
     }
 
 }
