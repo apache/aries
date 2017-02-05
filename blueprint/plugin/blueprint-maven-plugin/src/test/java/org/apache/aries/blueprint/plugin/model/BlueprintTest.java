@@ -30,6 +30,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class BlueprintTest {
     }
 
     private Set<String> getOsgiServices(Blueprint blueprint) {
-        Set<String> blueprintWritersKeys = blueprint.getBlueprintWriters().keySet();
+        Set<String> blueprintWritersKeys = blueprint.getCustomWriters().keySet();
         Set<String> osgiServices = new HashSet<>();
         for (String blueprintWritersKey : blueprintWritersKeys) {
             if (blueprintWritersKey.startsWith("osgiService/")) {
@@ -70,7 +71,7 @@ public class BlueprintTest {
 
     private void assertSpecialRef(String expectedId, Class<?> clazz) {
         Blueprint blueprint = new Blueprint(blueprintConfiguration);
-        BeanRef ref = blueprint.getMatching(new BeanRef(clazz));
+        BeanRef ref = blueprint.getMatching(new BeanRef(clazz, new Annotation[]{}));
         assertEquals(expectedId, ref.id);
     }
 
@@ -85,7 +86,7 @@ public class BlueprintTest {
     @Test
     public void testProduced() throws NoSuchFieldException, SecurityException {
         Blueprint blueprint = new Blueprint(blueprintConfiguration, MyFactoryBean.class);
-        BeanFromFactory matching = (BeanFromFactory) blueprint.getMatching(new BeanRef(MyProduced.class));
+        BeanFromFactory matching = (BeanFromFactory) blueprint.getMatching(new BeanRef(MyProduced.class, new Annotation[]{}));
         Assert.assertEquals(MyProduced.class, matching.clazz);
         Assert.assertEquals("myFactoryBean", matching.attributes.get("factory-ref"));
         Assert.assertEquals("create", matching.attributes.get("factory-method"));

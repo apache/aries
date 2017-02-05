@@ -4,14 +4,23 @@ import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-class Registry {
+class BeanRefStore {
     private SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
 
     void addBean(BeanRef beanRef) {
         reg.add(beanRef);
     }
 
-    Collection<BeanRef> getBeans(){
+    Collection<BeanRef> getBeans() {
         return reg;
+    }
+
+    BeanRef getMatching(BeanRef template) {
+        for (BeanRef bean : reg) {
+            if (bean.matches(template)) {
+                return bean;
+            }
+        }
+        return null;
     }
 }

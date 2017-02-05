@@ -26,6 +26,7 @@ import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import javax.xml.stream.XMLStreamException;
@@ -56,13 +57,11 @@ class Bean extends BeanRef implements BeanEnricher, XmlWriter {
     protected final ContextEnricher contextEnricher;
 
     Bean(Class<?> clazz, ContextEnricher contextEnricher) {
-        super(clazz, BeanRef.getBeanName(clazz));
+        super(clazz, getBeanName(clazz), clazz.getAnnotations());
         this.contextEnricher = contextEnricher;
         Introspector introspector = new Introspector(clazz);
 
         setScope(clazz);
-
-        setQualifiersFromAnnotations(clazz.getAnnotations());
 
         handleCustomBeanAnnotations();
 
@@ -75,7 +74,7 @@ class Bean extends BeanRef implements BeanEnricher, XmlWriter {
         attributes.put("scope", findSingleton(clazz) ? "singleton" : "prototype");
     }
 
-    void resolve(BlueprintRegistry blueprintRegistry) {
+    void resolveDependency(BlueprintRegistry blueprintRegistry) {
         resolveArguments(blueprintRegistry);
         resolveFields(blueprintRegistry);
         resolveMethods(blueprintRegistry);
@@ -173,8 +172,7 @@ class Bean extends BeanRef implements BeanEnricher, XmlWriter {
             }
 
             if (ref == null && value == null) {
-                BeanRef template = new BeanRef(parameterTypes[i]);
-                template.setQualifiersFromAnnotations(annotations);
+                BeanRef template = new BeanRef(parameterTypes[i], annotations);
                 BeanRef bean = blueprintRegistry.getMatching(template);
                 if (bean != null) {
                     ref = bean.id;
@@ -261,5 +259,30 @@ class Bean extends BeanRef implements BeanEnricher, XmlWriter {
             writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
         }
         writeAttributes(writer);
+    }
+
+    BeanRef toBeanRef() {
+        return this;
+    }
+
+    static String getBeanName(Class<?> clazz) {
+        return getBeanName(clazz, clazz);
+    }
+
+    private static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
+        for (NamedLikeHandler namedLikeHandler : Handlers.NAMED_LIKE_HANDLERS) {
+            if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
+                String name = namedLikeHandler.getName(clazz, annotatedElement);
+                if (name != null) {
+                    return name;
+                }
+            }
+        }
+        String name = clazz.getSimpleName();
+        return getBeanNameFromSimpleName(name);
+    }
+
+    private static String getBeanNameFromSimpleName(String name) {
+        return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
     }
 }
