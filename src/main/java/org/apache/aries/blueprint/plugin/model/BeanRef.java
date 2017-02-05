@@ -19,51 +19,41 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.handlers.Handlers;
-import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 class BeanRef implements Comparable<BeanRef> {
     public String id;
-    public Class<?> clazz;
-    private Map<Class<? extends Annotation>, Annotation> qualifiers = new HashMap<>();
+    public final Class<?> clazz;
+    private final Set<Annotation> qualifiers = new HashSet<>();
 
-    /**
-     * @param clazz interface or implementation class
-     */
-    BeanRef(Class<?> clazz) {
+    BeanRef(Class<?> clazz, String id, Annotation[] qualifiers) {
         this.clazz = clazz;
+        this.id = id;
+        setQualifiersFromAnnotations(qualifiers);
     }
 
-    BeanRef(Class<?> clazz, String id) {
-        this(clazz);
-        this.id = id;
+    BeanRef(Class<?> clazz, Annotation[] qualifiers) {
+        this.clazz = clazz;
+        setQualifiersFromAnnotations(qualifiers);
     }
 
     BeanRef(Field field) {
-        this(field.getType());
-        parseQualifiers(field);
+        this(field.getType(), field.getAnnotations());
     }
 
     BeanRef(Method method) {
-        this(method.getParameterTypes()[0]);
-        parseQualifiers(method);
+        this(method.getParameterTypes()[0], method.getAnnotations());
     }
 
-    private void parseQualifiers(AnnotatedElement annotatedElement) {
-        Annotation[] annotations = annotatedElement.getAnnotations();
-        setQualifiersFromAnnotations(annotations);
-    }
-
-    void setQualifiersFromAnnotations(Annotation[] annotations) {
+    private void setQualifiersFromAnnotations(Annotation[] annotations) {
         for (Annotation ann : annotations) {
             if (isQualifier(ann) != null) {
-                this.qualifiers.put(ann.annotationType(), ann);
+                this.qualifiers.add(ann);
             }
         }
     }
@@ -78,33 +68,12 @@ class BeanRef implements Comparable<BeanRef> {
         return null;
     }
 
-    static String getBeanName(Class<?> clazz) {
-        return getBeanName(clazz, clazz);
-    }
-
-    private static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
-        for (NamedLikeHandler namedLikeHandler : Handlers.NAMED_LIKE_HANDLERS) {
-            if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
-                String name = namedLikeHandler.getName(clazz, annotatedElement);
-                if (name != null) {
-                    return name;
-                }
-            }
-        }
-        String name = clazz.getSimpleName();
-        return getBeanNameFromSimpleName(name);
-    }
-
-    private static String getBeanNameFromSimpleName(String name) {
-        return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
-    }
-
     boolean matches(BeanRef template) {
-        boolean assignable = template.clazz.isAssignableFrom(this.clazz);
         if (template.id != null) {
             return template.id.equals(id);
         }
-        return assignable && qualifiers.values().containsAll(template.qualifiers.values());
+        boolean assignable = template.clazz.isAssignableFrom(this.clazz);
+        return assignable && qualifiers.containsAll(template.qualifiers);
     }
 
     @Override
@@ -122,17 +91,11 @@ class BeanRef implements Comparable<BeanRef> {
         if (!(o instanceof BeanRef)) return false;
         final BeanRef other = (BeanRef) o;
         if (!other.canEqual(this)) return false;
-        if (this.id == null ? other.id != null : !this.id.equals(other.id)) return false;
-        if (this.clazz == null ? other.clazz != null : !this.clazz.equals(other.clazz)) return false;
-        return true;
+        return this.id == null ? other.id == null : this.id.equals(other.id);
     }
 
     public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        result = result * PRIME + (this.id == null ? 0 : this.id.hashCode());
-        result = result * PRIME + (this.clazz == null ? 0 : this.clazz.hashCode());
-        return result;
+        return 1 * 59 + (this.id == null ? 0 : this.id.hashCode());
     }
 
     protected boolean canEqual(Object other) {

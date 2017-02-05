@@ -79,11 +79,12 @@ public class BlueprintFileWriterTest {
     @BeforeClass
     public static void setUp() throws Exception {
         ClassFinder classFinder = new ClassFinder(BlueprintFileWriterTest.class.getClassLoader());
+        long start = System.currentTimeMillis();
         Set<Class<?>> beanClasses = findClasses(classFinder, Arrays.asList(
                 MyBean1.class.getPackage().getName(),
                 ReferenceListenerToProduceWithoutAnnotation.class.getPackage().getName()
         ));
-        Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA, NS_TX1));
+        Set<String> namespaces = new HashSet<>(Arrays.asList(NS_JPA, NS_TX1));
         Map<String, String> customParameters = new HashMap<>();
         customParameters.put("ex.t", "1");
         customParameters.put("example.p1", "v1");
@@ -92,9 +93,11 @@ public class BlueprintFileWriterTest {
         Blueprint blueprint = new Blueprint(blueprintConfiguration, beanClasses);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         new BlueprintFileWriter(os).write(blueprint);
-        System.out.println(os.toString("UTF-8"));
 
         xmlAsBytes = os.toByteArray();
+        System.out.println("Generation took " + (System.currentTimeMillis() - start) + " millis");
+        System.out.println(new String(xmlAsBytes, "UTF-8"));
+
         document = readToDocument(xmlAsBytes, false);
         xpath = XPathFactory.newInstance().newXPath();
     }

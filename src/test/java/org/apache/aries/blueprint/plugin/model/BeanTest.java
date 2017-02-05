@@ -55,7 +55,7 @@ public class BeanTest {
     @Test
     public void testParseMyBean1() {
         Bean bean = new Bean(MyBean1.class, blueprint);
-        bean.resolve(blueprint);
+        bean.resolveDependency(blueprint);
         assertEquals(MyBean1.class, bean.clazz);
         assertEquals("myBean1", bean.id); // Name derived from class name
         assertEquals(2, getPersistenceFields(bean).size());
@@ -79,7 +79,7 @@ public class BeanTest {
     @Test
     public void testParseMyBean3() {
         Bean bean = new Bean(MyBean3.class, blueprint);
-        bean.resolve(blueprint);
+        bean.resolveDependency(blueprint);
         assertEquals(MyBean3.class, bean.clazz);
         assertEquals("myBean3", bean.id); // Name derived from class name
         assertEquals("There should be no persistence fields", 0, getPersistenceFields(bean).size());
@@ -99,7 +99,7 @@ public class BeanTest {
     @Test
     public void testParseNamedBean() {
         Bean bean = new Bean(ServiceAImpl1.class, blueprint);
-        bean.resolve(blueprint);
+        bean.resolveDependency(blueprint);
         String definedName = ServiceAImpl1.class.getAnnotation(Named.class).value();
         assertEquals("my1", definedName);
         assertEquals("Name should be defined using @Named", definedName, bean.id);
@@ -112,7 +112,7 @@ public class BeanTest {
     @Test
     public void testBlueprintBundleContext() {
         Bean bean = new Bean(MyBean4.class, blueprint);
-        bean.resolve(blueprint);
+        bean.resolveDependency(blueprint);
         Property bcProp = bean.properties.iterator().next();
         assertEquals("bundleContext", bcProp.name);
         assertEquals("blueprintBundleContext", bcProp.ref);
@@ -183,7 +183,7 @@ public class BeanTest {
     @Test
     public void testParseBeanWithConstructorInject() {
         Bean bean = new Bean(MyBean5.class, blueprint);
-        bean.resolve(blueprint);
+        bean.resolveDependency(blueprint);
         assertEquals(MyBean5.class, bean.clazz);
         assertEquals("myBean5", bean.id); // Name derived from class name
         assertTrue("There should be no persistenceUnit", getPersistenceFields(bean).isEmpty());
@@ -202,7 +202,7 @@ public class BeanTest {
     @Test
     public void testParseBeanWithConfig() {
         Bean bean = new Bean(BeanWithConfig.class, blueprint);
-        bean.resolve(blueprint);
+        bean.resolveDependency(blueprint);
         assertEquals("There should be a property", 1, bean.properties.size());
         Property prop = bean.properties.iterator().next();
         assertEquals("title", prop.name);
