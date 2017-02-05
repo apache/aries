@@ -19,27 +19,25 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Set;
 
-class BeanRef implements Comparable<BeanRef> {
-    final String id;
-    private final Class<?> clazz;
-    private final Set<Annotation> qualifiers;
+class BeanTemplate {
+    final Class<?> clazz;
+    final Set<Annotation> qualifiers;
 
-    BeanRef(Class<?> clazz, String id, Annotation[] qualifiers) {
+    BeanTemplate(Class<?> clazz, Annotation[] qualifiers) {
         this.clazz = clazz;
-        this.id = id;
         this.qualifiers = QualifierHelper.getQualifiers(qualifiers);
     }
 
-    boolean matches(BeanTemplate template) {
-        boolean assignable = template.clazz.isAssignableFrom(this.clazz);
-        return assignable && qualifiers.containsAll(template.qualifiers);
+    BeanTemplate(Field field) {
+        this(field.getType(), field.getAnnotations());
     }
 
-    @Override
-    public int compareTo(BeanRef other) {
-        return this.id.compareTo(other.id);
+    BeanTemplate(Method method) {
+        this(method.getParameterTypes()[0], method.getAnnotations());
     }
 
 }

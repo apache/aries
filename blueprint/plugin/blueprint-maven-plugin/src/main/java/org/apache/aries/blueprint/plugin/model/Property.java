@@ -65,7 +65,7 @@ class Property implements Comparable<Property>, XmlWriter {
             if (ref != null) {
                 return new Property(field.getName(), ref, null, true);
             }
-            BeanRef matching = blueprintRegistry.getMatching(new BeanRef(field));
+            BeanRef matching = blueprintRegistry.getMatching(new BeanTemplate(field));
             ref = (matching == null) ? getDefaultRefName(field) : matching.id;
             return new Property(field.getName(), ref, null, true);
         } else {
@@ -118,9 +118,9 @@ class Property implements Comparable<Property>, XmlWriter {
                 return new Property(propertyName, ref, null, false);
             }
 
-            BeanRef beanRef = new BeanRef(method);
-            BeanRef matching = blueprintRegistry.getMatching(beanRef);
-            ref = (matching == null) ? beanRef.id : matching.id;
+            BeanTemplate template = new BeanTemplate(method);
+            BeanRef matching = blueprintRegistry.getMatching(template);
+            ref = (matching == null) ? Bean.getBeanName(method.getParameterTypes()[0]) : matching.id;
             return new Property(propertyName, ref, null, false);
         }
 
