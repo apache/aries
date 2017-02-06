@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
+import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
 class Property implements Comparable<Property>, XmlWriter {
     public final String name;
@@ -120,7 +121,7 @@ class Property implements Comparable<Property>, XmlWriter {
 
             BeanTemplate template = new BeanTemplate(method);
             BeanRef matching = blueprintRegistry.getMatching(template);
-            ref = (matching == null) ? Bean.getBeanName(method.getParameterTypes()[0]) : matching.id;
+            ref = (matching == null) ? getBeanName(method.getParameterTypes()[0]) : matching.id;
             return new Property(propertyName, ref, null, false);
         }
 
@@ -142,25 +143,21 @@ class Property implements Comparable<Property>, XmlWriter {
      * @return
      */
     private static String getDefaultRefName(Field field) {
-        return Bean.getBeanName(field.getType());
+        return getBeanName(field.getType());
     }
 
     private static String getForcedRefName(Field field) {
-        for (NamedLikeHandler namedLikeHandler : Handlers.NAMED_LIKE_HANDLERS) {
-            if (field.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
-                String name = namedLikeHandler.getName(field.getType(), field);
-                if (name != null) {
-                    return name;
-                }
-            }
-        }
-        return null;
+        return getForcedRefName(field.getType(), field);
     }
 
     private static String getForcedRefName(Method method) {
+        return getForcedRefName(method.getParameterTypes()[0], method);
+    }
+
+    private static String getForcedRefName(Class<?> clazz, AnnotatedElement annotatedElement) {
         for (NamedLikeHandler namedLikeHandler : Handlers.NAMED_LIKE_HANDLERS) {
-            if (method.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
-                String name = namedLikeHandler.getName(method.getParameterTypes()[0], method);
+            if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
+                String name = namedLikeHandler.getName(clazz, annotatedElement);
                 if (name != null) {
                     return name;
                 }

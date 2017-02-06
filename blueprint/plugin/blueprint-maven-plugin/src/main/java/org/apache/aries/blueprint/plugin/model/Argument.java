@@ -18,18 +18,53 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
+import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.lang.annotation.Annotation;
+
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
+import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
 class Argument implements XmlWriter{
     private final String ref;
     private final String value;
 
-    Argument(String ref, String value) {
-        this.ref = ref;
+    Argument(BlueprintRegistry blueprintRegistry, Class<?> argumentClass, Annotation[] annotations) {
+        String value = findValue(annotations);
+        String ref = findName(annotations);
+
+        for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.CUSTOM_DEPENDENCY_ANNOTATION_HANDLERS) {
+            Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(annotations, customDependencyAnnotationHandler.getAnnotation());
+            if (annotation != null) {
+                String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(argumentClass, annotation, ref, blueprintRegistry);
+                if (generatedRef != null) {
+                    ref = generatedRef;
+                    break;
+                }
+            }
+        }
+
+        if (ref == null && value == null) {
+            BeanTemplate template = new BeanTemplate(argumentClass, annotations);
+            BeanRef bean = blueprintRegistry.getMatching(template);
+            if (bean != null) {
+                ref = bean.id;
+            } else {
+                String name = findName(annotations);
+                if (name != null) {
+                    ref = name;
+                } else {
+                    ref = getBeanName(argumentClass);
+                }
+            }
+        }
         this.value = value;
+        this.ref = ref;
     }
 
     String getRef() {
