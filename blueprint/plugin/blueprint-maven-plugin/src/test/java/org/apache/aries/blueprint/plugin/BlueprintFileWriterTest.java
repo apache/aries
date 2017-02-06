@@ -755,6 +755,20 @@ public class BlueprintFileWriterTest {
 
     }
 
+    @Test
+    public void shouldInjectDependencyByQualifierFromFactory() throws Exception {
+
+        Node bean1 = getBeanById("testBean1");
+        assertXpathEquals(bean1, "@factory-method", "create1");
+
+        Node bean2 = getBeanById("testBean2");
+        assertXpathEquals(bean2, "@factory-method", "create2");
+
+        Node consumer = getBeanById("testConsumer");
+        assertXpathEquals(consumer, "argument[1]/@ref", "testBean1");
+        assertXpathEquals(consumer, "argument[2]/@ref", "testBean2");
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }

@@ -60,4 +60,9 @@ class BeanFromFactory extends Bean {
     protected void resolveArguments(BlueprintRegistry matcher) {
         resolveArguments(matcher, producingMethod.getParameterTypes(), producingMethod.getParameterAnnotations());
     }
+
+    @Override
+    BeanRef toBeanRef() {
+        return new BeanRef(clazz, id, producingMethod.getAnnotations());
+    }
 }
