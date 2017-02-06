@@ -28,19 +28,23 @@ import java.lang.reflect.Method;
 class BeanFromFactory extends Bean {
     private final Method producingMethod;
 
-    BeanFromFactory(Class<?> clazz, Bean factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
-        this(clazz, null, factoryBean, factoryMethod, contextEnricher);
-    }
-
-    BeanFromFactory(Class<?> clazz, String id, Bean factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
-        super(clazz, contextEnricher);
-        if (id != null) {
-            this.id = id;
+    BeanFromFactory(Bean factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+        super(factoryMethod.getReturnType(), contextEnricher);
+        String forcedId = AnnotationHelper.findName(factoryMethod.getAnnotations());
+        if (forcedId != null) {
+            this.id = forcedId;
         }
         this.producingMethod = factoryMethod;
+        setScope(factoryMethod);
         handleCustomBeanAnnotations();
         attributes.put("factory-ref", factoryBean.id);
         attributes.put("factory-method", producingMethod.getName());
+    }
+
+    private void setScope(Method factoryMethod) {
+        if (AnnotationHelper.findSingletons(factoryMethod.getAnnotations())) {
+            attributes.put("scope", "singleton");
+        }
     }
 
     private void handleCustomBeanAnnotations() {
@@ -50,10 +54,6 @@ class BeanFromFactory extends Bean {
                 beanAnnotationHandler.handleBeanAnnotation(producingMethod, id, contextEnricher, this);
             }
         }
-    }
-
-    void setSingleton() {
-        attributes.put("scope", "singleton");
     }
 
     @Override

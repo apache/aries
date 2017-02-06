@@ -85,4 +85,13 @@ class AnnotationHelper {
         }
         return false;
     }
+
+    static boolean findSingleton(Class clazz) {
+        for (Class<?> singletonAnnotation : Handlers.SINGLETONS) {
+            if (clazz.getAnnotation(singletonAnnotation) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

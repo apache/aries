@@ -26,7 +26,6 @@ import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import javax.xml.stream.XMLStreamException;
@@ -44,7 +43,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findSingleton;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
+import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
 class Bean implements BeanEnricher, XmlWriter {
 
@@ -57,19 +58,17 @@ class Bean implements BeanEnricher, XmlWriter {
     final Map<String, String> attributes = new HashMap<>();
     final Map<String, XmlWriter> beanContentWriters = new HashMap<>();
     protected final ContextEnricher contextEnricher;
+    private final Introspector introspector;
 
     Bean(Class<?> clazz, ContextEnricher contextEnricher) {
         this.clazz = clazz;
         this.id = getBeanName(clazz);
         this.contextEnricher = contextEnricher;
-        Introspector introspector = new Introspector(clazz);
+        introspector = new Introspector(clazz);
 
         setScope(clazz);
-
         handleCustomBeanAnnotations();
-
         handleFieldsAnnotation(introspector);
-
         handleMethodsAnnotation(introspector);
     }
 
@@ -110,18 +109,8 @@ class Bean implements BeanEnricher, XmlWriter {
         }
     }
 
-    private boolean findSingleton(Class clazz) {
-        for (Class<?> singletonAnnotation : Handlers.SINGLETONS) {
-            if (clazz.getAnnotation(singletonAnnotation) != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     private void resolveMethods(BlueprintRegistry blueprintRegistry) {
-        for (Method method : new Introspector(clazz).methodsWith(AnnotationHelper.injectDependencyAnnotations)) {
+        for (Method method : introspector.methodsWith(AnnotationHelper.injectDependencyAnnotations)) {
             Property prop = Property.create(blueprintRegistry, method);
             if (prop != null) {
                 properties.add(prop);
@@ -130,7 +119,7 @@ class Bean implements BeanEnricher, XmlWriter {
     }
 
     private void resolveFields(BlueprintRegistry matcher) {
-        for (Field field : new Introspector(clazz).fieldsWith(AnnotationHelper.injectDependencyAnnotations)) {
+        for (Field field : introspector.fieldsWith(AnnotationHelper.injectDependencyAnnotations)) {
             Property prop = Property.create(matcher, field);
             if (prop != null) {
                 properties.add(prop);
@@ -159,43 +148,8 @@ class Bean implements BeanEnricher, XmlWriter {
 
     void resolveArguments(BlueprintRegistry blueprintRegistry, Class[] parameterTypes, Annotation[][] parameterAnnotations) {
         for (int i = 0; i < parameterTypes.length; ++i) {
-            Annotation[] annotations = parameterAnnotations[i];
-            String value = findValue(annotations);
-            String ref = findName(annotations);
-
-            for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.CUSTOM_DEPENDENCY_ANNOTATION_HANDLERS) {
-                Annotation annotation = (Annotation) AnnotationHelper.findAnnotation(annotations, customDependencyAnnotationHandler.getAnnotation());
-                if (annotation != null) {
-                    String generatedRef = customDependencyAnnotationHandler.handleDependencyAnnotation(parameterTypes[i], annotation, ref, blueprintRegistry);
-                    if (generatedRef != null) {
-                        ref = generatedRef;
-                        break;
-                    }
-                }
-            }
-
-            if (ref == null && value == null) {
-                BeanTemplate template = new BeanTemplate(parameterTypes[i], annotations);
-                BeanRef bean = blueprintRegistry.getMatching(template);
-                if (bean != null) {
-                    ref = bean.id;
-                } else {
-                    String name = findName(annotations);
-                    if (name != null) {
-                        ref = name;
-                    } else {
-                        ref = getBeanName(parameterTypes[i]);
-                    }
-                }
-            }
-
-            constructorArguments.add(new Argument(ref, value));
+            constructorArguments.add(new Argument(blueprintRegistry, parameterTypes[i], parameterAnnotations[i]));
         }
-    }
-
-    @Override
-    public String toString() {
-        return clazz.getName();
     }
 
     private void writeProperties(XMLStreamWriter writer) throws XMLStreamException {
@@ -266,26 +220,5 @@ class Bean implements BeanEnricher, XmlWriter {
 
     BeanRef toBeanRef() {
         return new BeanRef(clazz, id, clazz.getAnnotations());
-    }
-
-    static String getBeanName(Class<?> clazz) {
-        return getBeanName(clazz, clazz);
-    }
-
-    private static String getBeanName(Class<?> clazz, AnnotatedElement annotatedElement) {
-        for (NamedLikeHandler namedLikeHandler : Handlers.NAMED_LIKE_HANDLERS) {
-            if (annotatedElement.getAnnotation(namedLikeHandler.getAnnotation()) != null) {
-                String name = namedLikeHandler.getName(clazz, annotatedElement);
-                if (name != null) {
-                    return name;
-                }
-            }
-        }
-        String name = clazz.getSimpleName();
-        return getBeanNameFromSimpleName(name);
-    }
-
-    private static String getBeanNameFromSimpleName(String name) {
-        return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
     }
 }
