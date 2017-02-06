@@ -80,17 +80,7 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
             if (!isFactoryMethod(method)) {
                 continue;
             }
-            String name = AnnotationHelper.findName(method.getAnnotations());
-            Class<?> beanClass = method.getReturnType();
-            BeanFromFactory beanFromFactory;
-            if (name == null) {
-                beanFromFactory = new BeanFromFactory(beanClass, factoryBean, method, this);
-            } else {
-                beanFromFactory = new BeanFromFactory(beanClass, name, factoryBean, method, this);
-            }
-            if (AnnotationHelper.findSingletons(method.getAnnotations())) {
-                beanFromFactory.setSingleton();
-            }
+            BeanFromFactory beanFromFactory = new BeanFromFactory(factoryBean, method, this);
             beanRefStore.addBean(beanFromFactory.toBeanRef());
             generatedBeans.add(beanFromFactory);
         }

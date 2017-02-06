@@ -37,7 +37,7 @@ import java.util.Set;
  * Class to find uniquely-named fields declared in a class hierarchy with specified annotations.
  */
 final class Introspector {
-    private Class<?> originalClazz;
+    private final Class<?> originalClazz;
 
     /**
      * @param clazz the class to introspect (including those defined in parent classes).
@@ -111,14 +111,6 @@ final class Introspector {
             }
         }
         return false;
-    }
-    
-    public <T extends Annotation> Method methodWith(Class<T> annotationClass) {
-        List<Method> methods = methodsWith(annotationClass);
-        Preconditions.checkArgument(methods.size() <= 1,
-                                    "Found %d methods annotated with %s in class %s, but only 1 allowed",
-                                    methods.size(), annotationClass.getName(), originalClazz.getName());
-        return Iterables.getOnlyElement(methods, null);
     }
 
     @SafeVarargs
