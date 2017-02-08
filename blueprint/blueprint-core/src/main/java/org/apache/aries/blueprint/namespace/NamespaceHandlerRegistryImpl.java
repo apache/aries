@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -572,11 +573,17 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             private boolean isCorrectUrl(URL url) {
                 return url != null && !loaded.values().contains(url);
             }
+            
             private String resolveIfRelative(String systemId, String baseURI) {
                 if (baseURI != null && systemId != null) {
                     URI sId = URI.create(systemId);
                     if (!sId.isAbsolute()) {
-                        return URI.create(baseURI).resolve(sId).toString();
+                        try {
+                            // http://stackoverflow.com/questions/13046150/java-net-uri-relativize-doesnt-work-with-jar-uris
+                            return new URL(new URL(baseURI), systemId).toString();
+                        } catch (MalformedURLException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
                 return null;
