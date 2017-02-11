@@ -22,7 +22,6 @@ import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
@@ -42,9 +41,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findSingleton;
-import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
 class Bean implements BeanEnricher, XmlWriter {

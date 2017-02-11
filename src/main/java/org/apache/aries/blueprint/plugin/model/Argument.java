@@ -30,12 +30,20 @@ import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
-class Argument implements XmlWriter{
+class Argument implements XmlWriter {
     private final String ref;
     private final String value;
 
     Argument(BlueprintRegistry blueprintRegistry, Class<?> argumentClass, Annotation[] annotations) {
-        String value = findValue(annotations);
+        this.value = findValue(annotations);
+        if (value != null) {
+            ref = null;
+            return;
+        }
+        this.ref = findRef(blueprintRegistry, argumentClass, annotations);
+    }
+
+    private String findRef(BlueprintRegistry blueprintRegistry, Class<?> argumentClass, Annotation[] annotations) {
         String ref = findName(annotations);
 
         for (CustomDependencyAnnotationHandler customDependencyAnnotationHandler : Handlers.CUSTOM_DEPENDENCY_ANNOTATION_HANDLERS) {
@@ -49,22 +57,16 @@ class Argument implements XmlWriter{
             }
         }
 
-        if (ref == null && value == null) {
+        if (ref == null) {
             BeanTemplate template = new BeanTemplate(argumentClass, annotations);
             BeanRef bean = blueprintRegistry.getMatching(template);
             if (bean != null) {
                 ref = bean.id;
             } else {
-                String name = findName(annotations);
-                if (name != null) {
-                    ref = name;
-                } else {
-                    ref = getBeanName(argumentClass);
-                }
+                ref = getBeanName(argumentClass);
             }
         }
-        this.value = value;
-        this.ref = ref;
+        return ref;
     }
 
     String getRef() {
