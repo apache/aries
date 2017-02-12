@@ -73,16 +73,4 @@ public class ConfigPropertiesHandler implements CustomDependencyAnnotationHandle
         return ConfigProperties.class;
     }
 
-    private Class<?> getClass(AnnotatedElement annotatedElement) {
-        if (annotatedElement instanceof Class<?>) {
-            return (Class<?>) annotatedElement;
-        }
-        if (annotatedElement instanceof Method) {
-            return ((Method) annotatedElement).getParameterTypes()[0];
-        }
-        if (annotatedElement instanceof Field) {
-            return ((Field) annotatedElement).getType();
-        }
-        throw new RuntimeException("Unknown annotated element");
-    }
 }

@@ -769,6 +769,17 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(consumer, "argument[2]/@ref", "testBean2");
     }
 
+    @Test
+    public void shouldGeneratePropertyPlaceholder() throws Exception {
+        Node propertyPlaceholder = getPropertyPlaceholderByPersistentId("org.apache.aries.my");
+        assertXpathEquals(propertyPlaceholder, "@placeholder-prefix", "$[");
+        assertXpathEquals(propertyPlaceholder, "@placeholder-suffix", "]");
+        assertXpathEquals(propertyPlaceholder, "@update-strategy", "reload");
+        assertXpathEquals(propertyPlaceholder, "count(default-properties/property)", "2");
+        assertXpathEquals(propertyPlaceholder, "default-properties/property[@name='title']/@value", "My Title");
+        assertXpathEquals(propertyPlaceholder, "default-properties/property[@name='test2']/@value", "v2");
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }
@@ -807,4 +818,7 @@ public class BlueprintFileWriterTest {
         return (Node) xpath.evaluate("/blueprint/reference-list[@id='" + id + "']", document, XPathConstants.NODE);
     }
 
+    private static Node getPropertyPlaceholderByPersistentId(String id) throws XPathExpressionException {
+        return (Node) xpath.evaluate("/blueprint/property-placeholder[@persistent-id='" + id + "']", document, XPathConstants.NODE);
+    }
 }
