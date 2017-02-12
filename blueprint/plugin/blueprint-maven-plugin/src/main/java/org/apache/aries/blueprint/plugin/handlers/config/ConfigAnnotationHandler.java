@@ -37,10 +37,7 @@ public class ConfigAnnotationHandler implements BeanAnnotationHandler<Config>{
     public void handleBeanAnnotation(AnnotatedElement annotatedElement, String id,
                                      ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         Config config = annotatedElement.getAnnotation(Config.class);
-        XmlWriter writer = new ConfigWriter(config);
-        contextEnricher.addBlueprintContentWriter("config", writer);
-        contextEnricher.getBlueprintConfiguration().getNamespaces().add(ConfigWriter.CONFIG_NS);
-        
+        contextEnricher.addBlueprintContentWriter("cm/property-placeholder", new ConfigWriter(config));
     }
 
 }
