@@ -28,7 +28,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint-maven-plugin-annotation</artifactId>
     <packaging>bundle</packaging>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>Apache Aries Blueprint Maven Plugin Annotations</name>
 
     <scm>
