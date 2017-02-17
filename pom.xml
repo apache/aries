@@ -17,26 +17,25 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
         <version>2.0.1</version>
-        <relativePath/>
+        <relativePath />
     </parent>
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint-maven-plugin-annotation</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0</version>
     <name>Apache Aries Blueprint Maven Plugin Annotations</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin-annotation</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin-annotation
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/blueprint-maven-plugin-annotation-1.1.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/blueprint-maven-plugin-annotation-1.1.0
         </developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/plugin/blueprint-maven-plugin-annotation</url>
+        <url>http://svn.apache.org/viewvc/aries/tags/blueprint-maven-plugin-annotation-1.1.0</url>
     </scm>
 
     <properties>
@@ -45,8 +44,8 @@
             org.apache.aries.blueprint.annotation.config,
             org.apache.aries.blueprint.annotation.referencelistener
         </aries.osgi.export.pkg>
-        <aries.osgi.import.pkg/>
-        <aries.osgi.private.pkg/>
+        <aries.osgi.import.pkg />
+        <aries.osgi.private.pkg />
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 </project>
