@@ -124,7 +124,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private boolean sourcesChanged() {
-        return !buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()));
+        return buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()));
     }
 
     private void writeBlueprint(Blueprint blueprint) throws Exception {
