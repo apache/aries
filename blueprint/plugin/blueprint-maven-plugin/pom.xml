@@ -99,6 +99,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>1.10</version>
+                <configuration>
+                    <projectsDirectory>src/it</projectsDirectory>
+                    <pomIncludes>
+                        <pomInclude>**/pom.xml</pomInclude>
+                    </pomIncludes>
+                    <postBuildHookScript>verify</postBuildHookScript>
+                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -136,6 +156,7 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
     </build>
 
     <dependencies>
@@ -328,6 +349,5 @@
         </dependency>
 
     </dependencies>
-
 
 </project>

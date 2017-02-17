@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -16,17 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test.bean;
 
-import org.apache.aries.blueprint.annotation.bean.Activation;
-import org.apache.aries.blueprint.annotation.bean.Bean;
-import org.apache.aries.blueprint.annotation.bean.Scope;
+def file = new File(basedir, 'target/generated-sources/blueprint/OSGI-INF/blueprint/autowire.xml')
+assert file.exists()
 
-@Bean(activation = Activation.LAZY, scope = Scope.PROTOTYPE, dependsOn = {"basicBean", "namedBean1"}, initMethod = "init", destroyMethod = "destroy")
-public class BeanWithCallbackMethods {
-    public void init() {
-    }
-
-    public void destroy() {
-    }
-}
+def xml = new groovy.util.XmlSlurper().parse(file)
+assert xml.bean.find {it.@class == 'p1.T1'}.size() == 0
+assert xml.bean.find {it.@class == 'p2.T2'}.@id == 't2'
+assert xml.bean.find {it.@class == 'p2.inner.T3'}.@id == 'test3'
