@@ -39,33 +39,13 @@
             <plugin>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>blueprint-maven-plugin</artifactId>
-                <version>@project.version@</version>
+                <version>@blueprint-maven-plugin.version@</version>
                 <executions>
                     <execution>
-                        <id>p1</id>
                         <goals>
+                            <goal>add-resource-dir</goal>
                             <goal>blueprint-generate</goal>
                         </goals>
-                        <configuration>
-                            <scanPaths>
-                                <scanPath>p1</scanPath>
-                            </scanPaths>
-                            <generatedFileName>p1.xml</generatedFileName>
-                            <defaultActivation>LAZY</defaultActivation>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>p2</id>
-                        <goals>
-                            <goal>blueprint-generate</goal>
-                        </goals>
-                        <configuration>
-                            <scanPaths>
-                                <scanPath>p2</scanPath>
-                            </scanPaths>
-                            <generatedFileName>p2.xml</generatedFileName>
-                            <defaultActivation>EAGER</defaultActivation>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -39,7 +39,12 @@
             <plugin>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>blueprint-maven-plugin</artifactId>
-                <version>@project.version@</version>
+                <version>@blueprint-maven-plugin.version@</version>
+                <configuration>
+                    <scanPaths>
+                        <scanPath>p2</scanPath>
+                    </scanPaths>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

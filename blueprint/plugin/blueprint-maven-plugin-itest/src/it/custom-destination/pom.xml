@@ -39,7 +39,7 @@
             <plugin>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>blueprint-maven-plugin</artifactId>
-                <version>@project.version@</version>
+                <version>@blueprint-maven-plugin.version@</version>
                 <configuration>
                     <generatedFileName>blueprint.xml</generatedFileName>
                     <generatedDir>custom/my</generatedDir>
