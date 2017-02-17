@@ -47,7 +47,7 @@ import java.util.Set;
 /**
  * Generates blueprint from CDI annotations
  */
-@Mojo(name = "blueprint-write", requiresDependencyResolution = ResolutionScope.COMPILE,
+@Mojo(name = "blueprint-generate", requiresDependencyResolution = ResolutionScope.COMPILE,
         defaultPhase = LifecyclePhase.PROCESS_CLASSES, inheritByDefault = false)
 public class GenerateMojo extends AbstractMojo {
 
