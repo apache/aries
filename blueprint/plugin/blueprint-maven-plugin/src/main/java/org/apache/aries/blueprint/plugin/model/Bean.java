@@ -35,6 +35,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ import java.util.TreeSet;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findSingleton;
 import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
-class Bean implements BeanEnricher, XmlWriter {
+class Bean implements BeanEnricher, XmlWriter, Comparable<Bean>{
 
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
 
@@ -181,8 +182,10 @@ class Bean implements BeanEnricher, XmlWriter {
     }
 
     private void writeCustomContent(XMLStreamWriter writer) throws XMLStreamException {
-        for (XmlWriter xmlWriter : beanContentWriters.values()) {
-            xmlWriter.write(writer);
+        List<String> customWriterKeys = new ArrayList<>(beanContentWriters.keySet());
+        Collections.sort(customWriterKeys);
+        for (String customWriterKey : customWriterKeys) {
+            beanContentWriters.get(customWriterKey).write(writer);
         }
     }
 
@@ -217,5 +220,10 @@ class Bean implements BeanEnricher, XmlWriter {
 
     BeanRef toBeanRef() {
         return new BeanRef(clazz, id, clazz.getAnnotations());
+    }
+
+    @Override
+    public int compareTo(Bean o) {
+        return id.compareTo(o.id);
     }
 }
