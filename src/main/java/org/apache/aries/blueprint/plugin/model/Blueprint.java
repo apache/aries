@@ -31,6 +31,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,16 +135,24 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
 
     public void write(XMLStreamWriter writer) throws XMLStreamException {
         writeBlueprint(writer);
+        writeBeans(writer);
+        writeCustomWriters(writer);
+        writer.writeEndElement();
+    }
 
+    private void writeCustomWriters(XMLStreamWriter writer) throws XMLStreamException {
+        List<String> customWriterKeys = new ArrayList<>(customWriters.keySet());
+        Collections.sort(customWriterKeys);
+        for (String customWriterKey : customWriterKeys) {
+            customWriters.get(customWriterKey).write(writer);
+        }
+    }
+
+    private void writeBeans(XMLStreamWriter writer) throws XMLStreamException {
+        Collections.sort(generatedBeans);
         for (Bean beanWriter : generatedBeans) {
             beanWriter.write(writer);
         }
-
-        for (XmlWriter bw : customWriters.values()) {
-            bw.write(writer);
-        }
-
-        writer.writeEndElement();
     }
 
     private void writeBlueprint(XMLStreamWriter writer) throws XMLStreamException {

@@ -47,7 +47,7 @@ import java.util.Set;
 /**
  * Generates blueprint from CDI annotations
  */
-@Mojo(name = "blueprint-write", requiresDependencyResolution = ResolutionScope.COMPILE,
+@Mojo(name = "blueprint-generate", requiresDependencyResolution = ResolutionScope.COMPILE,
         defaultPhase = LifecyclePhase.PROCESS_CLASSES, inheritByDefault = false)
 public class GenerateMojo extends AbstractMojo {
 
@@ -124,7 +124,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private boolean sourcesChanged() {
-        return !buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()));
+        return buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()));
     }
 
     private void writeBlueprint(Blueprint blueprint) throws Exception {
