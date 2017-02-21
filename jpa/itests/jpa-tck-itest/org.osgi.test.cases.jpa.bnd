@@ -14,11 +14,14 @@
 
 # bnd pack for project org.osgi.test.cases.jpa
 # Thu Nov 01 12:39:45 EDT 2012
+
+-standalone:
+
 -runpath = \
     lib/org.eclipse.osgi-3.8.0.v20120529-1548.jar;version=file, \
-    lib/org.apache.servicemix.bundles.junit-3.8.2_2.jar;version=file;export="junit.framework;version=3.8" 
+lib/org.apache.servicemix.bundles.junit-4.11_1.jar;version=file;export="junit.framework;version=3.8,junit.framework;version=4.11" 
 
--runtrace = true
+#-runtrace = true
 
 -target = \
     lib/org.osgi.test.cases.jpa-5.0.0.jar;version=file,
