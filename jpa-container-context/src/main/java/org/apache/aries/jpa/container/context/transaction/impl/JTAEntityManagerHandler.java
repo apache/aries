@@ -1,6 +1,7 @@
 package org.apache.aries.jpa.container.context.transaction.impl;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -188,6 +189,28 @@ public class JTAEntityManagerHandler implements InvocationHandler {
           new PersistenceException(NLS.MESSAGES.getMessage("wrong.JPA.version", new Object[]{
               method.getName(), delegate
           }), e);
+        } catch (final Throwable tActual) {
+            Throwable t = tActual;
+
+            while (t != null && t instanceof InvocationTargetException) {
+                t = ((InvocationTargetException) t).getTargetException();
+            }
+            if (t == null) {
+                throw new PersistenceException("unknown invocation target exception", tActual);
+            }
+
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            }
+            if (t instanceof Error) {
+                throw (Error) t;
+            }
+            for (Class<?> declaredException : method.getExceptionTypes()) {
+                if (declaredException.isAssignableFrom(t.getClass())) {
+                    throw t;
+                }
+            }
+            throw new PersistenceException("unexpected un-declared exception " + tActual, tActual);
         }
         return res;
 
