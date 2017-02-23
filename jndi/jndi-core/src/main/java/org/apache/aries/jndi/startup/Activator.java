@@ -43,6 +43,7 @@ import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.jndi.JNDIContextManager;
 import org.osgi.service.jndi.JNDIProviderAdmin;
 import org.osgi.util.tracker.ServiceTracker;
@@ -58,14 +59,18 @@ public class Activator implements BundleActivator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class.getName());
 
+    private static String FORCE_BUILDER = "org.apache.aries.jndi.force.builder";
+
     private OSGiInitialContextFactoryBuilder icfBuilder;
+    private static InitialContextFactoryBuilder originalICFBuilder;
     private OSGiObjectFactoryBuilder ofBuilder;
-    private static ServiceTracker icfBuilders;
-    private static ServiceTracker urlObjectFactoryFinders;
-    private static ServiceTracker initialContextFactories;
-    private static ServiceTracker objectFactories;
-    private static ServiceTracker environmentAugmentors;
-    private static ServiceTracker environmentUnaugmentors;
+    private static ObjectFactoryBuilder originalOFBuilder;
+    private static volatile ServiceTracker icfBuilders;
+    private static volatile ServiceTracker urlObjectFactoryFinders;
+    private static volatile ServiceTracker initialContextFactories;
+    private static volatile ServiceTracker objectFactories;
+    private static volatile ServiceTracker environmentAugmentors;
+    private static volatile ServiceTracker environmentUnaugmentors;
 
     public void start(BundleContext context) {
 
@@ -78,10 +83,17 @@ public class Activator implements BundleActivator {
 
         try {
             OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder();
-            NamingManager.setInitialContextFactoryBuilder(builder);
+            try {
+                NamingManager.setInitialContextFactoryBuilder(builder);
+            } catch (IllegalStateException e) {
+                // use reflection to force the builder to be used
+                if (forceBuilder(context)) {
+                    setField(InitialContextFactoryBuilder.class, builder, true);
+                }
+            }
             icfBuilder = builder;
         } catch (NamingException e) {
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB"), e);
+            LOGGER.debug(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB"), e);
         } catch (IllegalStateException e) {
             // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
             // don't want to see stack traces at info level when everything it working as expected.
@@ -91,15 +103,22 @@ public class Activator implements BundleActivator {
 
         try {
             OSGiObjectFactoryBuilder builder = new OSGiObjectFactoryBuilder(context);
-            NamingManager.setObjectFactoryBuilder(builder);
+            try {
+                NamingManager.setObjectFactoryBuilder(builder);
+            } catch (IllegalStateException e) {
+                // use reflection to force the builder to be used
+                if (forceBuilder(context)) {
+                    setField(ObjectFactoryBuilder.class, builder, true);
+                }
+            }
             ofBuilder = builder;
         } catch (NamingException e) {
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB"), e);
+        	LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB"), e);
         } catch (IllegalStateException e) {
             // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
             // don't want to see stack traces at info level when everything it working as expected.
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(InitialContextFactoryBuilder.class)));
-            LOGGER.debug(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
+            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(ObjectFactoryBuilder.class)));
+            LOGGER.debug(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(ObjectFactoryBuilder.class)), e);
         }
 
         context.registerService(JNDIProviderAdmin.class.getName(),
@@ -113,34 +132,43 @@ public class Activator implements BundleActivator {
         context.registerService(JNDIContextManager.class.getName(),
                                 new ContextManagerServiceFactory(),
                                 null);
-               context.registerService(AugmenterInvoker.class.getName(),
-                                               AugmenterInvokerImpl.getInstance(),
-                                               null);
 
+        context.registerService(AugmenterInvoker.class.getName(),
+                                AugmenterInvokerImpl.getInstance(),
+                                null);
     }
 
-    private String getClassName(Class<?> expectedType)
-    {
-      try {
-        for (Field field : NamingManager.class.getDeclaredFields()) {
-            if (expectedType.equals(field.getType())) {
-                field.setAccessible(true);
-                Object icf = field.get(null);
-                return icf.getClass().getName();
-            }
+    private boolean forceBuilder(BundleContext context) {
+        String forceBuilderProp = context.getProperty(FORCE_BUILDER);
+        if (forceBuilderProp != null) {
+            return true;
         }
-      } catch (Throwable t) {
-          // Ignore
-      }
-      return "";
+        BundleRevision revision = context.getBundle().adapt(BundleRevision.class);
+        return !(revision.getDeclaredCapabilities(FORCE_BUILDER).isEmpty());
+    }
+
+	private String getClassName(Class<?> expectedType)
+    {
+        try {
+            for (Field field : NamingManager.class.getDeclaredFields()) {
+                if (expectedType.equals(field.getType())) {
+                    field.setAccessible(true);
+                    Object icf = field.get(null);
+                    return icf.getClass().getName();
+                }
+            }
+        } catch (Throwable t) {
+            // Ignore
+        }
+        return "";
     }
 
     private ServiceTracker initServiceTracker(BundleContext context,
-        Class<?> type, ServiceTrackerCustomizer custom)
+                                              Class<?> type, ServiceTrackerCustomizer custom)
     {
-      ServiceTracker t = new ServiceTracker(context, type.getName(), custom);
-      t.open();
-      return t;
+        ServiceTracker t = new ServiceTracker(context, type.getName(), custom);
+        t.open();
+        return t;
     }
 
     public void stop(BundleContext context) {
@@ -149,10 +177,10 @@ public class Activator implements BundleActivator {
          * on the NamingManager.
          */
         if (icfBuilder != null) {
-            unsetField(InitialContextFactoryBuilder.class);
+            setField(InitialContextFactoryBuilder.class, originalICFBuilder, false);
         }
         if (ofBuilder != null) {
-            unsetField(ObjectFactoryBuilder.class);
+            setField(ObjectFactoryBuilder.class, originalOFBuilder, false);
         }
 
         icfBuilders.close();
@@ -167,55 +195,68 @@ public class Activator implements BundleActivator {
      * There are no public API to reset the InitialContextFactoryBuilder or
      * ObjectFactoryBuilder on the NamingManager so try to use reflection.
      */
-    private static void unsetField(Class<?> expectedType) {
+    private static void setField(Class<?> expectedType, Object value, boolean saveOriginal) throws IllegalStateException {
         try {
             for (Field field : NamingManager.class.getDeclaredFields()) {
                 if (expectedType.equals(field.getType())) {
                     field.setAccessible(true);
-                    field.set(null, null);
+                    if (saveOriginal) {
+                        if (expectedType.equals(InitialContextFactoryBuilder.class)) {
+                            originalICFBuilder = (InitialContextFactoryBuilder) field.get(null);
+                        } else {
+                            originalOFBuilder = (ObjectFactoryBuilder) field.get(null);
+                        }
+                    }
+
+                    field.set(null, value);
                 }
             }
         } catch (Throwable t) {
             // Ignore
             LOGGER.debug("Error setting field.", t);
+            throw new IllegalStateException(t);
         }
     }
 
     public static ServiceReference[] getInitialContextFactoryBuilderServices()
     {
-      ServiceReference[] refs = icfBuilders.getServiceReferences();
+        ServiceReference[] refs = icfBuilders.getServiceReferences();
 
-      if (refs != null) Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        if (refs != null) {
+            Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        }
 
-      return refs;
+        return refs;
     }
 
     public static ServiceReference[] getInitialContextFactoryServices()
     {
-      ServiceReference[] refs = initialContextFactories.getServiceReferences();
+        ServiceReference[] refs = initialContextFactories.getServiceReferences();
 
-      if (refs != null) Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        if (refs != null) {
+            Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        }
 
-      return refs;
+        return refs;
     }
 
     public static ServiceReference[] getURLObectFactoryFinderServices()
     {
-      ServiceReference[] refs = urlObjectFactoryFinders.getServiceReferences();
+        ServiceReference[] refs = urlObjectFactoryFinders.getServiceReferences();
 
-      if (refs != null) Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
-
-      return refs;
+        if (refs != null) {
+            Arrays.sort(refs, Utils.SERVICE_REFERENCE_COMPARATOR);
+        }
+        return refs;
     }
 
     public static Object[] getEnvironmentAugmentors()
     {
-      return environmentAugmentors.getServices();
+        return environmentAugmentors.getServices();
     }
 
     public static Object[] getEnvironmentUnaugmentors()
     {
-      return environmentUnaugmentors.getServices();
+        return environmentUnaugmentors.getServices();
     }
-
 }
