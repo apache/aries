@@ -59,6 +59,9 @@ public abstract class AbstractManagedJPADataSourceSetup implements LifecycleAwar
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractManagedJPADataSourceSetup.class);
 	
+	// TODO - where should this go?
+	private static final String CONNECTION_TEST_QUERY = "aries.connection.test.query";
+	
 	private final BundleContext context;
 	private final String pid;
 	private final Properties jdbcProperties;
@@ -176,7 +179,9 @@ public abstract class AbstractManagedJPADataSourceSetup implements LifecycleAwar
 			hcfg.setConnectionTimeout(toLong(resourceProviderProperties, CONNECTION_TIMEOUT, SECONDS.toMillis(30)));
 			hcfg.setIdleTimeout(toLong(resourceProviderProperties, IDLE_TIMEOUT, TimeUnit.MINUTES.toMillis(3)));
 			hcfg.setMaxLifetime(toLong(resourceProviderProperties, CONNECTION_LIFETIME, HOURS.toMillis(3)));
-
+	
+			hcfg.setConnectionTestQuery((String)resourceProviderProperties.get(CONNECTION_TEST_QUERY));
+			
 			toUse = new HikariDataSource(hcfg);
 
 		} else {
