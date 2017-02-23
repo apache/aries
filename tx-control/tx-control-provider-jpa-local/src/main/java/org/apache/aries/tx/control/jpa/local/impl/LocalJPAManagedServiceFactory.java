@@ -26,7 +26,6 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAManagedServiceFactory;
 import org.apache.aries.tx.control.jpa.common.impl.AbstractManagedJPADataSourceSetup;
 import org.apache.aries.tx.control.jpa.common.impl.AbstractManagedJPAEMFLocator;
-import org.apache.aries.tx.control.resource.common.impl.LifecycleAware;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.cm.ConfigurationException;
