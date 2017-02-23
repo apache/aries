@@ -39,6 +39,7 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
+import org.h2.Driver;
 import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
@@ -80,7 +81,7 @@ public abstract class AbstractTransactionTest {
 	
 	protected Connection connection;
 
-	private Server server;
+	protected Server server;
 	
 	protected final List<ServiceTracker<?,?>> trackers = new ArrayList<>();
 
@@ -104,20 +105,25 @@ public abstract class AbstractTransactionTest {
 			jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
 		}
 		
+		initTestTable(jdbcUrl);
+		
 		jdbc.setProperty(DataSourceFactory.JDBC_URL, jdbcUrl);
 		
 		boolean configuredProvider = isConfigured();
 		
 		connection = configuredProvider ? configuredConnection(jdbc) : programaticConnection(jdbc);
-		
-		txControl.required(() -> {
-				Statement s = connection.createStatement();
-				try {
-					s.execute("DROP TABLE TEST_TABLE");
-				} catch (SQLException sqle) {}
-				s.execute("CREATE TABLE TEST_TABLE ( message varchar(255) )");
-				return null;
-			});
+	}
+
+	protected void initTestTable(String jdbcUrl) throws SQLException {
+		Driver d = new Driver();
+		try (Connection c = d.connect(jdbcUrl, null)) {
+			Statement s = c.createStatement();
+			try {
+				s.execute("DROP TABLE TEST_TABLE");
+			} catch (SQLException sqle) {}
+			s.execute("CREATE TABLE TEST_TABLE ( message varchar(255) )");
+			c.commit();
+		}
 	}
 
 	protected Map<String, Object> resourceProviderConfig() {
