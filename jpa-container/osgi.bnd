@@ -7,4 +7,5 @@ Provide-Capability: \
     osgi.extender;osgi.extender=aries.jpa;version:Version="${project.version.clean}",\
     osgi.service;objectClass=javax.persistence.EntityManagerFactory;effective:=active;uses:=javax.persistence,\
     osgi.service;objectClass=org.osgi.service.jpa.EntityManagerFactoryBuilder;effective:=active";uses:=org.osgi.service.jpa
-Require-Capability: osgi.service;effective:=active;filter:="(objectClass=javax.persistence.spi.PersistenceProvider)"
+Require-Capability: \
+    osgi.service;effective:=active;filter:="(objectClass=javax.persistence.spi.PersistenceProvider)"
