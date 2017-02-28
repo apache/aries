@@ -54,7 +54,10 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 	<S> OSGi<S> then(OSGi<S> next);
 
-	OSGi<Void> foreach(Consumer<? super T> action);
+	OSGi<Void> foreach(Consumer<? super T> onAdded);
+
+	OSGi<Void> foreach(
+		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
 
 	static OSGi<BundleContext> bundleContext() {
 
