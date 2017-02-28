@@ -31,11 +31,13 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -45,7 +47,9 @@ import static org.apache.aries.osgi.functional.OSGi.just;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
 import static org.apache.aries.osgi.functional.OSGi.register;
 import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
+import static org.apache.aries.osgi.functional.OSGi.services;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -423,6 +427,75 @@ public class DSLTest {
         result.close();
 
         bundleContext.ungetService(serviceReference);
+    }
+
+    @Test
+    public void testProgrammaticDependencies() {
+        AtomicBoolean executed = new AtomicBoolean(false);
+        AtomicBoolean closed = new AtomicBoolean(false);
+
+        String[] filters = {
+            "(key=service one)",
+            "(key=service two)",
+            "(key=service three)"
+        };
+
+        OSGi<?> program =
+            onClose(() -> closed.set(true)).foreach(
+            ign -> executed.set(true)
+        );
+
+        for (String filter : filters) {
+            program = services(filter).then(program);
+        }
+
+        OSGiResult<?> result = program.run(bundleContext);
+
+        try {
+            assertFalse(closed.get());
+            assertFalse(executed.get());
+
+            ServiceRegistration<Service> serviceRegistrationOne =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("key", "service one");
+                    }});
+
+            assertFalse(closed.get());
+            assertFalse(executed.get());
+
+            ServiceRegistration<Service> serviceRegistrationTwo =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("key", "service two");
+                    }});
+
+            assertFalse(closed.get());
+            assertFalse(executed.get());
+
+            ServiceRegistration<Service> serviceRegistrationThree =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("key", "service three");
+                    }});
+
+            assertFalse(closed.get());
+            assertTrue(executed.get());
+
+            serviceRegistrationOne.unregister();
+
+            assertTrue(closed.get());
+
+            serviceRegistrationTwo.unregister();
+            serviceRegistrationThree.unregister();
+        }
+        finally {
+            result.close();
+        }
+
     }
 
     private class Service {}
