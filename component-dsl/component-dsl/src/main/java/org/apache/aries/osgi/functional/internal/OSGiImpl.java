@@ -108,8 +108,24 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
-	public OSGi<Void> foreach(Consumer<? super T> consumer) {
-		return this.map(f ->  {consumer.accept(f); return null;});
+	public OSGi<Void> foreach(Consumer<? super T> onAdded) {
+		return foreach(onAdded, ign -> {});
+	}
+
+	@Override
+	public OSGi<Void> foreach(
+		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
+
+		return new OSGiImpl<>(((bundleContext) -> {
+			OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
+
+			return new OSGiResultImpl<>(
+				osgiResult.added.map(
+					t -> t.map(o -> {onAdded.accept(o); return null;})),
+				osgiResult.removed.map(
+					t -> t.map(o -> {onRemoved.accept(o); return null;})),
+				osgiResult.start, osgiResult.close);
+		}));
 	}
 
 	@Override
