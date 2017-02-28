@@ -209,7 +209,8 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
-	public OSGi<Void> distribute(Function<T, OSGi<?>>... funs) {
+	@SafeVarargs
+	final public OSGi<Void> distribute(Function<T, OSGi<?>>... funs) {
 		return new OSGiImpl<>(bundleContext -> {
 			ArrayList<OSGiResult> results = new ArrayList<>();
 
