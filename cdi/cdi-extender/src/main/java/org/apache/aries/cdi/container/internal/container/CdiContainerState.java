@@ -59,19 +59,14 @@ public class CdiContainerState {
 			CdiContainer.class, _cdiContainerService, properties);
 	}
 
-	public void close() {
+	public synchronized void close() {
 		try {
-			_lock.lock();
-
 			_cdiContainerRegistration.unregister();
 		}
 		catch (Exception e) {
 			if (_log.isTraceEnabled()) {
 				_log.trace("Service already unregistered {}", _cdiContainerRegistration);
 			}
-		}
-		finally {
-			_lock.unlock();
 		}
 	}
 
@@ -108,45 +103,38 @@ public class CdiContainerState {
 	}
 
 	public CdiEvent.Type getLastState() {
-		return _lastState.get();
+		return _lastState;
 	}
 
-	public void fire(CdiEvent event) {
-		try {
-			_lock.lock();
+	public synchronized void fire(CdiEvent event) {
+		Type type = event.getType();
 
-			Type type = event.getType();
+		if ((_lastState == CdiEvent.Type.DESTROYING) &&
+			((type == CdiEvent.Type.WAITING_FOR_EXTENSIONS) ||
+			(type == CdiEvent.Type.WAITING_FOR_SERVICES))) {
 
-			if ((_lastState.get() == CdiEvent.Type.DESTROYING) &&
-				((type == CdiEvent.Type.WAITING_FOR_EXTENSIONS) ||
-				(type == CdiEvent.Type.WAITING_FOR_SERVICES))) {
-
-				return;
-			}
-
-			if (_log.isDebugEnabled()) {
-				_log.debug("CDIe - Event {}", event, event.getCause());
-			}
-
-			updateState(event);
-
-			if (_beanManager != null) {
-				_beanManager.fireEvent(event);
-			}
-
-			for (CdiListener listener : _listeners.values()) {
-				try {
-					listener.cdiEvent(event);
-				}
-				catch (Throwable t) {
-					if (_log.isErrorEnabled()) {
-						_log.error("CDIe - CdiListener failed", t);
-					}
-				}
-			}
+			return;
 		}
-		finally {
-			_lock.unlock();
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("CDIe - Event {}", event, event.getCause());
+		}
+
+		updateState(event);
+
+		if (_beanManager != null) {
+			_beanManager.fireEvent(event);
+		}
+
+		for (CdiListener listener : _listeners.values()) {
+			try {
+				listener.cdiEvent(event);
+			}
+			catch (Throwable t) {
+				if (_log.isErrorEnabled()) {
+					_log.error("CDIe - CdiListener failed", t);
+				}
+			}
 		}
 	}
 
@@ -183,33 +171,26 @@ public class CdiContainerState {
 		_references = references;
 	}
 
-	private void updateState(CdiEvent event) {
-		try {
-			_lock.lock();
+	private synchronized void updateState(CdiEvent event) {
+		Type type = event.getType();
 
-			Type type = event.getType();
+		ServiceReference<CdiContainer> reference = _cdiContainerRegistration.getReference();
 
-			ServiceReference<CdiContainer> reference = _cdiContainerRegistration.getReference();
-
-			if (type == reference.getProperty(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE)) {
-				return;
-			}
-
-			_lastState.set(type);
-
-			Hashtable<String, Object> properties = new Hashtable<>();
-
-			for (String key : reference.getPropertyKeys()) {
-				properties.put(key, reference.getProperty(key));
-			}
-
-			properties.put(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE, type);
-
-			_cdiContainerRegistration.setProperties(properties);
+		if (type == reference.getProperty(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE)) {
+			return;
 		}
-		finally {
-			_lock.unlock();
+
+		_lastState = type;
+
+		Hashtable<String, Object> properties = new Hashtable<>();
+
+		for (String key : reference.getPropertyKeys()) {
+			properties.put(key, reference.getProperty(key));
 		}
+
+		properties.put(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE, type);
+
+		_cdiContainerRegistration.setProperties(properties);
 	}
 
 	private static final Logger _log = LoggerFactory.getLogger(CdiContainerState.class);
@@ -222,9 +203,8 @@ public class CdiContainerState {
 	private List<ConfigurationDependency> _configurations;
 	private final Bundle _extenderBundle;
 	private List<ExtensionDependency> _extensionDependencies;
-	private AtomicReference<CdiEvent.Type> _lastState = new AtomicReference<CdiEvent.Type>(CdiEvent.Type.CREATING);
+	private CdiEvent.Type _lastState = CdiEvent.Type.CREATING;
 	private final Map<ServiceReference<CdiListener>, CdiListener> _listeners;
-	private final ReentrantLock _lock = new ReentrantLock();
 	private List<ReferenceDependency> _references;
 
 }
