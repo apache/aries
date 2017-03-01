@@ -1,4 +1,0 @@
-Fragment-Host: javax.enterprise.cdi-api
-Import-Package: org.apache.aries.cdi.provider;cdi-api-bundle=true
--resourceonly: true
--includeresource: META-INF/=LICENSE, META-INF/=NOTICE
