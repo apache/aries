@@ -4,7 +4,11 @@ Conditional-Package: \
 	org.apache.felix.utils.extender,\
 	org.osgi.util.converter,\
 	org.osgi.util.function
-Export-Package: org.apache.aries.cdi.provider;cdi-api-bundle=true;mandatory:=cdi-api-bundle
+Export-Package: \
+	javax.decorator,\
+	javax.el,\
+	javax.enterprise.*,\
+	javax.inject;version='1.0.0'
 Provide-Capability: \
 	osgi.extender; \
 		osgi.extender='osgi.cdi'; \

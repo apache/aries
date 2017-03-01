@@ -24,7 +24,6 @@
 	</licenses>
 
 	<modules>
-		<module>cdi-api-provider-fragment</module>
 		<module>cdi-extender</module>
 		<module>cdi-extension-jndi</module>
 		<module>cdi-itests</module>
