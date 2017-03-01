@@ -1,0 +1,8 @@
+Export-Package: \
+	javax.el;version='1.0.0'
+Provide-Capability: \
+	osgi.contract; \
+		osgi.contract=JavaEL; \
+		uses:="javax.el"; \
+		version:List<Version>='2.1,2.2,3.0'
+-includeresource: @tomcat-el-api-*.jar!/META-INF/LICENSE, @tomcat-el-api-*.jar!/META-INF/NOTICE

@@ -14,61 +14,27 @@
 
 package org.apache.aries.cdi.extension.jndi;
 
-import java.util.Hashtable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.enterprise.inject.spi.BeanManager;
-import javax.naming.Name;
 import javax.naming.spi.ObjectFactory;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
 public class JndiObjectFactory implements ServiceFactory<ObjectFactory> {
 
+	public JndiObjectFactory(JndiExtensionFactory jndiExtensionFactory) {
+		_jndiExtensionFactory = jndiExtensionFactory;
+	}
+
 	@Override
 	public ObjectFactory getService(Bundle bundle, ServiceRegistration<ObjectFactory> registration) {
-		if (!_contexts.containsKey(bundle.getBundleContext())) {
-			return null;
-		}
-
-		return _contexts.get(bundle.getBundleContext());
+		return _jndiExtensionFactory.getObjectFactory(bundle);
 	}
 
 	@Override
 	public void ungetService(Bundle bundle, ServiceRegistration<ObjectFactory> registration, ObjectFactory service) {
-		_contexts.remove(bundle.getBundleContext());
 	}
 
-	public void put(BundleContext bundleContext, BeanManager beanManager) {
-		_contexts.putIfAbsent(bundleContext, new InnerObjectFactory(new JndiContext(beanManager)));
-	}
-
-	private final ConcurrentMap<BundleContext, ObjectFactory> _contexts = new ConcurrentHashMap<>();
-
-	private class InnerObjectFactory implements ObjectFactory {
-
-		public InnerObjectFactory(JndiContext jndiContext) {
-			_jndiContext = jndiContext;
-		}
-
-		@Override
-		public Object getObjectInstance(
-				Object obj, Name name, javax.naming.Context context, Hashtable<?, ?> environment)
-			throws Exception {
-
-			if (obj == null) {
-				return _jndiContext;
-			}
-
-			return null;
-		}
-
-		private final JndiContext _jndiContext;
-
-	}
+	private final JndiExtensionFactory _jndiExtensionFactory;
 
 }

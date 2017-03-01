@@ -24,6 +24,7 @@
 	</licenses>
 
 	<modules>
+		<module>el-api</module>
 		<module>cdi-extender</module>
 		<module>cdi-extension-jndi</module>
 		<module>cdi-itests</module>
