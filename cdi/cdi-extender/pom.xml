@@ -35,26 +35,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<version>1.2</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.el</groupId>
-					<artifactId>javax.el-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>javax.inject</groupId>
-			<artifactId>javax.inject</artifactId>
-			<version>1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.el-api</artifactId>
+			<artifactId>org.apache.aries.javax.cdi-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -85,8 +67,24 @@
 			<version>2.4.0.Final</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.jboss.spec.javax.el</groupId>
-					<artifactId>jboss-el-api_3.0_spec</artifactId>
+					<groupId>org.jboss.weld</groupId>
+					<artifactId>weld-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.weld</groupId>
+					<artifactId>weld-core-impl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.weld</groupId>
+					<artifactId>weld-core-jsf</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.weld</groupId>
+					<artifactId>weld-spi</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jboss.weld.probe</groupId>
+					<artifactId>weld-probe-core</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
