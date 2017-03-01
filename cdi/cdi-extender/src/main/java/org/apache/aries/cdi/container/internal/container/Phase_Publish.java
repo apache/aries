@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.naming.spi.ObjectFactory;
 
 import org.apache.aries.cdi.container.internal.bean.ReferenceBean;
 import org.apache.aries.cdi.container.internal.literal.AnyLiteral;
@@ -78,18 +77,8 @@ public class Phase_Publish implements Phase {
 			}
 			catch (Exception e) {
 				if (_log.isTraceEnabled()) {
-					_log.trace("Service already unregistered {}", _beanManagerRegistration);
-				}
-			}
-		}
-
-		if (_objectFactoryRegistration != null) {
-			try {
-				_objectFactoryRegistration.unregister();
-			}
-			catch (Exception e) {
-				if (_log.isTraceEnabled()) {
-					_log.trace("Service already unregistered {}", _objectFactoryRegistration);
+					_log.trace(
+						"Service already unregistered {}", _beanManagerRegistration);
 				}
 			}
 		}
@@ -236,6 +225,5 @@ public class Phase_Publish implements Phase {
 	private final List<ServiceDeclaration> _services;
 
 	private ServiceRegistration<BeanManager> _beanManagerRegistration;
-	private ServiceRegistration<ObjectFactory> _objectFactoryRegistration;
 
 }
