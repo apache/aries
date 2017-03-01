@@ -39,7 +39,6 @@
 		<module>cdi-extender</module>
 		<module>cdi-extension-jndi</module>
 		<module>cdi-itests</module>
-		<module>cdi-executable</module>
 	</modules>
 
 	<build>
@@ -97,6 +96,19 @@
 							<id>bnd-process</id>
 							<goals>
 								<goal>bnd-process</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>biz.aQute.bnd</groupId>
+					<artifactId>bnd-resolver-maven-plugin</artifactId>
+					<version>${bnd.version}</version>
+					<executions>
+						<execution>
+							<id>resolve</id>
+							<goals>
+								<goal>resolve</goal>
 							</goals>
 						</execution>
 					</executions>
