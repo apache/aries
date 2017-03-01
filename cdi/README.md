@@ -18,6 +18,6 @@ This repository contains an [OSGi enRoute](http://enroute.osgi.org/) based, pre-
 
 Once you've completed a successfull build, you should be able to execute the command:
 
-`java -jar cdi-extender-executable/cdi-executable.jar`
+`java -jar cdi-itests/target/cdi-executable.jar`
 
 and be presented with a gogo shell prompt ready for you to install a CDI bundle.
