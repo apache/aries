@@ -56,7 +56,7 @@ public class Activator extends AbstractExtender {
 		_listenerTracker = new ServiceTracker<>(_bundleContext, CdiListener.class, new CdiListenerCustomizer());
 		_listenerTracker.open();
 
-		registerCdiCommand(_bundleContext);
+		registerCdiCommand();
 
 		super.start(bundleContext);
 
@@ -65,7 +65,7 @@ public class Activator extends AbstractExtender {
 		}
 	}
 
-	private void registerCdiCommand(BundleContext bundleContext) {
+	private void registerCdiCommand() {
 		Dictionary<String, Object> properties = new Hashtable<>();
 		properties.put("osgi.command.scope", "cdi");
 		properties.put("osgi.command.function", new String[] {"list", "info"});
@@ -86,6 +86,10 @@ public class Activator extends AbstractExtender {
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("CDIe - stoped {}", bundleContext.getBundle());
+		}
+
+		if (_commandRegistration != null) {
+			_commandRegistration.unregister();
 		}
 	}
 
@@ -116,7 +120,7 @@ public class Activator extends AbstractExtender {
 		}
 	}
 
-	private final boolean requiresCdiExtender(Bundle bundle) {
+	private boolean requiresCdiExtender(Bundle bundle) {
 		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
 		List<BundleWire> requiredBundleWires = bundleWiring.getRequiredWires(EXTENDER_NAMESPACE);
 
