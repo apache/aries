@@ -183,7 +183,7 @@ public class Phase_Publish implements Phase {
 				}
 
 				ServiceDeclaration serviceDeclaration = new ServiceDeclaration(
-					ServiceLiteral.from(interfaces.toArray(new Class<?>[0]), serviceModel.getProperties()), bean,
+					ServiceLiteral.from(interfaces.toArray(new Class<?>[interfaces.size()]), serviceModel.getProperties()), bean,
 					creationalContext);
 
 				processServiceDeclaration(serviceDeclaration);
