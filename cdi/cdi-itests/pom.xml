@@ -73,36 +73,15 @@
 			<version>1.2.17</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.21</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>2.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.component.annotations</artifactId>
-			<version>1.3.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.core</artifactId>
-			<version>6.0.0</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
 			<artifactId>org.apache.aries.cdi.extender</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.enterprise</groupId>
+					<artifactId>cdi-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
@@ -111,7 +90,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.cdi.log4j.configuration.fragment</artifactId>
+			<artifactId>org.apache.aries.el-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -133,6 +112,16 @@
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.gogo.command</artifactId>
 			<version>1.0.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.osgi</groupId>
+					<artifactId>org.osgi.core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.osgi</groupId>
+					<artifactId>org.osgi.compendium</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
@@ -148,6 +137,11 @@
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.scr</artifactId>
 			<version>2.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
@@ -177,6 +171,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.service.component.annotations</artifactId>
+			<version>1.3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.http.whiteboard</artifactId>
 			<version>1.0.0</version>
 			<scope>provided</scope>
@@ -185,6 +185,21 @@
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.metatype</artifactId>
 			<version>1.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>osgi.core</artifactId>
+			<version>6.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.21</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
 		</dependency>
 	</dependencies>
 </project>
