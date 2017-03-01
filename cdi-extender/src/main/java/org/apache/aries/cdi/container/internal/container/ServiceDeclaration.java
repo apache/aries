@@ -93,7 +93,7 @@ public class ServiceDeclaration {
 			}
 		}
 
-		return classNames.toArray(new String[0]);
+		return classNames.toArray(new String[classNames.size()]);
 	}
 
 	public Dictionary<String, Object> getProperties() {
@@ -116,8 +116,7 @@ public class ServiceDeclaration {
 	Object getValue(ServiceProperty serviceProperty) {
 		Type type = serviceProperty.type().getType();
 		String[] value = serviceProperty.value();
-		Object object = _converter.convert(value).to(type);
-		return object;
+		return _converter.convert(value).to(type);
 	}
 
 	private static final Converter _converter = new StandardConverter();
