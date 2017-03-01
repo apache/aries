@@ -20,7 +20,7 @@ public class ConfigurationDependency {
 	}
 
 	public String[] pids() {
-		return _pids;
+		return Arrays.copyOf(_pids, _pids.length);
 	}
 
 	@Override
