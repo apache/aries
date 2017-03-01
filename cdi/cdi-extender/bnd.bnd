@@ -8,6 +8,6 @@ Export-Package: org.apache.aries.cdi.provider;cdi-api-bundle=true;mandatory:=cdi
 Provide-Capability: \
 	osgi.extender; \
 		osgi.extender='osgi.cdi'; \
-		uses:="org.osgi.service.cdi,javax.enterprise.inject.spi"; \
-		version:Version="0.0.1"
+		uses:="org.osgi.service.cdi,org.osgi.service.cdi.annotations,javax.enterprise.inject.spi"; \
+		version:Version="${Bundle-Version}"
 -includeresource: META-INF/=LICENSE, META-INF/=NOTICE
