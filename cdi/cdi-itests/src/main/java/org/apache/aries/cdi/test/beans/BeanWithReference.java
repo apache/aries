@@ -10,29 +10,29 @@ import javax.inject.Qualifier;
 
 import org.apache.aries.cdi.test.interfaces.BundleScoped;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceFilterQualifier;
+import org.osgi.service.cdi.annotations.ReferenceFilter;
 
 public class BeanWithReference {
 
 	@Qualifier
-	@ReferenceFilterQualifier
+	@ReferenceFilter
 	@Retention(value = RetentionPolicy.RUNTIME)
 	@Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.CONSTRUCTOR })
 	public @interface ComplexEnoughKey {
-		String value();
+		String complex_enough_key();
 	}
 
 	@Qualifier
-	@ReferenceFilterQualifier
+	@ReferenceFilter
 	@Retention(value = RetentionPolicy.RUNTIME)
 	@Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.CONSTRUCTOR })
 	public @interface ComplexAnnotation {
-		String feeFi();
-		int foFum();
+		String fee_fi();
+		int fo_fum();
 	}
 
-	@ComplexEnoughKey("fum")
-	@ComplexAnnotation(feeFi = "fee", foFum = 23)
+	@ComplexEnoughKey(complex_enough_key= "fum")
+	@ComplexAnnotation(fee_fi = "fee", fo_fum = 23)
 	@Inject
 	@Reference
 	BundleScoped bundleScoped;

@@ -17,7 +17,6 @@ package org.apache.aries.cdi.container.internal.container;
 import static org.apache.aries.cdi.container.internal.util.Reflection.cast;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -29,7 +28,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.aries.cdi.container.internal.util.Strings;
+import org.apache.aries.cdi.container.internal.util.Maps;
 import org.jboss.weld.manager.BeanManagerImpl;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
@@ -38,10 +37,11 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.annotations.MinCardinality;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceFilterQualifier;
+import org.osgi.service.cdi.annotations.ReferenceFilter;
 import org.osgi.service.cdi.annotations.ReferenceScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.util.converter.Converter;
+import org.osgi.util.converter.StandardConverter;
+import org.osgi.util.converter.TypeReference;
 
 public class ReferenceDependency {
 
@@ -170,41 +170,16 @@ public class ReferenceDependency {
 		}
 
 		for (Annotation qualifier : qualifiers) {
-			if (qualifier.annotationType().isAnnotationPresent(ReferenceFilterQualifier.class)) {
-				Class<?> clazz = qualifier.annotationType();
-				try {
-					Method methodValue = clazz.getDeclaredMethod("value");
-					String value = String.valueOf(methodValue.invoke(qualifier));
-					append(sb, clazz.getSimpleName(), value);
-				}
-				catch (ReflectiveOperationException roe) {
-					Method[] methods = clazz.getDeclaredMethods();
+			if (qualifier.annotationType().isAnnotationPresent(ReferenceFilter.class)) {
+				Map<String, String> map = _converter.convert(qualifier).sourceAs(qualifier.annotationType()).to(_mapType);
 
-					for (Method method : methods) {
-						try {
-							String value = String.valueOf(method.invoke(qualifier));
-							append(sb, method.getName(), value);
-						} catch (ReflectiveOperationException roe2) {
-							if (_log.isDebugEnabled()) {
-								_log.debug("CDIe - Failure in reference filter qualifier processing", roe2);
-							}
-						}
-					}
-				}
+				Maps.appendFilter(sb, map);
 			}
 		}
 
 		sb.append(")");
 
 		return sb.toString();
-	}
-
-	private void append(StringBuilder sb, String simpleName, String value) {
-		sb.append("(");
-		sb.append(Strings.camelCase(simpleName));
-		sb.append("=");
-		sb.append(value);
-		sb.append(")");
 	}
 
 	private BindType getBindType(Type type) {
@@ -324,7 +299,9 @@ public class ReferenceDependency {
 		return cast(first);
 	}
 
-	private static final Logger _log = LoggerFactory.getLogger(ReferenceDependency.class);
+	private static final Converter _converter = new StandardConverter();
+
+	private static final TypeReference<Map<String, String>> _mapType = new TypeReference<Map<String, String>>(){};
 
 	private final BeanManagerImpl _beanManagerImpl;
 	private final BindType _bindType;

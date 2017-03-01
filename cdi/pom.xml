@@ -24,12 +24,11 @@
 	</licenses>
 
 	<modules>
-		<module>cdi-log4j-configuration-fragment</module>
 		<module>cdi-api-provider-fragment</module>
 		<module>cdi-extender</module>
 		<module>cdi-extension-jndi</module>
 		<module>cdi-itests</module>
-		<!-- <module>cdi-executable</module> -->
+		<module>cdi-executable</module>
 	</modules>
 
 	<build>
@@ -65,7 +64,7 @@
 						</execution>
 					</executions>
 				</plugin>
-			<plugin>
+				<plugin>
 					<groupId>biz.aQute.bnd</groupId>
 					<artifactId>bnd-indexer-maven-plugin</artifactId>
 					<version>${bnd.version}</version>
@@ -228,6 +227,7 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

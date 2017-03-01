@@ -100,17 +100,20 @@ public class Activator extends AbstractExtender {
 
 	@Override
 	protected void debug(Bundle bundle, String msg) {
-		_log.debug(msg);
 	}
 
 	@Override
 	protected void warn(Bundle bundle, String msg, Throwable t) {
-		_log.warn(msg, t);
+		if (_log.isWarnEnabled()) {
+			_log.warn(msg, t);
+		}
 	}
 
 	@Override
 	protected void error(String msg, Throwable t) {
-		_log.error(msg, t);
+		if (_log.isErrorEnabled()) {
+			_log.error(msg, t);
+		}
 	}
 
 	private final boolean requiresCdiExtender(Bundle bundle) {

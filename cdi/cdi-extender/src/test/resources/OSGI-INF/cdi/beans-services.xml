@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cdi:beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
+	<bean class="com.foo.FooImpl">
+		<service>
+			<provide interface="com.foo.Foo" />
+			<provide interface="java.lang.Clonable" />
+			<property name="foo" type="String" value="fum" />
+			<property name="foo2" type="Long" value="345987643" />
+			<property name="foo3" type="Double" value="3459.87643" />
+			<property name="foo4" type="Float" value="3459.87" />
+			<property name="foo5" type="Integer" value="724559" />
+			<property name="foo6" type="Byte" value="127" />
+			<property name="foo7" type="Character" value="X" />
+			<property name="foo8" type="Boolean" value="true" />
+			<property name="foo9" type="Short" value="32767" />
+			<property name="foo11" type="String">
+				frog
+				drum
+			</property>
+			<property name="foo12" type="Long">
+				345987643
+				34
+			</property>
+			<property name="foo13" type="Double">
+				3459.87643
+				34.3456
+			</property>
+			<property name="foo14" type="Float">
+				3459.87
+				35.23
+			</property>
+			<property name="foo15" type="Integer">
+				724559
+				345
+			</property>
+			<property name="foo16" type="Byte">
+				127
+				23
+			</property>
+			<property name="foo17" type="Character">
+				X
+				t
+			</property>
+			<property name="foo18" type="Boolean">
+				true
+				false
+			</property>
+			<property name="foo19" type="Short">
+				32767
+				2345
+			</property>
+		</service>
+	</bean>
+	<bean class="com.foo.BarImpl" />
+</cdi:beans>

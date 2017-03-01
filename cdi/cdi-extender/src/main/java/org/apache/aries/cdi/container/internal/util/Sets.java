@@ -6,6 +6,10 @@ import java.util.Set;
 
 public class Sets {
 
+	private Sets() {
+		// no instances
+	}
+
 	@SafeVarargs
 	public static <T> Set<T> hashSet(T ... elements) {
 		return hashSet0(new HashSet<>(), elements);

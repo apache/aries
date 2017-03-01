@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.cdi.container.internal.container.CdiContainerState;
+import org.apache.aries.cdi.container.internal.container.ConfigurationDependency;
 import org.apache.aries.cdi.container.internal.container.ExtensionDependency;
 import org.apache.aries.cdi.container.internal.container.ReferenceDependency;
 
@@ -49,6 +50,17 @@ public class CdiCommand {
 			System.out.println("  [EXTENSIONS]");
 			for (ExtensionDependency extensionDependency : extensionDependencies) {
 				System.out.printf("    %s%s\n", extensionDependency.toString(), " ???is this resolved???");
+			}
+		}
+		List<ConfigurationDependency> configurationDependencies = cdiContainerState.getConfigurationDependencies();
+		if (!configurationDependencies.isEmpty()) {
+			System.out.println("  [CONFIGURATIONS]");
+			for (ConfigurationDependency configurationDependency : configurationDependencies) {
+				for (String pid : configurationDependency.pids()) {
+					System.out.printf(
+						"    %s\n      : %s\n", pid,
+						!configurationDependency.isResolved(pid) ? " UNRESOLVED" : "resolved");
+				}
 			}
 		}
 		List<ReferenceDependency> referenceDependencies = cdiContainerState.getReferenceDependencies();

@@ -26,14 +26,23 @@
 			</plugin>
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-export-maven-plugin</artifactId>
+				<artifactId>bnd-resolver-maven-plugin</artifactId>
 				<configuration>
 					<failOnChanges>false</failOnChanges>
-					<resolve>true</resolve>
 					<bndruns>
 						<bndrun>cdi-executable.bndrun</bndrun>
 					</bndruns>
-					<targetDir>.</targetDir>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-export-maven-plugin</artifactId>
+				<configuration>
+					<failOnChanges>false</failOnChanges>
+					<resolve>false</resolve>
+					<bndruns>
+						<bndrun>cdi-executable.bndrun</bndrun>
+					</bndruns>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -84,7 +93,7 @@
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.configadmin</artifactId>
-			<version>1.8.8</version>
+			<version>1.8.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
