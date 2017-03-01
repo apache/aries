@@ -10,6 +10,10 @@ public class ServiceLiteral extends AnnotationLiteral<Service> implements Servic
 	private static final long serialVersionUID = 1L;
 	public static final Service INSTANCE = new ServiceLiteral(new Class<?>[0], new ServiceProperty[0]);
 
+	public static ServiceLiteral from(Class<?>[] classes, ServiceProperty[] properties) {
+		return new ServiceLiteral(classes, properties);
+	}
+
 	public ServiceLiteral(Class<?>[] classes, ServiceProperty[] properties) {
 		_type = classes;
 		_properties = properties;

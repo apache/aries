@@ -1,3 +1,3 @@
 Export-Package: ${p}.tb2.*
-Require-Capability: osgi.extender;filter:='(osgi.extender=osgi.cdi)';services:="org.apache.aries.cdi.test.tb2.PojoImpl"
--includeresource: META-INF/beans.xml=bnd/basic-beans.xml
+Require-Capability: osgi.extender;filter:='(osgi.extender=osgi.cdi)'
+-includeresource: OSGI-INF/cdi/osgi-beans.xml=bnd/tb2-beans.xml

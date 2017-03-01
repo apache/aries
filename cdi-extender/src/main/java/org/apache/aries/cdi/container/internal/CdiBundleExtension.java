@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.aries.cdi.container.internal.command.CdiCommand;
 import org.apache.aries.cdi.container.internal.container.CdiContainerState;
-import org.apache.aries.cdi.container.internal.container.Phase_1_Init;
+import org.apache.aries.cdi.container.internal.container.Phase_Init;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
@@ -65,17 +65,17 @@ public class CdiBundleExtension implements Extension {
 
 			_command.add(_bundle.getBundleId(), cdiHelper);
 
-			Phase_1_Init initPhase = null;
+			Phase_Init initPhase = null;
 
 			try {
-				initPhase = new Phase_1_Init(_bundle, cdiHelper);
+				initPhase = new Phase_Init(_bundle, cdiHelper);
 
 				initPhase.open();
 
 				_initPhase = initPhase;
 			}
 			catch (Throwable t) {
-				cdiHelper.fire(CdiEvent.State.FAILURE, t);
+				cdiHelper.fire(CdiEvent.Type.FAILURE, t);
 
 				if (initPhase != null) {
 					initPhase.close();
@@ -133,7 +133,7 @@ public class CdiBundleExtension implements Extension {
 	private final CdiCommand _command;
 	private final Bundle _extenderBundle;
 	private final Map<ServiceReference<CdiListener>, CdiListener> _listeners;
-	private Phase_1_Init _initPhase;
+	private Phase_Init _initPhase;
 	private final Lock _stateLock = new ReentrantLock();
 
 }
