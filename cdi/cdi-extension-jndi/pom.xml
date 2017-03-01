@@ -30,7 +30,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.cdi.extender</artifactId>
+			<artifactId>org.apache.aries.javax.cdi-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -42,6 +42,11 @@
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.cdi</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>osgi.core</artifactId>
+			<version>6.0.0</version>
 		</dependency>
 	</dependencies>
 

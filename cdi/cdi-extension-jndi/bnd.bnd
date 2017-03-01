@@ -1,5 +1,5 @@
 Bundle-Activator: org.apache.aries.cdi.extension.jndi.Activator
 Provide-Capability: osgi.cdi.extension;osgi.cdi.extension=jndi;version:Version="${Bundle-Version}"
-Require-Capability: osgi.contract;filter:="(&(osgi.contract=JavaCDI)(version=1.2))"
 
+-contract: JavaCDI
 -includeresource: META-INF/=LICENSE, META-INF/=NOTICE
