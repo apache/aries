@@ -26,7 +26,6 @@
 	<modules>
 		<module>cdi-log4j-configuration-fragment</module>
 		<module>cdi-api-provider-fragment</module>
-		<module>cdi-osgi-api</module>
 		<module>cdi-extender</module>
 		<module>cdi-extension-jndi</module>
 		<module>cdi-itests</module>
