@@ -87,7 +87,7 @@ public class AbstractTestCase extends TestCase {
 	ServiceTracker<CdiContainer, CdiContainer> getServiceTracker(long bundleId) throws InvalidSyntaxException {
 		Filter filter = bundleContext.createFilter(
 			"(&(objectClass=" + CdiContainer.class.getName() + ")(service.bundleid=" + bundleId + ")(" +
-				CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE + "=" + CdiEvent.State.CREATED + "))");
+				CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE + "=" + CdiEvent.Type.CREATED + "))");
 
 		ServiceTracker<CdiContainer, CdiContainer> serviceTracker = new ServiceTracker<>(bundleContext, filter, null);
 
@@ -124,7 +124,7 @@ public class AbstractTestCase extends TestCase {
 
 	static final Bundle bundle = FrameworkUtil.getBundle(CdiBeanTests.class);
 	static final BundleContext bundleContext = bundle.getBundleContext();
-	static final long timeout = 10000;
+	static final long timeout = 5000;
 
 	Bundle cdiBundle;
 	Bundle servicesBundle;

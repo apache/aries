@@ -15,30 +15,27 @@
 package org.apache.aries.cdi.container.internal.container;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.inject.Singleton;
 
-import org.apache.aries.cdi.container.internal.util.Strings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.ServiceProperty;
-import org.osgi.service.cdi.annotations.ServicePropertyQualifier;
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.StandardConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.util.converter.TypeReference;
 
 public class ServiceDeclaration {
 
@@ -51,44 +48,21 @@ public class ServiceDeclaration {
 		Dictionary<String, Object> properties = new Hashtable<>();
 
 		for (Object object : bean.getQualifiers()) {
-			Annotation qualifier = (Annotation)object;
-			if (qualifier.annotationType().isAnnotationPresent(ServicePropertyQualifier.class)) {
-				Class<?> clazz = qualifier.annotationType();
-				try {
-					Method methodValue = clazz.getDeclaredMethod("value");
-					put(properties, clazz.getSimpleName(), methodValue.invoke(qualifier));
-				}
-				catch (ReflectiveOperationException roe) {
-					Method[] methods = clazz.getDeclaredMethods();
+			Annotation annotation = (Annotation)object;
+			Map<String, Object> map = _converter.convert(annotation).sourceAs(annotation.annotationType()).to(_mapType);
 
-					for (Method method : methods) {
-						try {
-							put(properties, method.getName(), method.invoke(qualifier));
-						} catch (ReflectiveOperationException roe2) {
-							if (_log.isDebugEnabled()) {
-								_log.debug("CDIe - Failure in service property qualifier processing", roe2);
-							}
-						}
-					}
-				}
+			for (Map.Entry<String, Object> entry : map.entrySet()) {
+				properties.put(entry.getKey(), entry.getValue());
 			}
 		}
 
 		for (ServiceProperty serviceProperty : _service.properties()) {
-			Type type = serviceProperty.type().getType();
-			String[] value = serviceProperty.value().split("\\s*,\\s*");
-
-			@SuppressWarnings("deprecation")
-			Object object = _converter.convert(value).to(type);
+			Object object = getValue(serviceProperty);
 
 			properties.put(serviceProperty.key(), object);
 		}
 
 		_properties = properties;
-	}
-
-	private void put(Dictionary<String, Object> properties, String simpleName, Object value) {
-		properties.put(Strings.camelCase(simpleName), value);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -139,10 +113,16 @@ public class ServiceDeclaration {
 		return new PrototypeScopeWrapper();
 	}
 
-	@SuppressWarnings("deprecation")
+	Object getValue(ServiceProperty serviceProperty) {
+		Type type = serviceProperty.type().getType();
+		String[] value = serviceProperty.value();
+		Object object = _converter.convert(value).to(type);
+		return object;
+	}
+
 	private static final Converter _converter = new StandardConverter();
 
-	private static final Logger _log = LoggerFactory.getLogger(ServiceDeclaration.class);
+	private static final TypeReference<Map<String, Object>> _mapType = new TypeReference<Map<String, Object>>(){};
 
 	@SuppressWarnings("rawtypes")
 	private final Bean _bean;

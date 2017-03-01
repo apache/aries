@@ -24,11 +24,13 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 
+import org.apache.aries.cdi.container.internal.model.BeansModel;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cdi.CdiContainer;
 import org.osgi.service.cdi.CdiEvent;
+import org.osgi.service.cdi.CdiEvent.Type;
 import org.osgi.service.cdi.CdiExtenderConstants;
 import org.osgi.service.cdi.CdiListener;
 import org.slf4j.Logger;
@@ -51,7 +53,7 @@ public class CdiContainerState {
 
 		Hashtable<String, Object> properties = new Hashtable<>();
 
-		properties.put(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE, CdiEvent.State.CREATING);
+		properties.put(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE, CdiEvent.Type.CREATING);
 
 		_cdiContainerRegistration = _bundle.getBundleContext().registerService(
 			CdiContainer.class, _cdiContainerService, properties);
@@ -77,6 +79,10 @@ public class CdiContainerState {
 		return _beanManager;
 	}
 
+	public BeansModel getBeansModel() {
+		return _beansModel;
+	}
+
 	public Bundle getBundle() {
 		return _bundle;
 	}
@@ -85,29 +91,35 @@ public class CdiContainerState {
 		return _extenderBundle;
 	}
 
+	public List<ConfigurationDependency> getConfigurationDependencies() {
+		return _configurations;
+	}
+
 	public List<ExtensionDependency> getExtensionDependencies() {
 		return _extensionDependencies;
+	}
+
+	public List<ReferenceDependency> getReferenceDependencies() {
+		return _references;
 	}
 
 	public String getId() {
 		return _bundle.getSymbolicName() + ":" + _bundle.getBundleId();
 	}
 
-	public CdiEvent.State getLastState() {
+	public CdiEvent.Type getLastState() {
 		return _lastState.get();
-	}
-
-	public List<ReferenceDependency> getReferenceDependencies() {
-		return _referenceDependencies;
 	}
 
 	public void fire(CdiEvent event) {
 		try {
 			_lock.lock();
 
-			if ((_lastState.get() == CdiEvent.State.DESTROYING) &&
-				((event.getState() == CdiEvent.State.WAITING_FOR_EXTENSIONS) ||
-				(event.getState() == CdiEvent.State.WAITING_FOR_SERVICES))) {
+			Type type = event.getType();
+
+			if ((_lastState.get() == CdiEvent.Type.DESTROYING) &&
+				((type == CdiEvent.Type.WAITING_FOR_EXTENSIONS) ||
+				(type == CdiEvent.Type.WAITING_FOR_SERVICES))) {
 
 				return;
 			}
@@ -138,15 +150,15 @@ public class CdiContainerState {
 		}
 	}
 
-	public void fire(CdiEvent.State state) {
+	public void fire(CdiEvent.Type state) {
 		fire(new CdiEvent(state, _bundle, _extenderBundle));
 	}
 
-	public void fire(CdiEvent.State state, String payload) {
+	public void fire(CdiEvent.Type state, String payload) {
 		fire(new CdiEvent(state, _bundle, _extenderBundle, payload, null));
 	}
 
-	public void fire(CdiEvent.State state, Throwable cause) {
+	public void fire(CdiEvent.Type state, Throwable cause) {
 		fire(new CdiEvent(state, _bundle, _extenderBundle, null, cause));
 	}
 
@@ -155,25 +167,35 @@ public class CdiContainerState {
 		_cdiContainerService.setBeanManager(beanManager);
 	}
 
+	public void setBeansModel(BeansModel beansModel) {
+		_beansModel = beansModel;
+	}
+
+	public void setConfigurationDependencies(List<ConfigurationDependency> configurations) {
+		_configurations = configurations;
+	}
+
 	public void setExtensionDependencies(List<ExtensionDependency> extensionDependencies) {
 		_extensionDependencies = extensionDependencies;
 	}
 
-	public void setReferenceDependency(List<ReferenceDependency> referenceDependencies) {
-		_referenceDependencies = referenceDependencies;
+	public void setReferenceDependencies(List<ReferenceDependency> references) {
+		_references = references;
 	}
 
 	private void updateState(CdiEvent event) {
 		try {
 			_lock.lock();
 
+			Type type = event.getType();
+
 			ServiceReference<CdiContainer> reference = _cdiContainerRegistration.getReference();
 
-			if (event.getState() == reference.getProperty(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE)) {
+			if (type == reference.getProperty(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE)) {
 				return;
 			}
 
-			_lastState.set(event.getState());
+			_lastState.set(type);
 
 			Hashtable<String, Object> properties = new Hashtable<>();
 
@@ -181,7 +203,7 @@ public class CdiContainerState {
 				properties.put(key, reference.getProperty(key));
 			}
 
-			properties.put(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE, event.getState());
+			properties.put(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE, type);
 
 			_cdiContainerRegistration.setProperties(properties);
 		}
@@ -193,14 +215,16 @@ public class CdiContainerState {
 	private static final Logger _log = LoggerFactory.getLogger(CdiContainerState.class);
 
 	private volatile BeanManager _beanManager;
+	private BeansModel _beansModel;
 	private final Bundle _bundle;
 	private final ServiceRegistration<CdiContainer> _cdiContainerRegistration;
 	private final CdiContainerService _cdiContainerService;
+	private List<ConfigurationDependency> _configurations;
 	private final Bundle _extenderBundle;
 	private List<ExtensionDependency> _extensionDependencies;
-	private AtomicReference<CdiEvent.State> _lastState = new AtomicReference<CdiEvent.State>(CdiEvent.State.CREATING);
+	private AtomicReference<CdiEvent.Type> _lastState = new AtomicReference<CdiEvent.Type>(CdiEvent.Type.CREATING);
 	private final Map<ServiceReference<CdiListener>, CdiListener> _listeners;
 	private final ReentrantLock _lock = new ReentrantLock();
-	private List<ReferenceDependency> _referenceDependencies;
+	private List<ReferenceDependency> _references;
 
 }

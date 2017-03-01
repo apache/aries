@@ -16,7 +16,9 @@ package org.apache.aries.cdi.container.internal.util;
 
 public class Throw {
 
-	private Throw() {}
+	private Throw() {
+		// no instances
+	}
 
 	public static <T> T exception(Throwable throwable) {
 		return Throw.<T, RuntimeException>_exception(throwable);
