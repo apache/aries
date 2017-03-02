@@ -517,7 +517,7 @@ public class EsaMojo
     }
     
     /**
-     * Return artifacts in 'compile' or 'runtime' scope only.   
+     * Return non-pom artifacts in 'compile' or 'runtime' scope only.
      */
     private Set<Artifact> selectArtifacts(Set<Artifact> artifacts) 
     {
@@ -527,7 +527,9 @@ public class EsaMojo
             if (scope == null 
                 || Artifact.SCOPE_COMPILE.equals(scope)
                 || Artifact.SCOPE_RUNTIME.equals(scope)) {
-                selected.add(artifact);
+                if (artifact.getType() == null || !artifact.getType().equals("pom")) {
+                    selected.add(artifact);
+                }
             }
         }
         return selected;
