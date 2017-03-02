@@ -463,6 +463,149 @@ public class EsaMojoTest
 
     }
 
+    public void testArchiveContentConfigurationSubsystemContentAll()
+            throws Exception
+    {
+        File testPom = new File( getBasedir(),
+                "target/test-classes/unit/basic-esa-content-all-transitive/plugin-config.xml" );
+
+        EsaMojo mojo = ( EsaMojo ) lookupMojo( "esa", testPom );
+
+        assertNotNull( mojo );
+
+        String finalName = ( String ) getVariableValueFromObject( mojo, "finalName" );
+
+        String workDir = ( String ) getVariableValueFromObject( mojo, "workDirectory" );
+
+        String outputDir = ( String ) getVariableValueFromObject( mojo, "outputDirectory" );
+
+        mojo.execute();
+
+
+        //check the generated esa file
+        File esaFile = new File( outputDir, finalName + ".esa" );
+
+        assertTrue( esaFile.exists() );
+
+        //expected files/directories inside the esa file
+        List expectedFiles = new ArrayList();
+
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-esa-test/pom.properties" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-esa-test/pom.xml" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-esa-test/" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
+        expectedFiles.add( "META-INF/maven/" );
+        expectedFiles.add( "META-INF/" );
+        expectedFiles.add( "OSGI-INF/SUBSYSTEM.MF" );
+        expectedFiles.add( "OSGI-INF/" );
+        expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
+        expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
+        expectedFiles.add( "maven-artifact03-1.1-SNAPSHOT.jar" );
+
+        ZipFile esa = new ZipFile( esaFile );
+
+        Enumeration entries = esa.getEntries();
+
+        assertTrue( entries.hasMoreElements() );
+
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles,  0, missing);
+
+    }
+
+    public void testManifestSubsystemContentContainsOnlyDirectContent()
+            throws Exception
+    {
+        File testPom = new File(getBasedir(),
+                "target/test-classes/unit/basic-esa-content-type-bundles-only/plugin-config.xml");
+
+        EsaMojo mojo = (EsaMojo) lookupMojo("esa", testPom);
+
+        assertNotNull(mojo);
+
+        String finalName = (String) getVariableValueFromObject(mojo, "finalName");
+
+        String workDir = (String) getVariableValueFromObject(mojo, "workDirectory");
+
+        String outputDir = (String) getVariableValueFromObject(mojo, "outputDirectory");
+
+        mojo.execute();
+
+        // check the generated esa file
+        File esaFile = new File(outputDir, finalName + ".esa");
+
+        assertTrue(esaFile.exists());
+
+        ZipFile esa = new ZipFile(esaFile);
+
+        Manifest mf = getSubsystemManifest(esa);
+        Map<String, Map<String, String>> header = getHeader(mf, "Subsystem-Content");
+
+        Map<String, String> attributes = null;
+
+        attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
+        assertNotNull(attributes);
+        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
+        assertNull(attributes.get("type"));
+
+        attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
+        assertNotNull(attributes);
+        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
+        assertNull(attributes.get("type"));
+
+        assertEquals(2, header.size());
+    }
+
+    public void testManifestSubsystemContentContainsAllTransitiveDependencies()
+            throws Exception
+    {
+        File testPom = new File(getBasedir(),
+                "target/test-classes/unit/basic-esa-content-type-all-transitive/plugin-config.xml");
+
+        EsaMojo mojo = (EsaMojo) lookupMojo("esa", testPom);
+
+        assertNotNull(mojo);
+
+        String finalName = (String) getVariableValueFromObject(mojo, "finalName");
+
+        String workDir = (String) getVariableValueFromObject(mojo, "workDirectory");
+
+        String outputDir = (String) getVariableValueFromObject(mojo, "outputDirectory");
+
+        mojo.execute();
+
+        // check the generated esa file
+        File esaFile = new File(outputDir, finalName + ".esa");
+
+        assertTrue(esaFile.exists());
+
+        ZipFile esa = new ZipFile(esaFile);
+
+        Manifest mf = getSubsystemManifest(esa);
+        Map<String, Map<String, String>> header = getHeader(mf, "Subsystem-Content");
+
+        System.out.println(header);
+
+        Map<String, String> attributes = null;
+
+        attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
+        assertNotNull(attributes);
+        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
+        assertNull(attributes.get("type"));
+
+        attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
+        assertNotNull(attributes);
+        assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
+        assertNull(attributes.get("type"));
+
+        attributes = header.get("maven-artifact03");
+        assertNotNull(attributes);
+        assertEquals("[1.1.0.SNAPSHOT.NNN,1.1.0.SNAPSHOT.NNN]", attributes.get("version"));
+        assertEquals("osgi.fragment", attributes.get("type"));
+
+        assertEquals(3, header.size());
+    }
+
     public void testCustomInstructions()
         throws Exception
     {
