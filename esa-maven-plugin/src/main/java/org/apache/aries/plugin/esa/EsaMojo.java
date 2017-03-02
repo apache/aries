@@ -176,7 +176,7 @@ public class EsaMojo
     /**
      * Define which bundles to include in the archive.
      *   none - no bundles are included 
-     *   subsystemContent - direct dependencies go into the content
+     *   content - direct dependencies go into the content
      *   all - direct and transitive dependencies go into the content 
      *
      * @parameter expression="${archiveContent}" default-value="content"
