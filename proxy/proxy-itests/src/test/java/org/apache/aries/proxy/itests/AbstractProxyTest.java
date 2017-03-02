@@ -23,9 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.composite;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
@@ -38,7 +36,6 @@ import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.junit.Test;
@@ -49,10 +46,14 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public abstract class AbstractProxyTest extends AbstractIntegrationTest {
+public abstract class AbstractProxyTest {
+  @Inject
+  BundleContext bundleContext;
+  
   @Inject
   ProxyManager mgr;
 
@@ -287,40 +288,22 @@ public abstract class AbstractProxyTest extends AbstractIntegrationTest {
     assertEquals(ex, listener.postInvokeExceptionalReturn);
   }
   
-  protected Option generalOptions() {
+  protected Option proxyOptions() {
 	  String localRepo = System.getProperty("maven.repo.local");
       if (localRepo == null) {
           localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
       }
-	  return composite(
-			  junitBundles(),
+     return composite(
+              CoreOptions.junitBundles(),
               systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
               when(localRepo != null).useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-	          mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
-	          mavenBundle("org.ow2.asm", "asm-debug-all").versionAsInProject(),
-	          mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+              mavenBundle("org.ow2.asm", "asm-debug-all").versionAsInProject(),
               mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
-              mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
-	         /* vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-	          waitForFrameworkStartup(),*/
-	  );
-  }
-
-  protected Option[] proxyBundles()
-  {
-	  return options(
-			  generalOptions(),
-	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
-	          mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl").versionAsInProject()
-	  );
-  }
-
-  protected Option[] proxyUberBundle()
-  {
-	  return options(
-			  generalOptions(),
-			  mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()
-	  );
+              mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
+              mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()
+              /* vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+              waitForFrameworkStartup(),*/
+     );
   }
 
 }

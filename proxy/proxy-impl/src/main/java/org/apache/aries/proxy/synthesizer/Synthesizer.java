@@ -63,7 +63,6 @@ public class Synthesizer
         //using the writer we created as the visitor
         reader.accept(cv, 0);
       } finally {
-        //close the InputStream if it is hanging around
         if (classInStream != null) classInStream.close();
       }
       FileOutputStream classOutStream = null;

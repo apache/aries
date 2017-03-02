@@ -37,6 +37,7 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 public class AriesEntityManagerFactoryBuilder implements EntityManagerFactoryBuilder {
     private static final String JAVAX_PERSISTENCE_JDBC_DRIVER = "javax.persistence.jdbc.driver";
     private static final String JAVAX_PERSISTENCE_JTA_DATASOURCE = "javax.persistence.jtaDataSource";
+    private static final String JAVAX_PERSISTENCE_DATASOURCE = "javax.persistence.dataSource";
     private static final String JAVAX_PERSISTENCE_NON_JTA_DATASOURCE = "javax.persistence.nonJtaDataSource";
     private static final String JAVAX_PERSISTENCE_TX_TYPE = "javax.persistence.transactionType";
 
@@ -75,6 +76,12 @@ public class AriesEntityManagerFactoryBuilder implements EntityManagerFactoryBui
         if(o instanceof DataSource) {
         	persistenceUnit.setNonJtaDataSource((DataSource) o);
         	props.remove(JAVAX_PERSISTENCE_NON_JTA_DATASOURCE);
+        } else {
+            o = props.get(JAVAX_PERSISTENCE_DATASOURCE);
+            if(o != null && o instanceof DataSource) {
+                    persistenceUnit.setNonJtaDataSource((DataSource) o);
+                    props.remove(JAVAX_PERSISTENCE_DATASOURCE);
+            }   
         }
         
         o = props.get(JAVAX_PERSISTENCE_TX_TYPE);

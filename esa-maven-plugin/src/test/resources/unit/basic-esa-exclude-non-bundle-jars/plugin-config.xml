@@ -38,7 +38,7 @@ under the License.
 					<outputDirectory>${basedir}/target/unit/basic-esa-exclude-non-bundle-jars/target
 					</outputDirectory>
 					<finalName>test-esa-exclude-non-bundle-jars</finalName>
-					<project implementation="org.apache.aries.plugin.esa.stubs.EsaMavenProjectStub10" />
+					<project implementation="org.apache.aries.plugin.esa.stubs.EsaMavenProjectStub11" />
 				</configuration>
 			</plugin>
 		</plugins>

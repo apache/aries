@@ -19,34 +19,36 @@
 package org.apache.aries.blueprint.plugin.model;
 
 
-import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 
 import java.lang.reflect.Method;
 
-public class BeanFromFactory extends Bean {
-    public String factoryMethod;
-    public BeanRef factoryBean;
-    private Method producingMethod;
+class BeanFromFactory extends Bean {
+    private final Method producingMethod;
 
-    public BeanFromFactory(Class<?> clazz, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
-        this(clazz, null, factoryBean, factoryMethod, contextEnricher);
+    BeanFromFactory(Bean factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
+        super(factoryMethod.getReturnType(), contextEnricher);
+        String forcedId = AnnotationHelper.findName(factoryMethod.getAnnotations());
+        if (forcedId != null) {
+            this.id = forcedId;
+        }
+        this.producingMethod = factoryMethod;
+        setScope(factoryMethod);
+        handleCustomBeanAnnotations();
+        attributes.put("factory-ref", factoryBean.id);
+        attributes.put("factory-method", producingMethod.getName());
     }
 
-    public BeanFromFactory(Class<?> clazz, String id, BeanRef factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
-        super(clazz, contextEnricher);
-        if (id != null) {
-            this.id = id;
+    private void setScope(Method factoryMethod) {
+        if (AnnotationHelper.findSingletons(factoryMethod.getAnnotations())) {
+            attributes.put("scope", "singleton");
         }
-        this.factoryBean = factoryBean;
-        this.factoryMethod = factoryMethod.getName();
-        this.producingMethod = factoryMethod;
-        handleCustomBeanAnnotations();
     }
 
     private void handleCustomBeanAnnotations() {
-        for (BeanAnnotationHandler beanAnnotationHandler : Extensions.BEAN_ANNOTATION_HANDLERs) {
+        for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERS) {
             Object annotation = AnnotationHelper.findAnnotation(producingMethod.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
                 beanAnnotationHandler.handleBeanAnnotation(producingMethod, id, contextEnricher, this);
@@ -54,12 +56,13 @@ public class BeanFromFactory extends Bean {
         }
     }
 
-    public void setSingleton() {
-        this.isPrototype = false;
+    @Override
+    protected void resolveArguments(BlueprintRegistry matcher) {
+        resolveArguments(matcher, producingMethod.getParameterTypes(), producingMethod.getParameterAnnotations());
     }
 
     @Override
-    protected void resolveArguments(BlueprintRegister matcher) {
-        resolveArguments(matcher, producingMethod.getParameterTypes(), producingMethod.getParameterAnnotations());
+    BeanRef toBeanRef() {
+        return new BeanRef(clazz, id, producingMethod.getAnnotations());
     }
 }

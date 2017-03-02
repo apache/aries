@@ -48,7 +48,8 @@ public class ProxyTestClassSuperWithNoDefaultOrProtectedAccess
     return null;
   }
   
-  private void doTarget() {
+  @SuppressWarnings("unused")
+private void doTarget() {
     Object o = getTargetObject();
     if(this != o)
       ((ProxyTestClassSuperWithNoDefaultOrProtectedAccess)o).doTarget();

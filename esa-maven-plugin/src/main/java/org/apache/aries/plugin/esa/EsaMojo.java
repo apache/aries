@@ -19,6 +19,16 @@ package org.apache.aries.plugin.esa;
  * under the License.
  */
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import static org.apache.aries.util.manifest.BundleManifest.fromBundle;
 
 import java.io.File;
@@ -54,6 +64,8 @@ public class EsaMojo
 {
 
     public enum EsaContent {none, all, content};
+
+    public enum EsaManifestContent {all, content};
     
     public static final String SUBSYSTEM_MF_URI = "OSGI-INF/SUBSYSTEM.MF";
 
@@ -180,7 +192,7 @@ public class EsaMojo
     /**
      * Define which bundles to include in the archive.
      *   none - no bundles are included 
-     *   subsystemContent - direct dependencies go into the content
+     *   content - direct dependencies go into the content
      *   all - direct and transitive dependencies go into the content 
      *
      * @parameter expression="${archiveContent}" default-value="content"
@@ -193,6 +205,15 @@ public class EsaMojo
      * @parameter expression="${includeNonBundleJars}" default-value="true"
      */
     private boolean includeNonBundleJars;
+
+    /**
+     * Define which bundles to include in the manifest Subsystem-Content header.
+     *  all - direct and transitive dependencies go into the Subsystem-Content header
+     *  content - direct dependencies go into the Subsystem-Content header
+     *
+     * @parameter expression="${manifestContent}" default-value="content"
+     */
+    private String manifestContent;
 
     /**
      * Define the start order for content bundles.
@@ -392,10 +413,17 @@ public class EsaMojo
         if (archiveContent == null) {
             archiveContent = new String("content");
         }
-        
-        getLog().debug( "archiveContent[" + archiveContent + "]" );        
-        getLog().info( "archiveContent[" + archiveContent + "]" );        
-        
+
+        getLog().debug( "archiveContent[" + archiveContent + "]" );
+        getLog().info( "archiveContent[" + archiveContent + "]" );
+
+        if (manifestContent == null) {
+            manifestContent = new String("content");
+        }
+
+        getLog().debug( "manifestContent[" + archiveContent + "]" );
+        getLog().info( "manifestContent[" + archiveContent + "]" );
+
         zipArchiver.setIncludeEmptyDirs( includeEmptyDirs );
         zipArchiver.setCompress( true );
         zipArchiver.setForced( forceCreation );        
@@ -420,8 +448,19 @@ public class EsaMojo
 
             // Write the SUBSYSTEM-CONTENT
             Set<Artifact> artifacts = null;
-            // only include the direct dependencies in the content
-            artifacts = project.getDependencyArtifacts();                   
+
+            switch (EsaManifestContent.valueOf(manifestContent)) {
+                case content:
+                    // only include the direct dependencies in the content
+                    artifacts = project.getDependencyArtifacts();
+                    break;
+                case all:
+                    // include direct and transitive dependencies in content
+                    artifacts = project.getArtifacts();
+                    break;
+                default:
+                    throw new MojoExecutionException("Invalid configuration for <manifestContent/>.  Valid values are content and all." );
+            }
 
             artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
             if(!includeNonBundleJars){
@@ -432,6 +471,7 @@ public class EsaMojo
 
             FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_CONTENT + ": ");
             int order = 0;
+            int nbInSubsystemContent = 0;
             while (iter.hasNext()) {
                 Artifact artifact = iter.next();
                 order++;
@@ -446,8 +486,10 @@ public class EsaMojo
                 if (iter.hasNext()) {
                     entry += ",\n ";
                 }
+                nbInSubsystemContent++;
                 FileUtils.fileAppend(fileName, entry);
             }
+            getLog().info("Added '" + nbInSubsystemContent + "' artefacts to the Subsystem-Content header");
 
             FileUtils.fileAppend(fileName, "\n");
 
@@ -533,7 +575,7 @@ public class EsaMojo
     }
     
     /**
-     * Returns artifacts in 'compile' or 'runtime' scope only.
+     * Return non-pom artifacts in 'compile' or 'runtime' scope only.
      */
     private Set<Artifact> selectArtifactsInCompileOrRuntimeScope(Set<Artifact> artifacts)
     {
@@ -543,7 +585,9 @@ public class EsaMojo
             if (scope == null 
                 || Artifact.SCOPE_COMPILE.equals(scope)
                 || Artifact.SCOPE_RUNTIME.equals(scope)) {
-                selected.add(artifact);
+                if (artifact.getType() == null || !artifact.getType().equals("pom")) {
+                    selected.add(artifact);
+                }
             }
         }
         return selected;

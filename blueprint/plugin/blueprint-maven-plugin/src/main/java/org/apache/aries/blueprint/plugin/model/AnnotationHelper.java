@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.Extensions;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler;
@@ -27,22 +27,22 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnnotationHelper {
-    public static Class<? extends Annotation>[] injectDependencyAnnotations = findInjectDependencyAnnotations();
+class AnnotationHelper {
+    static Class<? extends Annotation>[] injectDependencyAnnotations = findInjectDependencyAnnotations();
 
     private static Class<? extends Annotation>[] findInjectDependencyAnnotations() {
         List<Class<? extends Annotation>> classes = new ArrayList<>();
-        for (InjectLikeHandler<? extends Annotation> injectLikeHandler : Extensions.beanInjectLikeHandlers) {
+        for (InjectLikeHandler<? extends Annotation> injectLikeHandler : Handlers.BEAN_INJECT_LIKE_HANDLERS) {
             classes.add(injectLikeHandler.getAnnotation());
         }
-        for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : Extensions.valueInjectionHandlers) {
+        for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : Handlers.VALUE_INJECTION_HANDLERS) {
             classes.add(valueInjectionHandler.getAnnotation());
         }
         return classes.toArray(new Class[classes.size()]);
     }
 
-    public static String findValue(Annotation[] annotations) {
-        for (ValueInjectionHandler valueInjectionHandler : Extensions.valueInjectionHandlers) {
+    static String findValue(Annotation[] annotations) {
+        for (ValueInjectionHandler valueInjectionHandler : Handlers.VALUE_INJECTION_HANDLERS) {
             Object annotation = findAnnotation(annotations, valueInjectionHandler.getAnnotation());
             if (annotation != null) {
                 String value = valueInjectionHandler.getValue(annotation);
@@ -54,8 +54,8 @@ public class AnnotationHelper {
         return null;
     }
 
-    public static String findName(Annotation[] annotations) {
-        for (NamedLikeHandler namedLikeHandler : Extensions.namedLikeHandlers) {
+    static String findName(Annotation[] annotations) {
+        for (NamedLikeHandler namedLikeHandler : Handlers.NAMED_LIKE_HANDLERS) {
             Object annotation = findAnnotation(annotations, namedLikeHandler.getAnnotation());
             if (annotation != null) {
                 String value = namedLikeHandler.getName(annotation);
@@ -67,7 +67,7 @@ public class AnnotationHelper {
         return null;
     }
 
-    public static <T> T findAnnotation(Annotation[] annotations, Class<T> annotation) {
+    static <T> T findAnnotation(Annotation[] annotations, Class<T> annotation) {
         for (Annotation a : annotations) {
             if (a.annotationType() == annotation) {
                 return annotation.cast(a);
@@ -76,10 +76,19 @@ public class AnnotationHelper {
         return null;
     }
 
-    public static boolean findSingletons(Annotation[] annotations) {
-        for (Class<? extends Annotation> singletonAnnotation : Extensions.singletons) {
+    static boolean findSingletons(Annotation[] annotations) {
+        for (Class<? extends Annotation> singletonAnnotation : Handlers.SINGLETONS) {
             Object annotation = findAnnotation(annotations, singletonAnnotation);
             if (annotation != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean findSingleton(Class clazz) {
+        for (Class<?> singletonAnnotation : Handlers.SINGLETONS) {
+            if (clazz.getAnnotation(singletonAnnotation) != null) {
                 return true;
             }
         }

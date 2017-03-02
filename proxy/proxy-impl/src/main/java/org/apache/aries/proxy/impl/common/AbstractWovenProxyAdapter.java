@@ -18,6 +18,7 @@
  */
 package org.apache.aries.proxy.impl.common;
 
+import static java.lang.String.format;
 import static org.apache.aries.proxy.impl.ProxyUtils.JAVA_CLASS_VERSION;
 
 import java.io.IOException;
@@ -36,7 +37,6 @@ import java.util.concurrent.Callable;
 
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
-import org.apache.aries.proxy.impl.NLS;
 import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.apache.aries.proxy.impl.gen.Constants;
 import org.apache.aries.proxy.weaving.WovenProxy;
@@ -280,8 +280,14 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       // should stop weaving and fail. Make sure we don't cause the hook to
       // throw an error though.
       UnableToProxyException u = new UnableToProxyException(name, e);
-      throw new RuntimeException(NLS.MESSAGES.getMessage("cannot.load.superclass", superName.replace('/', '.'), typeBeingWoven.getClassName()), u);
+      cannotLoadSuperClassException(superName, u);
     }
+  }
+
+  private void cannotLoadSuperClassException(String superName, UnableToProxyException u) {
+      String msg = format("Unable to load the super type %s for class %s.", 
+                          superName.replace('/', '.'), typeBeingWoven.getClassName());
+      throw new RuntimeException(msg, u);
   }
 
   /**
@@ -304,7 +310,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       new ClassReader(is).accept(cf, ClassReader.SKIP_FRAMES + ClassReader.SKIP_DEBUG + ClassReader.SKIP_CODE);
     } catch (IOException ioe) {
       UnableToProxyException u = new UnableToProxyException(name, ioe);
-      throw new RuntimeException(NLS.MESSAGES.getMessage("cannot.load.superclass", superName.replace('/', '.'), typeBeingWoven.getClassName()), u);
+      cannotLoadSuperClassException(superName, u);
     }
     return cf.hasNoArgsConstructor();
   }
@@ -394,8 +400,9 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
         readClass(c, new MethodCopyingClassAdapter(this, loader, c, typeBeingWoven, 
             getKnownMethods(), transformedMethods));
       } catch (IOException e) {
-        // This should never happen! <= famous last words (not)
-        throw new RuntimeException(NLS.MESSAGES.getMessage("unexpected.error.processing.class", c.getName(), typeBeingWoven.getClassName()), e);
+        String msg = format("Unexpected error processing %s when weaving %s.",
+                            c.getName(), typeBeingWoven.getClassName());
+        throw new RuntimeException(msg, e);
       }
     }
     // If we need to implement woven proxy in this class then write the methods
@@ -549,7 +556,8 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
           methodAdapter.invokeConstructor(typeBeingWoven, NO_ARGS_CONSTRUCTOR);
         else
           throw new RuntimeException(new UnableToProxyException(typeBeingWoven.getClassName(), 
-              NLS.MESSAGES.getMessage("type.lacking.no.arg.constructor", typeBeingWoven.getClassName(), superType.getClassName())));
+              String.format("The class %s and its superclass %s do not have no-args constructors and cannot be woven.",
+                            typeBeingWoven.getClassName(), superType.getClassName())));
       }
       methodAdapter.loadThis();
       methodAdapter.loadArg(0);

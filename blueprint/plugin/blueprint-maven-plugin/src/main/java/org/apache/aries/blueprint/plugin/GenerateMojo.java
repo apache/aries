@@ -18,11 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.model.Context;
+import org.apache.aries.blueprint.plugin.model.Blueprint;
 import org.apache.aries.blueprint.plugin.spi.Activation;
-import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -50,7 +48,7 @@ import java.util.Set;
  * Generates blueprint from CDI annotations
  */
 @Mojo(name = "blueprint-generate", requiresDependencyResolution = ResolutionScope.COMPILE,
-    defaultPhase = LifecyclePhase.PROCESS_CLASSES, inheritByDefault = false)
+        defaultPhase = LifecyclePhase.PROCESS_CLASSES, inheritByDefault = false)
 public class GenerateMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", required = true)
@@ -69,13 +67,13 @@ public class GenerateMojo extends AbstractMojo {
     private BuildContext buildContext;
 
     /**
-     * Name of file to generate
+     * Name of file to write
      */
     @Parameter(defaultValue = "autowire.xml")
     protected String generatedFileName;
 
     /**
-     * Base directory to generate into
+     * Base directory to write into
      * (relative to ${project.build.directory}/generated-sources/blueprint).
      */
     @Parameter(defaultValue = "OSGI-INF/blueprint/")
@@ -98,47 +96,39 @@ public class GenerateMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        List<String> toScan = scanPaths;
-        if (scanPaths == null || scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
-            getLog().info("Scan paths not specified - searching for packages");
-            Set<String> packages = PackageFinder.findPackagesInSources(project.getCompileSourceRoots());
-            if (packages.contains(null)) {
-                throw new MojoExecutionException("Found file without package");
-            }
-            toScan = new ArrayList<>(packages);
-            Collections.sort(toScan);
+        List<String> toScan = getPackagesToScan();
 
-        }
-        for (String aPackage : toScan) {
-            getLog().info("Package " + aPackage + " will be scan");
-        }
-        if (!buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()))) {
+        if (!sourcesChanged()) {
+            getLog().info("Skipping blueprint generation because source files was not changed");
             return;
         }
 
+        BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters);
+
         try {
-            ClassFinder finder = createProjectScopeFinder();
-
-            Set<Class<?>> classes = FilteredClassFinder.findClasses(finder, toScan);
-
-            BlueprintConfiguration blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters);
-
-            Context context = new Context(blueprintConfiguration, classes);
-            context.resolve();
-            if (context.getBeans().size() > 0) {
-                writeBlueprint(context, blueprintConfiguration);
-            }
+            ClassFinder classFinder = createProjectScopeFinder();
+            Set<Class<?>> classes = FilteredClassFinder.findClasses(classFinder, toScan);
+            Blueprint blueprint = new Blueprint(blueprintConfiguration, classes);
+            writeBlueprintIfNeeded(blueprint);
         } catch (Exception e) {
             throw new MojoExecutionException("Error building commands help", e);
         }
     }
 
-    private void writeBlueprint(Context context, BlueprintConfiguration blueprintConfiguration) throws Exception {
-        String buildDir = project.getBuild().getDirectory();
-        String generatedBaseDir = buildDir + "/generated-sources/blueprint";
-        Resource resource = new Resource();
-        resource.setDirectory(generatedBaseDir);
-        project.addResource(resource);
+    private void writeBlueprintIfNeeded(Blueprint blueprint) throws Exception {
+        if (blueprint.shouldBeGenerated()) {
+            writeBlueprint(blueprint);
+        } else {
+            getLog().warn("Skipping blueprint generation because beans were not found");
+        }
+    }
+
+    private boolean sourcesChanged() {
+        return buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()));
+    }
+
+    private void writeBlueprint(Blueprint blueprint) throws Exception {
+        String generatedBaseDir = ResourceInitializer.generateResourceEntry(project);
 
         File dir = new File(generatedBaseDir, generatedDir);
         File file = new File(dir, generatedFileName);
@@ -146,7 +136,7 @@ public class GenerateMojo extends AbstractMojo {
         getLog().info("Generating blueprint to " + file);
 
         OutputStream fos = buildContext.newFileOutputStream(file);
-        new Generator(context, fos, blueprintConfiguration).generate();
+        new BlueprintFileWriter(fos).write(blueprint);
         fos.close();
     }
 
@@ -165,4 +155,21 @@ public class GenerateMojo extends AbstractMojo {
         return new ClassFinder(loader, urls);
     }
 
+    private List<String> getPackagesToScan() throws MojoExecutionException {
+        List<String> toScan = scanPaths;
+        if (scanPaths == null || scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
+            getLog().info("Scan paths not specified - searching for packages");
+            Set<String> packages = PackageFinder.findPackagesInSources(project.getCompileSourceRoots());
+            if (packages.contains(null)) {
+                throw new MojoExecutionException("Found file without package");
+            }
+            toScan = new ArrayList<>(packages);
+            Collections.sort(toScan);
+        }
+
+        for (String aPackage : toScan) {
+            getLog().info("Package " + aPackage + " will be scan");
+        }
+        return toScan;
+    }
 }

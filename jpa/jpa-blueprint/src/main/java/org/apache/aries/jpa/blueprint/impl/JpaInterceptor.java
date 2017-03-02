@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public class JpaInterceptor implements Interceptor {
     private static final Logger LOG = LoggerFactory.getLogger(JpaInterceptor.class);
-    EntityManager em;
+    private EntityManager em;
     private Boolean cachedIsResourceLocal;
     private Coordinator coordinator;
     private BlueprintContainer container;
@@ -70,16 +70,18 @@ public class JpaInterceptor implements Interceptor {
         }
     }
 
-    private void initServices() {
-        coordinator = (Coordinator)container.getComponentInstance(coordinatorId);
-        em = (EntityManager)container.getComponentInstance(emId);
+    private synchronized void initServices() {
+        if (coordinator == null) {
+            coordinator = (Coordinator)container.getComponentInstance(coordinatorId);
+            em = (EntityManager)container.getComponentInstance(emId);
+        }
     }
 
     @Override
     public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) {
         LOG.debug("PostCallWithException for bean {}, method {}", cm.getId(), m.getName(), ex);
         if (preCallToken != null) {
-            ((Coordination) preCallToken).fail(ex);
+            ((Coordination)preCallToken).fail(ex);
         }
     }
 
@@ -88,7 +90,7 @@ public class JpaInterceptor implements Interceptor {
         throws Exception {
         LOG.debug("PostCallWithReturn for bean {}, method {}", cm.getId(), m.getName());
         if (preCallToken != null) {
-            ((Coordination) preCallToken).end();
+            ((Coordination)preCallToken).end();
         }
     }
 

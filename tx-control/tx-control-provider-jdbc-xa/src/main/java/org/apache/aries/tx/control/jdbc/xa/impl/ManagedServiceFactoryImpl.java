@@ -19,7 +19,7 @@
 package org.apache.aries.tx.control.jdbc.xa.impl;
 
 import static java.util.Arrays.asList;
-import static org.apache.aries.tx.control.jdbc.xa.impl.JDBCConnectionProviderFactoryImpl.toBoolean;
+import static org.apache.aries.tx.control.jdbc.common.impl.AbstractInternalJDBCConnectionProviderFactory.toBoolean;
 import static org.osgi.framework.Constants.OBJECTCLASS;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATABASE_NAME;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_DATASOURCE_NAME;

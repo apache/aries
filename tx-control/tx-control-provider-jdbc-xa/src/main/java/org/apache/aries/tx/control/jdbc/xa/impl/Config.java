@@ -76,6 +76,9 @@ public @interface Config {
 	@AttributeDefinition(required=false, description="The maximum time (in ms) that a connection will stay in the pool before being discarded")
 	long osgi_connection_lifetime() default 10800000;
 	
+	@AttributeDefinition(required=false, description="The query that will be executed just before a connection is given to you from the pool to validate that the connection to the database is still alive. If your driver supports JDBC4 we strongly recommend not setting this property. This is for 'legacy' databases that do not support the JDBC Connection.isValid() API")
+	String aries_connection_test_query();	
+		
 	// Recovery credential configuration
 	
 	@AttributeDefinition(required=false, description="The user that should be used for recovery. If not specified then recovery will use the same user credentials as normal operation")

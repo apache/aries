@@ -18,6 +18,8 @@
  */
 package org.apache.aries.proxy.impl;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -28,8 +30,8 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.weaving.WovenProxy;
-import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleWiring;
 
 public abstract class AbstractProxyManager implements ProxyManager
 {
@@ -60,7 +62,7 @@ public abstract class AbstractProxyManager implements ProxyManager
       throws UnableToProxyException 
   {
     if(dispatcher == null)
-      throw new NullPointerException(NLS.MESSAGES.getMessage("no.dispatcher"));
+      throw new NullPointerException("You must specify a dipatcher");
     
     if (template instanceof WovenProxy) {
       WovenProxy proxy = ((WovenProxy) template).
@@ -118,7 +120,8 @@ public abstract class AbstractProxyManager implements ProxyManager
   protected synchronized ClassLoader getClassLoader(final Bundle clientBundle, Collection<Class<?>> classes) 
   {
     if (clientBundle != null && clientBundle.getState() == Bundle.UNINSTALLED) {
-      throw new IllegalStateException(NLS.MESSAGES.getMessage("bundle.uninstalled", clientBundle.getSymbolicName(), clientBundle.getVersion(), clientBundle.getBundleId()));
+      throw new IllegalStateException(format("The bundle %s at version %s with id %d has been uninstalled.", 
+                                             clientBundle.getSymbolicName(), clientBundle.getVersion(), clientBundle.getBundleId()));
     }
     
     ClassLoader cl = null;
@@ -126,11 +129,15 @@ public abstract class AbstractProxyManager implements ProxyManager
     if (classes.size() == 1) cl = classes.iterator().next().getClassLoader();
 
     if (cl == null) {
-      // First of all see if the AriesFrameworkUtil can get the classloader, if it can we go with that.
-      cl = AriesFrameworkUtil.getClassLoaderForced(clientBundle);
+        cl = getWiringClassloader(clientBundle);
     }
     
     return cl;
+  }
+
+  private ClassLoader getWiringClassloader(final Bundle bundle) {
+    BundleWiring wiring = bundle != null ? bundle.adapt(BundleWiring.class) : null;
+    return wiring != null ? wiring.getClassLoader() : null;
   }
 
   private Object duplicateProxy(Collection<Class<?>> classes, Callable<Object> dispatcher, 

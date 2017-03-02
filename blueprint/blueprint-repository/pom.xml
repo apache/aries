@@ -58,6 +58,29 @@
         </plugins>
     </build>
 	<dependencies>
+        <!--  Aries PROXY -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+            <version>5.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries</groupId>
+            <artifactId>org.apache.aries.util</artifactId>
+            <version>1.1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.api</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.impl</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+
+        <!-- blueprint -->	
 		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
 			<artifactId>org.apache.aries.blueprint.api</artifactId>
@@ -70,13 +93,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.blueprint</groupId>
-			<artifactId>org.apache.aries.blueprint.compatibility</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.blueprint</groupId>
 			<artifactId>org.apache.aries.blueprint.cm</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.9</version>
 		</dependency>
 	</dependencies>
 </project>

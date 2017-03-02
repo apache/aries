@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -576,7 +577,17 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 if (baseURI != null && systemId != null) {
                     URI sId = URI.create(systemId);
                     if (!sId.isAbsolute()) {
-                        return URI.create(baseURI).resolve(sId).toString();
+                        URI resolved = URI.create(baseURI).resolve(sId);
+                        if (resolved.isAbsolute()) {
+                            return resolved.toString();
+                        } else {
+                            try {
+                                return new URL(new URL(baseURI), systemId).toString();
+                            } catch (MalformedURLException e) {
+                                LOGGER.warn("Can't resolve " + systemId + " against " + baseURI);
+                                return null;
+                            }
+                        }
                     }
                 }
                 return null;

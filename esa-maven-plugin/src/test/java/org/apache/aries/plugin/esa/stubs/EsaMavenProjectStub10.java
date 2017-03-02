@@ -1,5 +1,4 @@
 package org.apache.aries.plugin.esa.stubs;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,23 +18,31 @@ package org.apache.aries.plugin.esa.stubs;
  * under the License.
  */
 
-import java.io.File;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class EsaMavenProjectStub10
-    extends EsaMavenProjectStub
-{
-    public File getFile()
-    {
-        return new File( getBasedir(), "src/test/resources/unit/basic-esa-exclude-non-bundle-jars/plugin-config.xml" );
-    }
+public class EsaMavenProjectStub10 extends EsaMavenProjectStub {
 
-    public Set getArtifacts()
-    {
-        Set artifacts = new HashSet();
-        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
-        artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact05-no-bundle-manifest", "1.1-SNAPSHOT", false ));
-        return artifacts;
-    }
+	@Override
+	public Set getArtifacts()
+	{
+		Set artifacts = new LinkedHashSet();
+
+		artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
+		artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact02", "1.0-SNAPSHOT", false ) );
+		artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact03", "1.1-SNAPSHOT", false ) );
+
+
+		return artifacts;
+	}
+
+	@Override
+	public Set getDependencyArtifacts() {
+		Set artifacts = new LinkedHashSet();
+
+		artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
+		artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact02", "1.0-SNAPSHOT", false ) );
+
+		return artifacts;
+	}
 }
