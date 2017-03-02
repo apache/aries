@@ -19,16 +19,6 @@ package org.apache.aries.plugin.esa;
  * under the License.
  */
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import static org.apache.aries.util.manifest.BundleManifest.fromBundle;
 
 import java.io.File;
