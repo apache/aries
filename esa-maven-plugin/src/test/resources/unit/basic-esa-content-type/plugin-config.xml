@@ -19,7 +19,6 @@
 					<generateManifest>true</generateManifest>
 					<addMavenDescriptor>false</addMavenDescriptor>
 					<includeEmptyDirs>true</includeEmptyDirs>
-					<includeNonBundleJars>true</includeNonBundleJars>
 					<workDirectory>${basedir}/target/unit/basic-esa-content-type/target/esa-test-content-type
 					</workDirectory>
 					<sharedResources>${basedir}/target/unit/basic-esa-content-type/target/maven-shared-archive-resources

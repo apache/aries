@@ -27,7 +27,6 @@ under the License.
 		  <subsystemManifestFile>${basedir}/src/test/resources/unit/basic-esa-with-descriptor/src/main/esa/OSGI-INF/SUBSYSTEM.MF</subsystemManifestFile>
           <addMavenDescriptor>true</addMavenDescriptor>
           <includeEmptyDirs>true</includeEmptyDirs>
-		  <includeNonBundleJars>true</includeNonBundleJars>
 		  <manifestFile>${basedir}/src/test/resources/unit/basic-esa-with-descriptor/src/main/esa/META-INF/MANIFEST.MF</manifestFile>
 		  <workDirectory>${basedir}/target/unit/basic-esa-with-descriptor/target/esa-test-with-descriptor</workDirectory>
           <sharedResources>${basedir}/target/unit/basic-esa-with-descriptor/target/maven-shared-archive-resources</sharedResources>

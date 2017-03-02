@@ -190,13 +190,6 @@ public class EsaMojo
     private String archiveContent;
 
     /**
-     * Whether non-bundle JAR files should be included in the archive
-     *
-     * @parameter expression="${includeNonBundleJars}" default-value="true"
-     */
-    private boolean includeNonBundleJars;
-
-    /**
      * Define which bundles to include in the manifest Subsystem-Content header.
      *  all - direct and transitive dependencies go into the Subsystem-Content header
      *  content - direct dependencies go into the Subsystem-Content header
@@ -250,9 +243,8 @@ public class EsaMojo
                 }
                 
                 artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
-                if(!includeNonBundleJars){
-                    artifacts = selectNonJarArtifactsAndBundles(artifacts);
-                }
+                artifacts = selectNonJarArtifactsAndBundles(artifacts);
+
                 int cnt = 0;
                 for (Artifact artifact : artifacts) {                    
                     if (!artifact.isOptional() /*&& filter.include(artifact)*/) {
@@ -453,9 +445,7 @@ public class EsaMojo
             }
 
             artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
-            if(!includeNonBundleJars){
-                artifacts = selectNonJarArtifactsAndBundles(artifacts);
-            }
+            artifacts = selectNonJarArtifactsAndBundles(artifacts);
 
             Iterator<Artifact> iter = artifacts.iterator();
 

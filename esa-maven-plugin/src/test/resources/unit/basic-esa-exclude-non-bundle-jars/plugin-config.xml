@@ -30,7 +30,6 @@ under the License.
 					</instructions>
 					<addMavenDescriptor>true</addMavenDescriptor>
 					<includeEmptyDirs>true</includeEmptyDirs>
-					<includeNonBundleJars>false</includeNonBundleJars>
 					<workDirectory>${basedir}/target/unit/basic-esa-exclude-non-bundle-jars/target/basic-esa-exclude-non-bundle-jars
 					</workDirectory>
 					<sharedResources>${basedir}/target/unit/basic-esa-exclude-non-bundle-jars/target/maven-shared-archive-resources
