@@ -94,7 +94,7 @@ public class ContentInfo {
                 }
             }
         } catch (Exception e) {
-            log.warn("Error creating content information", e);
+            log.warn("Error creating content information for artifact '" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":v" + artifact.getVersion() + "'", e);
             return null;
         } finally {
             if (zip != null) {
