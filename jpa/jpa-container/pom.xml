@@ -30,7 +30,23 @@
     <description>Implements the OSGi JPA Container from the enterprise spec. Provider a EntityManagerFactory and EntityManagerFactoryBuilder service</description>
     <packaging>bundle</packaging>
     
+    <repositories>
+        <repository>
+            <id>OSGi Public APIs</id>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <url>https://oss.sonatype.org/content/repositories/osgi/</url>
+        </repository>
+    </repositories>
+    
     <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.jpa</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -47,4 +63,53 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    
+    <build>
+        <!-- This configuration makes sure that we backport
+             the OSGi provided APIs to Java 1.6 class compatibility.
+             Becuase of the way the maven-bundle-plugin works we must
+             extract the JAR before we translate and slurp in the API -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>extract-osgi-api</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.osgi</groupId>
+                                    <artifactId>org.osgi.service.jpa</artifactId>
+                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                    <includes>org/osgi/service/jpa/**</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.orfjackal.retrolambda</groupId>
+                <artifactId>retrolambda-maven-plugin</artifactId>
+                <version>2.5.1</version>
+                <executions>
+                    <execution>
+                        <id>backport-osgi-api</id>
+                        <goals>
+                            <goal>process-main</goal>
+                        </goals>
+                        <configuration>
+                            <target>1.6</target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
