@@ -30,11 +30,11 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import aQute.lib.osgi.Analyzer;
-
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.archiver.zip.ZipEntry;
 import org.codehaus.plexus.archiver.zip.ZipFile;
+
+import aQute.lib.osgi.Analyzer;
 
 /**
  * @author <a href="mailto:aramirez@apache.org">Allan Ramirez</a>
@@ -412,6 +412,52 @@ public class EsaMojoTest
         int missing = getSizeOfExpectedFiles(entries, expectedFiles);
         assertEquals("Missing files: " + expectedFiles,  0, missing);
 
+    }
+
+    public void testBasicEsaWithoutNonBundleJars()
+            throws Exception
+    {
+        File testPom = new File( getBasedir(),
+                "target/test-classes/unit/basic-esa-exclude-non-bundle-jars/plugin-config.xml" );
+
+        EsaMojo mojo = ( EsaMojo ) lookupMojo( "esa", testPom );
+
+        assertNotNull( mojo );
+
+        String finalName = ( String ) getVariableValueFromObject( mojo, "finalName" );
+
+        String workDir = ( String ) getVariableValueFromObject( mojo, "workDirectory" );
+
+        String outputDir = ( String ) getVariableValueFromObject( mojo, "outputDirectory" );
+
+        mojo.execute();
+
+        //check the generated esa file
+        File esaFile = new File( outputDir, finalName + ".esa" );
+
+        assertTrue( esaFile.exists() );
+
+        //expected files/directories inside the esa file
+        List expectedFiles = new ArrayList();
+
+        expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-esa-test/pom.properties" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-esa-test/pom.xml" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-esa-test/" );
+        expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
+        expectedFiles.add( "META-INF/maven/" );
+        expectedFiles.add( "META-INF/" );
+        expectedFiles.add( "OSGI-INF/SUBSYSTEM.MF" );
+        expectedFiles.add( "OSGI-INF/" );
+
+        ZipFile esa = new ZipFile( esaFile );
+
+        Enumeration entries = esa.getEntries();
+
+        assertTrue( entries.hasMoreElements() );
+
+        int missing = getSizeOfExpectedFiles(entries, expectedFiles);
+        assertEquals("Missing files: " + expectedFiles,  0, missing);
     }
 
     public void testArchiveContentConfigurationSubsystemContentBundles()
