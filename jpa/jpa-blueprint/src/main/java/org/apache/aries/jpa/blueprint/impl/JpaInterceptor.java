@@ -53,7 +53,7 @@ public class JpaInterceptor implements Interceptor {
 
     @Override
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
-        if (coordinator == null) {
+        if (coordinator == null || em == null) {
             initServices();
         }
         try {
@@ -71,7 +71,7 @@ public class JpaInterceptor implements Interceptor {
     }
 
     private synchronized void initServices() {
-        if (coordinator == null) {
+        if (coordinator == null || em == null) {
             coordinator = (Coordinator)container.getComponentInstance(coordinatorId);
             em = (EntityManager)container.getComponentInstance(emId);
         }
