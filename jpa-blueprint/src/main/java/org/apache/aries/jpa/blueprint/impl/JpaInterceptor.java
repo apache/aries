@@ -19,6 +19,7 @@
 package org.apache.aries.jpa.blueprint.impl;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceUnitTransactionType;
@@ -39,11 +40,13 @@ public class JpaInterceptor implements Interceptor {
     private BlueprintContainer container;
     private String coordinatorId;
     private String emId;
+    private AtomicBoolean initialized;
 
     public JpaInterceptor(BlueprintContainer container, String coordinatorId, String emId) {
         this.container = container;
         this.coordinatorId = coordinatorId;
         this.emId = emId;
+        this.initialized = new AtomicBoolean(false);
     }
 
     @Override
@@ -53,7 +56,7 @@ public class JpaInterceptor implements Interceptor {
 
     @Override
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
-        if (coordinator == null || em == null) {
+        if (!initialized.get()) {
             initServices();
         }
         try {
@@ -71,7 +74,7 @@ public class JpaInterceptor implements Interceptor {
     }
 
     private synchronized void initServices() {
-        if (coordinator == null || em == null) {
+        if (initialized.compareAndSet(false, true)) {
             coordinator = (Coordinator)container.getComponentInstance(coordinatorId);
             em = (EntityManager)container.getComponentInstance(emId);
         }
