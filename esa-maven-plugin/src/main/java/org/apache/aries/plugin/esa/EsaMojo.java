@@ -19,6 +19,8 @@ package org.apache.aries.plugin.esa;
  * under the License.
  */
 
+import static org.apache.aries.util.manifest.BundleManifest.fromBundle;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -28,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.aries.util.manifest.BundleManifest;
 import org.apache.maven.archiver.PomPropertiesUtil;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -239,7 +242,9 @@ public class EsaMojo
                     artifacts.add(project.getArtifact());
                 }
                 
-                artifacts = selectArtifacts(artifacts);
+                artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
+                artifacts = selectNonJarArtifactsAndBundles(artifacts);
+
                 int cnt = 0;
                 for (Artifact artifact : artifacts) {                    
                     if (!artifact.isOptional() /*&& filter.include(artifact)*/) {
@@ -424,9 +429,8 @@ public class EsaMojo
             }
 
             // Write the SUBSYSTEM-CONTENT
-            // TODO: check that the dependencies are bundles (currently, the converter
-            // will throw an exception)
             Set<Artifact> artifacts = null;
+
             switch (EsaManifestContent.valueOf(manifestContent)) {
                 case content:
                     // only include the direct dependencies in the content
@@ -439,8 +443,10 @@ public class EsaMojo
                 default:
                     throw new MojoExecutionException("Invalid configuration for <manifestContent/>.  Valid values are content and all." );
             }
-            
-            artifacts = selectArtifacts(artifacts);
+
+            artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
+            artifacts = selectNonJarArtifactsAndBundles(artifacts);
+
             Iterator<Artifact> iter = artifacts.iterator();
 
             FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_CONTENT + ": ");
@@ -551,7 +557,7 @@ public class EsaMojo
     /**
      * Return non-pom artifacts in 'compile' or 'runtime' scope only.
      */
-    private Set<Artifact> selectArtifacts(Set<Artifact> artifacts) 
+    private Set<Artifact> selectArtifactsInCompileOrRuntimeScope(Set<Artifact> artifacts)
     {
         Set<Artifact> selected = new LinkedHashSet<Artifact>();
         for (Artifact artifact : artifacts) {
@@ -565,6 +571,31 @@ public class EsaMojo
             }
         }
         return selected;
+    }
+
+    /**
+     * Returns bundles and artifacts that aren't JARs
+     */
+    private Set<Artifact> selectNonJarArtifactsAndBundles(Set<Artifact> artifacts)
+    {
+        Set<Artifact> selected = new LinkedHashSet<Artifact>();
+        for (Artifact artifact : artifacts) {
+            if (isNonJarOrOSGiBundle(artifact)) {
+                selected.add(artifact);
+            } else {
+                getLog().warn("Skipping dependency on non-bundle JAR! groupId: " + artifact.getGroupId() + " artifactId:" + artifact.getArtifactId());
+            }
+        }
+        return selected;
+    }
+
+    private boolean isNonJarOrOSGiBundle(Artifact artifact) {
+        if(!artifact.getFile().getName().endsWith(".jar")){
+            return true;
+        } else {
+            BundleManifest manifest = fromBundle(artifact.getFile());
+            return manifest != null && manifest.getSymbolicName() != null;
+        }
     }
 
     private void includeSharedResources() throws MojoExecutionException {
