@@ -54,6 +54,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
@@ -170,10 +171,19 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		if (isScoped() || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
 			return result;
 		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
-		for (Resource constituent : getConstituents())
-			if (header.contains(constituent))
-				for (Capability capability : constituent.getCapabilities(namespace))
+		for (Resource constituent : getConstituents()) {
+			if (header.contains(constituent)) {
+				for (Capability capability : constituent.getCapabilities(namespace)) {
+					if (namespace == null && (IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace()) || HostNamespace.HOST_NAMESPACE.equals(capability.getNamespace()))) {
+						// Don't want to include the osgi.identity and/or osgi.wiring.host capabilities of
+						// content. Need a second check here in case the namespace
+						// is null.
+						continue;
+					}
 					result.add(new BasicCapability(capability, this));
+				}
+			}
+		}
 		return result;
 	}
 
