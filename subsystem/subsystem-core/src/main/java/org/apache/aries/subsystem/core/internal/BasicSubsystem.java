@@ -54,6 +54,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
@@ -160,59 +161,27 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		// First, add the capabilities from the manifest.
 		SubsystemManifest manifest = getSubsystemManifest();
 		List<Capability> result = manifest.toCapabilities(this);
-		if (namespace != null) {
-			for (Iterator<Capability> i = result.iterator(); i.hasNext();) {
-				if (!i.next().getNamespace().equals(namespace)) {
+		if (namespace != null)
+			for (Iterator<Capability> i = result.iterator(); i.hasNext();)
+				if (!i.next().getNamespace().equals(namespace))
 					i.remove();
-				}
-			}
-		}
-		if (isScoped() || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace)) {
-			// Scoped subsystems have all capabilities explicitly declared in
-			// their manifests. Also, we do not want to include the osgi.identity
-			// capabilities of content since a resource must have zero or one
-			// osgi.identity capabilities.
+		// TODO Somehow, exposing the capabilities of content resources of a
+		// feature is causing an infinite regression of feature2 installations
+		// in FeatureTest.testSharedContent() under certain conditions.
+		if (isScoped() || IdentityNamespace.IDENTITY_NAMESPACE.equals(namespace))
 			return result;
-		}
-		// This is an unscoped subsystem that implicitly exports everything.
-		// Its capabilities must be derived from its content.
-		if (resource == null) {
-			// This is a persisted subsystem. We no longer have access to the
-			// original content. We must look at constituents that are also 
-			// content.
-			SubsystemContentHeader header = manifest.getSubsystemContentHeader();
-			for (Resource constituent : getConstituents()) {
-				if (header.contains(constituent)) {
-					for (Capability capability : constituent.getCapabilities(namespace)) {
-						if (namespace == null && IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace())) {
-							// Don't want to include the osgi.identity capabilities of
-							// content. Need a second check here in case the namespace
-							// is null.
-							continue;
-						}
-						result.add(new BasicCapability(capability, this));
+		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
+		for (Resource constituent : getConstituents()) {
+			if (header.contains(constituent)) {
+				for (Capability capability : constituent.getCapabilities(namespace)) {
+					if (namespace == null && (IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace()) || HostNamespace.HOST_NAMESPACE.equals(capability.getNamespace()))) {
+						// Don't want to include the osgi.identity and/or osgi.wiring.host capabilities of
+						// content. Need a second check here in case the namespace
+						// is null.
+						continue;
 					}
+					result.add(new BasicCapability(capability, this));
 				}
-			}
-			return result;
-		}
-		// This is a newly installing subsystem. We therefore have access to the
-		// original content via the SubsystemResource and can derive the
-		// capabilities from there.
-		Collection<Resource> installableContent = resource.getInstallableContent();
-		Collection<Resource> sharedContent = resource.getSharedContent();
-		Collection<Resource> contents = new ArrayList<Resource>(installableContent.size() + sharedContent.size());
-		contents.addAll(installableContent);
-		contents.addAll(sharedContent);
-		for (Resource content : contents) {
-			for (Capability capability : content.getCapabilities(namespace)) {
-				if (namespace == null && IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace())) {
-					// Don't want to include the osgi.identity capabilities of
-					// content. Need a second check here in case the namespace
-					// is null.
-					continue;
-				}
-				result.add(new BasicCapability(capability, this));
 			}
 		}
 		return result;
@@ -223,47 +192,17 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		// First, add the requirements from the manifest.
 		SubsystemManifest manifest = getSubsystemManifest();
 		List<Requirement> result = manifest.toRequirements(this);
-		if (namespace != null) {
-			for (Iterator<Requirement> i = result.iterator(); i.hasNext();) {
-				if (!i.next().getNamespace().equals(namespace)) {
+		if (namespace != null)
+			for (Iterator<Requirement> i = result.iterator(); i.hasNext();)
+				if (!i.next().getNamespace().equals(namespace))
 					i.remove();
-				}
-			}
-		}
-		if (isScoped()) {
-			// Scoped subsystems have all requirements explicitly declared in
-			// their manifests.
+		if (isScoped())
 			return result;
-		}
-		// This is an unscoped subsystem that implicitly imports everything.
-		// Its requirements must be derived from its content.
-		if (resource == null) {
-			// This is a persisted subsystem. We no longer have access to the
-			// original content. We must look at constituents that are also 
-			// content.
-			SubsystemContentHeader header = manifest.getSubsystemContentHeader();
-			for (Resource constituent : getConstituents()) {
-				if (header.contains(constituent)) {
-					for (Requirement requirement : constituent.getRequirements(namespace)) {
-						result.add(new BasicRequirement(requirement, this));
-					}
-				}
-			}
-			return result;
-		}
-		// This is a newly installing subsystem. We therefore have access to the
-		// original content via the SubsystemResource and can derive the
-		// requirements from there.
-		Collection<Resource> installableContent = resource.getInstallableContent();
-		Collection<Resource> sharedContent = resource.getSharedContent();
-		Collection<Resource> contents = new ArrayList<Resource>(installableContent.size() + sharedContent.size());
-		contents.addAll(installableContent);
-		contents.addAll(sharedContent);
-		for (Resource content : contents) {
-			for (Requirement requirement : content.getRequirements(namespace)) {
-				result.add(new BasicRequirement(requirement, this));
-			}
-		}
+		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
+		for (Resource constituent : getConstituents())
+			if (header.contains(constituent))
+				for (Requirement requirement : constituent.getRequirements(namespace))
+					result.add(new BasicRequirement(requirement, this));
 		return result;
 	}
 	
