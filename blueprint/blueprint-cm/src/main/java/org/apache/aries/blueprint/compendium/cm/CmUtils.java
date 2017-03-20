@@ -26,6 +26,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
@@ -65,8 +66,17 @@ public class CmUtils  {
             Configuration config = getConfiguration(ca, persistentId);
             if (config != null) {
                 Dictionary<String, Object> props = new CaseInsensitiveDictionary(config.getProperties());
-                BundleContext caBc = caRef.getBundle().getBundleContext();
-                callPlugins(caBc, props, service, persistentId, null);
+                Bundle bundle = caRef.getBundle();
+                if (bundle != null) {
+                    BundleContext caBc = bundle.getBundleContext();
+                    if (caBc != null) {
+                        try {
+                            callPlugins(caBc, props, service, persistentId, null);
+                        } catch (IllegalStateException ise) {
+                            // we don't care it doesn't exist so, shrug.
+                        }
+                    }
+                }
                 return props;
             } else {
                 return null;
