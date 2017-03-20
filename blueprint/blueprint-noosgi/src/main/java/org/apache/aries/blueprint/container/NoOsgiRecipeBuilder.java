@@ -232,7 +232,7 @@ public class NoOsgiRecipeBuilder {
             IdRefRecipe rnr = new IdRefRecipe(getName(null), componentName);
             return rnr;
         } else {
-            throw new IllegalStateException("Unsupported value: " + v.getClass().getName());
+            throw new IllegalStateException("Unsupported value: " + (v != null ? v.getClass().getName() : "null"));
         }
     }
 
