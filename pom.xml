@@ -62,9 +62,6 @@
         <aries.osgi.private.pkg>
             org.apache.aries.proxy.impl*
         </aries.osgi.private.pkg>
-        <aries.osgi.export.service>
-            org.apache.aries.proxy.ProxyManager
-        </aries.osgi.export.service>
         <lastReleaseVersion>1.0.1</lastReleaseVersion>
     </properties>
 
@@ -160,6 +157,17 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Provide-Capability>
+                            osgi.service;objectClass:List&lt;String&gt;=org.apache.aries.proxy.ProxyManager
+                        </Provide-Capability>
+                    </instructions>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
