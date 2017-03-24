@@ -959,7 +959,7 @@ public interface BlueprintMetadataMBean {
     /**
      * The key REFERENCE_LISTENERS, used in {@link #REFERENCE_LISTENERS_ITEM}.
      */
-    String          REFERENCE_LISTENERS     = "RegistrationListeners";
+    String          REFERENCE_LISTENERS     = "ReferenceListeners";
     
     /**
      * The item containing all the reference listeners.
