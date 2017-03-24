@@ -1074,8 +1074,9 @@ public interface BlueprintMetadataMBean {
      * 
      * @param containerServiceId The blueprint container service id
      * @return the array of component id
+     * @throws IOException if the operation fails
      */
-    String[] getComponentIds(long containerServiceId);
+    String[] getComponentIds(long containerServiceId) throws IOException;
     
     /**
      * Returns all component ids of the specified component type
@@ -1083,8 +1084,9 @@ public interface BlueprintMetadataMBean {
      * @param containerServiceId The blueprint container service id
      * @param type The string used to specify the type of component
      * @return the array of component id
+     * @throws IOException if the operation fails
      */
-    String[] getComponentIdsByType(long containerServiceId, String type);
+    String[] getComponentIdsByType(long containerServiceId, String type) throws IOException;
     
     /**
      * Returns the ComponentMetadata according to the its component id.
@@ -1094,8 +1096,9 @@ public interface BlueprintMetadataMBean {
      * @param containerServiceId The blueprint container service id
      * @param componentId The component id
      * @return the ComponentMetadata
+     * @throws IOException if the operation fails
      */
-    CompositeData getComponentMetadata(long containerServiceId, String componentId);
+    CompositeData getComponentMetadata(long containerServiceId, String componentId) throws IOException;
         
     /**
      * Returns all the blueprint containers' service IDs, which successfully
