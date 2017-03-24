@@ -86,7 +86,7 @@ public class BlueprintMetadata implements BlueprintMetadataMBean {
         return serviceIds;
     }
 
-    public String[] getComponentIds(long containerServiceId) {
+    public String[] getComponentIds(long containerServiceId) throws IOException {
         BlueprintContainer container = getBlueprintContainer(containerServiceId);
         return (String[]) container.getComponentIds().toArray(new String[0]);
     }
@@ -97,7 +97,7 @@ public class BlueprintMetadata implements BlueprintMetadataMBean {
      * 
      * @see org.apache.aries.jmx.blueprint.BlueprintMetadataMBean#getComponentIdsByType(long, java.lang.String)
      */
-    public String[] getComponentIdsByType(long containerServiceId, String type) {
+    public String[] getComponentIdsByType(long containerServiceId, String type) throws IOException {
         BlueprintContainer container = getBlueprintContainer(containerServiceId);
         Collection<? extends ComponentMetadata> components;
         if (type.equals(BlueprintMetadataMBean.SERVICE_METADATA)) {
@@ -122,24 +122,24 @@ public class BlueprintMetadata implements BlueprintMetadataMBean {
         return ids;
     }
 
-    public CompositeData getComponentMetadata(long containerServiceId, String componentId) {
+    public CompositeData getComponentMetadata(long containerServiceId, String componentId) throws IOException {
         BlueprintContainer container = getBlueprintContainer(containerServiceId);
         ComponentMetadata componentMetadata = container.getComponentMetadata(componentId);
         BPMetadata metadata = Util.metadata2BPMetadata(componentMetadata);
         return metadata.asCompositeData();
     }
 
-    private BlueprintContainer getBlueprintContainer(long containerServiceId) {
+    private BlueprintContainer getBlueprintContainer(long containerServiceId) throws IOException {
         String filter = "(" + Constants.SERVICE_ID + "=" + containerServiceId + ")";
         ServiceReference[] serviceReferences = null;
         try {
             serviceReferences = bundleContext.getServiceReferences(BlueprintContainer.class.getName(), filter);
         } catch (InvalidSyntaxException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
 
         if (serviceReferences == null || serviceReferences.length <1) {
-            throw new IllegalArgumentException("Invalid BlueprintContainer service id: " + containerServiceId);
+            throw new IOException("Invalid BlueprintContainer service id: " + containerServiceId);
         }
         return (BlueprintContainer) bundleContext.getService(serviceReferences[0]);
     }

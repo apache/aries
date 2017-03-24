@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -322,21 +323,21 @@ public class BlueprintMetadataTest {
             metadata.getComponentIds(serviceId);
         }catch(Exception ex)
         {
-            assertTrue(ex instanceof IllegalArgumentException);
+            assertTrue(ex instanceof IOException);
         }
         
         try{
             metadata.getComponentIdsByType(serviceId, BlueprintMetadataMBean.SERVICE_METADATA);
         }catch(Exception ex)
         {
-            assertTrue(ex instanceof IllegalArgumentException);
+            assertTrue(ex instanceof IOException);
         }
         
         try{
             metadata.getComponentMetadata(serviceId, "xxxx");
         }catch(Exception ex)
         {
-            assertTrue(ex instanceof IllegalArgumentException);
+            assertTrue(ex instanceof IOException);
         }
     }
 
