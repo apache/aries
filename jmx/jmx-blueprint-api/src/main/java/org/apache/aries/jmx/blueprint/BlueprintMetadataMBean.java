@@ -1075,7 +1075,7 @@ public interface BlueprintMetadataMBean {
      * @param containerServiceId The blueprint container service id
      * @return the array of component id
      */
-    public String[] getComponentIds(long containerServiceId);
+    String[] getComponentIds(long containerServiceId);
     
     /**
      * Returns all component ids of the specified component type
@@ -1084,8 +1084,7 @@ public interface BlueprintMetadataMBean {
      * @param type The string used to specify the type of component
      * @return the array of component id
      */
-    //TODO add description for type
-    public String[] getComponentIdsByType(long containerServiceId, String type);
+    String[] getComponentIdsByType(long containerServiceId, String type);
     
     /**
      * Returns the ComponentMetadata according to the its component id.
@@ -1096,7 +1095,7 @@ public interface BlueprintMetadataMBean {
      * @param componentId The component id
      * @return the ComponentMetadata
      */
-    public CompositeData getComponentMetadata(long containerServiceId, String componentId);
+    CompositeData getComponentMetadata(long containerServiceId, String componentId);
         
     /**
      * Returns all the blueprint containers' service IDs, which successfully
@@ -1105,7 +1104,7 @@ public interface BlueprintMetadataMBean {
      * @return the list of all the service IDs of the blueprint containers created by current extender 
      * @throws IOException if the operation fails
      */
-    public long[] getBlueprintContainerServiceIds() throws IOException;
+    long[] getBlueprintContainerServiceIds() throws IOException;
     
     /**
      * Returns the blueprint container's service id if the bundle specified 
@@ -1116,5 +1115,5 @@ public interface BlueprintMetadataMBean {
      * @throws IOException if the operation fails
      * @throws IllegalArgumentException if the bundle is not a blueprint bundle
      */
-    public long getBlueprintContainerServiceId(long bundleId) throws IOException;
+    long getBlueprintContainerServiceId(long bundleId) throws IOException;
 }
