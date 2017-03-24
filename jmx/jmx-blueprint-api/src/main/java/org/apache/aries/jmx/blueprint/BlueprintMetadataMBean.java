@@ -197,7 +197,7 @@ public interface BlueprintMetadataMBean {
     /**
     * The item containing a value and this will be used by 
     * BeanArgument, BeanProperty, MapEntry and CollectionMetadata.
-    * The key is {@link #VALUE}, and the type is {@link JmxConstants#PRIMITIVE_BYTE_ARRAY_TYPE}.
+    * The key is {@link #VALUE}, and the type is {@link JmxConstants#BYTE_ARRAY_TYPE}.
     */
     Item            VALUE_ITEM              = new Item(
                                                    VALUE, 
@@ -576,7 +576,7 @@ public interface BlueprintMetadataMBean {
     
     /**
      * The item containing the id of the factory component on which to invoke the factory method for the bean.
-     * The key is {@link #FACTORY_COMPONENT}, and the type is {@link JmxConstants#PRIMITIVE_BYTE_ARRAY_TYPE}.
+     * The key is {@link #FACTORY_COMPONENT}, and the type is {@link JmxConstants#BYTE_ARRAY_TYPE}.
      */
     Item            FACTORY_COMPONENT_ITEM  = new Item(
                                                     FACTORY_COMPONENT, 
@@ -604,7 +604,7 @@ public interface BlueprintMetadataMBean {
         
     /**
      * The item containing the bean argument for the bean's compositeType.
-     * The key is {@link #ARGUMENTS}, and the type is {@link ARGUMENT_TYPE}.
+     * The key is {@link #ARGUMENTS}, and the type is {@link #BEAN_ARGUMENT_TYPE}.
      */
     Item           ARGUMENTS_ITEM     = new Item(
                                                     ARGUMENTS, 
@@ -618,7 +618,7 @@ public interface BlueprintMetadataMBean {
         
     /**
      * The item containing the bean property for the bean's compositeType.
-     * The key is {@link #PROPERTIES}, and the type is {@link PROPERTY_TYPE}.
+     * The key is {@link #PROPERTIES}, and the type is {@link #BEAN_PROPERTY_TYPE}.
      */
     Item            PROPERTIES_ITEM    = new Item(
                                                     PROPERTIES, 
@@ -668,7 +668,7 @@ public interface BlueprintMetadataMBean {
     
     /**
      * The item containing the listener component.
-     * The key is {@link #LISTENER_COMPONENT}, and the type is {@link JmxConstants#PRIMITIVE_BYTE_ARRAY_TYPE}.
+     * The key is {@link #LISTENER_COMPONENT}, and the type is {@link JmxConstants#BYTE_ARRAY_TYPE}.
      */
     Item            LISTENER_COMPONENT_ITEM = new Item(
                                                     LISTENER_COMPONENT, 
@@ -777,7 +777,7 @@ public interface BlueprintMetadataMBean {
     
     /**
      * The item containing the id of the component to be exported as a service.
-     * The key is {@link #SERVICE_COMPONENT}, and the type is {@link JmxConstants#PRIMITIVE_BYTE_ARRAY_TYPE}.
+     * The key is {@link #SERVICE_COMPONENT}, and the type is {@link JmxConstants#BYTE_ARRAY_TYPE}.
      */
     Item            SERVICE_COMPONENT_ITEM  = new Item(
                                                     SERVICE_COMPONENT, 
@@ -799,7 +799,7 @@ public interface BlueprintMetadataMBean {
                                                     Item.arrayType(1, MAP_ENTRY_TYPE));
     
     /**
-     * The key REGISTRATION_LISTENERS, used in {@link #SERVICE_LISTENERS_ITEM}.
+     * The key REGISTRATION_LISTENERS, used in {@link #REGISTRATION_LISTENERS_ITEM}.
      */
     String          REGISTRATION_LISTENERS  = "RegistrationListeners";
     
@@ -957,7 +957,7 @@ public interface BlueprintMetadataMBean {
                                                     SimpleType.STRING);
     
     /**
-     * The key REFERENCE_LISTENERS, used in {@link #SERVICE_LISTENERS_ITEM}.
+     * The key REFERENCE_LISTENERS, used in {@link #REFERENCE_LISTENERS_ITEM}.
      */
     String          REFERENCE_LISTENERS     = "RegistrationListeners";
     
