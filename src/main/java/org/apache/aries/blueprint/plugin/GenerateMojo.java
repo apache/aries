@@ -99,7 +99,7 @@ public class GenerateMojo extends AbstractMojo {
         List<String> toScan = getPackagesToScan();
 
         if (!sourcesChanged()) {
-            getLog().info("Skipping blueprint generation because source files was not changed");
+            getLog().info("Skipping blueprint generation because source files were not changed");
             return;
         }
 
@@ -119,7 +119,7 @@ public class GenerateMojo extends AbstractMojo {
         if (blueprint.shouldBeGenerated()) {
             writeBlueprint(blueprint);
         } else {
-            getLog().warn("Skipping blueprint generation because beans were not found");
+            getLog().warn("Skipping blueprint generation because no beans were found");
         }
     }
 
@@ -168,7 +168,7 @@ public class GenerateMojo extends AbstractMojo {
         }
 
         for (String aPackage : toScan) {
-            getLog().info("Package " + aPackage + " will be scan");
+            getLog().info("Package " + aPackage + " will be scanned");
         }
         return toScan;
     }
