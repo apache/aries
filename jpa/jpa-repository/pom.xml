@@ -21,7 +21,7 @@
 	<groupId>org.apache.aries.jpa</groupId>
 	<artifactId>jpa-repository</artifactId>
 	<name>Apache Aries JPA Repository</name>
-	<version>2.6.1</version>
+	<version>2.7.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
 		<bnd.version>3.1.0</bnd.version>
@@ -119,10 +119,4 @@
 			<version>2.1.0</version>
 		</dependency>
 	</dependencies>
-
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa-2.6.1/jpa-repository</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa-2.6.1/jpa-repository</developerConnection>
-    <url>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jpa-2.6.1/jpa-repository</url>
-  </scm>
 </project>
