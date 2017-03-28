@@ -68,6 +68,7 @@
              the OSGi provided APIs to Java 1.6 class compatibility.
              Becuase of the way the maven-bundle-plugin works we must
              extract the JAR before we translate and slurp in the API -->
+             <!--
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -110,5 +111,6 @@
                 </executions>
             </plugin>
         </plugins>
+        -->
     </build>
 </project>
