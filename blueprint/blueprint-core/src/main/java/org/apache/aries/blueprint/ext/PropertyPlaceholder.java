@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.ext;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -27,7 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.osgi.framework.Bundle;
+import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +59,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
     private boolean ignoreMissingLocations;
     private SystemProperties systemProperties = SystemProperties.fallback;
     private PropertyEvaluator evaluator = null;
+    private ExtendedBlueprintContainer container;
 
     public Map getDefaultProperties() {
         return defaultProperties;
@@ -118,6 +126,12 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         }
     }
 
+    @Override
+    public void process(ComponentDefinitionRegistry registry) throws ComponentDefinitionException {
+        container = (ExtendedBlueprintContainer) ((PassThroughMetadata) registry.getComponentDefinition("blueprintContainer")).getObject();
+        super.process(registry);
+    }
+
     protected String getProperty(String val) {
         LOGGER.debug("Retrieving property {}", val);
         Object v = null;
@@ -154,6 +168,37 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
     protected String getSystemProperty(String val) {
         if (val.startsWith("env:")) {
             return System.getenv(val.substring("env:".length()));
+        }
+        if (val.startsWith("static:")) {
+            val = val.substring("static:".length());
+            int idx = val.indexOf('#');
+            if (idx <= 0 || idx == val.length() - 1) {
+                throw new IllegalArgumentException("Bad syntax: " + val);
+            }
+            String clazz = val.substring(0, idx);
+            String name = val.substring(idx + 1);
+            try {
+                Class cl = container.loadClass(clazz);
+                Field field = null;
+                try {
+                    field = cl.getField(name);
+                } catch (NoSuchFieldException e) {
+                    while (field == null && cl != null) {
+                        try {
+                            field = cl.getDeclaredField(name);
+                        } catch (NoSuchFieldException t) {
+                            cl = cl.getSuperclass();
+                        }
+                    }
+                }
+                if (field == null) {
+                    throw new NoSuchFieldException(name);
+                }
+                Object obj = field.get(null);
+                return obj != null ? obj.toString() : null;
+            } catch (Throwable t) {
+                LOGGER.warn("Unable to retrieve static field: " + val + " (" + t + ")");
+            }
         }
         return System.getProperty(val);
     }
