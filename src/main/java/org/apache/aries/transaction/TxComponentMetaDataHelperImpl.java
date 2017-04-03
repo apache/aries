@@ -41,16 +41,16 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
 
     private static class TranData
     {
-      private final Map<Pattern, String> map;
+      private final Map<String, PatternDTO> map;
       private final Map<String, String> cache;
       
       public TranData() {
-          map = new ConcurrentHashMap<Pattern, String>();
+          map = new ConcurrentHashMap<String, PatternDTO>();
           cache = new ConcurrentHashMap<String, String>();
       }
       
       public void add(Pattern pattern, TransactionPropagationType txAttribute) {
-          map.put(pattern, txAttribute.name());
+          map.put(pattern.pattern(), new PatternDTO(pattern, txAttribute.name()));
       }
       
     public TransactionPropagationType getAttribute(String name) {
@@ -68,19 +68,19 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
         }
 
         if (size == 1) {
-            txAttribute = map.get(matches.get(0));
+            txAttribute = map.get(matches.get(0).pattern()).getTxAttributeName();
         } else {
             matches = selectPatternsWithFewestWildcards(matches);
             size = matches.size();
 
             if (size == 1) {
-                txAttribute = map.get(matches.get(0));
+                txAttribute = map.get(matches.get(0).pattern()).getTxAttributeName();
             } else {
                 matches = selectLongestPatterns(matches);
                 size = matches.size();
 
-                if (size == 1) {
-                    txAttribute = map.get(matches.get(0));
+                if (size >= 1) {
+                    txAttribute = map.get(matches.get(0).pattern()).getTxAttributeName();
                 } else {
                     throw new IllegalStateException(
                                                     Constants.MESSAGES
@@ -103,9 +103,9 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
     private List<Pattern> findMatches(String name)
       {
         List<Pattern> matches = new ArrayList<Pattern>();
-        for (Pattern p : map.keySet()) {
-          if (p.matcher(name).matches()) {
-            matches.add(p);
+        for (PatternDTO patternDTO : map.values()) {
+          if (patternDTO.getPattern().matcher(name).matches()) {
+            matches.add(patternDTO.getPattern());
           }
         }
         return matches;
@@ -158,7 +158,29 @@ public class TxComponentMetaDataHelperImpl implements TxComponentMetaDataHelper 
           return remainingMatches;
       }
     }
-    
+
+    private static class PatternDTO {
+        private Pattern pattern;
+        private String txAttributeName;
+
+        public PatternDTO(Pattern pattern, String txAttributeName) {
+            this.pattern = pattern;
+            this.txAttributeName = txAttributeName;
+        }
+
+        public Pattern getPattern() {
+            return pattern;
+        }
+
+        public String getTxAttributeName() {
+            return txAttributeName;
+        }
+        
+        public String toString() {
+            return pattern + ";" + txAttributeName;
+        }
+    }
+
     private static final Map<ComponentMetadata, TranData> data = new ConcurrentHashMap<ComponentMetadata, TranData>();
     // bundle transaction map keeps track of the default transaction behavior for the bundle at the bundle-wide level.
     // this is configured via top level tx:transaction element for the blueprint managed bundle
