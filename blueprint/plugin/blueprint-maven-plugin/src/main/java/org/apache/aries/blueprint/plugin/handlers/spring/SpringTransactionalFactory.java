@@ -19,8 +19,10 @@
 package org.apache.aries.blueprint.plugin.handlers.spring;
 
 import com.google.common.base.CaseFormat;
+
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
+import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -37,6 +40,8 @@ import java.util.Set;
 public class SpringTransactionalFactory implements BeanAnnotationHandler<Transactional>, MethodAnnotationHandler<Transactional> {
     private static final String PATTERN_NS_TX1 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v1\\.(.)\\.(.)";
     private static final String PATTERN_NS_TX2 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v2\\.(.)\\.(.)";
+    private static final String NS_TX_1_2_0 = "http://aries.apache.org/xmlns/transactions/v1.2.0";
+    private static final String ENABLE_ANNOTATION = "transaction.enableAnnotation";
 
     private String getTransactionTypeName(Transactional transactional) {
         Propagation propagation = transactional.propagation();
@@ -53,9 +58,9 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
 
     @Override
     public void handleMethodAnnotation(Class<?> clazz, List<Method> methods, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
-        final String nsTx1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX1);
+        final String nsTx1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX1);     
         if (nsTx1 != null) {
-            enableAnnotations(contextEnricher, nsTx1);
+            enableAnnotationTx1(contextEnricher, nsTx1);
             for (final Method method : methods) {
                 final Transactional transactional = method.getAnnotation(Transactional.class);
                 final String transactionTypeName = getTransactionTypeName(transactional);
@@ -73,25 +78,15 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
         }
         final String nsTx2 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX2);
         if (nsTx2 != null) {
-            enableTransactionsTx2(contextEnricher, nsTx2);
+            insertEnableAnnotationTx2(contextEnricher, nsTx2);
         }
-    }
-
-    private void enableAnnotations(ContextEnricher contextEnricher, final String namespace) {
-        contextEnricher.addBlueprintContentWriter("transaction/ennable-annotation", new XmlWriter() {
-            @Override
-            public void write(XMLStreamWriter writer) throws XMLStreamException {
-                writer.writeEmptyElement("enable-annotations");
-                writer.writeDefaultNamespace(namespace);
-            }
-        });
     }
 
     @Override
     public void handleBeanAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         final String nsTx1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX1);
         if (nsTx1 != null) {
-            enableAnnotations(contextEnricher, nsTx1);
+            enableAnnotationTx1(contextEnricher, nsTx1);
             final Transactional transactional = annotatedElement.getAnnotation(Transactional.class);
             final String transactionTypeName = getTransactionTypeName(transactional);
             beanEnricher.addBeanContentWriter("javax.transactional.method/" + annotatedElement + "/*/" + transactionTypeName, new XmlWriter() {
@@ -106,18 +101,8 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
         }
         final String nsTx2 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX1);
         if (nsTx2 != null) {
-            enableTransactionsTx2(contextEnricher, nsTx2);
+            insertEnableAnnotationTx2(contextEnricher, nsTx2);
         }
-    }
-
-    private void enableTransactionsTx2(ContextEnricher contextEnricher, final String namespace) {
-        contextEnricher.addBlueprintContentWriter("transaction/ennable-annotation", new XmlWriter() {
-            @Override
-            public void write(XMLStreamWriter writer) throws XMLStreamException {
-                writer.writeEmptyElement("enable");
-                writer.writeDefaultNamespace(namespace);
-            }
-        });
     }
 
     private String getNamespaceByPattern(Set<String> namespaces, String pattern) {
@@ -127,5 +112,37 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
             }
         }
         return null;
+    }
+    
+    private void enableAnnotationTx1(ContextEnricher contextEnricher, final String nsTx1) {
+        // TX1 enable-annotation are valid only in 1.2.0 schema
+        if (NS_TX_1_2_0.equals(nsTx1) && getEnableAnnotationConfig(contextEnricher.getBlueprintConfiguration())) {
+            insertEnableAnnotationTx1(contextEnricher, nsTx1);
+        }
+    }
+
+    private boolean getEnableAnnotationConfig(BlueprintConfiguration blueprintConfig) {
+        String enableAnnotation = blueprintConfig.getCustomParameters().get(ENABLE_ANNOTATION);
+        return enableAnnotation == null || Boolean.parseBoolean(enableAnnotation);
+    }
+
+    private void insertEnableAnnotationTx1(ContextEnricher contextEnricher, final String namespace) {
+        contextEnricher.addBlueprintContentWriter("transaction/ennable-annotation", new XmlWriter() {
+            @Override
+            public void write(XMLStreamWriter writer) throws XMLStreamException {
+                writer.writeEmptyElement("enable-annotations");
+                writer.writeDefaultNamespace(namespace);
+            }
+        });
+    }
+        
+    private void insertEnableAnnotationTx2(ContextEnricher contextEnricher, final String namespace) {
+        contextEnricher.addBlueprintContentWriter("transaction/ennable-annotation", new XmlWriter() {
+            @Override
+            public void write(XMLStreamWriter writer) throws XMLStreamException {
+                writer.writeEmptyElement("enable");
+                writer.writeDefaultNamespace(namespace);
+            }
+        });
     }
 } 

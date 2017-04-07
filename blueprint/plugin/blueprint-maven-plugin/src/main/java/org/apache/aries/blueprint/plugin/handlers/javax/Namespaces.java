@@ -25,6 +25,7 @@ class Namespaces {
     static final String PATTERN_NS_JPA2 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/jpa\\/v2\\.(.)\\.(.)";
     static final String PATTERN_NS_TX1 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v1\\.(.)\\.(.)";
     static final String PATTERN_NS_TX2 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v2\\.(.)\\.(.)";
+    private static final String NS_TX_1_2_0 = "http://aries.apache.org/xmlns/transactions/v1.2.0";
 
     static String getNamespaceByPattern(Set<String> namespaces, String pattern) {
         for (String namespace : namespaces) {
@@ -33,5 +34,9 @@ class Namespaces {
             }
         }
         return null;
+    }
+    
+    static boolean isTX12(String namespace) {
+        return NS_TX_1_2_0.equals(namespace);
     }
 }
