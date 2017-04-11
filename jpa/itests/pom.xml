@@ -35,7 +35,7 @@
     
     <properties>
         <paxlogging.version>1.7.3</paxlogging.version>
-        <exam.version>4.9.1</exam.version>
+        <exam.version>4.10.0</exam.version>
         <equinox.version>3.11.3</equinox.version>
         <url.version>2.5.2</url.version>
         <hibernate42.version>4.2.15.Final</hibernate42.version>
