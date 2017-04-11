@@ -41,9 +41,9 @@
         </dependency>
         
         <dependency>
-            <groupId>org.eclipse.tycho</groupId>
+            <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.10.100.v20150529-1857</version>
+            <version>${equinox.version}</version>
         </dependency>
 <!--         <dependency> -->
 <!--             <groupId>org.apache.felix</groupId> -->
