@@ -45,7 +45,7 @@
         <serp.bundle.version>1.14.1_1</serp.bundle.version>
         <eclipselink.version>2.6.0</eclipselink.version>
         <openjpa.version>2.3.0</openjpa.version>
-        <paxjdbc.version>0.7.0</paxjdbc.version>
+        <paxjdbc.version>1.1.0</paxjdbc.version>
     </properties>
 
     <modules>

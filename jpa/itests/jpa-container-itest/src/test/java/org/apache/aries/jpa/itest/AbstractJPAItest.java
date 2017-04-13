@@ -22,16 +22,15 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.when;
+import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.configurationFolder;
 
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.io.File;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import javax.transaction.UserTransaction;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
@@ -47,18 +46,12 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.tracker.ServiceTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractJPAItest {
-    private static Logger LOG = LoggerFactory.getLogger(AbstractJPAItest.class);
-
     protected static final String TEST_UNIT = "test-unit";
     protected static final String XA_TEST_UNIT = "xa-test-unit";
     protected static final String DSF_TEST_UNIT = "dsf-test-unit";
@@ -67,18 +60,23 @@ public abstract class AbstractJPAItest {
 
     protected static final String TEST_BUNDLE_NAME = "org.apache.aries.jpa.org.apache.aries.jpa.container.itest.bundle";
     
-    protected static final String BLUE_CAR_PLATE = "A1AAA";
-    protected static final String GREEN_CAR_PLATE = "B2BBB";
-
     @Inject
     protected BundleContext bundleContext;
     
     @Inject
     protected UserTransaction ut;
-
+    
     @Inject
-    protected ConfigurationAdmin configAdmin;
-    private static Configuration config;
+    @org.ops4j.pax.exam.util.Filter("(osgi.jndi.service.name=testds)")
+    protected DataSource ds;
+    
+    @Inject
+    @org.ops4j.pax.exam.util.Filter("(osgi.jndi.service.name=testdsxa)")
+    protected DataSource dsXa;
+    
+    @Inject
+    @org.ops4j.pax.exam.util.Filter("(osgi.jdbc.driver.class=org.apache.derby.jdbc.EmbeddedDriver)")
+    protected DataSourceFactory dsf;
 
     /**
      * TODO check calls to this. Eventually switch to EmSupplier 
@@ -119,7 +117,7 @@ public abstract class AbstractJPAItest {
         }
     }
 
-    public String sanitizeFilter(String filter) {
+    private String sanitizeFilter(String filter) {
         return filter.startsWith("(") ? filter : "(" + filter + ")";
     }
 
@@ -158,20 +156,24 @@ public abstract class AbstractJPAItest {
     }
 
     protected Option baseOptions() {
+        String localRepo = getLocalRepo();
+        return composite(junitBundles(),
+                         mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),
+                         mavenBundle("org.ops4j.pax.logging", "pax-logging-service", "1.7.2"),
+                         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                         //systemProperty("pax.exam.osgi.unresolved.fail").value("true"),
+                         when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+                         configurationFolder(new File("src/test/resources/config"))
+            );
+    }
+
+    private String getLocalRepo() {
         String localRepo = System.getProperty("maven.repo.local");
 
         if (localRepo == null) {
             localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
         }
-        return composite(junitBundles(),
-                         mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),
-                         mavenBundle("org.ops4j.pax.logging", "pax-logging-service", "1.7.2"),
-                         // this is how you set the default log level when using pax
-                         // logging (logProfile)
-                         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
-                         when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
-                         //,
-            );
+        return localRepo;
     }
 
     protected Option debug() {
@@ -278,6 +280,7 @@ public abstract class AbstractJPAItest {
                          mvnBundle("org.apache.commons", "commons-dbcp2"), //
                          mvnBundle("org.ops4j.pax.jdbc", "pax-jdbc-pool-common"), //
                          mvnBundle("org.ops4j.pax.jdbc", "pax-jdbc-pool-dbcp2"), //
+                         mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.jasypt"), //
                          mvnBundle("org.ops4j.pax.jdbc", "pax-jdbc-config")
             );
     }
@@ -308,33 +311,6 @@ public abstract class AbstractJPAItest {
 
     protected MavenArtifactProvisionOption testBundleEclipseLink() {
         return mvnBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container.itest.bundle.eclipselink");
-    }
-
-    @Before
-    public void createConfigForDataSource() throws Exception {
-        if (config == null) {
-            createConfigForLogging();
-            config = configAdmin.createFactoryConfiguration("org.ops4j.datasource", null);
-            Dictionary<String, String> props = new Hashtable<String, String>();
-            props.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, "org.apache.derby.jdbc.EmbeddedDriver-pool-xa");
-            props.put(DataSourceFactory.JDBC_URL, "jdbc:derby:memory:TEST1;create=true");
-            props.put("dataSourceName", "testds");
-            config.update(props);
-            LOG.info("Created DataSource config testds");
-        }
-    }
-    
-    public void createConfigForLogging() throws IOException {
-        Configuration logConfig = configAdmin.getConfiguration("org.ops4j.pax.logging", null);
-        Dictionary<String, String> props = new Hashtable<String, String>();
-        props.put("log4j.rootLogger", "INFO, stdout");
-        props.put("log4j.logger.org.apache.aries.transaction", "DEBUG");
-        props.put("log4j.logger.org.apache.aries.transaction.parsing", "DEBUG");
-        props.put("log4j.logger.org.apache.aries.jpa.blueprint.impl", "DEBUG");
-        props.put("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-        props.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-        props.put("log4j.appender.stdout.layout.ConversionPattern", "%d{ISO8601} | %-5.5p | %-16.16t | %c | %m%n");
-        logConfig.update(props);
     }
 
 }
