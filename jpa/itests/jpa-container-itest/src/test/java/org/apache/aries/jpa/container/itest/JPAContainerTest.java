@@ -30,7 +30,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.sql.DataSource;
 
 import org.apache.aries.jpa.container.itest.entities.Car;
 import org.apache.aries.jpa.itest.AbstractCarJPAITest;
@@ -167,25 +166,14 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
 
     @Test
     public void testCarEMFBuilderExternalDSXA() throws Exception {
-    	DataSource ds = getService(DataSource.class, 
-    			"(" + OSGI_JDBC_DRIVER_CLASS + "=org.apache.derby.jdbc.EmbeddedDriver-pool-xa)");
-    	
     	EntityManagerFactoryBuilder emfBuilder = getService(EntityManagerFactoryBuilder.class,
     			"(osgi.unit.name=" + EXTERNAL_TEST_UNIT + ")");
-    	
-    	
+
     	Map<String, Object> props = new HashMap<String, Object>();
     	props.put("javax.persistence.jtaDataSource", ds);
     	props.put("javax.persistence.transactionType", JTA.name());
-    	
     	//EclipseLink also needs a non-jta-datasource
-    	DataSourceFactory dsf = getService(DataSourceFactory.class, 
-    			"(" + OSGI_JDBC_DRIVER_CLASS + "=org.apache.derby.jdbc.EmbeddedDriver)");
-    	Properties jdbcProps = new Properties();
-    	jdbcProps.setProperty("url", "jdbc:derby:memory:TEST1;create=true");
-    	props.put("javax.persistence.nonJtaDataSource", dsf.createDataSource(jdbcProps));
-
-    	
+    	props.put("javax.persistence.nonJtaDataSource", ds);
     	EntityManagerFactory emf = emfBuilder.createEntityManagerFactory(props);
     	carLifecycleXA(ut, emf.createEntityManager());
     }
@@ -195,15 +183,10 @@ public abstract class JPAContainerTest extends AbstractCarJPAITest {
         EntityManagerFactoryBuilder emfBuilder = getService(EntityManagerFactoryBuilder.class,
                         "(osgi.unit.name=" + EXTERNAL_TEST_UNIT + ")");
         
-        
         Map<String, Object> props = new HashMap<String, Object>();
-        //EclipseLink also needs a non-jta-datasource
-        DataSourceFactory dsf = getService(DataSourceFactory.class, 
-                        "(" + OSGI_JDBC_DRIVER_CLASS + "=org.apache.derby.jdbc.EmbeddedDriver)");
         Properties jdbcProps = new Properties();
         jdbcProps.setProperty("url", "jdbc:derby:memory:TESTNOJTA;create=true");
         props.put("javax.persistence.dataSource", dsf.createDataSource(jdbcProps));
-
         
         EntityManagerFactory emf = emfBuilder.createEntityManagerFactory(props);
         carLifecycleRL(emf.createEntityManager());
