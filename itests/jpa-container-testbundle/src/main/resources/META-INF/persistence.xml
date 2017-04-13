@@ -25,7 +25,7 @@
   <persistence-unit name="test-unit" transaction-type="RESOURCE_LOCAL">
     <description>Test persistence unit for the JPA Container and Context iTests</description>
     
-    <non-jta-data-source>osgi:service/javax.sql.DataSource</non-jta-data-source>
+    <non-jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=testds)</non-jta-data-source>
     <properties>
         <!-- This is to avoid compile time enhancement which would conflict with hibernate -->
         <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
@@ -43,10 +43,9 @@
   
    <persistence-unit name="xa-test-unit" transaction-type="JTA">
      <description>Test persistence unit for the JPA Container advanced iTests</description>
+     
+     <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=testdsxa)</jta-data-source>
      <properties>
-       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver-pool-xa" />
-       <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:XATEST;create=true" />
-
         <!-- These properties are creating the database on the fly. We are using them to avoid the tests having to create a database -->
         <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
         <property name="openjpa.jdbc.DBDictionary" value="derby" />
@@ -76,7 +75,8 @@
   <persistence-unit name="dsf-xa-test-unit" transaction-type="JTA">
     <description>Test persistence unit for the JPA Container DataSourceFactory iTests</description>
     <properties>
-      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having to create a database  -->     <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver-pool-xa"/>
+      <!-- These properties are creating the database on the fly. We are using them to avoid the tests having to create a database  -->
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:DSFXATEST;create=true"/>
 
       <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
