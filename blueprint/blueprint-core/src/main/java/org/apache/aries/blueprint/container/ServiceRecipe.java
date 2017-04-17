@@ -315,7 +315,7 @@ public class ServiceRecipe extends AbstractRecipe {
             }
 
             // When the service is first requested, we need to create listeners and call them
-            if (!initialServiceRegistration && listeners == null) {
+            if (initialServiceRegistration && listeners == null) {
                 LOGGER.debug("Creating listeners");
                 if (listenersRecipe != null) {
                     listeners = (List) createRecipe(listenersRecipe);
@@ -323,7 +323,7 @@ public class ServiceRecipe extends AbstractRecipe {
                     listeners = Collections.emptyList();
                 }
                 LOGGER.debug("Listeners created: {}", listeners);
-                if (registration.get() != null) {
+                if (registration.get() == null) {
                     LOGGER.debug("Calling listeners for initial service registration");
                     for (ServiceListener listener : listeners) {
                         listener.register(service, registrationProperties);
