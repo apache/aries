@@ -174,7 +174,11 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
             LOGGER.debug("Adding bean for bean={} / pid={}", beanName, persistentId);
             synchronized (lock) {
                 beans.add(bean);
-                inject(bean, true);
+                if ("component-managed".equals(updateStrategy)) {
+                    inject(bean, false);
+                } else {
+                    inject(bean, true);
+                }
             }
         }
         return bean;
