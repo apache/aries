@@ -22,24 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>parent</artifactId>
-        <version>2.0.1</version>
-        <relativePath>../../parent/pom.xml</relativePath>
+        <groupId>org.apache.aries.blueprint</groupId>
+        <artifactId>blueprint-itests-parent</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
     <name>Apache Aries Blueprint Test Bundle B</name>
-    <version>1.0.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>Blueprint Test Bundle B, tests namespace handlers, bean processors etc provided by Test Bundle A</description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testbundleb</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testbundleb</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-testbundleb</url>
-    </scm>
 
     <properties>
         <aries.osgi.activator>
@@ -51,25 +44,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>3.5.0.v20090520</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundlea</artifactId>
             <version>1.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
