@@ -46,9 +46,8 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
- * Base class for Pax Exam 1.2.x based unit tests
- * 
- * Contains the injection point and various utilities used in most tests
+ * Base class for Pax Exam 1.2.x based unit tests Contains the injection point and various utilities used in
+ * most tests
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
@@ -63,52 +62,52 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
         assertNotNull(beanContainer);
         return beanContainer;
     }
-    
+
     public Option baseOptions() {
         String localRepo = System.getProperty("maven.repo.local");
         if (localRepo == null) {
             localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
         }
-        return composite(
-                junitBundles(),
-                systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
-                when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-                mvnBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                mvnBundle("org.ops4j.pax.logging", "pax-logging-service"),
-                systemProperty("pax.exam.osgi.unresolved.fail").value("true")
-         );
+        return composite(junitBundles(),
+                         systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                         when(localRepo != null)
+                             .useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+                         mvnBundle("org.ops4j.pax.logging", "pax-logging-api"),
+                         mvnBundle("org.ops4j.pax.logging", "pax-logging-service"),
+                         systemProperty("pax.exam.osgi.unresolved.fail").value("true")
+            );
     }
-    
+
     public InputStream getResource(String path) {
-    	InputStream is = this.getClass().getClassLoader().getResourceAsStream(path);
-    	if (is == null) {
-    		throw new IllegalArgumentException("Resource not found " + path);
-    	}
-    	return is;
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream(path);
+        if (is == null) {
+            throw new IllegalArgumentException("Resource not found " + path);
+        }
+        return is;
     }
 
-	protected void applyCommonConfiguration(BundleContext ctx) throws Exception {
-	    ConfigurationAdmin ca = (new RichBundleContext(ctx)).getService(ConfigurationAdmin.class);        
-	    Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
-	    Hashtable<String, String> props = new Hashtable<String, String>();
-	    props.put("key.b", "10");
-	    cf.update(props);
-	}
+    protected void applyCommonConfiguration(BundleContext ctx) throws Exception {
+        ConfigurationAdmin ca = (new RichBundleContext(ctx)).getService(ConfigurationAdmin.class);
+        Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
+        Hashtable<String, String> props = new Hashtable<String, String>();
+        props.put("key.b", "10");
+        cf.update(props);
+    }
 
-	protected Bundle getSampleBundle() {
-		Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
-		assertNotNull(bundle);
-		return bundle;
-	}
+    protected Bundle getSampleBundle() {
+        Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
+        assertNotNull(bundle);
+        return bundle;
+    }
 
-	protected MavenArtifactProvisionOption sampleBundleOption() {
-		return CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample").versionAsInProject();
-	}
+    protected MavenArtifactProvisionOption sampleBundleOption() {
+        return CoreOptions.mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.sample")
+            .versionAsInProject();
+    }
 
-	protected void startBlueprintBundles() throws BundleException,
-			InterruptedException {
-			    context().getBundleByName("org.apache.aries.blueprint.core").start();
-			    context().getBundleByName("org.apache.aries.blueprint.cm").start();
-			    Thread.sleep(2000);
-			}
+    protected void startBlueprintBundles() throws BundleException, InterruptedException {
+        context().getBundleByName("org.apache.aries.blueprint.core").start();
+        context().getBundleByName("org.apache.aries.blueprint.cm").start();
+        Thread.sleep(2000);
+    }
 }

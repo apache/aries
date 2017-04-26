@@ -37,7 +37,7 @@ public class BlueprintContainer2Test extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void test() throws Exception {
-    	applyCommonConfiguration(context());
+        applyCommonConfiguration(context());
 
         Bundle bundle = getSampleBundle();
         bundle.start();
@@ -46,7 +46,7 @@ public class BlueprintContainer2Test extends AbstractBlueprintIntegrationTest {
         // do the test
         Helper.testBlueprintContainer(context(), bundle);
     }
-
+    
     @org.ops4j.pax.exam.Configuration
     public Option[] configuration() {
         return new Option[] {
