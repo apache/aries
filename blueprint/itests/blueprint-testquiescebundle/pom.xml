@@ -22,24 +22,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>parent</artifactId>
-        <version>2.0.1</version>
-        <relativePath>../../parent/pom.xml</relativePath>
+        <groupId>org.apache.aries.blueprint</groupId>
+        <artifactId>blueprint-itests-parent</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
     <name>Apache Aries Blueprint Test Quiesce Bundle</name>
     <packaging>bundle</packaging>
-    <version>1.0.1-SNAPSHOT</version>
     <description>Blueprint Test Quiesce Bundle, tests the blueprint participant for the quiesce functionality.</description>
-
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testquiescebundle</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-testquiescebundle</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-testquiescebundle</url>
-    </scm>
 
     <properties>
         <aries.osgi.activator>
@@ -52,25 +45,6 @@
         <aries.osgi.private.pkg />
         <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>3.5.0.v20090520</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-    </dependencies>
 
 </project>
 
