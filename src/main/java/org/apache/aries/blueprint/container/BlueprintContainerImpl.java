@@ -896,8 +896,6 @@ public class BlueprintContainerImpl
 
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundle(), getExtenderBundle()));
 
-        AriesFrameworkUtil.safeUnregisterService(registration);
-
         executors.shutdownNow();
         if (handlerSet != null) {
             handlerSet.removeListener(this);
@@ -914,6 +912,17 @@ public class BlueprintContainerImpl
 
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundle(), getExtenderBundle()));
         LOGGER.debug("Blueprint container {} destroyed", getBundle().getSymbolicName(), getBundle().getVersion());
+    }
+    
+    public static void safeUnregisterService(ServiceRegistration reg) 
+    {
+      if(reg != null) {
+        try {
+          reg.unregister();
+        } catch (IllegalStateException e) {
+          //This can be safely ignored
+        }
+      }
     }
     
     protected void quiesce() {
