@@ -37,7 +37,7 @@ import java.util.List;
 
 public class JavaxTransactionFactory extends AbstractTransactionFactory<Transactional> {
 
-    protected String getTransactionTypeName(AnnotatedElement annotatedElement) {
+    String getTransactionTypeName(AnnotatedElement annotatedElement) {
         Transactional transactional = annotatedElement.getAnnotation(Transactional.class);
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());
     }
