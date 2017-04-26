@@ -38,7 +38,8 @@ import java.util.List;
 import java.util.Set;
 
 public class CdiTransactionFactory extends AbstractTransactionFactory<Transactional> {
-    protected String getTransactionTypeName(AnnotatedElement annotatedElement) {
+
+    String getTransactionTypeName(AnnotatedElement annotatedElement) {
         final Transactional transactional = annotatedElement.getAnnotation(Transactional.class);
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());
     }

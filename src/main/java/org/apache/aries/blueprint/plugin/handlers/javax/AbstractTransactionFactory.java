@@ -28,8 +28,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public abstract class AbstractTransactionFactory<T extends Annotation> implements BeanAnnotationHandler<T>, MethodAnnotationHandler<T> {
-    protected abstract String getTransactionTypeName(AnnotatedElement annotatedElement);
+abstract class AbstractTransactionFactory<T extends Annotation> implements BeanAnnotationHandler<T>, MethodAnnotationHandler<T> {
+    abstract String getTransactionTypeName(AnnotatedElement annotatedElement);
 
     private static final String ENABLE_ANNOTATION = "transaction.enableAnnotation";
     @Override
