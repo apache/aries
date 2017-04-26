@@ -16,49 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.javax.cdi;
+package org.apache.aries.blueprint.plugin.handlers.javax;
 
-import com.google.common.base.CaseFormat;
+import org.apache.aries.blueprint.plugin.spi.*;
 
-import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
-import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.transaction.cdi.Transactional;
+import javax.transaction.Transactional;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Set;
 
-public class CdiTransactionFactory implements BeanAnnotationHandler<Transactional>, MethodAnnotationHandler<Transactional> {
-    private static final String PATTERN_NS_TX1 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v1\\.(.)\\.(.)";
-    private static final String PATTERN_NS_TX2 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v2\\.(.)\\.(.)";
-    private static final String NS_TX_1_2_0 = "http://aries.apache.org/xmlns/transactions/v1.2.0";
+public abstract class AbstractTransactionFactory<T extends Annotation> implements BeanAnnotationHandler<T>, MethodAnnotationHandler<T> {
+    protected abstract String getTransactionTypeName(AnnotatedElement annotatedElement);
+
     private static final String ENABLE_ANNOTATION = "transaction.enableAnnotation";
-
-    private String getTransactionTypeName(Transactional transactional) {
-        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());
-    }
-
-    @Override
-    public Class<Transactional> getAnnotation() {
-        return Transactional.class;
-    }
-
     @Override
     public void handleMethodAnnotation(Class<?> clazz, List<Method> methods, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
-        final String nsTx1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX1);
+        final String nsTx1 = Namespaces.getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), Namespaces.PATTERN_NS_TX1);
         if (nsTx1 != null) {
             enableAnnotationTx1(contextEnricher, nsTx1);
             for (final Method method : methods) {
-                final Transactional transactional = method.getAnnotation(Transactional.class);
-                final String transactionTypeName = getTransactionTypeName(transactional);
+                final String transactionTypeName = getTransactionTypeName(method);
                 final String name = method.getName();
                 beanEnricher.addBeanContentWriter("javax.transactional.method/" + clazz.getName() + "/" + name + "/" + transactionTypeName, new XmlWriter() {
                     @Override
@@ -71,19 +51,18 @@ public class CdiTransactionFactory implements BeanAnnotationHandler<Transactiona
                 });
             }
         }
-        final String nsTx2 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX2);
-        if ((nsTx2 != null) && getEnableAnnotationConfig(contextEnricher.getBlueprintConfiguration())) {
+        final String nsTx2 = Namespaces.getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), Namespaces.PATTERN_NS_TX2);
+        if (nsTx2 != null) {
             insertEnableAnnotationTx2(contextEnricher, nsTx2);
         }
     }
 
     @Override
     public void handleBeanAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
-        final String nsTx1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX1);
+        final String nsTx1 = Namespaces.getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), Namespaces.PATTERN_NS_TX1);
         if (nsTx1 != null) {
             enableAnnotationTx1(contextEnricher, nsTx1);
-            final Transactional transactional = annotatedElement.getAnnotation(Transactional.class);
-            final String transactionTypeName = getTransactionTypeName(transactional);
+            final String transactionTypeName = getTransactionTypeName(annotatedElement);
             beanEnricher.addBeanContentWriter("javax.transactional.method/" + annotatedElement + "/*/" + transactionTypeName, new XmlWriter() {
                 @Override
                 public void write(XMLStreamWriter writer) throws XMLStreamException {
@@ -94,24 +73,16 @@ public class CdiTransactionFactory implements BeanAnnotationHandler<Transactiona
                 }
             });
         }
-        final String nsTx2 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX2);
-        if (nsTx2 != null && getEnableAnnotationConfig(contextEnricher.getBlueprintConfiguration())) {
+        final String nsTx2 = Namespaces.getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), Namespaces.PATTERN_NS_TX2);
+        if (nsTx2 != null) {
             insertEnableAnnotationTx2(contextEnricher, nsTx2);
         }
     }
 
-    private String getNamespaceByPattern(Set<String> namespaces, String pattern) {
-        for (String namespace : namespaces) {
-            if (namespace.matches(pattern)) {
-                return namespace;
-            }
-        }
-        return null;
-    }
-    
+
     private void enableAnnotationTx1(ContextEnricher contextEnricher, final String nsTx1) {
         // TX1 enable-annotation are valid only in 1.2.0 schema
-        if (NS_TX_1_2_0.equals(nsTx1) && getEnableAnnotationConfig(contextEnricher.getBlueprintConfiguration())) {
+        if (Namespaces.isTX12(nsTx1) && getEnableAnnotationConfig(contextEnricher.getBlueprintConfiguration())) {
             insertEnableAnnotationTx1(contextEnricher, nsTx1);
         }
     }
