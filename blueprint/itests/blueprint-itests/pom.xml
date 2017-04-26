@@ -28,10 +28,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.itests</artifactId>
     <name>Apache Aries Blueprint iTests</name>
-    <version>1.0.2-SNAPSHOT</version>
     <description>
         Integration tests using the standalone blueprint-bundle for the implementation
         and blueprint-sample for the blueprint application to be tested.
@@ -44,15 +42,15 @@
     </scm>
     
     <properties>
-        <exam.version>4.5.0</exam.version>
+        <exam.version>4.10.0</exam.version>
         <url.version>2.2.0</url.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse</groupId>
+            <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.8.0.v20120529-1548</version>
+            <version>3.11.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -173,25 +171,25 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundlea</artifactId>
             <scope>test</scope>
-            <version>1.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundleb</artifactId>
             <scope>test</scope>
-            <version>1.0.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundlee</artifactId>
             <scope>test</scope>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testbundles</artifactId>
             <scope>test</scope>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
@@ -326,12 +324,12 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.ops4j.pax.exam</groupId>
-                <artifactId>maven-paxexam-plugin</artifactId>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+                <version>1.4.0</version>
                 <executions>
                     <execution>
-                        <id>generate-config</id>
-                        <phase>generate-resources</phase>
+                        <id>generate-depends-file</id>
                         <goals>
                             <goal>generate-depends-file</goal>
                         </goals>
