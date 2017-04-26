@@ -36,6 +36,7 @@
     <modules>
         <module>blueprint-maven-plugin-spi</module>
         <module>blueprint-maven-plugin-annotation</module>
+        <module>blueprint-maven-plugin-spring-handlers</module>
         <module>blueprint-maven-plugin</module>
         <module>blueprint-maven-plugin-itest</module>
     </modules>
