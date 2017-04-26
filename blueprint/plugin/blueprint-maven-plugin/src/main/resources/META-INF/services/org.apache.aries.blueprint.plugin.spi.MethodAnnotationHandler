@@ -17,6 +17,5 @@
 
 org.apache.aries.blueprint.plugin.handlers.javax.PostConstructHandler
 org.apache.aries.blueprint.plugin.handlers.javax.PreDestroyHandler
-org.apache.aries.blueprint.plugin.handlers.spring.SpringTransactionalFactory
 org.apache.aries.blueprint.plugin.handlers.javax.JavaxTransactionFactory
-org.apache.aries.blueprint.plugin.handlers.javax.cdi.CdiTransactionFactory
+org.apache.aries.blueprint.plugin.handlers.javax.CdiTransactionFactory
