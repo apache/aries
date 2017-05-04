@@ -29,6 +29,7 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Named;
 
 import org.apache.aries.cdi.container.internal.container.BindType;
 import org.apache.aries.cdi.container.internal.literal.AnyLiteral;
@@ -52,14 +53,18 @@ public class ReferenceBean implements Bean<Object> {
 
 		_beanManagerImpl = beanManagerImpl;
 		_bundleContext = bundleContext;
-
 		_typesForMatchingBeansToInjectionPoints = Sets.immutableHashSet(injectionPointType, Object.class);
 		_beanClass = beanClass;
 		_bindType = bindType;
 		_serviceReference = serviceReference;
-
 		_currentInjectionPoint = _beanManagerImpl.getServices().get(CurrentInjectionPoint.class);
 		_qualifiers = Sets.hashSet(DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE);
+
+		for (Annotation qualifier : _qualifiers) {
+			if (qualifier.annotationType().equals(Named.class)) {
+				_name = ((Named)qualifier).value();
+			}
+		}
 	}
 
 	public void addQualifier(Annotation annotation) {
@@ -108,7 +113,7 @@ public class ReferenceBean implements Bean<Object> {
 
 	@Override
 	public String getName() {
-		return toString() + "#" + System.identityHashCode(this);
+		return _name;
 	}
 
 	@Override
@@ -143,13 +148,16 @@ public class ReferenceBean implements Bean<Object> {
 
 	@Override
 	public String toString() {
-		return "ReferenceBean(" + _serviceReference + ")";
+		return "ReferenceBean[" + _serviceReference + "]";
 	}
 
 	protected <T> T create0(CreationalContext<T> creationalContext) {
-		InjectionPoint ip = getInjectionPoint(_currentInjectionPoint);
-		List<Decorator<?>> decorators = getDecorators(ip);
 		T instance = cast(getServiceImpl());
+		InjectionPoint ip = getInjectionPoint(_currentInjectionPoint);
+		if (ip == null) {
+			return instance;
+		}
+		List<Decorator<?>> decorators = getDecorators(ip);
 		if (decorators.isEmpty()) {
 			return instance;
 		}
@@ -190,10 +198,11 @@ public class ReferenceBean implements Bean<Object> {
 	private static final Logger _log = LoggerFactory.getLogger(ReferenceBean.class);
 
 	private final Class<?> _beanClass;
+	private final BeanManagerImpl _beanManagerImpl;
 	private final BindType _bindType;
 	private final BundleContext _bundleContext;
 	private final CurrentInjectionPoint _currentInjectionPoint;
-	private final BeanManagerImpl _beanManagerImpl;
+	private String _name;
 	private final Set<Annotation> _qualifiers;
 	@SuppressWarnings("rawtypes")
 	private volatile ServiceObjects _serviceObjects;

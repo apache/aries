@@ -1,38 +1,32 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.aries.cdi.container.internal.container;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.aries.cdi.container.internal.literal.ReferenceLiteral;
-import org.apache.aries.cdi.container.internal.model.ReferenceInjectionPoint;
-import org.apache.aries.cdi.container.internal.model.ReferenceModel;
-import org.jboss.weld.bootstrap.api.Bootstrap;
-import org.jboss.weld.manager.BeanManagerImpl;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.CdiEvent;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Phase_Reference implements Phase {
 
-	public Phase_Reference(
-		List<ReferenceDependency> references, List<ServiceDeclaration> services, CdiContainerState cdiContainerState,
-		Bootstrap bootstrap) {
-
-		_references = references;
-		_services = services;
-		_cdiContainerState = cdiContainerState;
-		_bootstrap = bootstrap;
-		_bundle = _cdiContainerState.getBundle();
-		_bundleContext = _bundle.getBundleContext();
+	public Phase_Reference(BootstrapContainer bc) {
+		_bc = bc;
 	}
 
 	@Override
@@ -60,14 +54,12 @@ public class Phase_Reference implements Phase {
 
 	@Override
 	public void open() {
-		processDescriptorReferences((BeanManagerImpl)_cdiContainerState.getBeanManager());
+		if (_bc.hasReferences()) {
+			Filter filter = FilterBuilder.createReferenceFilter(_bc.getReferences());
 
-		if (!_references.isEmpty()) {
-			Filter filter = FilterBuilder.createReferenceFilter(_references);
+			_bc.fire(CdiEvent.Type.WAITING_FOR_SERVICES, filter.toString());
 
-			_cdiContainerState.fire(CdiEvent.Type.WAITING_FOR_SERVICES, filter.toString());
-
-			_serviceTracker = new ServiceTracker<>(_bundleContext, filter, new ReferencePhaseCustomizer(_bootstrap));
+			_serviceTracker = new ServiceTracker<>(_bc.getBundleContext(), filter, new ReferencePhaseCustomizer());
 
 			_serviceTracker.open();
 		}
@@ -76,7 +68,7 @@ public class Phase_Reference implements Phase {
 
 		try {
 			if ((_nextPhase == null) && dependenciesAreEmptyOrAllOptional()) {
-				_nextPhase = new Phase_Publish(_references, _services, _cdiContainerState, _bootstrap);
+				_nextPhase = new Phase_Publish(_bc);
 
 				_nextPhase.open();
 			}
@@ -87,11 +79,11 @@ public class Phase_Reference implements Phase {
 	}
 
 	private boolean dependenciesAreEmptyOrAllOptional() {
-		if (_references.isEmpty()) {
+		if (!_bc.hasReferences()) {
 			return true;
 		}
 
-		for (ReferenceDependency referenceDependency : _references) {
+		for (ReferenceDependency referenceDependency : _bc.getReferences()) {
 			if (referenceDependency.getMinCardinality() > 0) {
 				return false;
 			}
@@ -100,52 +92,13 @@ public class Phase_Reference implements Phase {
 		return true;
 	}
 
-	private void processDescriptorReferences(BeanManagerImpl beanManagerImpl) {
-		Collection<ReferenceModel> referenceModels = _cdiContainerState.getBeansModel().getReferenceModels();
-
-		for (ReferenceModel referenceModel : referenceModels) {
-			processReferenceModel(referenceModel, beanManagerImpl);
-		}
-	}
-
-	private void processReferenceModel(ReferenceModel referenceModel, BeanManagerImpl beanManagerImpl) {
-		try {
-			Class<?> beanClass = _bundle.loadClass(referenceModel.getBeanClass());
-
-			ReferenceDependency referenceDependency = new ReferenceDependency(
-				beanManagerImpl, ReferenceLiteral.fromTarget(referenceModel.getTarget()),
-				new ReferenceInjectionPoint(beanClass, referenceModel.getTarget()));
-
-			_references.add(referenceDependency);
-		}
-		catch (ClassNotFoundException cnfe) {
-			_log.error(
-				"CDIe - osgi bean descriptor reference processing cannot load class {}",
-				referenceModel.getBeanClass(), cnfe);
-		}
-		catch (InvalidSyntaxException ise) {
-			_log.error("CDIe - osgi bean descriptor reference processing error", ise);
-		}
-	}
-
-	private static final Logger _log = LoggerFactory.getLogger(Phase_Reference.class);
-
-	private final Bootstrap _bootstrap;
-	private final Bundle _bundle;
-	private final BundleContext _bundleContext;
-	private final CdiContainerState _cdiContainerState;
+	private final BootstrapContainer _bc;
 	private final Lock _lock = new ReentrantLock(true);
 	private Phase _nextPhase;
-	private final List<ReferenceDependency> _references;
-	private final List<ServiceDeclaration> _services;
 
 	ServiceTracker<?, ?> _serviceTracker;
 
 	private class ReferencePhaseCustomizer implements ServiceTrackerCustomizer<Object, Object> {
-
-		public ReferencePhaseCustomizer(Bootstrap bootstrap) {
-			_bootstrap = bootstrap;
-		}
 
 		@Override
 		public Object addingService(ServiceReference<Object> reference) {
@@ -159,7 +112,7 @@ public class Phase_Reference implements Phase {
 				boolean matches = false;
 				boolean resolved = true;
 
-				for (ReferenceDependency referenceDependency : _references) {
+				for (ReferenceDependency referenceDependency : _bc.getReferences()) {
 					if (referenceDependency.matches(reference)) {
 						referenceDependency.resolve(reference);
 						matches = true;
@@ -174,7 +127,7 @@ public class Phase_Reference implements Phase {
 				}
 
 				if (resolved) {
-					_nextPhase = new Phase_Publish(_references, _services, _cdiContainerState, _bootstrap);
+					_nextPhase = new Phase_Publish(_bc);
 
 					_nextPhase.open();
 				}
@@ -200,10 +153,10 @@ public class Phase_Reference implements Phase {
 
 					_nextPhase = null;
 
-					_cdiContainerState.fire(CdiEvent.Type.WAITING_FOR_SERVICES);
+					_bc.fire(CdiEvent.Type.WAITING_FOR_SERVICES);
 				}
 
-				for (ReferenceDependency referenceDependency : _references) {
+				for (ReferenceDependency referenceDependency : _bc.getReferences()) {
 					if (referenceDependency.matches(reference)) {
 						referenceDependency.unresolve(reference);
 					}
@@ -213,8 +166,6 @@ public class Phase_Reference implements Phase {
 				_lock.unlock();
 			}
 		}
-
-		private final Bootstrap _bootstrap;
 
 	}
 

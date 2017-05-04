@@ -15,10 +15,10 @@
 package org.apache.aries.cdi.container.internal.model;
 
 import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
-import static org.osgi.service.cdi.CdiExtenderConstants.CDI_EXTENDER;
+import static org.osgi.service.cdi.CdiConstants.CDI_CAPABILITY_NAME;
 
 import java.net.URL;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class BeansModelBuilder extends AbstractModelBuilder {
 			Map<String, Object> attributes = capability.getAttributes();
 			String extender = (String)attributes.get(EXTENDER_NAMESPACE);
 
-			if (extender.equals(CDI_EXTENDER)) {
+			if (extender.equals(CDI_CAPABILITY_NAME)) {
 				BundleRequirement requirement = wire.getRequirement();
 				cdiAttributes = requirement.getAttributes();
 				break;
@@ -71,12 +71,8 @@ public class BeansModelBuilder extends AbstractModelBuilder {
 	}
 
 	@Override
-	Collection<String> getResources(String descriptorString) {
-		int pos = descriptorString.lastIndexOf('/');
-		String path = descriptorString.substring(0, pos);
-		String fileName = descriptorString.substring(pos, descriptorString.length());
-
-		return _bundleWiring.listResources(path, fileName, BundleWiring.LISTRESOURCES_LOCAL);
+	List<String> getDefaultResources() {
+		return new ArrayList<>(_bundleWiring.listResources("OSGI-INF/cdi", "*.xml", BundleWiring.LISTRESOURCES_LOCAL));
 	}
 
 	private final Map<String, Object> _attributes;

@@ -13,9 +13,9 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.resource.Capability;
+import org.osgi.service.cdi.CdiConstants;
 import org.osgi.service.cdi.CdiContainer;
 import org.osgi.service.cdi.CdiEvent;
-import org.osgi.service.cdi.CdiExtenderConstants;
 import org.osgi.service.jndi.JNDIConstants;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
@@ -46,7 +46,7 @@ public class JndiExtensionTests extends AbstractTestCase {
 				@Override
 				public Bundle addingBundle(Bundle bundle, BundleEvent arg1) {
 					List<BundleCapability> capabilities = bundle.adapt(
-						BundleWiring.class).getCapabilities(CdiExtenderConstants.CDI_EXTENSION);
+						BundleWiring.class).getCapabilities(CdiConstants.CDI_EXTENSION_NAMESPACE);
 
 					if (capabilities.isEmpty()) {
 						return null;
@@ -87,21 +87,21 @@ public class JndiExtensionTests extends AbstractTestCase {
 		ServiceReference<CdiContainer> serviceReference = serviceReferences.iterator().next();
 
 		CdiEvent.Type state = (CdiEvent.Type)serviceReference.getProperty(
-			CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE);
+			CdiConstants.CDI_CONTAINER_STATE);
 
 		assertEquals(CdiEvent.Type.CREATED, state);
 
 		extensionBundle.stop();
 
 		state = (CdiEvent.Type)serviceReference.getProperty(
-			CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE);
+			CdiConstants.CDI_CONTAINER_STATE);
 
 		assertEquals(CdiEvent.Type.WAITING_FOR_EXTENSIONS, state);
 
 		extensionBundle.start();
 
 		state = (CdiEvent.Type)serviceReference.getProperty(
-			CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE);
+			CdiConstants.CDI_CONTAINER_STATE);
 
 		assertEquals(CdiEvent.Type.CREATED, state);
 	}

@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.apache.aries.cdi.container.internal.util.Maps;
 import org.jboss.weld.manager.BeanManagerImpl;
 import org.osgi.framework.Constants;
@@ -35,12 +36,8 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.annotations.MinCardinality;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceFilter;
 import org.osgi.service.cdi.annotations.ReferenceScope;
-import org.osgi.util.converter.Converter;
-import org.osgi.util.converter.StandardConverter;
 import org.osgi.util.converter.TypeReference;
 
 public class ReferenceDependency {
@@ -132,14 +129,6 @@ public class ReferenceDependency {
 	}
 
 	private String buildFilter(Class<?> serviceType, Set<Annotation> qualifiers) throws InvalidSyntaxException {
-		String targetFilter = _reference.target();
-
-		int targetFilterLength = targetFilter.length();
-
-		if (targetFilterLength > 0) {
-			FrameworkUtil.createFilter(targetFilter);
-		}
-
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("(&(");
@@ -165,16 +154,25 @@ public class ReferenceDependency {
 			sb.append(")");
 		}
 
-		if ((targetFilterLength > 0)) {
+		String targetFilter = _reference.target();
+
+		int targetFilterLength = targetFilter.length();
+
+		if (targetFilterLength > 0) {
+			FrameworkUtil.createFilter(targetFilter);
+
 			sb.append(targetFilter);
 		}
 
 		for (Annotation qualifier : qualifiers) {
-			if (qualifier.annotationType().isAnnotationPresent(ReferenceFilter.class)) {
-				Map<String, String> map = _converter.convert(qualifier).sourceAs(qualifier.annotationType()).to(_mapType);
-
-				Maps.appendFilter(sb, map);
+			Class<? extends Annotation> annotationType = qualifier.annotationType();
+			if (annotationType.equals(Reference.class)) {
+				continue;
 			}
+
+			Map<String, String> map = Conversions.c().convert(qualifier).sourceAs(qualifier.annotationType()).to(_mapType);
+
+			Maps.appendFilter(sb, map);
 		}
 
 		sb.append(")");
@@ -230,11 +228,7 @@ public class ReferenceDependency {
 		int value = 1;
 
 		if (_instance) {
-			MinCardinality minCardinality = injectionPoint.getAnnotated().getAnnotation(MinCardinality.class);
-
-			if ((minCardinality != null) && (minCardinality.value() >= 0)) {
-				value = minCardinality.value();
-			}
+			value = 0;
 		}
 
 		return value;
@@ -298,8 +292,6 @@ public class ReferenceDependency {
 
 		return cast(first);
 	}
-
-	private static final Converter _converter = new StandardConverter();
 
 	private static final TypeReference<Map<String, String>> _mapType = new TypeReference<Map<String, String>>(){};
 

@@ -56,7 +56,7 @@ public class BundleContextBean implements Bean<BundleContext> {
 
 	@Override
 	public String getName() {
-		return "BundleContext";
+		return "bundleContext";
 	}
 
 	@Override
@@ -87,6 +87,11 @@ public class BundleContextBean implements Bean<BundleContext> {
 	@Override
 	public boolean isNullable() {
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "BundleContextBean[bundleContext]";
 	}
 
 	private static final Set<Annotation> DEFAULT_QUALIFIERS = Sets.hashSet(

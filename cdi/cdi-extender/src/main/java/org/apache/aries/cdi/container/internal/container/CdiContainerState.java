@@ -17,21 +17,19 @@ package org.apache.aries.cdi.container.internal.container;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.enterprise.inject.Any;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.aries.cdi.container.internal.model.BeansModel;
+import org.jboss.weld.manager.BeanManagerImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cdi.CdiConstants;
 import org.osgi.service.cdi.CdiContainer;
 import org.osgi.service.cdi.CdiEvent;
 import org.osgi.service.cdi.CdiEvent.Type;
-import org.osgi.service.cdi.CdiExtenderConstants;
 import org.osgi.service.cdi.CdiListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +51,7 @@ public class CdiContainerState {
 
 		Hashtable<String, Object> properties = new Hashtable<>();
 
-		properties.put(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE, CdiEvent.Type.CREATING);
+		properties.put(CdiConstants.CDI_CONTAINER_STATE, CdiEvent.Type.CREATING);
 
 		_cdiContainerRegistration = _bundle.getBundleContext().registerService(
 			CdiContainer.class, _cdiContainerService, properties);
@@ -68,10 +66,6 @@ public class CdiContainerState {
 				_log.trace("Service already unregistered {}", _cdiContainerRegistration);
 			}
 		}
-	}
-
-	public BeanManager getBeanManager() {
-		return _beanManager;
 	}
 
 	public BeansModel getBeansModel() {
@@ -110,20 +104,24 @@ public class CdiContainerState {
 		Type type = event.getType();
 
 		if ((_lastState == CdiEvent.Type.DESTROYING) &&
-			((type == CdiEvent.Type.WAITING_FOR_EXTENSIONS) ||
+			((type == CdiEvent.Type.WAITING_FOR_CONFIGURATIONS) ||
+			(type == CdiEvent.Type.WAITING_FOR_EXTENSIONS) ||
 			(type == CdiEvent.Type.WAITING_FOR_SERVICES))) {
 
 			return;
 		}
 
-		if (_log.isDebugEnabled()) {
-			_log.debug("CDIe - Event {}", event, event.getCause());
+		if (_log.isErrorEnabled() && (event.getCause() != null)) {
+			_log.error("CDIe - Event {}", event, event.getCause());
+		}
+		else if (_log.isDebugEnabled()) {
+			_log.debug("CDIe - Event {}", event);
 		}
 
 		updateState(event);
 
-		if (_beanManager != null) {
-			_beanManager.fireEvent(event);
+		if (_beanManagerImpl != null) {
+			_beanManagerImpl.fireEvent(event);
 		}
 
 		for (CdiListener listener : _listeners.values()) {
@@ -150,9 +148,9 @@ public class CdiContainerState {
 		fire(new CdiEvent(state, _bundle, _extenderBundle, null, cause));
 	}
 
-	public void setBeanManager(BeanManager beanManager) {
-		_beanManager = beanManager;
-		_cdiContainerService.setBeanManager(beanManager);
+	public void setBeanManager(BeanManagerImpl beanManagerImpl) {
+		_beanManagerImpl = beanManagerImpl;
+		_cdiContainerService.setBeanManager(beanManagerImpl);
 	}
 
 	public void setBeansModel(BeansModel beansModel) {
@@ -176,7 +174,7 @@ public class CdiContainerState {
 
 		ServiceReference<CdiContainer> reference = _cdiContainerRegistration.getReference();
 
-		if (type == reference.getProperty(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE)) {
+		if (type == reference.getProperty(CdiConstants.CDI_CONTAINER_STATE)) {
 			return;
 		}
 
@@ -188,14 +186,14 @@ public class CdiContainerState {
 			properties.put(key, reference.getProperty(key));
 		}
 
-		properties.put(CdiExtenderConstants.CDI_EXTENDER_CONTAINER_STATE, type);
+		properties.put(CdiConstants.CDI_CONTAINER_STATE, type);
 
 		_cdiContainerRegistration.setProperties(properties);
 	}
 
 	private static final Logger _log = LoggerFactory.getLogger(CdiContainerState.class);
 
-	private volatile BeanManager _beanManager;
+	private volatile BeanManagerImpl _beanManagerImpl;
 	private BeansModel _beansModel;
 	private final Bundle _bundle;
 	private final ServiceRegistration<CdiContainer> _cdiContainerRegistration;

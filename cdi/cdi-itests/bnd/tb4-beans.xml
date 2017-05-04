@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cdi:beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<bean class="org.apache.aries.cdi.test.tb4.CallableImpl">
-		<service>
-			<provide interface="java.util.concurrent.Callable" />
-			<property name="a.service.property" value="The Value" type="String"/>
-		</service>
-	</bean>
-</cdi:beans>
+<cdi:bean class="org.apache.aries.cdi.test.tb4.CallableImpl" xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
+	<service>
+		<property name="a.service.property" value="The Value" type="String"/>
+		<provide interface="java.util.concurrent.Callable" />
+	</service>
+</cdi:bean>

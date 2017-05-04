@@ -14,7 +14,6 @@ import javax.enterprise.util.AnnotationLiteral;
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.BundleContextBeanQualifier;
 import org.apache.aries.cdi.test.interfaces.FieldInjectedReference;
-import org.apache.aries.cdi.test.interfaces.SingletonScoped;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -234,28 +233,9 @@ public class CdiBeanTests extends AbstractTestCase {
 		assertTrue(bti.get() instanceof BundleContext);
 	}
 
-	public void testInstance() throws Exception {
-		Iterator<ServiceReference<BeanService>> iterator = bundleContext.getServiceReferences(
-			BeanService.class, String.format("(objectClass=*.%s)","InstanceBean")).iterator();
-
-		assertTrue(iterator.hasNext());
-
-		ServiceReference<BeanService> serviceReference = iterator.next();
-
-		assertNotNull(serviceReference);
-
-		@SuppressWarnings("unchecked")
-		BeanService<SingletonScoped<?>> bean = bundleContext.getService(serviceReference);
-
-		assertNotNull(bean);
-		assertEquals(3, Integer.decode(bean.doSomething()).intValue());
-		SingletonScoped<?> singletonScoped = bean.get();
-		assertNotNull(singletonScoped);
-	}
-
 	public void testInstanceProperties() throws Exception {
 		Iterator<ServiceReference<BeanService>> iterator = bundleContext.getServiceReferences(
-			BeanService.class, String.format("(objectClass=*.%s)","InstancePropertiesBean")).iterator();
+			BeanService.class, String.format("(objectClass=*.%s)","Instance_ServiceProperties")).iterator();
 
 		assertTrue(iterator.hasNext());
 
@@ -274,7 +254,7 @@ public class CdiBeanTests extends AbstractTestCase {
 
 	public void testInstanceServiceReference() throws Exception {
 		Iterator<ServiceReference<BeanService>> iterator = bundleContext.getServiceReferences(
-			BeanService.class, String.format("(objectClass=*.%s)","InstanceServiceReferenceBean")).iterator();
+			BeanService.class, String.format("(objectClass=*.%s)","Instance_ServiceReference")).iterator();
 
 		assertTrue(iterator.hasNext());
 
@@ -291,31 +271,9 @@ public class CdiBeanTests extends AbstractTestCase {
 		assertNotNull(sr);
 	}
 
-	public void testInstanceOrdering() throws Exception {
+	public void testInstance_Optional() throws Exception {
 		Iterator<ServiceReference<BeanService>> iterator = bundleContext.getServiceReferences(
-			BeanService.class, String.format("(objectClass=*.%s)","InstanceOrderBean")).iterator();
-
-		assertTrue(iterator.hasNext());
-
-		ServiceReference<BeanService> serviceReference = iterator.next();
-
-		assertNotNull(serviceReference);
-
-		@SuppressWarnings("unchecked")
-		BeanService<List<ServiceReference<?>>> bean = bundleContext.getService(serviceReference);
-
-		assertNotNull(bean);
-		assertEquals(3, Integer.decode(bean.doSomething()).intValue());
-		List<ServiceReference<?>> sl = bean.get();
-		assertNotNull(sl);
-		// TODO fix ordering!
-//		assertEquals(1, sl.get(0).compareTo(sl.get(1)));
-//		assertEquals(1, sl.get(1).compareTo(sl.get(2)));
-	}
-
-	public void testInstanceCardinality0() throws Exception {
-		Iterator<ServiceReference<BeanService>> iterator = bundleContext.getServiceReferences(
-			BeanService.class, String.format("(objectClass=*.%s)","InstanceCardinality0Bean")).iterator();
+			BeanService.class, String.format("(objectClass=*.%s)","Instance_Optional")).iterator();
 
 		assertTrue(iterator.hasNext());
 
