@@ -15,7 +15,7 @@
 package org.apache.aries.cdi.container.internal;
 
 import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
-import static org.osgi.service.cdi.CdiExtenderConstants.CDI_EXTENDER;
+import static org.osgi.service.cdi.CdiConstants.CDI_CAPABILITY_NAME;
 
 import java.util.Comparator;
 import java.util.Dictionary;
@@ -128,7 +128,7 @@ public class Activator extends AbstractExtender {
 			Map<String, Object> attributes = bundleWire.getCapability().getAttributes();
 
 			if (attributes.containsKey(EXTENDER_NAMESPACE) &&
-				attributes.get(EXTENDER_NAMESPACE).equals(CDI_EXTENDER)) {
+				attributes.get(EXTENDER_NAMESPACE).equals(CDI_CAPABILITY_NAME)) {
 
 				Bundle providerWiringBundle = bundleWire.getProviderWiring().getBundle();
 

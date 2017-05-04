@@ -16,18 +16,16 @@ package org.apache.aries.cdi.container.internal.command;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.aries.cdi.container.internal.container.CdiContainerState;
 import org.apache.aries.cdi.container.internal.container.ConfigurationDependency;
 import org.apache.aries.cdi.container.internal.container.ExtensionDependency;
 import org.apache.aries.cdi.container.internal.container.ReferenceDependency;
+import org.apache.aries.cdi.container.internal.util.Conversions;
 
 public class CdiCommand {
-
-	public CdiCommand() {
-
-	}
 
 	public void list() {
 		for (CdiContainerState cdiContainerState : _states.values()) {
@@ -49,7 +47,7 @@ public class CdiCommand {
 		if (!extensionDependencies.isEmpty()) {
 			System.out.println("  [EXTENSIONS]");
 			for (ExtensionDependency extensionDependency : extensionDependencies) {
-				System.out.printf("    %s%s\n", extensionDependency.toString(), " ???is this resolved???");
+				System.out.printf("    Extension: %s%s\n", extensionDependency.toString(), " ???is this resolved???");
 			}
 		}
 		List<ConfigurationDependency> configurationDependencies = cdiContainerState.getConfigurationDependencies();
@@ -58,8 +56,18 @@ public class CdiCommand {
 			for (ConfigurationDependency configurationDependency : configurationDependencies) {
 				for (String pid : configurationDependency.pids()) {
 					System.out.printf(
-						"    %s\n      : %s\n", pid,
-						!configurationDependency.isResolved(pid) ? " UNRESOLVED" : "resolved");
+						"    PID: %s\n      Status: %s\n      Required: %s\n", pid,
+						!configurationDependency.isResolved(pid) ? "UNRESOLVED" : "resolved",
+						configurationDependency.isRequired());
+					Map<String, Object> configuration = configurationDependency.getConfiguration();
+
+					if (!configuration.isEmpty()) {
+						System.out.println("      Properties:");
+						for (Entry<String, Object> entry : configuration.entrySet()) {
+							String value = Conversions.toString(entry.getValue());
+							System.out.printf("        %s = %s%n", entry.getKey(), value);
+						}
+					}
 				}
 			}
 		}
@@ -68,9 +76,9 @@ public class CdiCommand {
 			System.out.println("  [REFERENCES]");
 			for (ReferenceDependency referenceDependency : referenceDependencies) {
 				System.out.printf(
-					"    %s\n      Status: %s\n      Min Cardinality: %s\n",
+					"    Reference: %s\n      Status: %s\n      Min Cardinality: %s\n",
 					referenceDependency.toString(),
-					!referenceDependency.isResolved() ? " UNRESOLVED" : "resolved",
+					!referenceDependency.isResolved() ? "UNRESOLVED" : "resolved",
 					referenceDependency.getMinCardinality());
 			}
 		}
@@ -85,5 +93,6 @@ public class CdiCommand {
 	}
 
 	private final Map<Long, CdiContainerState> _states = new ConcurrentHashMap<>();
+
 
 }

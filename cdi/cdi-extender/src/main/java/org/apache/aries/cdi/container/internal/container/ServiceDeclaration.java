@@ -21,20 +21,20 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.inject.Singleton;
 
+import org.apache.aries.cdi.container.internal.util.Conversions;
+import org.apache.aries.cdi.container.internal.util.Maps;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cdi.annotations.Service;
-import org.osgi.service.cdi.annotations.ServiceProperty;
-import org.osgi.util.converter.Converter;
-import org.osgi.util.converter.StandardConverter;
 import org.osgi.util.converter.TypeReference;
 
 public class ServiceDeclaration {
@@ -49,17 +49,16 @@ public class ServiceDeclaration {
 
 		for (Object object : bean.getQualifiers()) {
 			Annotation annotation = (Annotation)object;
-			Map<String, Object> map = _converter.convert(annotation).sourceAs(annotation.annotationType()).to(_mapType);
+			Map<String, Object> map = Conversions.c().convert(
+				annotation).sourceAs(annotation.annotationType()).to(_mapType);
 
 			for (Map.Entry<String, Object> entry : map.entrySet()) {
 				properties.put(entry.getKey(), entry.getValue());
 			}
 		}
 
-		for (ServiceProperty serviceProperty : _service.properties()) {
-			Object object = getValue(serviceProperty);
-
-			properties.put(serviceProperty.key(), object);
+		for (Entry<String, Object> entry : Maps.map(_service.property()).entrySet()) {
+			properties.put(entry.getKey(), entry.getValue());
 		}
 
 		_properties = properties;
@@ -112,14 +111,6 @@ public class ServiceDeclaration {
 
 		return new PrototypeScopeWrapper();
 	}
-
-	Object getValue(ServiceProperty serviceProperty) {
-		Type type = serviceProperty.type().getType();
-		String[] value = serviceProperty.value();
-		return _converter.convert(value).to(type);
-	}
-
-	private static final Converter _converter = new StandardConverter();
 
 	private static final TypeReference<Map<String, Object>> _mapType = new TypeReference<Map<String, Object>>(){};
 

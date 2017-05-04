@@ -28,7 +28,7 @@ public class Phase_Init implements Phase {
 
 		cdiContainerState.setBeansModel(beansModel);
 
-		_extensionPhase = new Phase_Extension(bundle, cdiContainerState);
+		_extensionPhase = new Phase_Extension(cdiContainerState);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cdi:beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<bean class="org.apache.aries.cdi.test.tb3.ConfigurationBeanA" />
-</cdi:beans>
+<beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
+	<cdi:bean class="org.apache.aries.cdi.test.tb3.ConfigurationBeanA" />
+	<cdi:bean class="org.apache.aries.cdi.test.tb3.ConfigurationBeanB" />
+</beans>

@@ -12,51 +12,119 @@ import javax.inject.Singleton;
 import org.apache.aries.cdi.test.beans.ServiceWithProperties.MoreProperties;
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
-import org.osgi.service.cdi.annotations.PropertyType;
 import org.osgi.service.cdi.annotations.Service;
-import org.osgi.service.cdi.annotations.ServiceProperty;
 
 @Service(
-	properties = {
-		@ServiceProperty(key = "test.key.b1", value = "test.value.b1"),
-		@ServiceProperty(key = "test.key.b2", value = "test.value.b2"),
+	property = {
+		"test.key.b1=test.value.b1",
+		"test.key.b2=test.value.b2",
 
-		@ServiceProperty(key = "p.Boolean", value = "true", type = PropertyType.Boolean),
-		@ServiceProperty(key = "p.Boolean.array", value = {"true","false"}, type = PropertyType.Boolean_Array),
-		@ServiceProperty(key = "p.Boolean.list", value = {"false","true"}, type = PropertyType.Boolean_List),
-		@ServiceProperty(key = "p.Boolean.set", value = {"true", "true", "false"}, type = PropertyType.Boolean_Set),
-		@ServiceProperty(key = "p.Byte", value = "2", type = PropertyType.Byte),
-		@ServiceProperty(key = "p.Byte.array", value = {"2","34"}, type = PropertyType.Byte_Array),
-		@ServiceProperty(key = "p.Byte.list", value = {"34","2"}, type = PropertyType.Byte_List),
-		@ServiceProperty(key = "p.Byte.set", value = {"34","34","2"}, type = PropertyType.Byte_Set),
-		@ServiceProperty(key = "p.Character", value = "C", type = PropertyType.Character),
-		@ServiceProperty(key = "p.Character.array", value = {"C","D"}, type = PropertyType.Character_Array),
-		@ServiceProperty(key = "p.Character.list", value = {"D","C"}, type = PropertyType.Character_List),
-		@ServiceProperty(key = "p.Character.set", value = {"D","D","C"}, type = PropertyType.Character_Set),
-		@ServiceProperty(key = "p.Double", value = "2.5", type = PropertyType.Double),
-		@ServiceProperty(key = "p.Double.array", value = {"2.5","45.678"}, type = PropertyType.Double_Array),
-		@ServiceProperty(key = "p.Double.list", value = {"45.678","2.5"}, type = PropertyType.Double_List),
-		@ServiceProperty(key = "p.Double.set", value = {"45.678","45.678","2.5"}, type = PropertyType.Double_Set),
-		@ServiceProperty(key = "p.Float", value = "3.4", type = PropertyType.Float),
-		@ServiceProperty(key = "p.Float.array", value = {"3.4","78.9"}, type = PropertyType.Float_Array),
-		@ServiceProperty(key = "p.Float.list", value = {"78.9","3.4"}, type = PropertyType.Float_List),
-		@ServiceProperty(key = "p.Float.set", value = {"78.9","78.9","3.4"}, type = PropertyType.Float_Set),
-		@ServiceProperty(key = "p.Integer", value = "5", type = PropertyType.Integer),
-		@ServiceProperty(key = "p.Integer.array", value = {"5","34567"}, type = PropertyType.Integer_Array),
-		@ServiceProperty(key = "p.Integer.list", value = {"34567","5"}, type = PropertyType.Integer_List),
-		@ServiceProperty(key = "p.Integer.set", value = {"34567","34567","5"}, type = PropertyType.Integer_Set),
-		@ServiceProperty(key = "p.Long", value = "7", type = PropertyType.Long),
-		@ServiceProperty(key = "p.Long.array", value = {"7","7789654"}, type = PropertyType.Long_Array),
-		@ServiceProperty(key = "p.Long.list", value = {"7789654","7"}, type = PropertyType.Long_List),
-		@ServiceProperty(key = "p.Long.set", value = {"7789654","7789654","7"}, type = PropertyType.Long_Set),
-		@ServiceProperty(key = "p.Short", value = "25", type = PropertyType.Short),
-		@ServiceProperty(key = "p.Short.array", value = {"25","196"}, type = PropertyType.Short_Array),
-		@ServiceProperty(key = "p.Short.list", value = {"196","25"}, type = PropertyType.Short_List),
-		@ServiceProperty(key = "p.Short.set", value = {"196","196","25"}, type = PropertyType.Short_Set),
-		@ServiceProperty(key = "p.String", value = "black", type = PropertyType.String),
-		@ServiceProperty(key = "p.String.array", value = {"black","green"}, type = PropertyType.String_Array),
-		@ServiceProperty(key = "p.String.list", value = {"green","black"}, type = PropertyType.String_List),
-		@ServiceProperty(key = "p.String.set", value = {"green","green","black"}, type = PropertyType.String_Set)
+		"p.Boolean:Boolean=true",
+		"p.Boolean.array:Boolean=true",
+		"p.Boolean.array:Boolean=false",
+
+		"p.Boolean.list:List<Boolean>=false",
+		"p.Boolean.list:List<Boolean>=true",
+
+		"p.Boolean.set:Set<Boolean>=true",
+		"p.Boolean.set:Set<Boolean>=true",
+		"p.Boolean.set:Set<Boolean>=false",
+
+		"p.Byte:Byte=2",
+
+		"p.Byte.array:Byte=2",
+		"p.Byte.array:Byte=34",
+
+		"p.Byte.list:List<Byte>=34",
+		"p.Byte.list:List<Byte>=2",
+
+		"p.Byte.set:Set<Byte>=34",
+		"p.Byte.set:Set<Byte>=34",
+		"p.Byte.set:Set<Byte>=2",
+
+		"p.Character:Character=C",
+
+		"p.Character.array:Character=C",
+		"p.Character.array:Character=D",
+
+		"p.Character.list:List<Character>=D",
+		"p.Character.list:List<Character>=C",
+
+		"p.Character.set:Set<Character>=D",
+		"p.Character.set:Set<Character>=D",
+		"p.Character.set:Set<Character>=C",
+
+		"p.Double:Double=2.5",
+
+		"p.Double.array:Double=2.5",
+		"p.Double.array:Double=45.678",
+
+		"p.Double.list:List<Double>=45.678",
+		"p.Double.list:List<Double>=2.5",
+
+		"p.Double.set:Set<Double>=45.678",
+		"p.Double.set:Set<Double>=45.678",
+		"p.Double.set:Set<Double>=2.5",
+
+		"p.Float:Float=3.4",
+
+		"p.Float.array:Float=3.4",
+		"p.Float.array:Float=78.9",
+
+		"p.Float.list:List<Float>=78.9",
+		"p.Float.list:List<Float>=3.4",
+
+		"p.Float.set:Set<Float>=78.9",
+		"p.Float.set:Set<Float>=78.9",
+		"p.Float.set:Set<Float>=3.4",
+
+		"p.Integer:Integer=5",
+
+		"p.Integer.array:Integer=5",
+		"p.Integer.array:Integer=34567",
+
+		"p.Integer.list:List<Integer>=34567",
+		"p.Integer.list:List<Integer>=5",
+
+		"p.Integer.set:Set<Integer>=34567",
+		"p.Integer.set:Set<Integer>=34567",
+		"p.Integer.set:Set<Integer>=5",
+
+		"p.Long:Long=7",
+
+		"p.Long.array:Long=7",
+		"p.Long.array:Long=7789654",
+
+		"p.Long.list:List<Long>=7789654",
+		"p.Long.list:List<Long>=7",
+
+		"p.Long.set:Set<Long>=7789654",
+		"p.Long.set:Set<Long>=7789654",
+		"p.Long.set:Set<Long>=7",
+
+		"p.Short:Short=25",
+
+		"p.Short.array:Short=25",
+		"p.Short.array:Short=196",
+
+		"p.Short.list:List<Short>=196",
+		"p.Short.list:List<Short>=25",
+
+		"p.Short.set:Set<Short>=196",
+		"p.Short.set:Set<Short>=196",
+		"p.Short.set:Set<Short>=25",
+
+		"p.String=black",
+
+		"p.String.array=black",
+		"p.String.array=green",
+
+		"p.String.list:List<String>=green",
+		"p.String.list:List<String>=black",
+
+		"p.String.set:Set<String>=green",
+		"p.String.set:Set<String>=green",
+		"p.String.set:Set<String>=black"
 	},
 	type = {ServiceWithProperties.class, BeanService.class}
 )

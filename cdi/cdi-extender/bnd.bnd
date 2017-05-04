@@ -1,12 +1,12 @@
 Bundle-Activator: org.apache.aries.cdi.container.internal.Activator
 Conditional-Package: \
+	org.apache.felix.converter.dto,\
 	org.apache.felix.converter.impl,\
 	org.apache.felix.utils.extender,\
 	org.osgi.util.converter,\
 	org.osgi.util.function
 Export-Package: \
 	org.apache.aries.cdi.provider
-#Import-Package: javax.el, javax.interceptor, *
 Provide-Capability: \
 	osgi.extender; \
 		osgi.extender='osgi.cdi'; \
