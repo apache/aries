@@ -5,17 +5,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.inject.Qualifier;
 
 import org.apache.aries.cdi.test.interfaces.BundleScoped;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceFilter;
 
 public class BeanWithReference {
 
 	@Qualifier
-	@ReferenceFilter
 	@Retention(value = RetentionPolicy.RUNTIME)
 	@Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.CONSTRUCTOR })
 	public @interface ComplexEnoughKey {
@@ -23,7 +22,6 @@ public class BeanWithReference {
 	}
 
 	@Qualifier
-	@ReferenceFilter
 	@Retention(value = RetentionPolicy.RUNTIME)
 	@Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.CONSTRUCTOR })
 	public @interface ComplexAnnotation {
@@ -31,10 +29,19 @@ public class BeanWithReference {
 		int fo_fum();
 	}
 
+	@Qualifier
+	@Retention(value = RetentionPolicy.RUNTIME)
+	@Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.CONSTRUCTOR })
+	public @interface SimpleAnnotation {
+		String value();
+	}
+
 	@ComplexEnoughKey(complex_enough_key= "fum")
 	@ComplexAnnotation(fee_fi = "fee", fo_fum = 23)
+	@SimpleAnnotation("blah")
 	@Inject
 	@Reference
+	@Default
 	BundleScoped bundleScoped;
 
 }

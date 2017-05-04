@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cdi:beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<bean class="org.apache.aries.cdi.test.tb2.PojoImpl">
-		<service>
-			<provide interface="org.apache.aries.cdi.test.interfaces.Pojo" />
-		</service>
-	</bean>
-</cdi:beans>
+<cdi:bean class="org.apache.aries.cdi.test.tb2.PojoImpl" xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
+	<service>
+		<provide interface="org.apache.aries.cdi.test.interfaces.Pojo" />
+	</service>
+</cdi:bean>

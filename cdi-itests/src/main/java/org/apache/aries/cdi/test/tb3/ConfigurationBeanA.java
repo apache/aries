@@ -3,12 +3,13 @@ package org.apache.aries.cdi.test.tb3;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.Service;
 
-@Service
+@Service(property = "bean=A")
 public class ConfigurationBeanA implements BeanService<Callable<int[]>> {
 
 	@Override
@@ -28,14 +29,7 @@ public class ConfigurationBeanA implements BeanService<Callable<int[]>> {
 
 	@Configuration
 	@Inject
+	@Named("configA")
 	Config config;
-
-}
-
-@interface Config {
-
-	String color() default "blue";
-
-	int[] ports() default 35777;
 
 }

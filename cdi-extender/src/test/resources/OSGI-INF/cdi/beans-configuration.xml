@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cdi:beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<bean class="com.foo.FooImpl" />
-	<bean class="com.foo.BarImpl" />
-	<configuration pid="com.foo.FooImpl" />
-	<configuration pid="com.foo.other" />
-</cdi:beans>
+<beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
+	<cdi:bean class="com.foo.FooImpl" />
+	<cdi:bean class="com.foo.BarImpl" />
+	<cdi:configuration beanClass="com.foo.Config" pid="com.foo.FooImpl" />
+	<cdi:configuration beanClass="com.foo.Baz" pid="com.foo.other and.another" />
+	<cdi:configuration beanClass="com.foo.Fum" required="false" pid="an.optional.configuration" />
+</beans>

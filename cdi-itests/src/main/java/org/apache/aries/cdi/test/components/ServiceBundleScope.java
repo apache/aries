@@ -9,7 +9,8 @@ import org.osgi.service.component.annotations.ServiceScope;
 		"fee.fi=fee",
 		"fo.fum:Integer=23",
 		"complex.enough.key=fum",
-		"key=value"
+		"key=value",
+		"simple.annotation=blah"
 	},
 	scope = ServiceScope.BUNDLE
 )

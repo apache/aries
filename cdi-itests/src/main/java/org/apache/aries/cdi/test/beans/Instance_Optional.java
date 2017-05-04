@@ -8,13 +8,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
-import org.osgi.service.cdi.annotations.MinCardinality;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
 
-@Service(type = {BeanService.class, InstanceCardinality0Bean.class})
+@Service(type = {BeanService.class, Instance_Optional.class})
 @Singleton
-public class InstanceCardinality0Bean implements BeanService<Callable<String>> {
+public class Instance_Optional implements BeanService<Callable<String>> {
 
 	@Override
 	public String doSomething() {
@@ -33,7 +32,6 @@ public class InstanceCardinality0Bean implements BeanService<Callable<String>> {
 	}
 
 	@Inject
-	@MinCardinality(0)
 	@Reference
 	Instance<Callable<String>> _instance;
 

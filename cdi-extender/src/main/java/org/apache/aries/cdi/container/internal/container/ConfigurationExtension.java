@@ -19,11 +19,12 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
+import javax.inject.Named;
 
+import org.osgi.framework.BundleContext;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,13 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class ConfigurationExtension implements Extension {
 
-	public ConfigurationExtension(List<ConfigurationDependency> configurations) {
+	public ConfigurationExtension(List<ConfigurationDependency> configurations, BundleContext bundleContext) {
 		_configurations = configurations;
+		_bundleContext = bundleContext;
 	}
 
 	void processInjectionTarget(
-		@Observes @SuppressWarnings("rawtypes") ProcessInjectionPoint pip, BeanManager manager) {
+		@Observes @SuppressWarnings("rawtypes") ProcessInjectionPoint pip) {
 
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 		Annotated annotated = injectionPoint.getAnnotated();
@@ -48,8 +50,17 @@ public class ConfigurationExtension implements Extension {
 
 		Class<?> beanClass = injectionPoint.getBean().getBeanClass();
 
+		String name = beanClass.getName();
+
+		Named named = annotated.getAnnotation(Named.class);
+
+		if (named != null) {
+			name = named.value();
+		}
+
 		ConfigurationDependency configurationDependency = new ConfigurationDependency(
-			configuration.value(), beanClass.getName());
+			_bundleContext, configuration.value(), configuration.required(), name,
+			injectionPoint);
 
 		_configurations.add(configurationDependency);
 
@@ -58,8 +69,9 @@ public class ConfigurationExtension implements Extension {
 		}
 	}
 
-	private static final Logger _log = LoggerFactory.getLogger(ReferenceExtension.class);
+	private static final Logger _log = LoggerFactory.getLogger(ConfigurationExtension.class);
 
+	private final BundleContext _bundleContext;
 	private final List<ConfigurationDependency> _configurations;
 
 }

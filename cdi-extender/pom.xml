@@ -62,6 +62,11 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-annotation_1.2_spec</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-osgi-bundle</artifactId>
 			<version>2.4.2.Final</version>
@@ -113,6 +118,12 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

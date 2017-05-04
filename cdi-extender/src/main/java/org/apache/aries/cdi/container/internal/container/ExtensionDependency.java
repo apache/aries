@@ -20,13 +20,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.CdiExtenderConstants;
+import org.osgi.service.cdi.CdiConstants;
 
 public class ExtensionDependency {
 
 	public ExtensionDependency(BundleContext bundleContext, Long bundleId, String name) {
 		_string = "(&(" + org.osgi.framework.Constants.SERVICE_BUNDLEID + "=" + bundleId + ")(" +
-			CdiExtenderConstants.CDI_EXTENSION + "=" + name + "))";
+			CdiConstants.CDI_EXTENSION_NAMESPACE + "=" + name + "))";
 
 		try {
 			_filter = bundleContext.createFilter(_string);

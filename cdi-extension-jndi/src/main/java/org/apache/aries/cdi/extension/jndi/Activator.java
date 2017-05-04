@@ -23,7 +23,7 @@ import javax.naming.spi.ObjectFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cdi.CdiExtenderConstants;
+import org.osgi.service.cdi.CdiConstants;
 import org.osgi.service.jndi.JNDIConstants;
 
 public class Activator implements BundleActivator {
@@ -31,27 +31,20 @@ public class Activator implements BundleActivator {
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		Dictionary<String, Object> properties = new Hashtable<>();
-		properties.put(CdiExtenderConstants.CDI_EXTENSION, "jndi");
 
-		JndiExtensionFactory jndiExtensionFactory = new JndiExtensionFactory();
-
-		_jndiExtensionFactoryRegistration = bundleContext.registerService(
-			Extension.class, jndiExtensionFactory, properties);
-
-		properties = new Hashtable<>();
+		properties.put(CdiConstants.CDI_EXTENSION_NAMESPACE, "jndi");
 		properties.put(JNDIConstants.JNDI_URLSCHEME, "java");
 
-		_objectFactoryRegistration = bundleContext.registerService(
-			ObjectFactory.class, new JndiObjectFactory(jndiExtensionFactory), properties);
+		_serviceRegistration = bundleContext.registerService(
+			new String[] {Extension.class.getName(), ObjectFactory.class.getName()},
+			new JndiExtensionFactory(), properties);
 	}
 
 	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
-		_objectFactoryRegistration.unregister();
-		_jndiExtensionFactoryRegistration.unregister();
+		_serviceRegistration.unregister();
 	}
 
-	private ServiceRegistration<?> _jndiExtensionFactoryRegistration;
-	private ServiceRegistration<?> _objectFactoryRegistration;
+	private ServiceRegistration<?> _serviceRegistration;
 
 }

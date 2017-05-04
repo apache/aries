@@ -23,14 +23,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.enterprise.inject.spi.Extension;
 
 import org.jboss.weld.bootstrap.spi.Metadata;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.service.cdi.CdiConstants;
 import org.osgi.service.cdi.CdiEvent;
-import org.osgi.service.cdi.CdiExtenderConstants;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
@@ -38,11 +37,11 @@ import org.slf4j.LoggerFactory;
 
 public class Phase_Extension implements Phase {
 
-	public Phase_Extension(Bundle bundle, CdiContainerState cdiContainerState) {
-		_bundle = bundle;
+	public Phase_Extension(CdiContainerState cdiContainerState) {
 		_cdiContainerState = cdiContainerState;
-		_bundleContext = bundle.getBundleContext();
-		_extensionDependencies = findExtensionDependencies(bundle.adapt(BundleWiring.class));
+		_bundleContext = _cdiContainerState.getBundle().getBundleContext();
+		_extensionDependencies = findExtensionDependencies(
+			_cdiContainerState.getBundle().adapt(BundleWiring.class));
 		_extensions = new ConcurrentSkipListMap<>(Comparator.reverseOrder());
 
 		_cdiContainerState.setExtensionDependencies(_extensionDependencies);
@@ -82,7 +81,7 @@ public class Phase_Extension implements Phase {
 			_extensionTracker.open();
 		}
 		else {
-			_nextPhase = new Phase_Configuration(_bundle, _cdiContainerState, _extensions);
+			_nextPhase = new Phase_Configuration(_cdiContainerState, _extensions);
 
 			_nextPhase.open();
 		}
@@ -90,12 +89,12 @@ public class Phase_Extension implements Phase {
 
 	List<ExtensionDependency> findExtensionDependencies(BundleWiring bundleWiring) {
 		List<ExtensionDependency> extensionDependencies = new CopyOnWriteArrayList<>();
-		List<BundleWire> requiredWires = bundleWiring.getRequiredWires(CdiExtenderConstants.CDI_EXTENSION);
+		List<BundleWire> requiredWires = bundleWiring.getRequiredWires(CdiConstants.CDI_EXTENSION_NAMESPACE);
 
 		for (BundleWire wire : requiredWires) {
 			Map<String, Object> attributes = wire.getCapability().getAttributes();
 
-			String extension = (String)attributes.get(CdiExtenderConstants.CDI_EXTENSION);
+			String extension = (String)attributes.get(CdiConstants.CDI_EXTENSION_NAMESPACE);
 
 			if (extension != null) {
 				ExtensionDependency extensionDependency = new ExtensionDependency(
@@ -110,7 +109,6 @@ public class Phase_Extension implements Phase {
 
 	private static final Logger _log = LoggerFactory.getLogger(Phase_Extension.class);
 
-	private final Bundle _bundle;
 	private final BundleContext _bundleContext;
 	private final CdiContainerState _cdiContainerState;
 	private final Map<ServiceReference<Extension>, Metadata<Extension>> _extensions;
@@ -139,7 +137,7 @@ public class Phase_Extension implements Phase {
 			}
 
 			if ((trackedDependency != null) && _extensionDependencies.isEmpty()) {
-				_nextPhase = new Phase_Configuration(_bundle, _cdiContainerState, _extensions);
+				_nextPhase = new Phase_Configuration(_cdiContainerState, _extensions);
 
 				_nextPhase.open();
 			}

@@ -1,0 +1,3 @@
+Export-Package: ${p}.tb5.*
+Require-Capability: osgi.extender;filter:='(osgi.extender=osgi.cdi)'
+-includeresource: OSGI-INF/cdi/osgi-beans.xml=bnd/tb5-beans.xml

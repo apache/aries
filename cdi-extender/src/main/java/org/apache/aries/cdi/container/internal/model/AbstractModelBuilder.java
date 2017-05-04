@@ -1,14 +1,27 @@
+/**
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.aries.cdi.container.internal.model;
 
 import static org.apache.aries.cdi.container.internal.util.Reflection.cast;
-import static org.osgi.service.cdi.CdiExtenderConstants.REQUIREMENT_BEANS_ATTRIBUTE;
-import static org.osgi.service.cdi.CdiExtenderConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE;
+import static org.osgi.service.cdi.CdiConstants.REQUIREMENT_BEANS_ATTRIBUTE;
+import static org.osgi.service.cdi.CdiConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -26,35 +39,38 @@ public abstract class AbstractModelBuilder {
 
 	public BeansModel build() {
 		List<URL> beanDescriptorURLs = new ArrayList<URL>();
+		List<URL> osgiBeanDescriptorURLs = new ArrayList<URL>();
 		Map<String, Object> attributes = getAttributes();
 
 		List<String> beanDescriptorPaths = cast(attributes.get(REQUIREMENT_BEANS_ATTRIBUTE));
 
 		if (beanDescriptorPaths != null) {
 			for (String descriptorPath : beanDescriptorPaths) {
-				Collection<String> resources = getResources(descriptorPath);
+				URL url = getResource(descriptorPath);
 
-				if (resources != null) {
-					for (String resource : resources) {
-						URL url = getResource(resource);
-
-						if (url != null) {
-							beanDescriptorURLs.add(url);
-						}
-					}
+				if (url != null) {
+					beanDescriptorURLs.add(url);
 				}
 			}
 		}
 
-		String osgiBeansDescriptorPath = cast(attributes.get(REQUIREMENT_OSGI_BEANS_ATTRIBUTE));
+		List<String> osgiBeansDescriptorPaths = cast(attributes.get(REQUIREMENT_OSGI_BEANS_ATTRIBUTE));
 
-		if (osgiBeansDescriptorPath == null) {
-			osgiBeansDescriptorPath = "OSGI-INF/cdi/osgi-beans.xml";
+		if (osgiBeansDescriptorPaths == null) {
+			osgiBeansDescriptorPaths = getDefaultResources();
 		}
 
-		URL osgiBeansDescriptorURL = getResource(osgiBeansDescriptorPath);
+		if (osgiBeansDescriptorPaths != null) {
+			for (String descriptorPath : osgiBeansDescriptorPaths) {
+				URL url = getResource(descriptorPath);
 
-		return parse(osgiBeansDescriptorURL, beanDescriptorURLs);
+				if (url != null) {
+					osgiBeanDescriptorURLs.add(url);
+				}
+			}
+		}
+
+		return parse(osgiBeanDescriptorURLs, beanDescriptorURLs);
 	}
 
 	abstract Map<String, Object> getAttributes();
@@ -63,19 +79,19 @@ public abstract class AbstractModelBuilder {
 
 	abstract URL getResource(String resource);
 
-	abstract Collection<String> getResources(String descriptorString);
+	abstract List<String> getDefaultResources();
 
 	private OSGiBeansHandler getHandler(List<URL> beanDescriptorURLs) {
 		return new OSGiBeansHandler(beanDescriptorURLs);
 	}
 
-	private BeansModel parse(URL osgiBeansDescriptorURL, List<URL> beanDescriptorURLs) {
+	private BeansModel parse(List<URL> osgiBeansDescriptorURLs, List<URL> beanDescriptorURLs) {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setValidating(false);
 		factory.setNamespaceAware(true);
 
-		if (osgiBeansDescriptorURL == null) {
-			throw new IllegalArgumentException("Missing osgi-beans descriptor: " + osgiBeansDescriptorURL);
+		if (osgiBeansDescriptorURLs.isEmpty()) {
+			throw new IllegalArgumentException("Missing osgi-beans descriptors");
 		}
 
 		SAXParser parser;
@@ -87,45 +103,34 @@ public abstract class AbstractModelBuilder {
 			return Throw.exception(e);
 		}
 
-		InputStream inputStream = null;
+		OSGiBeansHandler handler = getHandler(beanDescriptorURLs);
 
-		try {
-			inputStream = osgiBeansDescriptorURL.openStream();
-			InputSource source = new InputSource(inputStream);
+		for (URL osgiBeansDescriptorURL: osgiBeansDescriptorURLs) {
+			try (InputStream inputStream = osgiBeansDescriptorURL.openStream()) {
+				InputSource source = new InputSource(inputStream);
 
-			if (source.getByteStream().available() == 0) {
-				throw new IllegalArgumentException(
-					"Specified osgi-beans descriptor is empty: " + osgiBeansDescriptorURL);
-			}
+				if (source.getByteStream().available() == 0) {
+					throw new IllegalArgumentException(
+						"Specified osgi-beans descriptor is empty: " + osgiBeansDescriptorURL);
+				}
 
-			try {
-				parser.setProperty(
-					"http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
-				parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", loadXsds());
-			}
-			catch (IllegalArgumentException | SAXNotRecognizedException | SAXNotSupportedException e) {
-				// No op, we just don't validate the XML
-			}
-
-			OSGiBeansHandler handler = getHandler(beanDescriptorURLs);
-
-			parser.parse(source, handler);
-
-			return handler.createBeansModel();
-		}
-		catch (IOException | SAXException e) {
-			return Throw.exception(e);
-		}
-		finally {
-			if (inputStream != null) {
 				try {
-					inputStream.close();
+					parser.setProperty(
+						"http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
+					parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", loadXsds());
 				}
-				catch (IOException e) {
-					throw new IllegalStateException(e);
+				catch (IllegalArgumentException | SAXNotRecognizedException | SAXNotSupportedException e) {
+					// No op, we just don't validate the XML
 				}
+
+				parser.parse(source, handler);
+			}
+			catch (IOException | SAXException e) {
+				return Throw.exception(e);
 			}
 		}
+
+		return handler.createBeansModel();
 	}
 
 	private InputSource loadXsd(String name) {

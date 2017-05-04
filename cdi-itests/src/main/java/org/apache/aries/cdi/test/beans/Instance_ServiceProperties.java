@@ -12,9 +12,9 @@ import org.apache.aries.cdi.test.interfaces.SingletonScoped;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
 
-@Service(type = {BeanService.class, InstancePropertiesBean.class})
+@Service(type = {BeanService.class, Instance_ServiceProperties.class})
 @Singleton
-public class InstancePropertiesBean implements BeanService<Map<String, Object>> {
+public class Instance_ServiceProperties implements BeanService<Map<String, Object>> {
 
 	@Override
 	public String doSomething() {
