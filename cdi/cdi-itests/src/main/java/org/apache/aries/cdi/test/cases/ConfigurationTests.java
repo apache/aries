@@ -113,10 +113,22 @@ public class ConfigurationTests extends AbstractTestCase {
 			assertArrayEquals(new int[] {80}, beanService.get().call());
 		}
 		finally {
-			if (configurationA != null)
-				configurationA.delete();
-			if (configurationB != null)
-				configurationB.delete();
+			if (configurationA != null) {
+				try {
+					configurationA.delete();
+				}
+				catch (Exception e) {
+					// ignore
+				}
+			}
+			if (configurationB != null) {
+				try {
+					configurationB.delete();
+				}
+				catch (Exception e) {
+					// ignore
+				}
+			}
 			tb3Bundle.uninstall();
 		}
 	}
@@ -145,15 +157,15 @@ public class ConfigurationTests extends AbstractTestCase {
 				"(&(objectClass=" + CdiContainer.class.getName() + ")(service.bundleid=" + tb3Bundle.getBundleId() +
 				")(" + CdiConstants.CDI_CONTAINER_STATE + "=CREATED))");
 
-			ServiceTracker<CdiContainer, CdiContainer> serviceTracker = new ServiceTracker<>(bundleContext, filter, null);
+			ServiceTracker<CdiContainer, CdiContainer> st = new ServiceTracker<>(bundleContext, filter, null);
 
-			serviceTracker.open();
+			st.open();
 
-			CdiContainer container = serviceTracker.waitForService(timeout);
+			CdiContainer container = st.waitForService(timeout);
 
 			assertNotNull(container);
 
-			int trackerCount = serviceTracker.getTrackingCount();
+			int t = st.getTrackingCount();
 
 			BeanManager beanManager = container.getBeanManager();
 			Set<Bean<?>> beans = beanManager.getBeans("configB");
@@ -171,27 +183,31 @@ public class ConfigurationTests extends AbstractTestCase {
 
 			configurationA.delete();
 
-			while (trackerCount == serviceTracker.getTrackingCount()) {
-				Thread.sleep(10);
-			}
+			while (t == st.getTrackingCount()) {Thread.sleep(10);}
 
-			assertTrue(serviceTracker.isEmpty());
+			assertTrue(st.isEmpty());
 
-			serviceTracker.close();
+			st.close();
 
 			filter = bundleContext.createFilter(
 				"(&(objectClass=" + CdiContainer.class.getName() + ")(service.bundleid=" + tb3Bundle.getBundleId() +
 				")(" + CdiConstants.CDI_CONTAINER_STATE + "=" + CdiEvent.Type.WAITING_FOR_CONFIGURATIONS + "))");
 
-			serviceTracker = new ServiceTracker<>(bundleContext, filter, null);
+			st = new ServiceTracker<>(bundleContext, filter, null);
 
-			serviceTracker.open();
+			st.open();
 
-			assertFalse(serviceTracker.isEmpty());
+			assertFalse(st.isEmpty());
 		}
 		finally {
-			if (configurationB != null)
-				configurationB.delete();
+			if (configurationB != null) {
+				try {
+					configurationB.delete();
+				}
+				catch (Exception e) {
+					// ignore
+				}
+			}
 			tb3Bundle.uninstall();
 		}
 	}
@@ -220,7 +236,7 @@ public class ConfigurationTests extends AbstractTestCase {
 
 			BeanService<Callable<int[]>> beanService = stC.waitForService(timeout);
 
-			int trackingCount = stC.getTrackingCount();
+			int t = stC.getTrackingCount();
 
 			assertNotNull(beanService);
 			assertEquals("blue", beanService.doSomething());
@@ -232,12 +248,13 @@ public class ConfigurationTests extends AbstractTestCase {
 			properties.put("ports", new int[] {12, 4567});
 			configurationC.update(properties);
 
-			do {Thread.sleep(100);}
-			while (trackingCount == stC.getTrackingCount());
+			while (t == stC.getTrackingCount()) {Thread.sleep(10);}
+			t = stC.getTrackingCount();
+
+			while (t == stC.getTrackingCount()) {Thread.sleep(10);}
+			t = stC.getTrackingCount();
 
 			beanService = stC.waitForService(timeout);
-
-			trackingCount = stC.getTrackingCount();
 
 			assertNotNull(beanService);
 			assertEquals("blue", beanService.doSomething());
@@ -245,8 +262,7 @@ public class ConfigurationTests extends AbstractTestCase {
 
 			configurationC.delete();
 
-			do {Thread.sleep(100);}
-			while (trackingCount == stC.getTrackingCount());
+			while (t == stC.getTrackingCount()) {Thread.sleep(10);}
 
 			beanService = stC.waitForService(timeout);
 
@@ -255,6 +271,14 @@ public class ConfigurationTests extends AbstractTestCase {
 			assertArrayEquals(new int[] {35777}, beanService.get().call());
 		}
 		finally {
+			if (configurationC != null) {
+				try {
+					configurationC.delete();
+				}
+				catch (Exception e) {
+					// ignore
+				}
+			}
 			tb5Bundle.uninstall();
 		}
 	}
