@@ -11,6 +11,10 @@ Provide-Capability: \
 	osgi.extender; \
 		osgi.extender='osgi.cdi'; \
 		uses:="org.osgi.service.cdi,org.osgi.service.cdi.annotations,javax.enterprise.inject.spi"; \
+		version:Version="${Bundle-Version}",\
+	osgi.implementation; \
+		osgi.implementation='osgi.cdi'; \
+		uses:="org.osgi.service.cdi,org.osgi.service.cdi.annotations,javax.enterprise.inject.spi"; \
 		version:Version="${Bundle-Version}"
 -contract: JavaCDI, JavaEL, JavaInject, JavaInterceptor
 -includeresource: META-INF/=LICENSE, META-INF/=NOTICE
