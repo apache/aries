@@ -54,6 +54,7 @@
 		<module>javax.interceptor-api</module>
 		<module>javax.cdi-api</module>
 		<module>cdi-extender</module>
+		<module>cdi-extension-http</module>
 		<module>cdi-extension-jndi</module>
 		<module>cdi-itests</module>
 	</modules>
