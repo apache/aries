@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.proxy;
 
-import java.lang.reflect.Proxy;
 
 public class ProxyTestClassInnerClasses {
 

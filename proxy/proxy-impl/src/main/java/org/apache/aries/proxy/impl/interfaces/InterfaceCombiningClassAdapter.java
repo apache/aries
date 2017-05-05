@@ -95,6 +95,9 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
       else if(((access & (ACC_PRIVATE|ACC_SYNTHETIC)) == (ACC_PRIVATE|ACC_SYNTHETIC))) {
           // private, synthetic methods on interfaces don't need to be proxied.       
           return null;
+      } else if (((access & (ACC_STATIC)) == (ACC_STATIC))) {
+          //static methods on interfaces don't need to be proxied
+          return null;
       }
       else {//We're going to implement this method, so make it non abstract!
           return adapter.visitMethod(access, name, desc, null, arg4);

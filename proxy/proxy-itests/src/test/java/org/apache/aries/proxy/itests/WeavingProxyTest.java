@@ -31,15 +31,25 @@ import org.apache.aries.proxy.weaving.WovenProxy;
 import org.apache.aries.proxy.weavinghook.ProxyWeavingController;
 import org.apache.aries.proxy.weavinghook.WeavingHelper;
 import org.junit.Test;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.hooks.weaving.WovenClass;
 
 @ExamReactorStrategy(PerMethod.class)
-public abstract class AbstractWeavingProxyTest extends AbstractProxyTest
+public class WeavingProxyTest extends AbstractProxyTest
 {
 
+    @Configuration
+    public Option[] configuration() {
+      return new Option[] //
+      {
+       proxyOptions()
+      };
+    }
+    
   /**
    * This test does two things. First of all it checks that we can proxy a final 
    * class. It also validates that the class implements WovenProxy, and that the
@@ -89,7 +99,7 @@ public abstract class AbstractWeavingProxyTest extends AbstractProxyTest
   public void checkProxyController() throws Exception
   {
 
-    context().registerService(ProxyWeavingController.class.getName(), new ProxyWeavingController() {
+    bundleContext.registerService(ProxyWeavingController.class.getName(), new ProxyWeavingController() {
 
       public boolean shouldWeave(WovenClass arg0, WeavingHelper arg1)
       {

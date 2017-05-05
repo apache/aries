@@ -23,6 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -46,18 +48,17 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.AsmProxyManager;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
+import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
 import org.apache.aries.proxy.impl.weaving.WovenProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
-import org.apache.aries.util.ClassLoaderProxy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
 
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class WovenProxyGeneratorTest extends AbstractProxyTest
 {
   private static final String hexPattern = "[0-9_a-f]";
@@ -95,7 +96,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
  
   private static final Map<String, byte[]> rawClasses = new HashMap<String, byte[]>();
   
-  protected static final ClassLoader weavingLoader = new ClassLoader() {
+  protected static final ClassLoader weavingLoader = new SystemModuleClassLoader() {
     public Class<?> loadClass(String className)  throws ClassNotFoundException
     {
       return loadClass(className, false);
@@ -139,7 +140,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @BeforeClass
   public static void setUp() throws Exception
   {
-    List<Class<?>> classes = new ArrayList(CLASSES.size() + OTHER_CLASSES.size());
+    List<Class<?>> classes = new ArrayList<Class<?>>(CLASSES.size() + OTHER_CLASSES.size());
     
     classes.addAll(CLASSES);
     classes.addAll(OTHER_CLASSES);
@@ -496,13 +497,9 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
    */
   @Test
   public void testWovenClassPlusInterfaces() throws Exception {
-    Bundle b = (Bundle) Skeleton.newMock(new Class<?>[] {Bundle.class, ClassLoaderProxy.class});
-    BundleWiring bw = (BundleWiring) Skeleton.newMock(BundleWiring.class);
-
-    Skeleton.getSkeleton(b).setReturnValue(new MethodCall(
-        ClassLoaderProxy.class, "getClassLoader"), weavingLoader);
-    Skeleton.getSkeleton(b).setReturnValue(new MethodCall(
-        ClassLoaderProxy.class, "adapt", BundleWiring.class), bw);
+    Bundle b = mock(Bundle.class);
+    BundleWiring wiring = getWiring(weavingLoader);
+    when(b.adapt(BundleWiring.class)).thenReturn(wiring);
 
     Object toCall = new AsmProxyManager().createDelegatingProxy(b, Arrays.asList(
         getProxyClass(ProxyTestClassAbstract.class), Callable.class), new Callable() {

@@ -115,7 +115,18 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
   private static SortedSet<Class<?>> createSet(Collection<Class<?>> ifaces) {
     SortedSet<Class<?>> classes = new TreeSet<Class<?>>(new Comparator<Class<?>>() {
       public int compare(Class<?> object1, Class<?> object2) {
-        return object1.getName().compareTo(object2.getName());
+        if (object1.getName().equals(object2.getName())) {
+          return 0;
+        } else if (object1.isAssignableFrom(object2)) {
+          // first class is parent of second, it occurs earlier in type hierarchy
+          return -1;
+        } else if (object2.isAssignableFrom(object1)) {
+          // second class is subclass of first one, it occurs later in hierarchy
+          return 1;
+        }
+        // types have separate inheritance trees, so it doesn't mater which one is first or second,
+        // however we can't mark them as equal cause one of them will be removed
+        return 1;
       }
     });
     for(Class<?> c : ifaces) {

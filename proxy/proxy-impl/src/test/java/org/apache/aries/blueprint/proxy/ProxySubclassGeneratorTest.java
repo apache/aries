@@ -48,7 +48,7 @@ import org.apache.aries.proxy.impl.ProxyHandler;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
 import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
-import org.apache.aries.util.io.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -257,7 +257,8 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
     super.testGenerics();
   }
 
-  @Test
+  @SuppressWarnings("unchecked")
+@Test
   public void testClassLoaders() throws Exception {
     ClassLoader clA = new LimitedClassLoader("org.apache.aries.proxy.test.a", null, null);
     ClassLoader clB = new LimitedClassLoader("org.apache.aries.proxy.test.b", "org.apache.aries.proxy.test.a", clA);

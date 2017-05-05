@@ -21,16 +21,15 @@ package org.apache.aries.blueprint.proxy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -39,13 +38,8 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.apache.aries.proxy.impl.gen.ProxySubclassGenerator;
-import org.apache.aries.proxy.impl.gen.ProxySubclassMethodHashSet;
 import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
 import org.apache.aries.proxy.weaving.WovenProxy;
-import org.apache.aries.unittest.mocks.MethodCall;
-import org.apache.aries.unittest.mocks.Skeleton;
-import org.apache.aries.util.ClassLoaderProxy;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -54,28 +48,21 @@ import org.osgi.framework.wiring.BundleWiring;
 /**
  * This class uses the {@link ProxySubclassGenerator} to test
  */
+@SuppressWarnings("unchecked")
 public class WovenProxyPlusSubclassGeneratorTest extends WovenProxyGeneratorTest
 {
   private static final Class<?> FINAL_METHOD_CLASS = ProxyTestClassFinalMethod.class;
   private static final Class<?> FINAL_CLASS = ProxyTestClassFinal.class;
-  private static final Class<?> GENERIC_CLASS = ProxyTestClassGeneric.class;
-  private static final Class<?> COVARIANT_CLASS = ProxyTestClassCovariantOverride.class;
-  private static ProxySubclassMethodHashSet<String> expectedMethods = new ProxySubclassMethodHashSet<String>(
-      12);
   private Callable<Object> testCallable = null;
   
   private static Bundle testBundle;
-  private static BundleWiring testBundleWiring;
 
   @BeforeClass
-  public static void createTestBundle() {
-	  testBundle = (Bundle) Skeleton.newMock(new Class<?>[] {Bundle.class, ClassLoaderProxy.class});
-	  testBundleWiring = (BundleWiring) Skeleton.newMock(BundleWiring.class);
-
-	    Skeleton.getSkeleton(testBundle).setReturnValue(new MethodCall(
-	        ClassLoaderProxy.class, "getClassLoader"), weavingLoader);
-	    Skeleton.getSkeleton(testBundle).setReturnValue(new MethodCall(
-	        ClassLoaderProxy.class, "adapt", BundleWiring.class), testBundleWiring);
+  public static void createTestBundle() throws Exception {
+    testBundle = mock(Bundle.class);
+    BundleWiring wiring = AbstractProxyTest.getWiring(weavingLoader);
+    when(testBundle.adapt(BundleWiring.class))
+        .thenReturn(wiring);
   }
 
   //Avoid running four weaving tests that don't apply to us
@@ -203,7 +190,7 @@ public class WovenProxyPlusSubclassGeneratorTest extends WovenProxyGeneratorTest
   {
     try {
       InterfaceProxyGenerator.getProxyInstance(null, FINAL_CLASS, Collections.EMPTY_SET, 
-          new Callable() {
+          new Callable<Object>() {
         public Object call() throws Exception {
           return null;
         }} , null).getClass();

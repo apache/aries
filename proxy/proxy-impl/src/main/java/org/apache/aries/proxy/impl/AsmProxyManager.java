@@ -159,6 +159,12 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
            // Ignore
          }
         }
+        try {
+          // use bootClassLoader as last fallback
+          return bootClassLoader.loadClass(name);
+        } catch (ClassNotFoundException e) {
+          // Ignore
+        }
         throw new ClassNotFoundException(name);
     }
 

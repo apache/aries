@@ -28,6 +28,7 @@ public class ProxyManagerActivator implements BundleActivator
 {
   private static final boolean ASM_PROXY_SUPPORTED;
   private AbstractProxyManager managerService;
+  @SuppressWarnings("rawtypes")
   private ServiceRegistration registration;
   
   static
