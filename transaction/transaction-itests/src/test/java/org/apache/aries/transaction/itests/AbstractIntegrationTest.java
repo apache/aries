@@ -42,6 +42,7 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.options.extra.CleanCachesOption;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
@@ -69,6 +70,7 @@ public abstract class AbstractIntegrationTest {
         }
         return composite(
                 junitBundles(),
+                new CleanCachesOption(true), // change to 'false' if investigation is needed
                 // this is how you set the default log level when using pax
                 // logging (logProfile)
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
