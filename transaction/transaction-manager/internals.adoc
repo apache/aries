@@ -1,0 +1,220 @@
+= Internals of Aries Transaction Manager
+:toc:
+:icons: font
+
+== Transaction log configuration
+
+Geronimo transaction-manager component uses http://howl.ow2.org/[HOWL Logger] to manage transaction log.
+Transaction log is critical part of transaction management when 2PC protocol is involved. The log
+stores prepared and not yet completed transactions so recovery process is possible.
+
+TODO
+
+== Transaction log reference
+
+Transaction logs are stored in binary _files_ consisting of fixed size _blocks_. Each _transaction_ is
+stored inside single block. If size of transaction data exceeds blocks size, an exception is thrown like
+this:
+
+.Exception thrown when logging large transaction (12 branches) when block size = 1KB
+----
+java.lang.IllegalStateException
+	at org.apache.geronimo.transaction.log.HOWLLog.prepare(HOWLLog.java:295)
+...
+Caused by: org.objectweb.howl.log.LogRecordSizeException: maximum user data record size: 935
+	at org.objectweb.howl.log.BlockLogBuffer.put(BlockLogBuffer.java:215)
+	at org.objectweb.howl.log.LogBufferManager.put(LogBufferManager.java:691)
+	at org.objectweb.howl.log.Logger.put(Logger.java:207)
+	at org.objectweb.howl.log.xa.XALogger.putCommit(XALogger.java:420)
+	at org.apache.geronimo.transaction.log.HOWLLog.prepare(HOWLLog.java:290)
+	... 31 more
+----
+
+Before describing the structure of log file, let's have a look at 3 important parameters:
+
+* `maxLogFiles` – number of transaction log files (default: `2`). These are created upfront and their number doesn't change.
+* `maxBlocksPerFile` – number of blocks that may be stored in each file  (default: `-1`, which means `0x7fffffff` blocks). Mind that
+when using default value, 2+++<sup>nd</sup>+++ transaction log file will be used *only* after writing `2+++<sup>31</sup>+++-1` transaction
+records!
+* `bufferSizeKBytes` – a size of single block in kilobytes (default: `4`)
+
+
+[NOTE]
+====
+.XIDs
+A _transaction_ stored inside a block of a log file is generally an opaque data structure dependant on the
+transaction manager and logger used.
+====
+
+Now let's have a look at how transaction log file is structured.
+
+When transaction log is completely empty, the first record (block) written may be related to the call
+to `javax.transaction.TransactionManager.commit()` or `javax.transaction.UserTransaction.commit()`. Internally,
+when using 2PC, `org.apache.geronimo.transaction.manager.TransactionImpl.internalPrepare()` is called
+and first log record is stored. This is done *after* calling `javax.transaction.xa.XAResource.prepare()`.
+
+Each _block_ (with size = `bufferSizeKBytes`) may contain more than one _data records_. For example, when
+_data record_ related to `prepare()` (`XACOMMIT`) will reside in first _block_ of a file, the first
+_data record_ in this _block_ will be of `FILE_HEADER` type.
+
+Here's the structure of each _block_, where the dotted fragment contains arbitrary data:
+
+----
+00000000  48 4f 57 4c 00 00 00 01  00 00 04 00 00 00 01 1f  |HOWL............|
+00000010  95 2b 2d bd 00 00 01 5b  e7 37 86 8a 0d 0a .. ..  |.+-....[.7....  |
+........
+000003e0  .. .. .. .. .. .. .. ..  .. .. .. .. .. .. 4c 57  |              LW|
+000003f0  4f 48 00 00 00 01 00 00  01 5b e7 37 86 8a 0d 0a  |OH.......[.7....|
+00000400
+----
+
+* `48 4f 57 4c` is `HOWL` identifier, which is block header magic number
+* `00 00 00 01` is the block number (1)
+* `00 00 04 00` is the block size (`bufferSizeKBytes`) in bytes. `0x0400` = 1KB
+* `00 00 01 1f` indicates end of _data records_ inside _block_. If there's at least 4 bytes remaining before
+_block's_ footer, `EOB\n` is stored at this position
+* `95 2b 2d bd` is the checksum
+* `00 00 01 5b e7 37 86 8a` is the timestamp
+* `0d 0a` is supposed to make log easier to investigate in text editor (`\r\n`)
+* `...` is the data inside a block, which may consist of several _data records_
+* `4c 57 4f 48` is `LWOH` identifier, which is block footer magic number
+* `00 00 00 01` is again the block number (1)
+* `00 00 01 5b e7 37 86 8a` is the same timestamp as in header
+* `0d 0a` again
+
+Each _data record_ is just a list of byte arrays. Before each byte array is written, two shorts have to
+be written:
+
+* data type
+* data length
+
+Each byte array in a list is written directly, prepended with a short indicating a size of single array.
+So a length of entire _data record_ is: `2 + 2 + [(2 + length of byte array)]*` bytes.
+When _data records_ are read, the list of arrays is filled up to the point where _data record_ length is reached.
+
+For example, if the _block_ is first block inside transaction file, the first _data record_ is of type `FILE_HEADER`:
+
+----
+00000010  .. .. .. .. .. .. .. ..  .. .. .. .. .. .. 48 00  |              H.|
+00000020  00 25 00 23 00 00 00 00  00 01 00 00 00 00 00 00  |.%.#............|
+00000030  00 01 00 00 00 00 00 01  5b e7 37 86 8b 00 00 00  |........[.7.....|
+00000040  02 7f ff ff ff 0d 0a ..  .. .. .. .. .. .. .. ..  |.......         |
+----
+
+* `48 00` is `org.objectweb.howl.log.LogRecordType.FILE_HEADER`
+* `00 25` is the size of entire `FILE_HEADER` data without 2 bytes for `48 00` and for the length itself
+* `00 23` is the size of first array in list, so the first array of bytes starts at offset `0x24` and
+ends at (including) offset `0x46`.
+
+So the single byte array inside _data record_ of `FILE_HEADER` type is:
+
+* `00` means no _auto mark_
+* `00 00 00 00 01 00 00 00` is the value of _activeMark_, which is the log key for the oldest active entry in the log
+* `00 00 00 00 01 00 00 00` is the log key for beginning of new block sequence number as high mark for current file
+* `00 00 01 5b e7 37 86 8b` timestamp for file
+* `00 00 00 02` is the number of files of entire transaction log (`maxLogFiles`)
+* `7f ff ff ff` is the `maxBlocksPerFile` parameter
+* `0d 0a`
+
+_Data record_ written to transaction log is created by HOWL itself.
+
+Here's sample `XACOMMIT` _data record_, which is created by Geronimo Transaction Manager during _prepare_
+phase of 2PC:
+
+----
+00000040  .. .. .. .. .. .. .. 40  80 00 d4 00 04 47 65 52  |       @.....GeR|
+00000050  6f 00 40 22 86 37 e7 5b  01 00 00 6f 72 67 2e 61  |o.@".7.[...org.a|
+00000060  70 61 63 68 65 2e 61 72  69 65 73 2e 74 72 61 6e  |pache.aries.tran|
+00000070  73 61 63 74 69 6f 6e 00  00 00 00 00 00 00 00 00  |saction.........|
+00000080  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00000090  00 00 00 00 40 00 00 00  00 00 00 00 00 00 00 00  |....@...........|
+000000a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+000000b0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+000000c0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+000000d0  00 00 00 00 00 00 40 01  00 00 00 22 86 37 e7 5b  |......@....".7.[|
+000000e0  01 00 00 61 70 61 63 68  65 2e 61 72 69 65 73 2e  |...apache.aries.|
+000000f0  74 72 61 6e 73 61 63 74  69 6f 6e 00 00 00 00 00  |transaction.....|
+00000100  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00000110  00 00 00 00 00 00 00 00  06 72 65 73 2d 30 31 ..  |.........res-01 |
+----
+
+* `40 80` means `org.objectweb.howl.log.LogRecordType.XACOMMIT`
+* `00 d4` is a lenght of all byte arrays inside data created by Geronimo Transaction Manager plus 2x number of byte arrays
+
+So we have the following byte arrays stored:
+
+* 4 bytes `47 65 52 6f` is `GeRo`
+* 64 bytes starting with `22 86 37 e7` at offset 0x53
+* 64 bytes starting with `00 00 00 00` at offset 0x95
+* 64 bytes starting with `01 00 00 00` at offset 0xd7
+* 6 bytes `72 65 73 2d 30 31 is `res-01`
+
+And this array of byte arrays (sizes: 4, 64, 64, 64, 6) is exactly:
+
+* javax.transaction.xa.Xid.getFormatId()
+* javax.transaction.xa.Xid.getGlobalTransactionId()
+* javax.transaction.xa.Xid.getBranchQualifier()
+* javax.transaction.xa.Xid.getBranchQualifier() of transaction branch 1
+* resource name of transaction branch 1 (`res-01`)
+
+Each additional transaction branch (representing another transactional resource enlisted in transaction)
+adds two more byte arrays (`Xid.getBranchQualifier()` and resource name).
+
+Where does this `org.apache.aries.transaction` bytes come from inside _data record_ of `XACOMMIT`?
+When `org.apache.geronimo.transaction.manager.XidFactory` instance is created, it is passed some
+_transaction manager identifier_ which is arbitrary byte array of maximum 56 bytes size.
+
+Each XID produced by such `XidFactory` uses global transaction id with these bytes:
+
+* 8 bytes of transaction id, which is increasing 32-bit number starting from `System.currentTimeMillis()`
+written in little endian (e.g., `22 86 37 e7 5b 01 00 00` == `0x015be7378622`)
+* 56 bytes of _transaction manager identifier_
+
+Each transaction branch created by such `XidFactory` is based on globack transaction id:
+
+* 4 bytes if branch number written in little endian (e.g., `01 00 00 00` == `0x01`)
+* 8 bytes of `System.currentTimeMillis()` from `XidFactory` initialization (little endian)
+* 52 bytes from _transaction manager identifier_ starting from byte 4 (that's why global Id of XID contains
+`org.apache.aries.transaction` and branch Ids of XID contain `apache.aries.transaction`
+
+When Geronimo Transaction Manager commits 2PC transaction, two _data records_ are written. First, there's
+`USER` record (`org.apache.geronimo.transaction.log.HOWLLog.commit()`):
+
+----
+00000430  .. .. .. .. .. .. .. 00  00 00 8d 00 01 02 00 04  |       .........|
+00000440  47 65 52 6f 00 40 b9 b1  9a e7 5b 01 00 00 6f 72  |GeRo.@....[...or|
+00000450  67 2e 61 70 61 63 68 65  2e 61 72 69 65 73 2e 74  |g.apache.aries.t|
+00000460  72 61 6e 73 61 63 74 69  6f 6e 00 00 00 00 00 00  |ransaction......|
+00000470  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00000480  00 00 00 00 00 00 00 40  00 00 00 00 00 00 00 00  |.......@........|
+00000490  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+000004a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+000004b0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+000004c0  00 00 00 00 00 00 00 00  .. .. .. .. .. .. .. ..  |........        |
+----
+
+* `00 00` means `org.objectweb.howl.log.LogRecordType.USER`
+* `00 8d` is length
+* 1 byte array with `02` which means `org.apache.geronimo.transaction.log.HOWLLog.COMMIT`
+* XID's 4 bytes with `47 65 52 6f` which is `GeRo`, XID's format id
+* XID's 64 bytes with global transaction ID (8 bytes of little endian of ID and _transaction manager identifier_)
+* XID's 64 bytes with branch qualifier - all zeros, because branches are stored in transaction branches.
+
+And then, there's `XADONE` record:
+
+----
+000004c0  .. .. .. .. .. .. .. ..  40 40 00 10 00 08 00 00  |        @@......|
+000004d0  00 00 01 00 00 47 00 04  00 00 00 00 .. .. .. ..  |.....G......    |
+----
+
+* `40 40` means `org.objectweb.howl.log.LogRecordType.XADONE`
+* `00 10` is length
+* 8 bytes array with `00 00 00 00 01 00 00 47` - `org.objectweb.howl.log.xa.XACommittingTx.logKeyBytes`
+* 4 bytes array with `00 00 00 00` - `org.objectweb.howl.log.xa.XACommittingTx.indexBytes`
+
+The `{ logKeyBytes, indexBytes }` arrays reference existing `XACOMMIT` record.
+
+`logKey` is `((long)bsn << 24) | buffer.position()`, so we have (see the hexdump of the above `XACOMMIT` _data record_):
+
+* block sequence number = `1`
+* position inside this block = `0x47`
