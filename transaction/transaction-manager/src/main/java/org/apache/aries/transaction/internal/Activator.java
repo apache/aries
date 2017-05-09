@@ -16,6 +16,7 @@
  */
 package org.apache.aries.transaction.internal;
 
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -31,6 +32,9 @@ import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.aries.transaction.internal.TransactionManagerService.DEFAULT_RECOVERABLE;
+import static org.apache.aries.transaction.internal.TransactionManagerService.RECOVERABLE;
+
 /**
  */
 public class Activator implements BundleActivator, ManagedService {
@@ -41,12 +45,12 @@ public class Activator implements BundleActivator, ManagedService {
 
     private BundleContext bundleContext;
     private TransactionManagerService manager;
-    private Dictionary properties;
+    private Dictionary<String, ?> properties;
 
     public void start(BundleContext bundleContext) throws Exception {
         this.bundleContext = bundleContext;
         // Make sure TransactionManager comes up even if no config admin is installed
-        Dictionary properties = getInitialConfig();
+        Dictionary<String, Object> properties = getInitialConfig();
         updated(properties);
         bundleContext.registerService(ManagedService.class.getName(), this, getProps());
     }
@@ -81,12 +85,25 @@ public class Activator implements BundleActivator, ManagedService {
         deleted();
     }
 
-    public synchronized void updated(@SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
+    @SuppressWarnings("unchecked")
+    public synchronized void updated(Dictionary<String, ?> properties) throws ConfigurationException {
         if (properties == null) {
             properties = getProps();
         }
         if (!equals(this.properties, properties)) {
             deleted();
+
+            // ARIES-1719 - copy tx log with different configuration
+            // we can move active transactions (LogRecordType.XACOMMIT without XADONE)
+            // to different tx log
+            try {
+                if (TransactionManagerService.getBool(properties, RECOVERABLE, DEFAULT_RECOVERABLE)) {
+                    TransactionLogUtils.copyActiveTransactions((Dictionary<String, Object>) this.properties, properties);
+                }
+            } catch (IOException e) {
+                log.error(NLS.MESSAGES.getMessage("exception.tx.manager.start"), e);
+            }
+
             this.properties = properties;
             manager = new TransactionManagerService(PID, properties, bundleContext);
             try {
@@ -97,7 +114,7 @@ public class Activator implements BundleActivator, ManagedService {
         }
     }
 
-    private boolean equals(Dictionary<String, Object> d1, Dictionary<String, Object> d2) {
+    private boolean equals(Dictionary<String, ?> d1, Dictionary<String, ?> d2) {
         if (d1 == d2) {
             return true;
         } else if (d1 == null ^ d2 == null) {
