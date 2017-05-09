@@ -1,4 +1,0 @@
-Export-Package: !*
-Bundle-Activator: org.apache.aries.jpa.eclipselink.adapter.Activator
-Require-Capability: osgi.identity; effective:=active; filter:="(osgi.identity=org.eclipse.persistence.jpa)"
-Provide-Capability: osgi.service; effective:=active; objectClass=javax.persistence.spi.PersistenceProvider
