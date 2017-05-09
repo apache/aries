@@ -52,7 +52,6 @@
         <module>subsystem</module>
         <module>ejb</module>
         <module>jmx</module>
-        <module>jpa</module>
         <module>spi-fly</module>
         <module>samples</module>
         <module>esa-ant-task</module>
