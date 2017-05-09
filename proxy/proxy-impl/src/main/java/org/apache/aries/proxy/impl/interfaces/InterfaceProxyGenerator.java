@@ -124,9 +124,10 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
           // second class is subclass of first one, it occurs later in hierarchy
           return 1;
         }
-        // types have separate inheritance trees, so it doesn't mater which one is first or second,
+        // types have separate inheritance trees, but it does matter which one is first or second, so we
+        // won't end up with duplicates
         // however we can't mark them as equal cause one of them will be removed
-        return 1;
+        return object1.getName().compareTo(object2.getName());
       }
     });
     for(Class<?> c : ifaces) {

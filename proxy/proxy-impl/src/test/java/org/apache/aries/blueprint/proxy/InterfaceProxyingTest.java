@@ -33,11 +33,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.proxy.AbstractProxyTest.TestListener;
+import org.apache.aries.blueprint.proxy.complex.AriesTransactionManager;
+import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.interfaces.InterfaceProxyGenerator;
 import org.junit.Before;
 import org.junit.Test;
@@ -274,6 +277,18 @@ public class InterfaceProxyingTest {
 
       // 
       assertTrue("parents should be different, as the are the classloaders of different bundle revisions", parent1 != parent2);
+  }
+
+
+  // Test for https://issues.apache.org/jira/browse/ARIES-1618
+  @Test
+  public void checkDuplicateInterfaces() throws UnableToProxyException
+  {
+    Collection<Class<?>> classes = Collections.<Class<?>>singletonList(AriesTransactionManager.class);
+
+    Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
+
+    assertTrue(o instanceof AriesTransactionManager);
   }
 
   protected void assertCalled(TestListener listener, boolean pre, boolean post, boolean ex) {
