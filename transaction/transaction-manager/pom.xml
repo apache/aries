@@ -31,13 +31,13 @@
     <artifactId>org.apache.aries.transaction.manager</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Transaction Manager</name>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.3.3</version>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/transaction/transaction-manager
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.transaction.manager-1.3.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.transaction.manager-1.3.3
         </developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/transaction/transaction-manager</url>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.transaction.manager-1.3.3</url>
     </scm>
     <properties>
         <aries.osgi.export>
