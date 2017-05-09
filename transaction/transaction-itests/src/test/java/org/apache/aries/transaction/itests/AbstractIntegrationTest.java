@@ -74,6 +74,8 @@ public abstract class AbstractIntegrationTest {
                 // this is how you set the default log level when using pax
                 // logging (logProfile)
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+                // this option helps with debugging
+                //vmOption("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5006"),
                 when(localRepo != null).useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo))
          );
     }
