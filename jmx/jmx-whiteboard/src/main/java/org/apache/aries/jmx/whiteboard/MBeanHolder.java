@@ -63,7 +63,7 @@ final class MBeanHolder {
         }
 
         if (mbeanInterface.getName().equals(
-            mbeanClass.getName().concat("MBean"))) {
+            mbeanClass.getName().concat("MBean")) || mbeanInterface.getName().equals(mbeanClass.getName().concat("MXBean")) ) {
             return new MBeanHolder(mbean, requestedObjectName);
         }
 
@@ -85,7 +85,7 @@ final class MBeanHolder {
         }
 
         for (Class<?> i : mbeanClass.getInterfaces()) {
-            if (i.getName().endsWith("MBean")) {
+            if (i.getName().endsWith("MBean") || i.getName().endsWith("MXBean")) {
                 return i;
             }
 
