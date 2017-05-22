@@ -321,7 +321,7 @@ public class LogConversionTest {
         properties.put("aries.transaction.howl.maxBuffers", "0");
         properties.put("aries.transaction.howl.threadsWaitingForceThreshold", "-1");
         properties.put("aries.transaction.flushPartialBuffers", "true");
-        String absoluteLogFileDir = new File(BASE, logFileDir).getAbsolutePath();
+        String absoluteLogFileDir = new File(BASE, logFileDir).getAbsolutePath() + "/";
         properties.put("aries.transaction.howl.logFileDir", absoluteLogFileDir);
         properties.put("aries.transaction.howl.bufferSize", Integer.toString(bufferSizeInKB));
         properties.put("aries.transaction.howl.maxBlocksPerFile", Integer.toString(maxBlocksPerFile));

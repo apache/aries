@@ -78,7 +78,10 @@ public class TransactionLogUtils {
         }
 
         File oldDir = new File(oldLogDirectory);
+        oldLogDirectory = oldDir.getAbsolutePath();
         File newDir = new File(newLogDirectory);
+        newLogDirectory = newDir.getAbsolutePath();
+
         // a file which may tell us what's the previous configuation
         File transaction_1 = null;
 
