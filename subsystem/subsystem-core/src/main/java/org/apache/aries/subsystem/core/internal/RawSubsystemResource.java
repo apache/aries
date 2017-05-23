@@ -455,7 +455,7 @@ public class RawSubsystemResource implements Resource {
 		for (IFile file : directory.listFiles()) {
             if (file.isFile()) {
                 addResource(file, file.convertNested(), manifest, result);
-            } else {
+            } else if (!file.getName().endsWith("OSGI-INF")) {
                 addResource(file, file.convert(), manifest, result);
             }
 		}
