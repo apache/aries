@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import javax.transaction.RollbackException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 
 import org.apache.aries.blueprint.Interceptor;
@@ -77,7 +78,7 @@ public class TxInterceptorImpl implements Interceptor {
         safeEndCoordination(token);
         try {
             Transaction tran = token.getActiveTransaction();
-            if (tran != null && isRollBackException(ex)) {
+            if (tran != null && isRollBackException(ex, m)) {
                 tran.setRollbackOnly();
                 LOGGER.debug("Setting transaction to rollback only because of exception ", ex);
             }
@@ -126,7 +127,39 @@ public class TxInterceptorImpl implements Interceptor {
         return cm == null ? null : cm.getId();
     }
 
-    private static boolean isRollBackException(Throwable ex) {
+    private boolean isRollBackException(Throwable ex, Method m) {
+        if (m != null) {
+            Transactional annotation = m.getAnnotation(Transactional.class);
+            if (annotation == null) {
+                return isUncheckedException(ex);
+            } else {
+                //check dontRollbackOn first, since according to spec it has precedence
+                Class[] dontRollbackOn = annotation.dontRollbackOn();
+                for (Class dontRollbackClass : dontRollbackOn) {
+                    if (dontRollbackClass.isInstance(ex)) {
+                        LOGGER.debug("Current exception {} found in element dontRollbackOn.", ex.getClass());
+                        return false;
+                    }
+                }
+                //don't need to check further elements if ex is an unchecked exception
+                if (isUncheckedException(ex)) {
+                    return true;
+                }
+                Class[] rollbackOn = annotation.rollbackOn();
+                for (Class rollbackExceptionClass : rollbackOn) {
+                    if (rollbackExceptionClass.isInstance(ex)) {
+                        LOGGER.debug("Current exception {} found in element rollbackOn.", ex.getClass());
+                        return true;
+                    }
+                }
+            }
+        } else {
+	        return isUncheckedException(ex);
+        }
+        return false;
+    }
+
+    private static boolean isUncheckedException(Throwable ex) {
         return ex instanceof RuntimeException || ex instanceof Error;
     }
 
