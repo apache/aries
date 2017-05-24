@@ -47,6 +47,7 @@ import static org.apache.aries.osgi.functional.OSGi.onClose;
 import static org.apache.aries.osgi.functional.OSGi.register;
 import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
 import static org.apache.aries.osgi.functional.OSGi.services;
+import static org.apache.aries.osgi.functional.test.HighestRankingRouter.highest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -490,6 +491,58 @@ public class DSLTest {
             serviceRegistrationTwo.unregister();
             serviceRegistrationThree.unregister();
         }
+
+    }
+
+    @Test
+    public void testHighestRankingOnly() {
+        AtomicReference<ServiceReference<Service>> current =
+            new AtomicReference<>();
+
+        OSGi<Void> program =
+            highest(Service.class).
+            foreach(current::set, sr -> current.set(null));
+
+        assertNull(current.get());
+
+        try (OSGiResult<Void> result = program.run(bundleContext)) {
+            ServiceRegistration<Service> serviceRegistrationOne =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", 0);
+                    }});
+
+            assertEquals(serviceRegistrationOne.getReference(), current.get());
+
+            ServiceRegistration<Service> serviceRegistrationTwo =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", 1);
+                    }});
+
+            assertEquals(serviceRegistrationTwo.getReference(), current.get());
+
+            ServiceRegistration<Service> serviceRegistrationMinusOne =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", -1);
+                    }});
+
+            assertEquals(serviceRegistrationTwo.getReference(), current.get());
+
+            serviceRegistrationTwo.unregister();
+
+            assertEquals(serviceRegistrationOne.getReference(), current.get());
+
+            serviceRegistrationOne.unregister();
+
+            assertEquals(
+                serviceRegistrationMinusOne.getReference(), current.get());
+
+            serviceRegistrationMinusOne.unregister();
         }
 
     }
