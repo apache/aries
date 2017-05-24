@@ -31,7 +31,6 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -112,6 +111,7 @@ public class DSLTest {
         {
             assertEquals(25, atomicInteger.get());
         }
+
     }
 
     @Test
@@ -449,9 +449,7 @@ public class DSLTest {
             program = services(filter).then(program);
         }
 
-        OSGiResult<?> result = program.run(bundleContext);
-
-        try {
+        try (OSGiResult<?> result = program.run(bundleContext)) {
             assertFalse(closed.get());
             assertFalse(executed.get());
 
@@ -492,8 +490,6 @@ public class DSLTest {
             serviceRegistrationTwo.unregister();
             serviceRegistrationThree.unregister();
         }
-        finally {
-            result.close();
         }
 
     }
