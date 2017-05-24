@@ -148,4 +148,20 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	OSGi<T> filter(Predicate<T> predicate);
 
 	OSGi<Void> distribute(Function<T, OSGi<?>>... funs);
+
+	OSGi<T> route(Consumer<Router<T>> routerConsumer);
+
+	interface Router<T> {
+
+		void onIncoming(Consumer<Event<T>> adding);
+		void onLeaving(Consumer<Event<T>> removing);
+
+		void onStart(Runnable start);
+		void onClose(Runnable close);
+
+		void signalAdd(Event<T> event);
+		void signalLeave(Event<T> event);
+
+	}
+
 }
