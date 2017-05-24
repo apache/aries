@@ -60,8 +60,15 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 				Consumer<Tuple<S>> addedSource = added.getSource();
 
+				Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
+
+				Consumer<Tuple<S>> removedSource = removed.getSource();
+
+				AtomicReference<Tuple<S>> tupleAtomicReference =
+					new AtomicReference<>();
+
 				OSGiResultImpl<S> osgiResult = new OSGiResultImpl<>(
-					added, Pipe.create(), null,
+					added, removed, null,
 					() -> {
 						synchronized (identities) {
 							identities.values().forEach(OSGiResult::close);
@@ -80,7 +87,13 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 						OSGiResult<? extends S> or2 = program.run(
 							bundleContext,
-							s -> addedSource.accept(Tuple.create(s)));
+							s -> {
+								Tuple<S> tuple = Tuple.create(s);
+
+								tupleAtomicReference.set(tuple);
+
+								addedSource.accept(tuple);
+							});
 
 						identities.put(t.original, or2);
 
@@ -91,6 +104,8 @@ public class OSGiImpl<T> implements OSGi<T> {
 						synchronized (identities) {
 							OSGiResult<? extends S> osgiResult1 =
 								identities.remove(t.original);
+
+							removedSource.accept(tupleAtomicReference.get());
 
 							if (osgiResult1 != null) {
 								osgiResult1.close();
