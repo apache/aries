@@ -15,37 +15,11 @@
  * limitations under the License.
  */
 
-
-package org.apache.aries.osgi.functional.internal;
-
-import org.apache.aries.osgi.functional.Event;
-
-import java.util.function.Function;
+package org.apache.aries.osgi.functional;
 
 /**
  * @author Carlos Sierra Andrés
  */
-class Tuple<T> implements Event<T> {
-
-	public Object original;
-	public T t;
-
-	private Tuple(Object original, T t) {
-		this.original = original;
-		this.t = t;
-	}
-
-	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
-		return new Tuple<>(original, fun.apply(t));
-	}
-
-	public static <T> Tuple<T> create(T t) {
-		return new Tuple<>(t, t);
-	}
-
-	@Override
-	public T getContent() {
-		return t;
-	}
-
+public interface Event<T> {
+    T getContent();
 }

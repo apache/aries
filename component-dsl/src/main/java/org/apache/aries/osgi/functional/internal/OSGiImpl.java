@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.Event;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.osgi.framework.BundleContext;
@@ -225,6 +226,43 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
+	public OSGi<T> route(Consumer<Router<T>> routerConsumer) {
+
+		Pipe<Tuple<T>, Tuple<T>> outgoingAddingPipe = Pipe.create();
+		Pipe<Tuple<T>, Tuple<T>> outgoingRemovingPipe = Pipe.create();
+
+		Consumer<Tuple<T>> outgoingAddingSource =
+			outgoingAddingPipe.getSource();
+		Consumer<Tuple<T>> outgoingRemovingSource =
+			outgoingRemovingPipe.getSource();
+
+		final RouterImpl<T> router =
+			new RouterImpl<>(outgoingAddingSource, outgoingRemovingSource);
+
+		routerConsumer.accept(router);
+
+		return new OSGiImpl<>(((bundleContext) -> {
+			OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
+
+			osgiResult.added.map(
+				t -> {router._adding.accept(t); return null;});
+			osgiResult.removed.map(
+				t -> {router._leaving.accept(t); return null;});
+
+			return new OSGiResultImpl<>(
+				outgoingAddingPipe, outgoingRemovingPipe,
+				() -> {
+					router._start.run();
+					osgiResult.start.run();
+				},
+				() -> {
+					router._close.run();
+					osgiResult.close.run();
+				});
+		}));
+	}
+
+	@Override
 	@SafeVarargs
 	final public OSGi<Void> distribute(Function<T, OSGi<?>>... funs) {
 		return new OSGiImpl<>(bundleContext -> {
@@ -250,6 +288,56 @@ public class OSGiImpl<T> implements OSGi<T> {
 			);
 		});
 	}
+
+	static class RouterImpl<T> implements Router<T> {
+
+		RouterImpl(
+			Consumer<Tuple<T>> signalAdding, Consumer<Tuple<T>> signalLeaving) {
+
+			_signalAdding = signalAdding;
+			_signalLeaving = signalLeaving;
+		}
+
+		@Override
+		public void onIncoming(Consumer<Event<T>> adding) {
+			_adding = adding;
+		}
+
+		@Override
+		public void onLeaving(Consumer<Event<T>> removing) {
+			_leaving = removing;
+		}
+
+		@Override
+		public void onClose(Runnable close) {
+			_close = close;
+		}
+
+		@Override
+		public void onStart(Runnable start) {
+			_start = start;
+		}
+
+		@Override
+		public void signalAdd(Event<T> event) {
+			_signalAdding.accept((Tuple<T>)event);
+		}
+
+		@Override
+		public void signalLeave(Event<T> event) {
+			_signalLeaving.accept((Tuple<T>)event);
+		}
+
+		Consumer<Event<T>> _adding = (ign) -> {};
+		Consumer<Event<T>> _leaving = (ign) -> {};
+
+		private Runnable _close = NOOP;
+		private final Consumer<Tuple<T>> _signalAdding;
+		private final Consumer<Tuple<T>> _signalLeaving;
+		private Runnable _start = NOOP;
+
+	}
+
 }
 
 
