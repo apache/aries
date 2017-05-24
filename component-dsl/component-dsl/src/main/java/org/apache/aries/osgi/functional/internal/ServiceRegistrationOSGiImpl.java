@@ -47,14 +47,23 @@ public class ServiceRegistrationOSGiImpl<T, S extends T>
 			Tuple<ServiceRegistration<T>> tuple = Tuple.create(
 				serviceRegistration);
 
+			Pipe<Tuple<ServiceRegistration<T>>, Tuple<ServiceRegistration<T>>>
+				removed = Pipe.create();
+
+			Consumer<Tuple<ServiceRegistration<T>>> removedSource =
+				removed.getSource();
+
 			return new OSGiResultImpl<>(
-				added, Pipe.create(),
+				added, removed,
 				() -> addedSource.accept(tuple),
 				() -> {
 					try {
 						serviceRegistration.unregister();
 					}
 					catch (Exception e) {
+					}
+					finally {
+						removedSource.accept(tuple);
 					}
 				});
 		});

@@ -39,9 +39,16 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 
 			Consumer<Tuple<T>> source = added.getSource();
 
+			Pipe<Tuple<T>, Tuple<T>> removed = Pipe.create();
+
+			Consumer<Tuple<T>> removedSource = removed.getSource();
+
+			Tuple<T> tuple = Tuple.create(t);
+
 			return new OSGiResultImpl<>(
-				added, Pipe.create(),
-				() -> source.accept(Tuple.create(t)), OSGi.NOOP);
+				added, removed,
+				() -> source.accept(tuple),
+				() -> removedSource.accept(tuple));
 		}));
 
 		_t = t;
@@ -54,21 +61,37 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 
 			Consumer<Tuple<S>> addedSource = added.getSource();
 
+			Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
+
+			Consumer<Tuple<S>> removedSource = removed.getSource();
+
 			AtomicReference<OSGiResult<? extends S>> atomicReference =
 				new AtomicReference<>(null);
+			AtomicReference<Tuple<S>> tupleReference =
+				new AtomicReference<>();
 
 			return new OSGiResultImpl<>(
-				added, Pipe.create(),
+				added, removed,
 				() -> {
 					OSGi<? extends S> next = fun.apply(_t);
 
 					atomicReference.set(
 						next.run(
 							bundleContext,
-							s -> addedSource.accept(Tuple.create(s))));
+							s -> {
+								Tuple<S> tuple = Tuple.create(s);
+
+								tupleReference.set(tuple);
+
+								addedSource.accept(tuple);
+							}));
 
 				},
-				() -> atomicReference.get().close());
+				() -> {
+					removedSource.accept(tupleReference.get());
+
+					atomicReference.get().close();
+				});
 		});
 	}
 }
