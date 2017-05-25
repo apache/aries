@@ -600,7 +600,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
 
     for (String methodStaticFieldName : transformedMethods.keySet()) {
       // add a private static field for the method
-      cv.visitField(ACC_PRIVATE | ACC_STATIC | ACC_FINAL | ACC_SYNTHETIC,
+      cv.visitField(ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
           methodStaticFieldName, METHOD_TYPE.getDescriptor(), null, null)
           .visitEnd();
     }
