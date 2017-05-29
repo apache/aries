@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.container;
 
-import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URL;
 import java.security.AccessControlContext;
@@ -68,7 +67,6 @@ import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
 import org.apache.aries.blueprint.utils.JavaUtils;
 import org.apache.aries.blueprint.utils.ServiceUtil;
 import org.apache.aries.proxy.ProxyManager;
-import org.apache.aries.util.AriesFrameworkUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -137,7 +135,7 @@ public class BlueprintContainerImpl
     private final Bundle extenderBundle;
     private final BlueprintListener eventDispatcher;
     private final NamespaceHandlerRegistry handlers;
-    private final List<Object> pathList;
+    private final List<URL> pathList;
     private final ComponentDefinitionRegistryImpl componentDefinitionRegistry;
     private final AggregateConverter converter;
     private final ExecutorService executors;
@@ -165,7 +163,7 @@ public class BlueprintContainerImpl
 
     public BlueprintContainerImpl(Bundle bundle, BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher,
                                   NamespaceHandlerRegistry handlers, ExecutorService executor, ScheduledExecutorService timer,
-                                  List<Object> pathList, ProxyManager proxyManager, Collection<URI> namespaces) {
+                                  List<URL> pathList, ProxyManager proxyManager, Collection<URI> namespaces) {
         this.bundle = bundle;
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
@@ -303,7 +301,7 @@ public class BlueprintContainerImpl
                         readDirectives();
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATING, getBundle(), getExtenderBundle()));
                         parser = new Parser();
-                        parser.parse(getResources());
+                        parser.parse(pathList);
                         namespaces = parser.getNamespaces();
                         if (additionalNamespaces != null) {
                             namespaces.addAll(additionalNamespaces);
@@ -444,25 +442,6 @@ public class BlueprintContainerImpl
         }
     }
 
-    private List<URL> getResources() throws FileNotFoundException {
-        List<URL> resources = new ArrayList<URL>();
-        for (Object path : pathList) {
-            if (path instanceof URL) {
-                resources.add((URL) path);                
-            } else if (path instanceof String) {
-                URL url = bundle.getEntry((String) path);
-                if (url == null) {
-                    throw new FileNotFoundException("Unable to find configuration file for " + path);
-                } else {
-                    resources.add(url);
-                }
-            } else {
-                throw new IllegalArgumentException("Unexpected path type: " + path.getClass());
-            }
-        }
-        return resources;
-    }
-    
     public Class loadClass(final String name) throws ClassNotFoundException {
         if (accessControlContext == null) {
             return bundle.loadClass(name);
