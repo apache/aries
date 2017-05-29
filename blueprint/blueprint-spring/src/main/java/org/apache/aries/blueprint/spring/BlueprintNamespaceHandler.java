@@ -227,8 +227,19 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
     @SuppressWarnings("unchecked")
     private <T> T getPassThrough(ParserContext parserContext, String name, Class<T> clazz) {
         Metadata metadata = parserContext.getComponentDefinitionRegistry().getComponentDefinition(name);
+        if (metadata instanceof BeanMetadata) {
+            BeanMetadata bm = (BeanMetadata) metadata;
+            if (bm.getFactoryComponent() instanceof PassThroughMetadata
+                    && "getObject".equals(bm.getFactoryMethod())) {
+                metadata = bm.getFactoryComponent();
+            }
+        }
         if (metadata instanceof PassThroughMetadata) {
-            return (T) ((PassThroughMetadata) metadata).getObject();
+            Object o = ((PassThroughMetadata) metadata).getObject();
+            if (o instanceof Holder) {
+                o = ((Holder) o).getObject();
+            }
+            return (T) o;
         } else {
             return null;
         }
