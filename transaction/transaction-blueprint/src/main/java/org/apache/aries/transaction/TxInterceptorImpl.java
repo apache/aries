@@ -23,8 +23,6 @@ import java.lang.reflect.Method;
 import javax.transaction.RollbackException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
 
 import org.apache.aries.blueprint.Interceptor;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -53,12 +51,12 @@ public class TxInterceptorImpl implements Interceptor {
 
     @Override
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
-        final TxType type = txData.getEffectiveType(m);
+        final TransactionalAnnotationAttributes type = txData.getEffectiveType(m);
         if (type == null) {
             // No transaction
             return null;
         }
-        TransactionAttribute txAttribute = TransactionAttribute.fromValue(type);
+        TransactionAttribute txAttribute = TransactionAttribute.fromValue(type.getTxType());
 
         LOGGER.debug("PreCall for bean {}, method {} with tx strategy {}.", getCmId(cm), m.getName(), txAttribute);
         TransactionToken token = txAttribute.begin(tm);
@@ -129,13 +127,12 @@ public class TxInterceptorImpl implements Interceptor {
 
     private boolean isRollBackException(Throwable ex, Method m) {
         if (m != null) {
-            Transactional annotation = m.getAnnotation(Transactional.class);
-            if (annotation == null) {
+            TransactionalAnnotationAttributes effectiveType = txData.getEffectiveType(m);
+            if (effectiveType == null) {
                 return isUncheckedException(ex);
             } else {
                 //check dontRollbackOn first, since according to spec it has precedence
-                Class[] dontRollbackOn = annotation.dontRollbackOn();
-                for (Class dontRollbackClass : dontRollbackOn) {
+                for (Class dontRollbackClass : effectiveType.getDontRollbackOn()) {
                     if (dontRollbackClass.isInstance(ex)) {
                         LOGGER.debug("Current exception {} found in element dontRollbackOn.", ex.getClass());
                         return false;
@@ -145,8 +142,7 @@ public class TxInterceptorImpl implements Interceptor {
                 if (isUncheckedException(ex)) {
                     return true;
                 }
-                Class[] rollbackOn = annotation.rollbackOn();
-                for (Class rollbackExceptionClass : rollbackOn) {
+                for (Class rollbackExceptionClass : effectiveType.getRollbackOn()) {
                     if (rollbackExceptionClass.isInstance(ex)) {
                         LOGGER.debug("Current exception {} found in element rollbackOn.", ex.getClass());
                         return true;

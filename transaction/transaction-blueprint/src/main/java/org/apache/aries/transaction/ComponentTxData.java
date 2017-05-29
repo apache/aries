@@ -15,7 +15,7 @@ public class ComponentTxData {
     private static final Logger LOG = LoggerFactory.getLogger(ComponentTxData.class);
     private static final int BANNED_MODIFIERS = Modifier.PRIVATE | Modifier.STATIC;
     
-    Map<Method, TxType> txMap = new HashMap<Method, Transactional.TxType>();
+    private Map<Method, TransactionalAnnotationAttributes> txMap = new HashMap<Method, TransactionalAnnotationAttributes>();
     private boolean isTransactional;
     private Class<?> beanClass;
     
@@ -32,16 +32,16 @@ public class ComponentTxData {
             current = current.getSuperclass();
         }
     }
-    
-    TxType getEffectiveType(Method m) {
+
+    TransactionalAnnotationAttributes getEffectiveType(Method m) {
         if (txMap.containsKey(m)) {
                 return txMap.get(m);
         }
         try {
             Method effectiveMethod = beanClass.getDeclaredMethod(m.getName(), m.getParameterTypes());
-            TxType txType = txMap.get(effectiveMethod);
-            txMap.put(m, txType);
-            return txType;
+            TransactionalAnnotationAttributes txData = txMap.get(effectiveMethod);
+            txMap.put(m, txData);
+            return txData;
         } catch (NoSuchMethodException e) { // NOSONAR
             return getFromMethod(m);
         } catch (SecurityException e) {
@@ -49,12 +49,12 @@ public class ComponentTxData {
         }
     }
 
-    private TxType getFromMethod(Method m) {
+    private TransactionalAnnotationAttributes getFromMethod(Method m) {
         try {
             Method effectiveMethod = beanClass.getMethod(m.getName(), m.getParameterTypes());
-            TxType txType = txMap.get(effectiveMethod);
-            txMap.put(m, txType);
-            return txType;
+            TransactionalAnnotationAttributes txData = txMap.get(effectiveMethod);
+            txMap.put(m, txData);
+            return txData;
         } catch (NoSuchMethodException e1) {
             LOG.debug("No method found when scanning for transactions", e1);
             return null;
@@ -71,13 +71,15 @@ public class ComponentTxData {
         }
         for (Method m : c.getDeclaredMethods()) {
             try {
-                TxType t = getType(m.getAnnotation(Transactional.class));
+                Transactional annotation = m.getAnnotation(Transactional.class);
+                TxType t = getType(annotation);
                 if (t != null) {
-                   assertAllowedModifier(m);
-                   txMap.put(m, t);
+                    TransactionalAnnotationAttributes txData = new TransactionalAnnotationAttributes(t, annotation.dontRollbackOn(), annotation.rollbackOn());
+                    assertAllowedModifier(m);
+                   txMap.put(m, txData);
                    shouldAssignInterceptor = true;
                 } else if (defaultType != null){
-                   txMap.put(m, defaultType);
+                    txMap.put(m, new TransactionalAnnotationAttributes(defaultType));
                 }
             } catch(IllegalStateException e) {
                 LOG.warn("Invalid transaction annoation found", e);
