@@ -50,6 +50,11 @@
         </service-properties>
     </service>
 
+    <bean id="rollbackOnBeanImpl" class="org.apache.aries.transaction.test.impl.RollbackOnBeanImpl">
+        <property name="rBean" ref="requiredBeanImpl" />
+    </bean>
+    <service id="rollbackOnBean" ref="rollbackOnBeanImpl" interface="org.apache.aries.transaction.test.RollbackOnBean"/>
+
     <bean id="supportsBeanImpl" class="org.apache.aries.transaction.test.impl.SupportsTestBeanImpl">
         <property name="testBean" ref="mandatoryBeanImpl" />
         <property name="connector" ref="connector" />
