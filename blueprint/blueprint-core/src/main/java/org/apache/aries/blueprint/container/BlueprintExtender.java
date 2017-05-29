@@ -261,15 +261,15 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     }
 
     private boolean createContainer(Bundle bundle) {
-        List<Object> paths = getBlueprintPaths(bundle);
+        List<URL> paths = getBlueprintPaths(bundle);
         return createContainer(bundle, paths);
     }
 
-    private boolean createContainer(Bundle bundle, List<Object> paths) {
+    private boolean createContainer(Bundle bundle, List<URL> paths) {
         return createContainer(bundle, paths, null);
     }
 
-    private boolean createContainer(Bundle bundle, List<Object> paths, Collection<URI> namespaces) {
+    private boolean createContainer(Bundle bundle, List<URL> paths, Collection<URI> namespaces) {
         try {
             if (paths == null || paths.isEmpty()) {
                 // This bundle is not a blueprint bundle, so ignore it
@@ -351,12 +351,44 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
     }
 
-    private List<Object> getBlueprintPaths(Bundle bundle) {
+    private List<URL> resolvePaths(Bundle bundle, List<Object> paths) {
+        if (paths == null || paths.isEmpty()) {
+            return null;
+        }
+        List<URL> resolved = new ArrayList<URL>(paths.size());
+        for (Object path : paths) {
+            if (path instanceof URL) {
+                resolved.add((URL) path);
+            } else if (path instanceof String) {
+                String name = (String) path;
+                if (name.endsWith("/")) {
+                    addEntries(bundle, name, "*.xml", resolved);
+                } else {
+                    String baseName;
+                    String filePattern;
+                    int pos = name.lastIndexOf('/');
+                    if (pos < 0) {
+                        baseName = "/";
+                        filePattern = name;
+                    } else {
+                        baseName = name.substring(0, pos + 1);
+                        filePattern = name.substring(pos + 1);
+                    }
+                    addEntries(bundle, baseName, filePattern, resolved);
+                }
+            } else {
+                throw new IllegalArgumentException("Unexpected path type: " + path.getClass());
+            }
+        }
+        return resolved;
+    }
+
+    private List<URL> getBlueprintPaths(Bundle bundle) {
         LOGGER.debug("Scanning bundle {}/{} for blueprint application", bundle.getSymbolicName(), bundle.getVersion());
         try {
-            List<Object> pathList = new ArrayList<Object>();
-            String blueprintHeader = (String) bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
-            String blueprintHeaderAnnotation = (String) bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_ANNOTATION_HEADER);
+            List<URL> pathList = new ArrayList<URL>();
+            String blueprintHeader = bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_HEADER);
+            String blueprintHeaderAnnotation = bundle.getHeaders().get(BlueprintConstants.BUNDLE_BLUEPRINT_ANNOTATION_HEADER);
             if (blueprintHeader == null) {
                 blueprintHeader = "OSGI-INF/blueprint/";
             }
@@ -376,11 +408,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                         baseName = name.substring(0, pos + 1);
                         filePattern = name.substring(pos + 1);
                     }
-                    if (hasWildcards(filePattern)) {
-                        addEntries(bundle, baseName, filePattern, pathList);
-                    } else {
-                        addEntry(bundle, name, pathList);
-                    }
+                    addEntries(bundle, baseName, filePattern, pathList);
                 }
             }
             // Check annotations
@@ -521,23 +549,18 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
         return compatible;
     }
-    
-    private boolean hasWildcards(String path) {
-        return path.indexOf("*") >= 0; 
-    }
-    
+
     private String getFilePart(URL url) {
         String path = url.getPath();
         int index = path.lastIndexOf('/');
         return path.substring(index + 1);
     }
     
-    private String cachePath(Bundle bundle, String filePath)
-    {
-      return Integer.toHexString(bundle.hashCode()) + "/" + filePath;
+    private String cachePath(Bundle bundle, String filePath) {
+        return Integer.toHexString(bundle.hashCode()) + "/" + filePath;
     }    
     
-    private URL getOverrideURLForCachePath(String privatePath){
+    private URL getOverrideURLForCachePath(String privatePath) {
         URL override = null;
         File privateDataVersion = context.getDataFile(privatePath);
         if (privateDataVersion != null
@@ -550,27 +573,13 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
         return override;
     }
-    
-    private URL getOverrideURL(Bundle bundle, String path){
-        String cachePath = cachePath(bundle, path);
-        return getOverrideURLForCachePath(cachePath);
-    }
-    
-    private URL getOverrideURL(Bundle bundle, URL path, String basePath){
+
+    private URL getOverrideURL(Bundle bundle, URL path, String basePath) {
         String cachePath = cachePath(bundle, basePath + getFilePart(path));
         return getOverrideURLForCachePath(cachePath);
     }    
     
-    private void addEntry(Bundle bundle, String path, List<Object> pathList) {
-        URL override = getOverrideURL(bundle, path);
-        if(override == null) {
-            pathList.add(path);
-        } else {
-            pathList.add(override);
-        }
-    }
-    
-    private void addEntries(Bundle bundle, String path, String filePattern, List<Object> pathList) {
+    private void addEntries(Bundle bundle, String path, String filePattern, List<URL> pathList) {
         Enumeration<?> e = bundle.findEntries(path, filePattern, false);
         while (e != null && e.hasMoreElements()) {
             URL u = (URL) e.nextElement();
@@ -599,7 +608,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
 
         public BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths) {
-            if (BlueprintExtender.this.createContainer(bundle, blueprintPaths)) {
+            if (BlueprintExtender.this.createContainer(bundle, resolvePaths(bundle, blueprintPaths))) {
                 return getContainer(bundle);
             } else {
                 return null;
@@ -607,7 +616,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
 
         public BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths, Collection<URI> namespaces) {
-            if (BlueprintExtender.this.createContainer(bundle, blueprintPaths, namespaces)) {
+            if (BlueprintExtender.this.createContainer(bundle, resolvePaths(bundle, blueprintPaths), namespaces)) {
                 return getContainer(bundle);
             } else {
                 return null;
