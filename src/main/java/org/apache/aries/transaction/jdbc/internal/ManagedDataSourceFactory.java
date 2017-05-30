@@ -19,6 +19,7 @@
 package org.apache.aries.transaction.jdbc.internal;
 
 import org.apache.aries.transaction.AriesTransactionManager;
+import org.apache.aries.transaction.jdbc.RecoverableDataSource;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -40,7 +41,7 @@ public class ManagedDataSourceFactory {
     private final Map<String, Object> properties;
 
     private ServiceRegistration<DataSource> registration;
-    private ConnectionManagerFactory cm;
+    private RecoverableDataSource ds;
 
     public ManagedDataSourceFactory(ServiceReference reference,
                                     AriesTransactionManager transactionManager) {
@@ -104,39 +105,32 @@ public class ManagedDataSourceFactory {
         if (isXaDataSource) {
             props.put("aries.xa.aware", "true");
         }
+        props.put("jmx.objectname", "org.apache.aries.transaction:type=jdbc,name=" + getResourceName());
         props.put(Constants.SERVICE_RANKING, getInt(Constants.SERVICE_RANKING, 0) + 1000);
 
-        AbstractMCFFactory mcf = isXaDataSource ? new XADataSourceMCFFactory() : new DataSourceMCFFactory();
-        mcf.setDataSource(dataSource);
-        mcf.setExceptionSorterAsString(getString("aries.xa.exceptionSorter", "all"));
-        mcf.setUserName(getString("aries.xa.username", null));
-        mcf.setPassword(getString("aries.xa.password", null));
-        mcf.init();
+        ds = new RecoverableDataSource();
+        ds.setDataSource(dataSource);
+        ds.setExceptionSorter(getString("aries.xa.exceptionSorter", "all"));
+        ds.setUsername(getString("aries.xa.username", null));
+        ds.setPassword(getString("aries.xa.password", null));
 
-        cm = new ConnectionManagerFactory();
-        cm.setManagedConnectionFactory(mcf.getConnectionFactory());
-        cm.setTransactionManager(transactionManager);
-        cm.setAllConnectionsEqual(getBool("aries.xa.allConnectionsEquals", true));
-        cm.setConnectionMaxIdleMinutes(getInt("aries.xa.connectionMadIdleMinutes", 15));
-        cm.setConnectionMaxWaitMilliseconds(getInt("aries.xa.connectionMaxWaitMilliseconds", 5000));
-        cm.setPartitionStrategy(getString("aries.xa.partitionStrategy", null));
-        cm.setPooling(getBool("aries.xa.pooling", true));
-        cm.setPoolMaxSize(getInt("aries.xa.poolMaxSize", 10));
-        cm.setPoolMinSize(getInt("aries.xa.poolMinSize", 0));
-        cm.setValidateOnMatch(getBool("aries.xa.validateOnMatch", true));
-        cm.setBackgroundValidation(getBool("aries.xa.backgroundValidation", false));
-        cm.setBackgroundValidationMilliseconds(getInt("aries.xa.backgroundValidationMilliseconds", 600000));
-        cm.setTransaction(getString("aries.xa.transaction", isXaDataSource ? "xa" : "local"));
-        cm.setName(getResourceName());
-        cm.init();
+        ds.setTransactionManager(transactionManager);
+        ds.setAllConnectionsEquals(getBool("aries.xa.allConnectionsEquals", true));
+        ds.setConnectionMaxIdleMinutes(getInt("aries.xa.connectionMadIdleMinutes", 15));
+        ds.setConnectionMaxWaitMilliseconds(getInt("aries.xa.connectionMaxWaitMilliseconds", 5000));
+        ds.setPartitionStrategy(getString("aries.xa.partitionStrategy", null));
+        ds.setPooling(getBool("aries.xa.pooling", true));
+        ds.setPoolMaxSize(getInt("aries.xa.poolMaxSize", 10));
+        ds.setPoolMinSize(getInt("aries.xa.poolMinSize", 0));
+        ds.setValidateOnMatch(getBool("aries.xa.validateOnMatch", true));
+        ds.setBackgroundValidation(getBool("aries.xa.backgroundValidation", false));
+        ds.setBackgroundValidationMilliseconds(getInt("aries.xa.backgroundValidationMilliseconds", 600000));
+        ds.setTransaction(getString("aries.xa.transaction", isXaDataSource ? "xa" : "local"));
+        ds.setName(getResourceName());
+        ds.start();
 
         BundleContext context = reference.getBundle().getBundleContext();
-        DataSource ds = (DataSource) mcf.getConnectionFactory().createConnectionFactory(cm.getConnectionManager());
         registration = context.registerService(DataSource.class, ds, props);
-
-        if (isXaDataSource) {
-            Recovery.recover(getResourceName(), (XADataSource) dataSource, transactionManager);
-        }
     }
 
     public void unregister() throws Exception {
@@ -144,8 +138,8 @@ public class ManagedDataSourceFactory {
             registration.unregister();
             registration = null;
         }
-        if (cm != null) {
-            cm.destroy();
+        if (ds != null) {
+            ds.stop();
         }
     }
 
