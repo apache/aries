@@ -43,7 +43,7 @@ import java.sql.SQLFeatureNotSupportedException;
  *
  * @org.apache.xbean.XBean
  */
-public class RecoverableDataSource implements DataSource {
+public class RecoverableDataSource implements DataSource, RecoverableDataSourceMBean {
 
     private CommonDataSource dataSource;
     private AriesTransactionManager transactionManager;
@@ -63,6 +63,7 @@ public class RecoverableDataSource implements DataSource {
     private boolean backgroundValidation = false;
     private int backgroundValidationMilliseconds = 600000;
 
+    private ConnectionManagerFactory cm;
     private DataSource delegate;
 
     /**
@@ -217,7 +218,7 @@ public class RecoverableDataSource implements DataSource {
         mcf.setPassword(password);
         mcf.init();
 
-        ConnectionManagerFactory cm = new ConnectionManagerFactory();
+        cm = new ConnectionManagerFactory();
         cm.setManagedConnectionFactory(mcf.getConnectionFactory());
         cm.setTransactionManager(transactionManager);
         cm.setAllConnectionsEqual(allConnectionsEquals);
@@ -239,6 +240,87 @@ public class RecoverableDataSource implements DataSource {
         if (dataSource instanceof XADataSource) {
             Recovery.recover(name, (XADataSource) dataSource, transactionManager);
         }
+    }
+
+    /**
+     * @org.apache.xbean.DestroyMethod
+     */
+    public void stop() throws Exception {
+        if (cm != null) {
+            cm.destroy();
+        }
+    }
+
+    //---------------------------
+    // MBean implementation
+    //---------------------------
+
+    public String getName() {
+        return name;
+    }
+
+    public String getExceptionSorter() {
+        return exceptionSorter;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public boolean isAllConnectionsEquals() {
+        return allConnectionsEquals;
+    }
+
+    public int getConnectionMaxIdleMinutes() {
+        return connectionMaxIdleMinutes;
+    }
+
+    public int getConnectionMaxWaitMilliseconds() {
+        return connectionMaxWaitMilliseconds;
+    }
+
+    public String getPartitionStrategy() {
+        return partitionStrategy;
+    }
+
+    public boolean isPooling() {
+        return pooling;
+    }
+
+    public int getPoolMaxSize() {
+        return poolMaxSize;
+    }
+
+    public int getPoolMinSize() {
+        return poolMinSize;
+    }
+
+    public boolean isValidateOnMatch() {
+        return validateOnMatch;
+    }
+
+    public boolean isBackgroundValidation() {
+        return backgroundValidation;
+    }
+
+    public int getBackgroundValidationMilliseconds() {
+        return backgroundValidationMilliseconds;
+    }
+
+    public String getTransaction() {
+        return transaction;
+    }
+
+    public int getConnectionCount() {
+        return cm.getPoolingSupport().getConnectionCount();
+    }
+
+    public int getIdleConnectionCount() {
+        return cm.getPoolingSupport().getIdleConnectionCount();
     }
 
     //---------------------------
