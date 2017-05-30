@@ -18,10 +18,16 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
-import javax.resource.spi.TransactionSupport;
-import javax.sql.DataSource;
-
+import org.tranql.connector.CredentialExtractor;
 import org.tranql.connector.jdbc.AbstractLocalDataSourceMCF;
+
+import javax.resource.ResourceException;
+import javax.resource.spi.ResourceAdapterInternalException;
+import javax.resource.spi.TransactionSupport;
+import javax.security.auth.Subject;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class DataSourceMCFFactory extends AbstractMCFFactory {
 
@@ -47,6 +53,21 @@ public class DataSourceMCFFactory extends AbstractMCFFactory {
 
         public String getPassword() {
             return DataSourceMCFFactory.this.getPassword();
+        }
+
+        @Override
+        protected Connection getPhysicalConnection(Subject subject, CredentialExtractor credentialExtractor) throws ResourceException {
+            try {
+                String userName = credentialExtractor.getUserName();
+                String password = credentialExtractor.getPassword();
+                if (userName != null) {
+                    return dataSource.getConnection(userName, password);
+                } else {
+                    return dataSource.getConnection();
+                }
+            } catch (SQLException e) {
+                throw new ResourceAdapterInternalException("Unable to obtain physical connection to " + dataSource, e);
+            }
         }
 
         @Override
