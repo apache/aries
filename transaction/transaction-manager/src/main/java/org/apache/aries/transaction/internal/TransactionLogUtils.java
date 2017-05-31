@@ -57,12 +57,8 @@ public class TransactionLogUtils {
      */
     public static boolean copyActiveTransactions(Dictionary<String, Object> oldConfiguration, Dictionary<String, ?> newConfiguration)
             throws ConfigurationException, IOException {
-        boolean initialConfiguration = false;
         if (oldConfiguration == null) {
             oldConfiguration = new Hashtable<String, Object>();
-            // initialConfiguration means we don't know the location of "old" logs (if there are any) and
-            // assume there may be logs in newLogDirectory
-            initialConfiguration = true;
         }
         if (oldConfiguration.get(HOWL_LOG_FILE_DIR) == null) {
             // we will be adjusting oldConfiguration to be able to create "old HOWLLog"
