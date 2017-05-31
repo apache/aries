@@ -332,6 +332,21 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3</version>
                 <executions>
+                     <execution>
+                        <id>tb1-nobsn</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/*</exclude>
+                            </excludes>
+                            <classesDirectory>${project.build.directory}/test-classes</classesDirectory>
+                            <outputDirectory>${project.build.directory}/test-classes/nobsn</outputDirectory>
+                            <finalName>tb1</finalName>
+                        </configuration>
+                        <phase>process-test-classes</phase>
+                    </execution>
                     <execution>
                         <id>tb1-application1</id>
                         <goals>
