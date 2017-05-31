@@ -18,6 +18,11 @@
 
 package org.apache.aries.osgi.functional;
 
+import org.apache.aries.functional.Function2;
+import org.apache.aries.functional.Function3;
+import org.apache.aries.functional.Function4;
+import org.apache.aries.functional.Function5;
+import org.apache.aries.functional.Function6;
 import org.apache.aries.osgi.functional.internal.BundleContextOSGiImpl;
 import org.apache.aries.osgi.functional.internal.BundleOSGi;
 import org.apache.aries.osgi.functional.internal.ChangeContextOSGiImpl;
@@ -36,6 +41,7 @@ import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -162,6 +168,30 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		void signalAdd(Event<T> event);
 		void signalLeave(Event<T> event);
 
+	}
+
+	public default <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
+		return fun.flatMap(this::map);
+	}
+
+	public static <A, B, C> OSGi<C> apply(Function2<A, B, C> fun, OSGi<A> a, OSGi<B> b) {
+		return b.applyTo(a.applyTo(just(fun.curried())));
+	}
+
+	public static <A, B, C, D> OSGi<D> apply(Function3<A, B, C, D> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c) {
+		return c.applyTo(OSGi.apply((A aa, B bb) -> fun.curried().apply(aa).apply(bb), a, b));
+	}
+
+	public static <A, B, C, D, E> OSGi<E> apply(Function4<A, B, C, D, E> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d) {
+		return d.applyTo(OSGi.apply((A aa, B bb, C cc) -> fun.curried().apply(aa).apply(bb).apply(cc), a, b, c));
+	}
+
+	public static <A, B, C, D, E, F> OSGi<F> apply(Function5<A, B, C, D, E, F> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d, OSGi<E> e) {
+		return e.applyTo(OSGi.apply((A aa, B bb, C cc, D dd) -> fun.curried().apply(aa).apply(bb).apply(cc).apply(dd), a, b, c, d));
+	}
+
+	public static <A, B, C, D, E, F, G> OSGi<G> apply(Function6<A, B, C, D, E, F, G> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d, OSGi<E> e, OSGi<F> f) {
+		return f.applyTo(OSGi.apply((A aa, B bb, C cc, D dd, E ee) -> fun.curried().apply(aa).apply(bb).apply(cc).apply(dd).apply(ee), a, b, c, d, e));
 	}
 
 }
