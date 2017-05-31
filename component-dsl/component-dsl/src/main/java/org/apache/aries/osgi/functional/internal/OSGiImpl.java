@@ -281,25 +281,58 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@SafeVarargs
 	final public OSGi<Void> distribute(Function<T, OSGi<?>>... funs) {
 		return new OSGiImpl<>(bundleContext -> {
-			ArrayList<OSGiResult> results = new ArrayList<>();
-
 			Pipe<Tuple<Void>, Tuple<Void>> added = Pipe.create();
 
 			Consumer<Tuple<Void>> addedSource = added.getSource();
 
+			IdentityHashMap<Object, List<OSGiResult<?>>> results =
+				new IdentityHashMap<>();
+
+			Pipe<Tuple<Void>, Tuple<Void>> removed = Pipe.create();
+
+			Consumer<Tuple<Void>> removedSource = removed.getSource();
+
+			AtomicReference<OSGiResult<?>> atomicReference =
+				new AtomicReference<>();
+
 			return new OSGiResultImpl<>(
-				added, Pipe.create(),
+				added, removed,
 				() -> {
-					List<OSGiResult> results2 = Arrays.stream(funs).
-						map(this::flatMap).
-						map(o -> o.run(bundleContext)).
-						collect(Collectors.toList());
+					OSGiResultImpl<T> osgiResult = _operation.run(
+						bundleContext);
 
-					results.addAll(results2);
+					osgiResult.added.map(t -> {
+						results.put(
+							t.original,
+							Arrays.stream(funs).
+								map(f -> f.apply(t.t)).
+								map(o -> o.run(bundleContext)).
+								collect(Collectors.toList())
+						);
 
-					addedSource.accept(Tuple.create(null));
+						addedSource.accept(Tuple.create(null));
+
+						return null;
+					});
+
+					osgiResult.removed.map(t -> {
+						results.get(t.original).forEach(OSGiResult::close);
+
+						removedSource.accept(Tuple.create(null));
+
+						return null;
+					});
+
+					osgiResult.start.run();
+
+					atomicReference.set(osgiResult);
 				},
-				() -> results.stream().forEach(OSGiResult::close)
+				() -> {
+					results.values().forEach(
+						l -> l.forEach(OSGiResult::close));
+
+					atomicReference.get().close();
+				}
 			);
 		});
 	}
