@@ -55,7 +55,6 @@ public class TransactionLogUtils {
      * @param newConfiguration configuration to create new transaction manager
      * @return <code>true</code> if there was conversion performed
      */
-    @SuppressWarnings("unchecked")
     public static boolean copyActiveTransactions(Dictionary<String, Object> oldConfiguration, Dictionary<String, ?> newConfiguration)
             throws ConfigurationException, IOException {
         boolean initialConfiguration = false;
@@ -230,7 +229,8 @@ public class TransactionLogUtils {
      * @return
      */
     private static BaseTxLogConfig transactionLogFileConfig(File txFile) throws IOException {
-        FileChannel channel = new RandomAccessFile(txFile, "r").getChannel();
+        RandomAccessFile raf = new RandomAccessFile(txFile, "r");
+        FileChannel channel = raf.getChannel();
         try {
             ByteBuffer bb = ByteBuffer.wrap(new byte[1024]);
             int read = channel.read(bb);
@@ -267,6 +267,7 @@ public class TransactionLogUtils {
             return new BaseTxLogConfig(maxLogFiles, maxBlocksPerFile, bufferSizeKBytes);
         } finally {
             channel.close();
+            raf.close();
         }
     }
 

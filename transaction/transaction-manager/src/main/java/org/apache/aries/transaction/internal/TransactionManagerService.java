@@ -38,6 +38,7 @@ import org.osgi.service.cm.ConfigurationException;
 
 /**
  */
+@SuppressWarnings("rawtypes")
 public class TransactionManagerService {
 
     public static final String TRANSACTION_TIMEOUT = "aries.transaction.timeout";
@@ -65,7 +66,6 @@ public class TransactionManagerService {
 
     @SuppressWarnings("unused")
     private final String pid;
-    @SuppressWarnings("rawtypes")
     private final Dictionary properties;
     private final BundleContext bundleContext;
     private boolean useSpring;
@@ -73,7 +73,7 @@ public class TransactionManagerService {
     private TransactionLog transactionLog;
     private ServiceRegistration<?> serviceRegistration;
 
-    public TransactionManagerService(String pid, @SuppressWarnings("rawtypes") Dictionary properties, BundleContext bundleContext) throws ConfigurationException {
+    public TransactionManagerService(String pid, Dictionary properties, BundleContext bundleContext) throws ConfigurationException {
         this.pid = pid;
         this.properties = properties;
         this.bundleContext = bundleContext;
