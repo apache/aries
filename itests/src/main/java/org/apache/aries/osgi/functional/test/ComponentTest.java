@@ -39,8 +39,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+import static org.apache.aries.osgi.functional.OSGi.apply;
 import static org.apache.aries.osgi.functional.OSGi.bundleContext;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
@@ -77,7 +79,7 @@ public class ComponentTest {
     }
 
     @Test
-    public void testComponent() {
+    public void testComponent() throws IOException {
         OSGi<?> program =
             configurations("org.components.MyComponent").flatMap(props ->
             services(Service.class).flatMap(ms ->
@@ -104,10 +106,11 @@ public class ComponentTest {
                 put("service.pid", "org.components.MyComponent");
             }});
 
+        Configuration factoryConfiguration = null;
+
         try (OSGiResult<?> run = program.run(_bundleContext)) {
-            Configuration factoryConfiguration =
-                _configurationAdmin.createFactoryConfiguration(
-                    "org.components.MyComponent");
+            factoryConfiguration = _configurationAdmin.createFactoryConfiguration(
+                "org.components.MyComponent");
             factoryConfiguration.update(new Hashtable<>());
 
             countDownLatch.await(10, TimeUnit.SECONDS);
@@ -184,8 +187,150 @@ public class ComponentTest {
         }
         finally {
             serviceTracker.close();
+
+            if (factoryConfiguration != null) {
+                factoryConfiguration.delete();
+            }
         }
     }
+
+    @Test
+    public void testComponentApplicative() throws IOException, TimeoutException {
+        OSGi<?> program =
+            apply(
+                Component::new,
+                configurations("org.components.MyComponent"),
+                services(Service.class)).
+                flatMap(
+                    comp ->
+                register(Component.class, comp, new HashMap<>()).distribute(
+                    ign -> dynamic(
+                        highestService(ServiceOptional.class),
+                        comp::setOptional, c -> comp.setOptional(null)),
+                    ign -> dynamic(
+                        services(ServiceForList.class),
+                        comp::addService, comp::removeService)
+                ));
+
+        ServiceTracker<Component, Component> serviceTracker =
+            new ServiceTracker<>(_bundleContext, Component.class, null);
+
+        serviceTracker.open();
+
+        Configuration factoryConfiguration = null;
+
+        try (OSGiResult<?> run = program.run(_bundleContext)) {
+            factoryConfiguration =
+                _configurationAdmin.createFactoryConfiguration(
+                    "org.components.MyComponent");
+
+            factoryConfiguration.update(new Hashtable<>());
+
+            Thread.sleep(1000);
+
+            assertNull(serviceTracker.getService());
+
+            ServiceRegistration<Service> serviceRegistration =
+                _bundleContext.registerService(
+                    Service.class, new Service(), new Hashtable<>());
+
+            Component component = serviceTracker.waitForService(10 * 1000);
+
+            assertNotNull(component);
+
+            ServiceRegistration<Service> serviceRegistration10 =
+                _bundleContext.registerService(
+                    Service.class, new Service(), new Hashtable<>());
+
+            assertEquals(2, serviceTracker.getServiceReferences().length);
+
+            Configuration factoryConfiguration2 =
+                _configurationAdmin.createFactoryConfiguration(
+                    "org.components.MyComponent");
+
+            factoryConfiguration2.update(new Hashtable<>());
+
+            Thread.sleep(1000);
+
+            assertEquals(4, serviceTracker.getServiceReferences().length);
+
+            factoryConfiguration2.delete();
+
+            Thread.sleep(1000);
+
+            assertEquals(2, serviceTracker.getServiceReferences().length);
+
+            serviceRegistration10.unregister();
+
+            assertNull(component.getOptional());
+
+            ServiceRegistration<ServiceOptional> serviceRegistration2 =
+                _bundleContext.registerService(
+                    ServiceOptional.class, new ServiceOptional(),
+                    new Hashtable<>());
+
+            Thread.sleep(1000L);
+
+            assertNotNull(component.getOptional());
+
+            ServiceOptional serviceOptional = new ServiceOptional();
+
+            ServiceRegistration<ServiceOptional> serviceRegistration3 =
+                _bundleContext.registerService(
+                    ServiceOptional.class, serviceOptional,
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", 1);
+                    }});
+
+            assertEquals(serviceOptional, component.getOptional());
+
+            serviceRegistration3.unregister();
+
+            assertNotNull(component.getOptional());
+
+            serviceRegistration2.unregister();
+
+            assertNull(component.getOptional());
+
+            ServiceRegistration<ServiceForList> serviceRegistration4 =
+                _bundleContext.registerService(
+                    ServiceForList.class, new ServiceForList(),
+                    new Hashtable<>());
+
+            ServiceRegistration<ServiceForList> serviceRegistration5 =
+                _bundleContext.registerService(
+                    ServiceForList.class, new ServiceForList(),
+                    new Hashtable<>());
+
+            assertEquals(2, component.getServiceForLists().size());
+
+            serviceRegistration4.unregister();
+
+            assertEquals(1, component.getServiceForLists().size());
+
+            serviceRegistration5.unregister();
+
+            assertEquals(0, component.getServiceForLists().size());
+
+            serviceRegistration.unregister();
+
+            assertNull(serviceTracker.getService());
+        }
+        catch (IOException ioe) {
+
+        }
+        catch (InterruptedException e) {
+            Assert.fail("Timeout waiting for configuration");
+        }
+        finally {
+            serviceTracker.close();
+
+            if (factoryConfiguration != null) {
+                factoryConfiguration.delete();
+            }
+        }
+    }
+
 
     private static <T> OSGi<T> highestService(Class<T> clazz) {
         return highest(clazz).flatMap(sr ->

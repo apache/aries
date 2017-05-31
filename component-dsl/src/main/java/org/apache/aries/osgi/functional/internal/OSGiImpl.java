@@ -26,7 +26,9 @@ import org.osgi.framework.InvalidSyntaxException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -335,6 +337,193 @@ public class OSGiImpl<T> implements OSGi<T> {
 				}
 			);
 		});
+	}
+
+	private static class Pair<X, Y> {
+		private final X _first;
+		private final Y _second;
+
+		public Pair(X first, Y second) {
+			_first = first;
+			_second = second;
+		}
+
+		public X getFirst() {
+			return _first;
+		}
+
+		public Y getSecond() {
+			return _second;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Pair<?, ?> pair = (Pair<?, ?>) o;
+
+			return _first.equals(pair._first);
+		}
+
+		@Override
+		public int hashCode() {
+			return _first.hashCode();
+		}
+	}
+
+	@Override
+	public <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
+		return new OSGiImpl<>(
+			((bundleContext) -> {
+				Map<Tuple<T>, List<Pair<Function<T, S>, Tuple<S>>>> identities =
+					new HashMap<>();
+
+				Map<Function<T, S>, List<Pair<Tuple<T>, Tuple<S>>>> funs =
+					new IdentityHashMap<>();
+
+				AtomicReference<OSGiResult<?>> myCloseReference =
+					new AtomicReference<>();
+
+				AtomicReference<OSGiResult<?>> otherCloseReference =
+					new AtomicReference<>();
+
+				Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+
+				Consumer<Tuple<S>> addedSource = added.getSource();
+
+				Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
+
+				Consumer<Tuple<S>> removedSource = removed.getSource();
+
+				OSGiResultImpl<S> osgiResult = new OSGiResultImpl<>(
+					added, removed, null,
+					() -> {
+						synchronized (identities) {
+							identities.values().forEach(i ->
+								i.forEach(
+									p -> removedSource.accept(
+										p.getSecond())));
+
+							funs.clear();
+						}
+
+						myCloseReference.get().close();
+
+						otherCloseReference.get().close();
+					});
+
+				osgiResult.start = () -> {
+					OSGiResultImpl<T> or1 = _operation.run(bundleContext);
+
+					myCloseReference.set(or1);
+
+					or1.added.map(t -> {
+						synchronized (identities) {
+							identities.put(t, new ArrayList<>());
+
+							funs.keySet().forEach(f ->
+								processAdded(
+									identities, funs, addedSource, f, t));
+
+							return null;
+						}
+					});
+
+					or1.removed.map(t -> {
+						synchronized (identities) {
+							List<Pair<Function<T, S>, Tuple<S>>> remove =
+								identities.remove(t);
+
+							if (remove == null) {
+								return null;
+							}
+
+							remove.forEach(p -> {
+								List<Pair<Tuple<T>, Tuple<S>>> pairs = funs.get(
+									p.getFirst());
+
+								if (pairs == null) {
+									return;
+								}
+
+								pairs.remove(new Pair<>(t, null));
+
+								removedSource.accept(p.getSecond());
+							});
+						}
+
+						return null;
+					});
+
+					OSGiResult<Void> or2 = fun.foreach(
+						f -> {
+							synchronized (identities) {
+								funs.put(f, new ArrayList<>());
+
+								identities.keySet().forEach(
+									t -> processAdded(
+										identities, funs, addedSource, f, t));
+							}
+						},
+						f -> {
+							synchronized (identities) {
+								List<Pair<Tuple<T>, Tuple<S>>> remove = funs.remove(f);
+
+								if (remove == null) {
+									return;
+								}
+
+								remove.forEach(p -> {
+									List<Pair<Function<T, S>, Tuple<S>>> pairs =
+										identities.get(p.getFirst());
+
+									Iterator<Pair<Function<T, S>, Tuple<S>>> iterator =
+										pairs.iterator();
+
+									while (iterator.hasNext()) {
+										Pair<Function<T, S>, Tuple<S>> next = iterator.next();
+
+										if (next.getFirst() == f) {
+											iterator.remove();
+
+											break;
+										}
+									}
+
+									removedSource.accept(p.getSecond());
+								});
+							}
+						}).run(bundleContext);
+
+					or1.start.run();
+
+					otherCloseReference.set(or2);
+				};
+
+				return osgiResult;
+			}
+			));
+	}
+
+	private <S> void processAdded(
+		Map<Tuple<T>, List<Pair<Function<T, S>, Tuple<S>>>> identities,
+		Map<Function<T, S>, List<Pair<Tuple<T>, Tuple<S>>>> funs,
+		Consumer<Tuple<S>> addedSource, Function<T, S> f, Tuple<T> t) {
+
+		S result = f.apply(t.t);
+
+		Tuple<S> tuple = Tuple.create(result);
+
+		List<Pair<Function<T, S>, Tuple<S>>> tuples = identities.get(t);
+
+		tuples.add(new Pair<>(f, tuple));
+
+		List<Pair<Tuple<T>, Tuple<S>>> tuples2 = funs.get(f);
+
+		tuples2.add(new Pair<>(t, tuple));
+
+		addedSource.accept(tuple);
 	}
 
 	static class RouterImpl<T> implements Router<T> {

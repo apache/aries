@@ -1,1 +1,3 @@
-Export-Package: org.apache.aries.osgi.functional
+Export-Package:\
+	org.apache.aries.functional,\
+	org.apache.aries.osgi.functional
