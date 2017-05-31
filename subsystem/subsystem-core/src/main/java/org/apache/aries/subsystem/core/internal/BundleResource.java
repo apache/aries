@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.core.archive.BundleManifest;
 import org.apache.aries.subsystem.core.archive.BundleRequiredExecutionEnvironmentHeader;
@@ -49,6 +50,7 @@ import org.apache.aries.subsystem.core.archive.RequirementHeader;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.apache.aries.util.filesystem.IFile;
 import org.apache.aries.util.io.IOUtils;
+import org.osgi.framework.Constants;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
@@ -56,10 +58,18 @@ import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemException;
 
 public class BundleResource implements Resource, org.apache.aries.subsystem.core.repository.RepositoryContent {
-	private static BundleManifest computeManifest(IDirectory directory) {
-		return new BundleManifest(org.apache.aries.util.manifest.BundleManifest
-				.fromBundle(directory)
-				.getRawManifest());
+	private static BundleManifest computeManifest(IDirectory directory, IFile content) {
+		org.apache.aries.util.manifest.BundleManifest bm = 
+				org.apache.aries.util.manifest.BundleManifest.fromBundle(directory);
+		if (bm == null) {
+			throw new IllegalArgumentException("File \"" + content.getName() + "\" contains no bundle manifest META-INF/MANIFEST.MF.");
+		}
+		Manifest m = bm.getRawManifest();
+		BundleManifest result = new BundleManifest(m);
+		if (result.getHeader(Constants.BUNDLE_SYMBOLICNAME) == null) {
+			throw new IllegalArgumentException("File \"" + content.getName() + "\" has a META-INF/MANIFEST.MF with no Bundle-SymbolicName header.");
+		}
+		return result;
 	}
 	
 	private final List<Capability> capabilities = new ArrayList<Capability>();
@@ -70,7 +80,7 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 	public BundleResource(IFile content) {
 		this.content = content;
 		IDirectory dir = content.isDirectory() ? content.convert() : content.convertNested();
-		manifest = computeManifest(dir);
+		manifest = computeManifest(dir, content);
 		computeRequirementsAndCapabilities(dir);
 	}
 
