@@ -29,6 +29,7 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class SingleServiceTracker<T> 
 {
   public static interface SingleServiceListener
@@ -123,7 +124,6 @@ public final class SingleServiceTracker<T>
 	  ref = ctx.getServiceReference(className);
     }
     if (ref != null) {
-      @SuppressWarnings("unchecked")
       T service = (T) ctx.getService(ref);
       if (service != null) {
         clear = false;

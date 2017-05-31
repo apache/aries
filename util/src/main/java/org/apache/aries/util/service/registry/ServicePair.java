@@ -25,6 +25,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 // TODO need to determine if this needs to be thread safe or not
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ServicePair<T>
 {
   private BundleContext ctx;
@@ -44,7 +45,6 @@ public class ServicePair<T>
     serviceObject = service;
   }
   
-  @SuppressWarnings("unchecked")
   public T get()
   {
     if (serviceObject == null && ref.getBundle() != null) {

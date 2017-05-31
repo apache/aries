@@ -36,6 +36,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  * normal non-recursive BundleTracker when registering bundle tracker
  * customizers.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class InternalRecursiveBundleTracker extends BundleTracker
 {
   private final int mask;

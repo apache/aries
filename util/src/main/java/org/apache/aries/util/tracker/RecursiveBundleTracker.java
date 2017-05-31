@@ -37,6 +37,7 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  *
  * @author pradine
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class RecursiveBundleTracker {
     private static final int COMPOSITE_BUNDLE_MASK =
             Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING;

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
+@SuppressWarnings("rawtypes")
 public class FragmentUtilsTest {
 
     private Bundle hostBundle;
@@ -41,7 +42,6 @@ public class FragmentUtilsTest {
                 new Hashtable<String, Object>()), Bundle.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testFragmentCreation() throws Exception {
         Bundle exportBundle = makeBundleWithExports("export.bundle", "1.2.3",

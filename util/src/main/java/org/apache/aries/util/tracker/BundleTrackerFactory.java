@@ -29,6 +29,7 @@ import org.osgi.util.tracker.BundleTracker;
 /**
  * This is the factory for BundleTracker
  */
+@SuppressWarnings("rawtypes")
 public class BundleTrackerFactory {
     private static ConcurrentHashMap<String, List<BundleTracker>> btMap = new ConcurrentHashMap<String, List<BundleTracker>>();
 

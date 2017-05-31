@@ -20,14 +20,9 @@
 package org.apache.aries.util.filesystem;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.zip.ZipFile;
 
 import org.apache.aries.util.filesystem.impl.FileSystemImpl;
-import org.apache.aries.util.filesystem.impl.NestedZipDirectory;
-import org.apache.aries.util.io.IOUtils;
 
 /**
  * An abstraction of a file system. A file system can be a zip, or a directory.

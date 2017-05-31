@@ -114,6 +114,7 @@ public class RecursiveBundleTrackerTest {
         assertEquals(1, BundleTrackerFactory.getBundleTrackerList(cb.getSymbolicName()+"_"+cb.getVersion()).size());        
     }
     
+    @SuppressWarnings("rawtypes")
     private void makeSUT() {
         BundleTrackerCustomizer customizer = Skeleton.newMock(BundleTrackerCustomizer.class);
 

@@ -41,6 +41,7 @@ import java.util.Map;
  *
  * @version $Rev$ $Date$
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class BundleHookBundleTracker<T> extends BundleTracker {
 
     static {

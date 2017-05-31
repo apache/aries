@@ -33,6 +33,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 
+@SuppressWarnings("rawtypes")
 public class LoggerTest {
     private BundleContext ctx;
 
