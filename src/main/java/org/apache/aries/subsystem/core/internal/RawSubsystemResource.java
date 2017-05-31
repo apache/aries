@@ -467,9 +467,16 @@ public class RawSubsystemResource implements Resource {
             IOException, ResolutionException, MalformedURLException {
         String name = file.getName();
         if (name.endsWith(".esa")) {
-        	result.add(new RawSubsystemResource(convertFileToLocation(file), content, parentSubsystem));
+            result.add(new RawSubsystemResource(convertFileToLocation(file), content, parentSubsystem));
         } else if (name.endsWith(".jar")) {
-            result.add(new BundleResource(file));
+            try {
+                result.add(new BundleResource(file));
+            } catch (IllegalArgumentException e) {
+                // Ignore if the resource is an invalid bundle or not a bundle at all.
+                if (logger.isDebugEnabled()) {
+                    logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource.", e);
+                }
+            }
         } else {
             // This is a different type of file. Add a file resource for it if there is a custom content handler for it.
             FileResource fr = new FileResource(file);
@@ -493,7 +500,7 @@ public class RawSubsystemResource implements Resource {
             } catch (Exception e) {
                 // Ignore if the resource is an invalid bundle or not a bundle at all.
                 if (logger.isDebugEnabled()) {
-                    logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource", e);
+                    logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource.", e);
                 }
             }
         }
