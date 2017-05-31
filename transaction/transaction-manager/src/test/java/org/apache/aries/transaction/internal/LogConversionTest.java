@@ -54,7 +54,7 @@ public class LogConversionTest {
         FileUtils.deleteDirectory(logDir);
         logDir.mkdirs();
         Dictionary<String, Object> properties = new Hashtable<String, Object>();
-        HOWLLog txLog = createLog("initialConfiguration", "transaction", 2, -1, 1, properties);
+        createLog("initialConfiguration", "transaction", 2, -1, 1, properties);
 
         assertFalse(TransactionLogUtils.copyActiveTransactions(null, properties));
     }
@@ -65,7 +65,7 @@ public class LogConversionTest {
         FileUtils.deleteDirectory(logDir);
         logDir.mkdirs();
         Dictionary<String, Object> properties = new Hashtable<String, Object>();
-        HOWLLog txLog = createLog("initialConfigurationEmptyTransactionLog", "transaction", 2, -1, 1, properties);
+        createLog("initialConfigurationEmptyTransactionLog", "transaction", 2, -1, 1, properties);
         new RandomAccessFile(new File(logDir, "transaction_1.log"), "rw").close();
         new RandomAccessFile(new File(logDir, "transaction_2.log"), "rw").close();
 
@@ -250,7 +250,7 @@ public class LogConversionTest {
         transaction(txLog, 1, false);
         txLog.doStop();
 
-        long lm = earlierLastModified(new File(logDir, "transaction_1.log"));
+        earlierLastModified(new File(logDir, "transaction_1.log"));
 
         Hashtable<String, Object> newConfig = (Hashtable<String, Object>) properties.clone();
         newConfig.put("aries.transaction.howl.logFileName", "megatransaction");
@@ -273,7 +273,7 @@ public class LogConversionTest {
         transaction(txLog, 1, false);
         txLog.doStop();
 
-        long lm = earlierLastModified(new File(logDir, "transaction_1.log"));
+        earlierLastModified(new File(logDir, "transaction_1.log"));
 
         Hashtable<String, Object> newConfig = (Hashtable<String, Object>) properties.clone();
         newConfig.put("aries.transaction.howl.logFileName", "megatransaction");
