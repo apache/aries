@@ -80,7 +80,7 @@ public class TransactionManagerService {
         // Transaction timeout
         int transactionTimeout = getInt(this.properties, TRANSACTION_TIMEOUT, DEFAULT_TRANSACTION_TIMEOUT);
         if (transactionTimeout <= 0) {
-            throw new ConfigurationException(TRANSACTION_TIMEOUT, NLS.MESSAGES.getMessage("tx.timeout.greaterthan.zero"));
+            throw new ConfigurationException(TRANSACTION_TIMEOUT, "The transaction timeout property must be greater than zero.");
         }
 
         final String tmid = getString(this.properties, TMID, pid);
@@ -97,7 +97,7 @@ public class TransactionManagerService {
                 transactionManager = new AriesTransactionManagerImpl(transactionTimeout, xidFactory, transactionLog);
             }
         } catch (XAException e) {
-            throw new RuntimeException(NLS.MESSAGES.getMessage("tx.recovery.error"), e);
+            throw new RuntimeException("An exception occurred during transaction recovery.", e);
         }
     }
 
@@ -143,7 +143,7 @@ public class TransactionManagerService {
             try {
                 return Integer.parseInt(value);
             } catch (Exception e) {
-                throw new ConfigurationException(property, NLS.MESSAGES.getMessage("prop.value.not.int", property, value), e);
+                throw new ConfigurationException(property, "The property " + property + " should have an integer value, but the value " + value + " is not an integer.", e);
             }
         }
         return dflt;
@@ -155,7 +155,7 @@ public class TransactionManagerService {
             try {
                 return Boolean.parseBoolean(value);
             } catch (Exception e) {
-                throw new ConfigurationException(property, NLS.MESSAGES.getMessage("prop.value.not.boolean", property, value), e);
+                throw new ConfigurationException(property, "The property " + property + " should have a boolean value, but the value " + value + " is not a boolean.", e);
             }
         }
         return dflt;
@@ -167,7 +167,7 @@ public class TransactionManagerService {
             String bufferClassName = getString(properties, HOWL_BUFFER_CLASS_NAME, "org.objectweb.howl.log.BlockLogBuffer");
             int bufferSizeKBytes = getInt(properties, HOWL_BUFFER_SIZE, 4);
             if (bufferSizeKBytes < 1 || bufferSizeKBytes > 32) {
-                throw new ConfigurationException(HOWL_BUFFER_SIZE, NLS.MESSAGES.getMessage("buffer.size.between.one.and.thirtytwo"));
+                throw new ConfigurationException(HOWL_BUFFER_SIZE, "The buffer size must be between one and thirty-two.");
             }
             boolean checksumEnabled = getBool(properties, HOWL_CHECKSUM_ENABLED, true);
             boolean adler32Checksum = getBool(properties, HOWL_ADLER32_CHECKSUM, true);
@@ -178,17 +178,17 @@ public class TransactionManagerService {
             int maxLogFiles = getInt(properties, HOWL_MAX_LOG_FILES, 2);
             int minBuffers = getInt(properties, HOWL_MIN_BUFFERS, 4);
             if (minBuffers < 0) {
-                throw new ConfigurationException(HOWL_MIN_BUFFERS, NLS.MESSAGES.getMessage("min.buffers.greaterthan.zero"));
+                throw new ConfigurationException(HOWL_MIN_BUFFERS, "The minimum number of buffers must be greater than zero.");
             }
             int maxBuffers = getInt(properties, HOWL_MAX_BUFFERS, 0);
             if (maxBuffers > 0 && minBuffers < maxBuffers) {
-                throw new ConfigurationException(HOWL_MAX_BUFFERS, NLS.MESSAGES.getMessage("max.buffers.greaterthan.min.buffers"));
+                throw new ConfigurationException(HOWL_MAX_BUFFERS, "The maximum number of buffers must be greater than the minimum number of buffers.");
             }
             int threadsWaitingForceThreshold = getInt(properties, HOWL_THREADS_WAITING_FORCE_THRESHOLD, -1);
             boolean flushPartialBuffers = getBool(properties, HOWL_FLUSH_PARTIAL_BUFFERS, true);
             String logFileDir = getString(properties, HOWL_LOG_FILE_DIR, null);
             if (logFileDir == null || logFileDir.length() == 0 || !new File(logFileDir).isAbsolute()) {
-                throw new ConfigurationException(HOWL_LOG_FILE_DIR, NLS.MESSAGES.getMessage("log.file.dir"));
+                throw new ConfigurationException(HOWL_LOG_FILE_DIR, "The log file directory must be set to an absolute directory.");
             }
             try {
                 result = new HOWLLog(bufferClassName,
