@@ -101,7 +101,7 @@ public class Activator implements BundleActivator, ManagedService {
                     TransactionLogUtils.copyActiveTransactions((Dictionary<String, Object>) this.properties, properties);
                 }
             } catch (IOException e) {
-                log.error(NLS.MESSAGES.getMessage("exception.tx.manager.start"), e);
+                log.error("An exception occurred starting the transaction manager.", e);
             }
 
             this.properties = properties;
@@ -109,7 +109,7 @@ public class Activator implements BundleActivator, ManagedService {
             try {
                 manager.start();
             } catch (Exception e) {
-                log.error(NLS.MESSAGES.getMessage("exception.tx.manager.start"), e);
+                log.error("An exception occurred starting the transaction manager.", e);
             }
         }
     }
@@ -139,7 +139,7 @@ public class Activator implements BundleActivator, ManagedService {
             try {
                 manager.close();
             } catch (Exception e) {
-                log.error(NLS.MESSAGES.getMessage("exception.tx.manager.stop"), e);
+                log.error("An exception occurred stopping the transaction manager.", e);
             } finally {
                 manager = null;
             }

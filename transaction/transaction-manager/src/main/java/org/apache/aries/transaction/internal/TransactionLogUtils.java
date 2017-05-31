@@ -107,7 +107,7 @@ public class TransactionLogUtils {
             // old log files compatible, but maybe we have to copy them
             if (!oldDir.equals(newDir)) {
                 if (!oldDir.renameTo(newDir)) {
-                    log.warn(NLS.MESSAGES.getMessage("tx.log.problem.renaming", oldDir.getAbsolutePath()));
+                    log.warn("Can't backup old transaction logs directory: {}", oldDir.getAbsolutePath());
                     return false;
                 }
             }
@@ -149,14 +149,14 @@ public class TransactionLogUtils {
             // move old dir to backup dir
             backupDir = new File(newLogDirectory + String.format("-%016x", System.currentTimeMillis()));
             if (!oldDir.renameTo(backupDir)) {
-                log.warn(NLS.MESSAGES.getMessage("tx.log.problem.renaming", oldDir.getAbsolutePath()));
+                log.warn("Can't backup old transaction logs directory: {}", oldDir.getAbsolutePath());
                 return false;
             }
             oldConfiguration = copy(oldConfiguration);
             oldConfiguration.put(HOWL_LOG_FILE_DIR, backupDir.getAbsolutePath());
         }
 
-        log.info(NLS.MESSAGES.getMessage("tx.log.conversion", oldDir.getAbsolutePath(), newDir.getAbsolutePath()));
+        log.info("Copying transaction log from {} to {}", oldDir.getAbsolutePath(), newDir.getAbsolutePath());
 
         oldConfiguration.put(RECOVERABLE, newConfiguration.get(RECOVERABLE));
         oldConfiguration.put(HOWL_MAX_LOG_FILES, Integer.toString(oldTxConfig.maxLogFiles));
@@ -175,11 +175,11 @@ public class TransactionLogUtils {
             newLog = TransactionManagerService.createTransactionLog(newConfiguration, xidFactory2);
 
             if (!(oldLog instanceof HOWLLog)) {
-                log.info(NLS.MESSAGES.getMessage("tx.log.notrecoverable", oldLogDirectory));
+                log.info("TransactionLog {} is not recoverable", oldLogDirectory);
                 return false;
             }
             if (!(newLog instanceof HOWLLog)) {
-                log.info(NLS.MESSAGES.getMessage("tx.log.notrecoverable", newLogDirectory));
+                log.info("TransactionLog {} is not recoverable", newLogDirectory);
                 return false;
             }
 
@@ -188,18 +188,18 @@ public class TransactionLogUtils {
 
             Collection<Recovery.XidBranchesPair> pairs = from.recover(xidFactory1);
             for (Recovery.XidBranchesPair xidBranchesPair : pairs) {
-                log.info(NLS.MESSAGES.getMessage("tx.log.migrate.xid", xidBranchesPair.getXid()));
+                log.info("Copying active transaction with XID {}", xidBranchesPair.getXid());
                 for (TransactionBranchInfo branchInfo : xidBranchesPair.getBranches()) {
-                    log.info(NLS.MESSAGES.getMessage("tx.log.migrate.xid.branch", branchInfo.getBranchXid(), branchInfo.getResourceName()));
+                    log.info("- Copying branch {} for resource {}", branchInfo.getBranchXid(), branchInfo.getResourceName());
                 }
                 to.prepare(xidBranchesPair.getXid(), new ArrayList<TransactionBranchInfo>(xidBranchesPair.getBranches()));
             }
-            log.info(NLS.MESSAGES.getMessage("tx.log.migrate.complete"));
+            log.info("Migration of active transactions finished");
             deleteDirectory(backupDir);
 
             return !pairs.isEmpty();
         } catch (Exception e) {
-            log.error(NLS.MESSAGES.getMessage("exception.tx.log.migration"), e);
+            log.error("An exception occurred while trying to migrate transaction log after changing configuration.", e);
             if (backupDir != null) {
                 deleteDirectory(newDir);
                 backupDir.renameTo(oldDir);
