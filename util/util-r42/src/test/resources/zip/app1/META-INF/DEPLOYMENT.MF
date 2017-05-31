@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Application-SymbolicName: com.travel.reservation
-Application-Version: 1.2
-Deployed-Content: com.travel.reservation.web;deployed-version="1.1.0",
-                     com.travel.reservation.business;deployed-version=2.0
-                     com.travel.reservation.data;deployed-version=2.1.1

@@ -25,26 +25,105 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
         <version>2.0.1</version>
-        <relativePath>../parent/pom.xml</relativePath>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>org.apache.aries.util-parent</artifactId>
-    <packaging>pom</packaging>
-    <version>1.1.4-SNAPSHOT</version>
+    <artifactId>org.apache.aries.util</artifactId>
+    <packaging>bundle</packaging>
+    <version>1.2.0-SNAPSHOT</version>
     <name>Apache Aries Util</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries
     </description>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/util</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/util</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/util</url>
-    </scm>
+    <!-- no scm info since this and the util-r42 project must be built together to produce the util bundle -->
 
-    <modules>
-        <module>util-r42</module>
-        <module>util</module>
-    </modules>
+    <properties>
+        <!-- Export package versions are maintained in packageinfo files -->
+        <aries.osgi.export.pkg>
+            org.apache.aries.util*
+        </aries.osgi.export.pkg>
+        <aries.osgi.import.pkg>
+            org.osgi.framework.hooks.bundle;resolution:=optional,
+            org.osgi.framework.launch;resolution:=optional,
+            org.osgi.framework.wiring.*;resolution:=optional,
+            org.osgi.service.framework;resolution:=optional,
+            org.eclipse.osgi.internal.loader;resolution:=optional,
+            org.eclipse.osgi.framework.internal.core;resolution:=optional,
+            org.eclipse.osgi.framework.adaptor;resolution:=optional,
+            org.osgi.service.log;resolution:=optional,
+            *
+        </aries.osgi.import.pkg>
+        <aries.osgi.private.pkg>
+            org.apache.aries.util.internal,
+            org.apache.aries.util.filesystem.impl,
+            org.apache.aries.util.tracker.hook
+        </aries.osgi.private.pkg>
+        <lastReleaseVersion>1.1.0</lastReleaseVersion>
+    </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>osgi</artifactId>
+            <version>3.5.0.v20090520</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.testsupport</groupId>
+            <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8.1</version>
+                <executions>
+                    <execution>
+                        <id>javadoc-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <failOnError>false</failOnError>
+                            <excludePackageNames>*.impl:*.internal</excludePackageNames>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>version-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
