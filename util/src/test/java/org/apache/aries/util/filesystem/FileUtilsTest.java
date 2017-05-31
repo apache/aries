@@ -48,7 +48,6 @@ public class FileUtilsTest
    * @throws IOException
    */
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testGetBundlesRecursive() throws IOException {
     File tmpDir = new File("../src/test/resources/tmpJars");

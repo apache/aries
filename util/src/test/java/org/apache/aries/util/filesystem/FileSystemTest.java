@@ -130,7 +130,7 @@ public class FileSystemTest
 	  File baseDir = new File(getTestResourceDir(), "/app1");
 	  File manifest = new File(baseDir, "META-INF/APPLICATION.MF");
 	  try {
-	      IDirectory dir = FileSystem.getFSRoot(manifest);
+	      FileSystem.getFSRoot(manifest);
 	      fail("Should have thrown an IORuntimeException");
 	  } catch (IORuntimeException e) {
 	      // good!
@@ -280,6 +280,7 @@ public class FileSystemTest
 		  InputStream is = zip.getInputStream(ze);
 		  is.close();
 	  }
+	  zip.close();
 	  long duration = System.currentTimeMillis() - start;
 
 

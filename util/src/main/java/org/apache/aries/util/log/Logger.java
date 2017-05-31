@@ -32,6 +32,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * @see org.osgi.service.log.LogService
  * @see org.osgi.util.tracker.ServiceTracker
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Logger extends ServiceTracker implements LogService {
     /**
      * Constructs new Logger(ServiceTracker for LogService).

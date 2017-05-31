@@ -102,6 +102,7 @@ public final class AriesFrameworkUtil
    * 
    * @param reg The {@link ServiceRegistration}, may be null
    */
+  @SuppressWarnings("rawtypes")
   public static void safeUnregisterService(ServiceRegistration reg) 
   {
     if(reg != null) {
