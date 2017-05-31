@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
@@ -545,6 +546,29 @@ public class DSLTest {
             serviceRegistrationMinusOne.unregister();
         }
 
+    }
+
+    @Test
+    public void testApplicativeApplyTo() {
+        AtomicInteger integer = new AtomicInteger(0);
+
+        OSGi<Integer> program = just(5).applyTo(just((i) -> i + 5));
+
+        program.run(bundleContext, integer::set);
+
+        assertEquals(10, integer.get());
+    }
+
+    @Test
+    public void testApply() {
+        AtomicInteger integer = new AtomicInteger(0);
+
+        OSGi<Integer> program = OSGi.apply(
+            (a, b, c) -> a + b + c, just(5), just(5), just(5));
+
+        program.run(bundleContext, integer::set);
+
+        assertEquals(15, integer.get());
     }
 
     private class Service {}

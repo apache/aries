@@ -21,6 +21,8 @@ package org.apache.aries.osgi.functional.internal;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -94,4 +96,52 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 				});
 		});
 	}
+
+/*
+	@Override
+	public <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
+		return new OSGiImpl<>(bundleContext -> {
+			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+
+			Consumer<Tuple<S>> addedSource = added.getSource();
+
+			Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
+
+			Consumer<Tuple<S>> removedSource = removed.getSource();
+
+			IdentityHashMap<Function<T, S>, Tuple<S>> identityMap =
+				new IdentityHashMap<>();
+
+			OSGi<Void> next = fun.foreach(
+				f -> {
+					Tuple<S> tuple = Tuple.create(f.apply(_t));
+
+					identityMap.put(f, tuple);
+
+					addedSource.accept(tuple);
+				},
+				f -> {
+					Tuple<S> tuple = identityMap.remove(f);
+
+					if (tuple != null) {
+						removedSource.accept(tuple);
+					}
+				});
+
+			AtomicReference<OSGiResult<Void>> atomicReference =
+				new AtomicReference<>();
+
+			return new OSGiResultImpl<>(
+				added, removed,
+				() -> atomicReference.set(next.run(bundleContext)),
+				() -> {
+					identityMap.forEach((f, t) -> removedSource.accept(t));
+
+					identityMap.clear();
+
+					atomicReference.get().close();
+				});
+		});
+	}
+*/
 }

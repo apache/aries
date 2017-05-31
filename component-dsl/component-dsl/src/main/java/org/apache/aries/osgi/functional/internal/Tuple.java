@@ -48,4 +48,18 @@ class Tuple<T> implements Event<T> {
 		return t;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Tuple<?> tuple = (Tuple<?>) o;
+
+		return original == tuple.original;
+	}
+
+	@Override
+	public int hashCode() {
+		return original.hashCode();
+	}
 }
