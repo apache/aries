@@ -240,6 +240,7 @@
                             <minmemory>128m</minmemory>
                             <maxmemory>512m</maxmemory>
                             <sourcepath>${project.build.directory}/sources</sourcepath>
+                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                     </plugin>
                     
