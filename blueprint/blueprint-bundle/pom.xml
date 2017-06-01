@@ -310,7 +310,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!--
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
@@ -327,9 +326,9 @@
                             <minmemory>128m</minmemory>
                             <maxmemory>512m</maxmemory>
                             <sourcepath>${project.build.directory}/sources</sourcepath>
+                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                     </plugin>
-                    -->
                 </plugins>
             </build>
         </profile>
