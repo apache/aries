@@ -31,42 +31,20 @@ import org.osgi.service.blueprint.container.BlueprintEvent;
 /**
  * <p>
  * This class represents the CODEC for the composite data representing a OSGi
- * <link>BlueprintEvent</link>
+ * BlueprintEvent
  * <p>
  * It serves as both the documentation of the type structure and as the
  * codification of the mechanism to convert to/from the CompositeData.
  * <p>
  * The structure of the composite data is:
- * <table border="1">
- * <tr>
- * <td>bundleId</td>
- * <td>long</td>
- * </tr>
- * <tr>
- * <td>extenderBundleId</td>
- * <td>long</td>
- * </tr>
- * <tr>
- * <td>eventType</td>
- * <td>int</td>
- * </tr>
- * <tr>
- * <td>replay</td>
- * <td>boolean</td>
- * </tr>
- * <tr>
- * <td>timestamp</td>
- * <td>long</td>
- * </tr>
- * <tr>
- * <td>dependencies</td>
- * <td>String[]</td>
- * </tr>
- * <tr>
- * <td>exceptionMessage</td>
- * <td>String</td>
- * </tr>
- * </table>
+ * <p>
+ * - bundleId : long<br>
+ * - extenderBundleId : long<br>
+ * - eventType : int<br>
+ * - replay : boolean<br>
+ * - timestamp : long<br>
+ * - dependencies : String[]<br>
+ * - exceptionMessage : String
  */
 
 public class OSGiBlueprintEvent implements TransferObject{
@@ -87,7 +65,7 @@ public class OSGiBlueprintEvent implements TransferObject{
 
 
     /**
-     * Construct an OSGiBlueprintEvent from the supplied <link>BlueprintEvent</link>
+     * Construct an OSGiBlueprintEvent from the supplied BlueprintEvent
      *
      * @param event
      *            - the event to represent
