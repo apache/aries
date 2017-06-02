@@ -25,7 +25,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
         <version>2.0.1</version>
-        <relativePath>../../parent/pom.xml</relativePath>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>org.apache.aries.util</artifactId>
@@ -36,7 +36,11 @@
         This bundle contains the OSGi common util for Apache Aries
     </description>
 
-    <!-- no scm info since this and the util-r42 project must be built together to produce the util bundle -->
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/util</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/util</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/util</url>
+    </scm>
 
     <properties>
         <!-- Export package versions are maintained in packageinfo files -->
