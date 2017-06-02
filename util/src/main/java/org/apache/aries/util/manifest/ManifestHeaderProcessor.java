@@ -385,7 +385,7 @@ public class ManifestHeaderProcessor
 
   /**
    * Parse a generic capability header. For example<br>
-   *   com.acme.myns;mylist:List String ="nl,be,fr,uk";myver:Version=1.3;long:Long="1234";d:Double="3.14";myattr=xyz,
+   *   com.acme.myns;mylist:List&lt;String&gt;="nl,be,fr,uk";myver:Version=1.3;long:Long="1234";d:Double="3.14";myattr=xyz,
    *   com.acme.myns;myattr=abc
    * @param s The header to be parsed
    * @return A list of GenericMetadata objects each representing an individual capability. The values in the attribute map
@@ -397,7 +397,7 @@ public class ManifestHeaderProcessor
 
   /**
    * Parse a generic capability header. For example<br>
-   *   com.acme.myns;mylist:List String ="nl,be,fr,uk";myver:Version=1.3;long:Long="1234";d:Double="3.14";myattr=xyz,
+   *   com.acme.myns;mylist:List&lt;String&gt;="nl,be,fr,uk";myver:Version=1.3;long:Long="1234";d:Double="3.14";myattr=xyz,
    *   com.acme.myns;myattr=abc
    * @param s The header to be parsed
    * @return A list of GenericMetadata objects each representing an individual capability. The values in the attribute map
