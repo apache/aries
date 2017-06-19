@@ -56,9 +56,7 @@
         <module>samples</module>
         <module>esa-ant-task</module>
         <module>esa-maven-plugin</module>
-        <!-- Exclude from main build as it fails on JDK 7
         <module>async</module>
-        -->
         <module>tx-control</module>
         <module>pushstream</module>
     </modules>
