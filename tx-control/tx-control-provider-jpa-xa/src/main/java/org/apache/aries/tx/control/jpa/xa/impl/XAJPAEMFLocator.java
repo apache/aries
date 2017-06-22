@@ -41,9 +41,13 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionControl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(XAJPAEMFLocator.class);
+	
 	public XAJPAEMFLocator(BundleContext context, String pid, Map<String, Object> jpaProperties,
 			Map<String, Object> providerProperties, Runnable onClose) throws InvalidSyntaxException, ConfigurationException {
 		super(context, pid, jpaProperties, providerProperties, onClose);
@@ -72,7 +76,7 @@ public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 		ServiceReference<PersistenceProvider> providerRef = getPersistenceProvider(provider, context);
 		
 		if(providerRef == null) {
-			// TODO log a warning and give up
+			LOGGER.warn("Unable to find a Persistence Provider for the provider named {}, so no XA plugin can be registered. XA transactions are unlikely to function properly.", provider);
 			return;
 		}
 
@@ -82,20 +86,34 @@ public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 		try {
 			if("org.hibernate.jpa.HibernatePersistenceProvider".equals(provider)) {
 				
-				try{
-					providerBundle.loadClass("org.hibernate.resource.transaction.TransactionCoordinatorBuilder");
-				} catch (Exception e) {
-					BundleWiring wiring = providerBundle.adapt(BundleWiring.class);
-					providerBundle = wiring.getRequiredWires("osgi.wiring.package").stream()
-								.filter(bw -> "org.hibernate".equals(bw.getCapability().getAttributes().get("osgi.wiring.package")))
-								.map(BundleWire::getProviderWiring)
-								.map(BundleWiring::getBundle)
-								.findFirst().get();
+				String pluginClass;
+				
+				Bundle toUse = findSource(providerBundle, "org.hibernate.resource.transaction.spi.TransactionCoordinatorBuilder");
+				
+				if(toUse != null) {
+					
+					try {
+						toUse.loadClass("org.hibernate.resource.transaction.spi.DdlTransactionIsolator");
+						LOGGER.debug("Detected Hibernate 5.2.2 or above when attempting to install the XA plugin.");
+						pluginClass = "org.apache.aries.tx.control.jpa.xa.plugin.hibernate.impl.Hibernate522TxControlPlatform";
+					} catch (Exception e) {
+						LOGGER.debug("Detected Hibernate 5.2.0 or 5.2.1 when attempting to install the XA plugin.");
+						pluginClass = "org.apache.aries.tx.control.jpa.xa.plugin.hibernate.impl.Hibernate520TxControlPlatform";
+					}
+				} else {
+					toUse = findSource(providerBundle, "org.hibernate.resource.transaction.TransactionCoordinatorBuilder");
+					if(toUse != null) {
+						LOGGER.debug("Detected Hibernate 5.0.x or 5.1.x or above when attempting to install the XA plugin.");
+						pluginClass = "org.apache.aries.tx.control.jpa.xa.plugin.hibernate.impl.HibernateTxControlPlatform";
+					} else {
+						LOGGER.warn("Detected a Hibernate provider, but we were unable to load an appropriate XA plugin");
+						return;
+					}
 				}
 				
-				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
+				ClassLoader pluginLoader = getPluginLoader(toUse, txControlProviderBundle);
 				
-				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.hibernate.impl.HibernateTxControlPlatform");
+				Class<?> pluginClazz = pluginLoader.loadClass(pluginClass);
 				Object plugin = pluginClazz.getConstructor(ThreadLocal.class)
 					.newInstance(t);
 				
@@ -105,7 +123,7 @@ public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 					
 				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
 					
-				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.openjpa.impl.OpenJPATxControlPlatform");
+				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.plugin.openjpa.impl.OpenJPATxControlPlatform");
 				Object plugin = pluginClazz.getConstructor(ThreadLocal.class)
 						.newInstance(t);
 					
@@ -115,7 +133,7 @@ public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 				
 				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
 				
-				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.eclipse.impl.EclipseTxControlPlatform");
+				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.plugin.eclipse.impl.EclipseTxControlPlatform");
 				
 				pluginClazz.getMethod("setTransactionControl", ThreadLocal.class)
 						.invoke(null, t);
@@ -129,12 +147,34 @@ public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 				}
 				
 			} else {
-				// TODO log a warning and give up
+				LOGGER.warn("The persistence provider {} is not recognised, so no adapter plugin can be registered with it. XA transactions are unlikely to work properly", provider);
 				return;
 			} 
 		} catch (Exception e) {
 			//TODO log a warning and give up
 			e.printStackTrace();
+		}
+	}
+
+	private Bundle findSource(Bundle providerBundle, String toFind) {
+		try{
+			providerBundle.loadClass(toFind);
+			return providerBundle;
+		} catch (Exception e) {
+			BundleWiring wiring = providerBundle.adapt(BundleWiring.class);
+			return wiring.getRequiredWires("osgi.wiring.package").stream()
+						.filter(bw -> "org.hibernate".equals(bw.getCapability().getAttributes().get("osgi.wiring.package")))
+						.map(BundleWire::getProviderWiring)
+						.map(BundleWiring::getBundle)
+						.findFirst()
+						.filter(b -> {
+								try {
+									b.loadClass(toFind);
+									return true;
+								} catch (Exception e2) {
+									return false;
+								}
+							}).orElse(null);
 		}
 	}
 
@@ -145,9 +185,7 @@ public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 			
 			@Override
 			public Class<?> loadClass(String name) throws ClassNotFoundException {
-				if(name.startsWith("org.apache.aries.tx.control.jpa.xa.hibernate") ||
-					name.startsWith("org.apache.aries.tx.control.jpa.xa.openjpa") ||
-					name.startsWith("org.apache.aries.tx.control.jpa.xa.eclipse")) {
+				if(name.startsWith("org.apache.aries.tx.control.jpa.xa.plugin")) {
 					
 					Class<?> c = loaded.get(name);
 					
@@ -175,7 +213,8 @@ public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 				}
 				
 				if(name.startsWith("org.apache.aries.tx.control") ||
-						name.startsWith("org.osgi.service.transaction.control")) {
+				   name.startsWith("org.osgi.service.transaction.control") ||
+						name.startsWith("org.slf4j")) {
 					return txControlProviderBundle.loadClass(name);
 				}
 				return providerBundle.loadClass(name);

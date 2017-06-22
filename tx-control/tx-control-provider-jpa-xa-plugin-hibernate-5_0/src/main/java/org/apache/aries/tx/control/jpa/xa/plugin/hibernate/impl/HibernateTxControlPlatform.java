@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jpa.xa.hibernate.impl;
+package org.apache.aries.tx.control.jpa.xa.plugin.hibernate.impl;
 
 import static javax.transaction.Status.STATUS_COMMITTED;
 import static javax.transaction.Status.STATUS_ROLLEDBACK;
@@ -50,9 +50,13 @@ import org.hibernate.resource.transaction.spi.TransactionCoordinatorOwner;
 import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HibernateTxControlPlatform implements 
 	TransactionCoordinatorBuilder {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(HibernateTxControlPlatform.class);
 	
 	private static final long serialVersionUID = 1L;
 
@@ -185,6 +189,7 @@ public class HibernateTxControlPlatform implements
 	
 		@Override
 		public void registerSynchronization(Synchronization synchronization) {
+			LOGGER.debug("Registering a synchronization with the current transaction");
 			TransactionContext currentContext = getTxControl().getCurrentContext();
 			currentContext.preCompletion(synchronization::beforeCompletion);
 			currentContext.postCompletion(status -> synchronization.afterCompletion(toIntStatus(status)));
@@ -291,10 +296,16 @@ public class HibernateTxControlPlatform implements
 				}
 			};
 			
-			if(transacted) {
-				return getTxControl().requiresNew(c);
-			} else {
-				return getTxControl().notSupported(c);
+			try {
+				if(transacted) {
+					LOGGER.debug("Performing a query in a nested transaction");
+					return getTxControl().requiresNew(c);
+				} else {
+					LOGGER.debug("Suspending the current transaction to run a query");
+					return getTxControl().notSupported(c);
+				}
+			} finally {
+				LOGGER.debug("The previous transaction has been resumed");
 			}
 				
 		}
