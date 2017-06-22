@@ -60,6 +60,10 @@
 				<module>tx-control-provider-jdbc-xa</module>
 				<module>tx-control-provider-jpa-common</module>
 				<module>tx-control-provider-jpa-local</module>
+				<module>tx-control-provider-jpa-xa-plugin-eclipselink</module>
+				<module>tx-control-provider-jpa-xa-plugin-hibernate-5_0</module>
+				<module>tx-control-provider-jpa-xa-plugin-hibernate-5_2</module>
+				<module>tx-control-provider-jpa-xa-plugin-openjpa</module>
 				<module>tx-control-provider-jpa-xa</module>
 				<module>tx-control-itests</module>
 				<module>tx-control-jpa-itests</module>

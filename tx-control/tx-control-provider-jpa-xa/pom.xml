@@ -111,23 +111,29 @@
 			<artifactId>geronimo-jpa_2.1_spec</artifactId>
 		</dependency>
 		
-		<!-- JPA Provider dependencies -->
+		<!-- JPA Provider Plugin dependencies -->
 		<dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.core</artifactId>
-            <version>2.4.2</version>
+            <groupId>org.apache.aries.tx-control</groupId>
+            <artifactId>tx-control-provider-jpa-xa-plugin-eclipselink</artifactId>
+            <version>${version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.0.0.Final</version>
+		<dependency>
+            <groupId>org.apache.aries.tx-control</groupId>
+            <artifactId>tx-control-provider-jpa-xa-plugin-hibernate-5_0</artifactId>
+            <version>${version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-kernel</artifactId>
-            <version>2.0.0</version>
+		<dependency>
+            <groupId>org.apache.aries.tx-control</groupId>
+            <artifactId>tx-control-provider-jpa-xa-plugin-hibernate-5_2</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.apache.aries.tx-control</groupId>
+            <artifactId>tx-control-provider-jpa-xa-plugin-openjpa</artifactId>
+            <version>${version}</version>
             <scope>provided</scope>
         </dependency>
 
