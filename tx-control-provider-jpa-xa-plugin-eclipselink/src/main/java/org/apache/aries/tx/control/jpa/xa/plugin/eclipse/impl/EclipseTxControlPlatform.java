@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jpa.xa.eclipse.impl;
+package org.apache.aries.tx.control.jpa.xa.plugin.eclipse.impl;
 
 import static javax.transaction.Status.STATUS_ACTIVE;
 import static javax.transaction.Status.STATUS_COMMITTED;
@@ -53,6 +53,8 @@ import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
 import org.osgi.service.transaction.control.TransactionStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EclipseTxControlPlatform extends ServerPlatformBase {
 
@@ -71,6 +73,8 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 
 	public static class TxControlAdapter extends AbstractTransactionController {
 
+		private static final Logger LOGGER = LoggerFactory.getLogger(TxControlAdapter.class);
+		
 		/**
 		 *  This has to be static because EclipseLink doesn't allow plugins
 		 *  to be configured and passed in as instances. It is safe because
@@ -98,6 +102,7 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 		@Override
 		protected void registerSynchronization_impl(AbstractSynchronizationListener listener, Object txn)
 				throws Exception {
+			LOGGER.debug("Registering a synchronization with the current transaction");
 			TransactionContext ctx = ((TransactionWrapper) txn).getContext();
 			ctx.preCompletion(listener::beforeCompletion);
 			ctx.postCompletion(listener::afterCompletion);
@@ -115,7 +120,6 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 
 		@Override
 		protected Object getTransactionKey_impl(Object transaction) throws Exception {
-			
 			return transaction == null ? null :
 				((TransactionWrapper) transaction).getContext().getTransactionKey();
 		}
@@ -143,6 +147,7 @@ public class EclipseTxControlPlatform extends ServerPlatformBase {
 
 		@Override
 		protected void markTransactionForRollback_impl() throws Exception {
+			LOGGER.debug("Marking the current transaction for rollback");
 			getTxControl().setRollbackOnly();
 		}
 

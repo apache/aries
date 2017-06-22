@@ -26,7 +26,10 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 
-public class XAHibernate_5_0_9_Test extends XAJPATransactionTest {
+/**
+ * We test Hibernate 5.2.1, and not 5.2.0 because of Hibernate bug HHH-10807
+ */
+public class XAHibernate_5_2_1_Test extends XAJPATransactionTest {
 
 	protected Option ariesJPAVersion() {
 		return mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container", "2.5.0");
@@ -50,13 +53,13 @@ public class XAHibernate_5_0_9_Test extends XAJPATransactionTest {
 			// Hibernate bundles and their dependencies (JPA API is available from the tx-control)
 			mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.antlr", "2.7.7_5"),
 			mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.dom4j", "1.6.1_5"),
-			mavenBundle("org.javassist", "javassist", "3.18.1-GA"),
+			mavenBundle("com.fasterxml", "classmate", "1.3.0"),
+			mavenBundle("org.javassist", "javassist", "3.20.0-GA"),
 			mavenBundle("org.jboss.logging", "jboss-logging", "3.3.0.Final"),
-			mavenBundle("org.jboss", "jandex", "2.0.0.Final"),
+			mavenBundle("org.jboss", "jandex", "2.0.3.Final"),
 			mavenBundle("org.hibernate.common", "hibernate-commons-annotations", "5.0.1.Final"),
-			mavenBundle("org.hibernate", "hibernate-core", "5.0.9.Final"),
-			mavenBundle("org.hibernate", "hibernate-osgi", "5.0.9.Final"),
-			mavenBundle("org.hibernate", "hibernate-entitymanager", "5.0.9.Final"));
+			mavenBundle("org.hibernate", "hibernate-core", "5.2.1.Final"),
+			mavenBundle("org.hibernate", "hibernate-osgi", "5.2.1.Final"));
 	}
 
 }

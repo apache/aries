@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.tx.control.jpa.xa.openjpa.impl;
+package org.apache.aries.tx.control.jpa.xa.plugin.openjpa.impl;
 
 import static javax.transaction.Status.STATUS_ACTIVE;
 import static javax.transaction.Status.STATUS_COMMITTED;
@@ -45,10 +45,14 @@ import org.osgi.service.transaction.control.TransactionContext;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionException;
 import org.osgi.service.transaction.control.TransactionStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenJPATxControlPlatform implements ManagedRuntime, 
 	TransactionManager, Transaction {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(OpenJPATxControlPlatform.class);
+	
 	private final ThreadLocal<TransactionControl> txControlToUse;
 	
 	public OpenJPATxControlPlatform(ThreadLocal<TransactionControl> txControlToUse) {
@@ -68,11 +72,17 @@ public class OpenJPATxControlPlatform implements ManagedRuntime,
 	public void doNonTransactionalWork(Runnable arg0) throws NotSupportedException {
 		
 		TransactionControl transactionControl = getTxControl();
-		
+		boolean activeTransaction = transactionControl.activeTransaction();
+		if(activeTransaction) {
+			LOGGER.debug("Suspending the active transaction to perform a non-transactional query");
+		}
 		transactionControl.notSupported(() -> {
 			arg0.run();
 			return null;
 		});
+		if(activeTransaction) {
+			LOGGER.debug("Resumed the transaction");
+		}
 	}
 
 	@Override
@@ -92,11 +102,13 @@ public class OpenJPATxControlPlatform implements ManagedRuntime,
 
 	@Override
 	public void setRollbackOnly(Throwable arg0) throws Exception {
+		LOGGER.debug("Marking rollback for the transaction due to an exception", arg0);
 		getTxControl().setRollbackOnly();
 	}
 
 	@Override
 	public void setRollbackOnly() throws IllegalStateException, SystemException {
+		LOGGER.debug("Marking rollback for the transaction");
 		getTxControl().setRollbackOnly();
 	}
 
@@ -153,6 +165,7 @@ public class OpenJPATxControlPlatform implements ManagedRuntime,
 	@Override
 	public void registerSynchronization(Synchronization synch)
 			throws IllegalStateException, RollbackException, SystemException {
+		LOGGER.debug("Registering a synchronization with the current transaction");
 		TransactionContext currentContext = getTxControl().getCurrentContext();
 		currentContext.preCompletion(synch::beforeCompletion);
 		currentContext.postCompletion(status -> synch.afterCompletion(toIntStatus(status)));
