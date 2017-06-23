@@ -22,13 +22,13 @@
 	<parent>
 		<groupId>org.apache.aries.tx-control</groupId>
 		<artifactId>tx-control</artifactId>
-		<version>0.0.3-SNAPSHOT</version>
+		<version>0.0.3</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-provider-jpa-xa-plugin-hibernate-5_0</artifactId>
 	<name>Hibernate (5.0.x and 5.1.x) plugin for the JPA (XA) Resource Provider</name>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 
 	<description>
         This bundle contains a Hibernate plugin for the Aries Transaction control JPA resource provider.
@@ -36,13 +36,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jpa-xa-plugin-hibernate-5_0
+            scm:svn:http://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.3/tx-control-provider-jpa-xa-plugin-hibernate-5_0
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jpa-xa-plugin--hibernate-5_0
+            scm:svn:https://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.3/tx-control-provider-jpa-xa-plugin--hibernate-5_0
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-provider-jpa-xa-plugin--hibernate-5_0
+            http://svn.apache.org/viewvc/aries/tags/tx-control-0.0.3/tx-control-provider-jpa-xa-plugin--hibernate-5_0
         </url>
 	</scm>
 
