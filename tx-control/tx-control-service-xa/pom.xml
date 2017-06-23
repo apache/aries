@@ -22,13 +22,13 @@
 	<parent>
 		<groupId>org.apache.aries.tx-control</groupId>
 		<artifactId>tx-control</artifactId>
-		<version>0.0.3</version>
+		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-service-xa</artifactId>
 	<name>OSGi Transaction Control Service - XA Transactions</name>
-	<version>0.0.3</version>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<description>
         This bundle contains an OSGi Transaction Control Service implementation based on
@@ -37,13 +37,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.3/tx-control-service-xa
+            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-service-xa
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.3/tx-control-service-xa
+            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-service-xa
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/tags/tx-control-0.0.3/tx-control-service-xa
+            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-service-xa
         </url>
 	</scm>
 
