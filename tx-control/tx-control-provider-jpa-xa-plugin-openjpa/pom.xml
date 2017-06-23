@@ -22,13 +22,13 @@
 	<parent>
 		<groupId>org.apache.aries.tx-control</groupId>
 		<artifactId>tx-control</artifactId>
-		<version>0.0.3-SNAPSHOT</version>
+		<version>0.0.3</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-provider-jpa-xa-plugin-openjpa</artifactId>
 	<name>OpenJPA plugin for the JPA (XA) Resource Provider</name>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 
 	<description>
         This bundle contains an OpenJPA plugin for the Aries Transaction control JPA resource provider.
@@ -36,13 +36,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jpa-xa-plugin-openjpa
+            scm:svn:http://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.3/tx-control-provider-jpa-xa-plugin-openjpa
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jpa-xa-plugin-openjpa
+            scm:svn:https://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.3/tx-control-provider-jpa-xa-plugin-openjpa
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-provider-jpa-xa-plugin-openjpa
+            http://svn.apache.org/viewvc/aries/tags/tx-control-0.0.3/tx-control-provider-jpa-xa-plugin-openjpa
         </url>
 	</scm>
 

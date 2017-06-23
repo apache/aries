@@ -22,14 +22,14 @@
 	<parent>
         <groupId>org.apache.aries.tx-control</groupId>
         <artifactId>tx-control</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-provider-jdbc-common</artifactId>
 	<packaging>jar</packaging>
 	<name>OSGi Transaction Control JDBC Resource Provider - Common Code</name>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 
 	<description>
         This jar contains a common code for building OSGi Transaction Control JDBCConnectionProvider 
@@ -39,13 +39,13 @@
 
 	<scm>
 		<connection>
-            scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jdbc-common
+            scm:svn:http://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.3/tx-control-provider-jdbc-common
         </connection>
 		<developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-provider-jdbc-common
+            scm:svn:https://svn.apache.org/repos/asf/aries/tags/tx-control-0.0.3/tx-control-provider-jdbc-common
         </developerConnection>
 		<url>
-            http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-provider-jdbc-common
+            http://svn.apache.org/viewvc/aries/tags/tx-control-0.0.3/tx-control-provider-jdbc-common
         </url>
 	</scm>
 
