@@ -20,71 +20,74 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.apache.aries.tx-control</groupId>
-		<artifactId>tx-control-parent</artifactId>
+        <groupId>org.apache.aries.tx-control</groupId>
+        <artifactId>tx-control-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>tx-control-parent</relativePath>
+		<relativePath>../../tx-control-parent/pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.apache.aries.tx-control</groupId>
-	<artifactId>tx-control</artifactId>
+	<artifactId>tx-control-providers</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<description>Apache Aries Transaction Control Reactor POM</description>
+	<description>Apache Aries Transaction Control Resource Provider implementations.</description>
 	<scm>
 		<connection>
-			scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control
+			scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-providers
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control
+			scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-providers
 		</developerConnection>
 		<url>
-			http://svn.apache.org/viewvc/aries/trunk/tx-control
+			http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-providers
 		</url>
 	</scm>
 
-	<profiles>
-		<profile>
-			<id>all</id>
-			<activation>
-                <property>
-			    	<name>!tx.build</name>
-                </property>
-			</activation>
-			<modules>
-				<module>tx-control-providers</module>
-				<module>tx-control-services</module>
-            </modules>
-		</profile>
+    <profiles>
         <profile>
-            <id>providers</id>
+            <id>all</id>
             <activation>
                 <property>
-                    <name>tx.build</name>
-                    <value>providers</value>
+                    <name>!tx.providers</name>
                 </property>
             </activation>
             <modules>
-                <module>tx-control-providers</module>
+                <module>jdbc</module>
+                <module>jpa</module>
             </modules>
         </profile>
         <profile>
-            <id>services</id>
+            <id>jdbc</id>
             <activation>
                 <property>
-                    <name>tx.build</name>
-                    <value>services</value>
+                    <name>tx.providers</name>
+                    <value>jdbc</value>
                 </property>
             </activation>
             <modules>
-                <module>tx-control-services</module>
+                <module>jdbc</module>
             </modules>
         </profile>
-	</profiles>
+        <profile>
+            <id>jpa</id>
+            <properties>
+                <jpa>true</jpa>
+            </properties>
+            <activation>
+                <property>
+                    <name>tx.providers</name>
+                    <value>jpa</value>
+                </property>
+            </activation>
+            <modules>
+                <module>jpa</module>
+            </modules>
+        </profile>
+    </profiles>
     
     <modules>
-        <module>tx-control-parent</module>
+        <module>tx-control-provider-parent</module>
+        <module>tx-control-provider-common</module>
     </modules>
-
 
 </project>
