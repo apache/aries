@@ -23,68 +23,23 @@
 		<groupId>org.apache.aries.tx-control</groupId>
 		<artifactId>tx-control-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>tx-control-parent</relativePath>
+		<relativePath>../../tx-control-parent/pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.apache.aries.tx-control</groupId>
-	<artifactId>tx-control</artifactId>
+	<artifactId>tx-control-provider-parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<description>Apache Aries Transaction Control Reactor POM</description>
+	<description>Apache Aries Tx Control Providers Parent.</description>
 	<scm>
 		<connection>
-			scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control
+			scm:svn:http://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-services/tx-control-provider-parent
 		</connection>
 		<developerConnection>
-			scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control
+			scm:svn:https://svn.apache.org/repos/asf/aries/trunk/tx-control/tx-control-services/tx-control-provider-parent
 		</developerConnection>
 		<url>
-			http://svn.apache.org/viewvc/aries/trunk/tx-control
+			http://svn.apache.org/viewvc/aries/trunk/tx-control/tx-control-services/tx-control-provider-parent
 		</url>
 	</scm>
-
-	<profiles>
-		<profile>
-			<id>all</id>
-			<activation>
-                <property>
-			    	<name>!tx.build</name>
-                </property>
-			</activation>
-			<modules>
-				<module>tx-control-providers</module>
-				<module>tx-control-services</module>
-            </modules>
-		</profile>
-        <profile>
-            <id>providers</id>
-            <activation>
-                <property>
-                    <name>tx.build</name>
-                    <value>providers</value>
-                </property>
-            </activation>
-            <modules>
-                <module>tx-control-providers</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>services</id>
-            <activation>
-                <property>
-                    <name>tx.build</name>
-                    <value>services</value>
-                </property>
-            </activation>
-            <modules>
-                <module>tx-control-services</module>
-            </modules>
-        </profile>
-	</profiles>
-    
-    <modules>
-        <module>tx-control-parent</module>
-    </modules>
-
-
 </project>

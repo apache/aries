@@ -1,0 +1,74 @@
+#    Licensed to the Apache Software Foundation (ASF) under one
+#    or more contributor license agreements.  See the NOTICE file
+#    distributed with this work for additional information
+#    regarding copyright ownership.  The ASF licenses this file
+#    to you under the Apache License, Version 2.0 (the
+#    "License"); you may not use this file except in compliance
+#    with the License.  You may obtain a copy of the License at
+#    
+#     http://www.apache.org/licenses/LICENSE-2.0
+#    
+#    Unless required by applicable law or agreed to in writing,
+#    software distributed under the License is distributed on an
+#    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#    KIND, either express or implied.  See the License for the
+#    specific language governing permissions and limitations
+#    under the License.
+
+Bundle-Activator: org.apache.aries.tx.control.jpa.xa.impl.Activator
+
+# Export the APIs we use so that this is an easily deployable bundle 
+# We keep the dual versions provided by Geronimo to keep things maximally happy
+
+Export-Package: org.osgi.service.transaction.control.jdbc, \
+                org.osgi.service.transaction.control.jpa, \
+                org.osgi.service.cm, \
+                org.osgi.service.jdbc, \
+                org.osgi.service.jpa
+
+
+# We embed Hikari CP and JDBC code to avoid dependency fanout
+
+Private-Package: org.apache.aries.tx.control.jdbc.common.impl, \
+                 org.apache.aries.tx.control.jdbc.xa.connection.impl, \
+                 org.apache.aries.tx.control.resource.common.impl, \
+                 org.apache.aries.tx.control.jpa.*, \
+                 com.zaxxer.hikari, \
+                 com.zaxxer.hikari.metrics, \
+                 com.zaxxer.hikari.pool, \
+                 com.zaxxer.hikari.util
+
+# Ensure that the API is exported substitutably, and that we don't pull
+# in any unused pieces of Hikari
+
+Import-Package: !com.codahale.*, \
+                !com.zaxxer.hikari.metrics.dropwizard, \
+                !javassist.*, \
+                !javax.transaction, \
+                !org.apache.geronimo.osgi.registry.api, \
+                !org.apache.openjpa.*, \
+                !org.eclipse.*, \
+                !org.hibernate.*, \
+                javax.persistence;version="0.0.0", \
+                javax.persistence.criteria;version="0.0.0", \
+                javax.persistence.metamodel;version="0.0.0", \
+                javax.persistence.spi;version="0.0.0", \
+                org.osgi.service.transaction.control, \
+                org.osgi.service.transaction.control.jdbc, \
+                org.osgi.service.transaction.control.jpa, \
+                org.osgi.service.cm, \
+                org.osgi.service.jdbc, \
+                org.osgi.service.jpa, \
+                *
+
+Provide-Capability: \
+                    osgi.service;objectClass="org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider";osgi.xa.enabled="true";uses:="org.osgi.service.transaction.control.jpa", \
+                    osgi.service;objectClass="org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory";osgi.xa.enabled="true";uses:="org.osgi.service.transaction.control.jpa"
+                    
+# This Resource Provider is able to work with JPA 2.0 or 2.1, but may need enhancement
+# for future versions, hence we prohibit versions of the contract greater than 2.1.x
+# Because of this complexity we can't just use -contract: JavaJPA.
+Require-Capability: \
+                    osgi.contract;filter:="(&(osgi.contract=JavaJPA)(|(version=2)(version=2.1))(!(version>=2.2)))",\
+                    osgi.service;filter:="(objectClass=org.osgi.service.jdbc.DataSourceFactory)";resolution:="optional";effective:="active", \
+                    osgi.service;filter:="(objectClass=org.osgi.service.jpa.EntityManagerFactoryBuilder)";resolution:="optional";effective:="active"
