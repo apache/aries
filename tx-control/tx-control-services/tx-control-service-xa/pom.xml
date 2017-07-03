@@ -23,7 +23,7 @@
 		<groupId>org.apache.aries.tx-control</groupId>
 		<artifactId>tx-control-service-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>../tx-control-servce-parent/pom.xml</relativePath>
+		<relativePath>../tx-control-service-parent/pom.xml</relativePath>
 	</parent>
 	<groupId>org.apache.aries.tx-control</groupId>
 	<artifactId>tx-control-service-xa</artifactId>
