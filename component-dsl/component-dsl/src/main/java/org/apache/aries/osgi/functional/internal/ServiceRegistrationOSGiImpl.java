@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
 import java.util.Hashtable;
@@ -26,47 +27,89 @@ import java.util.function.Consumer;
 /**
  * @author Carlos Sierra Andrés
  */
-public class ServiceRegistrationOSGiImpl<T, S extends T>
+public class ServiceRegistrationOSGiImpl<T>
 	extends OSGiImpl<ServiceRegistration<T>> {
 
 	public ServiceRegistrationOSGiImpl(
-		Class<T> clazz, S service, Map<String, Object> properties) {
+		Class<T> clazz, T service, Map<String, Object> properties) {
 
 		super(bundleContext -> {
 			ServiceRegistration<T> serviceRegistration =
 				bundleContext.registerService(
+					clazz, service, getProperties(properties));
+
+			return getServiceRegistrationOSGiResult(serviceRegistration);
+		});
+	}
+
+	public ServiceRegistrationOSGiImpl(
+		Class<T> clazz, ServiceFactory<T> serviceFactory,
+		Map<String, Object> properties) {
+
+		super(bundleContext -> {
+			ServiceRegistration<T> serviceRegistration =
+				bundleContext.registerService(
+					clazz, serviceFactory, getProperties(properties));
+
+			return getServiceRegistrationOSGiResult(serviceRegistration);
+		});
+	}
+
+	public ServiceRegistrationOSGiImpl(
+		String[] clazz, Object service, Map<String, ?> properties) {
+
+		super(bundleContext -> {
+			ServiceRegistration<?> serviceRegistration =
+				bundleContext.registerService(
 					clazz, service, new Hashtable<>(properties));
 
-			Pipe<Tuple
-				<ServiceRegistration<T>>, Tuple<ServiceRegistration<T>>>
-				added = Pipe.create();
-
-			Consumer<Tuple<ServiceRegistration<T>>> addedSource =
-				added.getSource();
-
-			Tuple<ServiceRegistration<T>> tuple = Tuple.create(
-				serviceRegistration);
-
-			Pipe<Tuple<ServiceRegistration<T>>, Tuple<ServiceRegistration<T>>>
-				removed = Pipe.create();
-
-			Consumer<Tuple<ServiceRegistration<T>>> removedSource =
-				removed.getSource();
-
-			return new OSGiResultImpl<>(
-				added, removed,
-				() -> addedSource.accept(tuple),
-				() -> {
-					try {
-						serviceRegistration.unregister();
-					}
-					catch (Exception e) {
-					}
-					finally {
-						removedSource.accept(tuple);
-					}
-				});
+			return getServiceRegistrationOSGiResult(
+				(ServiceRegistration)serviceRegistration);
 		});
+	}
+
+	private static Hashtable<String, Object> getProperties(
+		Map<String, Object> properties) {
+
+		if (properties == null) {
+			return new Hashtable<>();
+		}
+
+		return new Hashtable<>(properties);
+	}
+
+	private static <T> OSGiResultImpl<ServiceRegistration<T>>
+		getServiceRegistrationOSGiResult(
+			ServiceRegistration<T> serviceRegistration) {
+
+		Pipe<Tuple<ServiceRegistration<T>>, Tuple<ServiceRegistration<T>>>
+            added = Pipe.create();
+
+		Consumer<Tuple<ServiceRegistration<T>>> addedSource =
+            added.getSource();
+
+		Tuple<ServiceRegistration<T>> tuple = Tuple.create(
+            serviceRegistration);
+
+		Pipe<Tuple<ServiceRegistration<T>>, Tuple<ServiceRegistration<T>>>
+            removed = Pipe.create();
+
+		Consumer<Tuple<ServiceRegistration<T>>> removedSource =
+            removed.getSource();
+
+		return new OSGiResultImpl<>(
+            added, removed,
+            () -> addedSource.accept(tuple),
+            () -> {
+                try {
+                    serviceRegistration.unregister();
+                }
+                catch (Exception e) {
+                }
+                finally {
+                    removedSource.accept(tuple);
+                }
+            });
 	}
 
 }

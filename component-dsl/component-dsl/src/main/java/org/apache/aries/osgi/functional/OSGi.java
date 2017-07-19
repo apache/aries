@@ -37,11 +37,11 @@ import org.apache.aries.osgi.functional.internal.ServiceRegistrationOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ServicesOSGi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -114,11 +114,22 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new PrototypesOSGi<>(clazz, filterString);
 	}
 
-	static <T, S extends T> OSGi<ServiceRegistration<T>> register(
-		Class<T> clazz, S service, Map<String, Object> properties) {
+	static <T> OSGi<ServiceRegistration<T>> register(
+		Class<T> clazz, T service, Map<String, Object> properties) {
 
-		return new ServiceRegistrationOSGiImpl<>(
-			clazz, service, properties);
+		return new ServiceRegistrationOSGiImpl<>(clazz, service, properties);
+	}
+
+	static <T> OSGi<ServiceRegistration<T>> register(
+		Class<T> clazz, ServiceFactory<T> service, Map<String, Object> properties) {
+
+		return new ServiceRegistrationOSGiImpl<>(clazz, service, properties);
+	}
+
+	static OSGi<ServiceRegistration<?>> register(
+		String[] classes, Object service, Map<String, ?> properties) {
+
+		return new ServiceRegistrationOSGiImpl(classes, service, properties);
 	}
 
 	static <T> OSGi<T> services(Class<T> clazz) {
