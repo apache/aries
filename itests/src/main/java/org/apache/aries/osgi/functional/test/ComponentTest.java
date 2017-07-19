@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+import static org.apache.aries.osgi.functional.OSGi.all;
 import static org.apache.aries.osgi.functional.OSGi.apply;
 import static org.apache.aries.osgi.functional.OSGi.bundleContext;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
@@ -84,14 +85,15 @@ public class ComponentTest {
             configurations("org.components.MyComponent").flatMap(props ->
             services(Service.class).flatMap(ms ->
             just(new Component(props, ms)).flatMap(component ->
-            register(Component.class, component, new HashMap<>()).distribute(
-            ign -> dynamic(
-                highestService(ServiceOptional.class),
-                component::setOptional, c -> component.setOptional(null)),
-            ign -> dynamic(
-                services(ServiceForList.class),
-                component::addService, component::removeService)
-        ))));
+            register(Component.class, component, new HashMap<>()).then(
+            all(
+                dynamic(
+                    highestService(ServiceOptional.class),
+                    component::setOptional, c -> component.setOptional(null)),
+                dynamic(
+                    services(ServiceForList.class),
+                    component::addService, component::removeService)
+        )))));
 
         ServiceTracker<Component, Component> serviceTracker =
             new ServiceTracker<>(_bundleContext, Component.class, null);
@@ -203,14 +205,15 @@ public class ComponentTest {
                 services(Service.class)).
                 flatMap(
                     comp ->
-                register(Component.class, comp, new HashMap<>()).distribute(
-                    ign -> dynamic(
-                        highestService(ServiceOptional.class),
-                        comp::setOptional, c -> comp.setOptional(null)),
-                    ign -> dynamic(
-                        services(ServiceForList.class),
-                        comp::addService, comp::removeService)
-                ));
+                register(Component.class, comp, new HashMap<>()).then(
+                    all(
+                        dynamic(
+                            highestService(ServiceOptional.class),
+                            comp::setOptional, c -> comp.setOptional(null)),
+                        dynamic(
+                            services(ServiceForList.class),
+                            comp::addService, comp::removeService)
+                )));
 
         ServiceTracker<Component, Component> serviceTracker =
             new ServiceTracker<>(_bundleContext, Component.class, null);

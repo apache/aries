@@ -28,6 +28,7 @@ import org.apache.aries.osgi.functional.internal.BundleOSGi;
 import org.apache.aries.osgi.functional.internal.ChangeContextOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationsOSGiImpl;
+import org.apache.aries.osgi.functional.internal.DistributeOSGi;
 import org.apache.aries.osgi.functional.internal.JustOSGiImpl;
 import org.apache.aries.osgi.functional.internal.NothingOSGiImpl;
 import org.apache.aries.osgi.functional.internal.OnCloseOSGiImpl;
@@ -162,9 +163,11 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ServiceReferenceOSGi<>(filterString, clazz);
 	}
 
-	OSGi<T> filter(Predicate<T> predicate);
+	static OSGi<Void> all(OSGi<?> ... programs) {
+		return new DistributeOSGi(programs);
+	}
 
-	OSGi<Void> distribute(Function<T, OSGi<?>>... funs);
+	OSGi<T> filter(Predicate<T> predicate);
 
 	OSGi<T> route(Consumer<Router<T>> routerConsumer);
 
