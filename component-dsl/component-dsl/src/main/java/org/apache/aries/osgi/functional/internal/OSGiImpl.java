@@ -52,7 +52,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
 		return new OSGiImpl<>(
 			((bundleContext) -> {
-				Map<Object, OSGiResult<? extends S>> identities =
+				Map<Object, OSGiResult<?>> identities =
 					new IdentityHashMap<>();
 
 				AtomicReference<Runnable> closeReference =
@@ -66,11 +66,45 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 				Consumer<Tuple<S>> removedSource = removed.getSource();
 
-				AtomicReference<Tuple<S>> tupleAtomicReference =
-					new AtomicReference<>();
+				return new OSGiResultImpl<>(
+					added, removed,
+					() -> {
+						OSGiResultImpl<T> or1 = _operation.run(bundleContext);
 
-				OSGiResultImpl<S> osgiResult = new OSGiResultImpl<>(
-					added, removed, null,
+						closeReference.set(or1.close);
+
+						or1.added.map(t -> {
+							OSGiImpl<S> program =
+								(OSGiImpl<S>)fun.apply(t.t);
+
+							OSGiResultImpl<S> or2 =
+								program._operation.run(bundleContext);
+
+							or2.added.map(s -> {addedSource.accept(s); return null;});
+							or2.removed.map(s -> {removedSource.accept(s); return null;});
+
+							or2.start.run();
+
+							identities.put(t.original, or2);
+
+							return null;
+						});
+
+						or1.removed.map(t -> {
+							synchronized (identities) {
+								OSGiResult<?> osgiResult1 =
+									identities.remove(t.original);
+
+								if (osgiResult1 != null) {
+									osgiResult1.close();
+								}
+							}
+
+							return null;
+						});
+
+						or1.start.run();
+					},
 					() -> {
 						synchronized (identities) {
 							identities.values().forEach(OSGiResult::close);
@@ -78,49 +112,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 						closeReference.get().run();
 					});
-
-				osgiResult.start = () -> {
-					OSGiResultImpl<T> or1 = _operation.run(bundleContext);
-
-					closeReference.set(or1.close);
-
-					or1.added.map(t -> {
-						OSGi<? extends S> program = fun.apply(t.t);
-
-						OSGiResult<? extends S> or2 = program.run(
-							bundleContext,
-							s -> {
-								Tuple<S> tuple = Tuple.create(s);
-
-								tupleAtomicReference.set(tuple);
-
-								addedSource.accept(tuple);
-							});
-
-						identities.put(t.original, or2);
-
-						return null;
-					});
-
-					or1.removed.map(t -> {
-						synchronized (identities) {
-							OSGiResult<? extends S> osgiResult1 =
-								identities.remove(t.original);
-
-							removedSource.accept(tupleAtomicReference.get());
-
-							if (osgiResult1 != null) {
-								osgiResult1.close();
-							}
-						}
-
-						return null;
-					});
-
-					or1.start.run();
-				};
-
-				return osgiResult;
 			}
 			));
 	}
