@@ -70,7 +70,7 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 			AtomicReference<OSGiResult<? extends S>> atomicReference =
 				new AtomicReference<>(null);
 			AtomicReference<Tuple<S>> tupleReference =
-				new AtomicReference<>();
+				new AtomicReference<>(null);
 
 			return new OSGiResultImpl<>(
 				added, removed,
@@ -90,9 +90,17 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 
 				},
 				() -> {
-					removedSource.accept(tupleReference.get());
+					Tuple<S> s = tupleReference.get();
 
-					atomicReference.get().close();
+					if (s != null) {
+						removedSource.accept(s);
+					}
+
+					OSGiResult<? extends S> osGiResult = atomicReference.get();
+
+					if (osGiResult != null) {
+						osGiResult.close();
+					}
 				});
 		});
 	}
