@@ -328,7 +328,94 @@ public class OSGiImpl<T> implements OSGi<T> {
 				Consumer<Tuple<S>> removedSource = removed.getSource();
 
 				OSGiResultImpl<S> osgiResult = new OSGiResultImpl<>(
-					added, removed, null,
+					added, removed,
+					() -> {
+						OSGiResultImpl<T> or1 = _operation.run(bundleContext);
+
+						myCloseReference.set(or1);
+
+						or1.added.map(t -> {
+							synchronized (identities) {
+								identities.put(t, new ArrayList<>());
+
+								funs.keySet().forEach(f ->
+									processAdded(
+										identities, funs, addedSource, f, t));
+
+								return Tuple.create(null);
+							}
+						});
+
+						or1.removed.map(t -> {
+							synchronized (identities) {
+								List<Pair<Function<T, S>, Tuple<S>>> remove =
+									identities.remove(t);
+
+								if (remove == null) {
+									return Tuple.create(null);
+								}
+
+								remove.forEach(p -> {
+									List<Pair<Tuple<T>, Tuple<S>>> pairs = funs.get(
+										p.getFirst());
+
+									if (pairs == null) {
+										return;
+									}
+
+									pairs.remove(new Pair<>(t, null));
+
+									removedSource.accept(p.getSecond());
+								});
+							}
+
+							return Tuple.create(null);
+						});
+
+						OSGiResult<Void> or2 = fun.foreach(
+							f -> {
+								synchronized (identities) {
+									funs.put(f, new ArrayList<>());
+
+									identities.keySet().forEach(
+										t -> processAdded(
+											identities, funs, addedSource, f, t));
+								}
+							},
+							f -> {
+								synchronized (identities) {
+									List<Pair<Tuple<T>, Tuple<S>>> remove = funs.remove(f);
+
+									if (remove == null) {
+										return;
+									}
+
+									remove.forEach(p -> {
+										List<Pair<Function<T, S>, Tuple<S>>> pairs =
+											identities.get(p.getFirst());
+
+										Iterator<Pair<Function<T, S>, Tuple<S>>> iterator =
+											pairs.iterator();
+
+										while (iterator.hasNext()) {
+											Pair<Function<T, S>, Tuple<S>> next = iterator.next();
+
+											if (next.getFirst() == f) {
+												iterator.remove();
+
+												break;
+											}
+										}
+
+										removedSource.accept(p.getSecond());
+									});
+								}
+							}).run(bundleContext);
+
+						or1.start.run();
+
+						otherCloseReference.set(or2);
+					},
 					() -> {
 						synchronized (identities) {
 							identities.values().forEach(i ->
@@ -343,94 +430,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 						otherCloseReference.get().close();
 					});
-
-				osgiResult.start = () -> {
-					OSGiResultImpl<T> or1 = _operation.run(bundleContext);
-
-					myCloseReference.set(or1);
-
-					or1.added.map(t -> {
-						synchronized (identities) {
-							identities.put(t, new ArrayList<>());
-
-							funs.keySet().forEach(f ->
-								processAdded(
-									identities, funs, addedSource, f, t));
-
-							return null;
-						}
-					});
-
-					or1.removed.map(t -> {
-						synchronized (identities) {
-							List<Pair<Function<T, S>, Tuple<S>>> remove =
-								identities.remove(t);
-
-							if (remove == null) {
-								return null;
-							}
-
-							remove.forEach(p -> {
-								List<Pair<Tuple<T>, Tuple<S>>> pairs = funs.get(
-									p.getFirst());
-
-								if (pairs == null) {
-									return;
-								}
-
-								pairs.remove(new Pair<>(t, null));
-
-								removedSource.accept(p.getSecond());
-							});
-						}
-
-						return null;
-					});
-
-					OSGiResult<Void> or2 = fun.foreach(
-						f -> {
-							synchronized (identities) {
-								funs.put(f, new ArrayList<>());
-
-								identities.keySet().forEach(
-									t -> processAdded(
-										identities, funs, addedSource, f, t));
-							}
-						},
-						f -> {
-							synchronized (identities) {
-								List<Pair<Tuple<T>, Tuple<S>>> remove = funs.remove(f);
-
-								if (remove == null) {
-									return;
-								}
-
-								remove.forEach(p -> {
-									List<Pair<Function<T, S>, Tuple<S>>> pairs =
-										identities.get(p.getFirst());
-
-									Iterator<Pair<Function<T, S>, Tuple<S>>> iterator =
-										pairs.iterator();
-
-									while (iterator.hasNext()) {
-										Pair<Function<T, S>, Tuple<S>> next = iterator.next();
-
-										if (next.getFirst() == f) {
-											iterator.remove();
-
-											break;
-										}
-									}
-
-									removedSource.accept(p.getSecond());
-								});
-							}
-						}).run(bundleContext);
-
-					or1.start.run();
-
-					otherCloseReference.set(or2);
-				};
 
 				return osgiResult;
 			}
