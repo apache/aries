@@ -56,7 +56,14 @@ public class DistributeOSGi extends OSGiImpl<Void> {
                 () -> {
                     removedSource.accept(Tuple.create(null));
 
-                    results.forEach(OSGiResult::close);
+                    for (OSGiResult<?> result : results) {
+                        try {
+                            result.close();
+                        }
+                        catch (Exception ignored) {
+                        }
+                    }
+
                 }
             );
         });
