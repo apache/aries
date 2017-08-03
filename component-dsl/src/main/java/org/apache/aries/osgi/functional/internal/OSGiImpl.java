@@ -80,14 +80,14 @@ public class OSGiImpl<T> implements OSGi<T> {
 							OSGiResultImpl<S> or2 =
 								program._operation.run(bundleContext);
 
-							or2.added.map(s -> {addedSource.accept(s); return null;});
-							or2.removed.map(s -> {removedSource.accept(s); return null;});
+							or2.added.map(s -> {addedSource.accept(s); return Tuple.create(null);});
+							or2.removed.map(s -> {removedSource.accept(s); return Tuple.create(null);});
 
 							or2.start.run();
 
 							identities.put(t.original, or2);
 
-							return null;
+							return Tuple.create(null);
 						});
 
 						or1.removed.map(t -> {
@@ -100,7 +100,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 								}
 							}
 
-							return null;
+							return Tuple.create(null);
 						});
 
 						or1.start.run();
@@ -158,7 +158,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 	public OSGiResult<T> run(BundleContext bundleContext, Consumer<T> andThen) {
 		OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
 
-		osgiResult.added.map(x -> {andThen.accept(x.t); return null;});
+		osgiResult.added.map(x -> {andThen.accept(x.t); return Tuple.create(null);});
 
 		osgiResult.start.run();
 
@@ -253,9 +253,9 @@ public class OSGiImpl<T> implements OSGi<T> {
 			OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
 
 			osgiResult.added.map(
-				t -> {router._adding.accept(t); return null;});
+				t -> {router._adding.accept(t); return Tuple.create(null);});
 			osgiResult.removed.map(
-				t -> {router._leaving.accept(t); return null;});
+				t -> {router._leaving.accept(t); return Tuple.create(null);});
 
 			return new OSGiResultImpl<>(
 				outgoingAddingPipe, outgoingRemovingPipe,
