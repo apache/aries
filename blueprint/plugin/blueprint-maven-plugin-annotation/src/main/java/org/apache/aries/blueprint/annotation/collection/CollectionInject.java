@@ -16,15 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.annotation.collection;
 
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import java.util.List;
+/**
+ * Annotating any field, setter or constructor parameter inject collection of beans.
+ */
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface CollectionInject {
 
-interface BlueprintRegistry extends ContextEnricher {
-    BeanRef getMatching(BeanTemplate template);
-
-    List<BeanRef> getAllMatching(BeanTemplate template);
-
+    /**
+     * @return class of beans to inject
+     */
+    Class<?> value();
 }

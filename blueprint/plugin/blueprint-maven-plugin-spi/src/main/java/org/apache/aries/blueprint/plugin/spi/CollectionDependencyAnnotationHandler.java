@@ -16,15 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.spi;
 
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 
-import java.util.List;
+/**
+ * Annotation A on constructor, setter or field adds inject collection (array, list, set) of beans into annotated element.
+ */
+public interface CollectionDependencyAnnotationHandler<A extends Annotation> extends AnnotationHandler<A> {
 
-interface BlueprintRegistry extends ContextEnricher {
-    BeanRef getMatching(BeanTemplate template);
-
-    List<BeanRef> getAllMatching(BeanTemplate template);
-
+    /**
+     * @param annotation instance of annotation A
+     * @return class of beans to inject
+     */
+    Class<?> getBeanClass(Annotation annotation);
 }

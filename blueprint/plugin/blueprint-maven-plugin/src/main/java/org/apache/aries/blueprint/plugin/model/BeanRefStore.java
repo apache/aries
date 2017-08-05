@@ -18,7 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -40,5 +42,15 @@ class BeanRefStore {
             }
         }
         return null;
+    }
+
+    List<BeanRef> getAllMatching(BeanTemplate template) {
+        List<BeanRef> refs = new ArrayList<>();
+        for (BeanRef bean : reg) {
+            if (bean.matches(template)) {
+                refs.add(bean);
+            }
+        }
+        return refs;
     }
 }
