@@ -16,15 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.handlers.collection;
 
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import org.apache.aries.blueprint.annotation.collection.CollectionInject;
+import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
 
-import java.util.List;
+import java.lang.annotation.Annotation;
 
-interface BlueprintRegistry extends ContextEnricher {
-    BeanRef getMatching(BeanTemplate template);
+public class CollectionInjectHandler implements CollectionDependencyAnnotationHandler<CollectionInject> {
+    @Override
+    public Class<CollectionInject> getAnnotation() {
+        return CollectionInject.class;
+    }
 
-    List<BeanRef> getAllMatching(BeanTemplate template);
-
+    @Override
+    public Class<?> getBeanClass(Annotation annotation) {
+        return ((CollectionInject) annotation).value();
+    }
 }

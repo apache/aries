@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.plugin.handlers;
 
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanFinder;
+import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.ContextInitializationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.FactoryMethodFinder;
@@ -48,6 +49,7 @@ public class Handlers {
     public static final List<Class<? extends Annotation>> FACTORY_METHOD_ANNOTATION_CLASSES = new ArrayList<>();
     public static final List<Class<? extends Annotation>> QUALIFING_ANNOTATION_CLASSES = new ArrayList<>();
     public static final List<ContextInitializationHandler> CONTEXT_INITIALIZATION_HANDLERS = new ArrayList<>();
+    public static final List<CollectionDependencyAnnotationHandler<? extends Annotation>> COLLECTION_DEPENDENCY_ANNOTATION_HANDLERS = new ArrayList<>();
 
     static {
         for (BeanFinder beanFinder : ServiceLoader.load(BeanFinder.class)) {
@@ -91,6 +93,10 @@ public class Handlers {
 
         for (QualifingAnnotationFinder<? extends Annotation> qualifingAnnotationFinder : ServiceLoader.load(QualifingAnnotationFinder.class)) {
             QUALIFING_ANNOTATION_CLASSES.add((Class<? extends Annotation>) qualifingAnnotationFinder.getAnnotation());
+        }
+
+        for (CollectionDependencyAnnotationHandler<? extends Annotation> collectionDependencyAnnotationHandler : ServiceLoader.load(CollectionDependencyAnnotationHandler.class)) {
+            COLLECTION_DEPENDENCY_ANNOTATION_HANDLERS.add(collectionDependencyAnnotationHandler);
         }
 
         for (ContextInitializationHandler contextInitializationHandler : ServiceLoader.load(ContextInitializationHandler.class)) {

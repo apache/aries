@@ -110,6 +110,10 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
         return beanRefStore.getMatching(template);
     }
 
+    public List<BeanRef> getAllMatching(BeanTemplate template) {
+        return beanRefStore.getAllMatching(template);
+    }
+
     Collection<Bean> getBeans() {
         return generatedBeans;
     }

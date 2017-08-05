@@ -19,6 +19,8 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.handlers.Handlers;
+import org.apache.aries.blueprint.plugin.handlers.collection.CollectionInjectHandler;
+import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler;
@@ -37,6 +39,9 @@ class AnnotationHelper {
         }
         for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : Handlers.VALUE_INJECTION_HANDLERS) {
             classes.add(valueInjectionHandler.getAnnotation());
+        }
+        for (CollectionDependencyAnnotationHandler<? extends Annotation> collectionDependencyAnnotationHandler : Handlers.COLLECTION_DEPENDENCY_ANNOTATION_HANDLERS) {
+            classes.add(collectionDependencyAnnotationHandler.getAnnotation());
         }
         return classes.toArray(new Class[classes.size()]);
     }
