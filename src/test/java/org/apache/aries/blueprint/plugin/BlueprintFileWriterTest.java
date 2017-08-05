@@ -780,6 +780,138 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(propertyPlaceholder, "default-properties/property[@name='test2']/@value", "v2");
     }
 
+    @Test
+    public void shouldInjectListViaField() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(property[@name='listFieldInject']/list/ref)", "4");
+        assertXpathEquals(bean, "property[@name='listFieldInject']/list/ref[1]/@component-id", "i1Impl1");
+        assertXpathEquals(bean, "property[@name='listFieldInject']/list/ref[2]/@component-id", "i1Impl2");
+        assertXpathEquals(bean, "property[@name='listFieldInject']/list/ref[3]/@component-id", "i1Impl3Annotated");
+        assertXpathEquals(bean, "property[@name='listFieldInject']/list/ref[4]/@component-id", "i1Impl4Annotated");
+    }
+
+    @Test
+    public void shouldInjectSetViaField() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(property[@name='setFieldInject']/set/ref)", "4");
+        assertXpathEquals(bean, "property[@name='setFieldInject']/set/ref[1]/@component-id", "i1Impl1");
+        assertXpathEquals(bean, "property[@name='setFieldInject']/set/ref[2]/@component-id", "i1Impl2");
+        assertXpathEquals(bean, "property[@name='setFieldInject']/set/ref[3]/@component-id", "i1Impl3Annotated");
+        assertXpathEquals(bean, "property[@name='setFieldInject']/set/ref[4]/@component-id", "i1Impl4Annotated");
+    }
+
+    @Test
+    public void shouldInjectArrayViaField() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(property[@name='arrayFieldInject']/array/ref)", "3");
+        assertXpathEquals(bean, "property[@name='arrayFieldInject']/array/ref[1]/@component-id", "i2Impl1");
+        assertXpathEquals(bean, "property[@name='arrayFieldInject']/array/ref[2]/@component-id", "i2Impl2Annotated");
+        assertXpathEquals(bean, "property[@name='arrayFieldInject']/array/ref[3]/@component-id", "i2Impl3Annotated");
+    }
+
+    @Test
+    public void shouldInjectAnnotatedSetViaField() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(property[@name='annotatedSetFieldInject']/set/ref)", "2");
+        assertXpathEquals(bean, "property[@name='annotatedSetFieldInject']/set/ref[1]/@component-id", "i1Impl3Annotated");
+        assertXpathEquals(bean, "property[@name='annotatedSetFieldInject']/set/ref[2]/@component-id", "i1Impl4Annotated");
+    }
+
+    @Test
+    public void shouldInjectListViaSetter() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(property[@name='listSetterInject']/list/ref)", "4");
+        assertXpathEquals(bean, "property[@name='listSetterInject']/list/ref[1]/@component-id", "i1Impl1");
+        assertXpathEquals(bean, "property[@name='listSetterInject']/list/ref[2]/@component-id", "i1Impl2");
+        assertXpathEquals(bean, "property[@name='listSetterInject']/list/ref[3]/@component-id", "i1Impl3Annotated");
+        assertXpathEquals(bean, "property[@name='listSetterInject']/list/ref[4]/@component-id", "i1Impl4Annotated");
+    }
+
+    @Test
+    public void shouldInjectSetViaSetter() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(property[@name='setSetterInject']/set/ref)", "3");
+        assertXpathEquals(bean, "property[@name='setSetterInject']/set/ref[1]/@component-id", "i2Impl1");
+        assertXpathEquals(bean, "property[@name='setSetterInject']/set/ref[2]/@component-id", "i2Impl2Annotated");
+        assertXpathEquals(bean, "property[@name='setSetterInject']/set/ref[3]/@component-id", "i2Impl3Annotated");
+    }
+
+    @Test
+    public void shouldInjectArrayViaSetter() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(property[@name='arraySetterInject']/array/ref)", "4");
+        assertXpathEquals(bean, "property[@name='arraySetterInject']/array/ref[1]/@component-id", "i1Impl1");
+        assertXpathEquals(bean, "property[@name='arraySetterInject']/array/ref[2]/@component-id", "i1Impl2");
+        assertXpathEquals(bean, "property[@name='arraySetterInject']/array/ref[3]/@component-id", "i1Impl3Annotated");
+        assertXpathEquals(bean, "property[@name='arraySetterInject']/array/ref[4]/@component-id", "i1Impl4Annotated");
+    }
+
+    @Test
+    public void shouldInjectAnnotatedArrayViaSetter() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(property[@name='annotatedArraySetterInject']/array/ref)", "2");
+        assertXpathEquals(bean, "property[@name='annotatedArraySetterInject']/array/ref[1]/@component-id", "i2Impl2Annotated");
+        assertXpathEquals(bean, "property[@name='annotatedArraySetterInject']/array/ref[2]/@component-id", "i2Impl3Annotated");
+    }
+
+    @Test
+    public void shouldInjectListViaConstructor() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(argument[1]/list/ref)", "4");
+        assertXpathEquals(bean, "argument[1]/list/ref[1]/@component-id", "i1Impl1");
+        assertXpathEquals(bean, "argument[1]/list/ref[2]/@component-id", "i1Impl2");
+        assertXpathEquals(bean, "argument[1]/list/ref[3]/@component-id", "i1Impl3Annotated");
+        assertXpathEquals(bean, "argument[1]/list/ref[4]/@component-id", "i1Impl4Annotated");
+    }
+
+    @Test
+    public void shouldInjectSetViaConstructor() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(argument[2]/set/ref)", "4");
+        assertXpathEquals(bean, "argument[2]/set/ref[1]/@component-id", "i1Impl1");
+        assertXpathEquals(bean, "argument[2]/set/ref[2]/@component-id", "i1Impl2");
+        assertXpathEquals(bean, "argument[2]/set/ref[3]/@component-id", "i1Impl3Annotated");
+        assertXpathEquals(bean, "argument[2]/set/ref[4]/@component-id", "i1Impl4Annotated");
+    }
+
+    @Test
+    public void shouldInjectArrayViaConstructor() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(argument[3]/array/ref)", "3");
+        assertXpathEquals(bean, "argument[3]/array/ref[1]/@component-id", "i2Impl1");
+        assertXpathEquals(bean, "argument[3]/array/ref[2]/@component-id", "i2Impl2Annotated");
+        assertXpathEquals(bean, "argument[3]/array/ref[3]/@component-id", "i2Impl3Annotated");
+    }
+
+    @Test
+    public void shouldInjectAnnotatedListViaConstructor() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(argument[4]/list/ref)", "2");
+        assertXpathEquals(bean, "argument[4]/list/ref[1]/@component-id", "i1Impl3Annotated");
+        assertXpathEquals(bean, "argument[4]/list/ref[2]/@component-id", "i1Impl4Annotated");
+    }
+
+    @Test
+    public void shouldInjectEmptyListViaConstructor() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(argument[5]/list)", "1");
+        assertXpathEquals(bean, "count(argument[5]/list/ref)", "0");
+    }
+
+    @Test
+    public void shouldInjectEmptySetViaConstructor() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(argument[6]/set)", "1");
+        assertXpathEquals(bean, "count(argument[6]/set/ref)", "0");
+    }
+
+    @Test
+    public void shouldInjectEmptyArrayViaConstructor() throws Exception {
+        Node bean = getBeanById("beanWithCollections");
+        assertXpathEquals(bean, "count(argument[7]/array)", "1");
+        assertXpathEquals(bean, "count(argument[7]/array/ref)", "0");
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }

@@ -16,15 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.model;
+package org.apache.aries.blueprint.plugin.test.collection;
 
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import javax.inject.Singleton;
 
-import java.util.List;
-
-interface BlueprintRegistry extends ContextEnricher {
-    BeanRef getMatching(BeanTemplate template);
-
-    List<BeanRef> getAllMatching(BeanTemplate template);
-
+@Singleton
+public class I1Impl2 implements I1 {
 }

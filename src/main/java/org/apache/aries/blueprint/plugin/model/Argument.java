@@ -19,12 +19,16 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.handlers.Handlers;
+import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
@@ -33,10 +37,17 @@ import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 class Argument implements XmlWriter {
     private final String ref;
     private final String value;
+    private final RefCollection refCollection;
 
     Argument(BlueprintRegistry blueprintRegistry, Class<?> argumentClass, Annotation[] annotations) {
         this.value = findValue(annotations);
         if (value != null) {
+            ref = null;
+            refCollection = null;
+            return;
+        }
+        this.refCollection = RefCollection.getRefCollection(blueprintRegistry, argumentClass, annotations);
+        if (refCollection != null) {
             ref = null;
             return;
         }
@@ -79,11 +90,14 @@ class Argument implements XmlWriter {
 
     @Override
     public void write(XMLStreamWriter writer) throws XMLStreamException {
-        writer.writeEmptyElement("argument");
+        writer.writeStartElement("argument");
         if (ref != null) {
             writer.writeAttribute("ref", ref);
         } else if (value != null) {
             writer.writeAttribute("value", value);
+        }else if (refCollection != null) {
+            refCollection.write(writer);
         }
+        writer.writeEndElement();
     }
 }
