@@ -17,7 +17,8 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,7 +26,7 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
         <version>2.0.1</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
@@ -40,14 +41,38 @@
     <properties>
         <maven.version>3.0.5</maven.version>
         <aether.version>1.11</aether.version>
+        <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
+        <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
+
+        <blueprint-maven-plugin-spi.version>1.0.1-SNAPSHOT</blueprint-maven-plugin-spi.version>
+        <blueprint-maven-plugin-spring-handlers.version>1.0.0</blueprint-maven-plugin-spring-handlers.version>
+        <blueprint-maven-plugin-annotation.version>1.1.1-SNAPSHOT</blueprint-maven-plugin-annotation.version>
+
+        <javax.inject.version>1</javax.inject.version>
+        <javax.transaction-api.version>1.2</javax.transaction-api.version>
+        <javax.transaction.cdi-api.version>1.2-b03</javax.transaction.cdi-api.version>
+        <cdi-api.version>1.2</cdi-api.version>
+        <persistence-api.version>1.0.2</persistence-api.version>
+        <pax-cdi-api.version>0.8.0</pax-cdi-api.version>
+
+        <wagon-http-lightweight.version>2.6</wagon-http-lightweight.version>
+        <slf4j-jdk14.version>1.7.7</slf4j-jdk14.version>
+        <maven-filtering.version>1.0-beta-4</maven-filtering.version>
+        <plexus-build-api.version>0.0.7</plexus-build-api.version>
+        <plexus-utils.version>3.0</plexus-utils.version>
+        <osgi.cmpn.version>6.0.0</osgi.cmpn.version>
+        <xbean-finder-shaded.version>4.5</xbean-finder-shaded.version>
+
+        <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
+        <org.apache.aries.blueprint.core.version>1.7.1</org.apache.aries.blueprint.core.version>
+        <org.apache.aries.transaction.blueprint.version>1.1.1</org.apache.aries.transaction.blueprint.version>
+        <org.apache.aries.jpa.blueprint.aries.version>1.0.2</org.apache.aries.jpa.blueprint.aries.version>
+        <org.apache.aries.blueprint.cm.version>1.0.9</org.apache.aries.blueprint.cm.version>
     </properties>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin
-        </connection>
-        <developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin
-        </developerConnection>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin</developerConnection>
         <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/plugin/blueprint-maven-plugin</url>
     </scm>
 
@@ -62,7 +87,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.4</version>
+                <version>${maven-plugin-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>default-descriptor</id>
@@ -107,7 +132,7 @@
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
+                    <version>${lifecycle-mapping.version}</version>
                     <configuration>
                         <lifecycleMappingMetadata>
                             <pluginExecutions>
@@ -127,7 +152,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -143,54 +168,54 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-maven-plugin-spi</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>${blueprint-maven-plugin-spi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-maven-plugin-spring-handlers</artifactId>
-            <version>1.0.0</version>
+            <version>${blueprint-maven-plugin-spring-handlers.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.4</version>
+            <version>${maven-plugin-plugin.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>1</version>
+            <version>${javax.inject.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>javax.transaction-api</artifactId>
-            <version>1.2</version>
+            <version>${javax.transaction-api.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <version>1.2</version>
+            <version>${cdi-api.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.persistence</groupId>
             <artifactId>persistence-api</artifactId>
-            <version>1.0.2</version>
+            <version>${persistence-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.cdi</groupId>
             <artifactId>pax-cdi-api</artifactId>
-            <version>0.8.0</version>
+            <version>${pax-cdi-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
-            <version>6.0.0</version>
+            <version>${osgi.cmpn.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-maven-plugin-annotation</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>${blueprint-maven-plugin-annotation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -225,7 +250,7 @@
         <dependency>
             <groupId>org.apache.maven.wagon</groupId>
             <artifactId>wagon-http-lightweight</artifactId>
-            <version>2.6</version>
+            <version>${wagon-http-lightweight.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -235,35 +260,35 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.7</version>
+            <version>${slf4j-jdk14.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-filtering</artifactId>
-            <version>1.0-beta-4</version>
+            <version>${maven-filtering.version}</version>
         </dependency>
         <dependency>
             <groupId>org.sonatype.plexus</groupId>
             <artifactId>plexus-build-api</artifactId>
-            <version>0.0.7</version>
+            <version>${plexus-build-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
-            <version>3.0</version>
+            <version>${plexus-utils.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-finder-shaded</artifactId>
-            <version>4.5</version>
+            <version>${xbean-finder-shaded.version}</version>
         </dependency>
 
         <!-- For the CDI annotations -->
         <dependency>
             <groupId>javax.transaction.cdi</groupId>
             <artifactId>javax.transaction.cdi-api</artifactId>
-            <version>1.2-b03</version>
+            <version>${javax.transaction.cdi-api.version}</version>
         </dependency>
 
         <dependency>
@@ -275,34 +300,33 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>1.0.1</version>
+            <version>${org.apache.aries.blueprint.api.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.7.1</version>
+            <version>${org.apache.aries.blueprint.core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.blueprint</artifactId>
-            <version>1.1.1</version>
+            <version>${org.apache.aries.transaction.blueprint.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jpa</groupId>
             <artifactId>org.apache.aries.jpa.blueprint.aries</artifactId>
-            <version>1.0.2</version>
+            <version>${org.apache.aries.jpa.blueprint.aries.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
-            <version>1.0.9</version>
+            <version>${org.apache.aries.blueprint.cm.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
 </project>

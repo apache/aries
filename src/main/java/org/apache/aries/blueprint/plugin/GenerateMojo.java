@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.plugin;
 
 import org.apache.aries.blueprint.plugin.model.Blueprint;
+import org.apache.aries.blueprint.plugin.model.ConflictDetected;
 import org.apache.aries.blueprint.plugin.spi.Activation;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -112,13 +113,19 @@ public class GenerateMojo extends AbstractMojo {
         BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters);
 
         try {
-            ClassFinder classFinder = createProjectScopeFinder();
-            Set<Class<?>> classes = FilteredClassFinder.findClasses(classFinder, toScan);
-            Blueprint blueprint = new Blueprint(blueprintConfiguration, classes);
-            writeBlueprintIfNeeded(blueprint);
+            generateBlueprint(toScan, blueprintConfiguration);
+        } catch (ConflictDetected e) {
+            throw new MojoExecutionException(e.getMessage(), e);
         } catch (Exception e) {
-            throw new MojoExecutionException("Error building commands help", e);
+            throw new MojoExecutionException("Error during blueprint generation", e);
         }
+    }
+
+    private void generateBlueprint(List<String> toScan, BlueprintConfigurationImpl blueprintConfiguration) throws Exception {
+        ClassFinder classFinder = createProjectScopeFinder();
+        Set<Class<?>> classes = FilteredClassFinder.findClasses(classFinder, toScan);
+        Blueprint blueprint = new Blueprint(blueprintConfiguration, classes);
+        writeBlueprintIfNeeded(blueprint);
     }
 
     private void writeBlueprintIfNeeded(Blueprint blueprint) throws Exception {
