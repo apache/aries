@@ -41,6 +41,7 @@
                 <artifactId>blueprint-maven-plugin</artifactId>
                 <version>@blueprint-maven-plugin.version@</version>
                 <configuration>
+                    <baseDir>${project.build.directory}/classes</baseDir>
                     <generatedFileName>blueprint.xml</generatedFileName>
                     <generatedDir>custom/my</generatedDir>
                 </configuration>

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-def file = new File(basedir, 'target/generated-sources/blueprint/custom/my/blueprint.xml')
+def file = new File(basedir, 'target/classes/custom/my/blueprint.xml')
 assert file.exists()
 def xml = new groovy.util.XmlSlurper().parse(file)
 assert xml.name() == 'blueprint'
