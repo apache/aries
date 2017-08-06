@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,10 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.aries.blueprint.plugin.spi;
 
-def file = new File(basedir, 'target/generated-sources/blueprint/OSGI-INF/blueprint/autowire.xml')
-assert !file.exists()
-def log = new File(basedir, 'build.log')
-log.text.contains('Found two beans with id `t1`, but different classes: [p1.T1, p2.T1]') ||
-        log.text.contains('Found two beans with id `t1`, but different classes: [p2.T1, p1.T1]')
+/**
+ * Availability of references and reference-lists
+ */
+public enum Availability {
+    MANDATORY,
+    OPTIONAL;
 
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
+}

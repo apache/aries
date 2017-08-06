@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.plugin;
 import org.apache.aries.blueprint.plugin.model.Blueprint;
 import org.apache.aries.blueprint.plugin.model.ConflictDetected;
 import org.apache.aries.blueprint.plugin.spi.Activation;
+import org.apache.aries.blueprint.plugin.spi.Availability;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -96,6 +97,22 @@ public class GenerateMojo extends AbstractMojo {
     protected Activation defaultActivation;
 
     /**
+     * Specifies the default availability setting that will be defined for components.
+     * Default is null, which indicates mandatory (blueprint default).
+     * If MANDATORY then default-activation will be set to mandatory.
+     * If OPTIONAL then default-activation will be explicitly set to optional.
+     */
+    @Parameter
+    protected Availability defaultAvailability;
+
+    /**
+     * Specifies the default timout setting that will be defined for components.
+     * Default is null, which indicates 300000 seconds (blueprint default).
+     */
+    @Parameter
+    protected Long defaultTimeout;
+
+    /**
      * Specifies additional parameters which could be used in extensions
      */
     @Parameter
@@ -109,10 +126,9 @@ public class GenerateMojo extends AbstractMojo {
             getLog().info("Skipping blueprint generation because source files were not changed");
             return;
         }
-
-        BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters);
-
+        
         try {
+            BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters, defaultAvailability, defaultTimeout);
             generateBlueprint(toScan, blueprintConfiguration);
         } catch (ConflictDetected e) {
             throw new MojoExecutionException(e.getMessage(), e);
