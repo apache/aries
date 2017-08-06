@@ -912,6 +912,14 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(bean, "count(argument[7]/array/ref)", "0");
     }
 
+    @Test
+    public void shouldFindTypeConverters() throws Exception {
+        Node typeConverters = getTypeConverters();
+        assertXpathEquals(typeConverters, "count(*)", "2");
+        assertXpathEquals(typeConverters, "ref[1]/@component-id", "converter1");
+        assertXpathEquals(typeConverters, "ref[2]/@component-id", "converter2");
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }
@@ -932,6 +940,10 @@ public class BlueprintFileWriterTest {
 
     private static Node getBeanById(String id) throws XPathExpressionException {
         return (Node) xpath.evaluate("/blueprint/bean[@id='" + id + "']", document, XPathConstants.NODE);
+    }
+
+    private static Node getTypeConverters() throws XPathExpressionException {
+        return (Node) xpath.evaluate("/blueprint/type-converters", document, XPathConstants.NODE);
     }
 
     private static Node getCmPropertiesById(String id) throws XPathExpressionException {
