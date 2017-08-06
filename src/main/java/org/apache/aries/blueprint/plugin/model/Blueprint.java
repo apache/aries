@@ -32,12 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter {
     private static final String NS_BLUEPRINT = "http://www.osgi.org/xmlns/blueprint/v1.0.0";
@@ -139,9 +136,14 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
 
     public void write(XMLStreamWriter writer) throws XMLStreamException {
         writeBlueprint(writer);
+        writeTypeConverters(writer);
         writeBeans(writer);
         writeCustomWriters(writer);
         writer.writeEndElement();
+    }
+
+    private void writeTypeConverters(XMLStreamWriter writer) throws XMLStreamException {
+        new CustomTypeConverterWriter(beanRefStore).write(writer);
     }
 
     private void writeCustomWriters(XMLStreamWriter writer) throws XMLStreamException {
