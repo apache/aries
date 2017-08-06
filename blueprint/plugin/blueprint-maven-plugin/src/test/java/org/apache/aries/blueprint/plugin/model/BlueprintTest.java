@@ -20,8 +20,6 @@ package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.BlueprintConfigurationImpl;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
-import org.apache.aries.blueprint.plugin.test.MyFactoryBean;
-import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.ServiceReferences;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,7 +40,7 @@ public class BlueprintTest {
     private static final String NS_TX1 = "http://aries.apache.org/xmlns/transactions/v1.0.0";
 
     private final Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA1, NS_TX1));
-    private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, null);
+    private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, null, null, null);
 
     @Test
     public void testLists() {

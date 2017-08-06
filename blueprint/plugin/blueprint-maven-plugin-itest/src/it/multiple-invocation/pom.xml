@@ -52,6 +52,8 @@
                             </scanPaths>
                             <generatedFileName>p1.xml</generatedFileName>
                             <defaultActivation>LAZY</defaultActivation>
+                            <defaultAvailability>MANDATORY</defaultAvailability>
+                            <defaultTimeout>0</defaultTimeout>
                         </configuration>
                     </execution>
                     <execution>
@@ -65,6 +67,8 @@
                             </scanPaths>
                             <generatedFileName>p2.xml</generatedFileName>
                             <defaultActivation>EAGER</defaultActivation>
+                            <defaultAvailability>OPTIONAL</defaultAvailability>
+                            <defaultTimeout>60000</defaultTimeout>
                         </configuration>
                     </execution>
                 </executions>

@@ -22,6 +22,8 @@ assert p1.exists()
 def xmlP1 = new groovy.util.XmlSlurper().parse(p1)
 assert xmlP1.name() == 'blueprint'
 assert xmlP1.'@default-activation' == 'lazy'
+assert xmlP1.'@default-availability' == 'mandatory'
+assert xmlP1.'@default-timeout' == '0'
 assert xmlP1.bean.find { it.@class == 'p2.T2' }.size() == 0
 assert xmlP1.bean.@class == 'p1.T1'
 assert xmlP1.bean.@id == 't1'
@@ -31,6 +33,8 @@ assert p2.exists()
 def xmlP2 = new groovy.util.XmlSlurper().parse(p2)
 assert xmlP2.name() == 'blueprint'
 assert xmlP2.'@default-activation' == 'eager'
+assert xmlP2.'@default-availability' == 'optional'
+assert xmlP2.'@default-timeout' == '60000'
 assert xmlP2.bean.find { it.@class == 'p1.T1' }.size() == 0
 assert xmlP2.bean.@class == 'p2.T2'
 assert xmlP2.bean.@id == 't2'

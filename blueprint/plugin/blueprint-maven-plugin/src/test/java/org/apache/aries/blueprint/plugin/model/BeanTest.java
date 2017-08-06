@@ -49,7 +49,7 @@ public class BeanTest {
     private static final String NS_TX1 = "http://aries.apache.org/xmlns/transactions/v1.1.0";
 
     private final Set<String> namespaces = new HashSet<String>(Arrays.asList(NS_JPA1, NS_TX1));
-    private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, null);
+    private final BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, null, null, null);
     private final Blueprint blueprint = new Blueprint(blueprintConfiguration);
 
     @Test

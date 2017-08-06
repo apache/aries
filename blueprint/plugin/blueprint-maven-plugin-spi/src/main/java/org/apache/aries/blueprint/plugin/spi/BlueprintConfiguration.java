@@ -36,6 +36,16 @@ public interface BlueprintConfiguration {
     Activation getDefaultActivation();
 
     /**
+     * @return value of default availability parameter
+     */
+    Availability getDefaultAvailability();
+
+    /**
+     * @return value of default timeout parameter
+     */
+    Long getDefaultTimeout();
+
+    /**
      * @return custom parameters
      */
     Map<String, String> getCustomParameters();
