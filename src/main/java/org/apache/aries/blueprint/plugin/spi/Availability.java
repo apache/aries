@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,35 +18,15 @@
  */
 package org.apache.aries.blueprint.plugin.spi;
 
-import java.util.Map;
-import java.util.Set;
-
 /**
- * Blueprint plugin configuration from pom.xml
+ * Availability of references and reference-lists
  */
-public interface BlueprintConfiguration {
-    /**
-     * @return values of namespaces parameter
-     */
-    Set<String> getNamespaces();
+public enum Availability {
+    MANDATORY,
+    OPTIONAL;
 
-    /**
-     * @return value of default activation parameter
-     */
-    Activation getDefaultActivation();
-
-    /**
-     * @return value of default availability parameter
-     */
-    Availability getDefaultAvailability();
-
-    /**
-     * @return value of default timeout parameter
-     */
-    Long getDefaultTimeout();
-
-    /**
-     * @return custom parameters
-     */
-    Map<String, String> getCustomParameters();
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }
