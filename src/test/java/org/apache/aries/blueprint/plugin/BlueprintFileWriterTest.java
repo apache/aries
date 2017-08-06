@@ -89,7 +89,7 @@ public class BlueprintFileWriterTest {
         customParameters.put("ex.t", "1");
         customParameters.put("example.p1", "v1");
         customParameters.put("example.p2", "v2");
-        BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, customParameters);
+        BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, customParameters, null, null);
         Blueprint blueprint = new Blueprint(blueprintConfiguration, beanClasses);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         new BlueprintFileWriter(os).write(blueprint);

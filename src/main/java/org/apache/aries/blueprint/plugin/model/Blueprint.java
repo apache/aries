@@ -163,7 +163,13 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
         writer.writeStartElement("blueprint");
         writer.writeDefaultNamespace(NS_BLUEPRINT);
         if (blueprintConfiguration.getDefaultActivation() != null) {
-            writer.writeAttribute("default-activation", blueprintConfiguration.getDefaultActivation().name().toLowerCase());
+            writer.writeAttribute("default-activation", blueprintConfiguration.getDefaultActivation().toString());
+        }
+        if (blueprintConfiguration.getDefaultAvailability() != null) {
+            writer.writeAttribute("default-availability", blueprintConfiguration.getDefaultAvailability().toString());
+        }
+        if (blueprintConfiguration.getDefaultTimeout() != null) {
+            writer.writeAttribute("default-timeout", blueprintConfiguration.getDefaultTimeout().toString());
         }
     }
 
