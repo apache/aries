@@ -73,8 +73,14 @@ public class GenerateMojo extends AbstractMojo {
     protected String generatedFileName;
 
     /**
+     * Base directory to write generated hierarchy.
+     */
+    @Parameter(defaultValue = "${project.build.directory}/generated-sources/blueprint/")
+    private String baseDir;
+
+    /**
      * Base directory to write into
-     * (relative to ${project.build.directory}/generated-sources/blueprint).
+     * (relative to baseDir property).
      */
     @Parameter(defaultValue = "OSGI-INF/blueprint/")
     private String generatedDir;
@@ -128,9 +134,9 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void writeBlueprint(Blueprint blueprint) throws Exception {
-        String generatedBaseDir = ResourceInitializer.generateResourceEntry(project);
+        ResourceInitializer.prepareBaseDir(project, baseDir);
 
-        File dir = new File(generatedBaseDir, generatedDir);
+        File dir = new File(baseDir, generatedDir);
         File file = new File(dir, generatedFileName);
         file.getParentFile().mkdirs();
         getLog().info("Generating blueprint to " + file);

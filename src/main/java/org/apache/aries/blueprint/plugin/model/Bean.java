@@ -45,7 +45,7 @@ import java.util.TreeSet;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findSingleton;
 import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
-class Bean implements BeanEnricher, XmlWriter, Comparable<Bean>{
+class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
 
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
 

@@ -39,8 +39,14 @@ public class AddResourceDirMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", required = true)
     protected MavenProject project;
 
+    /**
+     * Base directory to write generated hierarchy.
+     */
+    @Parameter(defaultValue = "${project.build.directory}/generated-sources/blueprint/")
+    private String baseDir;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        ResourceInitializer.generateResourceEntry(project);
+        ResourceInitializer.prepareBaseDir(project, baseDir);
     }
 }

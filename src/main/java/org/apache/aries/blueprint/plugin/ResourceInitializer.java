@@ -22,12 +22,9 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.project.MavenProject;
 
 class ResourceInitializer {
-    static String generateResourceEntry(MavenProject project){
-        String buildDir = project.getBuild().getDirectory();
-        String generatedBaseDir = buildDir + "/generated-sources/blueprint";
+    static void prepareBaseDir(MavenProject project, String baseDir){
         Resource resource = new Resource();
-        resource.setDirectory(generatedBaseDir);
+        resource.setDirectory(baseDir);
         project.addResource(resource);
-        return generatedBaseDir;
     }
 }
