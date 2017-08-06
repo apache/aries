@@ -18,31 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
-
-final class BeanRef implements Comparable<BeanRef> {
-    final String id;
-    final Class<?> clazz;
-    private final Set<Annotation> qualifiers;
-
-    BeanRef(Class<?> clazz, String id, Annotation[] qualifiers) {
-        this.clazz = clazz;
-        this.id = id;
-        this.qualifiers = QualifierHelper.getQualifiers(qualifiers);
-    }
-
-    boolean matches(BeanTemplate template) {
-        boolean assignable = template.clazz.isAssignableFrom(this.clazz);
-        return assignable && qualifiers.containsAll(template.qualifiers);
-    }
-
-    @Override
-    public int compareTo(BeanRef other) {
-        return this.id.compareTo(other.id);
-    }
-
-    boolean conflictsWith(BeanRef bean) {
-        return id.equals(bean.id) && !clazz.equals(bean.clazz);
+public class ConflictDetected extends RuntimeException {
+    ConflictDetected(BeanRef bean1, BeanRef bean2) {
+        super(String.format("Found two beans with id `%s`, but different classes: [%s, %s]", bean1.id, bean1.clazz.getName(), bean2.clazz.getName()));
     }
 }

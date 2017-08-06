@@ -30,6 +30,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint-maven-plugin-spi</artifactId>
     <version>1.0.1-SNAPSHOT</version>
+    <name>Apache Aries Blueprint Maven Plugin SPI</name>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin-spi</connection>
@@ -49,5 +50,4 @@
         </plugins>
     </build>
 
-    <name>Apache Aries Blueprint Maven Plugin SPI</name>
 </project>

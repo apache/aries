@@ -28,11 +28,16 @@ class BeanRefStore {
     private SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
 
     void addBean(BeanRef beanRef) {
+        rejectOnConflict(beanRef);
         reg.add(beanRef);
     }
 
-    Collection<BeanRef> getBeans() {
-        return reg;
+    private void rejectOnConflict(BeanRef beanRef) {
+        for (BeanRef bean : reg) {
+            if(beanRef.conflictsWith(bean)){
+                throw new ConflictDetected(beanRef, bean);
+            }
+        }
     }
 
     BeanRef getMatching(BeanTemplate template) {
