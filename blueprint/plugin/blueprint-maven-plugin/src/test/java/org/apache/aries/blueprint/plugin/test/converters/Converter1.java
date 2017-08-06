@@ -1,4 +1,4 @@
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -16,11 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.aries.blueprint.plugin.test.converters;
 
-def file = new File(basedir, 'target/generated-sources/blueprint/OSGI-INF/blueprint/autowire.xml')
-assert file.exists()
-def xml = new groovy.util.XmlSlurper().parse(file)
-assert xml.name() == 'blueprint'
-assert xml.bean.find{ it.@class == 'p1.T1'}.@id == 't1'
-assert xml.bean.find{ it.@class == 'p1.T2'}.size() == 0
-assert xml.'type-converters'.size() == 0
+import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.ReifiedType;
+
+import javax.inject.Singleton;
+
+@Singleton
+public class Converter1 implements Converter {
+    @Override
+    public boolean canConvert(Object o, ReifiedType reifiedType) {
+        return false;
+    }
+
+    @Override
+    public Object convert(Object o, ReifiedType reifiedType) throws Exception {
+        return null;
+    }
+}
