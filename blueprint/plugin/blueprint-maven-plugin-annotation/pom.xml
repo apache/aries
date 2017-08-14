@@ -28,14 +28,14 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint-maven-plugin-annotation</artifactId>
     <packaging>bundle</packaging>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
     <name>Apache Aries Blueprint Maven Plugin Annotations</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/blueprint-maven-plugin-annotation-1.2.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/blueprint-maven-plugin-annotation-1.2.0
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin-annotation</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin-annotation
         </developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/blueprint-maven-plugin-annotation-1.2.0</url>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/plugin/blueprint-maven-plugin-annotation</url>
     </scm>
 
     <properties>
