@@ -17,14 +17,18 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0">
 
-    <cm:cm-properties id="myProps" persistent-id="blueprint-sample-properties.pid" />
+    <cm:property-placeholder id="myProps" persistent-id="blueprint-sample-properties.pid" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="pb" value="42" />
+        </cm:default-properties>
+    </cm:property-placeholder>
 
     <bean id="foo" class="org.apache.aries.blueprint.itests.cm.service.Foo">
-        <property name="props" ref="myProps" />
+        <property name="b" value="${pb}" />
     </bean>
     <service id="myService" interface="org.apache.aries.blueprint.itests.cm.service.FooInterface" ref="foo">
         <service-properties>
-            <entry key="key" value="foo4" />
+            <entry key="key" value="foo5" />
         </service-properties>
     </service>
 

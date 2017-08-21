@@ -38,6 +38,7 @@ public class Foo implements FooInterface {
         a = i;
     }
 
+    @Override
     public String getB() {
         return b;
     }
