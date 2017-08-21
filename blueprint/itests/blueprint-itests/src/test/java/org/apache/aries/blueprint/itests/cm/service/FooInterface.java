@@ -22,6 +22,8 @@ import java.util.Properties;
 
 public interface FooInterface {
 
+    String getB();
+
     Properties getProps();
 
 }
