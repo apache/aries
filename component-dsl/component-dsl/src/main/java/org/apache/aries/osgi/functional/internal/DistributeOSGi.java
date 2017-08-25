@@ -29,33 +29,41 @@ import java.util.stream.Collectors;
 /**
  * @author Carlos Sierra Andrés
  */
-public class DistributeOSGi extends OSGiImpl<Void> {
+public class DistributeOSGi<T> extends OSGiImpl<T> {
 
-    public DistributeOSGi(OSGi<?>... programs) {
+    @SafeVarargs
+    public DistributeOSGi(OSGi<T>... programs) {
         super(bundleContext -> {
-            Pipe<Tuple<Void>, Tuple<Void>> added = Pipe.create();
+            Pipe<Tuple<T>, Tuple<T>> added = Pipe.create();
 
-            Consumer<Tuple<Void>> addedSource = added.getSource();
+            Consumer<Tuple<T>> addedSource = added.getSource();
 
-            List<OSGiResult<?>> results = new ArrayList<>();
+            List<OSGiResult<T>> results = new ArrayList<>();
 
-            Pipe<Tuple<Void>, Tuple<Void>> removed = Pipe.create();
+            Pipe<Tuple<T>, Tuple<T>> removed = Pipe.create();
 
-            Consumer<Tuple<Void>> removedSource = removed.getSource();
+            Consumer<Tuple<T>> removedSource = removed.getSource();
 
             return new OSGiResultImpl<>(
                 added, removed,
                 () -> {
                     results.addAll(
                         Arrays.stream(programs).
-                            map(o -> o.run(bundleContext)).
-                            collect(Collectors.toList()));
+                            map(o -> {
+                                OSGiResultImpl<T> osGiResult =
+                                    ((OSGiImpl<T>) o)._operation.run(
+                                        bundleContext);
 
-                    addedSource.accept(Tuple.create(null));
+                                osGiResult.added.map(t -> {addedSource.accept(t); return null;});
+                                osGiResult.removed.map(t -> {removedSource.accept(t); return null;});
+
+                                osGiResult.start.run();
+
+                                return osGiResult;
+                            }).
+                            collect(Collectors.toList()));
                 },
                 () -> {
-                    removedSource.accept(Tuple.create(null));
-
                     for (OSGiResult<?> result : results) {
                         try {
                             result.close();

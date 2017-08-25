@@ -163,8 +163,9 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ServiceReferenceOSGi<>(filterString, clazz);
 	}
 
-	static OSGi<Void> all(OSGi<?> ... programs) {
-		return new DistributeOSGi(programs);
+	@SafeVarargs
+	static <T> OSGi<T> all(OSGi<T> ... programs) {
+		return new DistributeOSGi<>(programs);
 	}
 
 	OSGi<T> filter(Predicate<T> predicate);
