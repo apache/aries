@@ -20,15 +20,12 @@ package org.apache.aries.osgi.functional.internal;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import static org.apache.aries.osgi.functional.internal.OSGiImpl.buildFilter;
 
 /**
  * @author Carlos Sierra Andrés
@@ -82,7 +79,7 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 
 			Consumer<Tuple<S>> removedSource = removed.getSource();
 
-			ServiceTracker<T, Tracked<T, S>> serviceTracker =
+			ServiceTracker<T, OSGiResult<S>> serviceTracker =
 				new ServiceTracker<>(
 					bundleContext,
 					buildFilter(
@@ -137,7 +134,7 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 	}
 
 	private static class FlatMapServiceTrackerCustomizer<T, S>
-		implements ServiceTrackerCustomizer<T, Tracked<T, S>> {
+		implements ServiceTrackerCustomizer<T, OSGiResult<S>> {
 		private final Function<? super ServiceReference<T>, OSGi<? extends S>>
 			_fun;
 		private final BundleContext _bundleContext;
@@ -157,27 +154,20 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 		}
 
 		@Override
-        public Tracked<T, S> addingService(ServiceReference<T> reference) {
-            OSGi<? extends S> program = _fun.apply(reference);
+        public OSGiResult<S> addingService(ServiceReference<T> reference) {
+            OSGiImpl<S> program = (OSGiImpl<S>) _fun.apply(reference);
 
-            Tracked<T, S> tracked = new Tracked<>();
+			OSGiResultImpl<S> osgiResult = program._operation.run(
+				_bundleContext);
 
-            tracked.program = program.run(
-				_bundleContext, s -> {
-                    Tuple<S> tuple = Tuple.create(s);
+			osgiResult.pipeTo(_addedSource, _removedSource);
 
-                    tracked.result = tuple;
-
-                    _addedSource.accept(tuple);
-                }
-            );
-
-            return tracked;
+			return osgiResult;
         }
 
 		@Override
         public void modifiedService(
-        	ServiceReference<T> reference, Tracked<T, S> tracked) {
+        	ServiceReference<T> reference, OSGiResult<S> tracked) {
 
             removedService(reference, tracked);
 
@@ -186,13 +176,9 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 
 		@Override
         public void removedService(
-            ServiceReference<T> reference, Tracked<T, S> tracked) {
+            ServiceReference<T> reference, OSGiResult<S> tracked) {
 
-            tracked.program.close();
-
-            if (tracked.result != null) {
-                _removedSource.accept(tracked.result);
-            }
+            tracked.close();
         }
 
 	}

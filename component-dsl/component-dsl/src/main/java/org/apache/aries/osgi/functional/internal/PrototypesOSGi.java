@@ -129,22 +129,18 @@ public class PrototypesOSGi<T>
 							bundleContext.getServiceObjects(
 								reference);
 
-						OSGi<? extends S> program = fun.apply(serviceObjects);
+						OSGiImpl<S> program = (OSGiImpl<S>)fun.apply(
+							serviceObjects);
 
 						Tracked<ServiceObjects<T>, S> tracked =
 							new Tracked<>();
 
-						OSGiResult<? extends S> result = program.run(
-							bundleContext, s -> {
-								Tuple<S> tuple = Tuple.create(s);
+						OSGiResultImpl<S> result = program._operation.run(
+							bundleContext);
 
-								tracked.result = tuple;
+						result.pipeTo(addedSource, removedSource);
 
-								addedSource.accept(tuple);
-							}
-						);
-
-						tracked.program = result;
+						tracked.result = result;
 						tracked.service = serviceObjects;
 
 						return tracked;
@@ -165,11 +161,7 @@ public class PrototypesOSGi<T>
 						ServiceReference<T> reference,
 						Tracked<ServiceObjects<T>, S> tracked) {
 
-						tracked.program.close();
-
-						if (tracked.result != null) {
-							removedSource.accept(tracked.result);
-						}
+						tracked.result.close();
 					}
 				});
 

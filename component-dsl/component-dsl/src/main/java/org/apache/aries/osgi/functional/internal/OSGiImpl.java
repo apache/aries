@@ -25,7 +25,6 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -35,7 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * @author Carlos Sierra Andrés
@@ -50,70 +48,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 	@Override
 	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
-		return new OSGiImpl<>(
-			((bundleContext) -> {
-				Map<Object, OSGiResult<?>> identities =
-					new IdentityHashMap<>();
-
-				AtomicReference<Runnable> closeReference =
-					new AtomicReference<>(NOOP);
-
-				Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
-
-				Consumer<Tuple<S>> addedSource = added.getSource();
-
-				Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
-
-				Consumer<Tuple<S>> removedSource = removed.getSource();
-
-				return new OSGiResultImpl<>(
-					added, removed,
-					() -> {
-						OSGiResultImpl<T> or1 = _operation.run(bundleContext);
-
-						closeReference.set(or1.close);
-
-						or1.added.map(t -> {
-							OSGiImpl<S> program =
-								(OSGiImpl<S>)fun.apply(t.t);
-
-							OSGiResultImpl<S> or2 =
-								program._operation.run(bundleContext);
-
-							or2.added.map(s -> {addedSource.accept(s); return Tuple.create(null);});
-							or2.removed.map(s -> {removedSource.accept(s); return Tuple.create(null);});
-
-							or2.start.run();
-
-							identities.put(t.original, or2);
-
-							return Tuple.create(null);
-						});
-
-						or1.removed.map(t -> {
-							synchronized (identities) {
-								OSGiResult<?> osgiResult1 =
-									identities.remove(t.original);
-
-								if (osgiResult1 != null) {
-									osgiResult1.close();
-								}
-							}
-
-							return Tuple.create(null);
-						});
-
-						or1.start.run();
-					},
-					() -> {
-						synchronized (identities) {
-							identities.values().forEach(OSGiResult::close);
-						}
-
-						closeReference.get().run();
-					});
-			}
-			));
+		return new FlatMapImpl<>(this, fun);
 	}
 
 	@Override

@@ -19,6 +19,8 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGiResult;
 
+import java.util.function.Consumer;
+
 /**
  * @author Carlos Sierra Andrés
  */
@@ -42,6 +44,16 @@ public class OSGiResultImpl<T> implements OSGiResult<T> {
 	@Override
 	public void close() {
 		close.run();
+	}
+
+	public void pipeTo(
+		Consumer<Tuple<T>> addedSource, Consumer<Tuple<T>> removedSource) {
+
+		added.map(t -> {addedSource.accept(t); return null;});
+
+		removed.map(t -> {removedSource.accept(t); return null;});
+
+		start.run();
 	}
 
 }
