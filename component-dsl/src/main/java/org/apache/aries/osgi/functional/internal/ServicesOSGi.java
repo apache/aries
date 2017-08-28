@@ -128,22 +128,18 @@ public class ServicesOSGi<T> extends OSGiImpl<T> {
 
 							T service = serviceObjects.getService();
 
-							OSGi<? extends S> program = fun.apply(service);
+							OSGiImpl<S> program =
+								(OSGiImpl<S>)fun.apply(service);
+
+							OSGiResultImpl<S> result = program._operation.run(
+								bundleContext);
+
+							result.pipeTo(addedSource, removedSource);
 
 							Tracked<T, S> tracked = new Tracked<>();
 
-							OSGiResult<? extends S> result = program.run(
-								bundleContext, s -> {
-									Tuple<S> tuple = Tuple.create(s);
-
-									tracked.result = tuple;
-
-									addedSource.accept(tuple);
-								}
-							);
-
+							tracked.result = result;
 							tracked.service = service;
-							tracked.program = result;
 
 							return tracked;
 						}
@@ -163,18 +159,12 @@ public class ServicesOSGi<T> extends OSGiImpl<T> {
 							ServiceReference<T> reference,
 							Tracked<T, S> tracked) {
 
-							tracked.program.close();
-
-							if (tracked.result != null) {
-								removedSource.accept(tracked.result);
-							}
+							tracked.result.close();
 
 							ServiceObjects<T> serviceObjects =
-								bundleContext.getServiceObjects(
-									reference);
+								bundleContext.getServiceObjects(reference);
 
-							serviceObjects.ungetService(
-								tracked.service);
+							serviceObjects.ungetService(tracked.service);
 						}
 					});
 

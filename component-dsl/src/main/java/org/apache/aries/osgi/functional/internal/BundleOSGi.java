@@ -18,6 +18,7 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
+import org.apache.aries.osgi.functional.OSGiResult;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.util.tracker.BundleTracker;
@@ -81,11 +82,14 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 			return new OSGiResultImpl<>(
 				added, removed, bundleTracker::open, bundleTracker::close);
 		});
+
 		_stateMask = stateMask;
 	}
 
 	@Override
-	public <S> OSGiImpl<S> flatMap(Function<? super Bundle, OSGi<? extends S>> fun) {
+	public <S> OSGiImpl<S> flatMap(
+		Function<? super Bundle, OSGi<? extends S>> fun) {
+
 		return new OSGiImpl<>(bundleContext -> {
 			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
 
@@ -95,13 +99,13 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 
 			Consumer<Tuple<S>> removedSource = removed.getSource();
 
-			BundleTracker<Tracked<Bundle, S>> bundleTracker =
+			BundleTracker<OSGiResult<S>> bundleTracker =
 				new BundleTracker<>(
 					bundleContext, _stateMask,
-					new BundleTrackerCustomizer<Tracked<Bundle, S>>() {
+					new BundleTrackerCustomizer<OSGiResult<S>>() {
 
 						@Override
-						public Tracked<Bundle, S> addingBundle(
+						public OSGiResult<S> addingBundle(
 							Bundle bundle, BundleEvent bundleEvent) {
 
 							OSGiImpl<S> program = (OSGiImpl<S>) fun.apply(
@@ -110,30 +114,17 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 							OSGiResultImpl<S> result =
 								program._operation.run(bundleContext);
 
-							Tracked<Bundle, S> tracked = new Tracked<>();
+							result.pipeTo(addedSource, removedSource);
 
-							tracked.service = bundle;
-							tracked.program = result;
-
-							result.added.map(s -> {
-								tracked.result = s;
-
-								addedSource.accept(s);
-
-								return s;
-							});
-
-							result.start.run();
-
-							return tracked;
+							return result;
 						}
 
 						@Override
 						public void modifiedBundle(
 							Bundle bundle, BundleEvent bundleEvent,
-							Tracked<Bundle, S> tracked) {
+							OSGiResult<S> result) {
 
-							removedBundle(bundle, bundleEvent, tracked);
+							removedBundle(bundle, bundleEvent, result);
 
 							addingBundle(bundle, bundleEvent);
 						}
@@ -141,13 +132,9 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 						@Override
 						public void removedBundle(
 							Bundle bundle, BundleEvent bundleEvent,
-							Tracked<Bundle, S> tracked) {
+							OSGiResult<S> result) {
 
-							tracked.program.close();
-
-							if (tracked.result != null) {
-								removedSource.accept(tracked.result);
-							}
+							result.close();
 						}
 					});
 
