@@ -19,14 +19,14 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGiResult;
 
+
 /**
  * @author Carlos Sierra Andrés
  */
 class Tracked<T, S> {
 
 	T service = null;
-	OSGiResult<? extends S> program = null;
 
-	Tuple<S> result = null;
+	OSGiResult<? extends S> result = null;
 
 }
