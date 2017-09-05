@@ -19,14 +19,17 @@ import java.util.concurrent.Callable;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
+import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ReferenceCardinality;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(type = {BeanService.class, Instance_Optional.class})
-@Singleton
+@Component(
+	service = {BeanService.class, Instance_Optional.class},
+	serviceScope = ServiceScope.SINGLETON
+)
 public class Instance_Optional implements BeanService<Callable<String>> {
 
 	@Override
@@ -46,7 +49,7 @@ public class Instance_Optional implements BeanService<Callable<String>> {
 	}
 
 	@Inject
-	@Reference
+	@Reference(cardinality = ReferenceCardinality.MULTIPLE)
 	Instance<Callable<String>> _instance;
 
 }

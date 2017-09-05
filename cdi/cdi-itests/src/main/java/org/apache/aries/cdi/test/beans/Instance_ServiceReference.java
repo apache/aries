@@ -18,16 +18,19 @@ import java.util.Iterator;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.SingletonScoped;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ReferenceCardinality;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(type = {BeanService.class, Instance_ServiceReference.class})
-@Singleton
+@Component(
+	service = {BeanService.class, Instance_ServiceReference.class},
+	serviceScope = ServiceScope.SINGLETON
+)
 @SuppressWarnings("rawtypes")
 public class Instance_ServiceReference implements BeanService<ServiceReference> {
 

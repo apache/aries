@@ -14,97 +14,122 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
+import static org.apache.aries.cdi.container.test.TestUtil.*;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.aries.cdi.container.internal.component.ComponentModel;
+import org.apache.aries.cdi.container.internal.configuration.ConfigurationModel;
+import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
+import org.apache.aries.cdi.container.test.beans.BarReference;
+import org.apache.aries.cdi.container.test.beans.Foo;
+import org.apache.aries.cdi.container.test.beans.FooReference;
 import org.junit.Test;
-import org.osgi.service.cdi.CdiConstants;
+import org.osgi.service.cdi.annotations.ConfigurationPolicy;
 
 public class ModelTest {
 
 	@Test
 	public void testModelWithBeansOnly() throws Exception {
-		AbstractModelBuilder builder = getBuilder("OSGI-INF/cdi/beans-only.xml");
+		AbstractModelBuilder builder = getModelBuilder("OSGI-INF/cdi/beans-only.xml");
 		BeansModel beansModel = builder.build();
 		assertNotNull(beansModel);
 
-		Collection<String> beanClassNames = beansModel.getBeanClassNames();
+		Collection<String> beanClassNames = sort(beansModel.getBeanClassNames(), (c1, c2) -> c1.compareTo(c2));
 		assertEquals(2, beanClassNames.size());
-		assertEquals("com.foo.FooImpl", beanClassNames.iterator().next());
+		assertEquals("org.apache.aries.cdi.container.test.beans.Bar", beanClassNames.iterator().next());
 	}
 
 	@Test
 	public void testModelWithConfiguration() throws Exception {
-		AbstractModelBuilder builder = getBuilder("OSGI-INF/cdi/beans-configuration.xml");
+		AbstractModelBuilder builder = getModelBuilder("OSGI-INF/cdi/beans-configuration.xml");
 		BeansModel beansModel = builder.build();
 		assertNotNull(beansModel);
 
-		Collection<String> beanClassNames = beansModel.getBeanClassNames();
+		Collection<String> beanClassNames = sort(beansModel.getBeanClassNames());
 		assertEquals(2, beanClassNames.size());
-		assertEquals("com.foo.FooImpl", beanClassNames.iterator().next());
+		assertEquals("org.apache.aries.cdi.container.test.beans.BarWithConfig", beanClassNames.iterator().next());
 
-		Collection<ConfigurationModel> configurationModels = beansModel.getConfigurationModels();
-		assertEquals(3, configurationModels.size());
-		Iterator<ConfigurationModel> iterator = configurationModels.iterator();
+		Collection<ComponentModel> componentModels = beansModel.getComponentModels();
+		assertEquals(2, componentModels.size());
+		Iterator<ComponentModel> components = componentModels.iterator();
 
-		ConfigurationModel configurationModel = iterator.next();
-		assertArrayEquals(new String[] {"com.foo.FooImpl"}, configurationModel.pids());
-		assertEquals("com.foo.Config", configurationModel.beanClass());
-		assertEquals(true, configurationModel.required());
+		ComponentModel componentModel = components.next();
+		Collection<ConfigurationModel> configurations = sort(componentModel.getConfigurations());
+		Iterator<ConfigurationModel> confIterator = configurations.iterator();
 
-		configurationModel = iterator.next();
-		assertArrayEquals(new String[] {"com.foo.other", "and.another"}, configurationModel.pids());
-		assertEquals("com.foo.Baz", configurationModel.beanClass());
-		assertEquals(true, configurationModel.required());
+		ConfigurationModel configurationModel = confIterator.next();
+		assertArrayEquals(new String[] {"$"}, configurationModel.getPid());
+		assertEquals(ConfigurationPolicy.OPTIONAL, configurationModel.getConfigurationPolicy());
+		assertEquals("org.apache.aries.cdi.container.test.beans.Bar", configurationModel.getType().getTypeName());
 
-		configurationModel = iterator.next();
-		assertArrayEquals(new String[] {"an.optional.configuration"}, configurationModel.pids());
-		assertEquals(false, configurationModel.required());
+		configurationModel = confIterator.next();
+		assertArrayEquals(new String[] {"$"}, configurationModel.getPid());
+		assertEquals(ConfigurationPolicy.REQUIRE, configurationModel.getConfigurationPolicy());
+		assertEquals("org.apache.aries.cdi.container.test.beans.Config", configurationModel.getType().getTypeName());
+
+		componentModel = components.next();
+		configurations = sort(componentModel.getConfigurations());
+		configurationModel = configurations.iterator().next();
+		assertArrayEquals(new String[] {"$", "foo.config"}, configurationModel.getPid());
+		assertEquals(ConfigurationPolicy.OPTIONAL, configurationModel.getConfigurationPolicy());
+		assertEquals("org.apache.aries.cdi.container.test.beans.Config", configurationModel.getType().getTypeName());
 	}
 
 	@Test
 	public void testModelWithReferences() throws Exception {
-		AbstractModelBuilder builder = getBuilder("OSGI-INF/cdi/beans-references.xml");
+		AbstractModelBuilder builder = getModelBuilder("OSGI-INF/cdi/beans-references.xml");
 		BeansModel beansModel = builder.build();
 		assertNotNull(beansModel);
 
-		Collection<String> beanClassNames = beansModel.getBeanClassNames();
+		Collection<String> beanClassNames = sort(beansModel.getBeanClassNames());
 		assertEquals(2, beanClassNames.size());
-		assertEquals("com.foo.FooImpl", beanClassNames.iterator().next());
+		assertEquals("org.apache.aries.cdi.container.test.beans.BarWithReference", beanClassNames.iterator().next());
 
-		Collection<ReferenceModel> referenceModels = beansModel.getReferenceModels();
-		assertEquals(2, referenceModels.size());
-		ReferenceModel referenceModel = referenceModels.iterator().next();
-		assertEquals("java.util.concurrent.Callable", referenceModel.getBeanClass());
-		assertEquals("(objectClass=java.util.concurrent.Callable)", referenceModel.getTarget());
+		Collection<ComponentModel> componentModels = sort(beansModel.getComponentModels());
+		assertEquals(2, componentModels.size());
+		Iterator<ComponentModel> iterator = componentModels.iterator();
+
+		ComponentModel componentModel = iterator.next();
+		ReferenceModel referenceModel = componentModel.getReferences().iterator().next();
+		assertEquals(BarReference.class, referenceModel.getBeanClass());
+
+		componentModel = iterator.next();
+		referenceModel = componentModel.getReferences().iterator().next();
+		assertEquals(FooReference.class, referenceModel.getBeanClass());
 	}
 
 	@Test
 	public void testModelWithServices() throws Exception {
-		AbstractModelBuilder builder = getBuilder("OSGI-INF/cdi/beans-services.xml");
+		AbstractModelBuilder builder = getModelBuilder("OSGI-INF/cdi/beans-services.xml");
 		BeansModel beansModel = builder.build();
 		assertNotNull(beansModel);
 
-		Collection<String> beanClassNames = beansModel.getBeanClassNames();
+		Collection<String> beanClassNames = sort(beansModel.getBeanClassNames());
 		assertEquals(2, beanClassNames.size());
-		assertEquals("com.foo.FooImpl", beanClassNames.iterator().next());
+		assertEquals("org.apache.aries.cdi.container.test.beans.FooService", beanClassNames.iterator().next());
 
-		Collection<ServiceModel> serviceModels = beansModel.getServiceModels();
-		assertEquals(1, serviceModels.size());
-		ServiceModel serviceModel = serviceModels.iterator().next();
-		List<String> provides = serviceModel.getProvides();
+		Collection<ComponentModel> componentModels = sort(beansModel.getComponentModels(), (a, b) -> a.getName().compareTo(b.getName()));
+		assertEquals(2, componentModels.size());
+
+		Iterator<ComponentModel> iterator = componentModels.iterator();
+
+		ComponentModel componentModel = iterator.next();
+		List<String> provides = componentModel.getProvides();
+		assertEquals(0, provides.size());
+
+		componentModel = iterator.next();
+		provides = componentModel.getProvides();
 		assertEquals(2, provides.size());
-		assertEquals("com.foo.Foo", provides.get(0));
-		String[] serviceProperties = serviceModel.getProperties();
+
+		assertEquals(Foo.class.getName(), provides.get(0));
+		assertEquals(Cloneable.class.getName(), provides.get(1));
+		String[] serviceProperties = componentModel.getProperties();
 		assertEquals(33, serviceProperties.length);
 
 		assertEquals("foo:String=fum", serviceProperties[0]);
@@ -144,48 +169,13 @@ public class ModelTest {
 
 	@Test
 	public void testModelWithAllDescriptors() throws Exception {
-		AbstractModelBuilder builder = getBuilder(null);
+		AbstractModelBuilder builder = getModelBuilder(null);
 		BeansModel beansModel = builder.build();
 		assertNotNull(beansModel);
 
-		Collection<String> beanClassNames = beansModel.getBeanClassNames();
-		assertEquals(2, beanClassNames.size());
-		assertEquals("com.foo.FooImpl", beanClassNames.iterator().next());
-	}
-
-	AbstractModelBuilder getBuilder(final String osgiBeansFile) {
-		return new AbstractModelBuilder() {
-
-			@Override
-			List<String> getDefaultResources() {
-				return Arrays.asList(
-						"OSGI-INF/cdi/beans-configuration.xml",
-						"OSGI-INF/cdi/beans-only.xml",
-						"OSGI-INF/cdi/beans-references.xml",
-						"OSGI-INF/cdi/beans-services.xml"
-					);
-			}
-
-			@Override
-			URL getResource(String resource) {
-				return getClassLoader().getResource(resource);
-			}
-
-			@Override
-			ClassLoader getClassLoader() {
-				return getClass().getClassLoader();
-			}
-
-			@Override
-			Map<String, Object> getAttributes() {
-				if (osgiBeansFile == null) {
-					return Collections.emptyMap();
-				}
-
-				return Collections.singletonMap(
-					CdiConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE, Arrays.asList(osgiBeansFile));
-			}
-		};
+		Collection<String> beanClassNames = sort(beansModel.getBeanClassNames());
+		assertEquals(8, beanClassNames.size());
+		assertEquals("org.apache.aries.cdi.container.test.beans.FooService", beanClassNames.iterator().next());
 	}
 
 }

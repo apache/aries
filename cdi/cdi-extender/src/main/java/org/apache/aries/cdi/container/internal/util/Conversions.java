@@ -18,6 +18,7 @@ import java.util.Arrays;
 
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.ConverterBuilder;
+import org.osgi.util.converter.Converting;
 import org.osgi.util.converter.StandardConverter;
 import org.osgi.util.converter.TypeRule;
 
@@ -27,8 +28,8 @@ public class Conversions {
 		return INSTANCE._converter.convert(object).defaultValue("").to(String.class);
 	}
 
-	public static Converter c() {
-		return INSTANCE._converter;
+	public static Converting convert(Object object) {
+		return INSTANCE._converter.convert(object);
 	}
 
 	private Conversions() {

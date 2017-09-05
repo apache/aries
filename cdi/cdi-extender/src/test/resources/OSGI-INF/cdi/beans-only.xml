@@ -16,6 +16,6 @@
 -->
 
 <beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<cdi:bean class="com.foo.FooImpl" />
-	<cdi:bean class="com.foo.BarImpl" />
+	<cdi:component class="org.apache.aries.cdi.container.test.beans.Bar" />
+	<cdi:component class="org.apache.aries.cdi.container.test.beans.Foo" />
 </beans>

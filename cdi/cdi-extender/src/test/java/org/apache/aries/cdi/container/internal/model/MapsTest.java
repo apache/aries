@@ -238,6 +238,7 @@ public class MapsTest {
 		assertEquals(new HashSet<Byte>(Arrays.asList(new Byte("126"), new Byte("91"))), entry.getValue());
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	public void testMixedConversion() throws Exception {
 		Map<String,Object> map = Maps.map(

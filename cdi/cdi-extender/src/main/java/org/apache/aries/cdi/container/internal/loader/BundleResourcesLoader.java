@@ -33,12 +33,12 @@ import org.osgi.framework.wiring.BundleWiring;
 
 public class BundleResourcesLoader implements ProxyServices, ResourceLoader {
 
-	public BundleResourcesLoader(BundleWiring bundleWiring, Bundle extenderBundle) {
+	public BundleResourcesLoader(Bundle bundle, Bundle extenderBundle) {
 		BundleWiring extenderWiring = extenderBundle.adapt(BundleWiring.class);
 
 		List<Bundle> bundles = new ArrayList<>();
 
-		bundles.add(bundleWiring.getBundle());
+		bundles.add(bundle);
 		bundles.add(extenderBundle);
 
 		List<BundleWire> requiredWires = extenderWiring.getRequiredWires(PackageNamespace.PACKAGE_NAMESPACE);
@@ -59,6 +59,7 @@ public class BundleResourcesLoader implements ProxyServices, ResourceLoader {
 
 		_classLoader = new BundleClassLoader(bundles.toArray(new Bundle[0]));
 	}
+
 
 	@Override
 	public void cleanup() {
@@ -109,4 +110,30 @@ public class BundleResourcesLoader implements ProxyServices, ResourceLoader {
 
 	private final ClassLoader _classLoader;
 
+	public static Bundle[] getBundles(Bundle bundle, Bundle extenderBundle) {
+		List<Bundle> bundles = new ArrayList<>();
+
+		bundles.add(bundle);
+		bundles.add(extenderBundle);
+
+		BundleWiring extenderWiring = extenderBundle.adapt(BundleWiring.class);
+
+		List<BundleWire> requiredWires = extenderWiring.getRequiredWires(PackageNamespace.PACKAGE_NAMESPACE);
+
+		for (BundleWire bundleWire : requiredWires) {
+			BundleCapability capability = bundleWire.getCapability();
+			Map<String, Object> attributes = capability.getAttributes();
+			String packageName = (String)attributes.get(PackageNamespace.PACKAGE_NAMESPACE);
+			if (!packageName.startsWith("org.jboss.weld.")) {
+				continue;
+			}
+
+			Bundle wireBundle = bundleWire.getProvider().getBundle();
+			if (!bundles.contains(wireBundle)) {
+				bundles.add(wireBundle);
+			}
+		}
+
+		return bundles.toArray(new Bundle[0]);
+	}
 }

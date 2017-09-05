@@ -18,13 +18,17 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
+import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ConfigurationPolicy;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(property = "bean=B")
+@Component(
+	property = "bean=B",
+	serviceScope = ServiceScope.SINGLETON
+)
 public class ConfigurationBeanB implements BeanService<Callable<int[]>> {
 
 	@Override
@@ -42,9 +46,11 @@ public class ConfigurationBeanB implements BeanService<Callable<int[]>> {
 		};
 	}
 
-	@Configuration({"$", "configA"})
+	@Configuration(
+		configurationPolicy = ConfigurationPolicy.REQUIRE,
+		value = {"org.apache.aries.cdi.test.tb3.ConfigurationBeanA", "$"}
+	)
 	@Inject
-	@Named("configB")
 	Map<String, Object> config;
 
 }

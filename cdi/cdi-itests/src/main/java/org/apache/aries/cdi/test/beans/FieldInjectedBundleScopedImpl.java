@@ -19,17 +19,19 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.aries.cdi.test.interfaces.BundleScoped;
 import org.apache.aries.cdi.test.interfaces.FieldInjectedReference;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.ReferenceScope;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(type = {FieldInjectedBundleScopedImpl.class, FieldInjectedReference.class})
-@Singleton
+@Component(
+	service = {FieldInjectedBundleScopedImpl.class, FieldInjectedReference.class},
+	serviceScope = ServiceScope.SINGLETON
+)
 public class FieldInjectedBundleScopedImpl implements FieldInjectedReference<BundleScoped> {
 
 	@Inject

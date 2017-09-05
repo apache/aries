@@ -17,25 +17,19 @@ package org.apache.aries.cdi.container.internal;
 import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
 import static org.osgi.service.cdi.CdiConstants.CDI_CAPABILITY_NAME;
 
-import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.apache.aries.cdi.container.internal.command.CdiCommand;
 import org.apache.felix.utils.extender.AbstractExtender;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.cdi.CdiListener;
-import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +46,6 @@ public class Activator extends AbstractExtender {
 		}
 
 		_bundleContext = bundleContext;
-
-		_listenerTracker = new ServiceTracker<>(_bundleContext, CdiListener.class, new CdiListenerCustomizer());
-		_listenerTracker.open();
 
 		registerCdiCommand();
 
@@ -82,8 +73,6 @@ public class Activator extends AbstractExtender {
 
 		super.stop(bundleContext);
 
-		_listenerTracker.close();
-
 		if (_log.isDebugEnabled()) {
 			_log.debug("CDIe - stoped {}", bundleContext.getBundle());
 		}
@@ -99,7 +88,7 @@ public class Activator extends AbstractExtender {
 			return null;
 		}
 
-		return new CdiBundleExtension(_bundleContext.getBundle(), bundle, _listeners, _command);
+		return new CdiBundle(_bundleContext.getBundle(), bundle, _command);
 	}
 
 	@Override
@@ -146,29 +135,5 @@ public class Activator extends AbstractExtender {
 	private BundleContext _bundleContext;
 	private CdiCommand _command;
 	private ServiceRegistration<?> _commandRegistration;
-	private Map<ServiceReference<CdiListener>, CdiListener> _listeners =
-		new ConcurrentSkipListMap<>(Comparator.reverseOrder());
-	private ServiceTracker<CdiListener, CdiListener> _listenerTracker;
-
-	private class CdiListenerCustomizer implements ServiceTrackerCustomizer<CdiListener, CdiListener> {
-
-		@Override
-		public CdiListener addingService(ServiceReference<CdiListener> reference) {
-			CdiListener cdiListener = _bundleContext.getService(reference);
-			_listeners.put(reference, cdiListener);
-			return cdiListener;
-		}
-
-		@Override
-		public void modifiedService(ServiceReference<CdiListener> reference, CdiListener service) {
-		}
-
-		@Override
-		public void removedService(ServiceReference<CdiListener> reference, CdiListener service) {
-			_listeners.remove(reference);
-			_bundleContext.ungetService(reference);
-		}
-
-	}
 
 }

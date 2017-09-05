@@ -26,9 +26,10 @@ import javax.inject.Singleton;
 import org.apache.aries.cdi.test.beans.ServiceWithProperties.MoreProperties;
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.Component;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(
+@Component(
 	property = {
 		"test.key.b1=test.value.b1",
 		"test.key.b2=test.value.b2",
@@ -140,9 +141,9 @@ import org.osgi.service.cdi.annotations.Service;
 		"p.String.set:Set<String>=green",
 		"p.String.set:Set<String>=black"
 	},
-	type = {ServiceWithProperties.class, BeanService.class}
+	service = {ServiceWithProperties.class, BeanService.class},
+	serviceScope = ServiceScope.SINGLETON
 )
-@Singleton
 @MoreProperties(glub_integer = 45, goo_string = "green")
 public class ServiceWithProperties implements BeanService<Pojo> {
 

@@ -22,7 +22,6 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
@@ -52,8 +51,6 @@ public class HttpExtension implements Extension {
 	}
 
 	void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
-		processWebClasses();
-
 		BeanManagerImpl beanManagerImpl = ((BeanManagerProxy)beanManager).delegate();
 
 		Dictionary<String, Object> properties = new Hashtable<>();
@@ -63,21 +60,12 @@ public class HttpExtension implements Extension {
 		properties.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_LISTENER, Boolean.TRUE.toString());
 		properties.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE - 100);
 
-		_registrations.add(
-			_bundle.getBundleContext().registerService(
-				LISTENER_CLASSES, new WeldInitialListener(beanManagerImpl), properties));
-	}
-
-	private void processWebClasses() {
-		// TODO Auto-generated method stub
+		_listenerRegistration = _bundle.getBundleContext().registerService(
+				LISTENER_CLASSES, new WeldInitialListener(beanManagerImpl), properties);
 	}
 
 	void beforeShutdown(@Observes BeforeShutdown bs) {
-		for (ServiceRegistration<?> registration : _registrations) {
-			registration.unregister();
-		}
-
-		_registrations.clear();
+		_listenerRegistration.unregister();
 	}
 
 	private Map<String, Object> getAttributes() {
@@ -137,6 +125,6 @@ public class HttpExtension implements Extension {
 
 	private final Bundle _bundle;
 	private String _contextSelect;
-	private List<ServiceRegistration<?>> _registrations = new CopyOnWriteArrayList<>();
+	private ServiceRegistration<?> _listenerRegistration;
 
 }

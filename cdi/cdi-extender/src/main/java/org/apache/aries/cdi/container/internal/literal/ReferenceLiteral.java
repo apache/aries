@@ -14,9 +14,14 @@
 
 package org.apache.aries.cdi.container.internal.literal;
 
+import java.util.Objects;
+
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.ReferenceCardinality;
+import org.osgi.service.cdi.annotations.ReferencePolicy;
+import org.osgi.service.cdi.annotations.ReferencePolicyOption;
 import org.osgi.service.cdi.annotations.ReferenceScope;
 
 public class ReferenceLiteral extends AnnotationLiteral<Reference> implements Reference {
@@ -32,12 +37,64 @@ public class ReferenceLiteral extends AnnotationLiteral<Reference> implements Re
 	}
 
 	public ReferenceLiteral(String target) {
+		this(
+			_blank,
+			Object.class,
+			ReferenceCardinality.DEFAULT,
+			ReferencePolicy.DEFAULT,
+			ReferencePolicyOption.DEFAULT,
+			ReferenceScope.DEFAULT,
+			target);
+	}
+
+	public ReferenceLiteral(
+		String name,
+		Class<?> service,
+		ReferenceCardinality cardinality,
+		ReferencePolicy policy,
+		ReferencePolicyOption option,
+		ReferenceScope scope,
+		String target) {
+
+		Objects.requireNonNull(target);
+
+		_name = name;
+		_service = service;
+		_cardinality = cardinality;
+		_policy = policy;
+		_option = option;
+		_scope = scope;
 		_target = target;
 	}
 
 	@Override
+	public ReferenceCardinality cardinality() {
+		return _cardinality;
+	}
+
+	@Override
+	public String name() {
+		return _name;
+	}
+
+	@Override
+	public ReferencePolicy policy() {
+		return _policy;
+	}
+
+	@Override
+	public ReferencePolicyOption policyOption() {
+		return _option;
+	}
+
+	@Override
 	public ReferenceScope scope() {
-		return ReferenceScope.BUNDLE;
+		return _scope;
+	}
+
+	@Override
+	public Class<?> service() {
+		return _service;
 	}
 
 	@Override
@@ -45,11 +102,14 @@ public class ReferenceLiteral extends AnnotationLiteral<Reference> implements Re
 		return _target;
 	}
 
-	@Override
-	public Class<?> service() {
-		return Object.class;
-	}
+	private final static String _blank = "";
 
+	private final ReferenceCardinality _cardinality;
+	private final String _name;
+	private final ReferencePolicyOption _option;
+	private final ReferencePolicy _policy;
+	private final ReferenceScope _scope;
+	private final Class<?> _service;
 	private final String _target;
 
 }
