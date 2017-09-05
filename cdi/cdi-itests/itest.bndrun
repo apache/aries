@@ -9,11 +9,12 @@
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.jndi.core)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)',\
-	osgi.identity;filter:='(osgi.identity=slf4j.log4j12)'
+	osgi.identity;filter:='(osgi.identity=ch.qos.logback.classic)'
 
 -runbundles: \
+	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
+	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
 	jboss-classfilewriter;version='[1.1.2,1.1.3)',\
-	log4j;version='[1.2.17,1.2.18)',\
 	org.apache.aries.cdi.extender;version='[0.0.1,0.0.2)',\
 	org.apache.aries.cdi.extension.http;version='[0.0.1,0.0.2)',\
 	org.apache.aries.cdi.extension.jndi;version='[0.0.1,0.0.2)',\
@@ -38,22 +39,20 @@
 	org.apache.httpcomponents.httpcore;version='[4.4.6,4.4.7)',\
 	org.apache.logging.log4j.api;version='[2.7.0,2.7.1)',\
 	org.jboss.logging.jboss-logging;version='[3.2.1,3.2.2)',\
-	org.jboss.weld.osgi-bundle;version='[2.4.2,2.4.3)',\
+	org.jboss.weld.osgi-bundle;version='[2.4.3,2.4.4)',\
 	org.osgi.service.cdi;version='[1.0.0,1.0.1)',\
 	org.osgi.service.event;version='[1.3.1,1.3.2)',\
 	osgi.enroute.hamcrest.wrapper;version='[1.3.0,1.3.1)',\
 	osgi.enroute.junit.wrapper;version='[4.12.0,4.12.1)',\
-	slf4j.api;version='[1.7.21,1.7.22)',\
-	slf4j.log4j12;version='[1.6.1,1.6.2)'
+	slf4j.api;version='[1.7.25,1.7.26)'
 
 -resolve.effective: resolve, active
 -runee: JavaSE-1.8
 -runsystemcapabilities: ${native_capability}
--runfw: org.eclipse.osgi;version='[3.10.100.v20150529-1857,3.10.100.v20150529-1857]'
+-runfw: org.eclipse.osgi;version='[3.10.0,4.0.0)'
 -runproperties: \
-	osgi.console.enable.builtin=false, \
-	osgi.console=, \
-	org.osgi.service.http.port=8080,\
+	logback.configurationFile=file:${.}/logback.xml,\
 	org.jboss.logging.provider=slf4j,\
-	log4j.configuration=file:${.}/log4j.properties
--runsystempackages: javax.script
+	org.osgi.service.http.port=8080,\
+	osgi.console.enable.builtin=false, \
+	osgi.console=

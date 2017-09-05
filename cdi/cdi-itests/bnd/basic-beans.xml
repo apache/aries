@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<cdi:bean class="org.apache.aries.cdi.test.beans.BeanWithReference" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.BundleContextBean" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.CdiEventObserver" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.ConstructorInjectedService" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.FieldInjectedBundleScopedImpl" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.FieldInjectedPrototypeScopedImpl" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.FieldInjectedService" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.Instance_Optional" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.Instance_ServiceProperties" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.Instance_ServiceReference" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.MethodInjectedService" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.PojoImpl" />
-	<cdi:bean class="org.apache.aries.cdi.test.beans.ServiceWithProperties" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.BeanWithReference" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.BundleContextBean" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.CdiEventObserver" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.ConstructorInjectedService" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.FieldInjectedBundleScopedImpl" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.FieldInjectedPrototypeScopedImpl" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.FieldInjectedService" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.Instance_Optional" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.Instance_ServiceProperties" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.Instance_ServiceReference" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.MethodInjectedService" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.PojoImpl" />
+	<cdi:component class="org.apache.aries.cdi.test.beans.ServiceWithProperties" />
 </beans>

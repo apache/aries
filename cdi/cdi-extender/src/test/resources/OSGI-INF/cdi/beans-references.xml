@@ -16,8 +16,10 @@
 -->
 
 <beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<cdi:bean class="com.foo.FooImpl" />
-	<cdi:bean class="com.foo.BarImpl" />
-	<cdi:reference beanClass="java.util.concurrent.Callable" target="(objectClass=java.util.concurrent.Callable)" />
-	<cdi:reference beanClass="java.util.Map" target="(objectClass=java.util.Map)" />
+	<cdi:component class="org.apache.aries.cdi.container.test.beans.FooWithReference">
+		<reference service="org.apache.aries.cdi.container.test.beans.FooReference" />
+	</cdi:component>
+	<cdi:component class="org.apache.aries.cdi.container.test.beans.BarWithReference">
+		<reference service="org.apache.aries.cdi.container.test.beans.BarReference" />
+	</cdi:component>
 </beans>

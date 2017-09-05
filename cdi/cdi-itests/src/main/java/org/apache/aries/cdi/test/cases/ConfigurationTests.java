@@ -65,13 +65,13 @@ public class ConfigurationTests extends AbstractTestCase {
 				CdiEvent.Type.WAITING_FOR_CONFIGURATIONS,
 				serviceReference.getProperty(CdiConstants.CDI_CONTAINER_STATE));
 
-			configurationA = configurationAdmin.getConfiguration("configA", "?");
+			configurationA = configurationAdmin.getConfiguration("org.apache.aries.cdi.test.tb3.ConfigurationBeanA", "?");
 
 			Dictionary<String, Object> properties = new Hashtable<>();
 			properties.put("ports", new int[] {12, 4567});
 			configurationA.update(properties);
 
-			configurationB = configurationAdmin.getConfiguration("configB", "?");
+			configurationB = configurationAdmin.getConfiguration("org.apache.aries.cdi.test.tb3.ConfigurationBeanB", "?");
 
 			properties = new Hashtable<>();
 			properties.put("color", "green");
@@ -133,85 +133,6 @@ public class ConfigurationTests extends AbstractTestCase {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "serial" })
-	public void testNamedConfiguration() throws Exception {
-		Bundle tb3Bundle = installBundle("tb3.jar");
-
-		Configuration configurationA = null, configurationB = null;
-
-		try {
-			configurationA = configurationAdmin.getConfiguration("configA", "?");
-
-			Dictionary<String, Object> properties = new Hashtable<>();
-			properties.put("ports", new int[] {12, 4567});
-			configurationA.update(properties);
-
-			configurationB = configurationAdmin.getConfiguration("configB", "?");
-
-			properties = new Hashtable<>();
-			properties.put("color", "green");
-			properties.put("ports", new int[] {80});
-			configurationB.update(properties);
-
-			Filter filter = bundleContext.createFilter(
-				"(&(objectClass=" + CdiContainer.class.getName() + ")(service.bundleid=" + tb3Bundle.getBundleId() +
-				")(" + CdiConstants.CDI_CONTAINER_STATE + "=CREATED))");
-
-			ServiceTracker<CdiContainer, CdiContainer> st = new ServiceTracker<>(bundleContext, filter, null);
-
-			st.open();
-
-			CdiContainer container = st.waitForService(timeout);
-
-			assertNotNull(container);
-
-			int t = st.getTrackingCount();
-
-			BeanManager beanManager = container.getBeanManager();
-			Set<Bean<?>> beans = beanManager.getBeans("configB");
-			assertNotNull(beans);
-			Bean<? extends Object> bean = beanManager.resolve(beans);
-			CreationalContext<?> ctx = beanManager.createCreationalContext(bean);
-
-			Map<String, Object> config = (Map<String, Object>)beanManager.getReference(
-				bean, new TypeLiteral<Map<String, Object>>() {}.getType(), ctx);
-
-			assertNotNull(config);
-			assertEquals("green", config.get("color"));
-
-			assertArrayEquals(new int[] {80}, (int[])config.get("ports"));
-
-			configurationA.delete();
-
-			while (t == st.getTrackingCount()) {Thread.sleep(10);}
-
-			assertTrue(st.isEmpty());
-
-			st.close();
-
-			filter = bundleContext.createFilter(
-				"(&(objectClass=" + CdiContainer.class.getName() + ")(service.bundleid=" + tb3Bundle.getBundleId() +
-				")(" + CdiConstants.CDI_CONTAINER_STATE + "=" + CdiEvent.Type.WAITING_FOR_CONFIGURATIONS + "))");
-
-			st = new ServiceTracker<>(bundleContext, filter, null);
-
-			st.open();
-
-			assertFalse(st.isEmpty());
-		}
-		finally {
-			if (configurationB != null) {
-				try {
-					configurationB.delete();
-				}
-				catch (Exception e) {
-					// ignore
-				}
-			}
-			tb3Bundle.uninstall();
-		}
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void testOptionalConfiguration() throws Exception {
 		Bundle tb5Bundle = installBundle("tb5.jar");
@@ -236,8 +157,6 @@ public class ConfigurationTests extends AbstractTestCase {
 
 			BeanService<Callable<int[]>> beanService = stC.waitForService(timeout);
 
-			int t = stC.getTrackingCount();
-
 			assertNotNull(beanService);
 			assertEquals("blue", beanService.doSomething());
 			assertArrayEquals(new int[] {35777}, beanService.get().call());
@@ -248,11 +167,11 @@ public class ConfigurationTests extends AbstractTestCase {
 			properties.put("ports", new int[] {12, 4567});
 			configurationC.update(properties);
 
-			while (t == stC.getTrackingCount()) {Thread.sleep(10);}
-			t = stC.getTrackingCount();
-
-			while (t == stC.getTrackingCount()) {Thread.sleep(10);}
-			t = stC.getTrackingCount();
+			stC.close();
+			stC = new ServiceTracker<BeanService, BeanService>(
+				bundleContext, bundleContext.createFilter(
+					"(&(objectClass=org.apache.aries.cdi.test.interfaces.BeanService)(bean=C)(ports=12))"), null);
+			stC.open(true);
 
 			beanService = stC.waitForService(timeout);
 
@@ -262,8 +181,11 @@ public class ConfigurationTests extends AbstractTestCase {
 
 			configurationC.delete();
 
-			while (t == stC.getTrackingCount()) {Thread.sleep(10);}
-
+			stC.close();
+			stC = new ServiceTracker<BeanService, BeanService>(
+				bundleContext, bundleContext.createFilter(
+					"(&(objectClass=org.apache.aries.cdi.test.interfaces.BeanService)(bean=C)(!(ports=*)))"), null);
+			stC.open(true);
 			beanService = stC.waitForService(timeout);
 
 			assertNotNull(beanService);

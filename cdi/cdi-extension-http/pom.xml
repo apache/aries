@@ -30,7 +30,10 @@
 
 	<artifactId>org.apache.aries.cdi.extension.http</artifactId>
 	<name>CDI Http Extender</name>
-	<description>Http support for Aries CDI Extender</description>
+	<description>
+		Provides support to CDI bundles for http servlet scopes such as @RequestScoped,
+		@ApplicationScoped, @SessionScoped and @ConversationScoped.
+	</description>
 
 	<build>
 		<plugins>
@@ -100,6 +103,7 @@
 			<groupId>org.osgi</groupId>
 			<artifactId>osgi.core</artifactId>
 			<version>6.0.0</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -23,11 +23,15 @@ import javax.inject.Singleton;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.SingletonScoped;
+import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ReferenceCardinality;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(type = {BeanService.class, Instance_ServiceProperties.class})
-@Singleton
+@Component(
+	service = {BeanService.class, Instance_ServiceProperties.class},
+	serviceScope = ServiceScope.SINGLETON
+)
 public class Instance_ServiceProperties implements BeanService<Map<String, Object>> {
 
 	@Override

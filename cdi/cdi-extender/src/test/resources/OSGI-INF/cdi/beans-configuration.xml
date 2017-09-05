@@ -16,9 +16,11 @@
 -->
 
 <beans xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<cdi:bean class="com.foo.FooImpl" />
-	<cdi:bean class="com.foo.BarImpl" />
-	<cdi:configuration beanClass="com.foo.Config" pid="com.foo.FooImpl" />
-	<cdi:configuration beanClass="com.foo.Baz" pid="com.foo.other and.another" />
-	<cdi:configuration beanClass="com.foo.Fum" required="false" pid="an.optional.configuration" />
+	<cdi:component class="org.apache.aries.cdi.container.test.beans.FooWithConfig">
+		<configuration type="org.apache.aries.cdi.container.test.beans.Config" configuration-pid="$ foo.config" />
+	</cdi:component>
+	<cdi:component class="org.apache.aries.cdi.container.test.beans.BarWithConfig">
+		<configuration type="org.apache.aries.cdi.container.test.beans.Bar" />
+		<configuration type="org.apache.aries.cdi.container.test.beans.Config" configuration-policy="require" />
+	</cdi:component>
 </beans>

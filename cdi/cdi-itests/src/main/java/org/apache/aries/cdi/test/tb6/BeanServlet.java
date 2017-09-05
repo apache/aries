@@ -24,15 +24,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.Component;
+import org.osgi.service.cdi.annotations.ServiceScope;
 import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 
-@Service(
+@Component(
 	property = {
 		HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_NAME + "=foo",
 		HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "=/foo"
 	},
-	type = Servlet.class
+	service = Servlet.class,
+	serviceScope = ServiceScope.SINGLETON
 )
 public class BeanServlet extends HttpServlet {
 
