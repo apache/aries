@@ -19,17 +19,19 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.aries.cdi.test.interfaces.FieldInjectedReference;
 import org.apache.aries.cdi.test.interfaces.PrototypeScoped;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.ReferenceScope;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(type = {FieldInjectedPrototypeScopedImpl.class, FieldInjectedReference.class})
-@Singleton
+@Component(
+	service = {FieldInjectedPrototypeScopedImpl.class, FieldInjectedReference.class},
+	serviceScope = ServiceScope.SINGLETON
+)
 public class FieldInjectedPrototypeScopedImpl implements FieldInjectedReference<PrototypeScoped> {
 
 	@Inject

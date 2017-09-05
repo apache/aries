@@ -14,85 +14,141 @@
 
 package org.apache.aries.cdi.container.internal.command;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.aries.cdi.container.internal.container.CdiContainerState;
-import org.apache.aries.cdi.container.internal.container.ConfigurationDependency;
-import org.apache.aries.cdi.container.internal.container.ExtensionDependency;
-import org.apache.aries.cdi.container.internal.container.ReferenceDependency;
+import org.apache.aries.cdi.container.internal.component.ComponentModel;
+import org.apache.aries.cdi.container.internal.configuration.ConfigurationCallback;
+import org.apache.aries.cdi.container.internal.container.ContainerState;
+import org.apache.aries.cdi.container.internal.extension.ExtensionDependency;
+import org.apache.aries.cdi.container.internal.model.BeansModel;
+import org.apache.aries.cdi.container.internal.reference.ReferenceCallback;
+import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
+import org.apache.aries.cdi.container.internal.service.ServiceDeclaration;
 import org.apache.aries.cdi.container.internal.util.Conversions;
+import org.osgi.framework.Bundle;
 
 public class CdiCommand {
 
-	public void list() {
-		for (CdiContainerState cdiContainerState : _states.values()) {
-			System.out.printf("[%s] %s\n", cdiContainerState.getId(), cdiContainerState.getLastState());
+	public String list() {
+		try (Formatter f = new Formatter()) {
+			for (ContainerState cdiContainerState : _states.values()) {
+				f.format("[%s] %s%n", cdiContainerState.id(), cdiContainerState.lastState());
+			}
+			return f.toString();
 		}
 	}
 
-	public void info(long bundleId) {
-		CdiContainerState cdiContainerState = _states.get(bundleId);
+	public String info(Bundle bundle) {
+		try (Formatter f = new Formatter()) {
+			ContainerState containerState = _states.get(bundle);
 
-		if (cdiContainerState == null) {
-			System.out.println("No matching CDI bundle found.");
+			if (containerState == null) {
+				f.format("No CDI Bundle found matching {}", bundle);
 
-			return;
-		}
-
-		System.out.printf("[%s] %s\n", cdiContainerState.getId(), cdiContainerState.getLastState());
-		List<ExtensionDependency> extensionDependencies = cdiContainerState.getExtensionDependencies();
-		if (!extensionDependencies.isEmpty()) {
-			System.out.println("  [EXTENSIONS]");
-			for (ExtensionDependency extensionDependency : extensionDependencies) {
-				System.out.printf("    Extension: %s%s\n", extensionDependency.toString(), " ???is this resolved???");
+				return f.toString();
 			}
-		}
-		List<ConfigurationDependency> configurationDependencies = cdiContainerState.getConfigurationDependencies();
-		if (!configurationDependencies.isEmpty()) {
-			System.out.println("  [CONFIGURATIONS]");
-			for (ConfigurationDependency configurationDependency : configurationDependencies) {
-				for (String pid : configurationDependency.pids()) {
-					System.out.printf(
-						"    PID: %s\n      Status: %s\n      Required: %s\n", pid,
-						!configurationDependency.isResolved(pid) ? "UNRESOLVED" : "resolved",
-						configurationDependency.isRequired());
-					Map<String, Object> configuration = configurationDependency.getConfiguration();
 
-					if (!configuration.isEmpty()) {
-						System.out.println("      Properties:");
-						for (Entry<String, Object> entry : configuration.entrySet()) {
-							String value = Conversions.toString(entry.getValue());
-							System.out.printf("        %s = %s%n", entry.getKey(), value);
+			f.format("[%s] %s%n", containerState.id(), containerState.lastState());
+
+			List<ExtensionDependency> extensionDependencies = containerState.extensionDependencies();
+
+			if (!extensionDependencies.isEmpty()) {
+				f.format("  [EXTENSIONS]");
+
+				for (ExtensionDependency extensionDependency : extensionDependencies) {
+					f.format("    Extension: %s%s%n", extensionDependency.toString(), " ???is this resolved???");
+				}
+			}
+
+			BeansModel beansModel = containerState.beansModel();
+			Collection<ComponentModel> componentModels = beansModel.getComponentModels();
+
+			if (!componentModels.isEmpty()) {
+				for (ComponentModel componentModel : componentModels) {
+					ServiceDeclaration serviceDeclaration = containerState.serviceComponents().get(componentModel);
+
+					f.format("[COMPONENT]%n");
+					f.format(
+						"  Name: %s%n    BeanClass: %s%n    ServiceScope: %s%n    Provides: %s%n",
+						componentModel.getName(),
+						componentModel.getBeanClass().getName(),
+						componentModel.getServiceScope(),
+						serviceDeclaration != null ? Arrays.toString(serviceDeclaration.getClassNames()): "not yet ready!");
+
+					f.format("  [CONFIGURATIONS]%n");
+
+					Map<String, ConfigurationCallback> configurationCallbacks = containerState.configurationCallbacks().get(componentModel);
+
+					for (Entry<String, ConfigurationCallback> entry : configurationCallbacks.entrySet()) {
+						f.format(
+							"    PID: %s%n      Policy: %s%n      Resolved: %s%n",
+							entry.getKey(),
+							entry.getValue().policy(),
+							entry.getValue().resolved() ? "YES" : "NO");
+					}
+
+					if (serviceDeclaration != null) {
+						Dictionary<String, ?> configuration = serviceDeclaration.getServiceProperties();
+
+						if (!configuration.isEmpty()) {
+							f.format("    Properties:%n");
+
+							List<String> keys = Collections.list(configuration.keys());
+
+							Collections.sort(keys);
+
+							for (String key : keys) {
+								String value = Conversions.toString(configuration.get(key));
+
+								f.format("      %s = %s%n", key, value);
+							}
+						}
+					}
+
+					List<ReferenceModel> references = componentModel.getReferences();
+
+					if (!references.isEmpty()) {
+						f.format("  [REFERENCES]%n");
+
+						Map<String, ReferenceCallback> referenceCallbacks = containerState.referenceCallbacks().get(componentModel);
+
+						for (ReferenceModel referenceModel : references) {
+							f.format(
+								"    Name: %s%n      Service: %s%n      Target: %s%n      Cardinality: %s%n      Policy: %s%n      Policy Option: %s%n      Scope: %s%n      Resolved: %s%n",
+								referenceModel.getName(),
+								referenceModel.getServiceClass().getName(),
+								referenceModel.getTarget(),
+								referenceModel.getCardinality(),
+								referenceModel.getPolicy(),
+								referenceModel.getPolicyOption(),
+								referenceModel.getScope(),
+								referenceCallbacks.get(referenceModel.getName()).resolved() ? "YES" : "NO");
 						}
 					}
 				}
 			}
-		}
-		List<ReferenceDependency> referenceDependencies = cdiContainerState.getReferenceDependencies();
-		if (!referenceDependencies.isEmpty()) {
-			System.out.println("  [REFERENCES]");
-			for (ReferenceDependency referenceDependency : referenceDependencies) {
-				System.out.printf(
-					"    Reference: %s\n      Status: %s\n      Min Cardinality: %s\n",
-					referenceDependency.toString(),
-					!referenceDependency.isResolved() ? "UNRESOLVED" : "resolved",
-					referenceDependency.getMinCardinality());
-			}
+
+			return f.toString();
 		}
 	}
 
-	public void add(Long bundleId, CdiContainerState cdiContainerState) {
-		_states.put(bundleId, cdiContainerState);
+	public void add(Bundle bundle, ContainerState cdiContainerState) {
+		_states.put(bundle, cdiContainerState);
 	}
 
-	public void remove(Long bundleId) {
-		_states.remove(bundleId);
+	public void remove(Bundle bundle) {
+		_states.remove(bundle);
 	}
 
-	private final Map<Long, CdiContainerState> _states = new ConcurrentHashMap<>();
+	private final Map<Bundle, ContainerState> _states = new ConcurrentHashMap<>();
 
 
 }

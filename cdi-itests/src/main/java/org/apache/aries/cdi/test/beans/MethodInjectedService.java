@@ -15,14 +15,16 @@
 package org.apache.aries.cdi.test.beans;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.Component;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(type = {MethodInjectedService.class, BeanService.class})
-@Singleton
+@Component(
+	service = {MethodInjectedService.class, BeanService.class},
+	serviceScope = ServiceScope.SINGLETON
+)
 public class MethodInjectedService implements BeanService<Pojo> {
 
 	@Inject

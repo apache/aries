@@ -26,7 +26,7 @@ import org.osgi.framework.Bundle;
 
 public class BundleClassLoader extends URLClassLoader {
 
-	public BundleClassLoader(Bundle... bundles) {
+	public BundleClassLoader(Bundle[] bundles) {
 		super(new URL[0]);
 
 		if (bundles.length == 0) {
@@ -83,41 +83,43 @@ public class BundleClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		for (Bundle bundle : _bundles) {
-			try {
-				return bundle.loadClass(name);
-			}
-			catch (ClassNotFoundException cnfe) {
-				continue;
-			}
-		}
+		Object classLoadingLock = getClassLoadingLock(name);
 
-		throw new ClassNotFoundException(name);
+		synchronized (classLoadingLock) {
+			for (Bundle bundle : _bundles) {
+				try {
+					return bundle.loadClass(name);
+				}
+				catch (ClassNotFoundException cnfe) {
+					continue;
+				}
+			}
+
+			throw new ClassNotFoundException(name);
+		}
 	}
 
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve)
 		throws ClassNotFoundException {
 
-		Class<?> clazz = _cache.get(name);
+		Object classLoadingLock = getClassLoadingLock(name);
 
-		if (clazz == null) {
-			synchronized (this) {
+		synchronized (classLoadingLock) {
+			Class<?> clazz = _cache.get(name);
+
+			if (clazz == null) {
 				clazz = findClass(name);
 
 				if (resolve) {
 					resolveClass(clazz);
 				}
 
-				Class<?> existing = _cache.putIfAbsent(name, clazz);
-
-				if (existing != null) {
-					clazz = existing;
-				}
+				_cache.put(name, clazz);
 			}
-		}
 
-		return clazz;
+			return clazz;
+		}
 	}
 
 	private final Bundle[] _bundles;

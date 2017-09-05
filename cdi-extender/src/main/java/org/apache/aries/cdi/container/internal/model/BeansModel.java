@@ -16,21 +16,19 @@ package org.apache.aries.cdi.container.internal.model;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.Map;
 
+import org.apache.aries.cdi.container.internal.component.ComponentModel;
 import org.jboss.weld.bootstrap.spi.BeansXml;
 import org.jboss.weld.xml.BeansXmlParser;
 
 public class BeansModel {
 
 	public BeansModel(
-		Collection<String> beanClasses, Collection<ConfigurationModel> configurationModels,
-		Collection<ReferenceModel> referenceModels, Collection<ServiceModel> serviceModels,
+		Map<String, ComponentModel> components,
 		Collection<URL> beanDescriptorURLs) {
 
-		_beanClasses = beanClasses;
-		_configurationModels = configurationModels;
-		_referenceModels = referenceModels;
-		_serviceModels = serviceModels;
+		_components = components;
 
 		BeansXml beansXml = BeansXml.EMPTY_BEANS_XML;
 
@@ -42,30 +40,31 @@ public class BeansModel {
 		_beansXml = beansXml;
 	}
 
+	public void addComponentModel(String componentClass, ComponentModel componentModel) {
+		_components.put(componentClass, componentModel);
+	}
+
 	public Collection<String> getBeanClassNames() {
-		return _beanClasses;
+		return _components.keySet();
 	}
 
 	public BeansXml getBeansXml() {
 		return _beansXml;
 	}
 
-	public Collection<ConfigurationModel> getConfigurationModels() {
-		return _configurationModels;
+	public ComponentModel getComponentModel(String componentClass) {
+		return _components.get(componentClass);
 	}
 
-	public Collection<ReferenceModel> getReferenceModels() {
-		return _referenceModels;
+	public Collection<ComponentModel> getComponentModels() {
+		return _components.values();
 	}
 
-	public Collection<ServiceModel> getServiceModels() {
-		return _serviceModels;
+	public void removeComponentModel(String beanClassName) {
+		_components.remove(beanClassName);
 	}
 
-	private final Collection<String> _beanClasses;
 	private final BeansXml _beansXml;
-	private final Collection<ConfigurationModel> _configurationModels;
-	private final Collection<ReferenceModel> _referenceModels;
-	private final Collection<ServiceModel> _serviceModels;
+	private final Map<String, ComponentModel> _components;
 
 }

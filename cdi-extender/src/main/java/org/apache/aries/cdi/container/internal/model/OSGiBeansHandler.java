@@ -15,9 +15,10 @@
 package org.apache.aries.cdi.container.internal.model;
 
 import static org.apache.aries.cdi.container.internal.model.Constants.ARRAY_ELEMENT;
-import static org.apache.aries.cdi.container.internal.model.Constants.BEAN_ELEMENT;
-import static org.apache.aries.cdi.container.internal.model.Constants.CDI_URIS;
 import static org.apache.aries.cdi.container.internal.model.Constants.CLASS_ATTRIBUTE;
+import static org.apache.aries.cdi.container.internal.model.Constants.CDI10_URI;
+import static org.apache.aries.cdi.container.internal.model.Constants.CDI_URIS;
+import static org.apache.aries.cdi.container.internal.model.Constants.COMPONENT_ELEMENT;
 import static org.apache.aries.cdi.container.internal.model.Constants.CONFIGURATION_ELEMENT;
 import static org.apache.aries.cdi.container.internal.model.Constants.INTERFACE_ATTRIBUTE;
 import static org.apache.aries.cdi.container.internal.model.Constants.LIST_ELEMENT;
@@ -25,30 +26,37 @@ import static org.apache.aries.cdi.container.internal.model.Constants.NAME_ATTRI
 import static org.apache.aries.cdi.container.internal.model.Constants.PROPERTY_ELEMENT;
 import static org.apache.aries.cdi.container.internal.model.Constants.PROVIDE_ELEMENT;
 import static org.apache.aries.cdi.container.internal.model.Constants.REFERENCE_ELEMENT;
-import static org.apache.aries.cdi.container.internal.model.Constants.SERVICE_ELEMENT;
+import static org.apache.aries.cdi.container.internal.model.Constants.SERVICE_ATTRIBUTE;
 import static org.apache.aries.cdi.container.internal.model.Constants.SET_ELEMENT;
+import static org.apache.aries.cdi.container.internal.model.Constants.TYPE_ATTRIBUTE;
 import static org.apache.aries.cdi.container.internal.model.Constants.VALUE_ATTRIBUTE;
 import static org.apache.aries.cdi.container.internal.model.Constants.VALUE_ELEMENT;
 import static org.apache.aries.cdi.container.internal.model.Constants.VALUE_TYPE_ATTRIBUTE;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.aries.cdi.container.internal.component.ComponentModel;
+import org.apache.aries.cdi.container.internal.configuration.ConfigurationModel;
+import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class OSGiBeansHandler extends DefaultHandler {
 
-	public OSGiBeansHandler(List<URL> beanDescriptorURLs) {
+	public OSGiBeansHandler(List<URL> beanDescriptorURLs, ClassLoader classLoader) {
 		_beanDescriptorURLs = beanDescriptorURLs;
+		_classLoader = classLoader;
 	}
 
 	public BeansModel createBeansModel() {
-		return new BeansModel(
-			_beanClasses, _configurationModels, _referenceModels, _serviceModels, _beanDescriptorURLs);
+		return new BeansModel(_components, _beanDescriptorURLs);
 	}
 
 	@Override
@@ -65,14 +73,31 @@ public class OSGiBeansHandler extends DefaultHandler {
 		if (matches(ARRAY_ELEMENT, uri, localName) && (_propertyValue == null)) {
 			_collectionType = CollectionType.ARRAY;
 		}
-		if (matches(BEAN_ELEMENT, uri, localName)) {
-			_beanClass = attributes.getValue(CLASS_ATTRIBUTE).trim();
-			if (!_beanClasses.contains(_beanClass)) {
-				_beanClasses.add(_beanClass);
+		if (matches(COMPONENT_ELEMENT, uri, localName)) {
+			try {
+				Class<?> clazz = _classLoader.loadClass(
+					Model.getValue(CDI10_URI, CLASS_ATTRIBUTE, attributes));
+
+				_componentModel = new ComponentModel.Builder(clazz).attributes(attributes);
+			}
+			catch (ClassNotFoundException cnfe) {
+				if (_log.isErrorEnabled()) {
+					_log.error("CDIe - {}", cnfe.getMessage(), cnfe);
+				}
 			}
 		}
 		if (matches(CONFIGURATION_ELEMENT, uri, localName)) {
-			_configurationModel = new ConfigurationModel(attributes);
+			try {
+				Class<?> clazz = _classLoader.loadClass(
+					Model.getValue(CDI10_URI, TYPE_ATTRIBUTE, attributes));
+
+				_componentModel.configuration(new ConfigurationModel.Builder(clazz).attributes(attributes).build());
+			}
+			catch (ClassNotFoundException cnfe) {
+				if (_log.isErrorEnabled()) {
+					_log.error("CDIe - {}", cnfe.getMessage(), cnfe);
+				}
+			}
 		}
 		if (matches(LIST_ELEMENT, uri, localName) && (_propertyValue == null)) {
 			_collectionType = CollectionType.LIST;
@@ -93,12 +118,20 @@ public class OSGiBeansHandler extends DefaultHandler {
 		}
 		if (matches(PROVIDE_ELEMENT, uri, localName)) {
 			String value = attributes.getValue(INTERFACE_ATTRIBUTE).trim();
-			_serviceModel.addProvide(value);		}
-		if (matches(REFERENCE_ELEMENT, uri, localName)) {
-			_referenceModel = new ReferenceModel(attributes);
+			_componentModel.provide(value);
 		}
-		if (matches(SERVICE_ELEMENT, uri, localName)) {
-			_serviceModel = new ServiceModel(_beanClass);
+		if (matches(REFERENCE_ELEMENT, uri, localName)) {
+			try {
+				Class<?> clazz = _classLoader.loadClass(
+					Model.getValue(CDI10_URI, SERVICE_ATTRIBUTE, attributes));
+
+				_referenceModel = new ReferenceModel.Builder(attributes).service(clazz).build();
+			}
+			catch (ClassNotFoundException cnfe) {
+				if (_log.isErrorEnabled()) {
+					_log.error("CDIe - {}", cnfe.getMessage(), cnfe);
+				}
+			}
 		}
 		if (matches(SET_ELEMENT, uri, localName) && (_propertyValue == null)) {
 			_collectionType = CollectionType.SET;
@@ -113,9 +146,10 @@ public class OSGiBeansHandler extends DefaultHandler {
 		if (matches(ARRAY_ELEMENT, uri, localName)) {
 			_collectionType = null;
 		}
-		if (matches(CONFIGURATION_ELEMENT, uri, localName)) {
-			_configurationModels.add(_configurationModel);
-			_configurationModel = null;
+		if (matches(COMPONENT_ELEMENT, uri, localName)) {
+			ComponentModel componentModel = _componentModel.build();
+			_components.put(componentModel.getBeanClass().getName(), componentModel);
+			_componentModel = null;
 		}
 		if (matches(LIST_ELEMENT, uri, localName)) {
 			_collectionType = null;
@@ -127,7 +161,7 @@ public class OSGiBeansHandler extends DefaultHandler {
 			if (_propertyValue != null) {
 				try (Formatter f = new Formatter()) {
 					f.format("%s:%s=%s", _propertyName, _propertyType, _propertyValue);
-					_serviceModel.addProperty(f.toString());
+					_componentModel.property(f.toString());
 				}
 			}
 			_propertySB = null;
@@ -136,13 +170,8 @@ public class OSGiBeansHandler extends DefaultHandler {
 			_propertyValue = null;
 		}
 		if (matches(REFERENCE_ELEMENT, uri, localName)) {
-			_referenceModels.add(_referenceModel);
+			_componentModel.reference(_referenceModel);
 			_referenceModel = null;
-		}
-		if (matches(SERVICE_ELEMENT, uri, localName)) {
-			_serviceModels.add(_serviceModel);
-			_serviceModel = null;
-			_beanClass = null;
 		}
 		if (matches(SET_ELEMENT, uri, localName)) {
 			_collectionType = null;
@@ -167,7 +196,7 @@ public class OSGiBeansHandler extends DefaultHandler {
 			sb.append("=");
 			sb.append(_propertySB.toString().trim());
 
-			_serviceModel.addProperty(sb.toString());
+			_componentModel.property(sb.toString());
 			_propertySB = null;
 		}
 	}
@@ -183,19 +212,18 @@ public class OSGiBeansHandler extends DefaultHandler {
 		ARRAY, LIST, SET
 	}
 
-	private String _beanClass;
-	private final List<String> _beanClasses = new ArrayList<String>();
+	private final static Logger _log = LoggerFactory.getLogger(
+		OSGiBeansHandler.class);
+
+	private final ClassLoader _classLoader;
+	private final Map<String, ComponentModel> _components = new HashMap<>();
 	private final List<URL> _beanDescriptorURLs;
-	private ConfigurationModel _configurationModel;
-	private final List<ConfigurationModel> _configurationModels = new ArrayList<>();
 	private String _propertyName;
 	private StringBuilder _propertySB;
 	private String _propertyType;
 	private String _propertyValue;
 	private CollectionType _collectionType;
 	private ReferenceModel _referenceModel;
-	private final List<ReferenceModel> _referenceModels = new ArrayList<>();
-	private ServiceModel _serviceModel;
-	private final List<ServiceModel> _serviceModels = new ArrayList<>();
+	private ComponentModel.Builder _componentModel;
 
 }

@@ -104,9 +104,14 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>1.7.25</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
@@ -204,9 +209,9 @@
 			<version>1.4.100.v20150408-1437</version>
 		</dependency>
 		<dependency>
-			<groupId>org.osgi</groupId>
+			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.10.100.v20150529-1857</version>
+			<version>3.11.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
@@ -251,16 +256,6 @@
 			<groupId>org.osgi</groupId>
 			<artifactId>osgi.core</artifactId>
 			<version>6.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.21</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
 		</dependency>
 	</dependencies>
 </project>

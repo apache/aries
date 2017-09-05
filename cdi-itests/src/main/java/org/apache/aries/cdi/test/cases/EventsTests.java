@@ -49,7 +49,7 @@ public class EventsTests extends AbstractTestCase {
 		BeanService<List<CdiEvent>> bti = (BeanService<List<CdiEvent>>)bcb;
 		List<CdiEvent> list = bti.get();
 		assertNotNull(list);
-		assertEquals(3, list.size());
+		assertEquals(1, list.size());
 	}
 
 }

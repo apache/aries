@@ -17,29 +17,21 @@ package org.apache.aries.cdi.container.internal.literal;
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.osgi.service.cdi.annotations.Configuration;
+import org.osgi.service.cdi.annotations.ConfigurationPolicy;
 
 public class ConfigurationLiteral extends AnnotationLiteral<Configuration> implements Configuration {
 
-	private static final long serialVersionUID = 1L;
+	public static final Configuration INSTANCE = new ConfigurationLiteral(
+		new String[] {Configuration.NAME}, ConfigurationPolicy.OPTIONAL);
 
-	/**
-	 * @param pids an array of configuration pids
-	 * @return a literal instance of {@link Configuration}
-	 */
-	public static ConfigurationLiteral from(String[] pids) {
-		return new ConfigurationLiteral(pids);
-	}
-
-	/**
-	 * @param pids an array of configuration pids
-	 */
-	public ConfigurationLiteral(String[] pids) {
+	public ConfigurationLiteral(String[] pids, ConfigurationPolicy configurationPolicy) {
 		_pids = pids;
+		_configurationPolicy = configurationPolicy;
 	}
 
 	@Override
-	public boolean required() {
-		return true;
+	public ConfigurationPolicy configurationPolicy() {
+		return _configurationPolicy;
 	}
 
 	@Override
@@ -47,6 +39,9 @@ public class ConfigurationLiteral extends AnnotationLiteral<Configuration> imple
 		return _pids;
 	}
 
+	private static final long serialVersionUID = 1L;
+
+	private final ConfigurationPolicy _configurationPolicy;
 	private final String[] _pids;
 
 }

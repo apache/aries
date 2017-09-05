@@ -17,13 +17,17 @@ package org.apache.aries.cdi.test.tb3;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
+import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ConfigurationPolicy;
+import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Service(property = "bean=A")
+@Component(
+	property = "bean=A",
+	serviceScope = ServiceScope.SINGLETON
+)
 public class ConfigurationBeanA implements BeanService<Callable<int[]>> {
 
 	@Override
@@ -41,9 +45,8 @@ public class ConfigurationBeanA implements BeanService<Callable<int[]>> {
 		};
 	}
 
-	@Configuration
+	@Configuration(configurationPolicy = ConfigurationPolicy.REQUIRE)
 	@Inject
-	@Named("configA")
 	Config config;
 
 }

@@ -70,20 +70,21 @@ public class Maps {
 		map(map, key, type, value);
 	}
 
+	@SuppressWarnings("unchecked")
 	static void map(Map<String, Object> map, String key, String type, String value) {
 		PropertyType propertyType = PropertyType.find(type);
 
 		Object object = map.get(key);
 
 		if (object == null) {
-			Object valueObject = Conversions.c().convert(value).to(propertyType.getType());
+			Object valueObject = Conversions.convert(value).to(propertyType.getType());
 
 			map.put(key, valueObject);
 
 			return;
 		}
 
-		Object valueObject = Conversions.c().convert(value).to(propertyType.componentType());
+		Object valueObject = Conversions.convert(value).to(propertyType.componentType());
 
 		if (propertyType.isRaw()) {
 			if (!object.getClass().isArray()) {
@@ -101,10 +102,12 @@ public class Maps {
 			}
 		}
 		else if (propertyType.isList()) {
+			@SuppressWarnings("rawtypes")
 			List list = Collections.checkedList((List)object, propertyType.componentType());
 			list.add(valueObject);
 		}
 		else if (propertyType.isSet()) {
+			@SuppressWarnings("rawtypes")
 			Set set = Collections.checkedSet((Set)object, propertyType.componentType());
 			set.add(valueObject);
 		}

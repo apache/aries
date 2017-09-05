@@ -30,12 +30,18 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.aries.cdi.container.internal.util.Throw;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 public abstract class AbstractModelBuilder {
+
+	static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+	static final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
+	static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
 	public BeansModel build() {
 		List<URL> beanDescriptorURLs = new ArrayList<URL>();
@@ -73,21 +79,21 @@ public abstract class AbstractModelBuilder {
 		return parse(osgiBeanDescriptorURLs, beanDescriptorURLs);
 	}
 
-	abstract Map<String, Object> getAttributes();
+	public abstract Map<String, Object> getAttributes();
 
-	abstract ClassLoader getClassLoader();
+	public abstract ClassLoader getClassLoader();
 
-	abstract URL getResource(String resource);
+	public abstract URL getResource(String resource);
 
-	abstract List<String> getDefaultResources();
+	public abstract List<String> getDefaultResources();
 
 	private OSGiBeansHandler getHandler(List<URL> beanDescriptorURLs) {
-		return new OSGiBeansHandler(beanDescriptorURLs);
+		return new OSGiBeansHandler(beanDescriptorURLs, getClassLoader());
 	}
 
 	private BeansModel parse(List<URL> osgiBeansDescriptorURLs, List<URL> beanDescriptorURLs) {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
-		factory.setValidating(false);
+		factory.setValidating(true);
 		factory.setNamespaceAware(true);
 
 		if (osgiBeansDescriptorURLs.isEmpty()) {
@@ -98,6 +104,14 @@ public abstract class AbstractModelBuilder {
 
 		try {
 			parser = factory.newSAXParser();
+
+			try {
+				parser.setProperty(SCHEMA_LANGUAGE, XML_SCHEMA);
+				parser.setProperty(SCHEMA_SOURCE, loadXsds());
+			}
+			catch (SAXNotRecognizedException | SAXNotSupportedException e) {
+				// No op, we just don't validate the XML
+			}
 		}
 		catch (ParserConfigurationException | SAXException e) {
 			return Throw.exception(e);
@@ -110,17 +124,9 @@ public abstract class AbstractModelBuilder {
 				InputSource source = new InputSource(inputStream);
 
 				if (source.getByteStream().available() == 0) {
-					throw new IllegalArgumentException(
-						"Specified osgi-beans descriptor is empty: " + osgiBeansDescriptorURL);
-				}
+					_log.warn("CDIe - Ignoring {} because it contains 0 bytes", osgiBeansDescriptorURL);
 
-				try {
-					parser.setProperty(
-						"http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
-					parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", loadXsds());
-				}
-				catch (IllegalArgumentException | SAXNotRecognizedException | SAXNotSupportedException e) {
-					// No op, we just don't validate the XML
+					continue;
 				}
 
 				parser.parse(source, handler);
@@ -155,5 +161,7 @@ public abstract class AbstractModelBuilder {
 
 		return xsds.toArray(new InputSource[0]);
 	}
+
+	private static final Logger _log = LoggerFactory.getLogger(AbstractModelBuilder.class);
 
 }

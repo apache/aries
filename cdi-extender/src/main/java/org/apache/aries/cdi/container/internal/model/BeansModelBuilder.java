@@ -31,9 +31,9 @@ import org.osgi.framework.wiring.BundleWiring;
 
 public class BeansModelBuilder extends AbstractModelBuilder {
 
-	public BeansModelBuilder(BundleWiring bundleWiring, Bundle extenderBundle) {
+	public BeansModelBuilder(ClassLoader classLoader, BundleWiring bundleWiring) {
+		_classLoader = classLoader;
 		_bundleWiring = bundleWiring;
-		_extenderBundle = extenderBundle;
 		_bundle = _bundleWiring.getBundle();
 
 		List<BundleWire> wires = bundleWiring.getRequiredWires(EXTENDER_NAMESPACE);
@@ -56,28 +56,28 @@ public class BeansModelBuilder extends AbstractModelBuilder {
 	}
 
 	@Override
-	Map<String, Object> getAttributes() {
+	public Map<String, Object> getAttributes() {
 		return _attributes;
 	}
 
 	@Override
-	ClassLoader getClassLoader() {
-		return _extenderBundle.adapt(BundleWiring.class).getClassLoader();
+	public ClassLoader getClassLoader() {
+		return _classLoader;
 	}
 
 	@Override
-	URL getResource(String resource) {
+	public URL getResource(String resource) {
 		return _bundle.getResource(resource);
 	}
 
 	@Override
-	List<String> getDefaultResources() {
+	public List<String> getDefaultResources() {
 		return new ArrayList<>(_bundleWiring.listResources("OSGI-INF/cdi", "*.xml", BundleWiring.LISTRESOURCES_LOCAL));
 	}
 
 	private final Map<String, Object> _attributes;
 	private final Bundle _bundle;
+	private final ClassLoader _classLoader;
 	private final BundleWiring _bundleWiring;
-	private final Bundle _extenderBundle;
 
 }

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<cdi:bean class="org.apache.aries.cdi.test.tb2.PojoImpl" xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
-	<service>
-		<provide interface="org.apache.aries.cdi.test.interfaces.Pojo" />
-	</service>
-</cdi:bean>
+<cdi:component class="org.apache.aries.cdi.test.tb2.PojoImpl" service-scope="singleton" xmlns:cdi="http://www.osgi.org/xmlns/cdi/v1.0.0">
+	<provide interface="org.apache.aries.cdi.test.interfaces.Pojo" />
+</cdi:component>
