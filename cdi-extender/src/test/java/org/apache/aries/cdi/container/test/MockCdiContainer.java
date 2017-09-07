@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
 import org.apache.aries.cdi.container.internal.container.ContainerDeployment;
@@ -28,7 +29,6 @@ import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.bootstrap.spi.Metadata;
-import org.jboss.weld.manager.BeanManagerImpl;
 import org.junit.Assert;
 
 public class MockCdiContainer implements AutoCloseable {
@@ -60,7 +60,7 @@ public class MockCdiContainer implements AutoCloseable {
 	}
 
 	public Bean<?> getBean(Class<?> clazz) {
-		final BeanManagerImpl managerImpl = getBeanManager();
+		final BeanManager managerImpl = getBeanManager();
 
 		Set<javax.enterprise.inject.spi.Bean<?>> beans =
 			managerImpl.getBeans(clazz, AnyLiteral.INSTANCE);
@@ -70,12 +70,12 @@ public class MockCdiContainer implements AutoCloseable {
 		return managerImpl.resolve(beans);
 	}
 
-	public BeanManagerImpl getBeanManager() {
-		if (_beanManagerImpl != null) {
-			return _beanManagerImpl;
+	public BeanManager getBeanManager() {
+		if (_beanManager != null) {
+			return _beanManager;
 		}
 
-		return _beanManagerImpl = _bootstrap.getManager(_bda);
+		return _beanManager = _bootstrap.getManager(_bda);
 	}
 
 	public WeldBootstrap getBootstrap() {
@@ -83,7 +83,7 @@ public class MockCdiContainer implements AutoCloseable {
 	}
 
 	private final BeanDeploymentArchive _bda;
-	private BeanManagerImpl _beanManagerImpl;
+	private BeanManager _beanManager;
 	private final WeldBootstrap _bootstrap;
 
 }

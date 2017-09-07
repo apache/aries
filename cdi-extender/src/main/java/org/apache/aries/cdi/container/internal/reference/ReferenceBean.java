@@ -14,8 +14,6 @@
 
 package org.apache.aries.cdi.container.internal.reference;
 
-import static org.apache.aries.cdi.container.internal.util.Reflection.cast;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -25,18 +23,14 @@ import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 
 import org.apache.aries.cdi.container.internal.component.ComponentModel;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.jboss.weld.injection.CurrentInjectionPoint;
-import org.jboss.weld.injection.EmptyInjectionPoint;
-import org.jboss.weld.manager.BeanManagerImpl;
-import org.jboss.weld.util.Decorators;
 import org.osgi.service.cdi.annotations.ReferenceCardinality;
 
 public class ReferenceBean implements Bean<Object> {
@@ -45,17 +39,16 @@ public class ReferenceBean implements Bean<Object> {
 		ContainerState containerState,
 		ReferenceModel referenceModel,
 		ComponentModel componentModel,
-		Annotated annotated,
-		Set<Annotation> qualifiers,
-		BeanManagerImpl beanManagerImpl) {
+		InjectionPoint injectionPoint,
+		BeanManager beanManager) {
 
 		_containerState = containerState;
 		_referenceModel = referenceModel;
 		_componentModel = componentModel;
-		_qualifiers = qualifiers;
-		_beanManagerImpl = beanManagerImpl;
+		_injectionPoint = injectionPoint;
+		_beanManager = beanManager;
 
-		Named named = annotated.getAnnotation(Named.class);
+		Named named = _injectionPoint.getAnnotated().getAnnotation(Named.class);
 
 		_name = named != null ? named.value() : null;
 	}
@@ -63,16 +56,14 @@ public class ReferenceBean implements Bean<Object> {
 	@Override
 	public Object create(CreationalContext<Object> creationalContext) {
 		Object instance = _getInjectedInstance();
-		InjectionPoint ip = _getInjectionPoint();
-		if (ip == null) {
-			return instance;
-		}
-		List<Decorator<?>> decorators = _getDecorators(ip);
+		List<Decorator<?>> decorators = _getDecorators(_injectionPoint);
 		if (decorators.isEmpty()) {
 			return instance;
 		}
-		return Decorators.getOuterDelegate(
-			cast(this), instance, creationalContext, cast(getBeanClass()), ip, _beanManagerImpl, decorators);
+		return instance;
+		// TODO
+//		return Decorators.getOuterDelegate(
+//			cast(this), instance, creationalContext, cast(getBeanClass()), _injectionPoint, _beanManager, decorators);
 	}
 
 	@Override
@@ -91,12 +82,12 @@ public class ReferenceBean implements Bean<Object> {
 
 	@Override
 	public String getName() {
-		return _name; //_referenceModel.getName();
+		return _name;
 	}
 
 	@Override
 	public Set<Annotation> getQualifiers() {
-		return _qualifiers;
+		return _injectionPoint.getQualifiers();
 	}
 
 	@Override
@@ -130,7 +121,9 @@ public class ReferenceBean implements Bean<Object> {
 	}
 
 	private List<Decorator<?>> _getDecorators(InjectionPoint ip) {
-		return _beanManagerImpl.resolveDecorators(Collections.singleton(ip.getType()), getQualifiers());
+		return _beanManager.resolveDecorators(
+			Collections.singleton(ip.getType()),
+			_injectionPoint.getQualifiers().toArray(new Annotation[0]));
 	}
 
 	private Object _getInjectedInstance() {
@@ -139,8 +132,6 @@ public class ReferenceBean implements Bean<Object> {
 		Map<String, ReferenceCallback> map = _containerState.referenceCallbacks().get(_componentModel);
 
 		ReferenceCallback referenceCallback = map.get(_referenceModel.getName());
-
-		Type injectionPointType = _referenceModel.getInjectionPointType();
 
 		switch (_referenceModel.getCollectionType()) {
 			case PROPERTIES:
@@ -163,17 +154,11 @@ public class ReferenceBean implements Bean<Object> {
 		return instance;
 	}
 
-	private InjectionPoint _getInjectionPoint() {
-		CurrentInjectionPoint currentInjectionPoint = _beanManagerImpl.getServices().get(CurrentInjectionPoint.class);
-		InjectionPoint ip = currentInjectionPoint.peek();
-		return EmptyInjectionPoint.INSTANCE.equals(ip) ? null : ip;
-	}
-
-	private final BeanManagerImpl _beanManagerImpl;
+	private final BeanManager _beanManager;
 	private final ComponentModel _componentModel;
 	private final ContainerState _containerState;
+	private final InjectionPoint _injectionPoint;
 	private final String _name;
-	private final Set<Annotation> _qualifiers;
 	private final ReferenceModel _referenceModel;
 
 }

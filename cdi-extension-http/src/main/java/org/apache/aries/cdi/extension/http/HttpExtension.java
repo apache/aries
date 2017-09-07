@@ -25,16 +25,17 @@ import java.util.Map;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
+import javax.enterprise.inject.spi.InjectionTargetFactory;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionListener;
 
-import org.jboss.weld.bean.builtin.BeanManagerProxy;
-import org.jboss.weld.manager.BeanManagerImpl;
-import org.jboss.weld.servlet.WeldInitialListener;
+import org.jboss.weld.module.web.servlet.WeldInitialListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -51,8 +52,6 @@ public class HttpExtension implements Extension {
 	}
 
 	void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
-		BeanManagerImpl beanManagerImpl = ((BeanManagerProxy)beanManager).delegate();
-
 		Dictionary<String, Object> properties = new Hashtable<>();
 
 		properties.put(
@@ -60,8 +59,14 @@ public class HttpExtension implements Extension {
 		properties.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_LISTENER, Boolean.TRUE.toString());
 		properties.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE - 100);
 
+		AnnotatedType<WeldInitialListener> annotatedType = beanManager.createAnnotatedType(WeldInitialListener.class);
+		InjectionTargetFactory<WeldInitialListener> injectionTargetFactory = beanManager.getInjectionTargetFactory(annotatedType);
+		Bean<WeldInitialListener> bean = beanManager.createBean(beanManager.createBeanAttributes(annotatedType), WeldInitialListener.class, injectionTargetFactory);
+
+		WeldInitialListener initialListener = bean.create(beanManager.createCreationalContext(bean));
+
 		_listenerRegistration = _bundle.getBundleContext().registerService(
-				LISTENER_CLASSES, new WeldInitialListener(beanManagerImpl), properties);
+			LISTENER_CLASSES, initialListener, properties);
 	}
 
 	void beforeShutdown(@Observes BeforeShutdown bs) {

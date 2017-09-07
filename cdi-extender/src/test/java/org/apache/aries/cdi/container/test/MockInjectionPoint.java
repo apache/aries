@@ -24,13 +24,13 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.jboss.weld.annotated.slim.unbacked.UnbackedAnnotated;
+import org.apache.aries.cdi.container.internal.util.Sets;
 
 public class MockInjectionPoint implements InjectionPoint {
 
 	public MockInjectionPoint(Type type) {
 		_type = type;
-		_annotated = new UnbackedAnnotated(_type, Collections.emptySet(), Collections.emptySet());
+		_annotated = new MockAnnotated(_type);
 	}
 
 	@Override
@@ -75,5 +75,45 @@ public class MockInjectionPoint implements InjectionPoint {
 
 	private final Type _type;
 	private final Annotated _annotated;
+
+	private static class MockAnnotated implements Annotated {
+
+		public MockAnnotated(Type service) {
+			_service = service;
+		}
+
+		@Override
+		public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
+			return null;
+		}
+
+		@Override
+		public Set<Annotation> getAnnotations() {
+			return Collections.emptySet();
+		}
+
+		@Override
+		public <T extends Annotation> Set<T> getAnnotations(Class<T> annotationType) {
+			return null;
+		}
+
+		@Override
+		public Type getBaseType() {
+			return _service;
+		}
+
+		@Override
+		public Set<Type> getTypeClosure() {
+			return Sets.hashSet(_service);
+		}
+
+		@Override
+		public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
+			return false;
+		}
+
+		private final Type _service;
+
+	}
 
 }
