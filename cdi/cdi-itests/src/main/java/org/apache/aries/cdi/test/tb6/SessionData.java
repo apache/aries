@@ -21,7 +21,7 @@ import javax.inject.Named;
 
 @Named
 @SessionScoped
-public class SessionBean implements Serializable {
+public class SessionData implements Serializable {
 
 	public boolean hasData() {
 		return data != null;

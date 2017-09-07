@@ -36,7 +36,7 @@ import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 	service = Servlet.class,
 	serviceScope = ServiceScope.SINGLETON
 )
-public class BeanServlet extends HttpServlet {
+public class FooServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -47,24 +47,20 @@ public class BeanServlet extends HttpServlet {
 
 		String name = request.getParameter("name");
 
+		if (name != null) {
+			sessionData.setData(name);
+		}
+
 		response.setContentType("text/plain");
 
-		PrintWriter writer = response.getWriter();
-
-		if (!sessionBean.hasData() && (name == null)) {
-		}
-		else {
-			if (name != null) {
-				sessionBean.setData(name);
+		try (PrintWriter writer = response.getWriter()) {
+			if (sessionData.hasData()) {
+				writer.print(sessionData.getData());
 			}
-
-			writer.print(sessionBean.getData());
 		}
-
-		writer.close();
 	}
 
 	@Inject
-	SessionBean sessionBean;
+	SessionData sessionData;
 
 }
