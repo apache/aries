@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
 import org.apache.aries.cdi.container.internal.component.ComponentRuntimeExtension;
@@ -75,15 +76,15 @@ public class ContainerBootstrap {
 		_bootstrap.startExtensions(extensions);
 		_bootstrap.startContainer(_containerState.id(), new ContainerEnvironment(), deployment);
 
-		_beanManagerImpl = _bootstrap.getManager(beanDeploymentArchive);
-		_containerState.setBeanManager(_beanManagerImpl);
+		_beanManager = _bootstrap.getManager(beanDeploymentArchive);
+		_containerState.setBeanManager(_beanManager);
 
 		_bootstrap.startInitialization();
 		_bootstrap.deployBeans();
 	}
 
-	public BeanManagerImpl getBeanManagerImpl() {
-		return _beanManagerImpl;
+	public BeanManager getBeanManager() {
+		return _beanManager;
 	}
 
 	public WeldBootstrap getBootstrap() {
@@ -94,7 +95,7 @@ public class ContainerBootstrap {
 		_bootstrap.shutdown();
 	}
 
-	private final BeanManagerImpl _beanManagerImpl;
+	private final BeanManager _beanManager;
 	private final WeldBootstrap _bootstrap;
 	private final ContainerState _containerState;
 	private final Collection<Metadata<Extension>> _externalExtensions;

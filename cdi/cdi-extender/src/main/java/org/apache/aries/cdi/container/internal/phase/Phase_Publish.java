@@ -22,7 +22,6 @@ import org.apache.aries.cdi.container.internal.container.ContainerBootstrap;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.Metadata;
-import org.jboss.weld.manager.BeanManagerImpl;
 import org.osgi.service.cdi.CdiEvent;
 import org.osgi.service.cdi.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -53,7 +52,6 @@ public class Phase_Publish implements Phase {
 		try {
 			_cb = new ContainerBootstrap(_containerState, _extensions);
 
-			BeanManagerImpl beanManagerImpl = _cb.getBeanManagerImpl();
 			WeldBootstrap bootstrap = _cb.getBootstrap();
 
 			bootstrap.validateBeans();
@@ -65,9 +63,9 @@ public class Phase_Publish implements Phase {
 				callback -> callback.flush()
 			);
 
-			processServices(beanManagerImpl);
+			processServices();
 
-			_containerState.beanManagerRegistrator().registerService(beanManagerImpl);
+			_containerState.beanManagerRegistrator().registerService(_cb.getBeanManager());
 
 			_containerState.fire(CdiEvent.Type.CREATED);
 		}
@@ -76,7 +74,7 @@ public class Phase_Publish implements Phase {
 		}
 	}
 
-	private void processServices(BeanManagerImpl beanManagerImpl) {
+	private void processServices() {
 		_containerState.serviceComponents().values().stream().filter(
 			serviceDeclaration ->
 				serviceDeclaration.getScope() == ServiceScope.BUNDLE ||

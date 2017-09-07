@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 
@@ -34,10 +35,6 @@ import org.apache.aries.cdi.container.internal.component.ComponentModel;
 import org.apache.aries.cdi.container.internal.component.ComponentProperties;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.util.Conversions;
-import org.jboss.weld.injection.CurrentInjectionPoint;
-import org.jboss.weld.injection.EmptyInjectionPoint;
-import org.jboss.weld.manager.BeanManagerImpl;
-import org.jboss.weld.util.Decorators;
 
 public class ConfigurationBean implements Bean<Object> {
 
@@ -46,13 +43,13 @@ public class ConfigurationBean implements Bean<Object> {
 		ConfigurationModel configurationModel,
 		ComponentModel componentModel,
 		InjectionPoint injectionPoint,
-		BeanManagerImpl beanManagerImpl) {
+		BeanManager beanManager) {
 
 		_containerState = containerState;
 		_configurationModel = configurationModel;
 		_componentModel = componentModel;
 		_injectionPoint = injectionPoint;
-		_beanManagerImpl = beanManagerImpl;
+		_beanManager = beanManager;
 
 		Type type = _injectionPoint.getType();
 
@@ -68,13 +65,14 @@ public class ConfigurationBean implements Bean<Object> {
 	@Override
 	public Object create(CreationalContext<Object> creationalContext) {
 		Object instance = _getInjectedInstance();
-		InjectionPoint ip = _getInjectionPoint();
-		List<Decorator<?>> decorators = _getDecorators(ip);
+		List<Decorator<?>> decorators = _getDecorators(_injectionPoint);
 		if (decorators.isEmpty()) {
 			return instance;
 		}
-		return Decorators.getOuterDelegate(
-			this, instance, creationalContext, cast(_beanClass), ip, _beanManagerImpl, decorators);
+		return instance;
+		// TODO
+//		return Decorators.getOuterDelegate(
+//			this, instance, creationalContext, cast(_beanClass), _injectionPoint, _beanManager, decorators);
 	}
 
 	@Override
@@ -136,7 +134,9 @@ public class ConfigurationBean implements Bean<Object> {
 	}
 
 	private List<Decorator<?>> _getDecorators(InjectionPoint ip) {
-		return _beanManagerImpl.resolveDecorators(Collections.singleton(ip.getType()), getQualifiers());
+		return _beanManager.resolveDecorators(
+			Collections.singleton(ip.getType()),
+			_injectionPoint.getQualifiers().toArray(new Annotation[0]));
 	}
 
 	private Object _getInjectedInstance() {
@@ -153,14 +153,8 @@ public class ConfigurationBean implements Bean<Object> {
 		return Conversions.convert(dictionary).to(_injectionPoint.getType());
 	}
 
-	private InjectionPoint _getInjectionPoint() {
-		CurrentInjectionPoint currentInjectionPoint = _beanManagerImpl.getServices().get(CurrentInjectionPoint.class);
-		InjectionPoint ip = currentInjectionPoint.peek();
-		return EmptyInjectionPoint.INSTANCE.equals(ip) ? null : ip;
-	}
-
 	private final Class<?> _beanClass;
-	private final BeanManagerImpl _beanManagerImpl;
+	private final BeanManager _beanManager;
 	private final ComponentModel _componentModel;
 	private final ConfigurationModel _configurationModel;
 	private final ContainerState _containerState;

@@ -16,15 +16,16 @@ package org.apache.aries.cdi.container.internal.component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -52,13 +53,10 @@ import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
 import org.apache.aries.cdi.container.internal.service.ServiceDeclaration;
 import org.apache.aries.cdi.container.internal.util.Sets;
 import org.apache.aries.cdi.container.internal.util.Types;
-import org.jboss.weld.bean.builtin.BeanManagerProxy;
-import org.jboss.weld.manager.BeanManagerImpl;
 import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.ReferencePolicy;
-import org.osgi.service.cdi.annotations.ReferenceScope;
 import org.osgi.service.cdi.annotations.ServiceEvent;
 import org.osgi.service.cdi.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -68,6 +66,10 @@ public class ComponentRuntimeExtension implements Extension {
 
 	public ComponentRuntimeExtension(ContainerState containerState) {
 		_containerState = containerState;
+	}
+
+	void afterBeanDiscovery(@Observes AfterBeanDiscovery abd) {
+		_beans.stream().forEach(bean -> abd.addBean(bean));
 	}
 
 	ConfigurationModel matchConfiguration(ComponentModel componentModel, ProcessInjectionPoint<?, ?> pip) {
@@ -316,12 +318,7 @@ public class ComponentRuntimeExtension implements Extension {
 				_containerState, componentModel, bean, beanManager.createCreationalContext(bean)));
 	}
 
-	/*
-	 *
-	 */
 	void processInjectionPoint(@Observes ProcessInjectionPoint<?, ?> pip, BeanManager beanManager) {
-		BeanManagerImpl beanManagerImpl = ((BeanManagerProxy)beanManager).delegate();
-
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 
 		Bean<?> bean = injectionPoint.getBean();
@@ -345,11 +342,10 @@ public class ComponentRuntimeExtension implements Extension {
 				_containerState,
 				matchingReference,
 				componentModel,
-				pip.getInjectionPoint().getAnnotated(),
-				pip.getInjectionPoint().getQualifiers(),
-				beanManagerImpl);
+				pip.getInjectionPoint(),
+				beanManager);
 
-			beanManagerImpl.addBean(referenceBean);
+			_beans.add(referenceBean);
 
 			return;
 		}
@@ -358,9 +354,13 @@ public class ComponentRuntimeExtension implements Extension {
 
 		if (matchingConfiguration != null) {
 			ConfigurationBean configurationBean = new ConfigurationBean(
-				_containerState, matchingConfiguration, componentModel, pip.getInjectionPoint(), beanManagerImpl);
+				_containerState,
+				matchingConfiguration,
+				componentModel,
+				pip.getInjectionPoint(),
+				beanManager);
 
-			beanManagerImpl.addBean(configurationBean);
+			_beans.add(configurationBean);
 		}
 	}
 
@@ -395,5 +395,6 @@ public class ComponentRuntimeExtension implements Extension {
 
 	private final AtomicInteger _mark = new AtomicInteger();
 	private final ContainerState _containerState;
+	private final List<Bean<?>> _beans = new CopyOnWriteArrayList<>();
 
 }

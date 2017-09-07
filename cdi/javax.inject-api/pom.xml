@@ -30,7 +30,6 @@
 	</parent>
 
 	<artifactId>org.apache.aries.javax.inject-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>Javax Inject API Bundle</name>
 	<description>Javax Inject API Bundle</description>
 
@@ -42,7 +41,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
 				<executions>
 					<execution>
 						<id>javadoc-jar</id>

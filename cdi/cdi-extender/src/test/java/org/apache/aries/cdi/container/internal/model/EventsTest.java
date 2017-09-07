@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
 
-import org.jboss.weld.manager.BeanManagerImpl;
 import org.apache.aries.cdi.container.internal.component.ComponentModel;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.literal.AnyLiteral;
@@ -35,9 +35,7 @@ import org.apache.aries.cdi.container.test.MockServiceReference;
 import org.apache.aries.cdi.container.test.beans.Foo;
 import org.apache.aries.cdi.container.test.beans.ObserverFoo;
 import org.junit.Test;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.CdiEvent;
 
 public class EventsTest {
@@ -57,7 +55,7 @@ public class EventsTest {
 
 			assertEquals(CdiEvent.Type.CREATED, containerState.lastState());
 
-			BeanManagerImpl beanManager = containerState.getBeanManager();
+			BeanManager beanManager = containerState.getBeanManager();
 			Set<Bean<?>> beans = beanManager.getBeans(ObserverFoo.class, AnyLiteral.INSTANCE);
 			@SuppressWarnings("rawtypes")
 			Bean bean = beanManager.resolve(beans);
