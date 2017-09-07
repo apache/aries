@@ -6,6 +6,6 @@ Provide-Capability: \
 	osgi.contract; \
 		osgi.contract=JavaCDI; \
 		uses:="javax.decorator,javax.enterprise.context,javax.enterprise.context.spi,javax.enterprise.event,javax.enterprise.inject,javax.enterprise.inject.spi,javax.enterprise.util"; \
-		version:List<Version>='1.0,1.1,1.2'
+		version:List<Version>='1.0,1.1,1.2,2.0'
 -contract: JavaEL, JavaInject, JavaInterceptor
 -includeresource: META-INF/=LICENSE, META-INF/=NOTICE

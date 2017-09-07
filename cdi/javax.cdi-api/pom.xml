@@ -30,7 +30,6 @@
 	</parent>
 
 	<artifactId>org.apache.aries.javax.cdi-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>Javax CDI API Bundle</name>
 	<description>Javax CDI API Bundle</description>
 
@@ -42,7 +41,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
 				<executions>
 					<execution>
 						<id>javadoc-jar</id>
@@ -67,7 +65,7 @@
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
-			<version>1.2</version>
+			<version>2.0</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>

@@ -2,6 +2,7 @@ package org.apache.aries.cdi.container.internal.model;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.inject.spi.Annotated;
@@ -43,6 +44,20 @@ public class ObserverMethodAnnotated implements Annotated {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends Annotation> Set<T> getAnnotations(Class<T> annotationType) {
+		Set<T> annotations = new HashSet<>();
+
+		for (Annotation annotation : _qualifiers) {
+			if (annotationType.isInstance(annotation)) {
+				annotations.add((T)annotation);
+			}
+		}
+		return annotations;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
 		for (Annotation annotation : _qualifiers) {
 			if (annotationType.isInstance(annotation)) {

@@ -37,7 +37,6 @@ import org.apache.aries.cdi.container.internal.model.Registrator;
 import org.apache.aries.cdi.container.internal.model.Tracker;
 import org.apache.aries.cdi.container.internal.reference.ReferenceCallback;
 import org.apache.aries.cdi.container.internal.service.ServiceDeclaration;
-import org.jboss.weld.manager.BeanManagerImpl;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.jboss.weld.serialization.spi.ProxyServices;
 import org.osgi.framework.Bundle;
@@ -219,8 +218,8 @@ public class ContainerState implements CdiContainer {
 
 		updateState(event);
 
-		if (_beanManagerImpl != null) {
-			_beanManagerImpl.fireEvent(event);
+		if (_beanManager != null) {
+			_beanManager.fireEvent(event);
 		}
 	}
 
@@ -237,8 +236,8 @@ public class ContainerState implements CdiContainer {
 	}
 
 	@Override
-	public BeanManagerImpl getBeanManager() {
-		return _beanManagerImpl;
+	public BeanManager getBeanManager() {
+		return _beanManager;
 	}
 
 	public String id() {
@@ -274,8 +273,8 @@ public class ContainerState implements CdiContainer {
 		return _serviceRegistrator;
 	}
 
-	public void setBeanManager(BeanManagerImpl beanManagerImpl) {
-		_beanManagerImpl = beanManagerImpl;
+	public void setBeanManager(BeanManager beanManager) {
+		_beanManager = beanManager;
 	}
 
 	public void setBeansModel(BeansModel beansModel) {
@@ -318,7 +317,7 @@ public class ContainerState implements CdiContainer {
 
 	private static final Logger _log = LoggerFactory.getLogger(ContainerState.class);
 
-	private volatile BeanManagerImpl _beanManagerImpl;
+	private volatile BeanManager _beanManager;
 	private BeansModel _beansModel;
 	private final Registrator<BeanManager> _bmRegistrator;
 	private final Optional<Bundle> _bundle;
