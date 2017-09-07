@@ -48,16 +48,29 @@
 		</license>
 	</licenses>
 
-	<modules>
-		<module>javax.el-api</module>
-		<module>javax.inject-api</module>
-		<module>javax.interceptor-api</module>
-		<module>javax.cdi-api</module>
-		<module>cdi-extender</module>
-		<module>cdi-extension-http</module>
-		<module>cdi-extension-jndi</module>
-		<module>cdi-itests</module>
-	</modules>
+	<profiles>
+		<profile>
+			<id>specs</id>
+			<modules>
+				<module>javax.el-api</module>
+				<module>javax.inject-api</module>
+				<module>javax.interceptor-api</module>
+				<module>javax.cdi-api</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>cdi-extender</module>
+				<module>cdi-extension-http</module>
+				<module>cdi-extension-jndi</module>
+				<module>cdi-itests</module>
+			</modules>
+		</profile>
+	</profiles>
 
 	<build>
 		<pluginManagement>
