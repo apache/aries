@@ -37,8 +37,9 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class HttpTestCase extends AbstractTestCase {
 
-	public void testSessionBean() throws Exception {
-		Bundle tb5Bundle = installBundle("tb6.jar");
+	public void testSessionScoped() throws Exception {
+		Bundle tb6Bundle = installBundle("tb6.jar");
+		Bundle tb2Bundle = installBundle("tb2.jar");
 
 		try {
 			String path = "/foo";
@@ -94,7 +95,71 @@ public class HttpTestCase extends AbstractTestCase {
 			}
 		}
 		finally {
-			tb5Bundle.uninstall();
+			tb6Bundle.uninstall();
+			tb2Bundle.uninstall();
+		}
+	}
+
+	public void testRequestScopedWithReference() throws Exception {
+		Bundle tb6Bundle = installBundle("tb6.jar");
+		Bundle tb2Bundle = installBundle("tb2.jar");
+
+		try {
+			String path = "/bar";
+
+			RequestInfoDTO requestInfoDTO = waitFor(path);
+
+			assertEquals("bar", requestInfoDTO.servletDTO.name);
+
+			HttpClientBuilder clientBuilder = hcbf.newBuilder();
+			CloseableHttpClient httpclient = clientBuilder.build();
+
+			CookieStore cookieStore = new BasicCookieStore();
+			HttpContext httpContext = new BasicHttpContext();
+			httpContext.setAttribute(HttpClientContext.COOKIE_STORE, cookieStore);
+
+			URI uri = new URIBuilder(getEndpoint()).
+				setPath(path).
+				setParameter("name", "test").
+				build();
+
+			HttpGet httpget = new HttpGet(uri);
+
+			try (CloseableHttpResponse response = httpclient.execute(httpget, httpContext)) {
+				HttpEntity entity = response.getEntity();
+
+				assertEquals("POJO-IMPLtest", read(entity));
+			}
+
+			for (int i = 0; i < 10; i++) {
+				uri = new URIBuilder(getEndpoint()).
+					setPath(path).
+					build();
+
+				httpget = new HttpGet(uri);
+
+				try (CloseableHttpResponse response = httpclient.execute(httpget, httpContext)) {
+					HttpEntity entity = response.getEntity();
+
+					assertEquals("", read(entity));
+				}
+			}
+
+			uri = new URIBuilder(getEndpoint()).
+				setPath(path).
+				build();
+
+			httpget = new HttpGet(uri);
+
+			try (CloseableHttpResponse response = httpclient.execute(httpget)) {
+				HttpEntity entity = response.getEntity();
+
+				assertEquals("", read(entity));
+			}
+		}
+		finally {
+			tb6Bundle.uninstall();
+			tb2Bundle.uninstall();
 		}
 	}
 
@@ -143,7 +208,7 @@ public class HttpTestCase extends AbstractTestCase {
 	}
 
 	private RequestInfoDTO waitFor(String path) throws InterruptedException {
-		return waitFor(path, 10);
+		return waitFor(path, 20);
 	}
 
 	private RequestInfoDTO waitFor(String path, int intervals) throws InterruptedException {
