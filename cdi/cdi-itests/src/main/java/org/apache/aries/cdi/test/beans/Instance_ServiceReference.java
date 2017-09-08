@@ -29,7 +29,7 @@ import org.osgi.service.cdi.annotations.ServiceScope;
 
 @Component(
 	service = {BeanService.class, Instance_ServiceReference.class},
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 @SuppressWarnings("rawtypes")
 public class Instance_ServiceReference implements BeanService<ServiceReference> {

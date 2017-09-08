@@ -142,7 +142,7 @@ import org.osgi.service.cdi.annotations.ServiceScope;
 		"p.String.set:Set<String>=black"
 	},
 	service = {ServiceWithProperties.class, BeanService.class},
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 @MoreProperties(glub_integer = 45, goo_string = "green")
 public class ServiceWithProperties implements BeanService<Pojo> {

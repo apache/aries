@@ -24,7 +24,7 @@ import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.ConfigurationPolicy;
 import org.osgi.service.cdi.annotations.ServiceScope;
 
-@Component(property = "bean=C", serviceScope = ServiceScope.SINGLETON)
+@Component(property = "bean=C", scope = ServiceScope.SINGLETON)
 public class ConfigurationBeanC implements BeanService<Callable<int[]>> {
 
 	@Override

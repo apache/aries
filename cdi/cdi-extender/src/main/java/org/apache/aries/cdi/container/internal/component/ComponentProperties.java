@@ -54,6 +54,9 @@ public class ComponentProperties {
 					annotation).sourceAs(annotation.annotationType()).to(_mapType);
 
 				for (Map.Entry<String, Object> entry : map.entrySet()) {
+					if ('.' == entry.getKey().charAt(0)) {
+						continue;
+					}
 					componentProperties.put(entry.getKey(), entry.getValue());
 				}
 
@@ -61,6 +64,9 @@ public class ComponentProperties {
 		);
 
 		for (Map.Entry<String, Object> entry : Maps.map(_componentModel.getProperties()).entrySet()) {
+			if ('.' == entry.getKey().charAt(0)) {
+				continue;
+			}
 			componentProperties.put(entry.getKey(), entry.getValue());
 		}
 
@@ -80,6 +86,9 @@ public class ComponentProperties {
 			for (Enumeration<String> enumeration = properties.keys(); enumeration.hasMoreElements();) {
 				String key = enumeration.nextElement();
 
+				if ('.' == key.charAt(0)) {
+					continue;
+				}
 				componentProperties.put(key, properties.get(key));
 			}
 		}
@@ -94,11 +103,17 @@ public class ComponentProperties {
 		return this;
 	}
 
+	public ComponentProperties hidePrivate(boolean hidePrivate) {
+		_hidePrivate = hidePrivate;
+		return this;
+	}
+
 	private static final TypeReference<Map<String, Object>> _mapType = new TypeReference<Map<String, Object>>(){};
 
 	private Bean<?> _bean;
-	private String[] _pid;
 	private ComponentModel _componentModel;
 	private ContainerState _containerState;
+	private String[] _pid;
+	private boolean _hidePrivate = false;
 
 }
