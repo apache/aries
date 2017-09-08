@@ -25,7 +25,6 @@
 	<parent>
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -85,17 +84,17 @@
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
 			<artifactId>org.apache.aries.javax.el-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
 			<artifactId>org.apache.aries.javax.inject-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
 			<artifactId>org.apache.aries.javax.interceptor-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
