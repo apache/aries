@@ -77,7 +77,10 @@ public class Phase_Configuration implements Phase {
 
 			openConfigurations();
 
-			callbacksInit();
+			if (callbacksResolved()) {
+				_nextPhase = new Phase_Reference(_containerState, _extensions);
+				_nextPhase.open();
+			}
 		}
 		finally {
 			_lock.unlock();
@@ -88,14 +91,6 @@ public class Phase_Configuration implements Phase {
 		return _containerState.configurationCallbacks().values().stream().flatMap(
 			entry -> entry.values().stream()
 		).findFirst().isPresent();
-	}
-
-	void callbacksInit() {
-		_containerState.configurationCallbacks().values().stream().flatMap(
-			valueMap -> valueMap.values().stream()
-		).forEach(
-			cc -> cc.init()
-		);
 	}
 
 	boolean callbacksResolved() {
@@ -126,30 +121,17 @@ public class Phase_Configuration implements Phase {
 				_lock.unlock();
 			}
 		},
-		onUpdate = cc -> {
+		onUpdateOrRemove = cc -> {
 			_lock.lock();
 			try {
 				_nextPhase.close();
-				_nextPhase = new Phase_Reference(_containerState, _extensions);
-				_nextPhase.open();
-			}
-			finally {
-				_lock.unlock();
-			}
-		},
-		onRemove = cc -> {
-			_lock.lock();
-			try {
-				if (_nextPhase != null) {
-					_nextPhase.close();
-				}
-				if (!callbacksResolved()) {
-					_nextPhase = null;
-					_containerState.fire(CdiEvent.Type.WAITING_FOR_CONFIGURATIONS);
-				}
-				else {
+				_nextPhase = null;
+				if (callbacksResolved()) {
 					_nextPhase = new Phase_Reference(_containerState, _extensions);
 					_nextPhase.open();
+				}
+				else {
+					_containerState.fire(CdiEvent.Type.WAITING_FOR_CONFIGURATIONS);
 				}
 			}
 			finally {
@@ -158,7 +140,7 @@ public class Phase_Configuration implements Phase {
 		};
 
 		_componentModels.stream().forEach(
-			componentModel -> openConfigurations(componentModel, onAdd, onUpdate, onRemove)
+			componentModel -> openConfigurations(componentModel, onAdd, onUpdateOrRemove, onUpdateOrRemove)
 		);
 	}
 
