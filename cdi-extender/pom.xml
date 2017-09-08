@@ -25,12 +25,10 @@
 	<parent>
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.extender</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>CDI Extender</name>
 	<description>CDI Extender</description>
 
@@ -52,8 +50,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
+			<artifactId>org.apache.aries.javax.annotation-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.aries.cdi</groupId>
 			<artifactId>org.apache.aries.javax.cdi-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
@@ -78,15 +81,14 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-annotation_1.2_spec</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-osgi-bundle</artifactId>
 			<version>3.0.1.Final</version>
 			<exclusions>
+				<exclusion>
+					<groupId>javax.annotation</groupId>
+					<artifactId>javax.annotation-api</artifactId>
+				</exclusion>
 				<exclusion>
 					<groupId>javax.enterprise</groupId>
 					<artifactId>cdi-api</artifactId>

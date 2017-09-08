@@ -49,6 +49,7 @@
 	</licenses>
 
 	<modules>
+		<module>javax.annotation-api</module>
 		<module>javax.el-api</module>
 		<module>javax.inject-api</module>
 		<module>javax.interceptor-api</module>
