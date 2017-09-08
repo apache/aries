@@ -25,6 +25,7 @@
 	<parent>
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
