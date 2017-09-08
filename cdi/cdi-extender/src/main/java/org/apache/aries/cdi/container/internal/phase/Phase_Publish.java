@@ -42,7 +42,9 @@ public class Phase_Publish implements Phase {
 		_containerState.serviceRegistrator().close();
 		_containerState.beanManagerRegistrator().close();
 		_containerState.serviceComponents().clear();
-		_cb.shutdown();
+		if (_cb != null) {
+			_cb.shutdown();
+		}
 	}
 
 	@Override
