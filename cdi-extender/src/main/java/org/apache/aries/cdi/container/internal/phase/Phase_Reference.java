@@ -79,11 +79,7 @@ public class Phase_Reference implements Phase {
 
 			_containerState.tracker().open();
 
-			if (referencesResolved()) {
-				if (_log.isDebugEnabled()) {
-					_log.debug("CDIe - There are no service dependencies. Moving on!");
-				}
-
+			if (callbacksResolved()) {
 				_nextPhase = new Phase_Publish(_containerState, _extensions);
 
 				_nextPhase.open();
@@ -96,7 +92,7 @@ public class Phase_Reference implements Phase {
 
 	void openReferences() {
 		Consumer<ReferenceCallback> onAdd = r -> {
-			if ((_nextPhase == null) && referencesResolved()) {
+			if ((_nextPhase == null) && callbacksResolved()) {
 				_nextPhase = new Phase_Publish(_containerState, _extensions);
 				_nextPhase.open();
 			}
@@ -105,7 +101,7 @@ public class Phase_Reference implements Phase {
 			// TODO we may need to handle static greedy references by hard reset of _nextPhase
 		},
 		onRemove = r -> {
-			if ((_nextPhase != null) && !referencesResolved()) {
+			if ((_nextPhase != null) && !callbacksResolved()) {
 				_nextPhase.close();
 				_nextPhase = null;
 				_containerState.fire(CdiEvent.Type.WAITING_FOR_SERVICES);
@@ -174,7 +170,7 @@ public class Phase_Reference implements Phase {
 		).findFirst().isPresent();
 	}
 
-	boolean referencesResolved() {
+	boolean callbacksResolved() {
 		return !_containerState.referenceCallbacks().values().stream().flatMap(
 			valueMap -> valueMap.values().stream()
 		).filter(
