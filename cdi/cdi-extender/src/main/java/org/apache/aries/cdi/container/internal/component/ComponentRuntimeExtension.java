@@ -295,9 +295,9 @@ public class ComponentRuntimeExtension implements Extension {
 
 		// Only Dependent CDI scope is allowed for components who's service scope is singleton, bundle, prototype.
 
-		if ((component.serviceScope() == ServiceScope.BUNDLE) ||
-			(component.serviceScope() == ServiceScope.PROTOTYPE) ||
-			(component.serviceScope() == ServiceScope.SINGLETON)) {
+		if ((component.scope() == ServiceScope.BUNDLE) ||
+			(component.scope() == ServiceScope.PROTOTYPE) ||
+			(component.scope() == ServiceScope.SINGLETON)) {
 
 			Class<?> scope = bean.getScope();
 

@@ -88,7 +88,7 @@ public class ComponentDiscoveryExtension implements Extension {
 			).name(
 				component.name()
 			).scope(
-				component.serviceScope()
+				component.scope()
 			);
 
 			for (String property : component.property()) {

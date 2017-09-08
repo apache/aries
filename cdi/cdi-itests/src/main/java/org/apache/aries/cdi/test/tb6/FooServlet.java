@@ -34,7 +34,7 @@ import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 		HttpWhiteboardConstants.HTTP_WHITEBOARD_SERVLET_PATTERN + "=/foo"
 	},
 	service = Servlet.class,
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 public class FooServlet extends HttpServlet {
 

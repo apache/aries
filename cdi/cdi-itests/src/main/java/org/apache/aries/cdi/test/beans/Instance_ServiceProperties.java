@@ -30,7 +30,7 @@ import org.osgi.service.cdi.annotations.ServiceScope;
 
 @Component(
 	service = {BeanService.class, Instance_ServiceProperties.class},
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 public class Instance_ServiceProperties implements BeanService<Map<String, Object>> {
 
