@@ -21,7 +21,7 @@ import org.osgi.service.cdi.annotations.ServiceScope;
 	name = "foo.annotated",
 	property = {"service.ranking:Integer=12"},
 	service = Foo.class,
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 public class FooAnnotated implements Foo, Cloneable {
 }

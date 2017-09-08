@@ -127,31 +127,11 @@ public class ReferenceBean implements Bean<Object> {
 	}
 
 	private Object _getInjectedInstance() {
-		Object instance = null;
-
 		Map<String, ReferenceCallback> map = _containerState.referenceCallbacks().get(_componentModel);
 
 		ReferenceCallback referenceCallback = map.get(_referenceModel.getName());
 
-		switch (_referenceModel.getCollectionType()) {
-			case PROPERTIES:
-				instance = referenceCallback.tracked().values().iterator().next();
-				break;
-			case REFERENCE:
-				instance = referenceCallback.tracked().values().iterator().next();
-				break;
-			case SERVICE:
-				instance = referenceCallback.tracked().values().iterator().next();
-				break;
-			case SERVICEOBJECTS:
-				instance = referenceCallback.tracked().values().iterator().next();
-				break;
-			case TUPLE:
-				instance = referenceCallback.tracked().values().iterator().next();
-				break;
-		}
-
-		return instance;
+		return referenceCallback.tracked().values().iterator().next();
 	}
 
 	private final BeanManager _beanManager;

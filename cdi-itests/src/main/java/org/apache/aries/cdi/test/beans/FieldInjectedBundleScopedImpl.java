@@ -30,7 +30,7 @@ import org.osgi.service.cdi.annotations.ServiceScope;
 
 @Component(
 	service = {FieldInjectedBundleScopedImpl.class, FieldInjectedReference.class},
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 public class FieldInjectedBundleScopedImpl implements FieldInjectedReference<BundleScoped> {
 

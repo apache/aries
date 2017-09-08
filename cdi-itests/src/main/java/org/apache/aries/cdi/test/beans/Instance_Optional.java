@@ -28,7 +28,7 @@ import org.osgi.service.cdi.annotations.ServiceScope;
 
 @Component(
 	service = {BeanService.class, Instance_Optional.class},
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 public class Instance_Optional implements BeanService<Callable<String>> {
 

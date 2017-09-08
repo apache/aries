@@ -37,7 +37,7 @@ public class MarkedInjectionPoint extends ForwardingInjectionPoint {
 	}
 
 	public InjectionPoint getDelegate() {
-		return _delegate;
+		return delegate();
 	}
 
 	public int getMark() {

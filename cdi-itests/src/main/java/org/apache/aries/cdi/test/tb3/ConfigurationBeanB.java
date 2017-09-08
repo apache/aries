@@ -27,7 +27,7 @@ import org.osgi.service.cdi.annotations.ServiceScope;
 
 @Component(
 	property = "bean=B",
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 public class ConfigurationBeanB implements BeanService<Callable<int[]>> {
 

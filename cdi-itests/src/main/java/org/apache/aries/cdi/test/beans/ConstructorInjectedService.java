@@ -23,7 +23,7 @@ import org.osgi.service.cdi.annotations.ServiceScope;
 
 @Component(
 	service = {ConstructorInjectedService.class, BeanService.class},
-	serviceScope = ServiceScope.SINGLETON
+	scope = ServiceScope.SINGLETON
 )
 public class ConstructorInjectedService implements BeanService<Pojo> {
 

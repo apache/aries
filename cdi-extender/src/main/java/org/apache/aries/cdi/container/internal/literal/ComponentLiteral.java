@@ -67,7 +67,7 @@ public class ComponentLiteral extends AnnotationLiteral<Component> implements Co
 	}
 
 	@Override
-	public ServiceScope serviceScope() {
+	public ServiceScope scope() {
 		return _scope;
 	}
 
