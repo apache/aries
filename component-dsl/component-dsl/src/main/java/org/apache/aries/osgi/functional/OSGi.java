@@ -98,6 +98,10 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new JustOSGiImpl<>(s);
 	}
 
+	static <S> OSGi<S> join(OSGi<OSGi<S>> program) {
+		return program.flatMap(x -> x);
+	}
+
 	static <S> OSGi<S> nothing() {
 		return new NothingOSGiImpl<>();
 	}
