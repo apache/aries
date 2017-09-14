@@ -26,34 +26,35 @@ import java.util.IdentityHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author Carlos Sierra Andrés
  */
 public class JustOSGiImpl<T> extends OSGiImpl<T> {
 
-	private T _t;
+	private Supplier<T> _t;
 
-	public JustOSGiImpl(T t) {
+	public JustOSGiImpl(Supplier<T> t) {
 		super(((bundleContext) -> {
 
 			Pipe<Tuple<T>, Tuple<T>> added = Pipe.create();
 
-			Consumer<Tuple<T>> source = added.getSource();
-
 			Pipe<Tuple<T>, Tuple<T>> removed = Pipe.create();
 
-			Consumer<Tuple<T>> removedSource = removed.getSource();
-
-			Tuple<T> tuple = Tuple.create(t);
+			Tuple<T> tuple = Tuple.create(t.get());
 
 			return new OSGiResultImpl<>(
 				added, removed,
-				() -> source.accept(tuple),
-				() -> removedSource.accept(tuple));
+				() -> added.getSource().accept(tuple),
+				() -> removed.getSource().accept(tuple));
 		}));
 
 		_t = t;
+	}
+
+	public JustOSGiImpl(T t) {
+		this(() -> t);
 	}
 
 	@Override
@@ -61,11 +62,7 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 		return new OSGiImpl<>(bundleContext -> {
 			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
 
-			Consumer<Tuple<S>> addedSource = added.getSource();
-
 			Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
-
-			Consumer<Tuple<S>> removedSource = removed.getSource();
 
 			AtomicReference<OSGiResult<? extends S>> atomicReference =
 				new AtomicReference<>(null);
@@ -75,7 +72,7 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 			return new OSGiResultImpl<>(
 				added, removed,
 				() -> {
-					OSGi<? extends S> next = fun.apply(_t);
+					OSGi<? extends S> next = fun.apply(_t.get());
 
 					atomicReference.set(
 						next.run(
@@ -85,7 +82,7 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 
 								tupleReference.set(tuple);
 
-								addedSource.accept(tuple);
+								added.getSource().accept(tuple);
 							}));
 
 				},
@@ -93,7 +90,7 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 					Tuple<S> s = tupleReference.get();
 
 					if (s != null) {
-						removedSource.accept(s);
+						removed.getSource().accept(s);
 					}
 
 					OSGiResult<? extends S> osGiResult = atomicReference.get();
