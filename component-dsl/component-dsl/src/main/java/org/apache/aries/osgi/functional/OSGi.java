@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * @author Carlos Sierra Andrés
@@ -90,6 +91,10 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	}
 
 	static <S> OSGi<S> just(S s) {
+		return new JustOSGiImpl<>(s);
+	}
+
+	static <S> OSGi<S> just(Supplier<S> s) {
 		return new JustOSGiImpl<>(s);
 	}
 
