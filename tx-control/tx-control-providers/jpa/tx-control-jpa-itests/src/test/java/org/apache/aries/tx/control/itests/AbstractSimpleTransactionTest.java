@@ -28,11 +28,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.apache.aries.tx.control.itests.entity.Message;
-import org.junit.Assume;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
+import org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory;
 
 public abstract class AbstractSimpleTransactionTest extends AbstractJPATransactionTest {
 
@@ -242,9 +242,8 @@ public abstract class AbstractSimpleTransactionTest extends AbstractJPATransacti
 	public void reassignTxControl() throws Exception {
 		
 		Optional<Bundle> bundle = stream(context.getBundles())
-				.filter(b -> b.getSymbolicName().equals("tx-control-provider-jpa-xa"))
+				.filter(b -> b.getSymbolicName().startsWith("tx-control-provider-jpa"))
 				.findAny();
-		Assume.assumeTrue(bundle.isPresent());
 		
 		bundle.get().stop();
 		bundle.get().start();
@@ -252,7 +251,12 @@ public abstract class AbstractSimpleTransactionTest extends AbstractJPATransacti
 		txControl = getService(TransactionControl.class, 
 				System.getProperty(TX_CONTROL_FILTER), 5000);
 		
-		em = getService(JPAEntityManagerProvider.class, 5000).getResource(txControl); 
+		if(isConfigured()) {
+			em = getService(JPAEntityManagerProvider.class, 5000).getResource(txControl); 
+		} else {
+			em = getService(JPAEntityManagerProviderFactory.class, 5000)
+					.getProviderFor(builder, jpaProps, providerProps).getResource(txControl);
+		}
 		
 		testTx();
 	}

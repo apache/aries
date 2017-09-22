@@ -23,15 +23,20 @@ import static javax.persistence.spi.PersistenceUnitTransactionType.RESOURCE_LOCA
 import static org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory.LOCAL_ENLISTMENT_ENABLED;
 import static org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory.XA_ENLISTMENT_ENABLED;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitTransactionType;
+import javax.sql.DataSource;
 
 import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.apache.aries.tx.control.jpa.common.impl.InternalJPAEntityManagerProviderFactory;
+import org.apache.aries.tx.control.jpa.common.impl.JPADataSourceHelper;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionException;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 public class JPAEntityManagerProviderFactoryImpl implements InternalJPAEntityManagerProviderFactory {
 
@@ -40,11 +45,38 @@ public class JPAEntityManagerProviderFactoryImpl implements InternalJPAEntityMan
 			Map<String, Object> resourceProviderProperties) {
 		checkEnlistment(resourceProviderProperties);
 		
-		EntityManagerFactory emf = emfb.createEntityManagerFactory(jpaProperties);
+		Object found = jpaProperties.get("javax.persistence.dataSource");
+		
+		if(found == null) {
+			found = jpaProperties.get("javax.persistence.nonJtaDataSource");
+		}
+		
+		if(found == null) {
+			throw new IllegalArgumentException("No datasource was found when checking the javax.persistence.dataSource and javax.persistence.nonJtaDataSource.");
+		}
+		
+		DataSource unpooled;
+		if(found instanceof DataSource) {
+			unpooled = (DataSource) found;
+		} else {
+			throw new IllegalArgumentException("The object found when checking the javax.persistence.dataSource and javax.persistence.nonJtaDataSource properties was not a DataSource.");
+		}
+		
+		Map<String, Object> jpaPropsToUse = new HashMap<>(jpaProperties);
+		DataSource toUse = JPADataSourceHelper.poolIfNecessary(resourceProviderProperties, unpooled);
+		jpaPropsToUse.put("javax.persistence.dataSource", toUse);
+		jpaPropsToUse.put("javax.persistence.nonJtaDataSource", toUse);
+		
+		EntityManagerFactory emf = emfb.createEntityManagerFactory(jpaPropsToUse);
 		
 		validateEMF(emf);
 		
-		return new JPAEntityManagerProviderImpl(emf, () -> emf.close());
+		return new JPAEntityManagerProviderImpl(emf, () -> {
+				emf.close();
+				if (toUse instanceof HikariDataSource) {
+					((HikariDataSource)toUse).close();
+				}
+			});
 	}
 
 	public AbstractJPAEntityManagerProvider getProviderFor(EntityManagerFactoryBuilder emfb, 

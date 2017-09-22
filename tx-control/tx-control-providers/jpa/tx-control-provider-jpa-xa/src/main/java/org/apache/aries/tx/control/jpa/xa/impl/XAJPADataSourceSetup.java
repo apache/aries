@@ -18,6 +18,8 @@
  */
 package org.apache.aries.tx.control.jpa.xa.impl;
 
+import static org.apache.aries.tx.control.jpa.common.impl.JPADataSourceHelper.poolIfNecessary;
+import static org.apache.aries.tx.control.jpa.common.impl.JPADataSourceHelper.toBoolean;
 import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.USE_DRIVER;
 
 import java.sql.SQLException;
@@ -39,7 +41,8 @@ import com.zaxxer.hikari.HikariDataSource;
 
 public class XAJPADataSourceSetup extends AbstractManagedJPADataSourceSetup {
 
-	private static final String JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE = "javax.persistence.nonJtaDataSource";
+	static final String JTA_DATA_SOURCE = "javax.persistence.jtaDataSource";
+	static final String NON_JTA_DATA_SOURCE = "javax.persistence.nonJtaDataSource";
 	
 	public XAJPADataSourceSetup(BundleContext context, String pid, Properties jdbcProperties,
 			Map<String, Object> baseJPAProperties, Map<String, Object> providerProperties) throws InvalidSyntaxException, ConfigurationException {
@@ -62,14 +65,15 @@ public class XAJPADataSourceSetup extends AbstractManagedJPADataSourceSetup {
 
 		DataSource toUse = poolIfNecessary(providerProperties, unpooled);
 		
-		jpaProperties.put("javax.persistence.jtaDataSource", toUse);
+		jpaProperties.put(JTA_DATA_SOURCE, toUse);
+		jpaProperties.put(NON_JTA_DATA_SOURCE, toUse);
 		
 		return jpaProperties;
 	}
 
 	@Override
 	protected void cleanupOnClose(Map<String, Object> jpaProperties) {
-		Object o = jpaProperties.get(JAVAX_PERSISTENCE_NON_JTA_DATA_SOURCE);
+		Object o = jpaProperties.get(NON_JTA_DATA_SOURCE);
 		if (o instanceof HikariDataSource) {
 			((HikariDataSource)o).close();
 		}
