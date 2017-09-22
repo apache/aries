@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.apache.aries.tx.control.itests.entity.Message;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.CoreOptions;
@@ -49,7 +50,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.transaction.control.ScopedWorkException;
 import org.osgi.service.transaction.control.TransactionException;
 import org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory;
-import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
+import org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
@@ -146,12 +147,13 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 				} catch (BundleException e) {
 				}
 			});
-			getService(JPAEntityManagerProvider.class, 5000);
+			getService(JPAEntityManagerProviderFactory.class, 5000);
 		}
 	}
 
 	@Test
 	public void testDeleteOfConfig() throws Exception {
+		Assume.assumeTrue("Not a config test", isConfigured());
 		
 		Message m = new Message();
 		m.message = "Hello World";
@@ -183,6 +185,8 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 	@Test
 	public void testUpdateOfConfig() throws Exception {
 		
+		Assume.assumeTrue("Not a config test", isConfigured());
+		
 		Message m = new Message();
 		m.message = "Hello World";
 		txControl.required(() -> {em.persist(m); return null;});
@@ -209,34 +213,34 @@ public class JPALifecycleTest extends AbstractJPATransactionTest {
 			assertEquals("There was a problem getting hold of a database connection", swe.getCause().getMessage());
 		}
 	}
-//
-//	@Test
-//	public void testReleaseOfFactoryService() {
-//		Assume.assumeFalse("Not a factory test", isConfigured());
-//
-//		txControl.required(
-//				() -> connection.createStatement().execute("Insert into TEST_TABLE values ( 'Hello World!' )"));
-//
-//		assertEquals("Hello World!", txControl.notSupported(() -> {
-//			ResultSet rs = connection.createStatement().executeQuery("Select * from TEST_TABLE");
-//			rs.next();
-//			return rs.getString(1);
-//		}));
-//
-//		trackers.stream().filter(t -> t.getService() instanceof JDBCConnectionProviderFactory).findFirst().get()
-//				.close();
-//		;
-//
-//		try {
-//			assertEquals("Hello World!", txControl.notSupported(() -> {
-//				ResultSet rs = connection.createStatement().executeQuery("Select * from TEST_TABLE");
-//				rs.next();
-//				return rs.getString(1);
-//			}));
-//			fail("Should not be accessible");
-//		} catch (ScopedWorkException swe) {
-//			assertTrue(swe.getCause().toString(), swe.getCause() instanceof TransactionException);
-//			assertEquals("There was a problem getting hold of a database connection", swe.getCause().getMessage());
-//		}
-//	}
+
+	@Test
+	public void testReleaseOfFactoryService() {
+		Assume.assumeFalse("Not a factory test", isConfigured());
+
+		Message m = new Message();
+		m.message = "Hello World!";
+		
+		txControl.required(
+				() -> { em.persist(m); return null;});
+
+		assertEquals("Hello World!", txControl.notSupported(() -> em.find(Message.class, m.id).message));
+
+		JPAEntityManagerProviderFactory factory = trackers.stream()
+				.map(t -> t.getService())
+				.filter(s -> s instanceof JPAEntityManagerProviderFactory)
+				.map(s -> (JPAEntityManagerProviderFactory) s)
+				.findFirst()
+				.get();
+
+		factory.releaseProvider(provider);
+
+		try {
+			assertEquals("Hello World!", txControl.notSupported(() -> em.find(Message.class, m.id).message));
+			fail("Should not be accessible");
+		} catch (ScopedWorkException swe) {
+			assertTrue(swe.getCause().toString(), swe.getCause() instanceof TransactionException);
+			assertEquals("There was a problem getting hold of a database connection", swe.getCause().getMessage());
+		}
+	}
 }

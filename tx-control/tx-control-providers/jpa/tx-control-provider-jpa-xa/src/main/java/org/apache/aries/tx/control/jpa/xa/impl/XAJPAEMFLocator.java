@@ -18,36 +18,19 @@
  */
 package org.apache.aries.tx.control.jpa.xa.impl;
 
-import static org.osgi.service.jpa.EntityManagerFactoryBuilder.JPA_UNIT_PROVIDER;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.persistence.spi.PersistenceProvider;
 
 import org.apache.aries.tx.control.jpa.common.impl.AbstractJPAEntityManagerProvider;
 import org.apache.aries.tx.control.jpa.common.impl.AbstractManagedJPAEMFLocator;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.BundleWire;
-import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
-import org.osgi.service.transaction.control.TransactionControl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(XAJPAEMFLocator.class);
-	
 	public XAJPAEMFLocator(BundleContext context, String pid, Map<String, Object> jpaProperties,
 			Map<String, Object> providerProperties, Runnable onClose) throws InvalidSyntaxException, ConfigurationException {
 		super(context, pid, jpaProperties, providerProperties, onClose);
@@ -57,183 +40,13 @@ public class XAJPAEMFLocator extends AbstractManagedJPAEMFLocator {
 	protected AbstractJPAEntityManagerProvider getResourceProvider(BundleContext context,
 			EntityManagerFactoryBuilder service, ServiceReference<EntityManagerFactoryBuilder> reference,
 			Map<String, Object> jpaProperties, Map<String, Object> providerProperties, Runnable onClose) {
+		
+		Map<String, Object> jpaProps = new HashMap<String, Object>(jpaProperties);
+		Map<String, Object> providerProps = new HashMap<String, Object>(providerProperties);
+
 		return new DelayedJPAEntityManagerProvider(t -> {
-			
-			Map<String, Object> jpaProps = new HashMap<String, Object>(jpaProperties);
-			Map<String, Object> providerProps = new HashMap<String, Object>(providerProperties);
-			
-			setupTransactionManager(context, jpaProps, providerProps, t, reference);
-			
-			return new JPAEntityManagerProviderFactoryImpl().getProviderFor(service,
+			return new JPAEntityManagerProviderFactoryImpl(context).getProviderFor(service,
 					jpaProps, providerProps, t, onClose);
 		});
-	}
-
-	private void setupTransactionManager(BundleContext context, Map<String, Object> props, 
-			Map<String, Object> providerProps, ThreadLocal<TransactionControl> t, ServiceReference<EntityManagerFactoryBuilder> reference) {
-		String provider = (String) reference.getProperty(JPA_UNIT_PROVIDER);
-		
-		ServiceReference<PersistenceProvider> providerRef = getPersistenceProvider(provider, context);
-		
-		if(providerRef == null) {
-			LOGGER.warn("Unable to find a Persistence Provider for the provider named {}, so no XA plugin can be registered. XA transactions are unlikely to function properly.", provider);
-			return;
-		}
-
-		Bundle providerBundle = providerRef.getBundle();
-		Bundle txControlProviderBundle = context.getBundle();
-		
-		try {
-			if("org.hibernate.jpa.HibernatePersistenceProvider".equals(provider)) {
-				
-				String pluginClass;
-				
-				Bundle toUse = findSource(providerBundle, "org.hibernate.resource.transaction.spi.TransactionCoordinatorBuilder");
-				
-				if(toUse != null) {
-					
-					try {
-						toUse.loadClass("org.hibernate.resource.transaction.spi.DdlTransactionIsolator");
-						LOGGER.debug("Detected Hibernate 5.2.2 or above when attempting to install the XA plugin.");
-						pluginClass = "org.apache.aries.tx.control.jpa.xa.plugin.hibernate.impl.Hibernate522TxControlPlatform";
-					} catch (Exception e) {
-						LOGGER.debug("Detected Hibernate 5.2.0 or 5.2.1 when attempting to install the XA plugin.");
-						pluginClass = "org.apache.aries.tx.control.jpa.xa.plugin.hibernate.impl.Hibernate520TxControlPlatform";
-					}
-				} else {
-					toUse = findSource(providerBundle, "org.hibernate.resource.transaction.TransactionCoordinatorBuilder");
-					if(toUse != null) {
-						LOGGER.debug("Detected Hibernate 5.0.x or 5.1.x or above when attempting to install the XA plugin.");
-						pluginClass = "org.apache.aries.tx.control.jpa.xa.plugin.hibernate.impl.HibernateTxControlPlatform";
-					} else {
-						LOGGER.warn("Detected a Hibernate provider, but we were unable to load an appropriate XA plugin");
-						return;
-					}
-				}
-				
-				ClassLoader pluginLoader = getPluginLoader(toUse, txControlProviderBundle);
-				
-				Class<?> pluginClazz = pluginLoader.loadClass(pluginClass);
-				Object plugin = pluginClazz.getConstructor(ThreadLocal.class)
-					.newInstance(t);
-				
-				props.put("hibernate.transaction.coordinator_class", plugin);
-				
-			} else if("org.apache.openjpa.persistence.PersistenceProviderImpl".equals(provider)) {
-					
-				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
-					
-				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.plugin.openjpa.impl.OpenJPATxControlPlatform");
-				Object plugin = pluginClazz.getConstructor(ThreadLocal.class)
-						.newInstance(t);
-					
-				props.put("openjpa.ManagedRuntime", plugin);
-					
-			} else if("org.eclipse.persistence.jpa.PersistenceProvider".equals(provider)) {
-				
-				ClassLoader pluginLoader = getPluginLoader(providerBundle, txControlProviderBundle);
-				
-				Class<?> pluginClazz = pluginLoader.loadClass("org.apache.aries.tx.control.jpa.xa.plugin.eclipse.impl.EclipseTxControlPlatform");
-				
-				pluginClazz.getMethod("setTransactionControl", ThreadLocal.class)
-						.invoke(null, t);
-				
-				props.put("eclipselink.target-server", pluginClazz.getName());
-				props.put("org.apache.aries.jpa.eclipselink.plugin.types", pluginClazz);
-				// This is needed to ensure that sequences can be generated in nested
-				// transactions without blowing up.
-				if(!props.containsKey("eclipselink.jdbc.sequence-connection-pool")) {
-					props.put("eclipselink.jdbc.sequence-connection-pool", "true");
-				}
-				
-			} else {
-				LOGGER.warn("The persistence provider {} is not recognised, so no adapter plugin can be registered with it. XA transactions are unlikely to work properly", provider);
-				return;
-			} 
-		} catch (Exception e) {
-			//TODO log a warning and give up
-			e.printStackTrace();
-		}
-	}
-
-	private Bundle findSource(Bundle providerBundle, String toFind) {
-		try{
-			providerBundle.loadClass(toFind);
-			return providerBundle;
-		} catch (Exception e) {
-			BundleWiring wiring = providerBundle.adapt(BundleWiring.class);
-			return wiring.getRequiredWires("osgi.wiring.package").stream()
-						.filter(bw -> "org.hibernate".equals(bw.getCapability().getAttributes().get("osgi.wiring.package")))
-						.map(BundleWire::getProviderWiring)
-						.map(BundleWiring::getBundle)
-						.findFirst()
-						.filter(b -> {
-								try {
-									b.loadClass(toFind);
-									return true;
-								} catch (Exception e2) {
-									return false;
-								}
-							}).orElse(null);
-		}
-	}
-
-	private ClassLoader getPluginLoader(Bundle providerBundle, Bundle txControlProviderBundle) {
-		return new ClassLoader() {
-
-			ConcurrentMap<String, Class<?>> loaded = new ConcurrentHashMap<>();
-			
-			@Override
-			public Class<?> loadClass(String name) throws ClassNotFoundException {
-				if(name.startsWith("org.apache.aries.tx.control.jpa.xa.plugin")) {
-					
-					Class<?> c = loaded.get(name);
-					
-					if(c != null) {
-						return c;
-					}
-					
-					String resource = name.replace('.', '/') + ".class";
-					
-					try (InputStream is = txControlProviderBundle.getResource(resource).openStream()) {
-						ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
-						byte[] b = new byte[4096];
-						int read;
-						while ((read = is.read(b)) != -1) {
-							baos.write(b, 0, read);
-						}
-						byte[] clazzBytes = baos.toByteArray();
-						c = defineClass(name, clazzBytes, 0, clazzBytes.length, 
-								XAJPAEMFLocator.class.getProtectionDomain());
-						loaded.putIfAbsent(name, c);
-						return c;
-					} catch (IOException e) {
-						throw new ClassNotFoundException("Unable to load class " + name, e);
-					}
-				}
-				
-				if(name.startsWith("org.apache.aries.tx.control") ||
-				   name.startsWith("org.osgi.service.transaction.control") ||
-						name.startsWith("org.slf4j")) {
-					return txControlProviderBundle.loadClass(name);
-				}
-				return providerBundle.loadClass(name);
-			}
-		};
-	}
-
-	private ServiceReference<PersistenceProvider> getPersistenceProvider(String provider, BundleContext context) {
-		if(provider == null) {
-			return null;
-		}
-		try {
-			return context.getServiceReferences(PersistenceProvider.class, 
-							"(javax.persistence.provider=" + provider + ")").stream()
-								.findFirst()
-								.orElse(null);
-		} catch (InvalidSyntaxException e) {
-			//TODO log a warning
-			return null;
-		} 
 	}
 }

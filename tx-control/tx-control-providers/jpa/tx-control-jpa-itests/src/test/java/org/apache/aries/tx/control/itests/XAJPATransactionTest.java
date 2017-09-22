@@ -18,8 +18,11 @@
  */
 package org.apache.aries.tx.control.itests;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -32,15 +35,20 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -71,6 +79,7 @@ import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.TransactionRolledBackException;
 import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
+import org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory;
 import org.osgi.util.promise.Deferred;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -82,6 +91,7 @@ public abstract class XAJPATransactionTest {
 	static final String XA_TEST_UNIT_2 = "xa-test-unit-2";
 
 	protected static final String ARIES_EMF_BUILDER_TARGET_FILTER = "aries.emf.builder.target.filter";
+	protected static final String CONFIGURED_PROVIDER_PROPERTY = "org.apache.aries.tx.control.itests.configured";
 	
 	@Inject
 	BundleContext context;
@@ -109,8 +119,14 @@ public abstract class XAJPATransactionTest {
 		String jdbcUrl1 = "jdbc:h2:tcp://127.0.0.1:" + server1.getPort() + "/" + getRemoteDBPath("db1");
 		String jdbcUrl2 = "jdbc:h2:tcp://127.0.0.1:" + server2.getPort() + "/" + getRemoteDBPath("db2");
 		
-		em1 = configuredEntityManager(jdbcUrl1, XA_TEST_UNIT_1);
-		em2 = configuredEntityManager(jdbcUrl2, XA_TEST_UNIT_2);
+		em1 = isConfigured() ? configuredEntityManager(jdbcUrl1, XA_TEST_UNIT_1) :
+			factoryEntityManager(jdbcUrl1, XA_TEST_UNIT_1);
+		em2 = isConfigured() ? configuredEntityManager(jdbcUrl2, XA_TEST_UNIT_2) :
+			factoryEntityManager(jdbcUrl2, XA_TEST_UNIT_2);
+	}
+	
+	public boolean isConfigured() {
+		return Boolean.getBoolean(CONFIGURED_PROVIDER_PROPERTY);
 	}
 
 	private String getRemoteDBPath(String dbName) {
@@ -146,6 +162,32 @@ public abstract class XAJPATransactionTest {
 		return getService(JPAEntityManagerProvider.class,
 				"(" + EntityManagerFactoryBuilder.JPA_UNIT_NAME + "=" + unit + ")",
 				5000).getResource(txControl);
+	}
+
+	private EntityManager factoryEntityManager(String jdbcUrl, String unit) throws Exception {
+		
+		JPAEntityManagerProviderFactory resourceProviderFactory = getService(JPAEntityManagerProviderFactory.class, 5000);
+		
+		DataSourceFactory dsf = getService(DataSourceFactory.class, 5000);
+		
+		Properties props = new Properties();
+		props.put(DataSourceFactory.JDBC_URL, jdbcUrl);
+		XADataSource dataSource = dsf.createXADataSource(props);
+		
+		Map<String, Object> providerProps = new HashMap<>();
+		Dictionary<String,Object> baseProperties = getBaseProperties();
+		for (String string : Collections.list(baseProperties.keys())) {
+			providerProps.put(string, baseProperties.get(string));
+		}
+
+		providerProps.put("javax.persistence.dataSource", dataSource);
+		
+		
+		EntityManagerFactoryBuilder builder = getService(EntityManagerFactoryBuilder.class, 
+				"(osgi.unit.name=" + unit + ")",5000);
+		
+		return resourceProviderFactory.getProviderFor(builder, providerProps, providerProps)
+				.getResource(txControl);
 	}
 
 	private <T> T getService(Class<T> clazz, long timeout) {
@@ -197,6 +239,7 @@ public abstract class XAJPATransactionTest {
 		}
 
 		trackers.stream().forEach(ServiceTracker::close);
+		trackers.clear();
 		
 		em1 = null;
 		em2 = null;
@@ -234,6 +277,21 @@ public abstract class XAJPATransactionTest {
 	
 	@Configuration
 	public Option[] xaTxConfiguration() {
+		return options(
+				composite(xaTx()),
+				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value(TRUE.toString())
+			);
+	}
+	
+	@Configuration
+	public Option[] xaTxFactory() {
+		return options(
+				composite(xaTx()),
+				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value(FALSE.toString())
+				);
+	}
+	
+	private Option[] xaTx() {
 		String localRepo = System.getProperty("maven.repo.local");
 		if (localRepo == null) {
 			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");

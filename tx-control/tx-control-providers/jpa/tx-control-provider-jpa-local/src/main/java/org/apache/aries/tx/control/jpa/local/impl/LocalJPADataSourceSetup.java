@@ -18,6 +18,8 @@
  */
 package org.apache.aries.tx.control.jpa.local.impl;
 
+import static org.apache.aries.tx.control.jpa.common.impl.JPADataSourceHelper.poolIfNecessary;
+import static org.apache.aries.tx.control.jpa.common.impl.JPADataSourceHelper.toBoolean;
 import static org.osgi.service.jdbc.DataSourceFactory.JDBC_URL;
 import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.USE_DRIVER;
 

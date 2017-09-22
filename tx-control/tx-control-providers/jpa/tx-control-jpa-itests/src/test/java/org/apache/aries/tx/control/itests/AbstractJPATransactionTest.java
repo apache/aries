@@ -27,14 +27,20 @@ import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.sql.CommonDataSource;
 
 import org.h2.tools.Server;
 import org.junit.After;
@@ -58,6 +64,7 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import org.osgi.service.transaction.control.TransactionControl;
 import org.osgi.service.transaction.control.jpa.JPAEntityManagerProvider;
+import org.osgi.service.transaction.control.jpa.JPAEntityManagerProviderFactory;
 import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(PaxExam.class)
@@ -67,18 +74,24 @@ public abstract class AbstractJPATransactionTest {
 	protected static final String TX_CONTROL_FILTER = "tx.control.filter";
 	protected static final String ARIES_EMF_BUILDER_TARGET_FILTER = "aries.emf.builder.target.filter";
 	protected static final String IS_XA = "aries.test.is.xa";
+	protected static final String CONFIGURED_PROVIDER_PROPERTY = "org.apache.aries.tx.control.itests.configured";
 
 	@Inject
 	BundleContext context;
 	
 	protected TransactionControl txControl;
 
+	protected JPAEntityManagerProvider provider;
 	protected EntityManager em;
+	
+	// Set when using programmatic creation
+	protected EntityManagerFactoryBuilder builder;
+	protected Map<String, Object> jpaProps;
+	protected Map<String, Object> providerProps;
 
 	private Server server;
 	
-	private final List<ServiceTracker<?,?>> trackers = new ArrayList<>();
-
+	protected final List<ServiceTracker<?,?>> trackers = new ArrayList<>();
 	@Before
 	public void setUp() throws Exception {
 		
@@ -89,9 +102,15 @@ public abstract class AbstractJPATransactionTest {
 		
 		String jdbcUrl = "jdbc:h2:tcp://127.0.0.1:" + server.getPort() + "/" + getRemoteDBPath();
 		
-		em = configuredEntityManager(jdbcUrl);
+		boolean configuredProvider = isConfigured();
+		
+		em = configuredProvider ? configuredEntityManager(jdbcUrl) : programaticEntityManager(jdbcUrl);
 	}
 
+	public boolean isConfigured() {
+		return Boolean.getBoolean(CONFIGURED_PROVIDER_PROPERTY);
+	}
+	
 	protected <T> T getService(Class<T> clazz, long timeout) {
 		try {
 			return getService(clazz, null, timeout);
@@ -161,7 +180,34 @@ public abstract class AbstractJPATransactionTest {
 		
 		return getService(JPAEntityManagerProvider.class, 5000).getResource(txControl);
 	}
+	
+	private EntityManager programaticEntityManager(String jdbcURL) throws SQLException {
+		
+		JPAEntityManagerProviderFactory resourceProviderFactory = getService(JPAEntityManagerProviderFactory.class, 5000);
+		
+		DataSourceFactory dsf = getService(DataSourceFactory.class, 5000);
+		
+		Properties props = new Properties();
+		props.put(DataSourceFactory.JDBC_URL, jdbcURL);
+		CommonDataSource dataSource = getBoolean(IS_XA) ? dsf.createXADataSource(props) :
+			dsf.createDataSource(props);
+		
+		providerProps = new HashMap<>();
+		Dictionary<String,Object> baseProperties = getBaseProperties();
+		for (String string : Collections.list(baseProperties.keys())) {
+			providerProps.put(string, baseProperties.get(string));
+		}
 
+		jpaProps = new HashMap<>(providerProps);
+		jpaProps.put("javax.persistence.dataSource", dataSource);
+		
+		
+		builder = getService(EntityManagerFactoryBuilder.class, 5000);
+		
+		provider = resourceProviderFactory.getProviderFor(builder, jpaProps, providerProps);
+		return provider.getResource(txControl);
+	}
+	
 	protected Dictionary<String, Object> getBaseProperties() {
 		return new Hashtable<>();
 	}
@@ -176,8 +222,14 @@ public abstract class AbstractJPATransactionTest {
 		}
 
 		trackers.stream().forEach(ServiceTracker::close);
+		trackers.clear();
 		
+		txControl = null;
+		provider = null;
 		em = null;
+		builder = null;
+		jpaProps = null;
+		providerProps = null;
 	}
 
 	private void clearConfiguration() {
@@ -213,6 +265,51 @@ public abstract class AbstractJPATransactionTest {
 	}
 	
 	@Configuration
+	public Option[] localTxFactory() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				localTxControlService(),
+				localJpaResourceProviderWithH2(),
+				jpaProvider(),
+				ariesJPA(),
+				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+				);
+	}
+	
+	@Configuration
+	public Option[] xaTxFactory() {
+		String localRepo = System.getProperty("maven.repo.local");
+		if (localRepo == null) {
+			localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
+		}
+		
+		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+				when(localRepo != null)
+				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				systemProperty(IS_XA).value(Boolean.TRUE.toString()),
+				xaTxControlService(),
+				xaJpaResourceProviderWithH2(),
+				jpaProvider(),
+				ariesJPA(),
+				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject()
+				
+//				,CoreOptions.vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
+				);
+	}
+	
+	@Configuration
 	public Option[] localTxConfiguration() {
 		String localRepo = System.getProperty("maven.repo.local");
 		if (localRepo == null) {
@@ -222,6 +319,7 @@ public abstract class AbstractJPATransactionTest {
 		return options(junitBundles(), systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
+				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value(Boolean.TRUE.toString()),
 				localTxControlService(),
 				localJpaResourceProviderWithH2(),
 				jpaProvider(),
@@ -245,6 +343,7 @@ public abstract class AbstractJPATransactionTest {
 				when(localRepo != null)
 				.useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
 				systemProperty(IS_XA).value(Boolean.TRUE.toString()),
+				systemProperty(CONFIGURED_PROVIDER_PROPERTY).value(Boolean.TRUE.toString()),
 				xaTxControlService(),
 				xaJpaResourceProviderWithH2(),
 				jpaProvider(),

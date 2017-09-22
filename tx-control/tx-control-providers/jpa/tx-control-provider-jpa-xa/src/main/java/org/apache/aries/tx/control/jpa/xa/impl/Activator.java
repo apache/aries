@@ -36,7 +36,7 @@ public class Activator extends JPAResourceActivator {
 	protected ResourceProviderFactoryServiceFactory<AbstractJPAEntityManagerProvider, ResourceTrackingJPAEntityManagerProviderFactory> getServiceFactory(
 			BundleContext context) {
 		
-		InternalJPAEntityManagerProviderFactory ijempf = new JPAEntityManagerProviderFactoryImpl();
+		InternalJPAEntityManagerProviderFactory ijempf = new JPAEntityManagerProviderFactoryImpl(context);
 		return new ResourceProviderFactoryServiceFactory<AbstractJPAEntityManagerProvider, ResourceTrackingJPAEntityManagerProviderFactory>() {
 			@Override
 			protected TrackingResourceProviderFactory<AbstractJPAEntityManagerProvider> getTrackingResourceManagerProviderFactory() {

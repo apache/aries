@@ -19,26 +19,14 @@
 package org.apache.aries.tx.control.jpa.common.impl;
 
 import static java.util.Collections.unmodifiableMap;
-import static java.util.Optional.ofNullable;
-import static java.util.concurrent.TimeUnit.HOURS;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.osgi.framework.Constants.OBJECTCLASS;
 import static org.osgi.service.jdbc.DataSourceFactory.OSGI_JDBC_DRIVER_CLASS;
-import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_LIFETIME;
-import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_POOLING_ENABLED;
-import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.CONNECTION_TIMEOUT;
-import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.IDLE_TIMEOUT;
-import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.MAX_CONNECTIONS;
-import static org.osgi.service.transaction.control.jdbc.JDBCConnectionProviderFactory.MIN_CONNECTIONS;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-
-import javax.sql.DataSource;
 
 import org.apache.aries.tx.control.resource.common.impl.LifecycleAware;
 import org.osgi.framework.BundleContext;
@@ -51,16 +39,10 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
 public abstract class AbstractManagedJPADataSourceSetup implements LifecycleAware,
 		ServiceTrackerCustomizer<DataSourceFactory, AbstractManagedJPAEMFLocator> {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractManagedJPADataSourceSetup.class);
-	
-	// TODO - where should this go?
-	private static final String CONNECTION_TEST_QUERY = "aries.connection.test.query";
 	
 	private final BundleContext context;
 	private final String pid;
@@ -163,75 +145,4 @@ public abstract class AbstractManagedJPADataSourceSetup implements LifecycleAwar
 			}
 		}
 	}
-	
-	protected DataSource poolIfNecessary(Map<String, Object> resourceProviderProperties, DataSource unpooled) {
-		DataSource toUse;
-
-		if (toBoolean(resourceProviderProperties, CONNECTION_POOLING_ENABLED, true)) {
-			HikariConfig hcfg = new HikariConfig();
-			hcfg.setDataSource(unpooled);
-
-			// Sizes
-			hcfg.setMaximumPoolSize(toInt(resourceProviderProperties, MAX_CONNECTIONS, 10));
-			hcfg.setMinimumIdle(toInt(resourceProviderProperties, MIN_CONNECTIONS, 10));
-
-			// Timeouts
-			hcfg.setConnectionTimeout(toLong(resourceProviderProperties, CONNECTION_TIMEOUT, SECONDS.toMillis(30)));
-			hcfg.setIdleTimeout(toLong(resourceProviderProperties, IDLE_TIMEOUT, TimeUnit.MINUTES.toMillis(3)));
-			hcfg.setMaxLifetime(toLong(resourceProviderProperties, CONNECTION_LIFETIME, HOURS.toMillis(3)));
-	
-			hcfg.setConnectionTestQuery((String)resourceProviderProperties.get(CONNECTION_TEST_QUERY));
-			
-			toUse = new HikariDataSource(hcfg);
-
-		} else {
-			toUse = unpooled;
-		}
-		return toUse;
-	}
-
-	protected boolean toBoolean(Map<String, Object> props, String key, boolean defaultValue) {
-		Object o =  ofNullable(props)
-			.map(m -> m.get(key))
-			.orElse(defaultValue);
-		
-		if (o instanceof Boolean) {
-			return ((Boolean) o).booleanValue();
-		} else if(o instanceof String) {
-			return Boolean.parseBoolean((String) o);
-		} else {
-			throw new IllegalArgumentException("The property " + key + " cannot be converted to a boolean");
-		}
-	}
-
-	protected int toInt(Map<String, Object> props, String key, int defaultValue) {
-		
-		Object o =  ofNullable(props)
-				.map(m -> m.get(key))
-				.orElse(defaultValue);
-		
-		if (o instanceof Number) {
-			return ((Number) o).intValue();
-		} else if(o instanceof String) {
-			return Integer.parseInt((String) o);
-		} else {
-			throw new IllegalArgumentException("The property " + key + " cannot be converted to an int");
-		}
-	}
-
-	private long toLong(Map<String, Object> props, String key, long defaultValue) {
-		
-		Object o =  ofNullable(props)
-				.map(m -> m.get(key))
-				.orElse(defaultValue);
-		
-		if (o instanceof Number) {
-			return ((Number) o).longValue();
-		} else if(o instanceof String) {
-			return Long.parseLong((String) o);
-		} else {
-			throw new IllegalArgumentException("The property " + key + " cannot be converted to a long");
-		}
-	}
-
 }
