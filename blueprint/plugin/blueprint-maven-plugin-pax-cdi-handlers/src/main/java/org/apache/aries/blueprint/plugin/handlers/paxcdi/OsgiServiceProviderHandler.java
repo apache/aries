@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.pax;
+package org.apache.aries.blueprint.plugin.handlers.paxcdi;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
