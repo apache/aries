@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.handlers.pax.OsgiServiceProviderHandler
 org.apache.aries.blueprint.plugin.handlers.javax.JavaxTransactionFactory
 org.apache.aries.blueprint.plugin.handlers.javax.CdiTransactionFactory
 org.apache.aries.blueprint.plugin.handlers.config.ConfigAnnotationHandler
