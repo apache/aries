@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.bean;
+package org.apache.aries.blueprint.plugin.handlers.blueprint.bean;
 
 import org.apache.aries.blueprint.annotation.bean.Activation;
 import org.apache.aries.blueprint.annotation.bean.Bean;

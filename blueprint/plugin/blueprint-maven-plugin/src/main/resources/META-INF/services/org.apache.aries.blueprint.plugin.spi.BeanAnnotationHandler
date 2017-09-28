@@ -17,6 +17,6 @@
 
 org.apache.aries.blueprint.plugin.handlers.javax.JavaxTransactionFactory
 org.apache.aries.blueprint.plugin.handlers.javax.CdiTransactionFactory
-org.apache.aries.blueprint.plugin.handlers.config.ConfigAnnotationHandler
-org.apache.aries.blueprint.plugin.handlers.referencelistener.ReferenceListenerHandler
-org.apache.aries.blueprint.plugin.handlers.bean.BeanHandler
+org.apache.aries.blueprint.plugin.handlers.blueprint.config.ConfigAnnotationHandler
+org.apache.aries.blueprint.plugin.handlers.blueprint.referencelistener.ReferenceListenerHandler
+org.apache.aries.blueprint.plugin.handlers.blueprint.bean.BeanHandler

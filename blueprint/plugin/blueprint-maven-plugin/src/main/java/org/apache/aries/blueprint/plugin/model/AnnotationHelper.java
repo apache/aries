@@ -19,7 +19,6 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import org.apache.aries.blueprint.plugin.handlers.Handlers;
-import org.apache.aries.blueprint.plugin.handlers.collection.CollectionInjectHandler;
 import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;

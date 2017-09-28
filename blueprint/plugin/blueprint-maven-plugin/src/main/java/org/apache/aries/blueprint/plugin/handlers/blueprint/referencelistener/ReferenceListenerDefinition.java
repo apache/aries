@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.referencelistener;
+package org.apache.aries.blueprint.plugin.handlers.blueprint.referencelistener;
 
 class ReferenceListenerDefinition {
     final String ref;
     final String bind;
     final String unbind;
 
-    public ReferenceListenerDefinition(String ref, String bind, String unbind) {
+    ReferenceListenerDefinition(String ref, String bind, String unbind) {
         this.ref = ref;
         this.bind = getOrNull(bind);
         this.unbind = getOrNull(unbind);
