@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.config;
+package org.apache.aries.blueprint.plugin.handlers.blueprint.config;
 
 import org.apache.aries.blueprint.annotation.config.ConfigProperty;
 

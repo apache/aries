@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.config;
+package org.apache.aries.blueprint.plugin.handlers.blueprint.config;
 
 import java.lang.reflect.AnnotatedElement;
 
@@ -24,7 +24,6 @@ import org.apache.aries.blueprint.annotation.config.Config;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 public class ConfigAnnotationHandler implements BeanAnnotationHandler<Config>{
 
