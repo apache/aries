@@ -40,14 +40,18 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
-public class BlueprintBeanFactory extends DefaultListableBeanFactory {
+public class BlueprintBeanFactory extends DefaultListableBeanFactory implements ResourceLoader {
 
     private final ExtendedBlueprintContainer container;
+    private final ResourceLoader resourceLoader;
 
-    public BlueprintBeanFactory(ExtendedBlueprintContainer container) {
+    public BlueprintBeanFactory(ExtendedBlueprintContainer container, ResourceLoader resourceLoader) {
         super(new WrapperBeanFactory(container));
         this.container = container;
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
@@ -73,6 +77,16 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory {
     @Override
     public void removeBeanDefinition(String beanName) throws NoSuchBeanDefinitionException {
         super.removeBeanDefinition(beanName);
+    }
+
+    @Override
+    public Resource getResource(String location) {
+        return resourceLoader.getResource(location);
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return resourceLoader.getClassLoader();
     }
 
     public class SpringMetadata implements BeanMetadata {
