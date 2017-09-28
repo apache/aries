@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.referencelistener;
+package org.apache.aries.blueprint.plugin.handlers.blueprint.referencelistener;
 
 import org.apache.aries.blueprint.annotation.referencelistener.Bind;
 import org.apache.aries.blueprint.annotation.referencelistener.Cardinality;

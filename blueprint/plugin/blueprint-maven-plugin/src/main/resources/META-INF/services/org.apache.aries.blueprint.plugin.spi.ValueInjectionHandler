@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.handlers.config.ConfigPropertyInjectionHandler
+org.apache.aries.blueprint.plugin.handlers.blueprint.config.ConfigPropertyInjectionHandler

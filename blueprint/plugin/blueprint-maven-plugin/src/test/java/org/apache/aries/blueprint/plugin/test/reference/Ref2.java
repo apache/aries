@@ -16,21 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.collection;
+package org.apache.aries.blueprint.plugin.test.reference;
 
-import org.apache.aries.blueprint.annotation.collection.CollectionInject;
-import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
-
-import java.lang.annotation.Annotation;
-
-public class CollectionInjectHandler implements CollectionDependencyAnnotationHandler<CollectionInject> {
-    @Override
-    public Class<CollectionInject> getAnnotation() {
-        return CollectionInject.class;
-    }
-
-    @Override
-    public Class<?> getBeanClass(Annotation annotation) {
-        return ((CollectionInject) annotation).value();
-    }
+public interface Ref2 {
 }

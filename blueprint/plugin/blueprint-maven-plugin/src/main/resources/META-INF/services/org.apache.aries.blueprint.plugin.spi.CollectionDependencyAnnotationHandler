@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.handlers.collection.CollectionInjectHandler
+org.apache.aries.blueprint.plugin.handlers.blueprint.collection.CollectionInjectHandler
 

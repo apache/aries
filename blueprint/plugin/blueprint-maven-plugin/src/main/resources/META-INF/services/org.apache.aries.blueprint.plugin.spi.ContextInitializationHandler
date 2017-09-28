@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.handlers.blueprint.BlueprintInitialization
+org.apache.aries.blueprint.plugin.handlers.blueprint.init.BlueprintInitialization

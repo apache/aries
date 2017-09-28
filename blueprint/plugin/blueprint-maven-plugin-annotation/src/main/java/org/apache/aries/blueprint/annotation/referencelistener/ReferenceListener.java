@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotating any class with this will create a
- * reference or referenclist element in blueprint
+ * reference or reference-list element in blueprint
  * with annotated bean as reference-listener.
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
