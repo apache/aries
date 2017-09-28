@@ -16,8 +16,12 @@
  */
 package org.apache.aries.blueprint.spring;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.framework.Bundle;
@@ -34,7 +38,6 @@ public class SpringApplicationContext extends AbstractApplicationContext {
 
     public SpringApplicationContext(ExtendedBlueprintContainer container) {
         this.container = container;
-        this.beanFactory = new BlueprintBeanFactory(container);
         parentClassLoaders.add(container.getClassLoader());
         setClassLoader(new ClassLoader() {
             @Override
@@ -48,7 +51,51 @@ public class SpringApplicationContext extends AbstractApplicationContext {
                 }
                 throw new ClassNotFoundException(name);
             }
+
+            @Override
+            public URL getResource(String name) {
+                for (ClassLoader cl : parentClassLoaders) {
+                    URL url =  cl.getResource(name);
+                    if (url != null) {
+                        return url;
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            public Enumeration<URL> getResources(String name) throws IOException {
+                final Enumeration<URL>[] enums = (Enumeration<URL>[]) new Enumeration<?>[parentClassLoaders.size()];
+                for (int i = 0; i < enums.length; i++) {
+                    enums[i] = parentClassLoaders.get(i).getResources(name);
+                }
+                return new Enumeration<URL>() {
+                    private int index = 0;
+                    @Override
+                    public boolean hasMoreElements() {
+                        return next();
+                    }
+                    @Override
+                    public URL nextElement() {
+                        if (!this.next()) {
+                            throw new NoSuchElementException();
+                        } else {
+                            return enums[this.index].nextElement();
+                        }
+                    }
+                    private boolean next() {
+                        while(this.index < enums.length) {
+                            if (enums[this.index] != null && enums[this.index].hasMoreElements()) {
+                                return true;
+                            }
+                            ++this.index;
+                        }
+                        return false;
+                    }
+                };
+            }
         });
+        this.beanFactory = new BlueprintBeanFactory(container, this);
         prepareBeanFactory(beanFactory);
         prepareRefresh();
     }
