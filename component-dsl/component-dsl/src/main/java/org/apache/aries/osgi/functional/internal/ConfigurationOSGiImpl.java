@@ -49,12 +49,6 @@ public class ConfigurationOSGiImpl
 			Consumer<Tuple<Dictionary<String, ?>>> addedSource =
 				added.getSource();
 
-			Pipe<Tuple<Dictionary<String, ?>>, Tuple<Dictionary<String, ?>>>
-				removed = Pipe.create();
-
-			Consumer<Tuple<Dictionary<String, ?>>> removedSource =
-				removed.getSource();
-
 			Runnable start = () ->
 				serviceRegistrationReferece.set(
 					bundleContext.registerService(
@@ -69,7 +63,7 @@ public class ConfigurationOSGiImpl
 								tupleAtomicReference.get();
 
 							if (old.t != null) {
-								removedSource.accept(old);
+								old.terminate();
 							}
 
 							Tuple<Dictionary<String, ?>> tuple =
@@ -86,8 +80,17 @@ public class ConfigurationOSGiImpl
 						}}));
 
 			return new OSGiResultImpl<>(
-				added, removed, start,
-				() -> serviceRegistrationReferece.get().unregister());
+				added, start,
+				() -> {
+					serviceRegistrationReferece.get().unregister();
+
+					Tuple<Dictionary<String, ?>> tuple =
+						tupleAtomicReference.get();
+
+					if (tuple != null) {
+						tuple.terminate();
+					}
+				});
 		});
 	}
 

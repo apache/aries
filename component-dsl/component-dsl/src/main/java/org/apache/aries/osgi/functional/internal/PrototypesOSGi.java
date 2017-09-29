@@ -18,7 +18,6 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
-import org.apache.aries.osgi.functional.OSGiResult;
 import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -42,14 +41,8 @@ public class PrototypesOSGi<T>
 			Pipe<Tuple<ServiceObjects<T>>, Tuple<ServiceObjects<T>>> added =
 				Pipe.create();
 
-			Pipe<Tuple<ServiceObjects<T>>, Tuple<ServiceObjects<T>>>
-				removed = Pipe.create();
-
 			Consumer<Tuple<ServiceObjects<T>>> addedSource =
 				added.getSource();
-
-			Consumer<Tuple<ServiceObjects<T>>> removedSource =
-				removed.getSource();
 
 			ServiceTracker<T, Tuple<ServiceObjects<T>>> serviceTracker =
 				new ServiceTracker<>(
@@ -89,13 +82,12 @@ public class PrototypesOSGi<T>
 							ServiceReference<T> reference,
 							Tuple<ServiceObjects<T>> tuple) {
 
-							removedSource.accept(tuple);
+							tuple.terminate();
 						}
 					});
 
 			return new OSGiResultImpl<>(
-				added, removed, serviceTracker::open,
-				serviceTracker::close);
+				added, serviceTracker::open, serviceTracker::close);
 		});
 
 		_filterString = filterString;
@@ -108,11 +100,7 @@ public class PrototypesOSGi<T>
 		return new OSGiImpl<>(bundleContext -> {
 			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
 
-			Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
-
 			Consumer<Tuple<S>> addedSource = added.getSource();
-
-			Consumer<Tuple<S>> removedSource = removed.getSource();
 
 			ServiceTracker<T, Tracked<ServiceObjects<T>, S>>
 				serviceTracker = new ServiceTracker<>(
@@ -138,9 +126,9 @@ public class PrototypesOSGi<T>
 						OSGiResultImpl<S> result = program._operation.run(
 							bundleContext);
 
-						result.pipeTo(addedSource, removedSource);
+                        result.pipeTo(addedSource);
 
-						tracked.result = result;
+                        tracked.result = result;
 						tracked.service = serviceObjects;
 
 						return tracked;
@@ -166,8 +154,7 @@ public class PrototypesOSGi<T>
 				});
 
 			return new OSGiResultImpl<>(
-				added, removed, serviceTracker::open,
-				serviceTracker::close);
+				added, serviceTracker::open, serviceTracker::close);
 		});
 	}
 

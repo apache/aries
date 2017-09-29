@@ -48,31 +48,26 @@ public class ConfigurationsOSGiImpl
 			Consumer<Tuple<Dictionary<String, ?>>> addedSource =
 				added.getSource();
 
-			Pipe<Tuple<Dictionary<String, ?>>, Tuple<Dictionary<String, ?>>>
-				removed = Pipe.create();
-
-			Consumer<Tuple<Dictionary<String, ?>>> removedSource =
-				removed.getSource();
-
 			Runnable start = () ->
 				serviceRegistrationReference.set(
 					bundleContext.registerService(
 						ManagedServiceFactory.class,
 						new ConfigurationsManagedServiceFactory(
-							results, removedSource, addedSource),
+							results, addedSource),
 						new Hashtable<String, Object>() {{
 							put("service.pid", factoryPid);
 						}}));
 
 
-			return new OSGiResultImpl<>(added, removed, start,
+			return new OSGiResultImpl<>(
+				added, start,
 				() -> {
 					serviceRegistrationReference.get().unregister();
 
 					for (Tuple<Dictionary<String, ?>> tuple :
 						results.values()) {
 
-						removedSource.accept(tuple);
+						tuple.terminate();
 					}
 				});
 		});
@@ -83,25 +78,21 @@ public class ConfigurationsOSGiImpl
 
 		private final Map<String, Tuple<Dictionary<String, ?>>> _results;
 
-		private final Consumer<Tuple<Dictionary<String, ?>>> _removedSource;
 		private final Consumer<Tuple<Dictionary<String, ?>>> _addedSource;
 
 		public ConfigurationsManagedServiceFactory(
 			Map<String, Tuple<Dictionary<String, ?>>> results,
-			Consumer<Tuple<Dictionary<String, ?>>> removedSource,
 			Consumer<Tuple<Dictionary<String, ?>>> addedSource) {
 
 			_results = results;
-			_removedSource = removedSource;
 			_addedSource = addedSource;
 		}
 
 		@Override
 		public void deleted(String s) {
-			Tuple<Dictionary<String, ?>> tuple =
-				_results.remove(s);
+			Tuple<Dictionary<String, ?>> tuple = _results.remove(s);
 
-			_removedSource.accept(tuple);
+			tuple.terminate();
 		}
 
 		@Override
@@ -110,17 +101,15 @@ public class ConfigurationsOSGiImpl
 		}
 
 		@Override
-		public void updated(
-			String s, Dictionary<String, ?> dictionary)
+		public void updated(String s, Dictionary<String, ?> dictionary)
 			throws ConfigurationException {
 
-			Tuple<Dictionary<String, ?>> tuple = Tuple.create(
-				dictionary);
+			Tuple<Dictionary<String, ?>> tuple = Tuple.create(dictionary);
 
 			Tuple<Dictionary<String, ?>> old = _results.put(s, tuple);
 
 			if (old != null) {
-				_removedSource.accept(old);
+				old.terminate();
 			}
 
 			_addedSource.accept(tuple);

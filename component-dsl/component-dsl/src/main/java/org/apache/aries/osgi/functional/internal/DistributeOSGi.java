@@ -40,13 +40,9 @@ public class DistributeOSGi<T> extends OSGiImpl<T> {
 
             List<OSGiResult<T>> results = new ArrayList<>();
 
-            Pipe<Tuple<T>, Tuple<T>> removed = Pipe.create();
-
-            Consumer<Tuple<T>> removedSource = removed.getSource();
-
             return new OSGiResultImpl<>(
-                added, removed,
-                () -> {
+                added,
+                () ->
                     results.addAll(
                         Arrays.stream(programs).
                             map(o -> {
@@ -54,15 +50,11 @@ public class DistributeOSGi<T> extends OSGiImpl<T> {
                                     ((OSGiImpl<T>) o)._operation.run(
                                         bundleContext);
 
-                                osGiResult.added.map(t -> {addedSource.accept(t); return null;});
-                                osGiResult.removed.map(t -> {removedSource.accept(t); return null;});
-
-                                osGiResult.start.run();
+                                osGiResult.pipeTo(addedSource);
 
                                 return osGiResult;
                             }).
-                            collect(Collectors.toList()));
-                },
+                            collect(Collectors.toList())),
                 () -> {
                     for (OSGiResult<?> result : results) {
                         try {
@@ -71,7 +63,6 @@ public class DistributeOSGi<T> extends OSGiImpl<T> {
                         catch (Exception ignored) {
                         }
                     }
-
                 }
             );
         });
