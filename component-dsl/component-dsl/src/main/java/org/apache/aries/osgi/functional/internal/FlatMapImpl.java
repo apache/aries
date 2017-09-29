@@ -35,9 +35,6 @@ public class FlatMapImpl<T, S> extends OSGiImpl<S> {
 		OSGiImpl<T> previous, Function<? super T, OSGi<? extends S>> fun) {
 
 		super((bundleContext) -> {
-			Map<IdentityKey<Object>, OSGiResult<?>> identities =
-				new ConcurrentHashMap<>();
-
 			AtomicReference<Runnable> closeReference =
 				new AtomicReference<>(NOOP);
 
@@ -45,12 +42,8 @@ public class FlatMapImpl<T, S> extends OSGiImpl<S> {
 
 			Consumer<Tuple<S>> addedSource = added.getSource();
 
-			Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
-
-			Consumer<Tuple<S>> removedSource = removed.getSource();
-
 			return new OSGiResultImpl<>(
-				added, removed,
+				added,
 				() -> {
 					OSGiResultImpl<T> or1 = previous._operation.run(
 						bundleContext);
@@ -63,58 +56,18 @@ public class FlatMapImpl<T, S> extends OSGiImpl<S> {
 						OSGiResultImpl<S> or2 =
 							program._operation.run(bundleContext);
 
-						or2.pipeTo(addedSource, removedSource);
+						t.onTermination(or2::close);
 
-						identities.put(new IdentityKey<>(t.original), or2);
-
-						return null;
-					});
-
-					or1.removed.map(t -> {
-						OSGiResult<?> osgiResult1 = identities.remove(
-							new IdentityKey<>(t.original));
-
-						if (osgiResult1 != null) {
-							osgiResult1.close();
-						}
+						or2.pipeTo(addedSource);
 
 						return null;
 					});
 
 					or1.start.run();
 				},
-				() -> {
-					identities.values().forEach(OSGiResult::close);
-
-					closeReference.get().run();
-				});
+				() -> closeReference.get().run());
 			}
 		);
-	}
-
-	private static class IdentityKey<T> {
-
-		private final T _instance;
-
-		public IdentityKey(T instance) {
-			_instance = instance;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			IdentityKey<?> that = (IdentityKey<?>) o;
-
-			return _instance == that._instance;
-		}
-
-		@Override
-		public int hashCode() {
-			return System.identityHashCode(_instance);
-		}
-
 	}
 
 }

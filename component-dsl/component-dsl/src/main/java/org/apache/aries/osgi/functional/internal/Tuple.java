@@ -20,6 +20,9 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.Event;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -27,20 +30,24 @@ import java.util.function.Function;
  */
 class Tuple<T> implements Event<T> {
 
-	public Object original;
 	public T t;
+	private Deque<Runnable> _closingHandlers = new LinkedList<>();
 
-	private Tuple(Object original, T t) {
-		this.original = original;
+	private Tuple(T t) {
+		this(t, new LinkedList<>());
+	}
+
+	private Tuple(T t, Deque<Runnable> closingHandlers) {
 		this.t = t;
+		_closingHandlers = closingHandlers;
 	}
 
 	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
-		return new Tuple<>(original, fun.apply(t));
+		return new Tuple<>(fun.apply(t), _closingHandlers);
 	}
 
 	public static <T> Tuple<T> create(T t) {
-		return new Tuple<>(t, t);
+		return new Tuple<>(t);
 	}
 
 	@Override
@@ -55,11 +62,27 @@ class Tuple<T> implements Event<T> {
 
 		Tuple<?> tuple = (Tuple<?>) o;
 
-		return original == tuple.original;
+		return t.equals(tuple.t);
 	}
 
 	@Override
 	public int hashCode() {
-		return original.hashCode();
+		return t.hashCode();
+	}
+
+	public void onTermination(Runnable terminator) {
+		_closingHandlers.push(terminator);
+	}
+
+	public void terminate() {
+		while (!_closingHandlers.isEmpty()) {
+			Runnable pop = _closingHandlers.pop();
+
+			try {
+				pop.run();
+			}
+			catch (Exception e) {
+			}
+		}
 	}
 }

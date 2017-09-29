@@ -40,10 +40,6 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 
 			Consumer<Tuple<Bundle>> addedSource = added.getSource();
 
-			Pipe<Tuple<Bundle>, Tuple<Bundle>> removed = Pipe.create();
-
-			Consumer<Tuple<Bundle>> removedSource = removed.getSource();
-
 			BundleTracker<Tuple<Bundle>> bundleTracker =
 				new BundleTracker<>(
 					bundleContext, stateMask,
@@ -75,12 +71,12 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 							Bundle bundle, BundleEvent bundleEvent,
 							Tuple<Bundle> tuple) {
 
-							removedSource.accept(tuple);
+							tuple.terminate();
 						}
 					});
 
 			return new OSGiResultImpl<>(
-				added, removed, bundleTracker::open, bundleTracker::close);
+				added, bundleTracker::open, bundleTracker::close);
 		});
 
 		_stateMask = stateMask;
@@ -94,10 +90,6 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
 
 			Consumer<Tuple<S>> addedSource = added.getSource();
-
-			Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
-
-			Consumer<Tuple<S>> removedSource = removed.getSource();
 
 			BundleTracker<OSGiResult<S>> bundleTracker =
 				new BundleTracker<>(
@@ -114,7 +106,7 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 							OSGiResultImpl<S> result =
 								program._operation.run(bundleContext);
 
-							result.pipeTo(addedSource, removedSource);
+							result.pipeTo(addedSource);
 
 							return result;
 						}
@@ -139,7 +131,7 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 					});
 
 			return new OSGiResultImpl<>(
-				added, removed, bundleTracker::open, bundleTracker::close);
+				added, bundleTracker::open, bundleTracker::close);
 
 		});
 	}

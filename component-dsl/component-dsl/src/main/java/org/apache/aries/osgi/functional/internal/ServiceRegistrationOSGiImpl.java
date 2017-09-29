@@ -91,14 +91,8 @@ public class ServiceRegistrationOSGiImpl<T>
 		Tuple<ServiceRegistration<T>> tuple = Tuple.create(
             serviceRegistration);
 
-		Pipe<Tuple<ServiceRegistration<T>>, Tuple<ServiceRegistration<T>>>
-            removed = Pipe.create();
-
-		Consumer<Tuple<ServiceRegistration<T>>> removedSource =
-            removed.getSource();
-
 		return new OSGiResultImpl<>(
-            added, removed,
+            added,
             () -> addedSource.accept(tuple),
             () -> {
                 try {
@@ -107,7 +101,7 @@ public class ServiceRegistrationOSGiImpl<T>
                 catch (Exception e) {
                 }
                 finally {
-                    removedSource.accept(tuple);
+                    tuple.terminate();
                 }
             });
 	}

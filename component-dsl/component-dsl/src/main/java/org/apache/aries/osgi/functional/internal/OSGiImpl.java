@@ -65,9 +65,11 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 			return new OSGiResultImpl<>(
 				osgiResult.added.map(
-					t -> t.map(o -> {onAdded.accept(o); return null;})),
-				osgiResult.removed.map(
-					t -> t.map(o -> {onRemoved.accept(o); return null;})),
+					t -> {
+						t.onTermination(() -> onRemoved.accept(t.t));
+
+						return t.map(o -> {onAdded.accept(o); return null;});
+					}),
 				osgiResult.start, osgiResult.close);
 		}));
 	}
@@ -79,7 +81,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 			return new OSGiResultImpl<>(
 				osgiResult.added.map(t -> t.map(function)),
-				osgiResult.removed.map(t -> t.map(function)),
 				osgiResult.start, osgiResult.close);
 		}));
 	}
@@ -93,13 +94,12 @@ public class OSGiImpl<T> implements OSGi<T> {
 	public OSGiResult<T> run(BundleContext bundleContext, Consumer<T> andThen) {
 		OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
 
-		osgiResult.added.map(x -> {andThen.accept(x.t); return Tuple.create(null);});
+		osgiResult.added.map(x -> {andThen.accept(x.t); return null;});
 
 		osgiResult.start.run();
 
 		return new OSGiResultImpl<>(
-			osgiResult.added, osgiResult.removed,
-			osgiResult.start, osgiResult.close);
+			osgiResult.added, osgiResult.start, osgiResult.close);
 	}
 
 	@Override
@@ -172,15 +172,12 @@ public class OSGiImpl<T> implements OSGi<T> {
 	public OSGi<T> route(Consumer<Router<T>> routerConsumer) {
 
 		Pipe<Tuple<T>, Tuple<T>> outgoingAddingPipe = Pipe.create();
-		Pipe<Tuple<T>, Tuple<T>> outgoingRemovingPipe = Pipe.create();
 
 		Consumer<Tuple<T>> outgoingAddingSource =
 			outgoingAddingPipe.getSource();
-		Consumer<Tuple<T>> outgoingRemovingSource =
-			outgoingRemovingPipe.getSource();
 
 		final RouterImpl<T> router =
-			new RouterImpl<>(outgoingAddingSource, outgoingRemovingSource);
+			new RouterImpl<>(outgoingAddingSource);
 
 		routerConsumer.accept(router);
 
@@ -188,12 +185,22 @@ public class OSGiImpl<T> implements OSGi<T> {
 			OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
 
 			osgiResult.added.map(
-				t -> {router._adding.accept(t); return Tuple.create(null);});
-			osgiResult.removed.map(
-				t -> {router._leaving.accept(t); return Tuple.create(null);});
+				t -> {
+					Tuple<T> copy = Tuple.create(t.t);
+
+					t.onTermination(() -> {
+						router._leaving.accept(copy);
+
+						copy.terminate();
+					});
+
+					router._adding.accept(copy);
+
+					return null;
+				});
 
 			return new OSGiResultImpl<>(
-				outgoingAddingPipe, outgoingRemovingPipe,
+				outgoingAddingPipe,
 				() -> {
 					router._start.run();
 					osgiResult.start.run();
@@ -258,12 +265,8 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 				Consumer<Tuple<S>> addedSource = added.getSource();
 
-				Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
-
-				Consumer<Tuple<S>> removedSource = removed.getSource();
-
 				OSGiResultImpl<S> osgiResult = new OSGiResultImpl<>(
-					added, removed,
+					added,
 					() -> {
 						OSGiResultImpl<T> or1 = _operation.run(bundleContext);
 
@@ -277,34 +280,33 @@ public class OSGiImpl<T> implements OSGi<T> {
 									processAdded(
 										identities, funs, addedSource, f, t));
 
+								t.onTermination(() -> {
+									synchronized (identities) {
+										List<Pair<Function<T, S>, Tuple<S>>> remove =
+											identities.remove(t);
+
+										if (remove == null) {
+											return;
+										}
+
+										remove.forEach(p -> {
+											List<Pair<Tuple<T>, Tuple<S>>> pairs = funs.get(
+												p.getFirst());
+
+											if (pairs == null) {
+												return;
+											}
+
+											pairs.remove(new Pair<>(t, null));
+
+											p.getSecond().terminate();
+										});
+									}
+								});
+
 								return Tuple.create(null);
 							}
-						});
 
-						or1.removed.map(t -> {
-							synchronized (identities) {
-								List<Pair<Function<T, S>, Tuple<S>>> remove =
-									identities.remove(t);
-
-								if (remove == null) {
-									return Tuple.create(null);
-								}
-
-								remove.forEach(p -> {
-									List<Pair<Tuple<T>, Tuple<S>>> pairs = funs.get(
-										p.getFirst());
-
-									if (pairs == null) {
-										return;
-									}
-
-									pairs.remove(new Pair<>(t, null));
-
-									removedSource.accept(p.getSecond());
-								});
-							}
-
-							return Tuple.create(null);
 						});
 
 						OSGiResult<Void> or2 = fun.foreach(
@@ -342,7 +344,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 											}
 										}
 
-										removedSource.accept(p.getSecond());
+										p.getSecond().terminate();
 									});
 								}
 							}).run(bundleContext);
@@ -355,8 +357,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 						synchronized (identities) {
 							identities.values().forEach(i ->
 								i.forEach(
-									p -> removedSource.accept(
-										p.getSecond())));
+									p -> p.getSecond().terminate()));
 
 							funs.clear();
 						}
@@ -393,11 +394,8 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 	static class RouterImpl<T> implements Router<T> {
 
-		RouterImpl(
-			Consumer<Tuple<T>> signalAdding, Consumer<Tuple<T>> signalLeaving) {
-
+		RouterImpl(Consumer<Tuple<T>> signalAdding) {
 			_signalAdding = signalAdding;
-			_signalLeaving = signalLeaving;
 		}
 
 		@Override
@@ -422,12 +420,12 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 		@Override
 		public void signalAdd(Event<T> event) {
-			_signalAdding.accept((Tuple<T>)event);
+			_signalAdding.accept((Tuple<T>) event);
 		}
 
 		@Override
 		public void signalLeave(Event<T> event) {
-			_signalLeaving.accept((Tuple<T>)event);
+			((Tuple<T>)event).terminate();
 		}
 
 		Consumer<Event<T>> _adding = (ign) -> {};
@@ -435,7 +433,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 		private Runnable _close = NOOP;
 		private final Consumer<Tuple<T>> _signalAdding;
-		private final Consumer<Tuple<T>> _signalLeaving;
 		private Runnable _start = NOOP;
 
 	}

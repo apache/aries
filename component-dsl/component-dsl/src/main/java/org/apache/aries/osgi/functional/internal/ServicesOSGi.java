@@ -18,7 +18,6 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
-import org.apache.aries.osgi.functional.OSGiResult;
 import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -40,11 +39,7 @@ public class ServicesOSGi<T> extends OSGiImpl<T> {
 		super(bundleContext -> {
 			Pipe<Tuple<T>, Tuple<T>> added = Pipe.create();
 
-			Pipe<Tuple<T>, Tuple<T>> removed = Pipe.create();
-
 			Consumer<Tuple<T>> addedSource = added.getSource();
-
-			Consumer<Tuple<T>> removedSource = removed.getSource();
 
 			ServiceTracker<T, Tuple<T>> serviceTracker =
 				new ServiceTracker<>(
@@ -85,15 +80,14 @@ public class ServicesOSGi<T> extends OSGiImpl<T> {
 							ServiceObjects<T> serviceObjects =
 								bundleContext.getServiceObjects(reference);
 
-							removedSource.accept(tuple);
-
 							serviceObjects.ungetService(tuple.t);
+
+							tuple.terminate();
 						}
 					});
 
 			return new OSGiResultImpl<>(
-				added, removed, serviceTracker::open,
-				serviceTracker::close);
+				added, serviceTracker::open, serviceTracker::close);
 		});
 
 		_filterString = filterString;
@@ -106,11 +100,7 @@ public class ServicesOSGi<T> extends OSGiImpl<T> {
 		return new OSGiImpl<>(bundleContext -> {
 			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
 
-			Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
-
 			Consumer<Tuple<S>> addedSource = added.getSource();
-
-			Consumer<Tuple<S>> removedSource = removed.getSource();
 
 			ServiceTracker<T, Tracked<T, S>> serviceTracker =
 				new ServiceTracker<>(
@@ -134,7 +124,7 @@ public class ServicesOSGi<T> extends OSGiImpl<T> {
 							OSGiResultImpl<S> result = program._operation.run(
 								bundleContext);
 
-							result.pipeTo(addedSource, removedSource);
+							result.pipeTo(addedSource);
 
 							Tracked<T, S> tracked = new Tracked<>();
 
@@ -169,8 +159,7 @@ public class ServicesOSGi<T> extends OSGiImpl<T> {
 					});
 
 			return new OSGiResultImpl<>(
-				added, removed, serviceTracker::open,
-				serviceTracker::close);
+				added, serviceTracker::open, serviceTracker::close);
 
 		});
 	}
