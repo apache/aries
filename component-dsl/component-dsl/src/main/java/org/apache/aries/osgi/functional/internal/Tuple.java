@@ -21,6 +21,7 @@ package org.apache.aries.osgi.functional.internal;
 import org.apache.aries.osgi.functional.Event;
 
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -32,6 +33,8 @@ class Tuple<T> implements Event<T> {
 
 	public T t;
 	private Deque<Runnable> _closingHandlers = new LinkedList<>();
+	private DoublyLinkedList<Tuple<?>> _relatedTuples =
+		new DoublyLinkedList<>();
 
 	private Tuple(T t) {
 		this(t, new LinkedList<>());
@@ -42,8 +45,13 @@ class Tuple<T> implements Event<T> {
 		_closingHandlers = closingHandlers;
 	}
 
-	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
-		return new Tuple<>(fun.apply(t), _closingHandlers);
+	public DoublyLinkedList.Node<Tuple<?>> addRelatedTuple(Tuple<?> tuple) {
+		DoublyLinkedList.Node<Tuple<?>> tupleNode = _relatedTuples.addLast(
+			tuple);
+
+		tuple.onTermination(tupleNode::remove);
+
+		return tupleNode;
 	}
 
 	public static <T> Tuple<T> create(T t) {
@@ -56,6 +64,11 @@ class Tuple<T> implements Event<T> {
 	}
 
 	@Override
+	public int hashCode() {
+		return t.hashCode();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
@@ -65,9 +78,8 @@ class Tuple<T> implements Event<T> {
 		return t.equals(tuple.t);
 	}
 
-	@Override
-	public int hashCode() {
-		return t.hashCode();
+	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
+		return new Tuple<>(fun.apply(t), _closingHandlers);
 	}
 
 	public void onTermination(Runnable terminator) {
@@ -75,6 +87,21 @@ class Tuple<T> implements Event<T> {
 	}
 
 	public void terminate() {
+		Iterator<Tuple<?>> iterator = _relatedTuples.iterator();
+
+		while (iterator.hasNext()) {
+			Tuple<?> next = iterator.next();
+
+			iterator.remove();
+
+			try {
+				next.terminate();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		while (!_closingHandlers.isEmpty()) {
 			Runnable pop = _closingHandlers.pop();
 
@@ -85,4 +112,5 @@ class Tuple<T> implements Event<T> {
 			}
 		}
 	}
+
 }
