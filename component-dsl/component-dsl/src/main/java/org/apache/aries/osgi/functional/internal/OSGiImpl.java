@@ -170,46 +170,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 	@Override
 	public OSGi<T> route(Consumer<Router<T>> routerConsumer) {
-
-		Pipe<Tuple<T>, Tuple<T>> outgoingAddingPipe = Pipe.create();
-
-		Consumer<Tuple<T>> outgoingAddingSource =
-			outgoingAddingPipe.getSource();
-
-		final RouterImpl<T> router =
-			new RouterImpl<>(outgoingAddingSource);
-
-		routerConsumer.accept(router);
-
-		return new OSGiImpl<>(((bundleContext) -> {
-			OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
-
-			osgiResult.added.map(
-				t -> {
-					Tuple<T> copy = Tuple.create(t.t);
-
-					t.onTermination(() -> {
-						router._leaving.accept(copy);
-
-						copy.terminate();
-					});
-
-					router._adding.accept(copy);
-
-					return null;
-				});
-
-			return new OSGiResultImpl<>(
-				outgoingAddingPipe,
-				() -> {
-					router._start.run();
-					osgiResult.start.run();
-				},
-				() -> {
-					router._close.run();
-					osgiResult.close.run();
-				});
-		}));
+		return new RouteOsgiImpl<>(this, routerConsumer);
 	}
 
 	private static class Pair<X, Y> {
@@ -390,51 +351,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 		tuples2.add(new Pair<>(t, tuple));
 
 		addedSource.accept(tuple);
-	}
-
-	static class RouterImpl<T> implements Router<T> {
-
-		RouterImpl(Consumer<Tuple<T>> signalAdding) {
-			_signalAdding = signalAdding;
-		}
-
-		@Override
-		public void onIncoming(Consumer<Event<T>> adding) {
-			_adding = adding;
-		}
-
-		@Override
-		public void onLeaving(Consumer<Event<T>> removing) {
-			_leaving = removing;
-		}
-
-		@Override
-		public void onClose(Runnable close) {
-			_close = close;
-		}
-
-		@Override
-		public void onStart(Runnable start) {
-			_start = start;
-		}
-
-		@Override
-		public void signalAdd(Event<T> event) {
-			_signalAdding.accept((Tuple<T>) event);
-		}
-
-		@Override
-		public void signalLeave(Event<T> event) {
-			((Tuple<T>)event).terminate();
-		}
-
-		Consumer<Event<T>> _adding = (ign) -> {};
-		Consumer<Event<T>> _leaving = (ign) -> {};
-
-		private Runnable _close = NOOP;
-		private final Consumer<Tuple<T>> _signalAdding;
-		private Runnable _start = NOOP;
-
 	}
 
 }
