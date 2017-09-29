@@ -32,10 +32,8 @@ import org.apache.aries.osgi.functional.internal.DistributeOSGi;
 import org.apache.aries.osgi.functional.internal.JustOSGiImpl;
 import org.apache.aries.osgi.functional.internal.NothingOSGiImpl;
 import org.apache.aries.osgi.functional.internal.OnCloseOSGiImpl;
-import org.apache.aries.osgi.functional.internal.PrototypesOSGi;
 import org.apache.aries.osgi.functional.internal.ServiceReferenceOSGi;
 import org.apache.aries.osgi.functional.internal.ServiceRegistrationOSGiImpl;
-import org.apache.aries.osgi.functional.internal.ServicesOSGi;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
@@ -121,7 +119,12 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	static <T> OSGi<ServiceObjects<T>> prototypes(
 		Class<T> clazz, String filterString) {
 
-		return new PrototypesOSGi<>(clazz, filterString);
+		return
+		bundleContext().flatMap(
+		bundleContext ->
+
+		serviceReferences(clazz, filterString).map(
+			bundleContext::getServiceObjects));
 	}
 
 	static <T> OSGi<ServiceRegistration<T>> register(
@@ -151,7 +154,20 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	}
 
 	static <T> OSGi<T> services(Class<T> clazz, String filterString) {
-		return new ServicesOSGi<>(clazz, filterString);
+		return
+			bundleContext().flatMap(
+			bundleContext ->
+
+			serviceReferences(clazz, filterString).flatMap(
+			sr -> {
+				T service = bundleContext.getService(sr);
+
+				return
+					onClose(() -> bundleContext.ungetService(sr)).then(
+					just(service)
+				);
+			}
+		));
 	}
 
 	static <T> OSGi<ServiceReference<T>> serviceReferences(
