@@ -41,6 +41,8 @@ import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -92,8 +94,12 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new JustOSGiImpl<>(s);
 	}
 
-	static <S> OSGi<S> just(Supplier<S> s) {
+	static <S> OSGi<S> just(Collection<S> s) {
 		return new JustOSGiImpl<>(s);
+	}
+
+	static <S> OSGi<S> just(Supplier<S> s) {
+		return new JustOSGiImpl<>(() -> Collections.singletonList(s.get()));
 	}
 
 	static <S> OSGi<S> join(OSGi<OSGi<S>> program) {
