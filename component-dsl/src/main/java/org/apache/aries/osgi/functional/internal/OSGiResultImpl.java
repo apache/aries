@@ -27,16 +27,13 @@ import java.util.function.Consumer;
 public class OSGiResultImpl<T> implements OSGiResult<T> {
 
 	public Pipe<?, Tuple<T>> added;
-	public Pipe<?, Tuple<T>> removed;
 	public Runnable start;
 	public Runnable close;
 
 	public OSGiResultImpl(
-		Pipe<?, Tuple<T>> added, Pipe<?, Tuple<T>> removed,
-		Runnable start, Runnable close) {
+		Pipe<?, Tuple<T>> added, Runnable start, Runnable close) {
 
 		this.added = added;
-		this.removed = removed;
 		this.start = start;
 		this.close = close;
 	}
@@ -46,12 +43,8 @@ public class OSGiResultImpl<T> implements OSGiResult<T> {
 		close.run();
 	}
 
-	public void pipeTo(
-		Consumer<Tuple<T>> addedSource, Consumer<Tuple<T>> removedSource) {
-
+	public void pipeTo(Consumer<Tuple<T>> addedSource) {
 		added.map(t -> {addedSource.accept(t); return null;});
-
-		removed.map(t -> {removedSource.accept(t); return null;});
 
 		start.run();
 	}

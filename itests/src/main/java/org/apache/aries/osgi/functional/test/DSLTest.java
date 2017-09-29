@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
@@ -307,6 +306,7 @@ public class DSLTest {
                 Service.class, new Service(),
                 new HashMap<String, Object>() {{
                     put("key", key);
+                    put("test.configuration", true);
                 }})
             );
 
@@ -542,6 +542,15 @@ public class DSLTest {
 
             assertEquals(
                 serviceRegistrationMinusOne.getReference(), current.get());
+
+            serviceRegistrationOne =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", 0);
+                    }});
+
+            assertEquals(serviceRegistrationOne.getReference(), current.get());
 
             serviceRegistrationMinusOne.unregister();
         }

@@ -26,6 +26,6 @@ public class NothingOSGiImpl<S> extends OSGiImpl<S> {
 
 	public NothingOSGiImpl() {
 		super(((bundleContext) -> new OSGiResultImpl<>(
-			Pipe.create(), Pipe.create(), OSGi.NOOP, OSGi.NOOP)));
+			Pipe.create(), OSGi.NOOP, OSGi.NOOP)));
 	}
 }

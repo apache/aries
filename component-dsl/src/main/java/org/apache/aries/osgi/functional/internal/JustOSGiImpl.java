@@ -21,10 +21,7 @@ package org.apache.aries.osgi.functional.internal;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -40,14 +37,10 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 
 			Pipe<Tuple<T>, Tuple<T>> added = Pipe.create();
 
-			Pipe<Tuple<T>, Tuple<T>> removed = Pipe.create();
-
 			Tuple<T> tuple = Tuple.create(t.get());
 
 			return new OSGiResultImpl<>(
-				added, removed,
-				() -> added.getSource().accept(tuple),
-				() -> removed.getSource().accept(tuple));
+				added, () -> added.getSource().accept(tuple), tuple::terminate);
 		}));
 
 		_t = t;
@@ -62,42 +55,23 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 		return new OSGiImpl<>(bundleContext -> {
 			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
 
-			Pipe<Tuple<S>, Tuple<S>> removed = Pipe.create();
-
-			AtomicReference<OSGiResult<? extends S>> atomicReference =
-				new AtomicReference<>(null);
-			AtomicReference<Tuple<S>> tupleReference =
-				new AtomicReference<>(null);
+			AtomicReference<Runnable> atomicReference = new AtomicReference<>(
+				NOOP);
 
 			return new OSGiResultImpl<>(
-				added, removed,
+				added,
 				() -> {
-					OSGi<? extends S> next = fun.apply(_t.get());
+					OSGiImpl<S> next = (OSGiImpl<S>) fun.apply(_t.get());
 
-					atomicReference.set(
-						next.run(
-							bundleContext,
-							s -> {
-								Tuple<S> tuple = Tuple.create(s);
+					OSGiResultImpl<S> osGiResult = next._operation.run(
+						bundleContext);
 
-								tupleReference.set(tuple);
+					atomicReference.set(osGiResult::close);
 
-								added.getSource().accept(tuple);
-							}));
-
+					osGiResult.pipeTo(added.getSource());
 				},
 				() -> {
-					Tuple<S> s = tupleReference.get();
-
-					if (s != null) {
-						removed.getSource().accept(s);
-					}
-
-					OSGiResult<? extends S> osGiResult = atomicReference.get();
-
-					if (osGiResult != null) {
-						osGiResult.close();
-					}
+					atomicReference.get().run();
 				});
 		});
 	}

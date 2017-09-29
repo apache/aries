@@ -26,16 +26,15 @@ public class OnCloseOSGiImpl extends OSGiImpl<Void> {
 		super(bundleContext -> {
 			Pipe<Tuple<Void>, Tuple<Void>> added = Pipe.create();
 
-			Pipe<Tuple<Void>, Tuple<Void>> removed = Pipe.create();
-
 			Tuple<Void> tuple = Tuple.create(null);
 
 			return new OSGiResultImpl<>(
-				added, removed,
+				added,
 				() -> added.getSource().accept(tuple),
 				() -> {
 					action.run();
-					removed.getSource().accept(tuple);
+
+					tuple.terminate();
 				}
 			);
 		});
