@@ -19,6 +19,7 @@ package org.apache.aries.osgi.functional.test;
 
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -31,6 +32,8 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -578,6 +581,19 @@ public class DSLTest {
         program.run(bundleContext, integer::set);
 
         assertEquals(15, integer.get());
+    }
+
+    @Test
+    public void testMultipleApplies() {
+        ArrayList<Integer> results = new ArrayList<>();
+
+        OSGi<Integer> program = OSGi.apply(
+            (a, b, c) -> a + b + c, just(Arrays.asList(5, 20)),
+            just(Arrays.asList(5, 40)), just(Arrays.asList(5, 60)));
+
+        program.run(bundleContext, results::add);
+
+        assertEquals(8, results.size());
     }
 
     private class Service {}
