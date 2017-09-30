@@ -20,7 +20,6 @@ package org.apache.aries.blueprint.plugin.test.reference;
 
 import org.apache.aries.blueprint.annotation.service.Availability;
 import org.apache.aries.blueprint.annotation.service.MemberType;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.blueprint.annotation.service.ReferenceList;
 import org.osgi.framework.ServiceReference;
 

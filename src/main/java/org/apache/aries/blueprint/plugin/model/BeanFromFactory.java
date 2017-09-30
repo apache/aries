@@ -34,11 +34,19 @@ class BeanFromFactory extends Bean {
         if (forcedId != null) {
             this.id = forcedId;
         }
+//        if (forcedId == null && shouldGetBeanNameFromMethodName(contextEnricher)) {
+//            this.id = factoryMethod.getName();
+//        }
         this.producingMethod = factoryMethod;
         setScope(factoryMethod);
         handleCustomBeanAnnotations();
         attributes.put("factory-ref", factoryBean.id);
         attributes.put("factory-method", producingMethod.getName());
+    }
+
+    private boolean shouldGetBeanNameFromMethodName(ContextEnricher contextEnricher) {
+        String beanFromFactoryName = contextEnricher.getBlueprintConfiguration().getCustomParameters().get("beanFromFactory.name");
+        return "fromFactoryMethodName".equals(beanFromFactoryName);
     }
 
     private void setScope(Method factoryMethod) {
