@@ -26,6 +26,8 @@ import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import java.lang.reflect.Method;
 
 class BeanFromFactory extends Bean {
+    private static final String BLUEPRINT_BEAN_FROM_FACTORY_NAME_PROPERTY = "blueprint.beanFromFactory.name";
+    private static final String BLUEPRINT_BEAN_FROM_FACTORY_NAME_PROPERTY_VALUE = "fromFactoryMethodName";
     private final Method producingMethod;
 
     BeanFromFactory(Bean factoryBean, Method factoryMethod, ContextEnricher contextEnricher) {
@@ -34,9 +36,9 @@ class BeanFromFactory extends Bean {
         if (forcedId != null) {
             this.id = forcedId;
         }
-//        if (forcedId == null && shouldGetBeanNameFromMethodName(contextEnricher)) {
-//            this.id = factoryMethod.getName();
-//        }
+        if (forcedId == null && shouldGetBeanNameFromMethodName(contextEnricher)) {
+            this.id = factoryMethod.getName();
+        }
         this.producingMethod = factoryMethod;
         setScope(factoryMethod);
         handleCustomBeanAnnotations();
@@ -45,8 +47,8 @@ class BeanFromFactory extends Bean {
     }
 
     private boolean shouldGetBeanNameFromMethodName(ContextEnricher contextEnricher) {
-        String beanFromFactoryName = contextEnricher.getBlueprintConfiguration().getCustomParameters().get("beanFromFactory.name");
-        return "fromFactoryMethodName".equals(beanFromFactoryName);
+        String beanFromFactoryName = contextEnricher.getBlueprintConfiguration().getCustomParameters().get(BLUEPRINT_BEAN_FROM_FACTORY_NAME_PROPERTY);
+        return BLUEPRINT_BEAN_FROM_FACTORY_NAME_PROPERTY_VALUE.equals(beanFromFactoryName);
     }
 
     private void setScope(Method factoryMethod) {
