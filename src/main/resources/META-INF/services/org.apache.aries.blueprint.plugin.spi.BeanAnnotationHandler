@@ -20,3 +20,4 @@ org.apache.aries.blueprint.plugin.handlers.javax.CdiTransactionFactory
 org.apache.aries.blueprint.plugin.handlers.blueprint.config.ConfigAnnotationHandler
 org.apache.aries.blueprint.plugin.handlers.blueprint.referencelistener.ReferenceListenerHandler
 org.apache.aries.blueprint.plugin.handlers.blueprint.bean.BeanHandler
+org.apache.aries.blueprint.plugin.handlers.blueprint.service.ServiceHandler

@@ -36,6 +36,8 @@ import org.apache.aries.blueprint.plugin.test.reference.Ref2;
 import org.apache.aries.blueprint.plugin.test.reference.Ref3;
 import org.apache.aries.blueprint.plugin.test.reference.Ref4;
 import org.apache.aries.blueprint.plugin.test.referencelistener.ReferenceListenerToProduceWithoutAnnotation;
+import org.apache.aries.blueprint.plugin.test.service.Service1;
+import org.apache.aries.blueprint.plugin.test.service.Service2;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.xbean.finder.ClassFinder;
 import org.junit.BeforeClass;
@@ -1053,6 +1055,166 @@ public class BlueprintFileWriterTest {
         Node ref1ForCons = getReferenceById("ref3ForProduces");
         assertXpathEquals(ref1ForCons, "@interface", Ref3.class.getName());
         assertXpathEquals(ref1ForCons, "@timeout", "1000");
+    }
+
+    @Test
+    public void shouldGenerateSimplestServiceFromBean() throws XPathExpressionException {
+        Node service = getServiceByRef("simplestService");
+        assertXpathEquals(service, "@auto-export", "interfaces");
+        assertXpathDoesNotExist(service, "service-properties");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithAllClassesFromBean() throws XPathExpressionException {
+        Node service = getServiceByRef("serviceWithAllClasses");
+        assertXpathEquals(service, "@auto-export", "all-classes");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithClassHierarchyFromBean() throws XPathExpressionException {
+        Node service = getServiceByRef("serviceWithClassHierarchy");
+        assertXpathEquals(service, "@auto-export", "class-hierarchy");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithOneInterfaceFromBean() throws XPathExpressionException {
+        Node service = getServiceByRef("serviceWithOneInterface");
+        assertXpathEquals(service, "count(@auto-export)", "0");
+        assertXpathEquals(service, "count(interfaces)", "0");
+        assertXpathEquals(service, "@interface", Service1.class.getName());
+    }
+
+    @Test
+    public void shouldGenerateServiceWithManyInterfacesFromBean() throws XPathExpressionException {
+        Node service = getServiceByRef("serviceWithManyInterfaces");
+        assertXpathEquals(service, "count(@auto-export)", "0");
+        assertXpathEquals(service, "count(@interface)", "0");
+        assertXpathEquals(service, "count(interfaces/value)", "2");
+        assertXpathEquals(service, "interfaces/value[1]", Service1.class.getName());
+        assertXpathEquals(service, "interfaces/value[2]", Service2.class.getName());
+    }
+
+    @Test
+    public void shouldGenerateServiceWithRankingFromBean() throws XPathExpressionException {
+        Node service = getServiceByRef("serviceWithRankingParameter");
+        assertXpathEquals(service, "@ranking", "1000");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithRankingAndPropertyFromBean() throws XPathExpressionException {
+        Node service = getServiceByRef("serviceWithRankingAndProperty");
+        assertXpathEquals(service, "@ranking", "2");
+        assertXpathDoesNotExist(service, "service-properties");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithPropertiesFromBean() throws XPathExpressionException {
+        Node service = getServiceByRef("serviceWithProperties");
+        assertXpathEquals(service, "count(service-properties/entry)", "4");
+        assertXpathEquals(service, "service-properties/entry[@key='oneValue']/@value", "test");
+        assertXpathEquals(service, "count(service-properties/entry[@key='oneValue']/value)", "0");
+
+        assertXpathEquals(service, "count(service-properties/entry[@key='intValue']/@value)", "0");
+        assertXpathEquals(service, "service-properties/entry[@key='intValue']/value/@type", Integer.class.getName());
+        assertXpathEquals(service, "service-properties/entry[@key='intValue']/value/text()", "1");
+
+        assertXpathEquals(service, "count(service-properties/entry[@key='longArray']/@value)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='longArray']/value)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='longArray']/array/value)", "3");
+        assertXpathEquals(service, "service-properties/entry[@key='longArray']/array/@value-type", Long.class.getName());
+        assertXpathEquals(service, "service-properties/entry[@key='longArray']/array/value[1]", "1");
+        assertXpathEquals(service, "service-properties/entry[@key='longArray']/array/value[2]", "2");
+        assertXpathEquals(service, "service-properties/entry[@key='longArray']/array/value[3]", "3");
+
+        assertXpathEquals(service, "count(service-properties/entry[@key='stringArray']/@value)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='stringArray']/value)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='stringArray']/array/value)", "2");
+        assertXpathEquals(service, "count(service-properties/entry[@key='stringArray']/array/@value-type)", "0");
+        assertXpathEquals(service, "service-properties/entry[@key='stringArray']/array/value[1]", "a");
+        assertXpathEquals(service, "service-properties/entry[@key='stringArray']/array/value[2]", "b");
+    }
+
+    @Test
+    public void shouldGenerateSimplestServiceFromFactory() throws XPathExpressionException {
+        Node service = getServiceByRef("producedSimplestService");
+        assertXpathEquals(service, "@auto-export", "interfaces");
+        assertXpathDoesNotExist(service, "service-properties");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithAllClassesFromFactory() throws XPathExpressionException {
+        Node service = getServiceByRef("producedServiceWithAllClasses");
+        assertXpathEquals(service, "@auto-export", "all-classes");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithClassHierarchyFromFactory() throws XPathExpressionException {
+        Node service = getServiceByRef("producedServiceWithClassHierarchy");
+        assertXpathEquals(service, "@auto-export", "class-hierarchy");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithOneInterfaceFromFactory() throws XPathExpressionException {
+        Node service = getServiceByRef("producedServiceWithOneInterface");
+        assertXpathEquals(service, "count(@auto-export)", "0");
+        assertXpathEquals(service, "count(interfaces)", "0");
+        assertXpathEquals(service, "@interface", Service2.class.getName());
+    }
+
+    @Test
+    public void shouldGenerateServiceWithManyInterfacesFromFactory() throws XPathExpressionException {
+        Node service = getServiceByRef("producedServiceWithManyInterfaces");
+        assertXpathEquals(service, "count(@auto-export)", "0");
+        assertXpathEquals(service, "count(@interface)", "0");
+        assertXpathEquals(service, "count(interfaces/value)", "2");
+        assertXpathEquals(service, "interfaces/value[1]", Service1.class.getName());
+        assertXpathEquals(service, "interfaces/value[2]", Service2.class.getName());
+    }
+
+    @Test
+    public void shouldGenerateServiceWithRankingFromFactory() throws XPathExpressionException {
+        Node service = getServiceByRef("producedServiceWithRanking");
+        assertXpathEquals(service, "@ranking", "200");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithRankingAndPropertyFromFactory() throws XPathExpressionException {
+        Node service = getServiceByRef("producedServiceWithRankingAndProperies");
+        assertXpathEquals(service, "@ranking", "-9");
+        assertXpathEquals(service, "count(service-properties/entry)", "1");
+        assertXpathEquals(service, "service-properties/entry[@key='a']/@value", "1");
+    }
+
+    @Test
+    public void shouldGenerateServiceWithPropertiesFromFactory() throws XPathExpressionException {
+        Node service = getServiceByRef("producedServiceWithProperies");
+        assertXpathEquals(service, "count(service-properties/entry)", "5");
+        assertXpathEquals(service, "service-properties/entry[@key='oneValue']/@value", "test");
+        assertXpathEquals(service, "count(service-properties/entry[@key='oneValue']/value)", "0");
+
+        assertXpathEquals(service, "count(service-properties/entry[@key='intValue']/@value)", "0");
+        assertXpathEquals(service, "service-properties/entry[@key='intValue']/value/@type", Integer.class.getName());
+        assertXpathEquals(service, "service-properties/entry[@key='intValue']/value/text()", "1");
+
+        assertXpathEquals(service, "count(service-properties/entry[@key='longArray']/@value)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='longArray']/value)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='longArray']/array/value)", "3");
+        assertXpathEquals(service, "service-properties/entry[@key='longArray']/array/@value-type", Long.class.getName());
+        assertXpathEquals(service, "service-properties/entry[@key='longArray']/array/value[1]", "1");
+        assertXpathEquals(service, "service-properties/entry[@key='longArray']/array/value[2]", "2");
+        assertXpathEquals(service, "service-properties/entry[@key='longArray']/array/value[3]", "3");
+
+        assertXpathEquals(service, "count(service-properties/entry[@key='stringArray']/@value)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='stringArray']/value)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='stringArray']/array/value)", "2");
+        assertXpathEquals(service, "count(service-properties/entry[@key='stringArray']/array/@value-type)", "0");
+        assertXpathEquals(service, "service-properties/entry[@key='stringArray']/array/value[1]", "a");
+        assertXpathEquals(service, "service-properties/entry[@key='stringArray']/array/value[2]", "b");
+
+        assertXpathEquals(service, "count(@ranking)", "0");
+        assertXpathEquals(service, "count(service-properties/entry[@key='service.ranking']/@value)", "0");
+        assertXpathEquals(service, "service-properties/entry[@key='service.ranking']/value/@type", Integer.class.getName());
+        assertXpathEquals(service, "service-properties/entry[@key='service.ranking']/value/text()", "5");
     }
 
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
