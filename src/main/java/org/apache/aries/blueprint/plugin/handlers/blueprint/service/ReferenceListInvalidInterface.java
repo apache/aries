@@ -18,18 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
-import org.apache.aries.blueprint.plugin.spi.Availability;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import java.util.List;
 
-class ReferenceParameters {
-
-    static boolean needTimeout(long timeout) {
-        return timeout >= 0;
-    }
-
-    static boolean needAvailability(ContextEnricher contextEnricher, org.apache.aries.blueprint.annotation.service.Availability availability) {
-        Availability defaultAvailability = contextEnricher.getBlueprintConfiguration().getDefaultAvailability();
-        return defaultAvailability == null && availability.equals(org.apache.aries.blueprint.annotation.service.Availability.OPTIONAL) ||
-                defaultAvailability != null && !defaultAvailability.name().equals(availability.name());
+public class ReferenceListInvalidInterface extends RuntimeException {
+    public ReferenceListInvalidInterface(Class<?> received) {
+        super("Reference list must be " + List.class.getName() + " but received " + received.getName());
     }
 }

@@ -18,7 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
+import org.apache.aries.blueprint.annotation.service.Availability;
+import org.apache.aries.blueprint.annotation.service.MemberType;
 import org.apache.aries.blueprint.annotation.service.Reference;
+import org.apache.aries.blueprint.annotation.service.ReferenceList;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 
 import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
@@ -28,23 +31,56 @@ class ReferenceId {
     static String generateReferenceId(Class clazz, Reference reference, ContextEnricher contextEnricher) {
         StringBuilder sb = new StringBuilder();
         writeBeanNameFromSimpleName(sb, clazz.getSimpleName());
-        sb.append("-");
-        if (!"".equals(reference.filter())) {
-            writeEscapedFilter(sb, reference.filter());
-        }
-        sb.append("-");
-        if (!"".equals(reference.componentName())) {
-            sb.append(reference.componentName());
-        }
-        sb.append("-");
-        if (needAvailability(contextEnricher, reference)) {
-            sb.append(reference.availability().name().toLowerCase());
-        }
-        sb.append("-");
-        if (needTimeout(reference)) {
-            sb.append(reference.timeout());
-        }
+        appendFilter(sb, reference.filter());
+        appendComponentName(sb, reference.componentName());
+        appendAvailability(sb, reference.availability(), contextEnricher);
+        appendTimeout(sb, reference.timeout());
         return sb.toString().replaceAll("-+$", "");
+    }
+
+    private static void appendTimeout(StringBuilder sb, long timeout) {
+        sb.append("-");
+        if (needTimeout(timeout)) {
+            sb.append(timeout);
+        }
+    }
+
+    private static void appendAvailability(StringBuilder sb, Availability availability, ContextEnricher contextEnricher) {
+        sb.append("-");
+        if (needAvailability(contextEnricher, availability)) {
+            sb.append(availability.name().toLowerCase());
+        }
+    }
+
+    private static void appendComponentName(StringBuilder sb, String componentName) {
+        sb.append("-");
+        if (!"".equals(componentName)) {
+            sb.append(componentName);
+        }
+    }
+
+    private static void appendFilter(StringBuilder sb, String filter) {
+        sb.append("-");
+        if (!"".equals(filter)) {
+            writeEscapedFilter(sb, filter);
+        }
+    }
+
+    static String generateReferenceListId(ReferenceList referenceList, ContextEnricher contextEnricher) {
+        StringBuilder sb = new StringBuilder("listOf-");
+        writeBeanNameFromSimpleName(sb, referenceList.referenceInterface().getSimpleName());
+        appendFilter(sb, referenceList.filter());
+        appendComponentName(sb, referenceList.componentName());
+        appendAvailability(sb, referenceList.availability(), contextEnricher);
+        appendMemberType(sb, referenceList.memberType());
+        return sb.toString().replaceAll("-+$", "");
+    }
+
+    private static void appendMemberType(StringBuilder sb, MemberType memberType) {
+        sb.append("-");
+        if (memberType == MemberType.SERVICE_REFERENCE) {
+            sb.append("reference");
+        }
     }
 
     private static void writeBeanNameFromSimpleName(StringBuilder sb, String name) {

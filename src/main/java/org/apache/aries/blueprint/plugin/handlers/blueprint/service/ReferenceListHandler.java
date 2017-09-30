@@ -18,7 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
-import org.apache.aries.blueprint.annotation.service.Reference;
+import org.apache.aries.blueprint.annotation.service.MemberType;
+import org.apache.aries.blueprint.annotation.service.ReferenceList;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
@@ -28,56 +29,59 @@ import javax.xml.stream.XMLStreamWriter;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
-import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needTimeout;
 
-public class ReferenceHandler implements CustomDependencyAnnotationHandler<Reference> {
+public class ReferenceListHandler implements CustomDependencyAnnotationHandler<ReferenceList> {
     @Override
-    public Class<Reference> getAnnotation() {
-        return Reference.class;
+    public Class<ReferenceList> getAnnotation() {
+        return ReferenceList.class;
     }
 
     @Override
     public String handleDependencyAnnotation(AnnotatedElement annotatedElement, String name, ContextEnricher contextEnricher) {
-        Reference reference = annotatedElement.getAnnotation(Reference.class);
+        ReferenceList referenceList = annotatedElement.getAnnotation(ReferenceList.class);
         final Class<?> clazz = getClass(annotatedElement);
-        return handleDependencyAnnotation(clazz, reference, name, contextEnricher);
+        return handleDependencyAnnotation(clazz, referenceList, name, contextEnricher);
     }
 
     @Override
-    public String handleDependencyAnnotation(final Class<?> clazz, Reference reference, String name, ContextEnricher contextEnricher) {
-        final String id = name != null ? name : ReferenceId.generateReferenceId(clazz, reference, contextEnricher);
+    public String handleDependencyAnnotation(final Class<?> clazz, ReferenceList referenceList, String name, ContextEnricher contextEnricher) {
+        if (clazz != List.class) {
+            throw new ReferenceListInvalidInterface(clazz);
+        }
+        final String id = name != null ? name : ReferenceId.generateReferenceListId(referenceList, contextEnricher);
         contextEnricher.addBean(id, clazz);
-        contextEnricher.addBlueprintContentWriter(getWriterId(id, clazz), getXmlWriter(id, clazz, reference, contextEnricher));
+        contextEnricher.addBlueprintContentWriter(getWriterId(id, referenceList.referenceInterface()), getXmlWriter(id, referenceList, contextEnricher));
         return id;
     }
 
-    private XmlWriter getXmlWriter(final String id, final Class<?> clazz, final Reference reference, final ContextEnricher contextEnricher) {
+    private XmlWriter getXmlWriter(final String id, final ReferenceList referenceList, final ContextEnricher contextEnricher) {
         return new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
-                writer.writeEmptyElement("reference");
+                writer.writeEmptyElement("reference-list");
                 writer.writeAttribute("id", id);
-                writer.writeAttribute("interface", clazz.getName());
-                if (!"".equals(reference.filter())) {
-                    writer.writeAttribute("filter", reference.filter());
+                writer.writeAttribute("interface", referenceList.referenceInterface().getName());
+                if (!"".equals(referenceList.filter())) {
+                    writer.writeAttribute("filter", referenceList.filter());
                 }
-                if (!"".equals(reference.componentName())) {
-                    writer.writeAttribute("component-name", reference.componentName());
+                if (!"".equals(referenceList.componentName())) {
+                    writer.writeAttribute("component-name", referenceList.componentName());
                 }
-                if (needTimeout(reference.timeout())) {
-                    writer.writeAttribute("timeout", String.valueOf(reference.timeout()));
+                if (needAvailability(contextEnricher, referenceList.availability())) {
+                    writer.writeAttribute("availability", referenceList.availability().name().toLowerCase());
                 }
-                if (needAvailability(contextEnricher, reference.availability())) {
-                    writer.writeAttribute("availability", reference.availability().name().toLowerCase());
+                if (referenceList.memberType() == MemberType.SERVICE_REFERENCE) {
+                    writer.writeAttribute("member-type", "service-reference");
                 }
             }
         };
     }
 
     private String getWriterId(String id, Class<?> clazz) {
-        return "reference/" + clazz.getName() + "/" + id;
+        return "referenceList/" + clazz.getName() + "/" + id;
     }
 
     private Class<?> getClass(AnnotatedElement annotatedElement) {

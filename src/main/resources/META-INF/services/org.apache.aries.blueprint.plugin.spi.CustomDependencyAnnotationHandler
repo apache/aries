@@ -17,3 +17,4 @@
 
 org.apache.aries.blueprint.plugin.handlers.blueprint.config.ConfigPropertiesHandler
 org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceHandler
+org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceListHandler
