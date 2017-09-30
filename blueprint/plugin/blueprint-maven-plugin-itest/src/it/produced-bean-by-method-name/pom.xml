@@ -55,7 +55,7 @@
                 </executions>
                 <configuration>
                     <customParameters>
-                        <blueprint.beanFromFactory.name>fromFactoryMethodName</blueprint.beanFromFactory.name>
+                        <blueprint.beanFromFactory.nameFromFactoryMethodName>true</blueprint.beanFromFactory.nameFromFactoryMethodName>
                     </customParameters>
                 </configuration>
             </plugin>
