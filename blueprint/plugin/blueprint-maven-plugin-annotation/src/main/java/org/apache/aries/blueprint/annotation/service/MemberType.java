@@ -16,20 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
+package org.apache.aries.blueprint.annotation.service;
 
-import org.apache.aries.blueprint.plugin.spi.Availability;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-
-class ReferenceParameters {
-
-    static boolean needTimeout(long timeout) {
-        return timeout >= 0;
-    }
-
-    static boolean needAvailability(ContextEnricher contextEnricher, org.apache.aries.blueprint.annotation.service.Availability availability) {
-        Availability defaultAvailability = contextEnricher.getBlueprintConfiguration().getDefaultAvailability();
-        return defaultAvailability == null && availability.equals(org.apache.aries.blueprint.annotation.service.Availability.OPTIONAL) ||
-                defaultAvailability != null && !defaultAvailability.name().equals(availability.name());
-    }
+public enum MemberType {
+    SERVICE_OBJECT,
+    SERVICE_REFERENCE
 }
