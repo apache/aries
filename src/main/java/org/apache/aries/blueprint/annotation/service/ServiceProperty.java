@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,34 +18,23 @@
  */
 package org.apache.aries.blueprint.annotation.service;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Annotate dependency to inject a service.
+ * Service property for service registration
  */
-@Target({ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Reference {
-    /**
-     * @return filter on reference
-     */
-    String filter() default "";
+public @interface ServiceProperty {
 
     /**
-     * @return component-name on reference
+     * @return name of property
      */
-    String componentName() default "";
+    String name();
 
     /**
-     * @return if existence of at least one service is necessary
+     * @return array of property values
      */
-    Availability availability() default Availability.MANDATORY;
+    String[] values();
 
     /**
-     * @return timeout on reference - negative value means blueprint default
+     * @return type of value or type of each value in values array
      */
-    long timeout() default Long.MIN_VALUE;
+    Class<?> type() default String.class;
 }
