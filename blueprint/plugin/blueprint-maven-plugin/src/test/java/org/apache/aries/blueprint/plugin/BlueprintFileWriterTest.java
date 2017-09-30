@@ -1217,6 +1217,150 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(service, "service-properties/entry[@key='service.ranking']/value/text()", "5");
     }
 
+    @Test
+    public void shouldInjectReferenceListViaField() throws Exception {
+        Node bean = getBeanById("beanWithReferenceLists");
+        assertXpathEquals(bean, "property[@name='ref1Field']/@ref", "listOf-ref1");
+        assertXpathEquals(bean, "property[@name='myRef1Field']/@ref", "myRef1List");
+        assertXpathEquals(bean, "property[@name='myRef1FieldAllProps']/@ref", "listOf-ref1-a453-r1-optional");
+        assertXpathEquals(bean, "property[@name='myRef1FieldFilter']/@ref", "listOf-ref1-x1---reference");
+    }
+
+    @Test
+    public void shouldGenerateReferenceListFromBeanField() throws Exception {
+        Node ref1 = getReferenceListById("listOf-ref1");
+        assertXpathEquals(ref1, "@interface", Ref1.class.getName());
+        assertXpathEquals(ref1, "count(@member-type)", "0");
+
+        Node myRef1 = getReferenceListById("myRef1List");
+        assertXpathEquals(myRef1, "@interface", Ref1.class.getName());
+
+        Node ref1a453r1 = getReferenceListById("listOf-ref1-a453-r1-optional");
+        assertXpathEquals(ref1a453r1, "@interface", Ref1.class.getName());
+        assertXpathEquals(ref1a453r1, "@component-name", "r1");
+        assertXpathEquals(ref1a453r1, "@filter", "(a=453)");
+        assertXpathEquals(ref1a453r1, "@availability", "optional");
+
+        Node ref1x1 = getReferenceListById("listOf-ref1-x1---reference");
+        assertXpathEquals(ref1x1, "@interface", Ref1.class.getName());
+        assertXpathEquals(ref1x1, "@filter", "(x=1)");
+        assertXpathEquals(ref1x1, "count(@component-name)", "0");
+        assertXpathEquals(ref1x1, "@member-type", "service-reference");
+    }
+
+    @Test
+    public void shouldInjectReferenceListViaSetter() throws Exception {
+        Node bean = getBeanById("beanWithReferenceLists");
+        assertXpathEquals(bean, "property[@name='ref2Setter']/@ref", "listOf-ref2");
+        assertXpathEquals(bean, "property[@name='ref2SetterNamed']/@ref", "myRef2List");
+        assertXpathEquals(bean, "property[@name='ref2SetterFull']/@ref", "listOf-ref2-b453-r2-optional");
+        assertXpathEquals(bean, "property[@name='ref2SetterComponent']/@ref", "listOf-ref2--blablabla--reference");
+    }
+
+    @Test
+    public void shouldGenerateReferenceListFromBeanSetter() throws Exception {
+        Node ref2 = getReferenceListById("listOf-ref2");
+        assertXpathEquals(ref2, "@interface", Ref2.class.getName());
+        assertXpathEquals(ref2, "count(@member-type)", "0");
+
+        Node myRef2 = getReferenceListById("myRef2List");
+        assertXpathEquals(myRef2, "@interface", Ref2.class.getName());
+
+        Node ref1b453r2 = getReferenceListById("listOf-ref2-b453-r2-optional");
+        assertXpathEquals(ref1b453r2, "@interface", Ref2.class.getName());
+        assertXpathEquals(ref1b453r2, "@component-name", "r2");
+        assertXpathEquals(ref1b453r2, "@filter", "(b=453)");
+        assertXpathEquals(ref1b453r2, "@availability", "optional");
+
+        Node ref2blablabla = getReferenceListById("listOf-ref2--blablabla--reference");
+        assertXpathEquals(ref2blablabla, "@interface", Ref2.class.getName());
+        assertXpathEquals(ref2blablabla, "@component-name", "blablabla");
+        assertXpathEquals(ref2blablabla, "count(@filter)", "0");
+        assertXpathEquals(ref2blablabla, "@member-type", "service-reference");
+    }
+
+    @Test
+    public void shouldInjectReferenceListViaConstructor() throws Exception {
+        Node bean = getBeanById("beanWithReferenceLists");
+        assertXpathEquals(bean, "argument[1]/@ref", "listOf-ref1");
+        assertXpathEquals(bean, "argument[2]/@ref", "listOf-ref2---optional-reference");
+        assertXpathEquals(bean, "argument[3]/@ref", "listOf-ref1-y3");
+        assertXpathEquals(bean, "argument[4]/@ref", "listOf-ref1--compForConstr");
+        assertXpathEquals(bean, "argument[5]/@ref", "listOf-ref1-y3-compForConstr");
+        assertXpathEquals(bean, "argument[6]/@ref", "ref1ListForCons");
+    }
+
+    @Test
+    public void shouldGenerateReferenceListFromBeanConstructor() throws Exception {
+        Node ref1 = getReferenceListById("listOf-ref1");
+        assertXpathEquals(ref1, "@interface", Ref1.class.getName());
+        assertXpathEquals(ref1, "count(@member-type)", "0");
+
+        Node ref2optional20000 = getReferenceListById("listOf-ref2---optional-reference");
+        assertXpathEquals(ref2optional20000, "@interface", Ref2.class.getName());
+        assertXpathEquals(ref2optional20000, "@availability", "optional");
+        assertXpathEquals(ref2optional20000, "@member-type", "service-reference");
+
+        Node ref1y3 = getReferenceListById("listOf-ref1-y3");
+        assertXpathEquals(ref1y3, "@interface", Ref1.class.getName());
+        assertXpathEquals(ref1y3, "count(@component-name)", "0");
+        assertXpathEquals(ref1y3, "@filter", "(y=3)");
+
+        Node ref1compForConstr = getReferenceListById("listOf-ref1--compForConstr");
+        assertXpathEquals(ref1compForConstr, "@interface", Ref1.class.getName());
+        assertXpathEquals(ref1compForConstr, "@component-name", "compForConstr");
+        assertXpathEquals(ref1compForConstr, "count(@filter)", "0");
+
+        Node ref1y3compForConstr = getReferenceListById("listOf-ref1-y3-compForConstr");
+        assertXpathEquals(ref1y3compForConstr, "@interface", Ref1.class.getName());
+        assertXpathEquals(ref1y3compForConstr, "@component-name", "compForConstr");
+        assertXpathEquals(ref1y3compForConstr, "@filter", "(y=3)");
+
+        Node ref1ForCons = getReferenceListById("ref1ListForCons");
+        assertXpathEquals(ref1ForCons, "@interface", Ref1.class.getName());
+        assertXpathEquals(ref1ForCons, "@availability", "optional");
+    }
+
+    @Test
+    public void shouldInjectReferenceListToProducedBean() throws Exception {
+        Node bean = getBeanById("producedWithReferenceLists");
+        assertXpathEquals(bean, "argument[1]/@ref", "listOf-ref3");
+        assertXpathEquals(bean, "argument[2]/@ref", "listOf-ref4---optional");
+        assertXpathEquals(bean, "argument[3]/@ref", "listOf-ref3-y3");
+        assertXpathEquals(bean, "argument[4]/@ref", "listOf-ref3--compForProduces");
+        assertXpathEquals(bean, "argument[5]/@ref", "listOf-ref3-y3-compForProduces--reference");
+        assertXpathEquals(bean, "argument[6]/@ref", "ref3ListForProduces");
+    }
+
+    @Test
+    public void shouldGenerateReferenceListFromProducedBean() throws Exception {
+        Node ref3 = getReferenceListById("listOf-ref3");
+        assertXpathEquals(ref3, "@interface", Ref3.class.getName());
+        assertXpathEquals(ref3, "count(@member-type)", "0");
+
+        Node ref4optional = getReferenceListById("listOf-ref4---optional");
+        assertXpathEquals(ref4optional, "@interface", Ref4.class.getName());
+        assertXpathEquals(ref4optional, "@availability", "optional");
+
+        Node ref3y3 = getReferenceListById("listOf-ref3-y3");
+        assertXpathEquals(ref3y3, "@interface", Ref3.class.getName());
+        assertXpathEquals(ref3y3, "count(@component-name)", "0");
+        assertXpathEquals(ref3y3, "@filter", "(y=3)");
+
+        Node ref3compForProduces = getReferenceListById("listOf-ref3--compForProduces");
+        assertXpathEquals(ref3compForProduces, "@interface", Ref3.class.getName());
+        assertXpathEquals(ref3compForProduces, "@component-name", "compForProduces");
+        assertXpathEquals(ref3compForProduces, "count(@filter)", "0");
+
+        Node ref3y3compForProduces = getReferenceListById("listOf-ref3-y3-compForProduces--reference");
+        assertXpathEquals(ref3y3compForProduces, "@interface", Ref3.class.getName());
+        assertXpathEquals(ref3y3compForProduces, "@component-name", "compForProduces");
+        assertXpathEquals(ref3y3compForProduces, "@filter", "(y=3)");
+        assertXpathEquals(ref3y3compForProduces, "@member-type", "service-reference");
+
+        Node ref1ForCons = getReferenceListById("ref3ListForProduces");
+        assertXpathEquals(ref1ForCons, "@interface", Ref3.class.getName());
+    }
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }
