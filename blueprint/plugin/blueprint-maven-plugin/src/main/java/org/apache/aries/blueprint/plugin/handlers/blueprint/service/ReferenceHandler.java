@@ -19,7 +19,6 @@
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.apache.aries.blueprint.plugin.spi.Availability;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
@@ -29,6 +28,9 @@ import javax.xml.stream.XMLStreamWriter;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+
+import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
+import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needTimeout;
 
 public class ReferenceHandler implements CustomDependencyAnnotationHandler<Reference> {
     @Override
@@ -40,15 +42,12 @@ public class ReferenceHandler implements CustomDependencyAnnotationHandler<Refer
     public String handleDependencyAnnotation(AnnotatedElement annotatedElement, String name, ContextEnricher contextEnricher) {
         Reference reference = annotatedElement.getAnnotation(Reference.class);
         final Class<?> clazz = getClass(annotatedElement);
-        final String id = name != null ? name : generateReferenceId(clazz, reference, contextEnricher);
-        contextEnricher.addBean(id, clazz);
-        contextEnricher.addBlueprintContentWriter(getWriterId(id, clazz), getXmlWriter(id, clazz, reference, contextEnricher));
-        return id;
+        return handleDependencyAnnotation(clazz, reference, name, contextEnricher);
     }
 
     @Override
     public String handleDependencyAnnotation(final Class<?> clazz, Reference reference, String name, ContextEnricher contextEnricher) {
-        final String id = name != null ? name : generateReferenceId(clazz, reference, contextEnricher);
+        final String id = name != null ? name : ReferenceId.generateReferenceId(clazz, reference, contextEnricher);
         contextEnricher.addBean(id, clazz);
         contextEnricher.addBlueprintContentWriter(getWriterId(id, clazz), getXmlWriter(id, clazz, reference, contextEnricher));
         return id;
@@ -77,17 +76,6 @@ public class ReferenceHandler implements CustomDependencyAnnotationHandler<Refer
         };
     }
 
-    private boolean needTimeout(Reference reference) {
-        return reference.timeout() >= 0;
-    }
-
-    private boolean needAvailability(ContextEnricher contextEnricher, Reference reference) {
-        org.apache.aries.blueprint.annotation.service.Availability availability = reference.availability();
-        Availability defaultAvailability = contextEnricher.getBlueprintConfiguration().getDefaultAvailability();
-        return defaultAvailability == null && availability.equals(org.apache.aries.blueprint.annotation.service.Availability.OPTIONAL) ||
-                defaultAvailability != null && !defaultAvailability.name().equals(reference.availability().name());
-    }
-
     private String getWriterId(String id, Class<?> clazz) {
         return "reference/" + clazz.getName() + "/" + id;
     }
@@ -103,42 +91,6 @@ public class ReferenceHandler implements CustomDependencyAnnotationHandler<Refer
             return ((Field) annotatedElement).getType();
         }
         throw new RuntimeException("Unknown annotated element");
-    }
-
-    private String generateReferenceId(Class clazz, Reference reference, ContextEnricher contextEnricher) {
-        StringBuilder sb = new StringBuilder();
-        writeBeanNameFromSimpleName(sb, clazz.getSimpleName());
-        sb.append("-");
-        if (!"".equals(reference.filter())) {
-            writeEscapedFilter(sb, reference.filter());
-        }
-        sb.append("-");
-        if (!"".equals(reference.componentName())) {
-            sb.append(reference.componentName());
-        }
-        sb.append("-");
-        if (needAvailability(contextEnricher, reference)) {
-            sb.append(reference.availability().name().toLowerCase());
-        }
-        sb.append("-");
-        if (needTimeout(reference)) {
-            sb.append(reference.timeout());
-        }
-        return sb.toString().replaceAll("-+$", "");
-    }
-
-    private static void writeBeanNameFromSimpleName(StringBuilder sb, String name) {
-        sb.append(name.substring(0, 1).toLowerCase());
-        sb.append(name.substring(1, name.length()));
-    }
-
-    private void writeEscapedFilter(StringBuilder sb, String filter) {
-        for (int c = 0; c < filter.length(); c++) {
-            char ch = filter.charAt(c);
-            if (ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch >= '0' && ch <= '9') {
-                sb.append(ch);
-            }
-        }
     }
 
 }
