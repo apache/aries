@@ -19,8 +19,8 @@
 package org.apache.aries.blueprint.plugin.model;
 
 public class TransactionalDef {
-    final String method;
-    final String type;
+    private final String method;
+    private final String type;
 
     public TransactionalDef(String method, String type) {
         this.method = method;
