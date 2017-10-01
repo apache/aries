@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
+
 import javax.inject.Named;
 
 @Named("my1")

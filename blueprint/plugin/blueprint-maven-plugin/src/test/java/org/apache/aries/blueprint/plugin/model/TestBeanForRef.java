@@ -23,8 +23,8 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceUnit;
 
-import org.apache.aries.blueprint.plugin.test.ServiceA;
-import org.apache.aries.blueprint.plugin.test.ServiceB;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 

@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.test.referencelistener;
 
-import org.apache.aries.blueprint.plugin.test.ServiceB;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
 
 public class ReferenceListenerToProduceWithoutAnnotation {
     public void addMe(ServiceB serviceB) {

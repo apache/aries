@@ -21,6 +21,8 @@ package org.apache.aries.blueprint.plugin.test;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

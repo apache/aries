@@ -21,7 +21,7 @@ package org.apache.aries.blueprint.plugin.test.referencelistener;
 import com.google.inject.Singleton;
 import org.apache.aries.blueprint.annotation.referencelistener.Cardinality;
 import org.apache.aries.blueprint.annotation.referencelistener.ReferenceListener;
-import org.apache.aries.blueprint.plugin.test.ServiceA;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 
 import javax.inject.Named;
 

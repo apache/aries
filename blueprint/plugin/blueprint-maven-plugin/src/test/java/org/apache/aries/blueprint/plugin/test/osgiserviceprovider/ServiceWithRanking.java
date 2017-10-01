@@ -18,7 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.test.osgiserviceprovider;
 
-import org.apache.aries.blueprint.plugin.test.ServiceA;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
 import org.ops4j.pax.cdi.api.Property;
