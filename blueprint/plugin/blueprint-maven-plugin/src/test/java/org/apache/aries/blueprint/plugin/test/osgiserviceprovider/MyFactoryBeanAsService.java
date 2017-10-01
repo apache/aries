@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test;
+package org.apache.aries.blueprint.plugin.test.osgiserviceprovider;
 
+import org.apache.aries.blueprint.plugin.test.MyProduced;
+import org.apache.aries.blueprint.plugin.test.ServiceA;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
 import org.ops4j.pax.cdi.api.Property;
@@ -33,21 +35,21 @@ public class MyFactoryBeanAsService {
     @Named("producedForService")
     @OsgiServiceProvider
     public MyProduced createBeanWithServiceExpose1() {
-        return new MyProduced("My message");
+        return null;
     }
 
     @Produces
     @Named("producedForServiceWithOneInterface")
     @OsgiServiceProvider(classes = MyProduced.class)
     public MyProduced createBeanWithServiceExpose2() {
-        return new MyProduced("My message");
+        return null;
     }
 
     @Produces
     @Named("producedForServiceWithTwoInterfaces")
     @OsgiServiceProvider(classes = {MyProduced.class, ServiceA.class})
     public MyProduced createBeanWithServiceExpose3() {
-        return new MyProduced("My message");
+        return null;
     }
 
     @Produces
@@ -59,6 +61,6 @@ public class MyFactoryBeanAsService {
         @Property(name = "service.ranking", value = "100")
     })
     public MyProduced createBeanWithServiceExpose4() {
-        return new MyProduced("My message");
+        return null;
     }
 }
