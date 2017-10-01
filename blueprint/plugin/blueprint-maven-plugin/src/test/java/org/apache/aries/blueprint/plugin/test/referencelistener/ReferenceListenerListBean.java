@@ -22,7 +22,7 @@ import org.apache.aries.blueprint.annotation.referencelistener.Availability;
 import org.apache.aries.blueprint.annotation.referencelistener.Bind;
 import org.apache.aries.blueprint.annotation.referencelistener.ReferenceListener;
 import org.apache.aries.blueprint.annotation.referencelistener.Unbind;
-import org.apache.aries.blueprint.plugin.test.ServiceA;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 
 import javax.inject.Singleton;
 

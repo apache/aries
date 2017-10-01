@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.plugin.test;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.springframework.beans.factory.annotation.Value;
 

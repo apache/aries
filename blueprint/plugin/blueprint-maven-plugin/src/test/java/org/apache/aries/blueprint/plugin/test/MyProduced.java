@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 import org.springframework.context.annotation.Lazy;
 
 import javax.inject.Inject;

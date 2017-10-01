@@ -20,6 +20,8 @@ package org.apache.aries.blueprint.plugin.test;
 
 import javax.inject.Singleton;
 
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 
 @Singleton

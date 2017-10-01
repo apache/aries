@@ -25,6 +25,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.transaction.Transactional;
 
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ParentBean {

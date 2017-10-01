@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,7 +19,6 @@
 package org.apache.aries.blueprint.plugin.test.cditransactional;
 
 import org.apache.aries.blueprint.plugin.test.ParentBean;
-import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -27,19 +26,8 @@ import javax.transaction.cdi.Transactional;
 import javax.transaction.cdi.Transactional.TxType;
 
 @Singleton
-@Transactional(value=TxType.REQUIRES_NEW)
-@Lazy
+@Transactional(value = TxType.REQUIRES_NEW)
 public class CdiTransactionalAnnotatedBean extends ParentBean {
-
-    public void overridenInit() {
-        // By overriding the method and removing the annotation, this method has lost its
-        // @PostConstruct method because it isn't @Inherited
-    }
-
-    @PostConstruct
-    public void init() {
-
-    }
 
     @Transactional(TxType.NOT_SUPPORTED)
     public void txNotSupported() {
