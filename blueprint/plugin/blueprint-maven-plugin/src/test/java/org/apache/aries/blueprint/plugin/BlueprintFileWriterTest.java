@@ -468,7 +468,7 @@ public class BlueprintFileWriterTest {
     @Test
     public void testConfigPropertiesInjection() throws Exception {
         Node bean = getBeanById("beanWithConfigurationProperties");
-        assertXpathEquals(bean, "@class", "org.apache.aries.blueprint.plugin.test.BeanWithConfigurationProperties");
+        assertXpathEquals(bean, "@class", "org.apache.aries.blueprint.plugin.test.configuration.BeanWithConfigurationProperties");
         assertXpathEquals(bean, "argument[1]/@ref", "testProps5");
         assertXpathEquals(bean, "argument[2]/@ref", "properties-aries-test6-false");
         assertXpathEquals(bean, "property[@name='prop1']/@ref", "properties-aries-test1-true");

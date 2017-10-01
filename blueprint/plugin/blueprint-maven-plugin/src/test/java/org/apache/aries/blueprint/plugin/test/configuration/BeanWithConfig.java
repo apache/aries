@@ -16,11 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test;
+package org.apache.aries.blueprint.plugin.test.configuration;
 
 import org.apache.aries.blueprint.annotation.config.Config;
 import org.apache.aries.blueprint.annotation.config.ConfigProperty;
 import org.apache.aries.blueprint.annotation.config.DefaultProperty;
+import org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;
