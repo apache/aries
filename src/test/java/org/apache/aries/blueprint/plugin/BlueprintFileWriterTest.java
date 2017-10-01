@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import org.apache.aries.blueprint.plugin.model.Blueprint;
 import org.apache.aries.blueprint.plugin.model.TransactionalDef;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
+import org.apache.aries.blueprint.plugin.test.MyBean5;
 import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
@@ -231,9 +232,11 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void testGenerateBeanWithConstructorInjection() throws Exception {
-        // Bean with constructor injection
         Node myBean5 = getBeanById("myBean5");
+        assertXpathEquals(myBean5, "@class", MyBean5.class.getName());
         assertXpathDoesNotExist(myBean5, "@field-injection");
+        assertXpathDoesNotExist(myBean5, "property");
+        assertXpathEquals(myBean5, "count(argument)", "8");
         assertXpathEquals(myBean5, "argument[1]/@ref", "my2");
         assertXpathEquals(myBean5, "argument[2]/@ref", "my1");
         assertXpathEquals(myBean5, "argument[3]/@ref", "serviceABImpl");
@@ -241,6 +244,7 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(myBean5, "argument[5]/@ref", "ser1");
         assertXpathEquals(myBean5, "argument[6]/@ref", "ser2");
         assertXpathEquals(myBean5, "argument[7]/@ref", "serviceAImplQualified");
+        assertXpathEquals(myBean5, "argument[8]/@ref", "produced2");
     }
 
     @Test
@@ -476,6 +480,15 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(bean, "property[@name='prop3']/@ref", "properties-aries-test3-true");
         assertXpathEquals(bean, "property[@name='prop4']/@ref", "testProps4");
         assertXpathEquals(bean, "property[@name='prop7']/@ref", "properties-aries-test7-false");
+    }
+
+    @Test
+    public void testConfigPropertyInjection() throws Exception {
+        Node bean = getBeanById("beanWithConfig");
+        assertXpathEquals(bean, "@class", "org.apache.aries.blueprint.plugin.test.configuration.BeanWithConfig");
+        assertXpathDoesNotExist(bean, "argument");
+        assertXpathEquals(bean, "count(property)", "1");
+        assertXpathEquals(bean, "property[@name='title']/@value", "$[title]");
     }
 
     @Test

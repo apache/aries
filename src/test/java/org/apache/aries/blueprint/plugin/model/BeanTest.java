@@ -27,11 +27,9 @@ import org.apache.aries.blueprint.plugin.bad.BadFieldBean1;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean2;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean3;
 import org.apache.aries.blueprint.plugin.bad.FieldBean4;
-import org.apache.aries.blueprint.plugin.test.configuration.BeanWithConfig;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;
-import org.apache.aries.blueprint.plugin.test.MyBean5;
 import org.apache.aries.blueprint.plugin.test.ServiceAImpl1;
 import org.junit.Test;
 
@@ -40,7 +38,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -178,34 +175,5 @@ public class BeanTest {
     @Test
     public void testFieldBean4() {
         new Blueprint(blueprintConfiguration, FieldBean4.class);
-    }
-
-    @Test
-    public void testParseBeanWithConstructorInject() {
-        Bean bean = new Bean(MyBean5.class, blueprint);
-        bean.resolveDependency(blueprint);
-        assertEquals(MyBean5.class, bean.clazz);
-        assertEquals("myBean5", bean.id); // Name derived from class name
-        assertTrue("There should be no persistenceUnit", getPersistenceFields(bean).isEmpty());
-        assertEquals(0, bean.properties.size());
-        assertEquals(8, bean.constructorArguments.size());
-        assertEquals("my2", bean.constructorArguments.get(0).getRef());
-        assertEquals("serviceA", bean.constructorArguments.get(1).getRef());
-        assertEquals("serviceB", bean.constructorArguments.get(2).getRef());
-        assertEquals("100", bean.constructorArguments.get(3).getValue());
-        assertEquals("ser1", bean.constructorArguments.get(4).getRef());
-        assertEquals("ser2", bean.constructorArguments.get(5).getRef());
-        assertEquals("serviceA", bean.constructorArguments.get(6).getRef());
-        assertEquals("produced2", bean.constructorArguments.get(7).getRef());
-    }
-
-    @Test
-    public void testParseBeanWithConfig() {
-        Bean bean = new Bean(BeanWithConfig.class, blueprint);
-        bean.resolveDependency(blueprint);
-        assertEquals("There should be a property", 1, bean.properties.size());
-        Property prop = bean.properties.iterator().next();
-        assertEquals("title", prop.name);
-        assertEquals("$[title]", prop.value);
     }
 }
