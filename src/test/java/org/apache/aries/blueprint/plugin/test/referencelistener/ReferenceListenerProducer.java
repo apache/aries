@@ -21,7 +21,7 @@ package org.apache.aries.blueprint.plugin.test.referencelistener;
 import org.apache.aries.blueprint.annotation.referencelistener.Availability;
 import org.apache.aries.blueprint.annotation.referencelistener.Cardinality;
 import org.apache.aries.blueprint.annotation.referencelistener.ReferenceListener;
-import org.apache.aries.blueprint.plugin.test.ServiceB;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Named;

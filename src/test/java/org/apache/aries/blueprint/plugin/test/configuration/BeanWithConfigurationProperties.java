@@ -20,7 +20,6 @@ package org.apache.aries.blueprint.plugin.test.configuration;
 
 import org.apache.aries.blueprint.annotation.config.ConfigProperties;
 import org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor;
-import org.ops4j.pax.cdi.api.OsgiService;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
