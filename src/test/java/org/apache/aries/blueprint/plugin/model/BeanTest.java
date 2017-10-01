@@ -27,7 +27,7 @@ import org.apache.aries.blueprint.plugin.bad.BadFieldBean1;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean2;
 import org.apache.aries.blueprint.plugin.bad.BadFieldBean3;
 import org.apache.aries.blueprint.plugin.bad.FieldBean4;
-import org.apache.aries.blueprint.plugin.test.BeanWithConfig;
+import org.apache.aries.blueprint.plugin.test.configuration.BeanWithConfig;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.MyBean4;

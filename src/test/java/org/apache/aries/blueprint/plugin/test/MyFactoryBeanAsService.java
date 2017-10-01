@@ -42,6 +42,7 @@ public class MyFactoryBeanAsService {
     public MyProduced createBeanWithServiceExpose2() {
         return new MyProduced("My message");
     }
+
     @Produces
     @Named("producedForServiceWithTwoInterfaces")
     @OsgiServiceProvider(classes = {MyProduced.class, ServiceA.class})
