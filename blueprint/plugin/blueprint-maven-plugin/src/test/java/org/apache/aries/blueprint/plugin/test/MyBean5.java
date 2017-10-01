@@ -31,19 +31,6 @@ import javax.inject.Singleton;
 @DependsOn("myBean6")
 public class MyBean5 {
 
-    ServiceA serviceA1;
-
-    ServiceA serviceA2;
-
-    ServiceB serviceB;
-
-    int bla;
-
-    ServiceC myReference;
-    ServiceC myReference2;
-
-    ServiceA serviceAAnnotated;
-
     @Inject
     public MyBean5(@Named("my2") ServiceA serviceA1,
                    ServiceA serviceA2,
@@ -53,13 +40,6 @@ public class MyBean5 {
                    @OsgiService(filter = "(mode=123)") @Named("ser2") ServiceC myReference2,
                    @AnnotatedService ServiceA serviceAAnnotated,
                    @Named("produced2") MyProduced myProduced) {
-        this.serviceA1 = serviceA1;
-        this.serviceA2 = serviceA2;
-        this.serviceB = serviceB;
-        this.bla = bla;
-        this.myReference = myReference;
-        this.myReference2 = myReference2;
-        this.serviceAAnnotated = serviceAAnnotated;
     }
 
     public MyBean5() {

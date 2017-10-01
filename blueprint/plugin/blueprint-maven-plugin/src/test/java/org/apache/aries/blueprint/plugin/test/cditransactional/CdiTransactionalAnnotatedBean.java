@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test;
+package org.apache.aries.blueprint.plugin.test.cditransactional;
 
+import org.apache.aries.blueprint.plugin.test.ParentBean;
 import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
