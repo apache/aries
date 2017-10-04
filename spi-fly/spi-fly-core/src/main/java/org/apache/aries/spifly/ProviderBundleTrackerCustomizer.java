@@ -51,6 +51,8 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
+import javax.naming.spi.InitialContextFactory;
+
 /**
  * Listens for new bundles being installed and registers them as service providers if applicable.
  */
@@ -169,6 +171,14 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         else
                             properties = findServiceRegistrationProperties(bundle.getHeaders(), registrationClassName, className);
 
+                        String[] registrationClassNames;
+                        if (registrationClassName.equals("javax.naming.spi.InitialContextFactory")) {
+                            registrationClassNames = new String[2];
+                            registrationClassNames[1] = cls.getName();
+                        } else {
+                            registrationClassNames = new String[1];
+                        }
+                        registrationClassNames[0] = registrationClassName;
                         if (properties != null) {
                             properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
                             properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, cls.getName());
@@ -178,13 +188,13 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                             if (sm != null) {
                                 if (bundle.hasPermission(new ServicePermission(registrationClassName, ServicePermission.REGISTER))) {
                                     reg = bundle.getBundleContext().registerService(
-                                            registrationClassName, new ProviderServiceFactory(cls), properties);
+                                            registrationClassNames, new ProviderServiceFactory(cls), properties);
                                 } else {
                                     log(LogService.LOG_INFO, "Bundle " + bundle + " does not have the permission to register services of type: " + registrationClassName);
                                 }
                             } else {
                                 reg = bundle.getBundleContext().registerService(
-                                        registrationClassName, new ProviderServiceFactory(cls), properties);
+                                        registrationClassNames, new ProviderServiceFactory(cls), properties);
                             }
 
                             if (reg != null) {
