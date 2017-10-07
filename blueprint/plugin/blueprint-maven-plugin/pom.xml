@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.9.0</version>
+    <version>1.9.1-SNAPSHOT</version>
     <name>Apache Aries Blueprint Maven Plugin</name>
     <description>
         Maven plugin to create blueprint files from annotations
@@ -70,9 +70,9 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/blueprint-maven-plugin-1.9.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/blueprint-maven-plugin-1.9.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/blueprint-maven-plugin-1.9.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/plugin/blueprint-maven-plugin</url>
     </scm>
 
     <build>
