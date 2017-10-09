@@ -669,7 +669,9 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       
       result.add(modelledResourceManager.getModelledResource(null, FileSystem.getFSRoot(temp)));
       // delete the temp file
-      temp.delete();
+      if(!temp.exists() && !temp.delete()) {
+      	throw new IOException("Can not delete the template file.");
+      }
       IOUtils.deleteRecursive(dir);
     }
     _logger.debug(LOG_EXIT, "getByValueBundles", new Object[]{result});
