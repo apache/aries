@@ -132,7 +132,7 @@ public class BundleResource implements Resource
   public String[] getCategories() {
     logger.debug(LOG_ENTRY,"getCategories");
     logger.debug(LOG_EXIT,"getCategories", null);
-    return null;
+    return new String[0];
   }
 
 
