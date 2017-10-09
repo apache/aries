@@ -60,7 +60,7 @@ public class BundleSelector implements FileSelector {
 			}
 			catch (Exception e) {
 				// nothing to do
-				isValid = isValid && false;
+				isValid = false;
 			}
 			finally {
 				try {
