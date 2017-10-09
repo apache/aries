@@ -91,7 +91,7 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     this.appName = appMap.get(AppConstants.APPLICATION_NAME);
     this.appScope = this.appSymbolicName + "_" + this.appVersion.toString();
     
-    if (this.appSymbolicName == null || this.appVersion == null) {
+    if (this.appSymbolicName == null) {
       throw new IllegalArgumentException("Failed to create ApplicationMetadataImpl object from Manifest " + appManifest);
     }
     
