@@ -62,30 +62,30 @@ public class MarketSummaryDataBean implements Serializable
 
 	public String toString()
 	{
-		String ret = "\n\tMarket Summary at: " + getSummaryDate()
-			+ "\n\t\t        TSIA:" + getTSIA()
-			+ "\n\t\t    openTSIA:" + getOpenTSIA()
-			+ "\n\t\t        gain:" + getGainPercent()
-			+ "\n\t\t      volume:" + getVolume()
-			;
+		StringBuilder ret = new StringBuilder();
+		ret.append("\n\tMarket Summary at: ").append(getSummaryDate())
+		   .append("\n\t\t        TSIA:").append(getTSIA())
+		   .append("\n\t\t    openTSIA:").append(getOpenTSIA())
+		   .append("\n\t\t        gain:").append(getGainPercent())
+		   .append("\n\t\t      volume:").append(getVolume());
 
 		if ( (getTopGainers()==null) || (getTopLosers()==null) )
-			return ret;
-		ret += "\n\t\t   Current Top Gainers:";
+			return ret.toString();
+		ret.append("\n\t\t   Current Top Gainers:");
 		Iterator it = getTopGainers().iterator();
 		while ( it.hasNext() ) 
 		{
 			QuoteDataBean quoteData = (QuoteDataBean) it.next();
-			ret += ( "\n\t\t\t"  + quoteData.toString() );
+			ret.append("\n\t\t\t").append(quoteData.toString());
 		}
-		ret += "\n\t\t   Current Top Losers:";
+		ret.append("\n\t\t   Current Top Losers:");
 		it = getTopLosers().iterator();
 		while ( it.hasNext() ) 
 		{
 			QuoteDataBean quoteData = (QuoteDataBean) it.next();
-			ret += ( "\n\t\t\t"  + quoteData.toString() );
+			ret.append("\n\t\t\t").append(quoteData.toString());
 		}
-		return ret;		
+		return ret.toString();		
 	}
 	public String toHTML()
 	{
