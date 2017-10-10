@@ -19,7 +19,7 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
-import org.apache.aries.osgi.functional.internal.DoublyLinkedList.Node;
+import org.apache.aries.osgi.functional.internal.ConcurrentDoublyLinkedList.Node;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
@@ -181,25 +181,22 @@ public class OSGiImpl<T> implements OSGi<T> {
 				AtomicReference<OSGiResult> otherCloseReference =
 					new AtomicReference<>();
 
-				DoublyLinkedList<Tuple<T>> identities =
-					new DoublyLinkedList<>();
+				ConcurrentDoublyLinkedList<Tuple<T>> identities =
+					new ConcurrentDoublyLinkedList<>();
 
-				DoublyLinkedList<Tuple<Function<T, S>>> funs =
-					new DoublyLinkedList<>();
+				ConcurrentDoublyLinkedList<Tuple<Function<T, S>>> funs =
+					new ConcurrentDoublyLinkedList<>();
 
 				return new OSGiResultImpl(
 					() -> {
 						OSGiResultImpl or1 = _operation.run(
 							bundleContext,
 							t -> {
-								synchronized (identities) {
-									Node<Tuple<T>> node = identities.addLast(t);
+								Node node = identities.addLast(t);
 
-									t.onTermination(node::remove);
+								t.onTermination(node::remove);
 
-									funs.forEach(
-										f -> processAdded(op, f, t));
-								}
+								funs.forEach(f -> processAdded(op, f, t));
 							}
 						);
 
@@ -209,15 +206,12 @@ public class OSGiImpl<T> implements OSGi<T> {
 							((OSGiImpl<Function<T, S>>) fun)._operation.run(
 								bundleContext,
 								f -> {
-									synchronized (identities) {
-										Node<Tuple<Function<T, S>>> node =
-											funs.addLast(f);
+									Node node = funs.addLast(f);
 
-										f.onTermination(node::remove);
+									f.onTermination(node::remove);
 
-										identities.forEach(
-											t -> processAdded(op, f, t));
-									}
+									identities.forEach(
+										t -> processAdded(op, f, t));
 								});
 
 						otherCloseReference.set(funRun);
@@ -227,11 +221,9 @@ public class OSGiImpl<T> implements OSGi<T> {
 						funRun.start();
 					},
 					() -> {
-						synchronized (identities) {
-							myCloseReference.get().close();
+						myCloseReference.get().close();
 
-							otherCloseReference.get().close();
-						}
+						otherCloseReference.get().close();
 					});
 			}
 			));
