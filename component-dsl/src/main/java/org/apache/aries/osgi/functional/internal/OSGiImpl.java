@@ -84,7 +84,16 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@Override
 	public OSGiResult run(BundleContext bundleContext, Consumer<T> andThen) {
 		OSGiResultImpl osgiResult =
-			_operation.run(bundleContext, t -> andThen.accept(t._t));
+			_operation.run(
+				bundleContext,
+				t -> {
+					if (!t.isClosed()) {
+						andThen.accept(t._t);
+					}
+					if (t.isClosed()) {
+						t.terminate();
+					}
+				});
 
 		osgiResult.start();
 
