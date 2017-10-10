@@ -70,7 +70,7 @@ public class DSLTest {
 
         assertEquals(0, atomicInteger.get());
 
-        try (OSGiResult<Integer> result = just.run(
+        try (OSGiResult result = just.run(
             bundleContext, atomicInteger::set))
         {
             assertEquals(25, atomicInteger.get());
@@ -80,7 +80,7 @@ public class DSLTest {
 
         OSGi<Integer> map = just(25).map(s -> s + 5);
 
-        try (OSGiResult<Integer> result = map.run(
+        try (OSGiResult result = map.run(
             bundleContext, atomicInteger::set))
         {
             assertEquals(30, atomicInteger.get());
@@ -90,7 +90,7 @@ public class DSLTest {
 
         OSGi<Integer> flatMap = just(25).flatMap(s -> just(s + 10));
 
-        try (OSGiResult<Integer> result = flatMap.run(
+        try (OSGiResult result = flatMap.run(
             bundleContext, atomicInteger::set))
         {
             assertEquals(35, atomicInteger.get());
@@ -100,7 +100,7 @@ public class DSLTest {
 
         OSGi<Integer> filter = just(25).filter(s -> s % 2 == 0);
 
-        try (OSGiResult<Integer> result = filter.run(
+        try (OSGiResult result = filter.run(
             bundleContext, atomicInteger::set))
         {
             assertEquals(0, atomicInteger.get());
@@ -110,7 +110,7 @@ public class DSLTest {
 
         filter = just(25).filter(s -> s % 2 != 0);
 
-        try (OSGiResult<Integer> result = filter.run(
+        try (OSGiResult result = filter.run(
             bundleContext, atomicInteger::set))
         {
             assertEquals(25, atomicInteger.get());
@@ -126,7 +126,7 @@ public class DSLTest {
         ServiceRegistration<Service> serviceRegistration = null;
 
         try(
-            OSGiResult<ServiceReference<Service>> osGiResult =
+            OSGiResult osGiResult =
                 serviceReferences(Service.class).
                 run(bundleContext, atomicReference::set)
         ) {
@@ -159,7 +159,7 @@ public class DSLTest {
         ServiceRegistration<Service> serviceRegistration = null;
 
         try(
-            OSGiResult<?> osGiResult = program.run(
+            OSGiResult osGiResult = program.run(
             bundleContext, atomicReference::set)
         ) {
             assertNull(atomicReference.get());
@@ -194,7 +194,7 @@ public class DSLTest {
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
 
-        try(OSGiResult<Dictionary<String, ?>> result =
+        try(OSGiResult result =
             configuration("test.configuration").run(
                 bundleContext,
                 x -> {
@@ -239,7 +239,7 @@ public class DSLTest {
 
         Configuration configuration = null;
 
-        try(OSGiResult<Dictionary<String, ?>> result =
+        try(OSGiResult result =
             configurations("test.configuration").run(
                 bundleContext,
                 x -> {
@@ -275,7 +275,7 @@ public class DSLTest {
 
         Service service = new Service();
 
-        OSGiResult<ServiceRegistration<Service>> result = register(
+        OSGiResult result = register(
             Service.class, service, new HashMap<>()).
             run(bundleContext);
 
@@ -313,7 +313,7 @@ public class DSLTest {
                 }})
             );
 
-        OSGiResult<ServiceRegistration<Service>> result = program.run(
+        OSGiResult result = program.run(
             bundleContext);
 
         assertEquals(
@@ -454,7 +454,7 @@ public class DSLTest {
             program = services(filter).then(program);
         }
 
-        try (OSGiResult<?> result = program.run(bundleContext)) {
+        try (OSGiResult result = program.run(bundleContext)) {
             assertFalse(closed.get());
             assertFalse(executed.get());
 
@@ -509,7 +509,7 @@ public class DSLTest {
 
         assertNull(current.get());
 
-        try (OSGiResult<Void> result = program.run(bundleContext)) {
+        try (OSGiResult result = program.run(bundleContext)) {
             ServiceRegistration<Service> serviceRegistrationOne =
                 bundleContext.registerService(
                     Service.class, new Service(),

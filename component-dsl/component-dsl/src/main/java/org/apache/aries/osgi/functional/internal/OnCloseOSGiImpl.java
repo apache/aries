@@ -23,14 +23,11 @@ package org.apache.aries.osgi.functional.internal;
 public class OnCloseOSGiImpl extends OSGiImpl<Void> {
 
 	public OnCloseOSGiImpl(Runnable action) {
-		super(bundleContext -> {
-			Pipe<Void, Void> added = Pipe.create();
-
+		super((bundleContext, op) -> {
 			Tuple<Void> tuple = Tuple.create(null);
 
-			return new OSGiResultImpl<>(
-				added,
-				() -> added.getSource().accept(tuple),
+			return new OSGiResultImpl(
+				() -> op.accept(tuple),
 				() -> {
 					action.run();
 

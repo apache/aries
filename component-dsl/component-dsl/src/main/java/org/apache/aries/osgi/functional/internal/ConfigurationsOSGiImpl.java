@@ -35,32 +35,25 @@ public class ConfigurationsOSGiImpl
 	extends OSGiImpl<Dictionary<String, ?>> {
 
 	public ConfigurationsOSGiImpl(String factoryPid) {
-		super(bundleContext -> {
+		super((bundleContext, op) -> {
 			Map<String, Tuple<Dictionary<String, ?>>> results =
 				new ConcurrentHashMap<>();
 
 			AtomicReference<ServiceRegistration<ManagedServiceFactory>>
 				serviceRegistrationReference = new AtomicReference<>(null);
 
-			Pipe<Dictionary<String, ?>, Dictionary<String, ?>>
-				added = Pipe.create();
-
-			Consumer<Tuple<Dictionary<String, ?>>> addedSource =
-				added.getSource();
-
 			Runnable start = () ->
 				serviceRegistrationReference.set(
 					bundleContext.registerService(
 						ManagedServiceFactory.class,
-						new ConfigurationsManagedServiceFactory(
-							results, addedSource),
+						new ConfigurationsManagedServiceFactory(results, op),
 						new Hashtable<String, Object>() {{
 							put("service.pid", factoryPid);
 						}}));
 
 
-			return new OSGiResultImpl<>(
-				added, start,
+			return new OSGiResultImpl(
+				start,
 				() -> {
 					serviceRegistrationReference.get().unregister();
 

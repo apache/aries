@@ -25,7 +25,6 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -33,21 +32,23 @@ import java.util.function.Function;
  */
 class Tuple<T> implements Event<T>, SentEvent<T> {
 
-	public T t;
-	private Deque<Runnable> _closingHandlers = new LinkedList<>();
-	private DoublyLinkedList<Tuple<?>> _relatedTuples =
-		new DoublyLinkedList<>();
-	private AtomicBoolean closed = new AtomicBoolean(false);
+	public final T _t;
+	private final Deque<Runnable> _closingHandlers;
+	private final DoublyLinkedList<Tuple<?>> _relatedTuples;
+	private final AtomicBoolean closed = new AtomicBoolean(false);
 	private Event<T> cause = this;
 
 	private Tuple(T t) {
-		this(t, new LinkedList<>());
+		this(t, new LinkedList<>(), new DoublyLinkedList<>());
 	}
 
-	private Tuple(T t, Deque<Runnable> closingHandlers) {
-		this.t = t;
+	private Tuple(
+		T t, Deque<Runnable> closingHandlers,
+		DoublyLinkedList<Tuple<?>> relatedTuples) {
 
+		_t = t;
 		_closingHandlers = closingHandlers;
+		_relatedTuples = relatedTuples;
 	}
 
 	public void addRelatedTuple(Tuple<?> tuple) {
@@ -67,12 +68,12 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 
 	@Override
 	public T getContent() {
-		return t;
+		return _t;
 	}
 
 	@Override
 	public int hashCode() {
-		return t.hashCode();
+		return _t.hashCode();
 	}
 
 	@Override
@@ -85,7 +86,7 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 	}
 
 	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
-		return new Tuple<>(fun.apply(t), _closingHandlers);
+		return new Tuple<>(fun.apply(_t), _closingHandlers, _relatedTuples);
 	}
 
 	public void onTermination(Runnable terminator) {

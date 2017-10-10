@@ -18,12 +18,7 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
-import org.apache.aries.osgi.functional.OSGiResult;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -34,40 +29,19 @@ public class FlatMapImpl<T, S> extends OSGiImpl<S> {
 	public FlatMapImpl(
 		OSGiImpl<T> previous, Function<? super T, OSGi<? extends S>> fun) {
 
-		super((bundleContext) -> {
-			AtomicReference<Runnable> closeReference =
-				new AtomicReference<>(NOOP);
+		super((bundleContext, op) ->
+			previous._operation.run(
+				bundleContext,
+				t -> {
+					OSGiImpl<S> program = (OSGiImpl<S>) fun.apply(t._t);
 
-			Pipe<S, S> added = Pipe.create();
+					OSGiResultImpl result =
+						program._operation.run(bundleContext, op);
 
-			Consumer<Tuple<S>> addedSource = added.getSource();
+					t.onTermination(result::close);
 
-			return new OSGiResultImpl<>(
-				added,
-				() -> {
-					OSGiResultImpl<T> or1 = previous._operation.run(
-						bundleContext);
-
-					closeReference.set(or1.close);
-
-					or1.added.map(t -> {
-						OSGiImpl<S> program = (OSGiImpl<S>)fun.apply((T)t.t);
-
-						OSGiResultImpl<S> or2 =
-							program._operation.run(bundleContext);
-
-						t.onTermination(or2::close);
-
-						or2.pipeTo(addedSource);
-
-						return null;
-					});
-
-					or1.start.run();
-				},
-				() -> closeReference.get().run());
-			}
-		);
+					result.start();
+				}));
 	}
 
 }
