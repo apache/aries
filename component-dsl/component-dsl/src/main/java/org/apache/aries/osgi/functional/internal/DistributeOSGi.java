@@ -33,30 +33,21 @@ public class DistributeOSGi<T> extends OSGiImpl<T> {
 
     @SafeVarargs
     public DistributeOSGi(OSGi<T>... programs) {
-        super(bundleContext -> {
-            Pipe<T, T> added = Pipe.create();
+        super((bundleContext, op) -> {
+            List<OSGiResult> results = new ArrayList<>();
 
-            Consumer<Tuple<T>> addedSource = added.getSource();
-
-            List<OSGiResult<T>> results = new ArrayList<>();
-
-            return new OSGiResultImpl<>(
-                added,
-                () ->
+            return new OSGiResultImpl(
+                () -> {
                     results.addAll(
                         Arrays.stream(programs).
-                            map(o -> {
-                                OSGiResultImpl<T> osGiResult =
-                                    ((OSGiImpl<T>) o)._operation.run(
-                                        bundleContext);
+                            map(o -> ((OSGiImpl<T>) o)._operation.run(
+                                bundleContext, op)).
+                            collect(Collectors.toList()));
 
-                                osGiResult.pipeTo(addedSource);
-
-                                return osGiResult;
-                            }).
-                            collect(Collectors.toList())),
+                    results.forEach(OSGiResult::start);
+                },
                 () -> {
-                    for (OSGiResult<?> result : results) {
+                    for (OSGiResult result : results) {
                         try {
                             result.close();
                         }

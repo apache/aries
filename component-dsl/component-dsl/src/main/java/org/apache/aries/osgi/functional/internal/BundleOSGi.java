@@ -35,11 +35,7 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 	private final int _stateMask;
 
 	public BundleOSGi(int stateMask) {
-		super(bundleContext -> {
-			Pipe<Bundle, Bundle> added = Pipe.create();
-
-			Consumer<Tuple<Bundle>> addedSource = added.getSource();
-
+		super((bundleContext, op) -> {
 			BundleTracker<Tuple<Bundle>> bundleTracker =
 				new BundleTracker<>(
 					bundleContext, stateMask,
@@ -51,7 +47,7 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 
 							Tuple<Bundle> tuple = Tuple.create(bundle);
 
-							addedSource.accept(tuple);
+							op.accept(tuple);
 
 							return tuple;
 						}
@@ -75,8 +71,8 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 						}
 					});
 
-			return new OSGiResultImpl<>(
-				added, bundleTracker::open, bundleTracker::close);
+			return new OSGiResultImpl(
+				bundleTracker::open, bundleTracker::close);
 		});
 
 		_stateMask = stateMask;
@@ -86,27 +82,23 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 	public <S> OSGiImpl<S> flatMap(
 		Function<? super Bundle, OSGi<? extends S>> fun) {
 
-		return new OSGiImpl<>(bundleContext -> {
-			Pipe<S, S> added = Pipe.create();
-
-			Consumer<Tuple<S>> addedSource = added.getSource();
-
-			BundleTracker<OSGiResult<S>> bundleTracker =
+		return new OSGiImpl<>((bundleContext, op) -> {
+			BundleTracker<OSGiResult> bundleTracker =
 				new BundleTracker<>(
 					bundleContext, _stateMask,
-					new BundleTrackerCustomizer<OSGiResult<S>>() {
+					new BundleTrackerCustomizer<OSGiResult>() {
 
 						@Override
-						public OSGiResult<S> addingBundle(
+						public OSGiResult addingBundle(
 							Bundle bundle, BundleEvent bundleEvent) {
 
 							OSGiImpl<S> program = (OSGiImpl<S>) fun.apply(
 								bundle);
 
-							OSGiResultImpl<S> result =
-								program._operation.run(bundleContext);
+							OSGiResultImpl result = program._operation.run(
+								bundleContext, op);
 
-							result.pipeTo(addedSource);
+							result.start();
 
 							return result;
 						}
@@ -114,7 +106,7 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 						@Override
 						public void modifiedBundle(
 							Bundle bundle, BundleEvent bundleEvent,
-							OSGiResult<S> result) {
+							OSGiResult result) {
 
 							removedBundle(bundle, bundleEvent, result);
 
@@ -124,14 +116,14 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 						@Override
 						public void removedBundle(
 							Bundle bundle, BundleEvent bundleEvent,
-							OSGiResult<S> result) {
+							OSGiResult result) {
 
 							result.close();
 						}
 					});
 
-			return new OSGiResultImpl<>(
-				added, bundleTracker::open, bundleTracker::close);
+			return new OSGiResultImpl(
+				bundleTracker::open, bundleTracker::close);
 
 		});
 	}

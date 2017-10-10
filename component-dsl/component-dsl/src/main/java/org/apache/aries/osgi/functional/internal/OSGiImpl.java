@@ -54,46 +54,41 @@ public class OSGiImpl<T> implements OSGi<T> {
 	public OSGi<Void> foreach(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
 
-		return new OSGiImpl<>(((bundleContext) -> {
-			OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
+		return new OSGiImpl<>((bundleContext, op) ->
+			_operation.run(
+				bundleContext,
+            	t -> {
+                	t.onTermination(() -> onRemoved.accept(t._t));
 
-			return new OSGiResultImpl<>(
-				osgiResult.added.map(
-					t -> {
-						t.onTermination(() -> onRemoved.accept(t.t));
+                	onAdded.accept(t._t);
 
-						return t.map(o -> {onAdded.accept(o); return null;});
-					}),
-				osgiResult.start, osgiResult.close);
-		}));
+					Tuple<Void> tuple = Tuple.create(null);
+
+					t.addRelatedTuple(tuple);
+
+					op.accept(tuple);
+            	}));
 	}
 
 	@Override
 	public <S> OSGi<S> map(Function<? super T, ? extends S> function) {
-		return new OSGiImpl<>(((bundleContext) -> {
-			OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
-
-			return new OSGiResultImpl<>(
-				osgiResult.added.map(t -> t.map(function)),
-				osgiResult.start, osgiResult.close);
-		}));
+		return new OSGiImpl<>((bundleContext, op) ->
+			_operation.run(bundleContext, t -> op.accept(t.map(function))));
 	}
 
 	@Override
-	public OSGiResult<T> run(BundleContext bundleContext) {
+	public OSGiResult run(BundleContext bundleContext) {
 		return run(bundleContext, x -> {});
 	}
 
 	@Override
-	public OSGiResult<T> run(BundleContext bundleContext, Consumer<T> andThen) {
-		OSGiResultImpl<T> osgiResult = _operation.run(bundleContext);
+	public OSGiResult run(BundleContext bundleContext, Consumer<T> andThen) {
+		OSGiResultImpl osgiResult =
+			_operation.run(bundleContext, t -> andThen.accept(t._t));
 
-		osgiResult.added.map(x -> {andThen.accept(x.t); return x;});
+		osgiResult.start();
 
-		osgiResult.start.run();
-
-		return new OSGiResultImpl<>(
-			osgiResult.added, osgiResult.start, osgiResult.close);
+		return osgiResult;
 	}
 
 	@Override
@@ -167,47 +162,14 @@ public class OSGiImpl<T> implements OSGi<T> {
 		return new RouteOsgiImpl<>(this, routerConsumer);
 	}
 
-	private static class Pair<X, Y> {
-		private final X _first;
-		private final Y _second;
-
-		public Pair(X first, Y second) {
-			_first = first;
-			_second = second;
-		}
-
-		public X getFirst() {
-			return _first;
-		}
-
-		public Y getSecond() {
-			return _second;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			Pair<?, ?> pair = (Pair<?, ?>) o;
-
-			return _first.equals(pair._first);
-		}
-
-		@Override
-		public int hashCode() {
-			return _first.hashCode();
-		}
-	}
-
 	@Override
 	public <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
 		return new OSGiImpl<>(
-			((bundleContext) -> {
-				AtomicReference<OSGiResult<?>> myCloseReference =
+			((bundleContext, op) -> {
+				AtomicReference<OSGiResult> myCloseReference =
 					new AtomicReference<>();
 
-				AtomicReference<OSGiResult<?>> otherCloseReference =
+				AtomicReference<OSGiResult> otherCloseReference =
 					new AtomicReference<>();
 
 				DoublyLinkedList<Tuple<T>> identities =
@@ -216,52 +178,44 @@ public class OSGiImpl<T> implements OSGi<T> {
 				DoublyLinkedList<Tuple<Function<T, S>>> funs =
 					new DoublyLinkedList<>();
 
-				Pipe<S, S> added = Pipe.create();
-
-				Consumer<Tuple<S>> addedSource = added.getSource();
-
-				return new OSGiResultImpl<>(
-					added,
+				return new OSGiResultImpl(
 					() -> {
-						OSGiResultImpl<T> or1 = _operation.run(bundleContext);
+						OSGiResultImpl or1 = _operation.run(
+							bundleContext,
+							t -> {
+								synchronized (identities) {
+									Node<Tuple<T>> node = identities.addLast(t);
+
+									t.onTermination(node::remove);
+
+									funs.forEach(
+										f -> processAdded(op, f, t));
+								}
+							}
+						);
 
 						myCloseReference.set(or1);
 
-						or1.added.map(t -> {
-							synchronized (identities) {
-								Node<Tuple<T>> node = identities.addLast(t);
-
-								t.onTermination(node::remove);
-
-								funs.forEach(f -> processAdded(addedSource, f, t));
-
-								return null;
-							}
-						});
-
-						OSGiResultImpl<Function<T, S>> funRun =
+						OSGiResultImpl funRun =
 							((OSGiImpl<Function<T, S>>) fun)._operation.run(
-								bundleContext);
+								bundleContext,
+								f -> {
+									synchronized (identities) {
+										Node<Tuple<Function<T, S>>> node =
+											funs.addLast(f);
+
+										f.onTermination(node::remove);
+
+										identities.forEach(
+											t -> processAdded(op, f, t));
+									}
+								});
 
 						otherCloseReference.set(funRun);
 
-						funRun.added.map(f -> {
-							synchronized (identities) {
-								Node<Tuple<Function<T, S>>> node =
-									funs.addLast(f);
+						or1.start();
 
-								f.onTermination(node::remove);
-
-								identities.forEach(
-									t -> processAdded(addedSource, f, t));
-
-								return null;
-							}
-						});
-
-						or1.start.run();
-
-						funRun.start.run();
+						funRun.start();
 					},
 					() -> {
 						synchronized (identities) {

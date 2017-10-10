@@ -18,85 +18,37 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import org.apache.aries.osgi.functional.OSGi;
-import org.apache.aries.osgi.functional.OSGiResult;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author Carlos Sierra Andrés
  */
 public class JustOSGiImpl<T> extends OSGiImpl<T> {
 
-	private Supplier<Collection<T>> _t;
-
 	public JustOSGiImpl(Collection<T> t) {
 		this(() -> t);
 	}
 
 	public JustOSGiImpl(Supplier<Collection<T>> t) {
-		super(((bundleContext) -> {
+		super((bundleContext, op) -> {
 
-			Pipe<T, T> added = Pipe.create();
+			Collection<Tuple<T>> references =
+				t.get().stream().map(Tuple::create).collect(
+					Collectors.toList());
 
-			AtomicReference<Collection<Tuple<T>>> collectionAtomicReference =
-				new AtomicReference<>();
+			return new OSGiResultImpl(
+				() -> references.forEach(op),
+				() -> references.forEach(Tuple::terminate));
+		});
 
-			return new OSGiResultImpl<>(
-				added,
-				() -> {
-					List<Tuple<T>> tuples =
-						t.get().stream().map(Tuple::create).collect(
-							Collectors.toList());
-
-					collectionAtomicReference.set(tuples);
-
-					tuples.forEach(tuple ->
-						added.getSource().accept(tuple));
-				},
-				() ->
-					collectionAtomicReference.get().forEach(Tuple::terminate));
-		}));
-
-		_t = t;
 	}
 
 	public JustOSGiImpl(T t) {
 		this(() -> Collections.singletonList(t));
-	}
-
-	@Override
-	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
-		return new OSGiImpl<>(bundleContext -> {
-			Pipe<S, S> added = Pipe.create();
-
-			AtomicReference<Runnable> atomicReference = new AtomicReference<>(
-				NOOP);
-
-			return new OSGiResultImpl<>(
-				added,
-				() -> {
-					List<OSGiResultImpl<S>> results = _t.get().stream().map(
-						p -> (OSGiImpl<S>) fun.apply(p)
-					).map(
-						n -> n._operation.run(bundleContext)
-					).collect(Collectors.toList());
-
-					atomicReference.set(
-						() -> results.forEach(OSGiResult::close));
-
-					results.forEach(result -> result.pipeTo(added.getSource()));
-				},
-				() -> atomicReference.get().run());
-		});
 	}
 
 }

@@ -27,32 +27,21 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
     public RouteOsgiImpl(
         OSGiImpl<T> previous, Consumer<Router<T>> routerConsumer) {
 
-        super(((bundleContext) -> {
-
-            Pipe<T, T> outgoingAddingPipe = Pipe.create();
-
-            Consumer<Tuple<T>> outgoingAddingSource =
-                outgoingAddingPipe.getSource();
-
+        super((bundleContext, op) -> {
             final RouterImpl<T> router =
-                new RouterImpl<>(outgoingAddingSource);
+                new RouterImpl<>(op);
 
             routerConsumer.accept(router);
 
-            OSGiResultImpl<T> osgiResult = previous._operation.run(
-                bundleContext);
-
-            osgiResult.added.map(
+            OSGiResultImpl osgiResult = previous._operation.run(
+                bundleContext,
                 t -> {
                     router._adding.accept(t);
 
                     t.onTermination(() -> router._leaving.accept(t));
-
-                    return null;
                 });
 
-            return new OSGiResultImpl<>(
-                outgoingAddingPipe,
+            return new OSGiResultImpl(
                 () -> {
                     router._start.run();
                     osgiResult.start.run();
@@ -61,7 +50,7 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
                     router._close.run();
                     osgiResult.close.run();
                 });
-        }));
+        });
     }
 
     static class RouterImpl<T> implements Router<T> {
@@ -94,7 +83,7 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
         public SentEvent<T> signalAdd(Event<T> event) {
             Tuple<T> tuple = (Tuple<T>) event;
 
-            Tuple<T> copy = Tuple.create(tuple.t);
+            Tuple<T> copy = Tuple.create(tuple._t);
 
             tuple.addRelatedTuple(copy);
 

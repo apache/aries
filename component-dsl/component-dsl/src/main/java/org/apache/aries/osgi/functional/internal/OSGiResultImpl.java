@@ -20,33 +20,29 @@ package org.apache.aries.osgi.functional.internal;
 import org.apache.aries.osgi.functional.OSGiResult;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
  */
-public class OSGiResultImpl<T> implements OSGiResult<T> {
+public class OSGiResultImpl implements OSGiResult {
 
-	public Pipe<?, T> added;
 	public Runnable start;
 	public Runnable close;
 
-	public OSGiResultImpl(
-		Pipe<?, T> added, Runnable start, Runnable close) {
-
-		this.added = added;
+	public OSGiResultImpl(Runnable start, Runnable close) {
 		this.start = start;
 		this.close = close;
 	}
 
 	@Override
-	public void close() {
-		close.run();
+	public void start() {
+		start.run();
 	}
 
-	public void pipeTo(Consumer<Tuple<T>> addedSource) {
-		added.map(t -> {addedSource.accept(t); return null;});
-
-		start.run();
+	@Override
+	public void close() {
+		close.run();
 	}
 
 }

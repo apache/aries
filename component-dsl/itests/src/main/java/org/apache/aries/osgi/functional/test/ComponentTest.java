@@ -22,6 +22,7 @@ import org.apache.aries.osgi.functional.OSGiResult;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -110,7 +111,7 @@ public class ComponentTest {
 
         Configuration factoryConfiguration = null;
 
-        try (OSGiResult<?> run = program.run(_bundleContext)) {
+        try (OSGiResult run = program.run(_bundleContext)) {
             factoryConfiguration = _configurationAdmin.createFactoryConfiguration(
                 "org.components.MyComponent");
             factoryConfiguration.update(new Hashtable<>());
@@ -222,7 +223,7 @@ public class ComponentTest {
 
         Configuration factoryConfiguration = null;
 
-        try (OSGiResult<?> run = program.run(_bundleContext)) {
+        try (OSGiResult run = program.run(_bundleContext)) {
             factoryConfiguration =
                 _configurationAdmin.createFactoryConfiguration(
                     "org.components.MyComponent");
