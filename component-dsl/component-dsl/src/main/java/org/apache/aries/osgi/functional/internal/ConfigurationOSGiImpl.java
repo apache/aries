@@ -43,8 +43,8 @@ public class ConfigurationOSGiImpl
 			AtomicReference<ServiceRegistration<ManagedService>>
 				serviceRegistrationReferece = new AtomicReference<>(null);
 
-			Pipe<Tuple<Dictionary<String, ?>>, Tuple<Dictionary<String, ?>>>
-				added = Pipe.create();
+			Pipe<Dictionary<String, ?>, Dictionary<String, ?>> added =
+				Pipe.create();
 
 			Consumer<Tuple<Dictionary<String, ?>>> addedSource =
 				added.getSource();

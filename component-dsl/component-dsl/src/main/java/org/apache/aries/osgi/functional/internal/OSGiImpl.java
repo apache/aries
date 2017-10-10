@@ -216,7 +216,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 				DoublyLinkedList<Tuple<Function<T, S>>> funs =
 					new DoublyLinkedList<>();
 
-				Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+				Pipe<S, S> added = Pipe.create();
 
 				Consumer<Tuple<S>> addedSource = added.getSource();
 

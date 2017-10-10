@@ -24,7 +24,7 @@ public class OnCloseOSGiImpl extends OSGiImpl<Void> {
 
 	public OnCloseOSGiImpl(Runnable action) {
 		super(bundleContext -> {
-			Pipe<Tuple<Void>, Tuple<Void>> added = Pipe.create();
+			Pipe<Void, Void> added = Pipe.create();
 
 			Tuple<Void> tuple = Tuple.create(null);
 

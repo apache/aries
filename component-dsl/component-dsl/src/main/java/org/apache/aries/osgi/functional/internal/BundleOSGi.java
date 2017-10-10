@@ -36,7 +36,7 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 
 	public BundleOSGi(int stateMask) {
 		super(bundleContext -> {
-			Pipe<Tuple<Bundle>, Tuple<Bundle>> added = Pipe.create();
+			Pipe<Bundle, Bundle> added = Pipe.create();
 
 			Consumer<Tuple<Bundle>> addedSource = added.getSource();
 
@@ -87,7 +87,7 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 		Function<? super Bundle, OSGi<? extends S>> fun) {
 
 		return new OSGiImpl<>(bundleContext -> {
-			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+			Pipe<S, S> added = Pipe.create();
 
 			Consumer<Tuple<S>> addedSource = added.getSource();
 
