@@ -29,7 +29,7 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
 
         super(((bundleContext) -> {
 
-            Pipe<Tuple<T>, Tuple<T>> outgoingAddingPipe = Pipe.create();
+            Pipe<T, T> outgoingAddingPipe = Pipe.create();
 
             Consumer<Tuple<T>> outgoingAddingSource =
                 outgoingAddingPipe.getSource();

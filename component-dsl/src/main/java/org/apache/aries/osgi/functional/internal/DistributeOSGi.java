@@ -34,7 +34,7 @@ public class DistributeOSGi<T> extends OSGiImpl<T> {
     @SafeVarargs
     public DistributeOSGi(OSGi<T>... programs) {
         super(bundleContext -> {
-            Pipe<Tuple<T>, Tuple<T>> added = Pipe.create();
+            Pipe<T, T> added = Pipe.create();
 
             Consumer<Tuple<T>> addedSource = added.getSource();
 

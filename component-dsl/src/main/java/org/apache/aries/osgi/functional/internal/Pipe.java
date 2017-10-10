@@ -25,9 +25,9 @@ import java.util.function.Function;
  */
 class Pipe<I, O> {
 
-	private Function<I, O> pipe;
+	private Function<Tuple<I>, Tuple<O>> pipe;
 
-	private Pipe(Function<I, O> fun) {
+	private Pipe(Function<Tuple<I>, Tuple<O>> fun) {
 		this.pipe = fun;
 	}
 
@@ -35,11 +35,21 @@ class Pipe<I, O> {
 		return new Pipe<>(x -> x);
 	}
 
-	public Consumer<I> getSource() {
-		return i -> pipe.apply(i);
+	public Consumer<Tuple<I>> getSource() {
+		return i -> {
+			if (i.isClosed()) {
+				return;
+			}
+
+			pipe.apply(i);
+
+			if (i.isClosed()) {
+				i.terminate();
+			}
+		};
 	}
 
-	<U> Pipe<I, U> map(Function<? super O, ? extends U> fun) {
+	<U> Pipe<I, U> map(Function<Tuple<O>, Tuple<U>> fun) {
 		this.pipe = (Function)this.pipe.andThen(fun);
 
 		return (Pipe<I, U>)this;

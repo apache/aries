@@ -38,7 +38,7 @@ public class FlatMapImpl<T, S> extends OSGiImpl<S> {
 			AtomicReference<Runnable> closeReference =
 				new AtomicReference<>(NOOP);
 
-			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+			Pipe<S, S> added = Pipe.create();
 
 			Consumer<Tuple<S>> addedSource = added.getSource();
 
@@ -51,7 +51,7 @@ public class FlatMapImpl<T, S> extends OSGiImpl<S> {
 					closeReference.set(or1.close);
 
 					or1.added.map(t -> {
-						OSGiImpl<S> program = (OSGiImpl<S>)fun.apply(t.t);
+						OSGiImpl<S> program = (OSGiImpl<S>)fun.apply((T)t.t);
 
 						OSGiResultImpl<S> or2 =
 							program._operation.run(bundleContext);

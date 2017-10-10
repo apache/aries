@@ -45,7 +45,7 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 	public JustOSGiImpl(Supplier<Collection<T>> t) {
 		super(((bundleContext) -> {
 
-			Pipe<Tuple<T>, Tuple<T>> added = Pipe.create();
+			Pipe<T, T> added = Pipe.create();
 
 			AtomicReference<Collection<Tuple<T>>> collectionAtomicReference =
 				new AtomicReference<>();
@@ -76,7 +76,7 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 	@Override
 	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
 		return new OSGiImpl<>(bundleContext -> {
-			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+			Pipe<S, S> added = Pipe.create();
 
 			AtomicReference<Runnable> atomicReference = new AtomicReference<>(
 				NOOP);
