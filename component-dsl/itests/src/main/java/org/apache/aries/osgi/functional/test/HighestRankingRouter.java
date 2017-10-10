@@ -18,6 +18,7 @@ package org.apache.aries.osgi.functional.test;
 
 import org.apache.aries.osgi.functional.Event;
 import org.apache.aries.osgi.functional.OSGi;
+import org.apache.aries.osgi.functional.SentEvent;
 import org.osgi.framework.ServiceReference;
 
 import java.util.Comparator;
@@ -33,6 +34,7 @@ public class HighestRankingRouter<T extends Comparable<? super T>>
     implements Consumer<OSGi.Router<T>> {
 
     private PriorityQueue<Event<T>> _instances;
+    private SentEvent sent;
 
     public static <T> OSGi<ServiceReference<T>> highest(Class<T> clazz) {
         return serviceReferences(clazz).route(new HighestRankingRouter<>());
@@ -41,16 +43,14 @@ public class HighestRankingRouter<T extends Comparable<? super T>>
     @Override
     public void accept(OSGi.Router<T> router) {
         router.onIncoming(sr -> {
-            Event<T> old = _instances.peek();
-
             _instances.add(sr);
 
             if (_instances.peek() == sr) {
-                if (old != null) {
-                    router.signalLeave(old);
+                if (sent != null) {
+                    sent.terminate();
                 }
 
-                router.signalAdd(sr);
+                sent = router.signalAdd(sr);
             }
 
         });
@@ -63,10 +63,10 @@ public class HighestRankingRouter<T extends Comparable<? super T>>
             Event<T> current = _instances.peek();
 
             if (current != old) {
-                router.signalLeave(old);
+                sent.terminate();
 
                 if (current != null) {
-                    router.signalAdd(current);
+                    sent = router.signalAdd(current);
                 }
             }
         });
@@ -77,7 +77,9 @@ public class HighestRankingRouter<T extends Comparable<? super T>>
                     reversed()));
 
         router.onClose(() -> {
-            _instances.forEach(router::signalLeave);
+            if (sent != null) {
+                sent.terminate();
+            }
 
             _instances.clear();
         });

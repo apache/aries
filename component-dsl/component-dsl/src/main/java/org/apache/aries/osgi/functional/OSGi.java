@@ -211,9 +211,7 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		void onStart(Runnable start);
 		void onClose(Runnable close);
 
-		void signalAdd(Event<T> event);
-		void signalLeave(Event<T> event);
-
+		SentEvent<T> signalAdd(Event<T> event);
 	}
 
 	public default <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
