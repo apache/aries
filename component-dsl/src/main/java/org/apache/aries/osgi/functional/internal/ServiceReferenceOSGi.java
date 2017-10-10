@@ -37,18 +37,15 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 	private Class<T> _clazz;
 
 	public ServiceReferenceOSGi(String filterString, Class<T> clazz) {
-		super(bundleContext -> {
-			Pipe<ServiceReference<T>, ServiceReference<T>>
-				added = Pipe.create();
-
+		super((bundleContext, op) -> {
 			ServiceTracker<T, AtomicReference<Tuple<ServiceReference<T>>>>
 				serviceTracker = new ServiceTracker<>(
 					bundleContext,
 					buildFilter(bundleContext, filterString, clazz),
-					new DefaultServiceTrackerCustomizer<>(added.getSource()));
+					new DefaultServiceTrackerCustomizer<>(op));
 
-			return new OSGiResultImpl<>(
-				added, serviceTracker::open, serviceTracker::close);
+			return new OSGiResultImpl(
+				serviceTracker::open, serviceTracker::close);
 		});
 
 		_filterString = filterString;
@@ -59,19 +56,17 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 	public <S> OSGiImpl<S> flatMap(
 		Function<? super ServiceReference<T>, OSGi<? extends S>> fun) {
 
-		return new OSGiImpl<>(bundleContext -> {
-			Pipe<S, S> added = Pipe.create();
-
+		return new OSGiImpl<>((bundleContext, op) -> {
 			ServiceTracker<T, ?> serviceTracker =
 				new ServiceTracker<>(
 					bundleContext,
 					buildFilter(
 						bundleContext, _filterString, _clazz),
 						new FlatMapServiceTrackerCustomizer<>(
-							fun, bundleContext, added.getSource()));
+							fun, bundleContext, op));
 
-			return new OSGiResultImpl<>(
-				added, serviceTracker::open, serviceTracker::close);
+			return new OSGiResultImpl(
+				serviceTracker::open, serviceTracker::close);
 		});
 	}
 
@@ -121,45 +116,44 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 	}
 
 	private static class FlatMapServiceTrackerCustomizer<T, S>
-		implements ServiceTrackerCustomizer<T, AtomicReference<OSGiResult<S>>> {
+		implements ServiceTrackerCustomizer<T, AtomicReference<OSGiResult>> {
 		private final Function<? super ServiceReference<T>, OSGi<? extends S>>
 			_fun;
 		private final BundleContext _bundleContext;
-		private final Consumer<Tuple<S>> _addedSource;
+		private final Consumer<Tuple<S>> _op;
 
 		FlatMapServiceTrackerCustomizer(
 			Function<? super ServiceReference<T>, OSGi<? extends S>> fun,
-			BundleContext bundleContext, Consumer<Tuple<S>> addedSource) {
+			BundleContext bundleContext, Consumer<Tuple<S>> op) {
 
 			_fun = fun;
 			_bundleContext = bundleContext;
-			_addedSource = addedSource;
+			_op = op;
 		}
 
 		@Override
-        public AtomicReference<OSGiResult<S>> addingService(
+        public AtomicReference<OSGiResult> addingService(
         	ServiceReference<T> reference) {
 
-			OSGiResultImpl<S> osgiResult = doFlatMap(reference);
+			OSGiResultImpl osgiResult = doFlatMap(reference);
 
 			return new AtomicReference<>(osgiResult);
         }
 
-		private OSGiResultImpl<S> doFlatMap(ServiceReference<T> reference) {
+		private OSGiResultImpl doFlatMap(ServiceReference<T> reference) {
 			OSGiImpl<S> program = (OSGiImpl<S>) _fun.apply(reference);
 
-			OSGiResultImpl<S> osgiResult = program._operation.run(
-				_bundleContext);
+			OSGiResultImpl result = program._operation.run(_bundleContext, _op);
 
-			osgiResult.pipeTo(_addedSource);
+			result.start();
 
-			return osgiResult;
+			return result;
 		}
 
 		@Override
         public void modifiedService(
         	ServiceReference<T> reference,
-			AtomicReference<OSGiResult<S>> tracked) {
+			AtomicReference<OSGiResult> tracked) {
 
 			tracked.get().close();
 
@@ -169,7 +163,7 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 		@Override
         public void removedService(
             ServiceReference<T> reference,
-			AtomicReference<OSGiResult<S>> tracked) {
+			AtomicReference<OSGiResult> tracked) {
 
             tracked.get().close();
         }

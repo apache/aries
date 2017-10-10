@@ -18,14 +18,22 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGiOperation;
+import org.apache.aries.osgi.functional.OSGiResult;
 import org.osgi.framework.BundleContext;
+
+import java.util.function.Consumer;
 
 /**
  * @author Carlos Sierra Andrés
  */
 interface OSGiOperationImpl<T> extends OSGiOperation<T> {
 
+	OSGiResultImpl run(
+		BundleContext bundleContext, Consumer<Tuple<T>> consumer);
+
 	@Override
-	OSGiResultImpl<T> run(BundleContext bundleContext);
+	default OSGiResult run(BundleContext bundleContext) {
+		return run(bundleContext, (__) -> {});
+	}
 
 }

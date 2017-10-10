@@ -28,6 +28,7 @@ public class ChangeContextOSGiImpl<T> extends OSGiImpl<T> {
 	public ChangeContextOSGiImpl(
 		OSGi<T> program, BundleContext bundleContext) {
 
-		super(b -> ((OSGiImpl<T>) program)._operation.run(bundleContext));
+		super((b, op) ->
+			((OSGiImpl<T>) program)._operation.run(bundleContext, op));
 	}
 }

@@ -33,12 +33,12 @@ public class ServiceRegistrationOSGiImpl<T>
 	public ServiceRegistrationOSGiImpl(
 		Class<T> clazz, T service, Map<String, Object> properties) {
 
-		super(bundleContext -> {
-			ServiceRegistration<T> serviceRegistration =
+		super((bundleContext, op) -> {
+			ServiceRegistration<?> serviceRegistration =
 				bundleContext.registerService(
 					clazz, service, getProperties(properties));
 
-			return getServiceRegistrationOSGiResult(serviceRegistration);
+			return getServiceRegistrationOSGiResult(serviceRegistration, op);
 		});
 	}
 
@@ -46,25 +46,24 @@ public class ServiceRegistrationOSGiImpl<T>
 		Class<T> clazz, ServiceFactory<T> serviceFactory,
 		Map<String, Object> properties) {
 
-		super(bundleContext -> {
-			ServiceRegistration<T> serviceRegistration =
+		super((bundleContext, op) -> {
+			ServiceRegistration<?> serviceRegistration =
 				bundleContext.registerService(
 					clazz, serviceFactory, getProperties(properties));
 
-			return getServiceRegistrationOSGiResult(serviceRegistration);
+			return getServiceRegistrationOSGiResult(serviceRegistration, op);
 		});
 	}
 
 	public ServiceRegistrationOSGiImpl(
 		String[] clazz, Object service, Map<String, ?> properties) {
 
-		super(bundleContext -> {
+		super((bundleContext, op) -> {
 			ServiceRegistration<?> serviceRegistration =
 				bundleContext.registerService(
 					clazz, service, new Hashtable<>(properties));
 
-			return getServiceRegistrationOSGiResult(
-				(ServiceRegistration)serviceRegistration);
+			return getServiceRegistrationOSGiResult(serviceRegistration, op);
 		});
 	}
 
@@ -78,22 +77,15 @@ public class ServiceRegistrationOSGiImpl<T>
 		return new Hashtable<>(properties);
 	}
 
-	private static <T> OSGiResultImpl<ServiceRegistration<T>>
+	private static <T> OSGiResultImpl
 		getServiceRegistrationOSGiResult(
-			ServiceRegistration<T> serviceRegistration) {
+		ServiceRegistration<?> serviceRegistration,
+		Consumer<Tuple<ServiceRegistration<T>>> op) {
 
-		Pipe<ServiceRegistration<T>, ServiceRegistration<T>> added =
-			Pipe.create();
+		Tuple<ServiceRegistration<?>> tuple = Tuple.create(serviceRegistration);
 
-		Consumer<Tuple<ServiceRegistration<T>>> addedSource =
-            added.getSource();
-
-		Tuple<ServiceRegistration<T>> tuple = Tuple.create(
-            serviceRegistration);
-
-		return new OSGiResultImpl<>(
-            added,
-            () -> addedSource.accept(tuple),
+		return new OSGiResultImpl(
+            () -> ((Consumer)op).accept(tuple),
             () -> {
                 try {
                     serviceRegistration.unregister();

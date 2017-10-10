@@ -24,6 +24,6 @@ import org.osgi.framework.BundleContext;
  */
 public interface OSGiOperation<T> {
 
-	OSGiResult<T> run(BundleContext bundleContext);
+	OSGiResult run(BundleContext bundleContext);
 
 }

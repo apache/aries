@@ -23,7 +23,6 @@ import org.osgi.service.cm.ManagedService;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 /**
  * @author Carlos Sierra Andrés
@@ -32,7 +31,7 @@ public class ConfigurationOSGiImpl
 	extends OSGiImpl<Dictionary<String, ?>> {
 
 	public ConfigurationOSGiImpl(String pid) {
-		super(bundleContext -> {
+		super((bundleContext, op) -> {
 			AtomicReference<Dictionary<String, ?>> atomicReference =
 				new AtomicReference<>(null);
 
@@ -43,26 +42,20 @@ public class ConfigurationOSGiImpl
 			AtomicReference<ServiceRegistration<ManagedService>>
 				serviceRegistrationReferece = new AtomicReference<>(null);
 
-			Pipe<Dictionary<String, ?>, Dictionary<String, ?>> added =
-				Pipe.create();
-
-			Consumer<Tuple<Dictionary<String, ?>>> addedSource =
-				added.getSource();
-
 			Runnable start = () ->
 				serviceRegistrationReferece.set(
 					bundleContext.registerService(
 						ManagedService.class,
 						properties -> {
 							while (!atomicReference.compareAndSet(
-								tupleAtomicReference.get().t,
+								tupleAtomicReference.get()._t,
 								properties)) {
 							}
 
 							Tuple<Dictionary<String, ?>> old =
 								tupleAtomicReference.get();
 
-							if (old.t != null) {
+							if (old._t != null) {
 								old.terminate();
 							}
 
@@ -70,7 +63,7 @@ public class ConfigurationOSGiImpl
 								Tuple.create(properties);
 
 							if (properties != null) {
-								addedSource.accept(tuple);
+								op.accept(tuple);
 							}
 
 							tupleAtomicReference.set(tuple);
@@ -79,8 +72,8 @@ public class ConfigurationOSGiImpl
 							put("service.pid", pid);
 						}}));
 
-			return new OSGiResultImpl<>(
-				added, start,
+			return new OSGiResultImpl(
+				start,
 				() -> {
 					serviceRegistrationReferece.get().unregister();
 
