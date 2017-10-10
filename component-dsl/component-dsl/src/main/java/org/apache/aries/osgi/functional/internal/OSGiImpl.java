@@ -54,20 +54,23 @@ public class OSGiImpl<T> implements OSGi<T> {
 	public OSGi<Void> foreach(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
 
+		return OSGi.ignore(effects(onAdded, onRemoved));
+	}
+
+	@Override
+	public OSGi<T> effects(
+		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
+
 		return new OSGiImpl<>((bundleContext, op) ->
 			_operation.run(
 				bundleContext,
-            	t -> {
-                	t.onTermination(() -> onRemoved.accept(t._t));
+				t -> {
+					onAdded.accept(t._t);
 
-                	onAdded.accept(t._t);
+					op.accept(t);
 
-					Tuple<Void> tuple = Tuple.create(null);
-
-					t.addRelatedTuple(tuple);
-
-					op.accept(tuple);
-            	}));
+					t.onTermination(() -> onRemoved.accept(t._t));
+				}));
 	}
 
 	@Override
@@ -84,16 +87,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@Override
 	public OSGiResult run(BundleContext bundleContext, Consumer<T> andThen) {
 		OSGiResultImpl osgiResult =
-			_operation.run(
-				bundleContext,
-				t -> {
-					if (!t.isClosed()) {
-						andThen.accept(t._t);
-					}
-					if (t.isClosed()) {
-						t.terminate();
-					}
-				});
+			_operation.run(bundleContext, t -> andThen.accept(t._t));
 
 		osgiResult.start();
 
@@ -233,12 +227,9 @@ public class OSGiImpl<T> implements OSGi<T> {
 		Consumer<Tuple<S>> addedSource, Tuple<Function<T, S>> fTuple,
 		Tuple<T> t) {
 
-		S result = fTuple.getContent().apply(t.getContent());
-
-		Tuple<S> tuple = Tuple.create(result);
+		Tuple<S> tuple = t.map(fTuple.getContent());
 
 		fTuple.addRelatedTuple(tuple);
-		t.addRelatedTuple(tuple);
 
 		addedSource.accept(tuple);
 	}
