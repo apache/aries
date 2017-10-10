@@ -29,6 +29,7 @@ import org.apache.aries.osgi.functional.internal.ChangeContextOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationsOSGiImpl;
 import org.apache.aries.osgi.functional.internal.DistributeOSGi;
+import org.apache.aries.osgi.functional.internal.IgnoreImpl;
 import org.apache.aries.osgi.functional.internal.JustOSGiImpl;
 import org.apache.aries.osgi.functional.internal.NothingOSGiImpl;
 import org.apache.aries.osgi.functional.internal.OnCloseOSGiImpl;
@@ -55,6 +56,13 @@ import java.util.function.Supplier;
  */
 public interface OSGi<T> extends OSGiRunnable<T> {
 	Runnable NOOP = () -> {};
+
+	OSGi<T> effects(
+		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
+
+	static OSGi<Void> ignore(OSGi<?> program) {
+		return new IgnoreImpl(program);
+	}
 
 	<S> OSGi<S> map(Function<? super T, ? extends S> function);
 
