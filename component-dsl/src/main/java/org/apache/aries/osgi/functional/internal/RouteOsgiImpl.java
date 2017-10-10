@@ -55,8 +55,8 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
 
     static class RouterImpl<T> implements Router<T> {
 
-        RouterImpl(Consumer<Tuple<T>> signalAdding) {
-            _signalAdding = signalAdding;
+        RouterImpl(Consumer<Tuple<T>> op) {
+            this.op = op;
         }
 
         @Override
@@ -83,13 +83,9 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
         public SentEvent<T> signalAdd(Event<T> event) {
             Tuple<T> tuple = (Tuple<T>) event;
 
-            Tuple<T> copy = Tuple.create(tuple._t);
+            Tuple<T> copy = tuple.copy();
 
-            tuple.addRelatedTuple(copy);
-
-            copy.setEvent(tuple);
-
-            _signalAdding.accept(copy);
+            op.accept(copy);
 
             return copy;
         }
@@ -98,7 +94,7 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
         Consumer<Event<T>> _leaving = (ign) -> {};
 
         private Runnable _close = NOOP;
-        private final Consumer<Tuple<T>> _signalAdding;
+        private final Consumer<Tuple<T>> op;
         private Runnable _start = NOOP;
 
     }
