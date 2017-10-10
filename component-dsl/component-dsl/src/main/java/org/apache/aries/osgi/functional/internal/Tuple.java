@@ -19,23 +19,26 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.Event;
+import org.apache.aries.osgi.functional.SentEvent;
 
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
  */
-class Tuple<T> implements Event<T> {
+class Tuple<T> implements Event<T>, SentEvent<T> {
 
 	public T t;
 	private Deque<Runnable> _closingHandlers = new LinkedList<>();
 	private DoublyLinkedList<Tuple<?>> _relatedTuples =
 		new DoublyLinkedList<>();
 	private AtomicBoolean closed = new AtomicBoolean(false);
+	private Event<T> cause = this;
 
 	private Tuple(T t) {
 		this(t, new LinkedList<>());
@@ -43,6 +46,7 @@ class Tuple<T> implements Event<T> {
 
 	private Tuple(T t, Deque<Runnable> closingHandlers) {
 		this.t = t;
+
 		_closingHandlers = closingHandlers;
 	}
 
@@ -90,6 +94,15 @@ class Tuple<T> implements Event<T> {
 		}
 
 		_closingHandlers.push(terminator);
+	}
+
+	public void setEvent(Event<T> event) {
+		this.cause = event;
+	}
+
+	@Override
+	public Event<T> getEvent() {
+		return cause;
 	}
 
 	public void terminate() {
