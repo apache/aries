@@ -24,7 +24,9 @@ import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static org.apache.aries.osgi.functional.OSGi.just;
@@ -38,6 +40,62 @@ public class ProbeTests {
 
     static BundleContext bundleContext =
         FrameworkUtil.getBundle(DSLTest.class).getBundleContext();
+
+    @Test
+    public void testTupleTermination() {
+        AtomicReference<String> result = new AtomicReference<>("");
+
+        ProbeImpl<String> probeA = new ProbeImpl<>();
+        AtomicReference<ProbeImpl<String>> probeBreference = new AtomicReference<>();
+
+        OSGiImpl<String> program =
+            probeA.flatMap(a ->
+            onClose(
+                () -> result.accumulateAndGet("Hello", (x, y) -> x.replace(y, ""))).
+            flatMap(__ -> {
+                ProbeImpl<String> probeB = new ProbeImpl<>();
+
+                probeBreference.set(probeB);
+
+                return probeB.flatMap(b ->
+                    onClose(
+                        () -> result.accumulateAndGet(", World", (x, y) -> x.replace(y, ""))).
+                        then(
+                            just(a + b)));
+            }
+
+        ));
+
+        program.run(bundleContext, result::set);
+
+        Function<String, SentEvent<String>> opA = probeA.getOperation();
+
+        SentEvent<String> sentA = opA.apply("Hello");
+
+        Function<String, SentEvent<String>> opB = probeBreference.get().getOperation();
+
+        sentA.terminate();
+
+        SentEvent<String> sentB = opB.apply(", World");
+        sentB.terminate();
+
+        assertEquals("", result.get());
+
+        program.run(bundleContext, result::set);
+
+        opA = probeA.getOperation();
+        sentA = opA.apply("Hello");
+
+        opB = probeBreference.get().getOperation();
+        sentB = opB.apply(", World");
+
+        assertEquals("Hello, World", result.get());
+
+        sentA.terminate();
+        sentB.terminate();
+
+        assertEquals("", result.get());
+    }
 
     @Test
     public void testProbe() {

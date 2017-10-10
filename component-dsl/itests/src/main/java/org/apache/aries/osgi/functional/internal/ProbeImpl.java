@@ -35,11 +35,11 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
 
     public Function<T, SentEvent<T>> getOperation() {
         return (t) -> {
+            ProbeOperationImpl<T> operation = (ProbeOperationImpl<T>) _operation;
+
             Tuple<T> tuple = Tuple.create(t);
 
-            ((ProbeOperationImpl<T>)_operation)._op.accept(tuple);
-
-            return new SentEvent<T>() {
+            SentEvent<T> sentEvent = new SentEvent<T>() {
                 @Override
                 public Event<T> getEvent() {
                     return tuple;
@@ -50,6 +50,12 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
                     tuple.terminate();
                 }
             };
+
+            if (!operation.closed) {
+                operation._op.accept(tuple);
+            }
+
+            return sentEvent;
         };
     }
 
@@ -57,6 +63,7 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
 
         BundleContext _bundleContext;
         Consumer<Tuple<T>> _op;
+        volatile boolean closed;
 
         @Override
         public OSGiResultImpl run(
@@ -64,7 +71,7 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
             _bundleContext = bundleContext;
             _op = op;
 
-            return new OSGiResultImpl(NOOP, NOOP);
+            return new OSGiResultImpl(NOOP, () -> closed = true);
         }
     }
 
