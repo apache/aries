@@ -24,6 +24,8 @@ import org.apache.aries.osgi.functional.SentEvent;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
@@ -32,25 +34,35 @@ import java.util.function.Function;
 class Tuple<T> implements Event<T> {
 
 	public final T _t;
-	private final Deque<Runnable> _closingHandlers = new LinkedList<>();
+	private final Deque<Runnable> _closingHandlers =
+		new ConcurrentLinkedDeque<>();
 	private final ConcurrentDoublyLinkedList<Tuple<?>> _relatedTuples =
 		new ConcurrentDoublyLinkedList<>();
-	private volatile boolean _closed = false;
+	private AtomicBoolean _closed = new AtomicBoolean();
+	private AtomicBoolean _working = new AtomicBoolean();
 
 	private Tuple(T t) {
 		_t = t;
 	}
 
 	public void addRelatedTuple(Tuple<?> tuple) {
-		if (_closed) {
-			tuple.terminate();
-
-			return;
+		while (!_working.compareAndSet(false, true)) {
+			Thread.yield();
 		}
+		try {
+			if (_closed.get()) {
+                tuple.terminate();
 
-		ConcurrentDoublyLinkedList.Node node = _relatedTuples.addLast(tuple);
+                return;
+            }
 
-		tuple.onTermination(node::remove);
+			ConcurrentDoublyLinkedList.Node node = _relatedTuples.addLast(tuple);
+
+			tuple.onTermination(node::remove);
+		}
+		finally {
+			_working.set(false);
+		}
 	}
 
 	public static <T> Tuple<T> create(T t) {
@@ -73,7 +85,7 @@ class Tuple<T> implements Event<T> {
 	}
 
 	public boolean isClosed() {
-		return _closed;
+		return _closed.get();
 	}
 
 	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
@@ -85,17 +97,35 @@ class Tuple<T> implements Event<T> {
 	}
 
 	public void onTermination(Runnable terminator) {
-		if (_closed) {
-			terminator.run();
+		while (!_working.compareAndSet(false, true)) {
+			Thread.yield();
+		}
+		try {
+			if (_closed.get()) {
+                terminator.run();
 
-			return;
+                return;
+            }
+
+			_closingHandlers.push(terminator);
+		}
+		finally {
+			_working.set(false);
 		}
 
-		_closingHandlers.push(terminator);
 	}
 
 	public void terminate() {
-		_closed = true;
+		while (!_working.compareAndSet(false, true)) {
+		}
+		try {
+			if (!_closed.compareAndSet(false, true)) {
+                return;
+            }
+		}
+		finally {
+			_working.set(false);
+		}
 
 		Iterator<Tuple<?>> iterator = _relatedTuples.iterator();
 
@@ -120,6 +150,7 @@ class Tuple<T> implements Event<T> {
 			catch (Exception e) {
 			}
 		}
+
 	}
 
 }

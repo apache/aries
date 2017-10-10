@@ -19,16 +19,19 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGiResult;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Carlos Sierra Andrés
  */
 public class OSGiResultImpl implements OSGiResult {
 
-	public Runnable start;
-	public Runnable close;
+	private final Runnable start;
+	private final Runnable close;
+	private AtomicBoolean _working = new AtomicBoolean();
+	private AtomicBoolean _closed = new AtomicBoolean();
+	private volatile boolean _started = false;
+
 
 	public OSGiResultImpl(Runnable start, Runnable close) {
 		this.start = start;
@@ -37,12 +40,38 @@ public class OSGiResultImpl implements OSGiResult {
 
 	@Override
 	public void start() {
-		start.run();
+		if (_working.compareAndSet(false, true)) {
+
+			if (!_started && !_closed.get()) {
+				try {
+					start.run();
+
+					_started = true;
+				}
+				catch (Exception e) {
+				}
+			}
+
+			_working.set(false);
+		}
+
 	}
 
 	@Override
 	public void close() {
-		close.run();
+		while (!_working.compareAndSet(false, true)) {
+			Thread.yield();
+		}
+
+		if (_closed.compareAndSet(false, true) && _started) {
+			try {
+				close.run();
+			}
+			catch (Exception e) {
+			}
+		}
+
+		_working.set(false);
 	}
 
 }
