@@ -36,7 +36,7 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 	private final Deque<Runnable> _closingHandlers;
 	private final DoublyLinkedList<Tuple<?>> _relatedTuples;
 	private final AtomicBoolean closed = new AtomicBoolean(false);
-	private Event<T> cause = this;
+	private Tuple<T> _cause = this;
 
 	private Tuple(T t) {
 		this(t, new LinkedList<>(), new DoublyLinkedList<>());
@@ -49,6 +49,16 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 		_t = t;
 		_closingHandlers = closingHandlers;
 		_relatedTuples = relatedTuples;
+	}
+
+	private Tuple(
+		T t, Deque<Runnable> closingHandlers,
+		DoublyLinkedList<Tuple<?>> relatedTuples,
+		Tuple<T> cause) {
+
+		this(t, closingHandlers, relatedTuples);
+
+		_cause = cause;
 	}
 
 	public void addRelatedTuple(Tuple<?> tuple) {
@@ -97,13 +107,18 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 		_closingHandlers.push(terminator);
 	}
 
-	public void setEvent(Event<T> event) {
-		this.cause = event;
-	}
-
 	@Override
 	public Event<T> getEvent() {
-		return cause;
+		return _cause;
+	}
+
+	public Tuple<T> copy() {
+		Tuple<T> copy = new Tuple<>(
+			_t, new LinkedList<>(), new DoublyLinkedList<>(), this);
+
+		addRelatedTuple(copy);
+
+		return copy;
 	}
 
 	public void terminate() {
