@@ -44,11 +44,11 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
             return new OSGiResultImpl(
                 () -> {
                     router._start.run();
-                    osgiResult.start.run();
+                    osgiResult.start();
                 },
                 () -> {
                     router._close.run();
-                    osgiResult.close.run();
+                    osgiResult.close();
                 });
         });
     }
