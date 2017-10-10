@@ -35,6 +35,7 @@ class Tuple<T> implements Event<T> {
 	private Deque<Runnable> _closingHandlers = new LinkedList<>();
 	private DoublyLinkedList<Tuple<?>> _relatedTuples =
 		new DoublyLinkedList<>();
+	private AtomicBoolean closed = new AtomicBoolean(false);
 
 	private Tuple(T t) {
 		this(t, new LinkedList<>());
@@ -45,13 +46,15 @@ class Tuple<T> implements Event<T> {
 		_closingHandlers = closingHandlers;
 	}
 
-	public DoublyLinkedList.Node<Tuple<?>> addRelatedTuple(Tuple<?> tuple) {
+	public void addRelatedTuple(Tuple<?> tuple) {
+		if (closed.get()) {
+			return;
+		}
+
 		DoublyLinkedList.Node<Tuple<?>> tupleNode = _relatedTuples.addLast(
 			tuple);
 
 		tuple.onTermination(tupleNode::remove);
-
-		return tupleNode;
 	}
 
 	public static <T> Tuple<T> create(T t) {
@@ -70,12 +73,11 @@ class Tuple<T> implements Event<T> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		return this == o;
+	}
 
-		Tuple<?> tuple = (Tuple<?>) o;
-
-		return t.equals(tuple.t);
+	public boolean isClosed() {
+		return closed.get();
 	}
 
 	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
@@ -83,10 +85,18 @@ class Tuple<T> implements Event<T> {
 	}
 
 	public void onTermination(Runnable terminator) {
+		if (closed.get()) {
+			return;
+		}
+
 		_closingHandlers.push(terminator);
 	}
 
 	public void terminate() {
+		if (!closed.compareAndSet(false, true)) {
+			return;
+		}
+
 		Iterator<Tuple<?>> iterator = _relatedTuples.iterator();
 
 		while (iterator.hasNext()) {
