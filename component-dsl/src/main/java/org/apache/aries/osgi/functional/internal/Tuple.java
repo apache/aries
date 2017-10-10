@@ -24,30 +24,29 @@ import org.apache.aries.osgi.functional.SentEvent;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
  */
-class Tuple<T> implements Event<T>, SentEvent<T> {
+class Tuple<T> implements Event<T> {
 
 	public final T _t;
 	private final Deque<Runnable> _closingHandlers = new LinkedList<>();
 	private final DoublyLinkedList<Tuple<?>> _relatedTuples = new DoublyLinkedList<>();
-	private volatile boolean closed = false;
-	private Tuple<T> _cause = this;
+	private volatile boolean _closed = false;
 
 	private Tuple(T t) {
 		_t = t;
 	}
 
-	private Tuple(T t, Tuple<T> cause) {
-		this(t);
-		_cause = cause;
-	}
-
 	public void addRelatedTuple(Tuple<?> tuple) {
+		if (_closed) {
+			tuple.terminate();
+
+			return;
+		}
+
 		DoublyLinkedList.Node<Tuple<?>> tupleNode = _relatedTuples.addLast(
 			tuple);
 
@@ -74,7 +73,7 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
@@ -86,24 +85,17 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 	}
 
 	public void onTermination(Runnable terminator) {
+		if (_closed) {
+			terminator.run();
+
+			return;
+		}
+
 		_closingHandlers.push(terminator);
 	}
 
-	@Override
-	public Event<T> getEvent() {
-		return _cause;
-	}
-
-	public Tuple<T> copy() {
-		Tuple<T> copy = new Tuple<>(_t, this);
-
-		addRelatedTuple(copy);
-
-		return copy;
-	}
-
 	public void terminate() {
-		closed = true;
+		_closed = true;
 
 		Iterator<Tuple<?>> iterator = _relatedTuples.iterator();
 
@@ -116,7 +108,6 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 				next.terminate();
 			}
 			catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 

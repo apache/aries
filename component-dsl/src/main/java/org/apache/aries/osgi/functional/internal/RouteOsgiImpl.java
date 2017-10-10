@@ -83,11 +83,21 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
         public SentEvent<T> signalAdd(Event<T> event) {
             Tuple<T> tuple = (Tuple<T>) event;
 
-            Tuple<T> copy = tuple.copy();
+            Tuple<T> copy = tuple.map(x -> x);
 
             op.accept(copy);
 
-            return copy;
+            return new SentEvent<T>() {
+                @Override
+                public Event<T> getEvent() {
+                    return tuple;
+                }
+
+                @Override
+                public void terminate() {
+                    copy.terminate();
+                }
+            };
         }
 
         Consumer<Event<T>> _adding = (ign) -> {};
