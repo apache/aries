@@ -18,6 +18,7 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.Event;
+import org.apache.aries.osgi.functional.SentEvent;
 
 import java.util.function.Consumer;
 
@@ -43,15 +44,9 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
 
             osgiResult.added.map(
                 t -> {
-                    Tuple<T> copy = Tuple.create(t.t);
+                    router._adding.accept(t);
 
-                    t.onTermination(() -> {
-                        router._leaving.accept(copy);
-
-                        copy.terminate();
-                    });
-
-                    router._adding.accept(copy);
+                    t.onTermination(() -> router._leaving.accept(t));
 
                     return null;
                 });
@@ -96,13 +91,18 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
         }
 
         @Override
-        public void signalAdd(Event<T> event) {
-            _signalAdding.accept((Tuple<T>) event);
-        }
+        public SentEvent<T> signalAdd(Event<T> event) {
+            Tuple<T> tuple = (Tuple<T>) event;
 
-        @Override
-        public void signalLeave(Event<T> event) {
-            ((Tuple<T>)event).terminate();
+            Tuple<T> copy = Tuple.create(tuple.t);
+
+            tuple.addRelatedTuple(copy);
+
+            copy.setEvent(tuple);
+
+            _signalAdding.accept(copy);
+
+            return copy;
         }
 
         Consumer<Event<T>> _adding = (ign) -> {};
