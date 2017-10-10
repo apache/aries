@@ -33,7 +33,8 @@ class Tuple<T> implements Event<T> {
 
 	public final T _t;
 	private final Deque<Runnable> _closingHandlers = new LinkedList<>();
-	private final DoublyLinkedList<Tuple<?>> _relatedTuples = new DoublyLinkedList<>();
+	private final ConcurrentDoublyLinkedList<Tuple<?>> _relatedTuples =
+		new ConcurrentDoublyLinkedList<>();
 	private volatile boolean _closed = false;
 
 	private Tuple(T t) {
@@ -47,10 +48,9 @@ class Tuple<T> implements Event<T> {
 			return;
 		}
 
-		DoublyLinkedList.Node<Tuple<?>> tupleNode = _relatedTuples.addLast(
-			tuple);
+		ConcurrentDoublyLinkedList.Node node = _relatedTuples.addLast(tuple);
 
-		tuple.onTermination(tupleNode::remove);
+		tuple.onTermination(node::remove);
 	}
 
 	public static <T> Tuple<T> create(T t) {

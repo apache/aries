@@ -209,10 +209,13 @@ public class ConcurrentDoublyLinkedList<E> extends AbstractCollection<E>
      * @throws NullPointerException
      *             if the specified element is <tt>null</tt>
      */
-    public void addFirst(E o) {
+    public Node addFirst(E o) {
         checkNullArg(o);
-        while (header.append(o) == null)
+        NodeImpl<E> append;
+        while ((append = header.append(o)) == null)
             ;
+
+        return append;
     }
 
     /**
@@ -224,10 +227,13 @@ public class ConcurrentDoublyLinkedList<E> extends AbstractCollection<E>
      * @throws NullPointerException
      *             if the specified element is <tt>null</tt>
      */
-    public void addLast(E o) {
+    public Node addLast(E o) {
         checkNullArg(o);
-        while (trailer.prepend(o) == null)
+        NodeImpl<E> append;
+        while ((append = trailer.prepend(o)) == null)
             ;
+
+        return append;
     }
 
     /**
@@ -628,6 +634,10 @@ public class ConcurrentDoublyLinkedList<E> extends AbstractCollection<E>
         }
     }
 
+    public interface Node {
+        public boolean remove();
+    }
+
 }
 
 
@@ -655,7 +665,9 @@ public class ConcurrentDoublyLinkedList<E> extends AbstractCollection<E>
  * unrecoverably stale.
  */
 
-class NodeImpl<E> extends AtomicReference<NodeImpl<E>> {
+class NodeImpl<E> extends AtomicReference<NodeImpl<E>>
+    implements ConcurrentDoublyLinkedList.Node {
+
     private volatile NodeImpl<E> prev;
 
     final E element;
@@ -672,6 +684,18 @@ class NodeImpl<E> extends AtomicReference<NodeImpl<E>> {
         super(next);
         this.prev = this;
         this.element = null;
+    }
+
+    @Override
+    public boolean remove() {
+        if (isDeleted()) {
+            return false;
+        }
+
+        while (!delete() && !isDeleted())
+            ;
+
+        return true;
     }
 
     /**
