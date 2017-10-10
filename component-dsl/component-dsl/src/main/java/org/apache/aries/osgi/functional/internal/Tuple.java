@@ -33,39 +33,21 @@ import java.util.function.Function;
 class Tuple<T> implements Event<T>, SentEvent<T> {
 
 	public final T _t;
-	private final Deque<Runnable> _closingHandlers;
-	private final DoublyLinkedList<Tuple<?>> _relatedTuples;
-	private final AtomicBoolean closed = new AtomicBoolean(false);
+	private final Deque<Runnable> _closingHandlers = new LinkedList<>();
+	private final DoublyLinkedList<Tuple<?>> _relatedTuples = new DoublyLinkedList<>();
+	private volatile boolean closed = false;
 	private Tuple<T> _cause = this;
 
 	private Tuple(T t) {
-		this(t, new LinkedList<>(), new DoublyLinkedList<>());
-	}
-
-	private Tuple(
-		T t, Deque<Runnable> closingHandlers,
-		DoublyLinkedList<Tuple<?>> relatedTuples) {
-
 		_t = t;
-		_closingHandlers = closingHandlers;
-		_relatedTuples = relatedTuples;
 	}
 
-	private Tuple(
-		T t, Deque<Runnable> closingHandlers,
-		DoublyLinkedList<Tuple<?>> relatedTuples,
-		Tuple<T> cause) {
-
-		this(t, closingHandlers, relatedTuples);
-
+	private Tuple(T t, Tuple<T> cause) {
+		this(t);
 		_cause = cause;
 	}
 
 	public void addRelatedTuple(Tuple<?> tuple) {
-		if (closed.get()) {
-			return;
-		}
-
 		DoublyLinkedList.Node<Tuple<?>> tupleNode = _relatedTuples.addLast(
 			tuple);
 
@@ -92,18 +74,18 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 	}
 
 	public boolean isClosed() {
-		return closed.get();
+		return closed;
 	}
 
 	public <S> Tuple<S> map(Function<? super T, ? extends S> fun) {
-		return new Tuple<>(fun.apply(_t), _closingHandlers, _relatedTuples);
+		Tuple<S> tuple = new Tuple<>(fun.apply(_t));
+
+		addRelatedTuple(tuple);
+
+		return tuple;
 	}
 
 	public void onTermination(Runnable terminator) {
-		if (closed.get()) {
-			return;
-		}
-
 		_closingHandlers.push(terminator);
 	}
 
@@ -113,8 +95,7 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 	}
 
 	public Tuple<T> copy() {
-		Tuple<T> copy = new Tuple<>(
-			_t, new LinkedList<>(), new DoublyLinkedList<>(), this);
+		Tuple<T> copy = new Tuple<>(_t, this);
 
 		addRelatedTuple(copy);
 
@@ -122,9 +103,7 @@ class Tuple<T> implements Event<T>, SentEvent<T> {
 	}
 
 	public void terminate() {
-		if (!closed.compareAndSet(false, true)) {
-			return;
-		}
+		closed = true;
 
 		Iterator<Tuple<?>> iterator = _relatedTuples.iterator();
 
