@@ -82,8 +82,8 @@ public class ServiceRegistrationOSGiImpl<T>
 		getServiceRegistrationOSGiResult(
 			ServiceRegistration<T> serviceRegistration) {
 
-		Pipe<Tuple<ServiceRegistration<T>>, Tuple<ServiceRegistration<T>>>
-            added = Pipe.create();
+		Pipe<ServiceRegistration<T>, ServiceRegistration<T>> added =
+			Pipe.create();
 
 		Consumer<Tuple<ServiceRegistration<T>>> addedSource =
             added.getSource();

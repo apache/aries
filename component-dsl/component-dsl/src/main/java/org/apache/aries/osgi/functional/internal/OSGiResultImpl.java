@@ -26,12 +26,12 @@ import java.util.function.Consumer;
  */
 public class OSGiResultImpl<T> implements OSGiResult<T> {
 
-	public Pipe<?, Tuple<T>> added;
+	public Pipe<?, T> added;
 	public Runnable start;
 	public Runnable close;
 
 	public OSGiResultImpl(
-		Pipe<?, Tuple<T>> added, Runnable start, Runnable close) {
+		Pipe<?, T> added, Runnable start, Runnable close) {
 
 		this.added = added;
 		this.start = start;

@@ -38,7 +38,7 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 
 	public ServiceReferenceOSGi(String filterString, Class<T> clazz) {
 		super(bundleContext -> {
-			Pipe<Tuple<ServiceReference<T>>, Tuple<ServiceReference<T>>>
+			Pipe<ServiceReference<T>, ServiceReference<T>>
 				added = Pipe.create();
 
 			ServiceTracker<T, AtomicReference<Tuple<ServiceReference<T>>>>
@@ -60,7 +60,7 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 		Function<? super ServiceReference<T>, OSGi<? extends S>> fun) {
 
 		return new OSGiImpl<>(bundleContext -> {
-			Pipe<Tuple<S>, Tuple<S>> added = Pipe.create();
+			Pipe<S, S> added = Pipe.create();
 
 			ServiceTracker<T, ?> serviceTracker =
 				new ServiceTracker<>(
