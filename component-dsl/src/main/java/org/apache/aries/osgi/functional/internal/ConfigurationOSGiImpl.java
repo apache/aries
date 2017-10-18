@@ -35,9 +35,8 @@ public class ConfigurationOSGiImpl
 			AtomicReference<Dictionary<String, ?>> atomicReference =
 				new AtomicReference<>(null);
 
-			AtomicReference<Tuple<Dictionary<String, ?>>>
-				tupleAtomicReference = new AtomicReference<>(
-				Tuple.create(null));
+			AtomicReference<Runnable>
+				tupleAtomicReference = new AtomicReference<>(() -> {});
 
 			AtomicReference<ServiceRegistration<ManagedService>>
 				serviceRegistrationReferece = new AtomicReference<>(null);
@@ -47,26 +46,20 @@ public class ConfigurationOSGiImpl
 					bundleContext.registerService(
 						ManagedService.class,
 						properties -> {
-							while (!atomicReference.compareAndSet(
-								tupleAtomicReference.get()._t,
-								properties)) {
+							atomicReference.set(properties);
+
+							Runnable old = tupleAtomicReference.get();
+
+							if (old != null) {
+								old.run();
 							}
-
-							Tuple<Dictionary<String, ?>> old =
-								tupleAtomicReference.get();
-
-							if (old._t != null) {
-								old.terminate();
-							}
-
-							Tuple<Dictionary<String, ?>> tuple =
-								Tuple.create(properties);
 
 							if (properties != null) {
-								op.accept(tuple);
+								tupleAtomicReference.set(op.apply(properties));
 							}
-
-							tupleAtomicReference.set(tuple);
+							else {
+								tupleAtomicReference.set(null);
+							}
 						},
 						new Hashtable<String, Object>() {{
 							put("service.pid", pid);
@@ -77,11 +70,11 @@ public class ConfigurationOSGiImpl
 				() -> {
 					serviceRegistrationReferece.get().unregister();
 
-					Tuple<Dictionary<String, ?>> tuple =
+					Runnable runnable =
 						tupleAtomicReference.get();
 
-					if (tuple != null) {
-						tuple.terminate();
+					if (runnable != null) {
+						runnable.run();
 					}
 				});
 		});

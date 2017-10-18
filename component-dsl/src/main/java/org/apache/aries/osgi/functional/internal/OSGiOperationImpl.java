@@ -19,9 +19,11 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGiOperation;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.SentEvent;
 import org.osgi.framework.BundleContext;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
@@ -29,11 +31,11 @@ import java.util.function.Consumer;
 interface OSGiOperationImpl<T> extends OSGiOperation<T> {
 
 	OSGiResultImpl run(
-		BundleContext bundleContext, Consumer<Tuple<T>> consumer);
+		BundleContext bundleContext, Function<T, Runnable> consumer);
 
 	@Override
 	default OSGiResult run(BundleContext bundleContext) {
-		return run(bundleContext, (__) -> {});
+		return run(bundleContext, (__) -> () -> {});
 	}
 
 }

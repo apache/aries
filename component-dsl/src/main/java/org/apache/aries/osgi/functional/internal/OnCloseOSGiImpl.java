@@ -17,6 +17,8 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * @author Carlos Sierra Andrés
  */
@@ -24,14 +26,14 @@ public class OnCloseOSGiImpl extends OSGiImpl<Void> {
 
 	public OnCloseOSGiImpl(Runnable action) {
 		super((bundleContext, op) -> {
-			Tuple<Void> tuple = Tuple.create(null);
+			AtomicReference<Runnable> reference = new AtomicReference<>();
 
 			return new OSGiResultImpl(
-				() -> op.accept(tuple),
+				() -> reference.set(op.apply(null)),
 				() -> {
 					action.run();
 
-					tuple.terminate();
+					reference.get().run();
 				}
 			);
 		});
