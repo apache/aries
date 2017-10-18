@@ -38,7 +38,7 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 
 	public ServiceReferenceOSGi(String filterString, Class<T> clazz) {
 		super((bundleContext, op) -> {
-			ServiceTracker<T, AtomicReference<Tuple<ServiceReference<T>>>>
+			ServiceTracker<T, AtomicReference<Runnable>>
 				serviceTracker = new ServiceTracker<>(
 					bundleContext,
 					buildFilter(bundleContext, filterString, clazz),
@@ -71,47 +71,39 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 	}
 
 	private static class DefaultServiceTrackerCustomizer<T>
-		implements ServiceTrackerCustomizer<T, AtomicReference<Tuple<ServiceReference<T>>>> {
+		implements ServiceTrackerCustomizer<T, AtomicReference<Runnable>> {
 
-		private final Consumer<Tuple<ServiceReference<T>>> _addedSource;
+		private final Function<ServiceReference<T>, Runnable> _addedSource;
 
 		public DefaultServiceTrackerCustomizer(
-			Consumer<Tuple<ServiceReference<T>>> addedSource) {
+			Function<ServiceReference<T>, Runnable> addedSource) {
 
 			_addedSource = addedSource;
 		}
 
 		@Override
-		public AtomicReference<Tuple<ServiceReference<T>>> addingService(
+		public AtomicReference<Runnable> addingService(
 			ServiceReference<T> reference) {
 
-			Tuple<ServiceReference<T>> tuple = Tuple.create(reference);
-
-			_addedSource.accept(tuple);
-
-			return new AtomicReference<>(tuple);
+			return new AtomicReference<>(_addedSource.apply(reference));
 		}
 
 		@Override
 		public void modifiedService(
 			ServiceReference<T> reference,
-			AtomicReference<Tuple<ServiceReference<T>>> tupleReference) {
+			AtomicReference<Runnable> tupleReference) {
 
-			tupleReference.get().terminate();
+			tupleReference.get().run();
 
-			Tuple<ServiceReference<T>> tuple = Tuple.create(reference);
-
-			tupleReference.set(tuple);
-
-			_addedSource.accept(tuple);
+			tupleReference.set(_addedSource.apply(reference));
 		}
 
 		@Override
 		public void removedService(
 			ServiceReference<T> reference,
-			AtomicReference<Tuple<ServiceReference<T>>> tuple) {
+			AtomicReference<Runnable> runnable) {
 
-			tuple.get().terminate();
+			runnable.get().run();
 		}
 	}
 
@@ -120,11 +112,11 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 		private final Function<? super ServiceReference<T>, OSGi<? extends S>>
 			_fun;
 		private final BundleContext _bundleContext;
-		private final Consumer<Tuple<S>> _op;
+		private final Function<S, Runnable> _op;
 
 		FlatMapServiceTrackerCustomizer(
 			Function<? super ServiceReference<T>, OSGi<? extends S>> fun,
-			BundleContext bundleContext, Consumer<Tuple<S>> op) {
+			BundleContext bundleContext, Function<S, Runnable> op) {
 
 			_fun = fun;
 			_bundleContext = bundleContext;

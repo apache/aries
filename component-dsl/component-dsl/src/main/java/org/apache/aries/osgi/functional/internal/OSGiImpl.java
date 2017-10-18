@@ -24,10 +24,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author Carlos Sierra Andrés
@@ -65,18 +67,22 @@ public class OSGiImpl<T> implements OSGi<T> {
 			_operation.run(
 				bundleContext,
 				t -> {
-					onAdded.accept(t._t);
+					onAdded.accept(t);
 
-					op.accept(t);
+					Runnable terminator = op.apply(t);
 
-					t.onTermination(() -> onRemoved.accept(t._t));
+					return () -> {
+						onRemoved.accept(t);
+
+						terminator.run();
+					};
 				}));
 	}
 
 	@Override
 	public <S> OSGi<S> map(Function<? super T, ? extends S> function) {
 		return new OSGiImpl<>((bundleContext, op) ->
-			_operation.run(bundleContext, t -> op.accept(t.map(function))));
+			_operation.run(bundleContext, t -> op.apply(function.apply(t))));
 	}
 
 	@Override
@@ -87,7 +93,13 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@Override
 	public OSGiResult run(BundleContext bundleContext, Consumer<T> andThen) {
 		OSGiResultImpl osgiResult =
-			_operation.run(bundleContext, t -> andThen.accept(t._t));
+			_operation.run(
+				bundleContext,
+				t -> {
+					andThen.accept(t);
+
+					return () -> {};
+				});
 
 		osgiResult.start();
 
@@ -175,10 +187,10 @@ public class OSGiImpl<T> implements OSGi<T> {
 				AtomicReference<OSGiResult> otherCloseReference =
 					new AtomicReference<>();
 
-				ConcurrentDoublyLinkedList<Tuple<T>> identities =
+				ConcurrentDoublyLinkedList<T> identities =
 					new ConcurrentDoublyLinkedList<>();
 
-				ConcurrentDoublyLinkedList<Tuple<Function<T, S>>> funs =
+				ConcurrentDoublyLinkedList<Function<T, S>> funs =
 					new ConcurrentDoublyLinkedList<>();
 
 				return new OSGiResultImpl(
@@ -188,9 +200,17 @@ public class OSGiImpl<T> implements OSGi<T> {
 							t -> {
 								Node node = identities.addLast(t);
 
-								t.onTermination(node::remove);
+								List<Runnable> terminators = funs.stream().map(
+									f -> op.apply(f.apply(t))
+								).collect(
+									Collectors.toList()
+								);
 
-								funs.forEach(f -> processAdded(op, f, t));
+								return () -> {
+									node.remove();
+
+									terminators.forEach(Runnable::run);
+								};
 							}
 						);
 
@@ -202,10 +222,18 @@ public class OSGiImpl<T> implements OSGi<T> {
 								f -> {
 									Node node = funs.addLast(f);
 
-									f.onTermination(node::remove);
+									List<Runnable> terminators =
+										identities.stream().map(
+											t -> op.apply(f.apply(t))
+										).collect(
+											Collectors.toList()
+										);
 
-									identities.forEach(
-										t -> processAdded(op, f, t));
+									return () -> {
+										node.remove();
+
+										terminators.forEach(Runnable::run);
+									};
 								});
 
 						otherCloseReference.set(funRun);
@@ -221,17 +249,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 					});
 			}
 			));
-	}
-
-	private <S> void processAdded(
-		Consumer<Tuple<S>> addedSource, Tuple<Function<T, S>> fTuple,
-		Tuple<T> t) {
-
-		Tuple<S> tuple = t.map(fTuple.getContent());
-
-		fTuple.addRelatedTuple(tuple);
-
-		addedSource.accept(tuple);
 	}
 
 }

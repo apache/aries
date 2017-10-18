@@ -22,7 +22,9 @@ import org.osgi.framework.ServiceRegistration;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
@@ -80,12 +82,13 @@ public class ServiceRegistrationOSGiImpl<T>
 	private static <T> OSGiResultImpl
 		getServiceRegistrationOSGiResult(
 		ServiceRegistration<?> serviceRegistration,
-		Consumer<Tuple<ServiceRegistration<T>>> op) {
+		Function<ServiceRegistration<T>, Runnable> op) {
 
-		Tuple<ServiceRegistration<?>> tuple = Tuple.create(serviceRegistration);
+		AtomicReference<Runnable> reference = new AtomicReference<>();
 
 		return new OSGiResultImpl(
-            () -> ((Consumer)op).accept(tuple),
+            () -> reference.set(
+            	(Runnable)((Function)op).apply(serviceRegistration)),
             () -> {
                 try {
                     serviceRegistration.unregister();
@@ -93,7 +96,7 @@ public class ServiceRegistrationOSGiImpl<T>
                 catch (Exception e) {
                 }
                 finally {
-                    tuple.terminate();
+                    reference.get().run();
                 }
             });
 	}
