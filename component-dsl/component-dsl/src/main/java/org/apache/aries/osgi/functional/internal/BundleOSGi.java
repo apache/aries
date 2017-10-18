@@ -36,28 +36,24 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 
 	public BundleOSGi(int stateMask) {
 		super((bundleContext, op) -> {
-			BundleTracker<Tuple<Bundle>> bundleTracker =
+			BundleTracker<Runnable> bundleTracker =
 				new BundleTracker<>(
 					bundleContext, stateMask,
-					new BundleTrackerCustomizer<Tuple<Bundle>>() {
+					new BundleTrackerCustomizer<Runnable>() {
 
 						@Override
-						public Tuple<Bundle> addingBundle(
+						public Runnable addingBundle(
 							Bundle bundle, BundleEvent bundleEvent) {
 
-							Tuple<Bundle> tuple = Tuple.create(bundle);
-
-							op.accept(tuple);
-
-							return tuple;
+							return op.apply(bundle);
 						}
 
 						@Override
 						public void modifiedBundle(
 							Bundle bundle, BundleEvent bundleEvent,
-							Tuple<Bundle> tuple) {
+							Runnable runnable) {
 
-							removedBundle(bundle, bundleEvent, tuple);
+							removedBundle(bundle, bundleEvent, runnable);
 
 							addingBundle(bundle, bundleEvent);
 						}
@@ -65,9 +61,9 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 						@Override
 						public void removedBundle(
 							Bundle bundle, BundleEvent bundleEvent,
-							Tuple<Bundle> tuple) {
+							Runnable runnable) {
 
-							tuple.terminate();
+							runnable.run();
 						}
 					});
 

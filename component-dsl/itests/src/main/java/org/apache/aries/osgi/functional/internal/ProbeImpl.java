@@ -21,6 +21,7 @@ import org.apache.aries.osgi.functional.Event;
 import org.apache.aries.osgi.functional.SentEvent;
 import org.osgi.framework.BundleContext;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -37,23 +38,28 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
         return (t) -> {
             ProbeOperationImpl<T> operation = (ProbeOperationImpl<T>) _operation;
 
-            Tuple<T> tuple = Tuple.create(t);
+            AtomicReference<Runnable> terminator = new AtomicReference<>();
+
+            if (!operation.closed) {
+                terminator.set(operation._op.apply(t));
+            }
 
             SentEvent<T> sentEvent = new SentEvent<T>() {
                 @Override
                 public Event<T> getEvent() {
-                    return tuple;
+                    return () -> t;
                 }
 
                 @Override
                 public void terminate() {
-                    tuple.terminate();
+                    Runnable runnable = terminator.get();
+
+                    if (runnable != null) {
+                        runnable.run();
+                    }
                 }
             };
 
-            if (!operation.closed) {
-                operation._op.accept(tuple);
-            }
 
             return sentEvent;
         };
@@ -62,12 +68,12 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
     private static class ProbeOperationImpl<T> implements OSGiOperationImpl<T> {
 
         BundleContext _bundleContext;
-        Consumer<Tuple<T>> _op;
+        Function<T, Runnable> _op;
         volatile boolean closed;
 
         @Override
         public OSGiResultImpl run(
-            BundleContext bundleContext, Consumer<Tuple<T>> op) {
+            BundleContext bundleContext, Function<T, Runnable> op) {
             _bundleContext = bundleContext;
             _op = op;
 

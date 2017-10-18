@@ -33,14 +33,14 @@ public class FlatMapImpl<T, S> extends OSGiImpl<S> {
 			previous._operation.run(
 				bundleContext,
 				t -> {
-					OSGiImpl<S> program = (OSGiImpl<S>) fun.apply(t._t);
+					OSGiImpl<S> program = (OSGiImpl<S>) fun.apply(t);
 
 					OSGiResultImpl result =
 						program._operation.run(bundleContext, op);
 
-					t.onTermination(result::close);
-
 					result.start();
+
+					return result::close;
 				}));
 	}
 

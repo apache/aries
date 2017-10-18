@@ -21,6 +21,7 @@ import org.apache.aries.osgi.functional.Event;
 import org.apache.aries.osgi.functional.SentEvent;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class RouteOsgiImpl<T> extends OSGiImpl<T> {
 
@@ -36,9 +37,15 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
             OSGiResultImpl osgiResult = previous._operation.run(
                 bundleContext,
                 t -> {
-                    router._adding.accept(t);
+                    EventImpl<T> event = new EventImpl<>(t);
 
-                    t.onTermination(() -> router._leaving.accept(t));
+                    router._adding.accept(event);
+
+                    return () -> {
+                        event.terminate();
+
+                        router._leaving.accept(event);
+                    };
                 });
 
             return new OSGiResultImpl(
@@ -55,7 +62,13 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
 
     static class RouterImpl<T> implements Router<T> {
 
-        RouterImpl(Consumer<Tuple<T>> op) {
+        private final Function<T, Runnable> op;
+        Consumer<Event<T>> _adding = (ign) -> {};
+        Consumer<Event<T>> _leaving = (ign) -> {};
+        private Runnable _close = NOOP;
+        private Runnable _start = NOOP;
+
+        RouterImpl(Function<T, Runnable> op) {
             this.op = op;
         }
 
@@ -70,42 +83,65 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
         }
 
         @Override
-        public void onClose(Runnable close) {
-            _close = close;
-        }
-
-        @Override
         public void onStart(Runnable start) {
             _start = start;
         }
 
         @Override
+        public void onClose(Runnable close) {
+            _close = close;
+        }
+
+        @Override
         public SentEvent<T> signalAdd(Event<T> event) {
-            Tuple<T> tuple = (Tuple<T>) event;
+            Runnable terminator = op.apply(event.getContent());
 
-            Tuple<T> copy = tuple.map(x -> x);
-
-            op.accept(copy);
+            ConcurrentDoublyLinkedList.Node node =
+                ((EventImpl<T>) event).addTerminator(terminator);
 
             return new SentEvent<T>() {
                 @Override
                 public Event<T> getEvent() {
-                    return tuple;
+                    return event;
                 }
 
                 @Override
                 public void terminate() {
-                    copy.terminate();
+                    terminator.run();
+
+                    node.remove();
                 }
             };
         }
 
-        Consumer<Event<T>> _adding = (ign) -> {};
-        Consumer<Event<T>> _leaving = (ign) -> {};
+    }
 
-        private Runnable _close = NOOP;
-        private final Consumer<Tuple<T>> op;
-        private Runnable _start = NOOP;
+    static class EventImpl<T> implements Event<T> {
+
+        private final T t;
+        private ConcurrentDoublyLinkedList<Runnable> _runnables =
+            new ConcurrentDoublyLinkedList<>();
+
+        public EventImpl(T t) {
+            this.t = t;
+        }
+
+        @Override
+        public T getContent() {
+            return t;
+        }
+
+        ConcurrentDoublyLinkedList.Node addTerminator(Runnable terminator) {
+            return _runnables.addFirst(terminator);
+        }
+
+        void terminate() {
+            Runnable runnable;
+
+            while ((runnable = _runnables.poll()) != null) {
+                runnable.run();
+            }
+        }
 
     }
 }

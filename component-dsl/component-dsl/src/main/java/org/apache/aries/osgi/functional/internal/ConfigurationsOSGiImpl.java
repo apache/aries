@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
@@ -36,8 +37,7 @@ public class ConfigurationsOSGiImpl
 
 	public ConfigurationsOSGiImpl(String factoryPid) {
 		super((bundleContext, op) -> {
-			Map<String, Tuple<Dictionary<String, ?>>> results =
-				new ConcurrentHashMap<>();
+			Map<String, Runnable> results = new ConcurrentHashMap<>();
 
 			AtomicReference<ServiceRegistration<ManagedServiceFactory>>
 				serviceRegistrationReference = new AtomicReference<>(null);
@@ -57,10 +57,10 @@ public class ConfigurationsOSGiImpl
 				() -> {
 					serviceRegistrationReference.get().unregister();
 
-					for (Tuple<Dictionary<String, ?>> tuple :
+					for (Runnable runnable :
 						results.values()) {
 
-						tuple.terminate();
+						runnable.run();
 					}
 				});
 		});
@@ -69,13 +69,13 @@ public class ConfigurationsOSGiImpl
 	private static class ConfigurationsManagedServiceFactory
 		implements ManagedServiceFactory {
 
-		private final Map<String, Tuple<Dictionary<String, ?>>> _results;
+		private final Map<String, Runnable> _results;
 
-		private final Consumer<Tuple<Dictionary<String, ?>>> _addedSource;
+		private final Function<Dictionary<String, ?>, Runnable> _addedSource;
 
 		public ConfigurationsManagedServiceFactory(
-			Map<String, Tuple<Dictionary<String, ?>>> results,
-			Consumer<Tuple<Dictionary<String, ?>>> addedSource) {
+			Map<String, Runnable> results,
+			Function<Dictionary<String, ?>, Runnable> addedSource) {
 
 			_results = results;
 			_addedSource = addedSource;
@@ -83,9 +83,9 @@ public class ConfigurationsOSGiImpl
 
 		@Override
 		public void deleted(String s) {
-			Tuple<Dictionary<String, ?>> tuple = _results.remove(s);
+			Runnable runnable = _results.remove(s);
 
-			tuple.terminate();
+			runnable.run();
 		}
 
 		@Override
@@ -97,15 +97,13 @@ public class ConfigurationsOSGiImpl
 		public void updated(String s, Dictionary<String, ?> dictionary)
 			throws ConfigurationException {
 
-			Tuple<Dictionary<String, ?>> tuple = Tuple.create(dictionary);
+			Runnable terminator = _addedSource.apply(dictionary);
 
-			Tuple<Dictionary<String, ?>> old = _results.put(s, tuple);
+			Runnable old = _results.put(s, terminator);
 
 			if (old != null) {
-				old.terminate();
+				old.run();
 			}
-
-			_addedSource.accept(tuple);
 		}
 
 	}
