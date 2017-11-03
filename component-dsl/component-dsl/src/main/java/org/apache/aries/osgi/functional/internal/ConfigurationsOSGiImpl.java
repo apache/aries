@@ -25,8 +25,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -42,11 +42,14 @@ public class ConfigurationsOSGiImpl
 			AtomicReference<ServiceRegistration<ManagedServiceFactory>>
 				serviceRegistrationReference = new AtomicReference<>(null);
 
+			AtomicBoolean closed = new AtomicBoolean();
+
 			Runnable start = () ->
 				serviceRegistrationReference.set(
 					bundleContext.registerService(
 						ManagedServiceFactory.class,
-						new ConfigurationsManagedServiceFactory(results, op),
+						new ConfigurationsManagedServiceFactory(
+							results, op, closed),
 						new Hashtable<String, Object>() {{
 							put("service.pid", factoryPid);
 						}}));
@@ -55,13 +58,15 @@ public class ConfigurationsOSGiImpl
 			return new OSGiResultImpl(
 				start,
 				() -> {
+					closed.set(true);
+
 					serviceRegistrationReference.get().unregister();
 
-					for (Runnable runnable :
-						results.values()) {
+					results.replaceAll((key, terminator) -> {
+						terminator.run();
 
-						runnable.run();
-					}
+						return null;
+					});
 				});
 		});
 	}
@@ -71,14 +76,17 @@ public class ConfigurationsOSGiImpl
 
 		private final Map<String, Runnable> _results;
 
-		private final Function<Dictionary<String, ?>, Runnable> _addedSource;
+		private final Function<Dictionary<String, ?>, Runnable> _op;
+		private AtomicBoolean _closed;
 
 		public ConfigurationsManagedServiceFactory(
 			Map<String, Runnable> results,
-			Function<Dictionary<String, ?>, Runnable> addedSource) {
+			Function<Dictionary<String, ?>, Runnable> op,
+			AtomicBoolean closed) {
 
 			_results = results;
-			_addedSource = addedSource;
+			_op = op;
+			_closed = closed;
 		}
 
 		@Override
@@ -97,12 +105,25 @@ public class ConfigurationsOSGiImpl
 		public void updated(String s, Dictionary<String, ?> dictionary)
 			throws ConfigurationException {
 
-			Runnable terminator = _addedSource.apply(dictionary);
+			Runnable terminator = _op.apply(dictionary);
 
 			Runnable old = _results.put(s, terminator);
 
 			if (old != null) {
 				old.run();
+			}
+
+			if (_closed.get()) {
+				/* if we have been closed while executing the effects we have
+				   to check if this terminator has been left unexecuted.
+				*/
+				_results.computeIfPresent(
+					s,
+					(key, runnable) -> {
+						runnable.run();
+
+					return null;
+				});
 			}
 		}
 
