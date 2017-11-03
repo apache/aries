@@ -19,6 +19,10 @@ package org.apache.aries.osgi.functional.test;
 
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.SentEvent;
+import org.apache.aries.osgi.functional.internal.ProbeImpl;
+import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -41,11 +45,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
+import static org.apache.aries.osgi.functional.OSGi.once;
 import static org.apache.aries.osgi.functional.OSGi.register;
 import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
 import static org.apache.aries.osgi.functional.OSGi.services;
@@ -603,6 +609,51 @@ public class DSLTest {
         assertEquals(8, results.size());
         assertEquals(540, results2.get());
     }
+
+    @Test
+    public void testOnce() {
+        ProbeImpl<Integer> probe = new ProbeImpl<>();
+
+        Function<Integer, SentEvent<Integer>> op = probe.getOperation();
+
+        AtomicInteger count = new AtomicInteger();
+
+        OSGi<Integer> once =
+            once(probe).effects(
+                t -> count.incrementAndGet(),
+                t -> count.set(0));
+
+        once.run(bundleContext);
+
+        assertEquals(0, count.get());
+
+        SentEvent<Integer> se = op.apply(1);
+
+        assertEquals(1, count.get());
+
+        se.terminate();
+
+        assertEquals(0, count.get());
+
+        se = op.apply(1);
+        SentEvent se2 = op.apply(2);
+        SentEvent se3 = op.apply(3);
+
+        assertEquals(1, count.get());
+
+        se.terminate();
+
+        assertEquals(1, count.get());
+
+        se3.terminate();
+
+        assertEquals(1, count.get());
+
+        se2.terminate();
+
+        assertEquals(0, count.get());
+    }
+
 
     private class Service {}
 
