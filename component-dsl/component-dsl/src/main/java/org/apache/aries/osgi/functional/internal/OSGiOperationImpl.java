@@ -31,7 +31,7 @@ import java.util.function.Function;
 interface OSGiOperationImpl<T> extends OSGiOperation<T> {
 
 	OSGiResultImpl run(
-		BundleContext bundleContext, Function<T, Runnable> consumer);
+		BundleContext bundleContext, Function<T, Runnable> op);
 
 	@Override
 	default OSGiResult run(BundleContext bundleContext) {
