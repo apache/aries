@@ -49,6 +49,7 @@ public class OSGiResultImpl implements OSGiResult {
 					_started = true;
 				}
 				catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 
@@ -68,6 +69,7 @@ public class OSGiResultImpl implements OSGiResult {
 				close.run();
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 
