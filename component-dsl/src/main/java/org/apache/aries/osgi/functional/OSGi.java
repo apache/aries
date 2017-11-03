@@ -234,6 +234,28 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ServiceReferenceOSGi<>(filterString, clazz);
 	}
 
+	static <T> OSGi<CachingServiceReference<T>> serviceReferences(
+		Class<T> clazz, String filterString,
+		Refresher<? super CachingServiceReference<T>> onModified) {
+
+		return new ServiceReferenceOSGi<>(filterString, clazz, onModified);
+	}
+
+	static <T> OSGi<CachingServiceReference<T>> serviceReferences(
+		Class<T> clazz, Refresher<? super CachingServiceReference<T>> onModified) {
+
+		return new ServiceReferenceOSGi<>(null, clazz, onModified);
+	}
+
+	static OSGi<CachingServiceReference<Object>> serviceReferences(
+		String filterString,
+		Refresher<? super CachingServiceReference<Object>> onModified) {
+
+		return new ServiceReferenceOSGi<>(filterString, null, onModified);
+	}
+
+
+
 	@SafeVarargs
 	static <T> OSGi<T> all(OSGi<T> ... programs) {
 		return new DistributeOSGi<>(programs);
