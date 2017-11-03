@@ -53,9 +53,6 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 							Bundle bundle, BundleEvent bundleEvent,
 							Runnable runnable) {
 
-							removedBundle(bundle, bundleEvent, runnable);
-
-							addingBundle(bundle, bundleEvent);
 						}
 
 						@Override
@@ -104,9 +101,6 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 							Bundle bundle, BundleEvent bundleEvent,
 							OSGiResult result) {
 
-							removedBundle(bundle, bundleEvent, result);
-
-							addingBundle(bundle, bundleEvent);
 						}
 
 						@Override
