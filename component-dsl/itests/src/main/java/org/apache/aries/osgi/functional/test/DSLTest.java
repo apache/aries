@@ -20,6 +20,7 @@ package org.apache.aries.osgi.functional.test;
 import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.Refresher;
 import org.apache.aries.osgi.functional.SentEvent;
 import org.apache.aries.osgi.functional.internal.ProbeImpl;
 import org.junit.Test;
@@ -666,6 +667,48 @@ public class DSLTest {
         assertEquals(0, count.get());
     }
 
+    @Test
+    public void testServiceReferenceRefresher() {
+        ServiceRegistration<Service> serviceRegistration =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                    put("good", 0);
+                    put("bad", 0);
+                }});
+
+        AtomicInteger atomicInteger = new AtomicInteger();
+
+        try {
+            /* reload only when property "good" has changed */
+            OSGi<?> program = serviceReferences(
+                Service.class, csr -> csr.isDirty("good")).map(
+                    csr -> csr.getProperty("good"));
+
+            program.run(bundleContext, (__) -> atomicInteger.incrementAndGet());
+
+            assertEquals(1, atomicInteger.get());
+
+            serviceRegistration.setProperties(
+                new Hashtable<String, Object>() {{
+                    put("good", 0);
+                    put("bad", 1);
+                }});
+
+            assertEquals(1, atomicInteger.get());
+
+            serviceRegistration.setProperties(
+                new Hashtable<String, Object>() {{
+                    put("good", 1);
+                    put("bad", 1);
+                }});
+
+            assertEquals(2, atomicInteger.get());
+        }
+        finally {
+            serviceRegistration.unregister();
+        }
+    }
 
     private class Service {}
 
