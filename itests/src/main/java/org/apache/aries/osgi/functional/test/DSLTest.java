@@ -574,7 +574,7 @@ public class DSLTest {
     public void testApply() {
         AtomicInteger integer = new AtomicInteger(0);
 
-        OSGi<Integer> program = OSGi.apply(
+        OSGi<Integer> program = OSGi.combine(
             (a, b, c) -> a + b + c, just(5), just(5), just(5));
 
         program.run(bundleContext, integer::set);
@@ -585,14 +585,23 @@ public class DSLTest {
     @Test
     public void testMultipleApplies() {
         ArrayList<Integer> results = new ArrayList<>();
+        AtomicInteger results2 = new AtomicInteger();
 
-        OSGi<Integer> program = OSGi.apply(
+        OSGi<Integer> program = OSGi.combine(
             (a, b, c) -> a + b + c, just(Arrays.asList(5, 20)),
             just(Arrays.asList(5, 40)), just(Arrays.asList(5, 60)));
 
-        program.run(bundleContext, results::add);
+        OSGiResult or = program.run(bundleContext, results::add);
+
+        or.close();
+
+        OSGiResult or2 = program.run(
+            bundleContext, i -> results2.accumulateAndGet(i, (a, b) -> a + b));
+
+        or2.close();
 
         assertEquals(8, results.size());
+        assertEquals(540, results2.get());
     }
 
     private class Service {}

@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-import static org.apache.aries.osgi.functional.OSGi.apply;
+import static org.apache.aries.osgi.functional.OSGi.combine;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.services;
 import static org.junit.Assert.assertEquals;
@@ -72,7 +72,7 @@ public class AsynchronousTest {
         OSGi<Integer> bs = services(Service.class, "(property=b)").map(Service::getI);
         OSGi<Integer> cs = services(Service.class, "(property=c)").map(Service::getI);
 
-        OSGi<int[]> combined = apply((x, y, z) -> new int[] {x, y, z}, as, bs, cs);
+        OSGi<int[]> combined = combine((x, y, z) -> new int[] {x, y, z}, as, bs, cs);
 
         OSGi<?> program = combined.effects(
             i -> started[i[0]][i[1]][i[2]].set(true),
@@ -195,7 +195,7 @@ public class AsynchronousTest {
         OSGi<Integer> bs = services(Service.class, "(property=b)").map(Service::getI);
         OSGi<Integer> cs = configurations("configurationc").map(d -> (Integer)d.get("property"));
 
-        OSGi<int[]> combined = apply((x, y, z) -> new int[] {x, y, z}, as, bs, cs);
+        OSGi<int[]> combined = combine((x, y, z) -> new int[] {x, y, z}, as, bs, cs);
 
         OSGi<?> program = combined.effects(
             i -> started[i[0]][i[1]][i[2]].set(true),
@@ -327,7 +327,7 @@ public class AsynchronousTest {
         OSGi<Integer> bs = new ProbeImpl<>();
         OSGi<Integer> cs = new ProbeImpl<>();
 
-        OSGi<int[]> combined = apply((x, y, z) -> new int[] {x, y, z}, as, bs, cs);
+        OSGi<int[]> combined = combine((x, y, z) -> new int[] {x, y, z}, as, bs, cs);
 
         OSGi<?> program = combined.effects(
             i -> started[i[0]][i[1]][i[2]].set(true),
