@@ -39,7 +39,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceObjects;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 import java.util.Collection;
@@ -140,7 +139,10 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		bundleContext ->
 
 		serviceReferences(clazz, filterString).map(
-			bundleContext::getServiceObjects));
+			CachingServiceReference::getServiceReference
+		).map(
+			bundleContext::getServiceObjects)
+		);
 	}
 
 	static <T> OSGi<ServiceRegistration<T>> register(
@@ -174,14 +176,16 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 			bundleContext().flatMap(
 			bundleContext ->
 
-			serviceReferences(clazz, filterString).flatMap(
-			sr -> {
-				T service = bundleContext.getService(sr);
+			serviceReferences(clazz, filterString).map(
+				CachingServiceReference::getServiceReference
+			).flatMap(
+				sr -> {
+					T service = bundleContext.getService(sr);
 
-				return
-					onClose(() -> bundleContext.ungetService(sr)).then(
-					just(service)
-				);
+					return
+						onClose(() -> bundleContext.ungetService(sr)).then(
+						just(service)
+					);
 			}
 		));
 	}
@@ -212,19 +216,19 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		});
 	}
 
-	static <T> OSGi<ServiceReference<T>> serviceReferences(
+	static <T> OSGi<CachingServiceReference<T>> serviceReferences(
 		Class<T> clazz) {
 
 		return new ServiceReferenceOSGi<>(null, clazz);
 	}
 
-	static OSGi<ServiceReference<Object>> serviceReferences(
+	static OSGi<CachingServiceReference<Object>> serviceReferences(
 		String filterString) {
 
 		return new ServiceReferenceOSGi<>(filterString, null);
 	}
 
-	static <T> OSGi<ServiceReference<T>> serviceReferences(
+	static <T> OSGi<CachingServiceReference<T>> serviceReferences(
 		Class<T> clazz, String filterString) {
 
 		return new ServiceReferenceOSGi<>(filterString, clazz);

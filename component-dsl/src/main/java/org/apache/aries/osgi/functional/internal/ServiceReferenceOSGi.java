@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.osgi.framework.BundleContext;
@@ -25,13 +26,13 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
  */
-public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
+public class ServiceReferenceOSGi<T>
+	extends OSGiImpl<CachingServiceReference<T>> {
 
 	private String _filterString;
 	private Class<T> _clazz;
@@ -54,7 +55,7 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 
 	@Override
 	public <S> OSGiImpl<S> flatMap(
-		Function<? super ServiceReference<T>, OSGi<? extends S>> fun) {
+		Function<? super CachingServiceReference<T>, OSGi<? extends S>> fun) {
 
 		return new OSGiImpl<>((bundleContext, op) -> {
 			ServiceTracker<T, ?> serviceTracker =
@@ -73,10 +74,11 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 	private static class DefaultServiceTrackerCustomizer<T>
 		implements ServiceTrackerCustomizer<T, AtomicReference<Runnable>> {
 
-		private final Function<ServiceReference<T>, Runnable> _addedSource;
+		private final Function<CachingServiceReference<T>, Runnable>
+			_addedSource;
 
 		public DefaultServiceTrackerCustomizer(
-			Function<ServiceReference<T>, Runnable> addedSource) {
+			Function<CachingServiceReference<T>, Runnable> addedSource) {
 
 			_addedSource = addedSource;
 		}
@@ -85,7 +87,8 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 		public AtomicReference<Runnable> addingService(
 			ServiceReference<T> reference) {
 
-			return new AtomicReference<>(_addedSource.apply(reference));
+			return new AtomicReference<>(
+				_addedSource.apply(new CachingServiceReference<>(reference)));
 		}
 
 		@Override
@@ -95,7 +98,8 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 
 			tupleReference.get().run();
 
-			tupleReference.set(_addedSource.apply(reference));
+			tupleReference.set(
+				_addedSource.apply(new CachingServiceReference<>(reference)));
 		}
 
 		@Override
@@ -109,13 +113,13 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 
 	private static class FlatMapServiceTrackerCustomizer<T, S>
 		implements ServiceTrackerCustomizer<T, AtomicReference<OSGiResult>> {
-		private final Function<? super ServiceReference<T>, OSGi<? extends S>>
+		private final Function<? super CachingServiceReference<T>, OSGi<? extends S>>
 			_fun;
 		private final BundleContext _bundleContext;
 		private final Function<S, Runnable> _op;
 
 		FlatMapServiceTrackerCustomizer(
-			Function<? super ServiceReference<T>, OSGi<? extends S>> fun,
+			Function<? super CachingServiceReference<T>, OSGi<? extends S>> fun,
 			BundleContext bundleContext, Function<S, Runnable> op) {
 
 			_fun = fun;
@@ -127,12 +131,13 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
         public AtomicReference<OSGiResult> addingService(
         	ServiceReference<T> reference) {
 
-			OSGiResultImpl osgiResult = doFlatMap(reference);
+			OSGiResultImpl osgiResult = doFlatMap(
+				new CachingServiceReference<>(reference));
 
 			return new AtomicReference<>(osgiResult);
         }
 
-		private OSGiResultImpl doFlatMap(ServiceReference<T> reference) {
+		private OSGiResultImpl doFlatMap(CachingServiceReference<T> reference) {
 			OSGiImpl<S> program = (OSGiImpl<S>) _fun.apply(reference);
 
 			OSGiResultImpl result = program._operation.run(_bundleContext, _op);
@@ -149,7 +154,7 @@ public class ServiceReferenceOSGi<T> extends OSGiImpl<ServiceReference<T>> {
 
 			tracked.get().close();
 
-			tracked.set(doFlatMap(reference));
+			tracked.set(doFlatMap(new CachingServiceReference<>(reference)));
         }
 
 		@Override
