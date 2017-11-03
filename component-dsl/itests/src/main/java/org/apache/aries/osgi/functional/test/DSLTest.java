@@ -17,12 +17,11 @@
 
 package org.apache.aries.osgi.functional.test;
 
+import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.apache.aries.osgi.functional.SentEvent;
 import org.apache.aries.osgi.functional.internal.ProbeImpl;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -125,7 +124,7 @@ public class DSLTest {
 
     @Test
     public void testServiceReferences() {
-        AtomicReference<ServiceReference<Service>> atomicReference =
+        AtomicReference<CachingServiceReference<Service>> atomicReference =
             new AtomicReference<>();
 
         ServiceRegistration<Service> serviceRegistration = null;
@@ -141,7 +140,8 @@ public class DSLTest {
                 Service.class, new Service(), new Hashtable<>());
 
             assertEquals(
-                serviceRegistration.getReference(), atomicReference.get());
+                serviceRegistration.getReference(),
+                atomicReference.get().getServiceReference());
         }
         finally {
             if (serviceRegistration != null) {
@@ -152,10 +152,10 @@ public class DSLTest {
 
     @Test
     public void testServiceReferencesAndClose() {
-        AtomicReference<ServiceReference<Service>> atomicReference =
+        AtomicReference<CachingServiceReference<Service>> atomicReference =
             new AtomicReference<>();
 
-        OSGi<ServiceReference<Service>> program =
+        OSGi<CachingServiceReference<Service>> program =
             serviceReferences(Service.class).flatMap(ref ->
             onClose(() -> atomicReference.set(null)).
             then(just(ref))
@@ -173,7 +173,8 @@ public class DSLTest {
                 Service.class, new Service(), new Hashtable<>());
 
             assertEquals(
-                serviceRegistration.getReference(), atomicReference.get());
+                serviceRegistration.getReference(),
+                atomicReference.get().getServiceReference());
         }
         finally {
             if (serviceRegistration != null) {
@@ -505,7 +506,7 @@ public class DSLTest {
 
     @Test
     public void testHighestRankingOnly() {
-        AtomicReference<ServiceReference<Service>> current =
+        AtomicReference<CachingServiceReference<Service>> current =
             new AtomicReference<>();
 
         OSGi<Void> program =
@@ -522,7 +523,9 @@ public class DSLTest {
                         put("service.ranking", 0);
                     }});
 
-            assertEquals(serviceRegistrationOne.getReference(), current.get());
+            assertEquals(
+                serviceRegistrationOne.getReference(),
+                current.get().getServiceReference());
 
             ServiceRegistration<Service> serviceRegistrationTwo =
                 bundleContext.registerService(
@@ -531,7 +534,9 @@ public class DSLTest {
                         put("service.ranking", 1);
                     }});
 
-            assertEquals(serviceRegistrationTwo.getReference(), current.get());
+            assertEquals(
+                serviceRegistrationTwo.getReference(),
+                current.get().getServiceReference());
 
             ServiceRegistration<Service> serviceRegistrationMinusOne =
                 bundleContext.registerService(
@@ -540,16 +545,21 @@ public class DSLTest {
                         put("service.ranking", -1);
                     }});
 
-            assertEquals(serviceRegistrationTwo.getReference(), current.get());
+            assertEquals(
+                serviceRegistrationTwo.getReference(),
+                current.get().getServiceReference());
 
             serviceRegistrationTwo.unregister();
 
-            assertEquals(serviceRegistrationOne.getReference(), current.get());
+            assertEquals(
+                serviceRegistrationOne.getReference(),
+                current.get().getServiceReference());
 
             serviceRegistrationOne.unregister();
 
             assertEquals(
-                serviceRegistrationMinusOne.getReference(), current.get());
+                serviceRegistrationMinusOne.getReference(),
+                current.get().getServiceReference());
 
             serviceRegistrationOne =
                 bundleContext.registerService(
@@ -558,7 +568,9 @@ public class DSLTest {
                         put("service.ranking", 0);
                     }});
 
-            assertEquals(serviceRegistrationOne.getReference(), current.get());
+            assertEquals(
+                serviceRegistrationOne.getReference(),
+                current.get().getServiceReference());
 
             serviceRegistrationMinusOne.unregister();
         }

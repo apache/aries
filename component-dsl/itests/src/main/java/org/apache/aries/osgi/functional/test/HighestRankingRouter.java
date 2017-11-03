@@ -17,9 +17,9 @@
 package org.apache.aries.osgi.functional.test;
 
 import org.apache.aries.osgi.functional.Event;
+import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.SentEvent;
-import org.osgi.framework.ServiceReference;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -36,7 +36,7 @@ public class HighestRankingRouter<T extends Comparable<? super T>>
     private PriorityQueue<Event<T>> _instances;
     private SentEvent sent;
 
-    public static <T> OSGi<ServiceReference<T>> highest(Class<T> clazz) {
+    public static <T> OSGi<CachingServiceReference<T>> highest(Class<T> clazz) {
         return serviceReferences(clazz).route(new HighestRankingRouter<>());
     }
 
