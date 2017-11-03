@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.test;
 
+import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.junit.AfterClass;
@@ -336,7 +337,7 @@ public class ComponentTest {
 
 
     private static <T> OSGi<T> highestService(Class<T> clazz) {
-        return highest(clazz).flatMap(sr ->
+        return highest(clazz).map(CachingServiceReference::getServiceReference).flatMap(sr ->
         bundleContext().flatMap(bc ->
         onClose(() -> bc.ungetService(sr)).then(
         just(bc.getService(sr))
