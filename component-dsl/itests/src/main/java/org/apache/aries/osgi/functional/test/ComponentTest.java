@@ -22,7 +22,6 @@ import org.apache.aries.osgi.functional.OSGiResult;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -44,8 +43,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import static org.apache.aries.osgi.functional.OSGi.all;
-import static org.apache.aries.osgi.functional.OSGi.apply;
 import static org.apache.aries.osgi.functional.OSGi.bundleContext;
+import static org.apache.aries.osgi.functional.OSGi.combine;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
@@ -200,7 +199,7 @@ public class ComponentTest {
     @Test
     public void testComponentApplicative() throws IOException, TimeoutException {
         OSGi<?> program =
-            apply(
+            combine(
                 Component::new,
                 configurations("org.components.MyComponent"),
                 services(Service.class)).
