@@ -46,6 +46,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -182,6 +184,32 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 				);
 			}
 		));
+	}
+
+	public static <T> OSGi<T> once(OSGi<T> program) {
+		return program.route(router -> {
+			AtomicInteger count = new AtomicInteger();
+
+			AtomicReference<SentEvent> terminator = new AtomicReference<>();
+
+			router.onIncoming(t -> {
+				int c = count.getAndIncrement();
+
+				if (c == 0) {
+					terminator.set(router.signalAdd(t));
+				}
+			});
+
+			router.onLeaving(t -> {
+				int c = count.decrementAndGet();
+
+				if (c == 0) {
+					SentEvent s = terminator.getAndSet(null);
+
+					s.terminate();
+				}
+			});
+		});
 	}
 
 	static <T> OSGi<ServiceReference<T>> serviceReferences(

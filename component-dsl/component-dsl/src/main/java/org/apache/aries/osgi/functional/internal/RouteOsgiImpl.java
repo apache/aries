@@ -41,11 +41,7 @@ public class RouteOsgiImpl<T> extends OSGiImpl<T> {
 
                     router._adding.accept(event);
 
-                    return () -> {
-                        event.terminate();
-
-                        router._leaving.accept(event);
-                    };
+                    return () -> router._leaving.accept(event);
                 });
 
             return new OSGiResultImpl(
