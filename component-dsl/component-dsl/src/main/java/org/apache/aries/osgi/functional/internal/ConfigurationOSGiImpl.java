@@ -22,6 +22,7 @@ import org.osgi.service.cm.ManagedService;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -36,10 +37,12 @@ public class ConfigurationOSGiImpl
 				new AtomicReference<>(null);
 
 			AtomicReference<Runnable>
-				tupleAtomicReference = new AtomicReference<>(() -> {});
+				terminatorAtomicReference = new AtomicReference<>(() -> {});
 
 			AtomicReference<ServiceRegistration<ManagedService>>
 				serviceRegistrationReferece = new AtomicReference<>(null);
+
+			AtomicBoolean closed = new AtomicBoolean();
 
 			Runnable start = () ->
 				serviceRegistrationReferece.set(
@@ -48,17 +51,22 @@ public class ConfigurationOSGiImpl
 						properties -> {
 							atomicReference.set(properties);
 
-							Runnable old = tupleAtomicReference.get();
-
-							if (old != null) {
-								old.run();
-							}
+							signalLeave(terminatorAtomicReference);
 
 							if (properties != null) {
-								tupleAtomicReference.set(op.apply(properties));
-							}
-							else {
-								tupleAtomicReference.set(null);
+								terminatorAtomicReference.set(
+									op.apply(properties));
+
+								if (closed.get()) {
+									/*
+									if we have closed while executing the
+									effects we have to execute the terminator
+									directly instead of storing it
+									*/
+									signalLeave(terminatorAtomicReference);
+
+									return;
+								}
 							}
 						},
 						new Hashtable<String, Object>() {{
@@ -68,16 +76,23 @@ public class ConfigurationOSGiImpl
 			return new OSGiResultImpl(
 				start,
 				() -> {
+					closed.set(true);
+
 					serviceRegistrationReferece.get().unregister();
 
-					Runnable runnable =
-						tupleAtomicReference.get();
-
-					if (runnable != null) {
-						runnable.run();
-					}
+					signalLeave(terminatorAtomicReference);
 				});
 		});
+	}
+
+	private static void signalLeave(
+		AtomicReference<Runnable> terminatorAtomicReference) {
+
+		Runnable old = terminatorAtomicReference.getAndSet(null);
+
+		if (old != null) {
+            old.run();
+        }
 	}
 
 }
