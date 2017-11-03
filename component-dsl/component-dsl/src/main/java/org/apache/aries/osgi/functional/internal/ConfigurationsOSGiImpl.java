@@ -62,11 +62,9 @@ public class ConfigurationsOSGiImpl
 
 					serviceRegistrationReference.get().unregister();
 
-					results.replaceAll((key, terminator) -> {
-						terminator.run();
+					results.values().forEach(Runnable::run);
 
-						return null;
-					});
+					results.clear();
 				});
 		});
 	}
