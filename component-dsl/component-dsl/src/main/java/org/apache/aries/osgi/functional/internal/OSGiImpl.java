@@ -162,14 +162,18 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 	@Override
 	public OSGi<T> filter(Predicate<T> predicate) {
-		return flatMap(t -> {
-			if (predicate.test(t)) {
-				return OSGi.just(t);
-			}
-			else {
-				return OSGi.nothing();
-			}
-		});
+		return new OSGiImpl<>((bundleContext, op) ->
+			_operation.run(
+				bundleContext,
+				(t) -> {
+					if (predicate.test(t)) {
+						return op.apply(t);
+					}
+					else {
+						return () -> {};
+					}
+				}
+			));
 	}
 
 	@Override
