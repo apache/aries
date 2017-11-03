@@ -180,7 +180,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@Override
 	public <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
 		return new OSGiImpl<>(
-			((bundleContext, op) -> {
+			(bundleContext, op) -> {
 				AtomicReference<OSGiResult> myCloseReference =
 					new AtomicReference<>();
 
@@ -247,8 +247,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 						otherCloseReference.get().close();
 					});
-			}
-			));
+			});
 	}
 
 }
