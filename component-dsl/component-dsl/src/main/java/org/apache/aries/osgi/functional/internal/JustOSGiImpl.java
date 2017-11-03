@@ -43,13 +43,7 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 			return new OSGiResultImpl(
 				() -> references.set(
 					t.get().stream().map(op).collect(Collectors.toList())),
-				() -> {
-					Collection<Runnable> runnables = references.get();
-
-					if (runnables != null) {
-						runnables.forEach(Runnable::run);
-					}
-				});
+				() -> references.get().forEach(Runnable::run));
 		});
 	}
 
