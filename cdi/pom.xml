@@ -35,7 +35,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<bnd.version>3.4.0</bnd.version>
+		<bnd.version>3.5.0</bnd.version>
 		<full.version>${project.version} (${timestamp} AD)</full.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<surefire.version>2.12</surefire.version>
