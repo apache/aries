@@ -66,6 +66,10 @@ public class CachingServiceReference<T>
         }
     }
 
+    public String[] getCachedPropertyKeys() {
+        return _properties.keySet().toArray(new String[0]);
+    }
+
     /**
      * Returns the value associated with a key from the underlying {@link ServiceReference}
      * The returned value is then cached and the {@link ServiceReference} is
@@ -131,15 +135,17 @@ public class CachingServiceReference<T>
         return set.toArray(new String[]{});
     }
 
-    public String[] getCachedPropertyKeys() {
-        return _properties.keySet().toArray(new String[0]);
-    }
-
     /**
      * @return The underlying {@link ServiceReference}
      */
     public ServiceReference<T> getServiceReference() {
         return _serviceReference;
+    }    @Override
+    public String toString() {
+        return "CachingServiceReference{" +
+            "cachedProperties=" + _properties + ", " +
+            "serviceReference=" + _serviceReference +
+            '}';
     }
 
     @Override
@@ -195,6 +201,13 @@ public class CachingServiceReference<T>
         public boolean equals(Object obj) {
             return ((this == obj) || (obj == null));
         }
+
+        @Override
+        public String toString() {
+            return "null (cached)";
+        }
     }
+
+
 
 }
