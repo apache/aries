@@ -24,6 +24,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
@@ -61,10 +62,43 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
-	public <S> OSGi<S> transformer(
+	public <S> OSGi<S> transform(
 		Function<Function<S, Runnable>, Function<T, Runnable>> fun) {
 
 		return new TransformerOSGi<>(this, fun);
+	}
+
+	@Override
+	public <K, S> OSGi<S> splitBy(
+		Function<T, K> mapper, Function<OSGi<T>, OSGi<S>> fun) {
+
+		return new OSGiImpl<>((bundleContext, op) -> {
+			HashMap<K, Function<T, Runnable>> pipes = new HashMap<>();
+			HashMap<K, OSGiResult> results = new HashMap<>();
+
+			return _operation.run(
+				bundleContext,
+				t -> {
+					K key = mapper.apply(t);
+
+					results.computeIfAbsent(key, __ -> {
+						ProbeImpl<T> probe = new ProbeImpl<>();
+
+						OSGiImpl<S> program = (OSGiImpl<S>)fun.apply(probe);
+
+						OSGiResult r = program._operation.run(
+							bundleContext, op);
+
+						pipes.put(key, probe.getOperation());
+
+						r.start();
+
+						return r;
+					});
+
+					return pipes.get(key).apply(t);
+				});
+		});
 	}
 
 	@Override

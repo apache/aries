@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 /**
  * @author Carlos Sierra Andrés
  */
-public class DistributeOSGi<T> extends OSGiImpl<T> {
+public class AllOSGi<T> extends OSGiImpl<T> {
 
     @SafeVarargs
-    public DistributeOSGi(OSGi<T>... programs) {
+    public AllOSGi(OSGi<T>... programs) {
         super((bundleContext, op) -> {
             List<OSGiResult> results = new ArrayList<>();
 

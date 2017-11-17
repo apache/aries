@@ -20,6 +20,7 @@ package org.apache.aries.osgi.functional.test;
 import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.internal.HighestRankingTransformer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -52,6 +53,7 @@ import static org.apache.aries.osgi.functional.OSGi.onClose;
 import static org.apache.aries.osgi.functional.OSGi.register;
 import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
 import static org.apache.aries.osgi.functional.OSGi.services;
+import static org.apache.aries.osgi.functional.Utils.highest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -335,13 +337,16 @@ public class ComponentTest {
         }
     }
 
-
     private static <T> OSGi<T> highestService(Class<T> clazz) {
-        return highest(clazz).map(CachingServiceReference::getServiceReference).flatMap(sr ->
-        bundleContext().flatMap(bc ->
-        onClose(() -> bc.ungetService(sr)).then(
-        just(bc.getService(sr))
-        )));
+        return
+            highest(
+                serviceReferences(clazz)).map(
+                    CachingServiceReference::getServiceReference).
+                flatMap(sr ->
+            bundleContext().flatMap(bc ->
+            onClose(() -> bc.ungetService(sr)).then(
+            just(bc.getService(sr))
+            )));
     }
 
     public static <T> OSGi<Void> dynamic(
@@ -392,13 +397,6 @@ public class ComponentTest {
             return _serviceForLists;
         }
 
-    }
-
-    private static <T> OSGi<CachingServiceReference<T>> highest(
-        Class<T> clazz) {
-
-        return serviceReferences(clazz).transformer(
-            new HighestRankingTransformer<>());
     }
 
     private class Service {}
