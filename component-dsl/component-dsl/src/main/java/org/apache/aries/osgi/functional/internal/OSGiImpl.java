@@ -61,6 +61,13 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
+	public <S> OSGi<S> transformer(
+		Function<Function<S, Runnable>, Function<T, Runnable>> fun) {
+
+		return new TransformerOSGi<>(this, fun);
+	}
+
+	@Override
 	public OSGi<T> recover(BiFunction<T, Exception, T> onError) {
 		return new OSGiImpl<>((bundleContext, op) ->
 			_operation.run(
@@ -223,11 +230,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 					}
 				}
 			));
-	}
-
-	@Override
-	public OSGi<T> route(Consumer<Router<T>> routerConsumer) {
-		return new RouteOsgiImpl<>(this, routerConsumer);
 	}
 
 	@Override

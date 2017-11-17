@@ -81,6 +81,8 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	OSGi<Void> foreach(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
 
+	<S> OSGi<S> transformer(Function<Function<S, Runnable>, Function<T, Runnable>> fun);
+
 	static OSGi<BundleContext> bundleContext() {
 
 		return new BundleContextOSGiImpl();
@@ -196,28 +198,24 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	}
 
 	public static <T> OSGi<T> once(OSGi<T> program) {
-		return program.route(router -> {
+		return program.transformer(op -> {
 			AtomicInteger count = new AtomicInteger();
 
-			AtomicReference<SentEvent> terminator = new AtomicReference<>();
+			AtomicReference<Runnable> terminator = new AtomicReference<>();
 
-			router.onIncoming(t -> {
-				int c = count.getAndIncrement();
-
-				if (c == 0) {
-					terminator.set(router.signalAdd(t));
+			return t -> {
+				if (count.getAndIncrement() == 0) {
+					terminator.set(op.apply(t));
 				}
-			});
 
-			router.onLeaving(t -> {
-				int c = count.decrementAndGet();
+				return () -> {
+					if (count.decrementAndGet() == 0) {
+						Runnable runnable = terminator.getAndSet(NOOP);
 
-				if (c == 0) {
-					SentEvent s = terminator.getAndSet(null);
-
-					s.terminate();
-				}
-			});
+						runnable.run();
+					}
+				};
+			};
 		});
 	}
 
@@ -265,19 +263,6 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	}
 
 	OSGi<T> filter(Predicate<T> predicate);
-
-	OSGi<T> route(Consumer<Router<T>> routerConsumer);
-
-	interface Router<T> {
-
-		void onIncoming(Consumer<Event<T>> adding);
-		void onLeaving(Consumer<Event<T>> removing);
-
-		void onStart(Runnable start);
-		void onClose(Runnable close);
-
-		SentEvent<T> signalAdd(Event<T> event);
-	}
 
 	public default <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
 		return fun.flatMap(this::map);
