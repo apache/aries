@@ -17,6 +17,8 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.OSGi;
+import org.apache.aries.osgi.functional.OSGiResult;
 import org.osgi.framework.BundleContext;
 
 import java.util.function.Function;
@@ -32,6 +34,24 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
 
     public Function<T, Runnable> getOperation() {
         return ((ProbeOperationImpl<T>) _operation)._op;
+    }
+
+    public static <T, S> Function<T, Runnable> getProbePipe(
+        Function<OSGi<T>, OSGi<S>> then, BundleContext bundleContext,
+        Function<S, Runnable> publisher) {
+
+        ProbeImpl<T> thenProbe = new ProbeImpl<>();
+
+        OSGiImpl<S> thenNext = (OSGiImpl<S>) then.apply(thenProbe);
+
+        OSGiResult thenResult = thenNext._operation.run(
+            bundleContext, publisher);
+
+        Function<T, Runnable> thenPipe = thenProbe.getOperation();
+
+        thenResult.start();
+
+        return thenPipe;
     }
 
     private static class ProbeOperationImpl<T> implements OSGiOperationImpl<T> {

@@ -24,9 +24,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.apache.aries.osgi.functional.OSGi.just;
+import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
 import static org.apache.aries.osgi.functional.Utils.accumulate;
 import static org.apache.aries.osgi.functional.Utils.highest;
 
@@ -78,5 +80,38 @@ public class UtilTest {
         result.close();
     }
 
+    @Test
+    public void testDistribute() {
+        OSGi<List<String>> program = accumulate(just(Arrays.asList(
+            "apepe", "aana", "bvicente", "bcarlos", "cpepe", "ctomas"
+        ))).distribute(
+            pl -> pl.flatMap(l -> {
+                if (l.isEmpty()) {
+                    return just(Collections::<String>emptyList);
+                } else {
+                    return just(() -> l.subList(0, 1));
+                }
+            }).effects(
+                t -> System.out.println("in head:" + t),
+                t -> System.out.println("out head:" + t)
+            ),
+            pl -> pl.flatMap(l -> {
+                if (l.isEmpty()) {
+                    return just(Collections::<String>emptyList);
+                } else {
+                    return just(() -> l.subList(1, l.size()));
+                }
+            }).effects(
+                t -> System.out.println("in tail:" + t),
+                t -> System.out.println("out tail:" + t)
+            )
+        );
 
+        OSGiResult result = program.run(bundleContext);
+
+        result.close();
+    }
+
+    private class Service {
+    }
 }

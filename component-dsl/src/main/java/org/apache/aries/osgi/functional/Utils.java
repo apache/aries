@@ -1,7 +1,7 @@
 package org.apache.aries.osgi.functional;
 
 import org.apache.aries.osgi.functional.internal.ConcurrentDoublyLinkedList;
-import org.apache.aries.osgi.functional.internal.HighestRankingTransformer;
+import org.apache.aries.osgi.functional.internal.HighestRankingOSGi;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,14 +18,19 @@ import static org.apache.aries.osgi.functional.OSGi.NOOP;
 public interface Utils {
 
     static <T extends Comparable<? super T>> OSGi<T> highest(OSGi<T> program) {
-        return program.transform(
-            new HighestRankingTransformer<>(Comparator.naturalOrder()));
+        return highest(program, Comparator.naturalOrder());
     }
 
     static <T> OSGi<T> highest(
-        Comparator<? super T> comparator, OSGi<T> program) {
+        OSGi<T> program, Comparator<? super T> comparator) {
 
-        return program.transform(new HighestRankingTransformer<>(comparator));
+        return highest(program, comparator, __ -> __);
+    }
+
+    static <T> OSGi<T> highest(
+        OSGi<T> program, Comparator<? super T> comparator, Function<OSGi<T>, OSGi<T>> notHighest) {
+
+        return new HighestRankingOSGi<>(program, comparator, notHighest);
     }
 
     static <T> OSGi<List<T>> accumulate(OSGi<T> program) {
