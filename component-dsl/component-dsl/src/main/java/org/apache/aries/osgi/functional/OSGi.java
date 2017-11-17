@@ -47,6 +47,7 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -57,6 +58,10 @@ import java.util.function.Supplier;
  */
 public interface OSGi<T> extends OSGiRunnable<T> {
 	Runnable NOOP = () -> {};
+
+	OSGi<T> recover(BiFunction<T, Exception, T> onError);
+
+	OSGi<T> recoverWith(BiFunction<T, Exception, OSGi<T>> onError);
 
 	OSGi<T> effects(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
@@ -253,8 +258,6 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 		return new ServiceReferenceOSGi<>(filterString, null, onModified);
 	}
-
-
 
 	@SafeVarargs
 	static <T> OSGi<T> all(OSGi<T> ... programs) {
