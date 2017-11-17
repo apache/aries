@@ -50,8 +50,8 @@ import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
 import static org.apache.aries.osgi.functional.OSGi.register;
+import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
 import static org.apache.aries.osgi.functional.OSGi.services;
-import static org.apache.aries.osgi.functional.test.HighestRankingRouter.highest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -392,6 +392,13 @@ public class ComponentTest {
             return _serviceForLists;
         }
 
+    }
+
+    private static <T> OSGi<CachingServiceReference<T>> highest(
+        Class<T> clazz) {
+
+        return serviceReferences(clazz).transformer(
+            new HighestRankingTransformer<>());
     }
 
     private class Service {}
