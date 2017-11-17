@@ -29,7 +29,16 @@ public class OnCloseOSGiImpl extends OSGiImpl<Void> {
 			AtomicReference<Runnable> reference = new AtomicReference<>();
 
 			return new OSGiResultImpl(
-				() -> reference.set(op.apply(null)),
+				() -> {
+					try {
+						reference.set(op.apply(null));
+					}
+					catch (Exception e) {
+						action.run();
+
+						throw e;
+					}
+				},
 				() -> {
 					action.run();
 

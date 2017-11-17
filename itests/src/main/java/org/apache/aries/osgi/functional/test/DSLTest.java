@@ -20,7 +20,6 @@ package org.apache.aries.osgi.functional.test;
 import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
-import org.apache.aries.osgi.functional.Refresher;
 import org.apache.aries.osgi.functional.SentEvent;
 import org.apache.aries.osgi.functional.internal.ProbeImpl;
 import org.junit.Test;
@@ -50,6 +49,7 @@ import java.util.function.Function;
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
+import static org.apache.aries.osgi.functional.OSGi.nothing;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
 import static org.apache.aries.osgi.functional.OSGi.once;
 import static org.apache.aries.osgi.functional.OSGi.register;
@@ -709,6 +709,128 @@ public class DSLTest {
             serviceRegistration.unregister();
         }
     }
+
+    @Test
+    public void testRecover() {
+        ArrayList<Object> result = new ArrayList<>();
+        ArrayList<Object> arrived = new ArrayList<>();
+        ArrayList<Object> left = new ArrayList<>();
+
+        OSGi<Integer> program = just(
+            Arrays.asList(1, 2, 3, 4, 5, 6)
+        ).recover(
+            (__, e) -> 0
+        ).effects(
+            arrived::add, left::add
+        ).
+        effects(
+            t -> {
+                if (t % 2 != 0) {
+                    throw new RuntimeException();
+                }
+            }
+            , __ -> {}
+        );
+
+        try (OSGiResult run = program.run(bundleContext, result::add)) {
+            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
+            assertEquals(Arrays.asList(1, 0, 2, 3, 0, 4, 5, 0, 6), arrived);
+            assertEquals(Arrays.asList(1, 3, 5), left);
+
+            arrived.removeAll(left);
+            assertEquals(arrived, result);
+        }
+    }
+
+    @Test
+    public void testRecoverWith() {
+        ArrayList<Object> result = new ArrayList<>();
+        ArrayList<Object> arrived = new ArrayList<>();
+        ArrayList<Object> left = new ArrayList<>();
+
+        OSGi<Integer> program = just(
+            Arrays.asList(1, 2, 3, 4, 5, 6)
+        ).recoverWith(
+            (__, e) -> just(0)
+        ).effects(
+            arrived::add, left::add
+        ).effects(
+            t -> {
+                if (t % 2 != 0) {
+                    throw new RuntimeException();
+                }
+            }
+            , __ -> {}
+        );
+
+        try (OSGiResult run = program.run(bundleContext, result::add)) {
+            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
+            assertEquals(Arrays.asList(1, 0, 2, 3, 0, 4, 5, 0, 6), arrived);
+            assertEquals(Arrays.asList(1, 3, 5), left);
+
+            arrived.removeAll(left);
+            assertEquals(arrived, result);
+        }
+    }
+
+    @Test
+    public void testOnCloseWithError() {
+        ArrayList<Object> result = new ArrayList<>();
+        ArrayList<Object> left = new ArrayList<>();
+
+        OSGi<Integer> program = just(
+            Arrays.asList(1, 2, 3, 4, 5, 6)
+        ).recoverWith(
+            (__, e) -> just(0)
+        ).flatMap(t ->
+            onClose(() -> left.add(t)).then(just(t))
+        ).
+        flatMap(t -> {
+            if (t % 2 != 0) {
+                throw new RuntimeException();
+            }
+
+            return just(t);
+        });
+
+        try (OSGiResult run = program.run(bundleContext, result::add)) {
+            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
+            assertEquals(Arrays.asList(1, 3, 5), left);
+        }
+    }
+
+    /*@Test
+    public void testRouteWithError() {
+        ArrayList<Object> result = new ArrayList<>();
+        ArrayList<Object> left = new ArrayList<>();
+
+        OSGi<Integer> program = just(
+            Arrays.asList(1, 2, 3, 4, 5, 6)
+        ).recoverWith(
+            (__, e) -> just(0)
+        ).route(router -> {
+            AtomicReference<SentEvent<Integer>> sentEvent =
+                new AtomicReference<>();
+
+            router.onIncoming(event -> {
+                sentEvent.set(router.signalAdd(event));
+            });
+            router.onLeaving(__ -> sentEvent.get().terminate());
+        }).
+            effects(__ -> {}, left::add).
+            flatMap(t -> {
+                if (t % 2 != 0) {
+                    throw new RuntimeException();
+                }
+
+                return just(t);
+            });
+
+        try (OSGiResult run = program.run(bundleContext, result::add)) {
+            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
+            assertEquals(Arrays.asList(1, 3, 5), left);
+        }
+    }*/
 
     private class Service {}
 
