@@ -28,7 +28,7 @@ import org.apache.aries.osgi.functional.internal.BundleOSGi;
 import org.apache.aries.osgi.functional.internal.ChangeContextOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationsOSGiImpl;
-import org.apache.aries.osgi.functional.internal.DistributeOSGi;
+import org.apache.aries.osgi.functional.internal.AllOSGi;
 import org.apache.aries.osgi.functional.internal.IgnoreImpl;
 import org.apache.aries.osgi.functional.internal.JustOSGiImpl;
 import org.apache.aries.osgi.functional.internal.NothingOSGiImpl;
@@ -58,6 +58,9 @@ import java.util.function.Supplier;
  */
 public interface OSGi<T> extends OSGiRunnable<T> {
 	Runnable NOOP = () -> {};
+	
+	<K, S> OSGi<S> splitBy(
+		Function<T, K> mapper, Function<OSGi<T>, OSGi<S>> fun);
 
 	OSGi<T> recover(BiFunction<T, Exception, T> onError);
 
@@ -65,10 +68,6 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 	OSGi<T> effects(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
-
-	static OSGi<Void> ignore(OSGi<?> program) {
-		return new IgnoreImpl(program);
-	}
 
 	<S> OSGi<S> map(Function<? super T, ? extends S> function);
 
@@ -81,7 +80,11 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	OSGi<Void> foreach(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
 
-	<S> OSGi<S> transformer(Function<Function<S, Runnable>, Function<T, Runnable>> fun);
+	<S> OSGi<S> transform(Function<Function<S, Runnable>, Function<T, Runnable>> fun);
+
+	static OSGi<Void> ignore(OSGi<?> program) {
+		return new IgnoreImpl(program);
+	}
 
 	static OSGi<BundleContext> bundleContext() {
 
@@ -198,7 +201,7 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	}
 
 	public static <T> OSGi<T> once(OSGi<T> program) {
-		return program.transformer(op -> {
+		return program.transform(op -> {
 			AtomicInteger count = new AtomicInteger();
 
 			AtomicReference<Runnable> terminator = new AtomicReference<>();
@@ -259,7 +262,7 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 	@SafeVarargs
 	static <T> OSGi<T> all(OSGi<T> ... programs) {
-		return new DistributeOSGi<>(programs);
+		return new AllOSGi<>(programs);
 	}
 
 	OSGi<T> filter(Predicate<T> predicate);

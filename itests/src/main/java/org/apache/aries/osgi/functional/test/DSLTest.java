@@ -39,7 +39,6 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,7 +46,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-import static org.apache.aries.osgi.functional.OSGi.NOOP;
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
@@ -56,6 +54,7 @@ import static org.apache.aries.osgi.functional.OSGi.once;
 import static org.apache.aries.osgi.functional.OSGi.register;
 import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
 import static org.apache.aries.osgi.functional.OSGi.services;
+import static org.apache.aries.osgi.functional.Utils.highest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -511,7 +510,7 @@ public class DSLTest {
             new AtomicReference<>();
 
         OSGi<Void> program =
-            highest(Service.class).
+            highest(serviceReferences(Service.class)).
             foreach(current::set, sr -> current.set(null));
 
         assertNull(current.get());
@@ -627,7 +626,6 @@ public class DSLTest {
     public void testOnce() {
         ProbeImpl<Integer> probe = new ProbeImpl<>();
 
-        Function<Integer, SentEvent<Integer>> op = probe.getOperation();
 
         AtomicInteger count = new AtomicInteger();
 
@@ -638,31 +636,33 @@ public class DSLTest {
 
         once.run(bundleContext);
 
+        Function<Integer, Runnable> op = probe.getOperation();
+
         assertEquals(0, count.get());
 
-        SentEvent<Integer> se = op.apply(1);
+        Runnable se = op.apply(1);
 
         assertEquals(1, count.get());
 
-        se.terminate();
+        se.run();
 
         assertEquals(0, count.get());
 
         se = op.apply(1);
-        SentEvent se2 = op.apply(2);
-        SentEvent se3 = op.apply(3);
+        Runnable se2 = op.apply(2);
+        Runnable se3 = op.apply(3);
 
         assertEquals(1, count.get());
 
-        se.terminate();
+        se.run();
 
         assertEquals(1, count.get());
 
-        se3.terminate();
+        se3.run();
 
         assertEquals(1, count.get());
 
-        se2.terminate();
+        se2.run();
 
         assertEquals(0, count.get());
     }
@@ -797,11 +797,6 @@ public class DSLTest {
             assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
             assertEquals(Arrays.asList(1, 3, 5), left);
         }
-    }
-
-    private static <T> OSGi<CachingServiceReference<T>> highest(Class<T> clazz) {
-        return serviceReferences(clazz).transformer(
-            new HighestRankingTransformer<>());
     }
 
     private class Service {}
