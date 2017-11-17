@@ -26,6 +26,7 @@ import org.osgi.framework.InvalidSyntaxException;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -60,6 +61,46 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
+	public OSGi<T> recover(BiFunction<T, Exception, T> onError) {
+		return new OSGiImpl<>((bundleContext, op) ->
+			_operation.run(
+				bundleContext,
+				t -> {
+					try {
+						return op.apply(t);
+					}
+					catch (Exception e) {
+						return op.apply(onError.apply(t, e));
+					}
+				}
+			));
+	}
+
+	@Override
+	public OSGi<T> recoverWith(BiFunction<T, Exception, OSGi<T>> onError) {
+		return new OSGiImpl<>((bundleContext, op) ->
+			_operation.run(
+				bundleContext,
+				t -> {
+					try {
+						return op.apply(t);
+					}
+					catch (Exception e) {
+						OSGi<T> errorProgram = onError.apply(t, e);
+
+						OSGiResult result =
+							((OSGiImpl<T>) errorProgram)._operation.run(
+								bundleContext, op);
+
+						result.start();
+
+						return result::close;
+					}
+				}
+			));
+	}
+
+	@Override
 	public OSGi<T> effects(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
 
@@ -69,7 +110,15 @@ public class OSGiImpl<T> implements OSGi<T> {
 				t -> {
 					onAdded.accept(t);
 
-					Runnable terminator = op.apply(t);
+					Runnable terminator;
+					try {
+						terminator = op.apply(t);
+					}
+					catch (Exception e) {
+						onRemoved.accept(t);
+
+						throw e;
+					}
 
 					return () -> {
 						onRemoved.accept(t);

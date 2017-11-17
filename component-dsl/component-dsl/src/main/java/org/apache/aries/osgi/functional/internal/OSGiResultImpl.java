@@ -43,14 +43,9 @@ public class OSGiResultImpl implements OSGiResult {
 		if (_working.compareAndSet(false, true)) {
 
 			if (!_started && !_closed.get()) {
-				try {
-					start.run();
+				start.run();
 
-					_started = true;
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
+				_started = true;
 			}
 
 			_working.set(false);
@@ -65,12 +60,7 @@ public class OSGiResultImpl implements OSGiResult {
 		}
 
 		if (_closed.compareAndSet(false, true) && _started) {
-			try {
-				close.run();
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			close.run();
 		}
 
 		_working.set(false);

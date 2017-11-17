@@ -19,10 +19,8 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGiOperation;
 import org.apache.aries.osgi.functional.OSGiResult;
-import org.apache.aries.osgi.functional.SentEvent;
 import org.osgi.framework.BundleContext;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**

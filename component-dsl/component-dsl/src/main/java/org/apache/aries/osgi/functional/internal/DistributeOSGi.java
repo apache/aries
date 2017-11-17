@@ -44,7 +44,12 @@ public class DistributeOSGi<T> extends OSGiImpl<T> {
                                 bundleContext, op)).
                             collect(Collectors.toList()));
 
-                    results.forEach(OSGiResult::start);
+                    results.forEach(osGiResult -> {
+                        try {
+                            osGiResult.start();
+                        }
+                        catch (Exception e) {}
+                    });
                 },
                 () -> {
                     for (OSGiResult result : results) {
