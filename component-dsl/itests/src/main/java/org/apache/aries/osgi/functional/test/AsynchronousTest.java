@@ -19,7 +19,6 @@ package org.apache.aries.osgi.functional.test;
 
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
-import org.apache.aries.osgi.functional.SentEvent;
 import org.apache.aries.osgi.functional.internal.ProbeImpl;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -337,9 +336,9 @@ public class AsynchronousTest {
 
         result.start();
 
-        Function<Integer, Runnable> opa = ((ProbeImpl<Integer>) as).getOperation();
-        Function<Integer, Runnable> opb = ((ProbeImpl<Integer>) bs).getOperation();
-        Function<Integer, Runnable> opc = ((ProbeImpl<Integer>) cs).getOperation();
+        Function<Integer, Runnable> opa = ((ProbeImpl<Integer>) as).getPublisher();
+        Function<Integer, Runnable> opb = ((ProbeImpl<Integer>) bs).getPublisher();
+        Function<Integer, Runnable> opc = ((ProbeImpl<Integer>) cs).getPublisher();
 
         ExecutorService executor = Executors.newFixedThreadPool(8);
 

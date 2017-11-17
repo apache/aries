@@ -59,42 +59,12 @@ import java.util.function.Supplier;
 public interface OSGi<T> extends OSGiRunnable<T> {
 	Runnable NOOP = () -> {};
 
-	<S> OSGi<S> choose(
-		Predicate<T> chooser, Function<OSGi<T>, OSGi<S>> then,
-		Function<OSGi<T>, OSGi<S>> otherwise);
-
-	<S> OSGi<S> distribute(Function<OSGi<T>, OSGi<S>> ... funs);
-
-	<K, S> OSGi<S> splitBy(
-		Function<T, K> mapper, Function<OSGi<T>, OSGi<S>> fun);
-
-	OSGi<T> recover(BiFunction<T, Exception, T> onError);
-
-	OSGi<T> recoverWith(BiFunction<T, Exception, OSGi<T>> onError);
-
-	OSGi<T> effects(
-		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
-
-	<S> OSGi<S> map(Function<? super T, ? extends S> function);
-
-	<S> OSGi<S> flatMap(Function<? super T, OSGi<? extends S>> fun);
-
-	<S> OSGi<S> then(OSGi<S> next);
-
-	OSGi<Void> foreach(Consumer<? super T> onAdded);
-
-	OSGi<Void> foreach(
-		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
-
-	<S> OSGi<S> transform(
-		Function<Function<S, Runnable>, Function<T, Runnable>> fun);
-
-	static OSGi<Void> ignore(OSGi<?> program) {
-		return new IgnoreImpl(program);
+	@SafeVarargs
+	static <T> OSGi<T> all(OSGi<T> ... programs) {
+		return new AllOSGi<>(programs);
 	}
 
 	static OSGi<BundleContext> bundleContext() {
-
 		return new BundleContextOSGiImpl();
 	}
 
@@ -108,12 +78,40 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ChangeContextOSGiImpl<>(program, bundleContext);
 	}
 
+	static <A, B, C> OSGi<C> combine(Function2<A, B, C> fun, OSGi<A> a, OSGi<B> b) {
+		return b.applyTo(a.applyTo(just(fun.curried())));
+	}
+
+	static <A, B, C, D> OSGi<D> combine(Function3<A, B, C, D> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c) {
+		return c.applyTo(OSGi.combine((A aa, B bb) -> fun.curried().apply(aa).apply(bb), a, b));
+	}
+
+	static <A, B, C, D, E> OSGi<E> combine(Function4<A, B, C, D, E> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d) {
+		return d.applyTo(OSGi.combine((A aa, B bb, C cc) -> fun.curried().apply(aa).apply(bb).apply(cc), a, b, c));
+	}
+
+	static <A, B, C, D, E, F> OSGi<F> combine(Function5<A, B, C, D, E, F> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d, OSGi<E> e) {
+		return e.applyTo(OSGi.combine((A aa, B bb, C cc, D dd) -> fun.curried().apply(aa).apply(bb).apply(cc).apply(dd), a, b, c, d));
+	}
+
+	static <A, B, C, D, E, F, G> OSGi<G> combine(Function6<A, B, C, D, E, F, G> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d, OSGi<E> e, OSGi<F> f) {
+		return f.applyTo(OSGi.combine((A aa, B bb, C cc, D dd, E ee) -> fun.curried().apply(aa).apply(bb).apply(cc).apply(dd).apply(ee), a, b, c, d, e));
+	}
+
 	static OSGi<Dictionary<String, ?>> configuration(String pid) {
 		return new ConfigurationOSGiImpl(pid);
 	}
 
 	static OSGi<Dictionary<String, ?>> configurations(String factoryPid) {
 		return new ConfigurationsOSGiImpl(factoryPid);
+	}
+
+	static OSGi<Void> ignore(OSGi<?> program) {
+		return new IgnoreImpl(program);
+	}
+
+	static <S> OSGi<S> join(OSGi<OSGi<S>> program) {
+		return program.flatMap(x -> x);
 	}
 
 	static <S> OSGi<S> just(S s) {
@@ -128,16 +126,34 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new JustOSGiImpl<>(() -> Collections.singletonList(s.get()));
 	}
 
-	static <S> OSGi<S> join(OSGi<OSGi<S>> program) {
-		return program.flatMap(x -> x);
-	}
-
 	static <S> OSGi<S> nothing() {
 		return new NothingOSGiImpl<>();
 	}
 
 	static OSGi<Void> onClose(Runnable action) {
 		return new OnCloseOSGiImpl(action);
+	}
+
+	static <T> OSGi<T> once(OSGi<T> program) {
+		return program.transform(op -> {
+			AtomicInteger count = new AtomicInteger();
+
+			AtomicReference<Runnable> terminator = new AtomicReference<>();
+
+			return t -> {
+				if (count.getAndIncrement() == 0) {
+					terminator.set(op.apply(t));
+				}
+
+				return () -> {
+					if (count.decrementAndGet() == 0) {
+						Runnable runnable = terminator.getAndSet(NOOP);
+
+						runnable.run();
+					}
+				};
+			};
+		});
 	}
 
 	static OSGi<ServiceObjects<Object>> prototypes(String filterString) {
@@ -180,55 +196,6 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ServiceRegistrationOSGiImpl(classes, service, properties);
 	}
 
-	static <T> OSGi<T> services(Class<T> clazz) {
-		return services(clazz, null);
-	}
-
-	static <T> OSGi<Object> services(String filterString) {
-		return services(null, filterString);
-	}
-
-	static <T> OSGi<T> services(Class<T> clazz, String filterString) {
-		return
-			bundleContext().flatMap(
-			bundleContext ->
-
-			serviceReferences(clazz, filterString).map(
-				CachingServiceReference::getServiceReference
-			).flatMap(
-				sr -> {
-					T service = bundleContext.getService(sr);
-
-					return
-						onClose(() -> bundleContext.ungetService(sr)).then(
-						just(service)
-					);
-			}
-		));
-	}
-
-	public static <T> OSGi<T> once(OSGi<T> program) {
-		return program.transform(op -> {
-			AtomicInteger count = new AtomicInteger();
-
-			AtomicReference<Runnable> terminator = new AtomicReference<>();
-
-			return t -> {
-				if (count.getAndIncrement() == 0) {
-					terminator.set(op.apply(t));
-				}
-
-				return () -> {
-					if (count.decrementAndGet() == 0) {
-						Runnable runnable = terminator.getAndSet(NOOP);
-
-						runnable.run();
-					}
-				};
-			};
-		});
-	}
-
 	static <T> OSGi<CachingServiceReference<T>> serviceReferences(
 		Class<T> clazz) {
 
@@ -267,35 +234,66 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ServiceReferenceOSGi<>(filterString, null, onModified);
 	}
 
-	@SafeVarargs
-	static <T> OSGi<T> all(OSGi<T> ... programs) {
-		return new AllOSGi<>(programs);
+	static <T> OSGi<T> services(Class<T> clazz) {
+		return services(clazz, null);
 	}
 
-	OSGi<T> filter(Predicate<T> predicate);
+	static <T> OSGi<Object> services(String filterString) {
+		return services(null, filterString);
+	}
 
-	public default <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
+	static <T> OSGi<T> services(Class<T> clazz, String filterString) {
+		return
+			bundleContext().flatMap(
+			bundleContext ->
+
+			serviceReferences(clazz, filterString).map(
+				CachingServiceReference::getServiceReference
+			).flatMap(
+				sr -> {
+					T service = bundleContext.getService(sr);
+
+					return
+						onClose(() -> bundleContext.ungetService(sr)).then(
+						just(service)
+					);
+			}
+		));
+	}
+
+	default <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
 		return fun.flatMap(this::map);
 	}
 
-	public static <A, B, C> OSGi<C> combine(Function2<A, B, C> fun, OSGi<A> a, OSGi<B> b) {
-		return b.applyTo(a.applyTo(just(fun.curried())));
-	}
+	<S> OSGi<S> choose(
+		Predicate<T> chooser, Function<OSGi<T>, OSGi<S>> then,
+		Function<OSGi<T>, OSGi<S>> otherwise);
 
-	public static <A, B, C, D> OSGi<D> combine(Function3<A, B, C, D> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c) {
-		return c.applyTo(OSGi.combine((A aa, B bb) -> fun.curried().apply(aa).apply(bb), a, b));
-	}
+	<S> OSGi<S> distribute(Function<OSGi<T>, OSGi<S>> ... funs);
 
-	public static <A, B, C, D, E> OSGi<E> combine(Function4<A, B, C, D, E> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d) {
-		return d.applyTo(OSGi.combine((A aa, B bb, C cc) -> fun.curried().apply(aa).apply(bb).apply(cc), a, b, c));
-	}
+	OSGi<T> effects(
+		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
 
-	public static <A, B, C, D, E, F> OSGi<F> combine(Function5<A, B, C, D, E, F> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d, OSGi<E> e) {
-		return e.applyTo(OSGi.combine((A aa, B bb, C cc, D dd) -> fun.curried().apply(aa).apply(bb).apply(cc).apply(dd), a, b, c, d));
-	}
+	OSGi<T> filter(Predicate<T> predicate);
 
-	public static <A, B, C, D, E, F, G> OSGi<G> combine(Function6<A, B, C, D, E, F, G> fun, OSGi<A> a, OSGi<B> b, OSGi<C> c, OSGi<D> d, OSGi<E> e, OSGi<F> f) {
-		return f.applyTo(OSGi.combine((A aa, B bb, C cc, D dd, E ee) -> fun.curried().apply(aa).apply(bb).apply(cc).apply(dd).apply(ee), a, b, c, d, e));
-	}
+	<S> OSGi<S> flatMap(Function<? super T, OSGi<? extends S>> fun);
+
+	OSGi<Void> foreach(Consumer<? super T> onAdded);
+
+	OSGi<Void> foreach(
+		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
+
+	<S> OSGi<S> map(Function<? super T, ? extends S> function);
+
+	OSGi<T> recover(BiFunction<T, Exception, T> onError);
+
+	OSGi<T> recoverWith(BiFunction<T, Exception, OSGi<T>> onError);
+
+	<K, S> OSGi<S> splitBy(
+		Function<T, K> mapper, Function<OSGi<T>, OSGi<S>> fun);
+
+	<S> OSGi<S> then(OSGi<S> next);
+
+	<S> OSGi<S> transform(Transformer<T, S> fun);
 
 }

@@ -40,10 +40,10 @@ public class HighestRankingOSGi<T> extends OSGiImpl<T> {
                 comparing.reversed());
             AtomicReference<Tuple<T>> sent = new AtomicReference<>();
 
-            Function<T, Runnable> notHighestPipe = ProbeImpl.getProbePipe(
-                notHighest, bundleContext, __ -> () -> {});
+            Pad<T, T> notHighestPad = new Pad<>(
+                bundleContext, notHighest, __ -> NOOP);
 
-            return ((OSGiImpl<T>)previous)._operation.run(
+            OSGiResultImpl result = ((OSGiImpl<T>) previous)._operation.run(
                 bundleContext,
                 t -> {
                     Tuple<T> tuple = new Tuple<>(t);
@@ -57,15 +57,14 @@ public class HighestRankingOSGi<T> extends OSGiImpl<T> {
                             if (old != null) {
                                 old._runnable.run();
 
-                                old._runnable = notHighestPipe.apply(old._t);
+                                old._runnable = notHighestPad.publish(old._t);
                             }
 
                             tuple._runnable = highestPipe.apply(t);
 
                             sent.set(tuple);
-                        }
-                        else {
-                            tuple._runnable = notHighestPipe.apply(t);
+                        } else {
+                            tuple._runnable = notHighestPad.publish(t);
                         }
                     }
 
@@ -91,13 +90,18 @@ public class HighestRankingOSGi<T> extends OSGiImpl<T> {
                         }
                     };
                 });
+
+            return new OSGiResultImpl(
+                result::start,
+                () -> {
+                    result.close();
+
+                    notHighestPad.close();
+                });
         });
     }
 
     private static class Tuple<T> {
-
-        T _t;
-        Runnable _runnable;
 
         Tuple(T t) {
             _t = t;
@@ -106,6 +110,8 @@ public class HighestRankingOSGi<T> extends OSGiImpl<T> {
         public T getT() {
             return _t;
         }
+        T _t;
+        Runnable _runnable;
 
     }
 

@@ -26,16 +26,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class OSGiResultImpl implements OSGiResult {
 
-	private final Runnable start;
-	private final Runnable close;
-	private AtomicBoolean _working = new AtomicBoolean();
-	private AtomicBoolean _closed = new AtomicBoolean();
-	private volatile boolean _started = false;
-
-
 	public OSGiResultImpl(Runnable start, Runnable close) {
 		this.start = start;
 		this.close = close;
+	}
+
+	@Override
+	public void close() {
+		while (!_working.compareAndSet(false, true)) {
+			Thread.yield();
+		}
+
+		if (_closed.compareAndSet(false, true) && _started) {
+			close.run();
+		}
+
+		_working.set(false);
 	}
 
 	@Override
@@ -53,17 +59,10 @@ public class OSGiResultImpl implements OSGiResult {
 
 	}
 
-	@Override
-	public void close() {
-		while (!_working.compareAndSet(false, true)) {
-			Thread.yield();
-		}
-
-		if (_closed.compareAndSet(false, true) && _started) {
-			close.run();
-		}
-
-		_working.set(false);
-	}
+	private final Runnable start;
+	private final Runnable close;
+	private AtomicBoolean _working = new AtomicBoolean();
+	private AtomicBoolean _closed = new AtomicBoolean();
+	private volatile boolean _started = false;
 
 }

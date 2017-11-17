@@ -18,14 +18,12 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
-import org.apache.aries.osgi.functional.SentEvent;
 import org.apache.aries.osgi.functional.test.DSLTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -70,11 +68,11 @@ public class ProbeTests {
 
         program.run(bundleContext, result::set);
 
-        Function<String, Runnable> opA = probeA.getOperation();
+        Function<String, Runnable> opA = probeA.getPublisher();
 
         Runnable sentA = opA.apply("Hello");
 
-        Function<String, Runnable> opB = probeBreference.get().getOperation();
+        Function<String, Runnable> opB = probeBreference.get().getPublisher();
 
         sentA.run();
 
@@ -85,10 +83,10 @@ public class ProbeTests {
 
         program.run(bundleContext, result::set);
 
-        opA = probeA.getOperation();
+        opA = probeA.getPublisher();
         sentA = opA.apply("Hello");
 
-        opB = probeBreference.get().getOperation();
+        opB = probeBreference.get().getPublisher();
         sentB = opB.apply(", World");
 
         assertEquals("Hello, World", result.get());
@@ -117,7 +115,7 @@ public class ProbeTests {
         program.run(bundleContext, result::set);
         assertEquals(0, result.get());
 
-        Function<Integer, Runnable> opA = probeA.getOperation();
+        Function<Integer, Runnable> opA = probeA.getPublisher();
 
         Runnable sentA = opA.apply(5);
         assertEquals(15, result.get());

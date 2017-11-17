@@ -712,7 +712,7 @@ public class DSLTest {
 
         once.run(bundleContext);
 
-        Function<Integer, Runnable> op = probe.getOperation();
+        Function<Integer, Runnable> op = probe.getPublisher();
 
         assertEquals(0, count.get());
 

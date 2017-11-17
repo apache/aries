@@ -28,8 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author Carlos Sierra Andrés
  */
-public class ConfigurationOSGiImpl
-	extends OSGiImpl<Dictionary<String, ?>> {
+public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 
 	public ConfigurationOSGiImpl(String pid) {
 		super((bundleContext, op) -> {

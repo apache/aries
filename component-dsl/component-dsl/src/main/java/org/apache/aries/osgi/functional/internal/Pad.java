@@ -17,23 +17,48 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import org.apache.aries.osgi.functional.OSGiOperation;
+import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.apache.aries.osgi.functional.Publisher;
 import org.osgi.framework.BundleContext;
 
+import java.io.Closeable;
 import java.util.function.Function;
+
+import static org.apache.aries.osgi.functional.OSGi.NOOP;
 
 /**
  * @author Carlos Sierra Andrés
  */
-interface OSGiOperationImpl<T> extends OSGiOperation<T> {
+public class Pad<T, S> implements Publisher<T>, Closeable {
 
-	OSGiResultImpl run(BundleContext bundleContext, Publisher<T> op);
+    public Pad(
+        BundleContext bundleContext,
+        Function<OSGi<T>, OSGi<S>> fun,
+        Publisher<S> continuation) {
 
-	@Override
-	default OSGiResult run(BundleContext bundleContext) {
-		return run(bundleContext, (__) -> () -> {});
-	}
+        ProbeImpl<T> probe = new ProbeImpl<>();
 
+        OSGiImpl<S> next = (OSGiImpl<S>) fun.apply(probe);
+
+        _result = next.run(bundleContext, continuation);
+
+        _publisher =
+            probe.getPublisher() != null ?
+                probe.getPublisher() :
+                __ -> NOOP;
+    }
+
+    @Override
+    public void close() {
+        _result.close();
+    }
+
+    @Override
+    public Runnable publish(T t) {
+        return _publisher.publish(t);
+    }
+
+    private final OSGiResult _result;
+    private final Publisher<T> _publisher;
 }
