@@ -17,19 +17,17 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import java.util.function.Function;
+import org.apache.aries.osgi.functional.Transformer;
 
 /**
  * @author Carlos Sierra Andrés
  */
 public class TransformerOSGi<T, R> extends OSGiImpl<R> {
 
-    public TransformerOSGi(
-        OSGiImpl<T> previous,
-        Function<Function<R, Runnable>, Function<T, Runnable>> fun) {
+    public TransformerOSGi(OSGiImpl<T> previous, Transformer<T, R> fun) {
 
         super((bundleContext, op) ->
-            previous._operation.run(bundleContext, fun.apply(op)));
+            previous._operation.run(bundleContext, fun.transform(op)));
     }
 
 }

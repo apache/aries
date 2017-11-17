@@ -31,9 +31,6 @@ import java.util.stream.Collectors;
 public class CachingServiceReference<T>
     implements Comparable<CachingServiceReference<T>> {
 
-    private final ConcurrentHashMap<String, Object> _properties;
-    private final ServiceReference<T> _serviceReference;
-
     public CachingServiceReference(ServiceReference<T> serviceReference) {
         _properties = new ConcurrentHashMap<>();
         _serviceReference = serviceReference;
@@ -140,12 +137,6 @@ public class CachingServiceReference<T>
      */
     public ServiceReference<T> getServiceReference() {
         return _serviceReference;
-    }    @Override
-    public String toString() {
-        return "CachingServiceReference{" +
-            "cachedProperties=" + _properties + ", " +
-            "serviceReference=" + _serviceReference +
-            '}';
     }
 
     @Override
@@ -162,7 +153,6 @@ public class CachingServiceReference<T>
 
         return _serviceReference.equals(that._serviceReference);
     }
-
     /**
      * Checks if any of the cached properties has a different value in the
      * underlying {@link ServiceReference}. Only properties that have been
@@ -180,6 +170,14 @@ public class CachingServiceReference<T>
         );
     }
 
+    @Override
+    public String toString() {
+        return "CachingServiceReference{" +
+            "cachedProperties=" + _properties + ", " +
+            "serviceReference=" + _serviceReference +
+            '}';
+    }
+
     /**
      * Checks if the property is dirty in this instance without caching the
      * value. Trying to do the same using getProperty would cache the property
@@ -194,6 +192,9 @@ public class CachingServiceReference<T>
             !value.equals(_serviceReference.getProperty(key));
     }
 
+    private final ConcurrentHashMap<String, Object> _properties;
+    private final ServiceReference<T> _serviceReference;
+
     private static class NULL {
         private static NULL INSTANCE = new NULL();
 
@@ -207,7 +208,5 @@ public class CachingServiceReference<T>
             return "null (cached)";
         }
     }
-
-
 
 }

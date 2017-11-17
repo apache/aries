@@ -17,11 +17,8 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import org.apache.aries.osgi.functional.OSGi;
-import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.Publisher;
 import org.osgi.framework.BundleContext;
-
-import java.util.function.Function;
 
 /**
  * @author Carlos Sierra Andrés
@@ -32,41 +29,22 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
         super(new ProbeOperationImpl<>());
     }
 
-    public Function<T, Runnable> getOperation() {
+    public Publisher<T> getPublisher() {
         return ((ProbeOperationImpl<T>) _operation)._op;
-    }
-
-    public static <T, S> Function<T, Runnable> getProbePipe(
-        Function<OSGi<T>, OSGi<S>> then, BundleContext bundleContext,
-        Function<S, Runnable> publisher) {
-
-        ProbeImpl<T> thenProbe = new ProbeImpl<>();
-
-        OSGiImpl<S> thenNext = (OSGiImpl<S>) then.apply(thenProbe);
-
-        OSGiResult thenResult = thenNext._operation.run(
-            bundleContext, publisher);
-
-        Function<T, Runnable> thenPipe = thenProbe.getOperation();
-
-        thenResult.start();
-
-        return thenPipe;
     }
 
     private static class ProbeOperationImpl<T> implements OSGiOperationImpl<T> {
 
-        BundleContext _bundleContext;
-        Function<T, Runnable> _op;
-
         @Override
         public OSGiResultImpl run(
-            BundleContext bundleContext, Function<T, Runnable> op) {
+            BundleContext bundleContext, Publisher<T> op) {
             _bundleContext = bundleContext;
             _op = op;
 
             return new OSGiResultImpl(NOOP, NOOP);
         }
+        BundleContext _bundleContext;
+        Publisher<T> _op;
     }
 
 }

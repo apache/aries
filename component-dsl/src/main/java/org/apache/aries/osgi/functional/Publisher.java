@@ -17,9 +17,17 @@
 
 package org.apache.aries.osgi.functional;
 
+import java.util.function.Function;
+
 /**
  * @author Carlos Sierra Andrés
  */
-public interface Event<T> {
-    T getContent();
+public interface Publisher<T> extends Function<T, Runnable> {
+
+    default Runnable apply(T t) {
+        return publish(t);
+    }
+
+    Runnable publish(T t);
+
 }

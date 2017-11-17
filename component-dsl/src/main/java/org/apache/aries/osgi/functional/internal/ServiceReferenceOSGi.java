@@ -56,10 +56,6 @@ public class ServiceReferenceOSGi<T>
 	private static class DefaultServiceTrackerCustomizer<T>
 		implements ServiceTrackerCustomizer<T, Tracked<T>> {
 
-		private final Function<CachingServiceReference<T>, Runnable>
-			_addedSource;
-		private Refresher<? super CachingServiceReference<T>> _refresher;
-
 		public DefaultServiceTrackerCustomizer(
 			Function<CachingServiceReference<T>, Runnable> addedSource,
 			Refresher<? super CachingServiceReference<T>> refresher) {
@@ -97,12 +93,14 @@ public class ServiceReferenceOSGi<T>
 
 			tracked.runnable.run();
 		}
+
+		private final Function<CachingServiceReference<T>, Runnable>
+			_addedSource;
+		private Refresher<? super CachingServiceReference<T>> _refresher;
+
 	}
 
 	private static class Tracked<T> {
-
-		volatile CachingServiceReference<T> cachingServiceReference;
-		volatile Runnable runnable;
 
 		public Tracked(
 			CachingServiceReference<T> cachingServiceReference,
@@ -111,5 +109,9 @@ public class ServiceReferenceOSGi<T>
 			this.cachingServiceReference = cachingServiceReference;
 			this.runnable = runnable;
 		}
+
+		volatile CachingServiceReference<T> cachingServiceReference;
+		volatile Runnable runnable;
+
 	}
 }
