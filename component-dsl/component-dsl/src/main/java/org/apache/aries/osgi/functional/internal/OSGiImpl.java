@@ -19,11 +19,13 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.Utils;
 import org.apache.aries.osgi.functional.internal.ConcurrentDoublyLinkedList.Node;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -69,6 +71,56 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
+	public <S> OSGi<S> choose(
+		Predicate<T> chooser, Function<OSGi<T>, OSGi<S>> then,
+		Function<OSGi<T>, OSGi<S>> otherwise) {
+
+		return new OSGiImpl<>((bundleContext, publisher) -> {
+			Function<T, Runnable> thenPipe = ProbeImpl.getProbePipe(then, bundleContext, publisher);
+
+			Function<T, Runnable> elsePipe = ProbeImpl.getProbePipe(otherwise, bundleContext, publisher);
+
+			return _operation.run(
+				bundleContext,
+				t -> {
+					if (chooser.test(t)) {
+						return thenPipe.apply(t);
+					}
+					else {
+						return elsePipe.apply(t);
+					}
+				});
+		});
+	}
+
+	@Override
+	@SafeVarargs
+	public final <S> OSGi<S> distribute(Function<OSGi<T>, OSGi<S>> ... funs) {
+		return new OSGiImpl<>((bundleContext, publisher) -> {
+			List<Function<T, Runnable>> pipes =
+				Arrays.stream(
+					funs
+				).map(
+					fun -> ProbeImpl.getProbePipe(fun, bundleContext, publisher)
+				).collect(
+					Collectors.toList()
+			);
+
+			return _operation.run(
+				bundleContext,
+				t -> {
+					List<Runnable> terminators =
+						pipes.stream().map(p -> p.apply(t)).collect(
+							Collectors.toList());
+
+					return () -> {
+						terminators.forEach(Runnable::run);
+					};
+				});
+		});
+	}
+
+	@Override
 	public <K, S> OSGi<S> splitBy(
 		Function<T, K> mapper, Function<OSGi<T>, OSGi<S>> fun) {
 
@@ -89,9 +141,9 @@ public class OSGiImpl<T> implements OSGi<T> {
 						OSGiResult r = program._operation.run(
 							bundleContext, op);
 
-						pipes.put(key, probe.getOperation());
-
 						r.start();
+
+						pipes.put(key, probe.getOperation());
 
 						return r;
 					});
