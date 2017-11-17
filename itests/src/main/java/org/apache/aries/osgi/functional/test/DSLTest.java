@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -46,16 +47,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import static org.apache.aries.osgi.functional.OSGi.NOOP;
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
-import static org.apache.aries.osgi.functional.OSGi.nothing;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
 import static org.apache.aries.osgi.functional.OSGi.once;
 import static org.apache.aries.osgi.functional.OSGi.register;
 import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
 import static org.apache.aries.osgi.functional.OSGi.services;
-import static org.apache.aries.osgi.functional.test.HighestRankingRouter.highest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -799,38 +799,10 @@ public class DSLTest {
         }
     }
 
-    /*@Test
-    public void testRouteWithError() {
-        ArrayList<Object> result = new ArrayList<>();
-        ArrayList<Object> left = new ArrayList<>();
-
-        OSGi<Integer> program = just(
-            Arrays.asList(1, 2, 3, 4, 5, 6)
-        ).recoverWith(
-            (__, e) -> just(0)
-        ).route(router -> {
-            AtomicReference<SentEvent<Integer>> sentEvent =
-                new AtomicReference<>();
-
-            router.onIncoming(event -> {
-                sentEvent.set(router.signalAdd(event));
-            });
-            router.onLeaving(__ -> sentEvent.get().terminate());
-        }).
-            effects(__ -> {}, left::add).
-            flatMap(t -> {
-                if (t % 2 != 0) {
-                    throw new RuntimeException();
-                }
-
-                return just(t);
-            });
-
-        try (OSGiResult run = program.run(bundleContext, result::add)) {
-            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
-            assertEquals(Arrays.asList(1, 3, 5), left);
-        }
-    }*/
+    private static <T> OSGi<CachingServiceReference<T>> highest(Class<T> clazz) {
+        return serviceReferences(clazz).transformer(
+            new HighestRankingTransformer<>());
+    }
 
     private class Service {}
 
