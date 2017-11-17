@@ -68,16 +68,16 @@ public class ProbeTests {
 
         program.run(bundleContext, result::set);
 
-        Function<String, SentEvent<String>> opA = probeA.getOperation();
+        Function<String, Runnable> opA = probeA.getOperation();
 
-        SentEvent<String> sentA = opA.apply("Hello");
+        Runnable sentA = opA.apply("Hello");
 
-        Function<String, SentEvent<String>> opB = probeBreference.get().getOperation();
+        Function<String, Runnable> opB = probeBreference.get().getOperation();
 
-        sentA.terminate();
+        sentA.run();
 
-        SentEvent<String> sentB = opB.apply(", World");
-        sentB.terminate();
+        Runnable sentB = opB.apply(", World");
+        sentB.run();
 
         assertEquals("", result.get());
 
@@ -91,8 +91,8 @@ public class ProbeTests {
 
         assertEquals("Hello, World", result.get());
 
-        sentA.terminate();
-        sentB.terminate();
+        sentA.run();
+        sentB.run();
 
         assertEquals("", result.get());
     }
@@ -103,7 +103,6 @@ public class ProbeTests {
 
         ProbeImpl<Integer> probeA = new ProbeImpl<>();
 
-        Function<Integer, SentEvent<Integer>> opA = probeA.getOperation();
         OSGi<Integer> just10 = just(10);
 
         OSGi<Integer> program = probeA.flatMap(a ->
@@ -116,19 +115,18 @@ public class ProbeTests {
         program.run(bundleContext, result::set);
         assertEquals(0, result.get());
 
-        SentEvent<Integer> sentA = opA.apply(5);
+        Function<Integer, Runnable> opA = probeA.getOperation();
+
+        Runnable sentA = opA.apply(5);
         assertEquals(15, result.get());
 
-        sentA.terminate();
-        assertEquals(17, result.get());
-
-        sentA.terminate();
+        sentA.run();
         assertEquals(17, result.get());
 
         sentA = opA.apply(10);
         assertEquals(20, result.get());
 
-        sentA.terminate();
+        sentA.run();
         assertEquals(22, result.get());
     }
 

@@ -17,12 +17,8 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import org.apache.aries.osgi.functional.Event;
-import org.apache.aries.osgi.functional.SentEvent;
 import org.osgi.framework.BundleContext;
 
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -34,42 +30,14 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
         super(new ProbeOperationImpl<>());
     }
 
-    public Function<T, SentEvent<T>> getOperation() {
-        return (t) -> {
-            ProbeOperationImpl<T> operation = (ProbeOperationImpl<T>) _operation;
-
-            AtomicReference<Runnable> terminator = new AtomicReference<>();
-
-            if (!operation.closed) {
-                terminator.set(operation._op.apply(t));
-            }
-
-            SentEvent<T> sentEvent = new SentEvent<T>() {
-                @Override
-                public Event<T> getEvent() {
-                    return () -> t;
-                }
-
-                @Override
-                public void terminate() {
-                    Runnable runnable = terminator.get();
-
-                    if (runnable != null) {
-                        runnable.run();
-                    }
-                }
-            };
-
-
-            return sentEvent;
-        };
+    public Function<T, Runnable> getOperation() {
+        return ((ProbeOperationImpl<T>) _operation)._op;
     }
 
     private static class ProbeOperationImpl<T> implements OSGiOperationImpl<T> {
 
         BundleContext _bundleContext;
         Function<T, Runnable> _op;
-        volatile boolean closed;
 
         @Override
         public OSGiResultImpl run(
@@ -77,7 +45,7 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
             _bundleContext = bundleContext;
             _op = op;
 
-            return new OSGiResultImpl(NOOP, () -> closed = true);
+            return new OSGiResultImpl(NOOP, NOOP);
         }
     }
 

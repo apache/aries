@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.aries.osgi.functional.test;
+package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.Transformer;
 
@@ -29,12 +29,15 @@ import static org.apache.aries.osgi.functional.OSGi.NOOP;
 /**
  * @author Carlos Sierra Andrés
  */
-public class HighestRankingTransformer<T extends Comparable<? super T>>
-    implements Transformer<T, T> {
+public class HighestRankingTransformer<T> implements Transformer<T, T> {
+
+    public HighestRankingTransformer(Comparator<? super T> comparator) {
+        _comparator = comparator;
+    }
 
     @Override
     public Function<T, Runnable> apply(Function<T, Runnable> publisher) {
-        PriorityQueue<T> set = new PriorityQueue<>(Comparator.reverseOrder());
+        PriorityQueue<T> set = new PriorityQueue<>(_comparator.reversed());
         AtomicReference<Runnable> terminator = new AtomicReference<>(NOOP);
 
         return t -> {
@@ -69,4 +72,6 @@ public class HighestRankingTransformer<T extends Comparable<? super T>>
             };
         };
     }
+
+    private Comparator<? super T> _comparator;
 }

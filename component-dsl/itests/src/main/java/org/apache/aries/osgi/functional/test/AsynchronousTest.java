@@ -337,9 +337,9 @@ public class AsynchronousTest {
 
         result.start();
 
-        Function<Integer, SentEvent<Integer>> opa = ((ProbeImpl<Integer>) as).getOperation();
-        Function<Integer, SentEvent<Integer>> opb = ((ProbeImpl<Integer>) bs).getOperation();
-        Function<Integer, SentEvent<Integer>> opc = ((ProbeImpl<Integer>) cs).getOperation();
+        Function<Integer, Runnable> opa = ((ProbeImpl<Integer>) as).getOperation();
+        Function<Integer, Runnable> opb = ((ProbeImpl<Integer>) bs).getOperation();
+        Function<Integer, Runnable> opc = ((ProbeImpl<Integer>) cs).getOperation();
 
         ExecutorService executor = Executors.newFixedThreadPool(8);
 
@@ -354,29 +354,29 @@ public class AsynchronousTest {
                     executor.execute(() -> {
                         ignoreException(() -> Thread.sleep(random.nextInt(10)));
 
-                        SentEvent<Integer> sentEvent = opa.apply(ii);
+                        Runnable sentEvent = opa.apply(ii);
 
                         ignoreException(() -> Thread.sleep(random.nextInt(2)));
 
-                        sentEvent.terminate();
+                        sentEvent.run();
                     });
                     executor.execute(() -> {
                         ignoreException(() -> Thread.sleep(random.nextInt(5)));
 
-                        SentEvent<Integer> sentEvent = opb.apply(jj);
+                        Runnable sentEvent = opb.apply(jj);
 
                         ignoreException(() -> Thread.sleep(random.nextInt(2)));
 
-                        sentEvent.terminate();
+                        sentEvent.run();
                     });
                     executor.execute(() -> {
                         ignoreException(() -> Thread.sleep(random.nextInt(2)));
 
-                        SentEvent<Integer> sentEvent = opc.apply(kk);
+                        Runnable sentEvent = opc.apply(kk);
 
                         ignoreException(() -> Thread.sleep(random.nextInt(2)));
 
-                        sentEvent.terminate();
+                        sentEvent.run();
                     });
                 }
             }
