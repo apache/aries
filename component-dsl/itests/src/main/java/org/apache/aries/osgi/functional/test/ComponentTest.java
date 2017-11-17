@@ -20,7 +20,6 @@ package org.apache.aries.osgi.functional.test;
 import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
-import org.apache.aries.osgi.functional.internal.HighestRankingTransformer;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;

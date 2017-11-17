@@ -58,7 +58,13 @@ import java.util.function.Supplier;
  */
 public interface OSGi<T> extends OSGiRunnable<T> {
 	Runnable NOOP = () -> {};
-	
+
+	<S> OSGi<S> choose(
+		Predicate<T> chooser, Function<OSGi<T>, OSGi<S>> then,
+		Function<OSGi<T>, OSGi<S>> otherwise);
+
+	<S> OSGi<S> distribute(Function<OSGi<T>, OSGi<S>> ... funs);
+
 	<K, S> OSGi<S> splitBy(
 		Function<T, K> mapper, Function<OSGi<T>, OSGi<S>> fun);
 
@@ -80,7 +86,8 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	OSGi<Void> foreach(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
 
-	<S> OSGi<S> transform(Function<Function<S, Runnable>, Function<T, Runnable>> fun);
+	<S> OSGi<S> transform(
+		Function<Function<S, Runnable>, Function<T, Runnable>> fun);
 
 	static OSGi<Void> ignore(OSGi<?> program) {
 		return new IgnoreImpl(program);

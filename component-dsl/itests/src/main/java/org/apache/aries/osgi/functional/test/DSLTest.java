@@ -20,7 +20,6 @@ package org.apache.aries.osgi.functional.test;
 import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
-import org.apache.aries.osgi.functional.SentEvent;
 import org.apache.aries.osgi.functional.internal.ProbeImpl;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
@@ -36,6 +35,8 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -49,6 +50,7 @@ import java.util.function.Function;
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
+import static org.apache.aries.osgi.functional.OSGi.nothing;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
 import static org.apache.aries.osgi.functional.OSGi.once;
 import static org.apache.aries.osgi.functional.OSGi.register;
@@ -572,9 +574,83 @@ public class DSLTest {
                 serviceRegistrationOne.getReference(),
                 current.get().getServiceReference());
 
+            serviceRegistrationOne.unregister();
             serviceRegistrationMinusOne.unregister();
         }
 
+    }
+
+    @Test
+    public void testHighestRankingDiscards() {
+        ArrayList<ServiceReference<?>> discards = new ArrayList<>();
+
+        OSGi<CachingServiceReference<Service>> program = highest(serviceReferences(Service.class),
+            Comparator.naturalOrder(),
+            dp ->
+                dp.map(CachingServiceReference::getServiceReference).effects(
+                    discards::add, discards::remove).then(nothing()));
+
+        assertTrue(discards.isEmpty());
+
+        try (OSGiResult result = program.run(bundleContext)) {
+            ServiceRegistration<Service> serviceRegistrationOne =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", 0);
+                    }});
+
+            assertEquals(Collections.emptyList(), discards);
+
+            ServiceRegistration<Service> serviceRegistrationTwo =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", 1);
+                    }});
+
+            assertEquals(
+                Collections.singletonList(
+                    serviceRegistrationOne.getReference()),
+                discards);
+
+            ServiceRegistration<Service> serviceRegistrationMinusOne =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", -1);
+                    }});
+
+            assertEquals(
+                Arrays.asList(
+                    serviceRegistrationOne.getReference(),
+                    serviceRegistrationMinusOne.getReference()),
+                discards);
+
+            serviceRegistrationTwo.unregister();
+
+            assertEquals(
+                Arrays.asList(serviceRegistrationMinusOne.getReference()),
+                discards);
+
+            serviceRegistrationOne.unregister();
+
+            assertTrue(discards.isEmpty());
+
+            serviceRegistrationOne =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", 0);
+                    }});
+
+            assertEquals(
+                Arrays.asList(serviceRegistrationMinusOne.getReference()),
+                discards);
+
+            serviceRegistrationMinusOne.unregister();
+            serviceRegistrationOne.unregister();
+        }
     }
 
     @Test

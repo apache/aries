@@ -20,6 +20,7 @@ package org.apache.aries.osgi.functional.internal;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.SentEvent;
 import org.apache.aries.osgi.functional.test.DSLTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -36,6 +37,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Carlos Sierra Andrés
  */
+@Ignore
 public class ProbeTests {
 
     static BundleContext bundleContext =
