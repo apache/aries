@@ -29,6 +29,7 @@ import org.apache.aries.osgi.functional.internal.ChangeContextOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ConfigurationsOSGiImpl;
 import org.apache.aries.osgi.functional.internal.AllOSGi;
+import org.apache.aries.osgi.functional.internal.EffectsOSGi;
 import org.apache.aries.osgi.functional.internal.IgnoreImpl;
 import org.apache.aries.osgi.functional.internal.JustOSGiImpl;
 import org.apache.aries.osgi.functional.internal.NothingOSGiImpl;
@@ -104,6 +105,10 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 	static OSGi<Dictionary<String, ?>> configurations(String factoryPid) {
 		return new ConfigurationsOSGiImpl(factoryPid);
+	}
+
+	static OSGi<Void> effects(Runnable onAdding, Runnable onRemoving) {
+		return new EffectsOSGi(onAdding, onRemoving);
 	}
 
 	static OSGi<Void> ignore(OSGi<?> program) {
