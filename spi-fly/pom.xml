@@ -24,23 +24,23 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>spifly</artifactId>
     <name>Apache Aries SPI Fly</name>
-    <version>1.0.9-SNAPSHOT</version>
+    <version>1.0.10</version>
     <packaging>pom</packaging>
     <description>
         SPI support for OSGi
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/spifly-1.0.10</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/spifly-1.0.10</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/spifly-1.0.10</url>
     </scm>
 
     <modules>
