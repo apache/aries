@@ -1,8 +1,11 @@
-Export-Package: \
-	javax.el;version='1.0.0'
+Bundle-License: CDDL-1.1;link="https://spdx.org/licenses/CDDL-1.1.html"
 Provide-Capability: \
 	osgi.contract; \
 		osgi.contract=JavaEL; \
 		uses:="javax.el"; \
-		version:List<Version>='2.1,2.2,3.0'
--includeresource: @tomcat-el-api-*.jar!/META-INF/LICENSE, @tomcat-el-api-*.jar!/META-INF/NOTICE
+		version:List<Version>='3.0,2.2,2.1'
+
+-exportcontents: javax.el.*;version='3.0'
+
+-includeresource: META-INF/README=README
+-removeheaders: Archiver-Version, Created-By, Built-By, Build-Jdk
