@@ -40,7 +40,7 @@ public class CdiCommand {
 	public String list() {
 		try (Formatter f = new Formatter()) {
 			for (ContainerState cdiContainerState : _states.values()) {
-				f.format("[%s] %s%n", cdiContainerState.id(), cdiContainerState.lastState());
+				f.format("[%s]%n", cdiContainerState.id());
 			}
 			return f.toString();
 		}
@@ -56,7 +56,7 @@ public class CdiCommand {
 				return f.toString();
 			}
 
-			f.format("[%s] %s%n", containerState.id(), containerState.lastState());
+			f.format("[%s]%n", containerState.id());
 
 			List<ExtensionDependency> extensionDependencies = containerState.extensionDependencies();
 

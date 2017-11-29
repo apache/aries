@@ -50,12 +50,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
+			<groupId>org.apache.aries.spec</groupId>
 			<artifactId>org.apache.aries.javax.annotation-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
+			<groupId>org.apache.aries.spec</groupId>
 			<artifactId>org.apache.aries.javax.cdi-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>

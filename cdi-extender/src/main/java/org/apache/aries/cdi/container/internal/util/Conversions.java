@@ -18,8 +18,8 @@ import java.util.Arrays;
 
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.ConverterBuilder;
+import org.osgi.util.converter.Converters;
 import org.osgi.util.converter.Converting;
-import org.osgi.util.converter.StandardConverter;
 import org.osgi.util.converter.TypeRule;
 
 public class Conversions {
@@ -33,7 +33,7 @@ public class Conversions {
 	}
 
 	private Conversions() {
-		ConverterBuilder builder = new StandardConverter().newConverterBuilder();
+		ConverterBuilder builder = Converters.newConverterBuilder();
 
 		builder
 			.rule(new TypeRule<>(String[].class, String.class, i -> Arrays.toString((String[])i)))

@@ -31,7 +31,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cdi.annotations.ServiceScope;
 
 public class ServiceDeclaration {
 

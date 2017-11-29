@@ -15,7 +15,6 @@
 package org.apache.aries.cdi.container.internal.container;
 
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,19 +44,14 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.cdi.CdiConstants;
-import org.osgi.service.cdi.CdiContainer;
-import org.osgi.service.cdi.CdiEvent;
-import org.osgi.service.cdi.CdiEvent.Type;
-import org.osgi.service.cdi.annotations.ServiceEvent;
+import org.osgi.service.cdi.reference.ReferenceEvent;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ContainerState implements CdiContainer {
+public class ContainerState {
 
 	public static final AnnotationLiteral<Any> ANY = new AnnotationLiteral<Any>() {
 		private static final long serialVersionUID = 1L;
@@ -69,15 +63,10 @@ public class ContainerState implements CdiContainer {
 		_bundle = Optional.ofNullable(bundle);
 		_extenderBundle = extenderBundle;
 
-		Hashtable<String, Object> properties = new Hashtable<>();
-
-		properties.put(CdiConstants.CDI_CONTAINER_STATE, CdiEvent.Type.CREATING);
-
 		_bundle.ifPresent(
 			b -> {
 				_classLoader = new BundleClassLoader(
 					BundleResourcesLoader.getBundles(bundle, extenderBundle));
-				_registration = b.getBundleContext().registerService(CdiContainer.class, this, properties);
 			}
 		);
 
@@ -170,16 +159,7 @@ public class ContainerState implements CdiContainer {
 	}
 
 	public synchronized void close() {
-		try {
-			if (_registration != null) {
-				_registration.unregister();
-			}
-		}
-		catch (Exception e) {
-			if (_log.isTraceEnabled()) {
-				_log.trace("Service already unregistered {}", _registration);
-			}
-		}
+		// no op
 	}
 
 	public Map<ComponentModel, Map<String, ConfigurationCallback>> configurationCallbacks() {
@@ -198,54 +178,8 @@ public class ContainerState implements CdiContainer {
 		return _extensionDependencies;
 	}
 
-	public synchronized void fire(CdiEvent event) {
-		Type type = event.getType();
-
-		if ((_lastState == CdiEvent.Type.DESTROYING) &&
-			((type == CdiEvent.Type.WAITING_FOR_CONFIGURATIONS) ||
-			(type == CdiEvent.Type.WAITING_FOR_EXTENSIONS) ||
-			(type == CdiEvent.Type.WAITING_FOR_SERVICES))) {
-
-			return;
-		}
-
-		if (_log.isErrorEnabled() && (event.getCause() != null)) {
-			_log.error("CDIe - Event {}", event, event.getCause());
-		}
-		else if (_log.isDebugEnabled()) {
-			_log.debug("CDIe - Event {}", event);
-		}
-
-		updateState(event);
-
-		if (_beanManager != null) {
-			_beanManager.fireEvent(event);
-		}
-	}
-
-	public void fire(CdiEvent.Type state) {
-		fire(new CdiEvent(state, _bundle.orElse(null), _extenderBundle));
-	}
-
-	public void fire(CdiEvent.Type state, String payload) {
-		fire(new CdiEvent(state, _bundle.orElse(null), _extenderBundle, payload, null));
-	}
-
-	public void fire(CdiEvent.Type state, Throwable cause) {
-		fire(new CdiEvent(state, _bundle.orElse(null), _extenderBundle, null, cause));
-	}
-
-	@Override
-	public BeanManager getBeanManager() {
-		return _beanManager;
-	}
-
 	public String id() {
 		return _bundle.map(b -> b.getSymbolicName() + ":" + b.getBundleId()).orElse("null");
-	}
-
-	public CdiEvent.Type lastState() {
-		return _lastState;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -261,7 +195,7 @@ public class ContainerState implements CdiContainer {
 		return _referenceCallbacksMap;
 	}
 
-	public Map<ComponentModel, Map<String, ObserverMethod<ServiceEvent<?>>>> referenceObservers() {
+	public Map<ComponentModel, Map<String, ObserverMethod<ReferenceEvent<?>>>> referenceObservers() {
 		return _referenceObserversMap;
 	}
 
@@ -271,10 +205,6 @@ public class ContainerState implements CdiContainer {
 
 	public Registrator<Object> serviceRegistrator() {
 		return _serviceRegistrator;
-	}
-
-	public void setBeanManager(BeanManager beanManager) {
-		_beanManager = beanManager;
 	}
 
 	public void setBeansModel(BeansModel beansModel) {
@@ -289,35 +219,8 @@ public class ContainerState implements CdiContainer {
 		return _tracker;
 	}
 
-	private synchronized void updateState(CdiEvent event) {
-		Type type = event.getType();
-
-		_lastState = type;
-
-		if (_registration == null) {
-			return;
-		}
-
-		ServiceReference<CdiContainer> reference = _registration.getReference();
-
-		if (type == reference.getProperty(CdiConstants.CDI_CONTAINER_STATE)) {
-			return;
-		}
-
-		Hashtable<String, Object> properties = new Hashtable<>();
-
-		for (String key : reference.getPropertyKeys()) {
-			properties.put(key, reference.getProperty(key));
-		}
-
-		properties.put(CdiConstants.CDI_CONTAINER_STATE, type);
-
-		_registration.setProperties(properties);
-	}
-
 	private static final Logger _log = LoggerFactory.getLogger(ContainerState.class);
 
-	private volatile BeanManager _beanManager;
 	private BeansModel _beansModel;
 	private final Registrator<BeanManager> _bmRegistrator;
 	private final Optional<Bundle> _bundle;
@@ -326,11 +229,9 @@ public class ContainerState implements CdiContainer {
 	private final Context _context;
 	private final Bundle _extenderBundle;
 	private List<ExtensionDependency> _extensionDependencies;
-	private CdiEvent.Type _lastState = CdiEvent.Type.CREATING;
 	private final Registrator<ManagedService> _msRegistrator;
 	private final Map<ComponentModel, Map<String, ReferenceCallback>> _referenceCallbacksMap = new ConcurrentHashMap<>();
-	private final Map<ComponentModel, Map<String, ObserverMethod<ServiceEvent<?>>>> _referenceObserversMap = new ConcurrentHashMap<>();
-	private ServiceRegistration<CdiContainer> _registration;
+	private final Map<ComponentModel, Map<String, ObserverMethod<ReferenceEvent<?>>>> _referenceObserversMap = new ConcurrentHashMap<>();
 	private final Map<ComponentModel, ServiceDeclaration> _serviceComponents = new ConcurrentHashMap<>();
 	private final Registrator<Object> _serviceRegistrator;
 	private final Tracker _tracker;
