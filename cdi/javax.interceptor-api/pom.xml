@@ -29,45 +29,73 @@
 		<relativePath>..</relativePath>
 	</parent>
 
+	<groupId>org.apache.aries.spec</groupId>
 	<artifactId>org.apache.aries.javax.interceptor-api</artifactId>
-	<name>Javax Interceptor API Bundle</name>
-	<description>Javax Interceptor API Bundle</description>
+	<name>Apache Aries Javax Interceptor API</name>
+	<description>Apache Aries Javax Interceptor API</description>
+
+	<properties>
+		<spec.groupId>javax.interceptor</spec.groupId>
+		<spec.artifactId>javax.interceptor-api</spec.artifactId>
+		<spec.version>1.2.1</spec.version>
+		<remoteresources.skip>true</remoteresources.skip>
+	</properties>
+
+	<licenses>
+		<license>
+			<name>CDDL-1.1</name>
+			<url>https://spdx.org/licenses/CDDL-1.1.html</url>
+			<comments>This project uses the javax.interceptor API artifact under the terms of the CDDL-1.1 license.</comments>
+		</license>
+	</licenses>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
+
 			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.0.1</version><!--$NO-MVN-MAN-VER$-->
 				<executions>
 					<execution>
-						<id>javadoc-jar</id>
-						<phase>package</phase>
+						<id>unpack-sources</id>
+						<phase>process-sources</phase>
 						<goals>
-							<goal>jar</goal>
+							<goal>unpack</goal>
 						</goals>
 						<configuration>
-							<includeDependencySources>true</includeDependencySources>
-
-							<dependencySourceIncludes>
-								<dependencySourceInclude>org.apache.geronimo.specs:geronimo-interceptor_1.2_spec</dependencySourceInclude>
-							</dependencySourceIncludes>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${spec.groupId}</groupId>
+									<artifactId>${spec.artifactId}</artifactId>
+									<classifier>sources</classifier>
+									<version>${spec.version}</version>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}/sources</outputDirectory>
+									<excludes>pom.xml,META-INF/LICENSE.txt</excludes>
+								</artifactItem>
+							</artifactItems>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
+		<sourceDirectory>${project.build.directory}/sources</sourceDirectory>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-interceptor_1.2_spec</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
-
 </project>

@@ -29,20 +29,45 @@
 		<relativePath>..</relativePath>
 	</parent>
 
+	<groupId>org.apache.aries.spec</groupId>
 	<artifactId>org.apache.aries.javax.annotation-api</artifactId>
-	<name>Javax Annotation API Bundle</name>
-	<description>Javax Annotation API Bundle</description>
+	<name>Apache Aries Javax Annotation API</name>
+	<description>Apache Aries Javax Annotation API</description>
+
 	<properties>
-		<spec.group.id>org.apache.geronimo.specs</spec.group.id>
-		<spec.artifact.id>geronimo-annotation_1.3_spec</spec.artifact.id>
+		<spec.groupId>javax.annotation</spec.groupId>
+		<spec.artifactId>javax.annotation-api</spec.artifactId>
+		<spec.version>1.3.1</spec.version>
+		<remoteresources.skip>true</remoteresources.skip>
 	</properties>
+
+	<licenses>
+		<license>
+			<name>CDDL-1.1</name>
+			<url>https://spdx.org/licenses/CDDL-1.1.html</url>
+			<comments>This project uses the javax.annotation API artifact under the terms of the CDDL-1.1 license.</comments>
+		</license>
+	</licenses>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.0.1</version>
+				<version>3.0.1</version><!--$NO-MVN-MAN-VER$-->
 				<executions>
 					<execution>
 						<id>unpack-sources</id>
@@ -53,12 +78,13 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>${spec.group.id}</groupId>
-									<artifactId>${spec.artifact.id}</artifactId>
+									<groupId>${spec.groupId}</groupId>
+									<artifactId>${spec.artifactId}</artifactId>
 									<classifier>sources</classifier>
-									<version>1.0</version>
+									<version>${spec.version}</version>
 									<overWrite>false</overWrite>
 									<outputDirectory>${project.build.directory}/sources</outputDirectory>
+									<excludes>pom.xml,META-INF/LICENSE.txt</excludes>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
@@ -69,32 +95,7 @@
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<sourceDirectory>${project.build.directory}/sources</sourceDirectory>
 	</build>
-
 </project>
