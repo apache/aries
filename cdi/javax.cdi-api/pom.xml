@@ -29,71 +29,89 @@
 		<relativePath>..</relativePath>
 	</parent>
 
+	<groupId>org.apache.aries.spec</groupId>
 	<artifactId>org.apache.aries.javax.cdi-api</artifactId>
-	<name>Javax CDI API Bundle</name>
-	<description>Javax CDI API Bundle</description>
+	<name>Apache Aries Javax CDI API</name>
+	<description>Apache Aries Javax CDI API</description>
+
+	<properties>
+		<spec.groupId>javax.enterprise</spec.groupId>
+		<spec.artifactId>cdi-api</spec.artifactId>
+		<spec.version>2.0</spec.version>
+		<remoteresources.skip>true</remoteresources.skip>
+	</properties>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>false</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
+
 			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.0.1</version><!--$NO-MVN-MAN-VER$-->
 				<executions>
 					<execution>
-						<id>javadoc-jar</id>
-						<phase>package</phase>
+						<id>unpack-sources</id>
+						<phase>process-sources</phase>
 						<goals>
-							<goal>jar</goal>
+							<goal>unpack</goal>
 						</goals>
 						<configuration>
-							<includeDependencySources>true</includeDependencySources>
-
-							<dependencySourceIncludes>
-								<dependencySourceInclude>javax.enterprise:cdi-api</dependencySourceInclude>
-							</dependencySourceIncludes>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${spec.groupId}</groupId>
+									<artifactId>${spec.artifactId}</artifactId>
+									<classifier>sources</classifier>
+									<version>${spec.version}</version>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}/sources</outputDirectory>
+<!-- 									<excludes>pom.xml,META-INF/LICENSE.txt</excludes>
+-->
+								</artifactItem>
+							</artifactItems>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
+		<sourceDirectory>${project.build.directory}/sources</sourceDirectory>
 	</build>
 
 	<dependencies>
 		<dependency>
-			<groupId>javax.enterprise</groupId>
-			<artifactId>cdi-api</artifactId>
-			<version>2.0</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.el</groupId>
-					<artifactId>javax.el-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.inject</groupId>
-					<artifactId>javax.inject</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.interceptor</groupId>
-					<artifactId>javax.interceptor-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
+			<groupId>org.apache.aries.spec</groupId>
 			<artifactId>org.apache.aries.javax.el-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
+			<groupId>org.apache.aries.spec</groupId>
 			<artifactId>org.apache.aries.javax.inject-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
+			<groupId>org.apache.aries.spec</groupId>
 			<artifactId>org.apache.aries.javax.interceptor-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
