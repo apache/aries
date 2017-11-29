@@ -24,7 +24,6 @@ import org.apache.aries.cdi.container.internal.phase.Phase;
 import org.apache.aries.cdi.container.internal.phase.Phase_Init;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.framework.Bundle;
-import org.osgi.service.cdi.CdiEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,15 +60,11 @@ public class CdiBundle implements Extension {
 			_command.add(_bundle, _containerState);
 
 			try {
-				_containerState.fire(CdiEvent.Type.CREATING);
-
 				_nextPhase = new Phase_Init(_bundle, _containerState);
 
 				_nextPhase.open();
 			}
 			catch (Throwable t) {
-				_containerState.fire(CdiEvent.Type.FAILURE, t);
-
 				if (_nextPhase != null) {
 					_nextPhase.close();
 				}
@@ -106,13 +101,9 @@ public class CdiBundle implements Extension {
 
 			_command.remove(_bundle);
 
-			_containerState.fire(CdiEvent.Type.DESTROYING);
-
 			_nextPhase.close();
 
 			_nextPhase = null;
-
-			_containerState.fire(CdiEvent.Type.DESTROYED);
 
 			_containerState.close();
 

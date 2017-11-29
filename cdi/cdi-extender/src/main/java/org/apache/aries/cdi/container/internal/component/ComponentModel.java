@@ -169,8 +169,8 @@ public class ComponentModel {
 		return _references;
 	}
 
-	public ServiceScope getServiceScope() {
-		return _scope;
+	public boolean isService() {
+		return false;
 	}
 
 	@Override
@@ -196,7 +196,6 @@ public class ComponentModel {
 	private final List<String> _provides;
 	private final List<ConfigurationModel> _configurations;
 	private final List<ReferenceModel> _references;
-	private ServiceScope _scope;
 	private volatile String _string;
 
 }

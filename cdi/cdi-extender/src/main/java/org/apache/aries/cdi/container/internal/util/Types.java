@@ -23,7 +23,6 @@ import java.util.List;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.aries.cdi.container.internal.component.ComponentModel;
-import org.osgi.service.cdi.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,9 +93,7 @@ public class Types {
 
 		List<Class<?>> classes = new ArrayList<>();
 
-		if ((componentModel.getServiceScope() == ServiceScope.DEFAULT) ||
-			(componentModel.getServiceScope() == ServiceScope.NONE)) {
-
+		if (!componentModel.isService()) {
 			return new Class<?>[0];
 		}
 		else if (!componentModel.getProvides().isEmpty()) {
