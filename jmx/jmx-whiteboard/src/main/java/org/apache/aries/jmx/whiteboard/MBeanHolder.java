@@ -102,23 +102,36 @@ final class MBeanHolder {
         return null;
     }
 
-    private MBeanHolder(final Object mbean, final ObjectName requestedObjectName) {
+    MBeanHolder(final Object mbean, final ObjectName requestedObjectName) {
         this.mbean = mbean;
         this.requestedObjectName = requestedObjectName;
         this.registrations = new IdentityHashMap<MBeanServer, ObjectName>();
     }
 
-    void register(final MBeanServer server) {
+    void register(final MBeanServer server, String[] warnExceptions) {
         ObjectInstance instance;
         try {
             instance = server.registerMBean(mbean, requestedObjectName);
             registrations.put(server, instance.getObjectName());
-        } catch (InstanceAlreadyExistsException e) {
-            log.error("register: Failure registering MBean " + mbean, e);
-        } catch (MBeanRegistrationException e) {
-            log.error("register: Failure registering MBean " + mbean, e);
-        } catch (NotCompliantMBeanException e) {
-            log.error("register: Failure registering MBean " + mbean, e);
+        } catch (Exception e) {
+            String exClass = e.getClass().getName();
+            if (warnExceptions == null)
+                warnExceptions = new String[] {};
+
+            for (String exCls : warnExceptions) {
+                if (exClass.equals(exCls)) {
+                    log.warn("register: problem registering MBean " + mbean, e);
+                    return;
+                }
+            }
+
+            if (e instanceof InstanceAlreadyExistsException ||
+                    e instanceof MBeanRegistrationException ||
+                    e instanceof NotCompliantMBeanException) {
+                log.error("register: Failure registering MBean " + mbean, e);
+            } else if (e instanceof RuntimeException) {
+                throw ((RuntimeException) e);
+            }
         }
     }
 
