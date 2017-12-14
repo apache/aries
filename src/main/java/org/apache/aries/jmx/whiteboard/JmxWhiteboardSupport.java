@@ -20,6 +20,7 @@ package org.apache.aries.jmx.whiteboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 
 import javax.management.MBeanRegistration;
@@ -54,7 +55,7 @@ class JmxWhiteboardSupport {
 
         // register all mbeans with the new server
         for (MBeanHolder mbean : mbeans.values()) {
-            mbean.register(mbeanServer);
+            mbean.register(mbeanServer, null);
         }
     }
 
@@ -79,11 +80,12 @@ class JmxWhiteboardSupport {
 
         ObjectName objectName = getObjectName(props);
         if (objectName != null || mbean instanceof MBeanRegistration) {
-            MBeanHolder holder = MBeanHolder.create(mbean, objectName);
+            MBeanHolder holder = createMBeanHolder(mbean, objectName);
             if (holder != null) {
                 MBeanServer[] mbeanServers = this.mbeanServers;
+                String[] warnExceptions = getStringPlusProperty(props, "warning.exceptions");
                 for (MBeanServer mbeanServer : mbeanServers) {
-                    holder.register(mbeanServer);
+                    holder.register(mbeanServer, warnExceptions);
                 }
                 mbeans.put(mbean, holder);
             } else {
@@ -96,6 +98,10 @@ class JmxWhiteboardSupport {
                 "registerMBean: MBean service {} not registered with valid jmx.objectname propety and not implementing MBeanRegistration interface; not registering with MBean servers",
                 mbean);
         }
+    }
+
+    MBeanHolder createMBeanHolder(Object mbean, ObjectName objectName) {
+        return MBeanHolder.create(mbean, objectName);
     }
 
     protected synchronized void unregisterMBean(Object mbean) {
@@ -126,5 +132,28 @@ class JmxWhiteboardSupport {
         }
 
         return null;
+    }
+
+    private static String[] getStringPlusProperty(ServiceReference<?> ref, String propertyName) {
+        final String[] res;
+        Object prop = ref.getProperty(propertyName);
+        if (prop == null) {
+            res = null;
+        } else if (prop instanceof String) {
+            res = new String[] { (String) prop };
+        } else if ( prop instanceof Collection ) {
+            final Object[] col = ((Collection<?>) prop).toArray();
+            res = new String[col.length];
+            for (int i = 0; i < res.length; i++) {
+                res[i] = String.valueOf(col[i]);
+            }
+        } else if (prop.getClass().isArray() && String.class.equals(prop.getClass().getComponentType())) {
+            res = (String[]) prop;
+        } else {
+            // unsupported type of property
+            res = null;
+        }
+
+        return res;
     }
 }
