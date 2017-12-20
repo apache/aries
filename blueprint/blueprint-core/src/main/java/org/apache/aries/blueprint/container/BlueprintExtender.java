@@ -99,7 +99,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             return Executors.newScheduledThreadPool(3, new BlueprintThreadFactory(name));
           }
         });
-        eventDispatcher = new BlueprintEventDispatcher(ctx, executors);
+        eventDispatcher = new BlueprintEventDispatcher(ctx);
 
         // Ideally we'd want to only track STARTING and ACTIVE bundle, but this is not supported
         // when using equinox composites.  This would ensure that no STOPPING event is lost while
