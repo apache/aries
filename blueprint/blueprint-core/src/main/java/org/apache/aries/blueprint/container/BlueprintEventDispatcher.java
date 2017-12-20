@@ -66,15 +66,13 @@ class BlueprintEventDispatcher implements BlueprintListener {
     private final Set<BlueprintListener> listeners = new CopyOnWriteArraySet<BlueprintListener>();
     private final Map<Bundle, BlueprintEvent> states = new ConcurrentHashMap<Bundle, BlueprintEvent>();
     private final ExecutorService executor;
-    private final ExecutorService sharedExecutor;
     private final EventAdminListener eventAdminListener;
     private final ServiceTracker containerListenerTracker;
 
-    BlueprintEventDispatcher(final BundleContext bundleContext, ExecutorService sharedExecutor) {
+    BlueprintEventDispatcher(final BundleContext bundleContext) {
 
         assert bundleContext != null;
-        assert sharedExecutor != null;
-        
+
         executor = new ScheduledExecutorServiceWrapper(bundleContext, "Blueprint Event Dispatcher", new ScheduledExecutorServiceFactory() {
           
           public ScheduledExecutorService create(String name)
@@ -82,10 +80,6 @@ class BlueprintEventDispatcher implements BlueprintListener {
             return Executors.newScheduledThreadPool(1, new BlueprintThreadFactory(name));
           }
         });
-
-//        executor = Executors.newSingleThreadExecutor(new BlueprintThreadFactory("Blueprint Event Dispatcher"));
-        
-        this.sharedExecutor = sharedExecutor;
 
         EventAdminListener listener = null;
         try {
@@ -143,11 +137,7 @@ class BlueprintEventDispatcher implements BlueprintListener {
 
         if (eventAdminListener != null) {
             try {
-                sharedExecutor.submit(new Runnable() {
-                    public void run() {
-                        eventAdminListener.blueprintEvent(event);
-                    }
-                });
+                eventAdminListener.blueprintEvent(event);
             } catch (RejectedExecutionException ree) {
                 LOGGER.warn("Executor shut down", ree);
             }
