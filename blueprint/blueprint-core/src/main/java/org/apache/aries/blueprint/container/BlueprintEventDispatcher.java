@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -91,9 +91,9 @@ class BlueprintEventDispatcher implements BlueprintListener {
         }
         this.eventAdminListener = listener;
 
-        this.containerListenerTracker = new ServiceTracker(bundleContext, BlueprintListener.class.getName(), new ServiceTrackerCustomizer() {
-            public Object addingService(ServiceReference reference) {
-                BlueprintListener listener = (BlueprintListener) bundleContext.getService(reference);
+        this.containerListenerTracker = new ServiceTracker<BlueprintListener, BlueprintListener>(bundleContext, BlueprintListener.class, new ServiceTrackerCustomizer<BlueprintListener, BlueprintListener>() {
+            public BlueprintListener addingService(ServiceReference<BlueprintListener> reference) {
+                BlueprintListener listener = bundleContext.getService(reference);
 
                 synchronized (listeners) {
                     sendInitialEvents(listener);
@@ -103,10 +103,10 @@ class BlueprintEventDispatcher implements BlueprintListener {
                 return listener;
             }
 
-            public void modifiedService(ServiceReference reference, Object service) {
+            public void modifiedService(ServiceReference<BlueprintListener> reference, BlueprintListener service) {
             }
 
-            public void removedService(ServiceReference reference, Object service) {
+            public void removedService(ServiceReference<BlueprintListener> reference, BlueprintListener service) {
                 listeners.remove(service);
                 bundleContext.ungetService(reference);
             }
@@ -228,7 +228,7 @@ class BlueprintEventDispatcher implements BlueprintListener {
         private final ServiceTracker tracker;
 
         EventAdminListener(BundleContext context) {
-            tracker = new ServiceTracker(context, EventAdmin.class.getName(), null);
+            tracker = new ServiceTracker<BlueprintListener, BlueprintListener>(context, EventAdmin.class.getName(), null);
             tracker.open();
         }
 
