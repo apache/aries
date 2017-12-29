@@ -40,7 +40,7 @@ import javax.management.openmbean.TabularType;
  * An Item instance describes an item in a Composite Type. It groups the triplet of name, description, and Open Type.
  * These Item instances allows the definitions of an item to stay together.
  *
- * @Immutable
+ * Immutable
  */
 public class Item {
 
