@@ -26,10 +26,10 @@ import javax.management.openmbean.SimpleType;
  * Constants.
  *
  * Additionally, this class contains a number of utility types that are used in
- * different places in the specification. These are {@link #LONG_ARRAY_TYPE},
- * {@link #STRING_ARRAY_TYPE}, and {@link #PRIMITIVE_BYTE_ARRAY_TYPE}.
+ * different places in the specification. These are {@link #BYTE_ARRAY_TYPE},
+ * and {@link #STRING_ARRAY_TYPE}.
  *
- * @Immutable
+ * Immutable
  */
 public class JmxConstants {
 
