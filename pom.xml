@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint Core</name>
     <description>
@@ -123,8 +123,8 @@
     </build>
   
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-core</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-core</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-blueprint-core</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.blueprint.core-1.2</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.blueprint.core-1.2</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx.blueprint.core-1.2</url>
     </scm>
 </project>
