@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
-    <version>1.2</version>
+    <version>1.2.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint API</name>
     <description>
@@ -66,8 +66,8 @@
 
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.blueprint.api-1.2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.blueprint.api-1.2</developerConnection>
-    <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx.blueprint.api-1.2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-api</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-api</developerConnection>
+    <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-blueprint-api</url>
   </scm>
 </project>
