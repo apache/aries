@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint API</name>
     <description>
