@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.whiteboard</artifactId>
     <packaging>bundle</packaging>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
     <name>Apache Aries Whiteboard support for JMX DynamicMBean services</name>
     <description>
         This bundle implements whiteboard pattern support for DynamicMBean
@@ -41,9 +41,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.whiteboard-1.2.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.jmx.whiteboard-1.2.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.jmx.whiteboard-1.2.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-whiteboard</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-whiteboard</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-whiteboard</url>
     </scm>
 
     <!-- A Note on Testing ================= This project contains two kinds 
