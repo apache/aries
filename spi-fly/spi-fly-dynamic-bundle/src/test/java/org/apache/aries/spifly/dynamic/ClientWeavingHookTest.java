@@ -43,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.aries.mytest.MySPI;
 import org.apache.aries.spifly.BaseActivator;
 import org.apache.aries.spifly.SpiFlyConstants;
 import org.apache.aries.spifly.Streams;
@@ -441,6 +442,9 @@ public class ClientWeavingHookTest {
         testConsumerBundleWeaving(consumerBundle1, wh, Collections.singleton("impl4"), "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
         testConsumerBundleWeaving(consumerBundle2, wh, Collections.singleton("olleh"), thisJVMsDBF);
         testConsumerBundleWeaving(consumerBundle3, wh, Collections.<String>emptySet(), thisJVMsDBF);
+        testConsumerBundleWeavingNonConst(consumerBundle1, wh, Collections.singleton("impl4"), "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
+        testConsumerBundleWeavingNonConst(consumerBundle2, wh, Collections.singleton("olleh"), thisJVMsDBF);
+        testConsumerBundleWeavingNonConst(consumerBundle3, wh, Collections.<String>emptySet(), thisJVMsDBF);
     }
 
     private void testConsumerBundleWeaving(Bundle consumerBundle, WeavingHook wh, Set<String> testClientResult, String jaxpClientResult) throws Exception {
@@ -464,6 +468,20 @@ public class ClientWeavingHookTest {
         Method method2 = cls2.getMethod("test", new Class [] {});
         Class<?> result2 = (Class<?>) method2.invoke(cls2.newInstance());
         Assert.assertEquals(jaxpClientResult, result2.getName());
+    }
+
+    private void testConsumerBundleWeavingNonConst(Bundle consumerBundle, WeavingHook wh, Set<String> testClientResult, String jaxpClientResult) throws Exception {
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, TestClient.class.getName(), consumerBundle);
+        wh.weave(wc);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("testService", new Class [] {String.class, Class.class});
+        Object result = method.invoke(cls.newInstance(), "hello", MySPI.class);
+        Assert.assertEquals(testClientResult, result);
     }
 
     @Test
