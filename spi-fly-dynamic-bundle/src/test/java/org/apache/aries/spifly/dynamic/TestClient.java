@@ -25,10 +25,30 @@ import java.util.Set;
 import org.apache.aries.mytest.MySPI;
 
 public class TestClient {
+	/**
+	 * Load using a constant as parameter.
+	 */
     public Set<String> test(String input) {
         Set<String> results = new HashSet<String>();
 
         ServiceLoader<MySPI> loader = ServiceLoader.load(MySPI.class);
+        for (MySPI mySPI : loader) {
+            results.add(mySPI.someMethod(input));
+        }
+        return results;
+    }
+    
+	/**
+	 * Load using a variable as parameter.
+	 */
+    public Set<String> testService(String input, Class<MySPI> service) {
+        Set<String> results = new HashSet<String>();
+
+        // Try to irritate TCCLSetterVisitor by forcing an (irrelevant) LDC.
+        @SuppressWarnings("unused")
+		Class<?> causeLDC = String.class;
+        
+        ServiceLoader<MySPI> loader = ServiceLoader.load(service);
         for (MySPI mySPI : loader) {
             results.add(mySPI.someMethod(input));
         }
