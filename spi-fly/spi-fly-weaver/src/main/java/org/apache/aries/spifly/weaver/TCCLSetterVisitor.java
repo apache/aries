@@ -140,16 +140,19 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
 
     private class TCCLSetterMethodVisitor extends GeneratorAdapter {
         Type lastLDCType;
-
+        private int lastOpcode;
+        private int lastVar;
+        
         public TCCLSetterMethodVisitor(MethodVisitor mv, int access, String name, String descriptor) {
             super(Opcodes.ASM5, mv, access, name, descriptor);
         }
 
         /**
          * Store the last LDC call. When ServiceLoader.load(Class cls) is called
-         * the last LDC call before the ServiceLoader.load() visitMethodInsn call
-         * contains the class being passed in. We need to pass this class to $$FCCL$$ as well
-         * so we can copy the value found in here.
+         * with a class constant (XXX.class) as parameter, the last LDC call 
+         * before the ServiceLoader.load() visitMethodInsn call
+         * contains the class being passed in. We need to pass this class to 
+         * $$FCCL$$ as well so we can copy the value found in here.
          */
         @Override
         public void visitLdcInsn(Object cst) {
@@ -157,6 +160,23 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
                 lastLDCType = ((Type) cst);
             }
             super.visitLdcInsn(cst);
+        }
+
+        /**
+         * Store the last ALOAD call. When ServiceLoader.load(Class cls) is called
+         * with using a variable as parameter, the last ALOAD call 
+         * before the ServiceLoader.load() visitMethodInsn call
+         * contains the class being passed in. Annihilate any previously
+         * found LDC, because it had nothing to do with the call to
+         * ServiceLoader.load(Class cls) if it is followed by an ALOAD
+         * (before the actual call).
+         */
+        @Override
+        public void visitVarInsn(int opcode, int var) {
+        	lastLDCType = null;
+        	this.lastOpcode = opcode;
+        	this.lastVar = var;
+        	super.visitVarInsn(opcode, var);
         }
 
         /**
@@ -189,9 +209,14 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
                     (wd.getArgClasses() == null || Arrays.equals(new String [] {Class.class.getName()}, wd.getArgClasses()))) {
                     // ServiceLoader.load() is a special case because it's a general-purpose service loader,
                     // therefore, the target class it the class being passed in to the ServiceLoader.load()
-                    // call itself.
-
-                    mv.visitLdcInsn(lastLDCType);
+                    // call itself. Use LDC if found (immediately) before the call
+                	if (lastLDCType != null) {
+                		mv.visitLdcInsn(lastLDCType);
+                	} else {
+                		// If there was no LDC (or an LDC was followed by an
+                		// ALOAD), the parameter is loaded from a variable.
+                		mv.visitVarInsn(lastOpcode, lastVar);	
+                	}
                 } else {
                     // In any other case, we're not dealing with a general-purpose service loader, but rather
                     // with a specific one, such as DocumentBuilderFactory.newInstance(). In that case the
