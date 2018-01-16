@@ -176,7 +176,7 @@ public class BlueprintContainerImpl
         this.timer = timer;
         this.processors = new ArrayList<Processor>();
         if (System.getSecurityManager() != null) {
-            this.accessControlContext = BlueprintDomainCombiner.createAccessControlContext(bundleContext);
+            this.accessControlContext = BlueprintDomainCombiner.createAccessControlContext(bundle);
         } else {
             this.accessControlContext = null;
         }
