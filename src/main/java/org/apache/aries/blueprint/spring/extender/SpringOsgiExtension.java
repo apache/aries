@@ -99,7 +99,7 @@ public class SpringOsgiExtension implements Extension {
             writer.write("<blueprint xmlns=\"http://www.osgi.org/xmlns/blueprint/v1.0.0\"\n");
             writer.write("\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
             writer.write("\txmlns:bean=\"http://www.springframework.org/schema/beans\"\n");
-            writer.write("\txsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd\">\n");
+            writer.write("\txsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-" + SpringXsdVersionResolver.resolve() + ".xsd\">\n");
             for (URL url : paths) {
                 writer.write("\t<bean:import resource=\"" + url.toString() + "\"/>\n");
             }
