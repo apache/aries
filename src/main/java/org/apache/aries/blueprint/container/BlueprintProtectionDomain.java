@@ -21,20 +21,20 @@ package org.apache.aries.blueprint.container;
 import java.security.Permission;
 import java.security.ProtectionDomain;
 
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
 
 public class BlueprintProtectionDomain extends ProtectionDomain {
 
-    private final BundleContext bundleContext;
+    private final Bundle bundle;
 
-    public BlueprintProtectionDomain(BundleContext bundleContext) {
+    public BlueprintProtectionDomain(Bundle bundle) {
         super(null, null);
-        this.bundleContext = bundleContext;
+        this.bundle = bundle;
     }
 
     public boolean implies(Permission permission) {
         try {
-            return bundleContext.getBundle().hasPermission(permission);
+            return bundle.hasPermission(permission);
         } catch (IllegalStateException e) {
             return false;
         }

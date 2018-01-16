@@ -23,22 +23,23 @@ import java.security.AccessController;
 import java.security.DomainCombiner;
 import java.security.ProtectionDomain;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 public class BlueprintDomainCombiner implements DomainCombiner {
-    private final BundleContext bundleContext;
+    private final Bundle bundle;
 
-    public static AccessControlContext createAccessControlContext(BundleContext bundleContext) {
-        return new AccessControlContext(AccessController.getContext(), new BlueprintDomainCombiner(bundleContext));
+    public static AccessControlContext createAccessControlContext(Bundle bundle) {
+        return new AccessControlContext(AccessController.getContext(), new BlueprintDomainCombiner(bundle));
     }
 
-    BlueprintDomainCombiner(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
+    BlueprintDomainCombiner(Bundle bundle) {
+        this.bundle = bundle;
     }
 
     public ProtectionDomain[] combine(ProtectionDomain[] arg0,
                                       ProtectionDomain[] arg1) {
-        return new ProtectionDomain[] { new BlueprintProtectionDomain(bundleContext) };
+        return new ProtectionDomain[] { new BlueprintProtectionDomain(bundle) };
     }
 
 }
