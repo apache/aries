@@ -155,7 +155,7 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
                 if (StringUtils.hasText(profileSpec)) {
                     String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
                             profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
-                    if (!getReaderContext().getEnvironment().acceptsProfiles(specifiedProfiles)) {
+                    if (!getReaderContext().getReader().getEnvironment().acceptsProfiles(specifiedProfiles)) {
                         return;
                     }
                 }
@@ -230,7 +230,7 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
             }
 
             // Resolve system properties: e.g. "${user.dir}"
-            location = getReaderContext().getEnvironment().resolveRequiredPlaceholders(location);
+            location = getReaderContext().getReader().getEnvironment().resolveRequiredPlaceholders(location);
 
             Set<Resource> actualResources = new LinkedHashSet<Resource>(4);
 
