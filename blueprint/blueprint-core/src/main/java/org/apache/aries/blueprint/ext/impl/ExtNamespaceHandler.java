@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
+import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.ext.PlaceholdersUtils;
 import org.apache.aries.blueprint.ext.PropertyPlaceholder;
@@ -76,6 +77,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_3 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_4 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_5 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0";
+    public static final String BLUEPRINT_EXT_NAMESPACE_V1_6 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.6.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String DEFAULT_PROPERTIES_ELEMENT = "default-properties";
@@ -114,7 +116,16 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     
     public static final String BEAN = "bean";
     public static final String REFERENCE = "reference";
-    
+
+    public static final String DAMPING_ATTRIBUTE = "damping";
+
+    public static final String DAMPING_RELUCTANT = "reluctant";
+    public static final String DAMPING_GREEDY = "greedy";
+
+    public static final String LIFECYCLE_ATTRIBUTE = "lifecycle";
+
+    public static final String LIFECYCLE_DYNAMIC = "dynamic";
+    public static final String LIFECYCLE_STATIC = "static";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
@@ -139,6 +150,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             return getClass().getResource("blueprint-ext-1.4.xsd");
         } else if (BLUEPRINT_EXT_NAMESPACE_V1_5.equals(namespace)) {
             return getClass().getResource("blueprint-ext-1.5.xsd");
+        } else if (BLUEPRINT_EXT_NAMESPACE_V1_6.equals(namespace)) {
+            return getClass().getResource("blueprint-ext-1.6.xsd");
         } else if ("http://www.w3.org/XML/1998/namespace".equals(namespace)) {
             return getClass().getResource("xml.xsd");
         }
@@ -150,7 +163,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             || BLUEPRINT_EXT_NAMESPACE_V1_2.equals(e)
             || BLUEPRINT_EXT_NAMESPACE_V1_3.equals(e)
             || BLUEPRINT_EXT_NAMESPACE_V1_4.equals(e)
-            || BLUEPRINT_EXT_NAMESPACE_V1_5.equals(e);            
+            || BLUEPRINT_EXT_NAMESPACE_V1_5.equals(e)
+            || BLUEPRINT_EXT_NAMESPACE_V1_6.equals(e);
     }
 
     public Set<Class> getManagedClasses() {
@@ -191,6 +205,10 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         } else if (node instanceof Element && nodeNameEquals(node, REFERENCE)) {
             RefMetadata rd = context.parseElement(RefMetadata.class, component, (Element)node);
             return createReference(context, rd.getComponentId());
+        } else if (node instanceof Attr && nodeNameEquals(node, DAMPING_ATTRIBUTE)) {
+            return decorateDamping(node, component, context);
+        } else if (node instanceof Attr && nodeNameEquals(node, LIFECYCLE_ATTRIBUTE)) {
+            return decorateLifecycle(node, component, context);
         } else {
             throw new ComponentDefinitionException("Unsupported node: " + node.getNodeName());
         }
@@ -306,6 +324,42 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
 
         String value = ((Attr) node).getValue();
         ((MutableServiceReferenceMetadata) component).setExtendedFilter(createValue(context, value));
+        return component;
+    }
+
+    private ComponentMetadata decorateDamping(Node node, ComponentMetadata component, ParserContext context) {
+        if (!(component instanceof ReferenceMetadata)) {
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <reference> element");
+        }
+        if (!(component instanceof MutableReferenceMetadata)) {
+            throw new ComponentDefinitionException("Expected an instance of MutableReferenceMetadata");
+        }
+        int damping = ExtendedReferenceMetadata.DAMPING_GREEDY;
+        String value = ((Attr) node).getValue();
+        if (DAMPING_RELUCTANT.equals(value)) {
+            damping = ExtendedReferenceMetadata.DAMPING_RELUCTANT;
+        } else if (!DAMPING_GREEDY.equals(value)) {
+            throw new ComponentDefinitionException("Unknown damping method: " + value);
+        }
+        ((MutableReferenceMetadata) component).setDamping(damping);
+        return component;
+    }
+
+    private ComponentMetadata decorateLifecycle(Node node, ComponentMetadata component, ParserContext context) {
+        if (!(component instanceof ReferenceMetadata)) {
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <reference> element");
+        }
+        if (!(component instanceof MutableReferenceMetadata)) {
+            throw new ComponentDefinitionException("Expected an instance of MutableReferenceMetadata");
+        }
+        int lifecycle = ExtendedReferenceMetadata.LIFECYCLE_DYNAMIC;
+        String value = ((Attr) node).getValue();
+        if (LIFECYCLE_STATIC.equals(value)) {
+            lifecycle = ExtendedReferenceMetadata.LIFECYCLE_STATIC;
+        } else if (!LIFECYCLE_DYNAMIC.equals(value)) {
+            throw new ComponentDefinitionException("Unknown lifecycle method: " + value);
+        }
+        ((MutableReferenceMetadata) component).setLifecycle(lifecycle);
         return component;
     }
 

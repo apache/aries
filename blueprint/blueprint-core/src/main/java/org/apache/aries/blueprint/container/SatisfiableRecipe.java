@@ -49,4 +49,6 @@ public interface SatisfiableRecipe extends Recipe {
 
     String getOsgiFilter();
 
+    boolean isStaticLifecycle();
+
 }
