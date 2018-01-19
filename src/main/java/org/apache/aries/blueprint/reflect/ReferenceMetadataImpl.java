@@ -35,6 +35,8 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
     private String defaultBeanId;
     private Collection<Class<?>> proxyChildBeanClasses;
     private Collection<String> extraInterfaces;
+    private int damping;
+    private int lifecycle;
 
     public ReferenceMetadataImpl() {
     }
@@ -73,6 +75,8 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
                 ", referenceListeners=" + referenceListeners +
                 ", timeout=" + timeout +
                 ", additonalInterfaces=" + getExtraInterfaces() +
+                ", damping=" + getDamping() +
+                ", lifecycle=" + getLifecycle() +
                 ']';
     }
 
@@ -93,5 +97,21 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
 
     public void setExtraInterfaces(Collection<String> interfaces) {
         extraInterfaces = interfaces;
+    }
+
+    public int getDamping() {
+        return damping;
+    }
+
+    public void setDamping(int damping) {
+        this.damping = damping;
+    }
+
+    public int getLifecycle() {
+        return lifecycle;
+    }
+
+    public void setLifecycle(int lifecycle) {
+        this.lifecycle = lifecycle;
     }
 }

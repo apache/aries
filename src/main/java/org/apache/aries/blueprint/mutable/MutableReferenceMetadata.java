@@ -36,4 +36,8 @@ public interface MutableReferenceMetadata extends ExtendedReferenceMetadata, Mut
     void setProxyChildBeanClasses(Collection<Class<?>> classes);
 
     void setExtraInterfaces(Collection<String> interfaces);
+
+    void setDamping(int damping);
+
+    void setLifecycle(int lifecycle);
 }
