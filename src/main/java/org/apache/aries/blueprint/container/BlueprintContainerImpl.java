@@ -656,7 +656,16 @@ public class BlueprintContainerImpl
         }
         LOGGER.debug("Notified satisfaction {} in bundle {}/{}: {}",
                 satisfiable.getName(), bundle.getSymbolicName(), getBundle().getVersion(), satisfiable.isSatisfied());
-        if (state == State.Create || state == State.Created ) {
+
+        if ((state == State.Create || state == State.Created) && satisfiable.isStaticLifecycle()) {
+            if (satisfiable.isSatisfied()) {
+                repository.reCreateInstance(satisfiable.getName());
+            }
+            else {
+                repository.destroyInstance(satisfiable.getName());
+            }
+        }
+        else if (state == State.Create || state == State.Created) {
             Map<String, List<SatisfiableRecipe>> dependencies = getSatisfiableDependenciesMap();
             for (Map.Entry<String, List<SatisfiableRecipe>> entry : dependencies.entrySet()) {
                 String name = entry.getKey();

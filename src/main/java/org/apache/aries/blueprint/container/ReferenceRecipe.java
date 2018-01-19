@@ -67,6 +67,8 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     private final Collection<Class<?>> proxyChildBeanClasses;
     private final Collection<WeakReference<Voidable>> proxiedChildren;
+
+    private final boolean staticLifecycle;
     
     public ReferenceRecipe(String name,
                            ExtendedBlueprintContainer blueprintContainer,
@@ -76,15 +78,25 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                            List<Recipe> explicitDependencies) {
         super(name, blueprintContainer, metadata, filterRecipe, listenersRecipe, explicitDependencies);
         this.metadata = metadata;
-        if(metadata instanceof ExtendedReferenceMetadata) 
-            proxyChildBeanClasses = ((ExtendedReferenceMetadata) metadata).getProxyChildBeanClasses();
-        else 
+        if (metadata instanceof ExtendedReferenceMetadata) {
+            staticLifecycle = ((ExtendedReferenceMetadata) metadata).getLifecycle()
+                    == ExtendedReferenceMetadata.LIFECYCLE_STATIC;
+            if (!staticLifecycle) {
+                proxyChildBeanClasses = ((ExtendedReferenceMetadata) metadata).getProxyChildBeanClasses();
+                if (proxyChildBeanClasses != null) {
+                    proxiedChildren = new ArrayList<WeakReference<Voidable>>();
+                } else {
+                    proxiedChildren = null;
+                }
+            } else {
+                proxyChildBeanClasses = null;
+                proxiedChildren = null;
+            }
+        } else {
+            staticLifecycle = false;
             proxyChildBeanClasses = null;
-        
-        if (proxyChildBeanClasses != null)
-            proxiedChildren = new ArrayList<WeakReference<Voidable>>();
-        else
             proxiedChildren = null;
+        }
     }
 
     @Override
@@ -104,19 +116,24 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 interfaces.addAll(loadAllClasses(((ExtendedReferenceMetadata)metadata).getExtraInterfaces()));
             }
 
-            proxy = createProxy(new ServiceDispatcher(), interfaces);
+            Object result;
+            if (isStaticLifecycle()) {
+                result = getService();
+            }
+            else {
+                proxy = createProxy(new ServiceDispatcher(), interfaces);
 
-            // Add partially created proxy to the context
-            ServiceProxyWrapper wrapper = new ServiceProxyWrapper();
+                // Add partially created proxy to the context
+                result = new ServiceProxyWrapper();
+            }
 
-            addPartialObject(wrapper);
+            addPartialObject(result);
 
             // Handle initial references
             createListeners();
             updateListeners();            
 
-            // Return a ServiceProxy that can injection of references or proxies can be done correctly
-            return wrapper;
+            return result;
         } catch (ComponentDefinitionException e) {
             throw e;
         } catch (Throwable t) {
@@ -141,18 +158,21 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     }
 
     protected void track(ServiceReference ref) {
-        // TODO: make this behavior configurable through a custom attribute
-        // TODO:      policy = sticky | replace
+        boolean replace;
+        if (metadata instanceof ExtendedReferenceMetadata) {
+            replace = ((ExtendedReferenceMetadata) metadata).getDamping()
+                        == ExtendedReferenceMetadata.DAMPING_GREEDY;
+        } else {
+            replace = false;
+        }
         synchronized (monitor) {
-            if (trackedServiceReference == null) {
+            if (trackedServiceReference == null || replace) {
                 retrack();
             }
         }
     }
 
     protected void untrack(ServiceReference ref) {
-        // TODO: make this behavior configurable through a custom attribute
-        // TODO:      policy = sticky | replace
         synchronized (monitor) {
             if (trackedServiceReference == ref) {
                 retrack();
@@ -160,7 +180,12 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         }
     }
 
-    private void bind(ServiceReference ref) {
+    @Override
+    public boolean isStaticLifecycle() {
+        return staticLifecycle;
+    }
+
+    protected void bind(ServiceReference ref) {
         LOGGER.debug("Binding reference {} to {}", getName(), ref);
         synchronized (monitor) {
             ServiceReference oldReference = trackedServiceReference;

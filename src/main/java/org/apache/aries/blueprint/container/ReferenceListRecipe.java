@@ -64,6 +64,11 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
     }
 
     @Override
+    public boolean isStaticLifecycle() {
+        return false;
+    }
+
+    @Override
     protected Object internalCreate() throws ComponentDefinitionException {
         try {
             if (explicitDependencies != null) {
