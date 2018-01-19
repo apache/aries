@@ -87,6 +87,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
      * stack is used to detect circular dependencies.
      */
     private final ThreadLocal<LinkedList<Recipe>> stack = new ThreadLocal<LinkedList<Recipe>>();
+
+    private Map<String, Set<String>> invertedDependencies;
     
     public BlueprintRepository(ExtendedBlueprintContainer container) {
         blueprintContainer = container;
@@ -124,6 +126,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
             throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + getInstance(name));
         }
         recipes.put(name, recipe);
+        invertedDependencies = null;
     }
     
     public void removeRecipe(String name) {
@@ -131,6 +134,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
             throw new ComponentDefinitionException("Name " + name + " is already instanciated as " + getInstance(name) + " and cannot be removed.");
 
         recipes.remove(name);
+        invertedDependencies = null;
     }
 
     private Object convert(String name, Object instance) throws ComponentDefinitionException {
@@ -211,6 +215,107 @@ public class BlueprintRepository implements Repository, ExecutionContext {
             return allRecipes;
         } finally {
             ExecutionContext.Holder.setContext(oldContext);
+        }
+    }
+
+    private static <S, T> void addToMapSet(Map<S, Set<T>> map, S key, T value) {
+        Set<T> values = map.get(key);
+        if (values == null) {
+            values = new HashSet<T>();
+            map.put(key, values);
+        }
+        values.add(value);
+    }
+
+    private Map<String, Set<String>> getInvertedDependencies() {
+        if (invertedDependencies == null) {
+            Map<String, Set<String>> deps = new HashMap<String, Set<String>>();
+            for (String n : recipes.keySet()) {
+                Recipe r = recipes.get(n);
+                Set<Recipe> d = new HashSet<Recipe>();
+                internalGetAllRecipes(d, r);
+                for (Recipe e : d) {
+                    addToMapSet(deps, e.getName(), r.getName());
+                }
+            }
+            invertedDependencies = deps;
+        }
+        return invertedDependencies;
+    }
+
+    public void reCreateInstance(String name) {
+        ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
+        try {
+            Set<String> toCreate = new HashSet<String>();
+            Set<String> deps = getInvertedDependencies().get(name);
+            if (deps == null) {
+                throw new NoSuchComponentException(name);
+            }
+            for (String dep : deps) {
+                boolean ok = true;
+                for (SatisfiableRecipe r : getAllRecipes(SatisfiableRecipe.class, dep)) {
+                    if (!r.isSatisfied()) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok) {
+                    toCreate.add(dep);
+                }
+            }
+            createInstances(toCreate);
+            for (String n : toCreate) {
+                Recipe r = recipes.get(n);
+                if (r instanceof ServiceRecipe) {
+                    ServiceRecipe sr = (ServiceRecipe) r;
+                    if (!sr.isRegistered()) {
+                        sr.register();
+                    }
+                }
+            }
+        } finally {
+            ExecutionContext.Holder.setContext(oldContext);
+        }
+    }
+
+    public void destroyInstance(String name) {
+        ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
+        try {
+            Map<Recipe, Future<Object>> toDestroy = new LinkedHashMap<Recipe, Future<Object>>();
+            doGetInstancesToDestroy(toDestroy, name);
+            for (Map.Entry<Recipe, Future<Object>> entry : toDestroy.entrySet()) {
+                try {
+                    Recipe recipe = entry.getKey();
+                    Future<Object> future = entry.getValue();
+                    Object instance = future.get();
+                    if (instance != null) {
+                        recipe.destroy(instance);
+                    }
+                } catch (Exception e) {
+                    throw new ComponentDefinitionException("Error destroying instance", e);
+                }
+            }
+        } finally {
+            ExecutionContext.Holder.setContext(oldContext);
+        }
+    }
+
+    protected void doGetInstancesToDestroy(Map<Recipe, Future<Object>> toDestroy, String name) {
+        Recipe recipe = recipes.get(name);
+        if (recipe != null) {
+            if (recipe instanceof ServiceRecipe) {
+                ((ServiceRecipe) recipe).unregister();
+            }
+            Future<Object> future = instances.remove(name);
+            if (future != null && future.isDone()) {
+                Set<String> deps = getInvertedDependencies().get(name);
+                for (String dep : deps) {
+                    doGetInstancesToDestroy(toDestroy, dep);
+                }
+                toDestroy.put(recipe, future);
+            }
+        } else {
+            throw new NoSuchComponentException(name);
         }
     }
 

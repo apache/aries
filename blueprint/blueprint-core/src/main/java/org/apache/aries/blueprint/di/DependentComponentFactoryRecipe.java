@@ -41,6 +41,11 @@ public class DependentComponentFactoryRecipe extends ComponentFactoryRecipe<Depe
         super(name, metadata, container, dependencies);
     }
 
+    @Override
+    public boolean isStaticLifecycle() {
+        return false;
+    }
+
     public String getOsgiFilter() {
         return getMetadata().getDependencyDescriptor();
     }

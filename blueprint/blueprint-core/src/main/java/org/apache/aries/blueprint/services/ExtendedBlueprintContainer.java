@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Processor;
-import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.proxy.ProxyManager;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

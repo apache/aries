@@ -358,8 +358,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             synchronized (tracked) {
                 satisfied = optional || !tracked.isEmpty();
             }
-            setSatisfied(satisfied);
             track(ref);
+            setSatisfied(satisfied);
         }
     }
 
