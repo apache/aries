@@ -148,7 +148,7 @@ public class BlueprintContainerImpl
     private Parser parser;
     private BlueprintRepository repository;
     private ServiceRegistration registration;
-    private List<Processor> processors;
+    private final List<Processor> processors;
     private final Object satisfiablesLock = new Object();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
     private long timeout = 5 * 60 * 1000;
@@ -247,7 +247,7 @@ public class BlueprintContainerImpl
             resetComponentDefinitionRegistry();
             cancelFutureIfPresent();
             this.repository = null;
-            this.processors = new ArrayList<Processor>();
+            this.processors.clear();
             timeout = 5 * 60 * 1000;
             waitForDependencies = true;
             xmlValidation = null;
@@ -949,6 +949,7 @@ public class BlueprintContainerImpl
                 resetComponentDefinitionRegistry();
                 cancelFutureIfPresent();
                 this.repository = null;
+                this.processors.clear();
                 handlerSet.removeListener(this);
                 handlerSet.destroy();
                 handlerSet = handlers.getNamespaceHandlers(namespaces, getBundle());
