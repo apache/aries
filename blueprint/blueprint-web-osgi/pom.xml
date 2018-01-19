@@ -61,7 +61,7 @@
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.core.version>1.3.1-SNAPSHOT</blueprint.core.version>
+                <blueprint.core.version>1.8.4-SNAPSHOT</blueprint.core.version>
             </properties>
         </profile>
     </profiles> 
