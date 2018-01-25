@@ -71,6 +71,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     private String placeholderPrefix = "${";
     private String placeholderSuffix = "}";
+    private String nullValue = null;
     private Pattern pattern;
 
     private LinkedList<String> processingStack = new LinkedList<String>();
@@ -91,6 +92,14 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     public void setPlaceholderSuffix(String placeholderSuffix) {
         this.placeholderSuffix = placeholderSuffix;
+    }
+
+    public String getNullValue() {
+        return nullValue;
+    }
+
+    public void setNullValue(String nullValue) {
+        this.nullValue = nullValue;
     }
 
     public void process(ComponentDefinitionRegistry registry) throws ComponentDefinitionException {
@@ -445,6 +454,9 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                 str = str.replace(matcher.group(0), rep);
                 matcher.reset(str);
             }
+        }
+        if (nullValue != null && nullValue.equals(str)) {
+            return null;
         }
         return str;
     }

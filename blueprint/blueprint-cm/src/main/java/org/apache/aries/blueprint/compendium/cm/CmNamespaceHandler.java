@@ -19,13 +19,7 @@
 package org.apache.aries.blueprint.compendium.cm;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
@@ -84,12 +78,14 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String BLUEPRINT_CM_NAMESPACE_1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0";
     public static final String BLUEPRINT_CM_NAMESPACE_1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0";
     public static final String BLUEPRINT_CM_NAMESPACE_1_3 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0";
+    public static final String BLUEPRINT_CM_NAMESPACE_1_4 = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.4.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_0 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_1 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_2 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_3 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.3.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_4 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.4.0";
     public static final String BLUEPRINT_EXT_NAMESPACE_V1_5 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0";
+    public static final String BLUEPRINT_EXT_NAMESPACE_V1_6 = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.6.0";
 
     public static final String PROPERTY_PLACEHOLDER_ELEMENT = "property-placeholder";
     public static final String MANAGED_PROPERTIES_ELEMENT = "managed-properties";
@@ -109,6 +105,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     public static final String PERSISTENT_ID_ATTRIBUTE = "persistent-id";
     public static final String PLACEHOLDER_PREFIX_ATTRIBUTE = "placeholder-prefix";
     public static final String PLACEHOLDER_SUFFIX_ATTRIBUTE = "placeholder-suffix";
+    public static final String PLACEHOLDER_NULL_VALUE_ATTRIBUTE = "null-value";
     public static final String DEFAULTS_REF_ATTRIBUTE = "defaults-ref";
     public static final String UPDATE_STRATEGY_ATTRIBUTE = "update-strategy";
     public static final String UPDATE_METHOD_ATTRIBUTE = "update-method";
@@ -130,6 +127,20 @@ public class CmNamespaceHandler implements NamespaceHandler {
     private static final String MANAGED_OBJECT_MANAGER_NAME = "org.apache.aries.managedObjectManager";
     
     private static final Logger LOGGER = LoggerFactory.getLogger(CmNamespaceHandler.class);
+    private static final Set<String> EXT_URIS = Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
+                                                    BLUEPRINT_EXT_NAMESPACE_V1_0,
+                                                    BLUEPRINT_EXT_NAMESPACE_V1_1,
+                                                    BLUEPRINT_EXT_NAMESPACE_V1_2,
+                                                    BLUEPRINT_EXT_NAMESPACE_V1_3,
+                                                    BLUEPRINT_EXT_NAMESPACE_V1_4,
+                                                    BLUEPRINT_EXT_NAMESPACE_V1_5,
+                                                    BLUEPRINT_EXT_NAMESPACE_V1_6)));
+    private static final Set<String> CM_URIS = Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
+                                                    BLUEPRINT_CM_NAMESPACE_1_0,
+                                                    BLUEPRINT_CM_NAMESPACE_1_1,
+                                                    BLUEPRINT_CM_NAMESPACE_1_2,
+                                                    BLUEPRINT_CM_NAMESPACE_1_3,
+                                                    BLUEPRINT_CM_NAMESPACE_1_4)));
 
     // This property is static but it should be ok since there will be only a single instance
     // of this class for the bundle
@@ -154,15 +165,10 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public URL getSchemaLocation(String namespace) {
-        if (BLUEPRINT_CM_NAMESPACE_1_3.equals(namespace)) {
-            return getClass().getResource("blueprint-cm-1.3.0.xsd");
-        } else if (BLUEPRINT_CM_NAMESPACE_1_2.equals(namespace)) {
-            return getClass().getResource("blueprint-cm-1.2.0.xsd");
-        } else if (BLUEPRINT_CM_NAMESPACE_1_1.equals(namespace)) {
-            return getClass().getResource("blueprint-cm-1.1.0.xsd");
-        } else if (BLUEPRINT_CM_NAMESPACE_1_0.equals(namespace)) {
-            return getClass().getResource("blueprint-cm-1.0.0.xsd");
-        } else if (namespace.startsWith("http://aries.apache.org/blueprint/xmlns/blueprint-ext")) {
+        if (isCmNamespace(namespace)) {
+            String v = namespace.substring("http://aries.apache.org/blueprint/xmlns/blueprint-cm/v".length());
+            return getClass().getResource("blueprint-cm-" + v + ".xsd");
+        } else if (isExtNamespace(namespace)) {
             try {
                 Class<?> extNsHandlerClazz;
                 Bundle extBundle = FrameworkUtil.getBundle(PlaceholdersUtils.class);
@@ -271,6 +277,12 @@ public class CmNamespaceHandler implements NamespaceHandler {
                                     ? element.getAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
                                     : "}";
         metadata.addProperty("placeholderSuffix", createValue(context, suffix));
+        String nullValue = element.hasAttribute(PLACEHOLDER_NULL_VALUE_ATTRIBUTE)
+                ? element.getAttribute(PLACEHOLDER_NULL_VALUE_ATTRIBUTE)
+                : null;
+        if (nullValue != null) {
+            metadata.addProperty("nullValue", createValue(context, nullValue));
+        }
         String defaultsRef = element.hasAttribute(DEFAULTS_REF_ATTRIBUTE) ? element.getAttribute(DEFAULTS_REF_ATTRIBUTE) : null;
         if (defaultsRef != null) {
             metadata.addProperty("defaultProperties", createRef(context, defaultsRef));
@@ -321,40 +333,21 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     private String extractSystemPropertiesAttribute(Element element) {
-      String systemProperties = null;
-      
-      if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_0, SYSTEM_PROPERTIES_ATTRIBUTE)) {
-        systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_0, SYSTEM_PROPERTIES_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_1, SYSTEM_PROPERTIES_ATTRIBUTE)) {
-        systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_1, SYSTEM_PROPERTIES_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_2, SYSTEM_PROPERTIES_ATTRIBUTE)) {
-        systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_2, SYSTEM_PROPERTIES_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_3, SYSTEM_PROPERTIES_ATTRIBUTE)) {
-        systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_3, SYSTEM_PROPERTIES_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_4, SYSTEM_PROPERTIES_ATTRIBUTE)) {
-        systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_4, SYSTEM_PROPERTIES_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_5, SYSTEM_PROPERTIES_ATTRIBUTE)) {
-        systemProperties =  element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_5, SYSTEM_PROPERTIES_ATTRIBUTE);
+      for (String uri : EXT_URIS) {
+          if (element.hasAttributeNS(uri, SYSTEM_PROPERTIES_ATTRIBUTE)) {
+              return element.getAttributeNS(uri, SYSTEM_PROPERTIES_ATTRIBUTE);
+          }
       }
-      return systemProperties;
+      return null;
     }
 
     private String extractIgnoreMissingLocations(Element element) {
-      String ignoreMissingLocations = null;
-      if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_0, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
-        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_0, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_1, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
-        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_1, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_2, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
-        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_2, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_3, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
-        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_3, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_4, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
-        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_4, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
-      } else if (element.hasAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_5, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
-        ignoreMissingLocations = element.getAttributeNS(BLUEPRINT_EXT_NAMESPACE_V1_5, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
-      }
-      return ignoreMissingLocations;
+        for (String uri : EXT_URIS) {
+            if (element.hasAttributeNS(uri, IGNORE_MISSING_LOCATIONS_ATTRIBUTE)) {
+                return element.getAttributeNS(uri, IGNORE_MISSING_LOCATIONS_ATTRIBUTE);
+            }
+        }
+        return null;
     }
 
     private Metadata parseDefaultProperties(ParserContext context, MutableBeanMetadata enclosingComponent, Element element) {
@@ -624,18 +617,11 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public static boolean isCmNamespace(String uri) {
-        return BLUEPRINT_CM_NAMESPACE_1_0.equals(uri)
-                || BLUEPRINT_CM_NAMESPACE_1_1.equals(uri)
-                || BLUEPRINT_CM_NAMESPACE_1_2.equals(uri)
-                || BLUEPRINT_CM_NAMESPACE_1_3.equals(uri);
+        return CM_URIS.contains(uri);
     }
 
     public static boolean isExtNamespace(String uri) {
-        return BLUEPRINT_EXT_NAMESPACE_V1_0.equals(uri)
-                || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(uri)
-                || BLUEPRINT_EXT_NAMESPACE_V1_2.equals(uri)
-                || BLUEPRINT_EXT_NAMESPACE_V1_3.equals(uri)
-                || BLUEPRINT_EXT_NAMESPACE_V1_4.equals(uri);
+        return EXT_URIS.contains(uri);
     }
 
     public String getId(ParserContext context, Element element) {
