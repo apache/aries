@@ -24,6 +24,8 @@ public interface FooInterface {
 
     String getB();
 
+    Long getC();
+
     Properties getProps();
 
 }

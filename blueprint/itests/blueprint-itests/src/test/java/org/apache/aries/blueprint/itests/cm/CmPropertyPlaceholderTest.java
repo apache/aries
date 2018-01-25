@@ -39,6 +39,8 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.keepCaches;
 import static org.ops4j.pax.exam.CoreOptions.streamBundle;
@@ -85,6 +87,7 @@ public class CmPropertyPlaceholderTest extends AbstractBlueprintIntegrationTest 
         FooInterface foo = (FooInterface)context().getService(sr);
         assertNotNull(foo);
         assertThat(foo.getB(), equalTo("42"));
+        assertThat(foo.getC(), nullValue());
 
         Configuration cf = ca.getConfiguration("blueprint-sample-properties.pid", null);
         Hashtable<String,String> props = new Hashtable<String,String>();

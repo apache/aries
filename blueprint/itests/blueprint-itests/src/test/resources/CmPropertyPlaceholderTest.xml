@@ -15,20 +15,23 @@
         License.
     -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0">
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.4.0">
 
-    <cm:property-placeholder id="myProps" persistent-id="blueprint-sample-properties.pid" update-strategy="reload">
+    <cm:property-placeholder id="myProps" persistent-id="blueprint-sample-properties.pid" update-strategy="reload"
+                             null-value="#{null}">
         <cm:default-properties>
-            <cm:property name="pb" value="42" />
+            <cm:property name="pb" value="42"/>
+            <cm:property name="pc" value="#{null}"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
     <bean id="foo" class="org.apache.aries.blueprint.itests.cm.service.Foo">
-        <property name="b" value="${pb}" />
+        <property name="b" value="${pb}"/>
+        <property name="c" value="${pc}"/>
     </bean>
     <service id="myService" interface="org.apache.aries.blueprint.itests.cm.service.FooInterface" ref="foo">
         <service-properties>
-            <entry key="key" value="foo5" />
+            <entry key="key" value="foo5"/>
         </service-properties>
     </service>
 
