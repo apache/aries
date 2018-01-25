@@ -88,6 +88,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     public static final String ID_ATTRIBUTE = "id";
     public static final String PLACEHOLDER_PREFIX_ATTRIBUTE = "placeholder-prefix";
     public static final String PLACEHOLDER_SUFFIX_ATTRIBUTE = "placeholder-suffix";
+    public static final String PLACEHOLDER_NULL_VALUE_ATTRIBUTE = "null-value";
     public static final String DEFAULTS_REF_ATTRIBUTE = "defaults-ref";
     public static final String IGNORE_MISSING_LOCATIONS_ATTRIBUTE = "ignore-missing-locations";
     public static final String EVALUATOR_ATTRIBUTE = "evaluator";
@@ -378,6 +379,12 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
                                     ? element.getAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
                                     : "}";
         metadata.addProperty("placeholderSuffix", createValue(context, suffix));
+        String nullValue = element.hasAttribute(PLACEHOLDER_NULL_VALUE_ATTRIBUTE)
+                                    ? element.getAttribute(PLACEHOLDER_NULL_VALUE_ATTRIBUTE)
+                                    : null;
+        if (nullValue != null) {
+            metadata.addProperty("nullValue", createValue(context, nullValue));
+        }
         String defaultsRef = element.hasAttribute(DEFAULTS_REF_ATTRIBUTE) ? element.getAttribute(DEFAULTS_REF_ATTRIBUTE) : null;
         if (defaultsRef != null) {
             metadata.addProperty("defaultProperties", createRef(context, defaultsRef));

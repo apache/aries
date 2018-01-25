@@ -39,6 +39,7 @@
                 </xsd:sequence>
                 <xsd:attribute default="${" name="placeholder-prefix" type="xsd:string" use="optional"/>
                 <xsd:attribute default="}" name="placeholder-suffix" type="xsd:string" use="optional"/>
+                <xsd:attribute name="null-value" type="xsd:string" use="optional"/>
                 <xsd:attribute name="defaults-ref" type="bp:Tidref" use="optional"/>
                 <xsd:attribute default="false" name="ignore-missing-locations" type="xsd:boolean" use="optional"/>
                 <xsd:attribute default="fallback" name="system-properties" use="optional">
