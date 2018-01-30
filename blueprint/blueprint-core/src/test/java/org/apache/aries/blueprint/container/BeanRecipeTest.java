@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.PassThroughRecipe;
+import org.apache.aries.blueprint.utils.generics.TypeInference;
 import org.junit.Test;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
@@ -300,7 +301,7 @@ public class BeanRecipeTest {
 
     private Set<Method> applyStaticHidingRules(Collection<Method> methods) {
 		try {
-			Method m = BeanRecipe.class.getDeclaredMethod("applyStaticHidingRules", Collection.class);
+			Method m = TypeInference.class.getDeclaredMethod("applyStaticHidingRules", Collection.class);
 			m.setAccessible(true);
 			return new HashSet<Method>((List<Method>) m.invoke(null, methods));
 		} catch (Exception e) { 
