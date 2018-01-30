@@ -51,6 +51,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private Class runtimeClass;
     private boolean processor;
     private boolean fieldInjection;
+    private boolean rawConversion;
     
     public BeanMetadataImpl() {
         this.fieldInjection = false;
@@ -75,8 +76,10 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         if (source instanceof ExtendedBeanMetadata) {
             this.runtimeClass = ((ExtendedBeanMetadata) source).getRuntimeClass();
             this.fieldInjection = ((ExtendedBeanMetadata) source).getFieldInjection();
+            this.rawConversion = ((ExtendedBeanMetadata) source).getRawConversion();
         } else {
             this.fieldInjection = false;
+            this.rawConversion = false;
         }
     }
     
@@ -214,6 +217,14 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.fieldInjection = fieldInjection;
     }
     
+    public boolean getRawConversion() {
+        return rawConversion;
+    }
+
+    public void setRawConversion(boolean rawConversion) {
+        this.rawConversion = rawConversion;
+    }
+
     @Override
     public String toString() {
         return "BeanMetadata[" +
