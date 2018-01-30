@@ -132,7 +132,7 @@ public class BeanRecipeTest {
     @Test
     public void parameterWithGenerics() throws Exception {
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
-        BeanRecipe recipe = new BeanRecipe("example", container, ExampleService.class, false);
+        BeanRecipe recipe = new BeanRecipe("example", container, ExampleService.class, false, false);
         recipe.setArguments(Arrays.<Object>asList(new ExampleImpl()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
@@ -142,7 +142,7 @@ public class BeanRecipeTest {
     @Test
     public void parameterWithComplexGenerics1() throws Exception {
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
-        BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false);
+        BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false, false);
         recipe.setArguments(Arrays.<Object>asList(new MyClass()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
@@ -152,7 +152,7 @@ public class BeanRecipeTest {
     @Test
     public void parameterWithComplexGenerics2() throws Exception {
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
-        BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false);
+        BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false, false);
         recipe.setArguments(Arrays.<Object>asList(new MyClass3()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
@@ -227,25 +227,25 @@ public class BeanRecipeTest {
     @Test
     public void protectedClassAccess() throws Exception {
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
-        BeanRecipe recipe = new BeanRecipe("a", container, null, false);
+        BeanRecipe recipe = new BeanRecipe("a", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
         recipe.setFactoryMethod("getA");
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         assertNotNull(recipe.create());
 
-        recipe = new BeanRecipe("b", container, null, false);
+        recipe = new BeanRecipe("b", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
         recipe.setFactoryMethod("getB");
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         assertNotNull(recipe.create());
 
-        recipe = new BeanRecipe("c", container, null, false);
+        recipe = new BeanRecipe("c", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
         recipe.setFactoryMethod("getC");
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         assertNotNull(recipe.create());
 
-        recipe = new BeanRecipe("d", container, null, false);
+        recipe = new BeanRecipe("d", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
         recipe.setFactoryMethod("getD");
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
@@ -256,28 +256,28 @@ public class BeanRecipeTest {
             // ok
         }
 
-        recipe = new BeanRecipe("a", container, null, false);
+        recipe = new BeanRecipe("a", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
         recipe.setFactoryMethod("create");
         recipe.setProperty("a", "a");
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         assertNotNull(recipe.create());
 
-        recipe = new BeanRecipe("b", container, null, false);
+        recipe = new BeanRecipe("b", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
         recipe.setFactoryMethod("create");
         recipe.setProperty("b", "b");
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         assertNotNull(recipe.create());
 
-        recipe = new BeanRecipe("c", container, null, false);
+        recipe = new BeanRecipe("c", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
         recipe.setFactoryMethod("create");
         recipe.setProperty("c", "c");
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         assertNotNull(recipe.create());
 
-        recipe = new BeanRecipe("d", container, null, false);
+        recipe = new BeanRecipe("d", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
         recipe.setFactoryMethod("create");
         recipe.setProperty("d", "d");
@@ -289,7 +289,7 @@ public class BeanRecipeTest {
             // ok
         }
 
-        recipe = new BeanRecipe("a", container, null, false);
+        recipe = new BeanRecipe("a", container, null, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
         recipe.setFactoryMethod("create");
         recipe.setInitMethod("init");
