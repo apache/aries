@@ -47,4 +47,10 @@ public interface ExtendedBeanMetadata extends BeanMetadata {
      * @return Whether field injection is allowed
      */
     boolean getFieldInjection();
+
+    /**
+     * Whether arguments / properties conversion is strict or lenient.
+     * @return The type of conversion.
+     */
+    boolean getRawConversion();
 }

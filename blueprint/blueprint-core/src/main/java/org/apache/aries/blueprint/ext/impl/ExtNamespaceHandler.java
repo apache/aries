@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.ext.impl;
 import java.net.URL;
 import java.util.*;
 
+import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.ParserContext;
@@ -38,17 +39,7 @@ import org.apache.aries.blueprint.mutable.MutableServiceReferenceMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.ComponentMetadata;
-import org.osgi.service.blueprint.reflect.IdRefMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.RefMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
-import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
+import org.osgi.service.blueprint.reflect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
@@ -113,6 +104,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     
     public static final String BEAN = "bean";
     public static final String REFERENCE = "reference";
+    public static final String ARGUMENT = "argument";
 
     public static final String DAMPING_ATTRIBUTE = "damping";
 
@@ -123,6 +115,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
 
     public static final String LIFECYCLE_DYNAMIC = "dynamic";
     public static final String LIFECYCLE_STATIC = "static";
+
+    public static final String RAW_CONVERSION_ATTRIBUTE = "raw-conversion";
 
     private static final Set<String> EXT_URIS = Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
             BLUEPRINT_EXT_NAMESPACE_V1_0,
@@ -199,6 +193,10 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             return decorateDamping(node, component, context);
         } else if (node instanceof Attr && nodeNameEquals(node, LIFECYCLE_ATTRIBUTE)) {
             return decorateLifecycle(node, component, context);
+        } else if (node instanceof Attr && nodeNameEquals(node, RAW_CONVERSION_ATTRIBUTE)) {
+            return decorateRawConversion(node, component, context);
+        } else if (node instanceof Element && nodeNameEquals(node, ARGUMENT)) {
+            return parseBeanArgument(context, (Element) node);
         } else {
             throw new ComponentDefinitionException("Unsupported node: " + node.getNodeName());
         }
@@ -351,6 +349,44 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         }
         ((MutableReferenceMetadata) component).setLifecycle(lifecycle);
         return component;
+    }
+
+    private ComponentMetadata decorateRawConversion(Node node, ComponentMetadata component, ParserContext context) {
+        if (!(component instanceof BeanMetadata)) {
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <bean> element");
+        }
+
+        if (!(component instanceof MutableBeanMetadata)) {
+            throw new ComponentDefinitionException("Expected an instanceof MutableBeanMetadata");
+        }
+
+        String value = ((Attr) node).getValue();
+        ((MutableBeanMetadata) component).setRawConversion("true".equals(value) || "1".equals(value));
+        return component;
+    }
+
+    private ComponentMetadata parseBeanArgument(ParserContext context, Element element) {
+        MutableBeanMetadata mbm = (MutableBeanMetadata) context.getEnclosingComponent();
+        BeanArgument arg = context.parseElement(BeanArgument.class, mbm, element);
+        int index = 0;
+        for (Node node = element.getPreviousSibling(); node != null; node = node.getPreviousSibling()) {
+            if (nodeNameEquals(node, ARGUMENT)) {
+                index++;
+            }
+        }
+        List<BeanArgument> args = new ArrayList<BeanArgument>(mbm.getArguments());
+        if (index == args.size()) {
+            mbm.addArgument(arg);
+        } else {
+            for (BeanArgument ba : args) {
+                mbm.removeArgument(ba);
+            }
+            args.add(index, arg);
+            for (BeanArgument ba : args) {
+                mbm.addArgument(ba);
+            }
+        }
+        return mbm;
     }
 
     private Metadata parsePropertyPlaceholder(ParserContext context, Element element) {
