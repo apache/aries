@@ -19,11 +19,7 @@
 package org.apache.aries.blueprint.ext.impl;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
@@ -128,6 +124,15 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     public static final String LIFECYCLE_DYNAMIC = "dynamic";
     public static final String LIFECYCLE_STATIC = "static";
 
+    private static final Set<String> EXT_URIS = Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
+            BLUEPRINT_EXT_NAMESPACE_V1_0,
+            BLUEPRINT_EXT_NAMESPACE_V1_1,
+            BLUEPRINT_EXT_NAMESPACE_V1_2,
+            BLUEPRINT_EXT_NAMESPACE_V1_3,
+            BLUEPRINT_EXT_NAMESPACE_V1_4,
+            BLUEPRINT_EXT_NAMESPACE_V1_5,
+            BLUEPRINT_EXT_NAMESPACE_V1_6)));
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtNamespaceHandler.class);
 
     private int idCounter;
@@ -139,33 +144,17 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
     
     public URL getSchemaLocation(String namespace) {
-        if (BLUEPRINT_EXT_NAMESPACE_V1_0.equals(namespace)) {
-          return getClass().getResource("blueprint-ext.xsd");
-        } else if (BLUEPRINT_EXT_NAMESPACE_V1_1.equals(namespace)) {
-          return getClass().getResource("blueprint-ext-1.1.xsd");
-        } else if (BLUEPRINT_EXT_NAMESPACE_V1_2.equals(namespace)) {
-          return getClass().getResource("blueprint-ext-1.2.xsd");
-        } else if (BLUEPRINT_EXT_NAMESPACE_V1_3.equals(namespace)) {
-            return getClass().getResource("blueprint-ext-1.3.xsd");
-        } else if (BLUEPRINT_EXT_NAMESPACE_V1_4.equals(namespace)) {
-            return getClass().getResource("blueprint-ext-1.4.xsd");
-        } else if (BLUEPRINT_EXT_NAMESPACE_V1_5.equals(namespace)) {
-            return getClass().getResource("blueprint-ext-1.5.xsd");
-        } else if (BLUEPRINT_EXT_NAMESPACE_V1_6.equals(namespace)) {
-            return getClass().getResource("blueprint-ext-1.6.xsd");
+        if (isExtNamespace(namespace)) {
+            String v = namespace.substring("http://aries.apache.org/blueprint/xmlns/blueprint-ext/v".length());
+            return getClass().getResource("blueprint-ext-" + v + ".xsd");
         } else if ("http://www.w3.org/XML/1998/namespace".equals(namespace)) {
             return getClass().getResource("xml.xsd");
         }
         return null;
     }
-    public boolean isExtNamespace(String e) {
-        return BLUEPRINT_EXT_NAMESPACE_V1_0.equals(e)
-            || BLUEPRINT_EXT_NAMESPACE_V1_1.equals(e)
-            || BLUEPRINT_EXT_NAMESPACE_V1_2.equals(e)
-            || BLUEPRINT_EXT_NAMESPACE_V1_3.equals(e)
-            || BLUEPRINT_EXT_NAMESPACE_V1_4.equals(e)
-            || BLUEPRINT_EXT_NAMESPACE_V1_5.equals(e)
-            || BLUEPRINT_EXT_NAMESPACE_V1_6.equals(e);
+
+    public static boolean isExtNamespace(String e) {
+        return EXT_URIS.contains(e);
     }
 
     public Set<Class> getManagedClasses() {
