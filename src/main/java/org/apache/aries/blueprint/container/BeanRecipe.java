@@ -21,7 +21,6 @@ package org.apache.aries.blueprint.container;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +44,8 @@ import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.apache.aries.blueprint.utils.ReflectionUtils.PropertyDescriptor;
+import org.apache.aries.blueprint.utils.generics.OwbParametrizedTypeImpl;
+import org.apache.aries.blueprint.utils.generics.TypeInference;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -55,7 +56,6 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.aries.blueprint.utils.ReflectionUtils.getPublicMethods;
 import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
 
 /**
@@ -342,10 +342,10 @@ public class BeanRecipe extends AbstractRecipe {
             throw new ComponentDefinitionException("No factoryMethod nor class is defined for this bean");
         }
         // Map of matching constructors
-        Map<Constructor, List<Object>> matches = findMatchingConstructors(getType(), args, argTypes);
+        Map<Constructor<?>, List<Object>> matches = findMatchingConstructors(getType(), args, argTypes);
         if (matches.size() == 1) {
             try {
-                Map.Entry<Constructor, List<Object>> match = matches.entrySet().iterator().next();
+                Map.Entry<Constructor<?>, List<Object>> match = matches.entrySet().iterator().next();
                 return newInstance(match.getKey(), match.getValue().toArray());
             } catch (Throwable e) {
                 throw wrapAsCompDefEx(e);
@@ -366,271 +366,102 @@ public class BeanRecipe extends AbstractRecipe {
         return type == null ? null : type.getName();
     }
 
+    private Map<Constructor<?>, List<Object>> findMatchingConstructors(Class type, List<Object> args, List<ReifiedType> types) {
+        List<TypeInference.TypedObject> targs = getTypedObjects(args, types);
+        TypeInference.Converter cnv = new TIConverter();
+        List<TypeInference.Match<Constructor<?>>> m = TypeInference.findMatchingConstructors(type, targs, cnv, reorderArguments);
+        if (!m.isEmpty()) {
+            int score = m.iterator().next().getScore();
+            final Iterator<TypeInference.Match<Constructor<?>>> each = m.iterator();
+            while (each.hasNext()) {
+                if (each.next().getScore() > score) {
+                    each.remove();
+                }
+            }
+        }
+        Map<Constructor<?>, List<Object>> map = new HashMap<Constructor<?>, List<Object>>();
+        for (TypeInference.Match<Constructor<?>> match : m) {
+            List<Object> nargs = new ArrayList<Object>();
+            for (TypeInference.TypedObject to : match.getArgs()) {
+                nargs.add(to.getValue());
+            }
+            map.put(match.getMember(), nargs);
+        }
+        return map;
+    }
+
     private Map<Method, List<Object>> findMatchingMethods(Class type, String name, boolean instance, List<Object> args, List<ReifiedType> types) {
-        Map<Method, List<Object>> matches = new HashMap<Method, List<Object>>();
-        // Get constructors
-        List<Method> methods = new ArrayList<Method>(Arrays.asList(getPublicMethods(type)));
-        // Discard any signature with wrong cardinality
-        for (Iterator<Method> it = methods.iterator(); it.hasNext();) {
-            Method mth = it.next();
-            if (!mth.getName().equals(name)) {
-                it.remove();
-            } else if (mth.getParameterTypes().length != args.size()) {
-                it.remove();
-            } else if (instance ^ !Modifier.isStatic(mth.getModifiers())) {
-                it.remove();
-            } else if (mth.isBridge()) {
-                it.remove();
-            }
+        List<TypeInference.TypedObject> targs = getTypedObjects(args, types);
+        TypeInference.Converter cnv = new TIConverter();
+        List<TypeInference.Match<Method>> m;
+        if (instance) {
+            m = TypeInference.findMatchingMethods(type, name, targs, cnv, reorderArguments);
+        } else {
+            m = TypeInference.findMatchingStatics(type, name, targs, cnv, reorderArguments);
         }
-        
-        // on some JVMs (J9) hidden static methods are returned by Class.getMethods so we need to weed them out
-        // to reduce ambiguity
-        if (!instance) {
-        	methods = applyStaticHidingRules(methods);
-        }
-        
-        // Find a direct match with assignment
-        if (matches.size() != 1) {
-            Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
-            for (Method mth : methods) {
-                boolean found = true;
-                List<Object> match = new ArrayList<Object>();
-                for (int i = 0; i < args.size(); i++) {
-                    ReifiedType argType = new GenericType(mth.getGenericParameterTypes()[i]);
-                    if (types.get(i) != null && !argType.getRawClass().equals(types.get(i).getRawClass())) {
-                        found = false;
-                        break;
-                    }
-                    // If the arg is an Unwrappered bean then we need to do the assignment
-                    // check against the unwrappered bean itself.
-                    Object arg = args.get(i);
-                    Object argToTest = arg;
-                    if (arg instanceof UnwrapperedBeanHolder)
-                    	argToTest = ((UnwrapperedBeanHolder)arg).unwrapperedBean;
-                    if (!AggregateConverter.isAssignable(argToTest, argType)) {
-                        found = false;
-                        break;
-                    }
-                    try {
-                        match.add(convert(arg, mth.getGenericParameterTypes()[i]));
-                    } catch (Throwable t) {
-                        found = false;
-                        break;
-                    }
-                }
-                if (found) {
-                    nmatches.put(mth, match);
+        if (!m.isEmpty()) {
+            int score = m.iterator().next().getScore();
+            final Iterator<TypeInference.Match<Method>> each = m.iterator();
+            while (each.hasNext()) {
+                if (each.next().getScore() > score) {
+                    each.remove();
                 }
             }
-            if (nmatches.size() > 0) {
-                matches = nmatches;
-            }
         }
-        // Find a direct match with conversion
-        if (matches.size() != 1) {
-            Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
-            for (Method mth : methods) {
-                boolean found = true;
-                List<Object> match = new ArrayList<Object>();
-                for (int i = 0; i < args.size(); i++) {
-                    ReifiedType argType = new GenericType(mth.getGenericParameterTypes()[i]);
-                    if (types.get(i) != null && !argType.getRawClass().equals(types.get(i).getRawClass())) {
-                        found = false;
-                        break;
-                    }
-                    try {
-                        Object val = convert(args.get(i), argType);
-                        match.add(val);
-                    } catch (Throwable t) {
-                        found = false;
-                        break;
-                    }
-                }
-                if (found) {
-                    nmatches.put(mth, match);
-                }
+        Map<Method, List<Object>> map = new HashMap<Method, List<Object>>();
+        for (TypeInference.Match<Method> match : m) {
+            List<Object> nargs = new ArrayList<Object>();
+            for (TypeInference.TypedObject to : match.getArgs()) {
+                nargs.add(to.getValue());
             }
-            if (nmatches.size() > 0) {
-                matches = nmatches;
-            }
+            map.put(match.getMember(), nargs);
         }
-        // Start reordering with assignment
-        if (matches.size() != 1 && reorderArguments && args.size() > 1) {
-            Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
-            for (Method mth : methods) {
-                ArgumentMatcher matcher = new ArgumentMatcher(mth.getGenericParameterTypes(), false);
-                List<Object> match = matcher.match(args, types);
-                if (match != null) {
-                    nmatches.put(mth, match);
-                }
-            }
-            if (nmatches.size() > 0) {
-                matches = nmatches;
-            }
-        }
-        // Start reordering with conversion
-        if (matches.size() != 1 && reorderArguments && args.size() > 1) {
-            Map<Method, List<Object>> nmatches = new HashMap<Method, List<Object>>();
-            for (Method mth : methods) {
-                ArgumentMatcher matcher = new ArgumentMatcher(mth.getGenericParameterTypes(), true);
-                List<Object> match = matcher.match(args, types);
-                if (match != null) {
-                    nmatches.put(mth, match);
-                }
-            }
-            if (nmatches.size() > 0) {
-                matches = nmatches;
-            }
-        }
-        
-        return matches;
-    }
-    
-    private static List<Method> applyStaticHidingRules(Collection<Method> methods) {
-    	List<Method> result = new ArrayList<Method>(methods.size());
-    	for (Method m : methods) {
-    		boolean toBeAdded = true;
-
-    		Iterator<Method> it = result.iterator();
-    		inner: while (it.hasNext()) {
-    			Method other = it.next();
-    			if (hasIdenticalParameters(m, other)) {
-    				Class<?> mClass = m.getDeclaringClass();
-    				Class<?> otherClass = other.getDeclaringClass();
-    				
-    				if (mClass.isAssignableFrom(otherClass)) {
-    					toBeAdded = false;
-    					break inner;
-    				} else if (otherClass.isAssignableFrom(mClass)) {
-    					it.remove();
-    				}
-    			}
-    		}
-    		
-    		if (toBeAdded) result.add(m);
-    	}
-    	
-    	return result;
-    }
-    
-    private static boolean hasIdenticalParameters(Method one, Method two) {
-		Class<?>[] oneTypes = one.getParameterTypes();
-		Class<?>[] twoTypes = two.getParameterTypes();
-    	
-		if (oneTypes.length != twoTypes.length) return false;
-		
-		for (int i=0; i<oneTypes.length; i++) {
-			if (!oneTypes[i].equals(twoTypes[i])) return false;
-		}
-		
-		return true;
+        return map;
     }
 
-    private Map<Constructor, List<Object>> findMatchingConstructors(Class type, List<Object> args, List<ReifiedType> types) {
-        Map<Constructor, List<Object>> matches = new HashMap<Constructor, List<Object>>();
-        // Get constructors
-        List<Constructor> constructors = new ArrayList<Constructor>(Arrays.asList(type.getConstructors()));
-        // Discard any signature with wrong cardinality
-        for (Iterator<Constructor> it = constructors.iterator(); it.hasNext();) {
-            if (it.next().getParameterTypes().length != args.size()) {
-                it.remove();
-            }
+    private class TIConverter implements TypeInference.Converter {
+        public TypeInference.TypedObject convert(TypeInference.TypedObject from, Type to) throws Exception {
+            Object arg = BeanRecipe.this.convert(from.getValue(), new GenericType(to));
+            return new TypeInference.TypedObject(to, arg);
         }
-        // Find a direct match with assignment
-        if (matches.size() != 1) {
-            Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
-            for (Constructor cns : constructors) {
-                boolean found = true;
-                List<Object> match = new ArrayList<Object>();
-                for (int i = 0; i < args.size(); i++) {
-                    ReifiedType argType = new GenericType(cns.getGenericParameterTypes()[i]);
-                    if (types.get(i) != null && !argType.getRawClass().equals(types.get(i).getRawClass())) {
-                        found = false;
-                        break;
-                    }
-                    // If the arg is an Unwrappered bean then we need to do the assignment
-                    // check against the unwrappered bean itself.
-                    Object arg = args.get(i);
-                    Object argToTest = arg;
-                    if (arg instanceof UnwrapperedBeanHolder)
-                    	argToTest = ((UnwrapperedBeanHolder)arg).unwrapperedBean;
-                    if (!AggregateConverter.isAssignable(argToTest, argType)) {
-                        found = false;
-                        break;
-                    }
-                    try {
-                        match.add(convert(arg, cns.getGenericParameterTypes()[i]));
-                    } catch (Throwable t) {
-                        found = false;
-                        break;
-                    }
-                }
-                if (found) {
-                    nmatches.put(cns, match);
-                }
+    }
+
+    private Type toType(ReifiedType rt) {
+        if (rt.size() > 0) {
+            Type[] at = new Type[rt.size()];
+            for (int j = 0; j < at.length; j++) {
+                at[j] = toType(rt.getActualTypeArgument(j));
             }
-            if (nmatches.size() > 0) {
-                matches = nmatches;
-            }
+            return new OwbParametrizedTypeImpl(null, rt.getRawClass(), at);
+        } else {
+            return rt.getRawClass();
         }
-        // Find a direct match with conversion
-        if (matches.size() != 1) {
-            Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
-            for (Constructor cns : constructors) {
-                boolean found = true;
-                List<Object> match = new ArrayList<Object>();
-                for (int i = 0; i < args.size(); i++) {
-                    ReifiedType argType = new GenericType(cns.getGenericParameterTypes()[i]);
-                    if (types.get(i) != null && !argType.getRawClass().equals(types.get(i).getRawClass())) {
-                        found = false;
-                        break;
-                    }
-                    try {
-                        Object val = convert(args.get(i), argType);
-                        match.add(val);
-                    } catch (Throwable t) {
-                        found = false;
-                        break;
-                    }
-                }
-                if (found) {
-                    nmatches.put(cns, match);
-                }
+    }
+
+    private List<TypeInference.TypedObject> getTypedObjects(List<Object> args, List<ReifiedType> types) {
+        List<TypeInference.TypedObject> targs = new ArrayList<TypeInference.TypedObject>();
+        for (int i = 0; i < args.size(); i++) {
+            Type t;
+            Object o = args.get(i);
+            ReifiedType rt = types.get(i);
+            if (rt == null && o != null) {
+                Object ot = o instanceof UnwrapperedBeanHolder ? ((UnwrapperedBeanHolder) o).unwrapperedBean : o;
+                rt = new GenericType(ot.getClass());
             }
-            if (nmatches.size() > 0) {
-                matches = nmatches;
+            if (rt != null) {
+                if (rt.size() == 0 && rt.getRawClass().getTypeParameters().length > 0 && rt.getRawClass() != Class.class) {
+                    GenericType[] tt = new GenericType[rt.getRawClass().getTypeParameters().length];
+                    Arrays.fill(tt, 0, tt.length, new GenericType(Object.class));
+                    rt = new GenericType(rt.getRawClass(), tt);
+                }
+                t = toType(rt);
+            } else {
+                t = null;
             }
+
+            targs.add(new TypeInference.TypedObject(t, o));
         }
-        // Start reordering with assignment
-        if (matches.size() != 1 && reorderArguments && arguments.size() > 1) {
-            Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
-            for (Constructor cns : constructors) {
-                ArgumentMatcher matcher = new ArgumentMatcher(cns.getGenericParameterTypes(), false);
-                List<Object> match = matcher.match(args, types);
-                if (match != null) {
-                    nmatches.put(cns, match);
-                }
-            }
-            if (nmatches.size() > 0) {
-                matches = nmatches;
-            }
-        }
-        // Start reordering with conversion
-        if (matches.size() != 1 && reorderArguments && arguments.size() > 1) {
-            Map<Constructor, List<Object>> nmatches = new HashMap<Constructor, List<Object>>();
-            for (Constructor cns : constructors) {
-                ArgumentMatcher matcher = new ArgumentMatcher(cns.getGenericParameterTypes(), true);
-                List<Object> match = matcher.match(args, types);
-                if (match != null) {
-                    nmatches.put(cns, match);
-                }
-            }
-            if (nmatches.size() > 0) {
-                matches = nmatches;
-            }
-        }
-        return matches;
+        return targs;
     }
 
     /**
@@ -1028,7 +859,7 @@ public class BeanRecipe extends AbstractRecipe {
             List<Object> list = new ArrayList<Object>();
             for (TypeEntry entry : entries) {
                 if (entry.argument == UNMATCHED) {
-                    throw new RuntimeException("There are unmatched types");
+                    throw new RuntimeException("There are unmatched generics");
                 } else {
                     list.add(entry.argument);
                 }
