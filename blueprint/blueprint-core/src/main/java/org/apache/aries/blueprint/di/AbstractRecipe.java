@@ -17,6 +17,7 @@
  */
 package org.apache.aries.blueprint.di;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.aries.blueprint.container.GenericType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,8 +143,7 @@ public abstract class AbstractRecipe implements Recipe {
     }
 
     protected Object convert(Object obj, Type type) throws Exception {
-        return ExecutionContext.Holder.getContext().convert(obj,
-                new GenericType(type));
+        return ExecutionContext.Holder.getContext().convert(obj, new GenericType(type));
     }
 
     protected Class loadClass(String className) {

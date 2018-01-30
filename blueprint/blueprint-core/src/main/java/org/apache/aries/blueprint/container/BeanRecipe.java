@@ -18,10 +18,7 @@
  */
 package org.apache.aries.blueprint.container;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +35,7 @@ import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
+import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.proxy.CollaboratorFactory;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
@@ -135,14 +133,16 @@ public class BeanRecipe extends AbstractRecipe {
     private List<String> argTypes;
     private boolean reorderArguments;
     private final boolean allowsFieldInjection;
+    private final boolean allowsRawConversion;
     private BeanMetadata interceptorLookupKey;
     
 
-    public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type, boolean allowsFieldInjection) {
+    public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type, boolean allowsFieldInjection, boolean allowsRawConversion) {
         super(name);
         this.blueprintContainer = blueprintContainer;
         this.type = type;
         this.allowsFieldInjection = allowsFieldInjection;
+        this.allowsRawConversion = allowsRawConversion;
     }
 
     public Object getProperty(String name) {
@@ -419,9 +419,32 @@ public class BeanRecipe extends AbstractRecipe {
         return map;
     }
 
+    protected Object convert(Object obj, Type from, Type to) throws Exception {
+        if (allowsRawConversion
+                && (from instanceof ParameterizedType || to instanceof ParameterizedType)
+                && GenericType.getConcreteClass(from) == GenericType.getConcreteClass(to)) {
+            boolean assignable = true;
+            if (from instanceof ParameterizedType) {
+                for (Type t : ((ParameterizedType) from).getActualTypeArguments()) {
+                    assignable &= t == Object.class;
+                }
+            }
+            if (to instanceof ParameterizedType) {
+                for (Type t : ((ParameterizedType) to).getActualTypeArguments()) {
+                    assignable &= t == Object.class;
+                }
+            }
+            if (assignable) {
+                return obj instanceof UnwrapperedBeanHolder
+                            ? ((UnwrapperedBeanHolder) obj).unwrapperedBean : obj;
+            }
+        }
+        return convert(obj, to);
+    }
+
     private class TIConverter implements TypeInference.Converter {
         public TypeInference.TypedObject convert(TypeInference.TypedObject from, Type to) throws Exception {
-            Object arg = BeanRecipe.this.convert(from.getValue(), new GenericType(to));
+            Object arg = BeanRecipe.this.convert(from.getValue(), from.getType(), to);
             return new TypeInference.TypedObject(to, arg);
         }
     }

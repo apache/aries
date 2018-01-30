@@ -462,7 +462,13 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals("stringToo", ((Primavera) obj).prop);
     }
 
-     public void testMixedGenericsTyped() throws Exception {
+    public void testMixedGenericsTracker() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        repository.create("tracker");
+    }
+
+    public void testMixedGenericsTypedTracker() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         try {
@@ -473,13 +479,13 @@ public class WiringTest extends AbstractBlueprintTest {
         }
     }
 
-    public void testMixedGenericsTypedGeneric() throws Exception {
+    public void testMixedGenericsTypedTrackerRaw() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
-        repository.create("typedGenericTracker");
+        repository.create("typedTrackerRaw");
     }
 
-    public void testMixedGenericsTypedClass() throws Exception {
+    public void testMixedGenericsTypedClassTracker() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         try {
@@ -488,6 +494,18 @@ public class WiringTest extends AbstractBlueprintTest {
         } catch (ComponentDefinitionException e) {
             // expected
         }
+    }
+
+    public void testMixedGenericsTypedClassTrackerRaw() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        repository.create("typedClassTrackerRaw");
+    }
+
+    public void testMixedGenericsTypedGeneric() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        repository.create("typedGenericTracker");
     }
 
     public void testMixedGenericsTypedGenericClass() throws Exception {
