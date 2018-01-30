@@ -37,13 +37,12 @@ import org.xml.sax.SAXException;
 public abstract class AbstractBlueprintTest extends TestCase {
 
     protected ComponentDefinitionRegistryImpl parse(String name) throws Exception {
-      final URI extensionHandler = new URI("http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0");
       NamespaceHandlerSet handlers = new NamespaceHandlerSet() {
             public Set<URI> getNamespaces() {
                 return null;
             }
             public NamespaceHandler getNamespaceHandler(URI namespace) {
-                if (namespace.equals(extensionHandler)) {
+                if (ExtNamespaceHandler.isExtNamespace(namespace.toString())) {
                   return new ExtNamespaceHandler();
                 } else {
                   return null;
