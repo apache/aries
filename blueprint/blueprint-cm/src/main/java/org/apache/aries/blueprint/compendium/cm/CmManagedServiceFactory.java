@@ -187,10 +187,10 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
         return null;
     }
 
-    private Method findDestroyMethod(Class clazz) {
+    private Method findDestroyMethod(Class clazz, Class... args) {
         Method method = null;
         if (componentDestroyMethod != null && componentDestroyMethod.length() > 0) {
-            List<Method> methods = ReflectionUtils.findCompatibleMethods(clazz, componentDestroyMethod, new Class [] { int.class });
+            List<Method> methods = ReflectionUtils.findCompatibleMethods(clazz, componentDestroyMethod, args);
             if (methods != null && !methods.isEmpty()) {
                 method = methods.get(0);
             }
@@ -212,12 +212,21 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     }
 
     protected void doDestroy(Object service, Dictionary properties, int code) throws Exception {
-        Method method = findDestroyMethod(service.getClass());
+        Method method = findDestroyMethod(service.getClass(), int.class);
         if (method != null) {
             try {
-                method.invoke(service, new Object [] { code });
+                method.invoke(service, code);
             } catch (Exception e) {
                 LOGGER.info("Error destroying component", e);
+            }
+        } else {
+            method = findDestroyMethod(service.getClass());
+            if (method != null) {
+                try {
+                    method.invoke(service);
+                } catch (Exception e) {
+                    LOGGER.info("Error destroying component", e);
+                }
             }
         }
     }
