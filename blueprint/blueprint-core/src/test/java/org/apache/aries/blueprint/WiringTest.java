@@ -514,6 +514,13 @@ public class WiringTest extends AbstractBlueprintTest {
         repository.create("typedClassGenericTracker");
     }
 
+    public void testThreadPoolCreation() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-threadpool.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        repository.create("executorService");
+    }
+
+
     public void testCircular() throws Exception {
         BlueprintRepository repository = createBlueprintContainer().getRepository();
 
