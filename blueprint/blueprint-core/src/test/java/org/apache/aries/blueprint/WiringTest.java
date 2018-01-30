@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint;
 
-import java.lang.reflect.Constructor;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
@@ -37,9 +36,7 @@ import java.util.TimeZone;
 import junit.framework.Assert;
 
 import org.apache.aries.blueprint.CallbackTracker.Callback;
-import org.apache.aries.blueprint.container.AggregateConverter;
 import org.apache.aries.blueprint.container.BlueprintRepository;
-import org.apache.aries.blueprint.container.GenericType;
 import org.apache.aries.blueprint.container.ServiceRecipe;
 import org.apache.aries.blueprint.di.CircularDependencyException;
 import org.apache.aries.blueprint.di.ExecutionContext;
@@ -55,10 +52,6 @@ import org.apache.aries.blueprint.pojos.Multiple;
 import org.apache.aries.blueprint.pojos.PojoA;
 import org.apache.aries.blueprint.pojos.PojoB;
 import org.apache.aries.blueprint.pojos.PojoGenerics;
-import org.apache.aries.blueprint.pojos.PojoGenerics2.MyClass;
-import org.apache.aries.blueprint.pojos.PojoGenerics2.MyObject;
-import org.apache.aries.blueprint.pojos.PojoGenerics2.Tata;
-import org.apache.aries.blueprint.pojos.PojoGenerics2.Toto;
 import org.apache.aries.blueprint.pojos.PojoListener;
 import org.apache.aries.blueprint.pojos.PojoRecursive;
 import org.apache.aries.blueprint.pojos.Primavera;
@@ -468,7 +461,41 @@ public class WiringTest extends AbstractBlueprintTest {
         assertTrue(obj instanceof Primavera);
         assertEquals("stringToo", ((Primavera) obj).prop);
     }
-    
+
+     public void testMixedGenericsTyped() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        try {
+            repository.create("typedTracker");
+            fail("Should have thrown an exception");
+        } catch (ComponentDefinitionException e) {
+            // expected
+        }
+    }
+
+    public void testMixedGenericsTypedGeneric() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        repository.create("typedGenericTracker");
+    }
+
+    public void testMixedGenericsTypedClass() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        try {
+            repository.create("typedClassTracker");
+            fail("Should have thrown an exception");
+        } catch (ComponentDefinitionException e) {
+            // expected
+        }
+    }
+
+    public void testMixedGenericsTypedGenericClass() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        repository.create("typedClassGenericTracker");
+    }
+
     public void testCircular() throws Exception {
         BlueprintRepository repository = createBlueprintContainer().getRepository();
 
