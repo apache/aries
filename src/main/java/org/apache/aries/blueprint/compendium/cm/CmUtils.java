@@ -35,7 +35,7 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationPlugin;
 
-public class CmUtils  {
+public class CmUtils {
 
     private CmUtils() {        
     }

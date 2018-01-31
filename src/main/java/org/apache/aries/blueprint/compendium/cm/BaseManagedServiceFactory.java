@@ -143,7 +143,7 @@ public abstract class BaseManagedServiceFactory<T> implements ManagedServiceFact
                     }
                     ServiceRegistration registration = context.registerService(getExposedClasses(t), t, properties);
                     services.put(pid, new Pair<T, ServiceRegistration>(t, registration));
-                    registrations.put(registration,  t);
+                    registrations.put(registration, t);
                     postRegister(t, properties, registration);
                 } catch (Throwable throwable1) {
                     try {
@@ -210,7 +210,7 @@ public abstract class BaseManagedServiceFactory<T> implements ManagedServiceFact
         }
     }
 
-    static class Pair<U,V> {
+    static class Pair<U, V> {
         private U first;
         private V second;
         public Pair(U first, V second) {

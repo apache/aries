@@ -63,7 +63,7 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
 
     private final Object lock = new Object();
     private final Set<Object> beans = new HashSet<Object>();
-    private Dictionary<String,Object> properties;
+    private Dictionary<String, Object> properties;
     private boolean initialized;
 
     public ExtendedBlueprintContainer getBlueprintContainer() {

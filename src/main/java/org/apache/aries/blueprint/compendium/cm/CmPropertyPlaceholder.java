@@ -44,7 +44,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
     private String persistentId;
     private String updateStrategy;
     private ManagedObjectManager managedObjectManager;
-    private Dictionary<String,Object> properties;
+    private Dictionary<String, Object> properties;
     private boolean initialized;
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
@@ -140,7 +140,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
         }
     }
 
-    private <T,U> boolean equals(Dictionary<T,U> d1, Dictionary<T,U> d2) {
+    private <T, U> boolean equals(Dictionary<T, U> d1, Dictionary<T, U> d2) {
         if (d1 == null || d1.isEmpty()) {
             return d2 == null || d2.isEmpty();
         } else if (d2 == null || d1.size() != d2.size()) {
