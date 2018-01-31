@@ -35,7 +35,6 @@ import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.blueprint.di.AbstractRecipe;
-import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.proxy.CollaboratorFactory;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
@@ -132,17 +131,19 @@ public class BeanRecipe extends AbstractRecipe {
     private List<Object> arguments;
     private List<String> argTypes;
     private boolean reorderArguments;
-    private final boolean allowsFieldInjection;
-    private final boolean allowsRawConversion;
+    private final boolean allowFieldInjection;
+    private final boolean allowRawConversion;
+    private final boolean allowNonStandardSetters;
     private BeanMetadata interceptorLookupKey;
     
 
-    public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type, boolean allowsFieldInjection, boolean allowsRawConversion) {
+    public BeanRecipe(String name, ExtendedBlueprintContainer blueprintContainer, Object type, boolean allowFieldInjection, boolean allowRawConversion, boolean allowNonStandardSetters) {
         super(name);
         this.blueprintContainer = blueprintContainer;
         this.type = type;
-        this.allowsFieldInjection = allowsFieldInjection;
-        this.allowsRawConversion = allowsRawConversion;
+        this.allowFieldInjection = allowFieldInjection;
+        this.allowRawConversion = allowRawConversion;
+        this.allowNonStandardSetters = allowNonStandardSetters;
     }
 
     public Object getProperty(String name) {
@@ -420,7 +421,7 @@ public class BeanRecipe extends AbstractRecipe {
     }
 
     protected Object convert(Object obj, Type from, Type to) throws Exception {
-        if (allowsRawConversion
+        if (allowRawConversion
                 && (from instanceof ParameterizedType || to instanceof ParameterizedType)
                 && GenericType.getConcreteClass(from) == GenericType.getConcreteClass(to)) {
             boolean assignable = true;
@@ -825,7 +826,7 @@ public class BeanRecipe extends AbstractRecipe {
     }
 
     private ReflectionUtils.PropertyDescriptor getPropertyDescriptor(Class<?> clazz, String name) {
-        for (ReflectionUtils.PropertyDescriptor pd : ReflectionUtils.getPropertyDescriptors(clazz, allowsFieldInjection)) {
+        for (ReflectionUtils.PropertyDescriptor pd : ReflectionUtils.getPropertyDescriptors(clazz, allowFieldInjection, allowNonStandardSetters)) {
             if (pd.getName().equals(name)) {
                 return pd;
             }
