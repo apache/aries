@@ -49,6 +49,8 @@ import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
+import static org.junit.Assert.assertArrayEquals;
+
 public class WiringTest extends AbstractBlueprintTest {
 
     public void testWiring() throws Exception {
@@ -515,6 +517,13 @@ public class WiringTest extends AbstractBlueprintTest {
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         Thread.currentThread().setContextClassLoader(CachePojos.CacheContainer.class.getClassLoader());
         repository.create("queueCountCache");
+    }
+
+    public void testVarArgPojo() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-vararg.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        VarArg va = (VarArg) repository.create("vararg");
+        assertArrayEquals(new String[] { "-web" }, va.args);
     }
 
     public void testCircular() throws Exception {
