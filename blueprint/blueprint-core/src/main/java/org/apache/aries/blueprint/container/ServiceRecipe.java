@@ -217,7 +217,7 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     protected ServiceReference getReference() {
-    	ServiceRegistration reg = registration.get();
+        ServiceRegistration reg = registration.get();
         if (reg == null) {
             throw new IllegalStateException("Service is not registered");
         } else {
@@ -226,7 +226,7 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     protected void setProperties(Dictionary props) {
-    	ServiceRegistration reg = registration.get();
+        ServiceRegistration reg = registration.get();
         if (reg == null) {
             throw new IllegalStateException("Service is not registered");
         } else {
@@ -254,22 +254,22 @@ public class ServiceRecipe extends AbstractRecipe {
         Object service = this.service;
         // We need the real service ...
         if (bundle != null) {
-        	if (service instanceof ServiceFactory) {
-        		service = ((ServiceFactory) service).getService(bundle, registration);
-        	}
-        	if (service == null) {
-        		throw new IllegalStateException("service is null");
-        	}
-        	// Check if the service actually implement all the requested interfaces
-        	validateClasses(service);
-        	// We're not really interested in the service, but perform some sanity checks nonetheless
+            if (service instanceof ServiceFactory) {
+                service = ((ServiceFactory) service).getService(bundle, registration);
+            }
+            if (service == null) {
+                throw new IllegalStateException("service is null");
+            }
+            // Check if the service actually implement all the requested interfaces
+            validateClasses(service);
+            // We're not really interested in the service, but perform some sanity checks nonetheless
         } else {
-        	if (!(service instanceof ServiceFactory)) {
-        		// Check if the service actually implement all the requested interfaces
-        		validateClasses(service);
-        	}
+            if (!(service instanceof ServiceFactory)) {
+                // Check if the service actually implement all the requested interfaces
+                validateClasses(service);
+            }
         }
-        
+
         return service;
     }
 
@@ -361,7 +361,7 @@ public class ServiceRecipe extends AbstractRecipe {
          *  So we need to set the registration object in case registration listeners call 
          *  getServiceReference(). 
          */
-    	this.registration.compareAndSet(null, registration);
+        this.registration.compareAndSet(null, registration);
         return internalGetService(bundle, registration);
     }
 
@@ -409,29 +409,29 @@ public class ServiceRecipe extends AbstractRecipe {
      * @throws ClassNotFoundException
      */
     private Collection<Class<?>> getClassesForProxying(Object template) throws ClassNotFoundException {
-      Collection<Class<?>> classes;
-      switch (metadata.getAutoExport()) {
-          case ServiceMetadata.AUTO_EXPORT_INTERFACES:
-              classes = ReflectionUtils.getImplementedInterfacesAsClasses(new HashSet<Class<?>>(), template.getClass());
-              break;
-          case ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY:
-          case ServiceMetadata.AUTO_EXPORT_ALL_CLASSES:
-            classes = ProxyUtils.asList(template.getClass());
-              break;
-          default:
-              classes = new HashSet<Class<?>>(convertStringsToClasses(metadata.getInterfaces()));
-              break;
-      }
-      return classes;
-  }
+        Collection<Class<?>> classes;
+        switch (metadata.getAutoExport()) {
+            case ServiceMetadata.AUTO_EXPORT_INTERFACES:
+                classes = ReflectionUtils.getImplementedInterfacesAsClasses(new HashSet<Class<?>>(), template.getClass());
+                break;
+            case ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY:
+            case ServiceMetadata.AUTO_EXPORT_ALL_CLASSES:
+                classes = ProxyUtils.asList(template.getClass());
+                break;
+            default:
+                classes = new HashSet<Class<?>>(convertStringsToClasses(metadata.getInterfaces()));
+                break;
+        }
+        return classes;
+    }
 
     private Collection<? extends Class<?>> convertStringsToClasses(
-        List<String> interfaces) throws ClassNotFoundException {
-      Set<Class<?>> classes = new HashSet<Class<?>>();
-      for(String s : interfaces) {
-        classes.add(blueprintContainer.loadClass(s)); 
-      }
-      return classes;
+            List<String> interfaces) throws ClassNotFoundException {
+        Set<Class<?>> classes = new HashSet<Class<?>>();
+        for (String s : interfaces) {
+            classes.add(blueprintContainer.loadClass(s));
+        }
+        return classes;
     }
 
     private void createExplicitDependencies() {
@@ -476,7 +476,7 @@ public class ServiceRecipe extends AbstractRecipe {
                 callbacksToCall = new ArrayList<DestroyCallback>(destroyCallbacks);
                 destroyCallbacks.clear();
             }
-            for(DestroyCallback cbk : callbacksToCall) {
+            for (DestroyCallback cbk : callbacksToCall) {
                 cbk.callback();
             }
         }
@@ -522,21 +522,20 @@ public class ServiceRecipe extends AbstractRecipe {
             }
         }
     }
-     
-    private class TriggerServiceFactory implements ServiceFactory 
-    {
-    	private ServiceRecipe serviceRecipe;
-    	private ComponentMetadata cm;
-    	private ServiceMetadata sm;
+
+    private class TriggerServiceFactory implements ServiceFactory {
+        private ServiceRecipe serviceRecipe;
+        private ComponentMetadata cm;
+        private ServiceMetadata sm;
         private boolean isQuiesceAvailable;
-    	public TriggerServiceFactory(ServiceRecipe serviceRecipe, ServiceMetadata cm)
-    	{
-    		this.serviceRecipe = serviceRecipe;
-    		this.cm = cm;
-    		this.sm = cm;
+
+        public TriggerServiceFactory(ServiceRecipe serviceRecipe, ServiceMetadata cm) {
+            this.serviceRecipe = serviceRecipe;
+            this.cm = cm;
+            this.sm = cm;
             this.isQuiesceAvailable = isClassAvailable("org.apache.aries.quiesce.participant.QuiesceParticipant");
-    	}
-    	
+        }
+
         public Object getService(Bundle bundle, ServiceRegistration registration) {
             Object original = ServiceRecipe.this.getService(bundle, registration);
             LOGGER.debug(LOG_ENTRY, "getService", original);
@@ -561,8 +560,8 @@ public class ServiceRecipe extends AbstractRecipe {
             try {
                 Bundle b = FrameworkUtil.getBundle(original.getClass());
                 if (b == null) {
-                  // we have a class from the framework parent, so use our bundle for proxying.
-                  b = blueprintContainer.getBundleContext().getBundle();
+                    // we have a class from the framework parent, so use our bundle for proxying.
+                    b = blueprintContainer.getBundleContext().getBundle();
                 }
                 InvocationListener collaborator = CollaboratorFactory.create(cm, interceptors);
 

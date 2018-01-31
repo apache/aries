@@ -201,11 +201,11 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                 if (bundle != null) {
                     BundleContext ctx = getBundleContextForServiceLookup();
                     if (ctx != null) {
-                      try {
-                          ctx.ungetService(ref);
-                      } catch (IllegalStateException ise) {
-                        // we don't care it doesn't exist so, shrug.
-                      }
+                        try {
+                            ctx.ungetService(ref);
+                        } catch (IllegalStateException ise) {
+                            // we don't care it doesn't exist so, shrug.
+                        }
                     }
                 }
             }

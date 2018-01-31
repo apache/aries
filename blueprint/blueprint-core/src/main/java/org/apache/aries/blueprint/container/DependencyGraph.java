@@ -55,7 +55,7 @@ public class DependencyGraph {
                 if (!recipe.getName().equals(name)) {
                     throw new RuntimeException("Recipe '" + name + "' returned from the repository has name '" + name + "'");
                 }
-                createNode(name, recipe,  nodes);
+                createNode(name, recipe, nodes);
             }
         }
 
@@ -132,7 +132,7 @@ public class DependencyGraph {
         if (nodes.containsKey(name)) {
             Node node = nodes.get(name);
             if (node.recipe != recipe) {
-                throw new RuntimeException("The name '" + name +"' is assigned to multiple recipies");
+                throw new RuntimeException("The name '" + name + "' is assigned to multiple recipies");
             }
             return node;
         }
@@ -148,7 +148,7 @@ public class DependencyGraph {
         while (!constructorRecipes.isEmpty()) {
             Recipe nestedRecipe = constructorRecipes.removeFirst();            
             if (nestedRecipe instanceof RefRecipe) {
-                nestedRecipe =  nestedRecipe.getDependencies().get(0);
+                nestedRecipe = nestedRecipe.getDependencies().get(0);
                 String nestedName = nestedRecipe.getName();
                 Node nestedNode = createNode(nestedName, nestedRecipe, nodes);
                 node.referenceCount++;
@@ -173,7 +173,7 @@ public class DependencyGraph {
             if (references.size() > 0) {
                 buf.append(" <- ");
                 Iterator<Node> iter = references.iterator();
-                while(iter.hasNext()) {
+                while (iter.hasNext()) {
                     buf.append(iter.next().name);
                     if (iter.hasNext()) {
                         buf.append(", ");

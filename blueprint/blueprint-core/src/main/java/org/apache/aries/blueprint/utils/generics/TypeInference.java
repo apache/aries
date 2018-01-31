@@ -168,7 +168,7 @@ public class TypeInference {
 
         if (oneTypes.length != twoTypes.length) return false;
 
-        for (int i=0; i<oneTypes.length; i++) {
+        for (int i = 0; i < oneTypes.length; i++) {
             if (!oneTypes[i].equals(twoTypes[i])) return false;
         }
 

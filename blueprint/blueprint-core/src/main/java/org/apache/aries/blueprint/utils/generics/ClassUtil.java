@@ -28,22 +28,20 @@ import java.util.*;
  * @author <a href="mailto:gurkanerdogdu@yahoo.com">Gurkan Erdogdu</a>
  * @since 1.0
  */
-public final class ClassUtil
-{
+public final class ClassUtil {
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPERS_MAP;
 
-    static
-    {
+    static {
         Map<Class<?>, Class<?>> primitiveToWrappersMap = new HashMap<Class<?>, Class<?>>();
-        primitiveToWrappersMap.put(Integer.TYPE,Integer.class);
-        primitiveToWrappersMap.put(Float.TYPE,Float.class);
-        primitiveToWrappersMap.put(Double.TYPE,Double.class);
-        primitiveToWrappersMap.put(Character.TYPE,Character.class);
-        primitiveToWrappersMap.put(Long.TYPE,Long.class);
-        primitiveToWrappersMap.put(Byte.TYPE,Byte.class);
-        primitiveToWrappersMap.put(Short.TYPE,Short.class);
-        primitiveToWrappersMap.put(Boolean.TYPE,Boolean.class);
-        primitiveToWrappersMap.put(Void.TYPE,Void.class);
+        primitiveToWrappersMap.put(Integer.TYPE, Integer.class);
+        primitiveToWrappersMap.put(Float.TYPE, Float.class);
+        primitiveToWrappersMap.put(Double.TYPE, Double.class);
+        primitiveToWrappersMap.put(Character.TYPE, Character.class);
+        primitiveToWrappersMap.put(Long.TYPE, Long.class);
+        primitiveToWrappersMap.put(Byte.TYPE, Byte.class);
+        primitiveToWrappersMap.put(Short.TYPE, Short.class);
+        primitiveToWrappersMap.put(Boolean.TYPE, Boolean.class);
+        primitiveToWrappersMap.put(Void.TYPE, Void.class);
         PRIMITIVE_TO_WRAPPERS_MAP = Collections.unmodifiableMap(primitiveToWrappersMap);
     }
 
@@ -52,26 +50,21 @@ public final class ClassUtil
     /*
      * Private constructor
      */
-    private ClassUtil()
-    {
+    private ClassUtil() {
         throw new UnsupportedOperationException();
     }
 
-    public static boolean isSame(Type type1, Type type2)
-    {
-        if ((type1 instanceof Class) && ((Class<?>)type1).isPrimitive())
-        {
+    public static boolean isSame(Type type1, Type type2) {
+        if ((type1 instanceof Class) && ((Class<?>) type1).isPrimitive()) {
             type1 = PRIMITIVE_TO_WRAPPERS_MAP.get(type1);
         }
-        if ((type2 instanceof Class) && ((Class<?>)type2).isPrimitive())
-        {
+        if ((type2 instanceof Class) && ((Class<?>) type2).isPrimitive()) {
             type2 = PRIMITIVE_TO_WRAPPERS_MAP.get(type2);
         }
         return type1 == type2;
     }
 
-    public static Class<?> getPrimitiveWrapper(Class<?> clazz)
-    {
+    public static Class<?> getPrimitiveWrapper(Class<?> clazz) {
         return PRIMITIVE_TO_WRAPPERS_MAP.get(clazz);
 
     }
@@ -148,76 +141,52 @@ public final class ClassUtil
 
     /**
      * Return raw class type for given type.
+     *
      * @param type base type instance
      * @return class type for given type
      */
-    public static Class<?> getClazz(Type type)
-    {
-        if(type instanceof ParameterizedType)
-        {
-            ParameterizedType pt = (ParameterizedType)type;
-            return (Class<?>)pt.getRawType();                
-        }
-        else if(type instanceof Class)
-        {
-            return (Class<?>)type;
-        }
-        else if(type instanceof GenericArrayType)
-        {
-            GenericArrayType arrayType = (GenericArrayType)type;
+    public static Class<?> getClazz(Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            return (Class<?>) pt.getRawType();
+        } else if (type instanceof Class) {
+            return (Class<?>) type;
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType arrayType = (GenericArrayType) type;
             return Array.newInstance(getClazz(arrayType.getGenericComponentType()), 0).getClass();
-        }
-        else if (type instanceof WildcardType)
-        {
-            WildcardType wildcardType = (WildcardType)type;
+        } else if (type instanceof WildcardType) {
+            WildcardType wildcardType = (WildcardType) type;
             Type[] bounds = wildcardType.getUpperBounds();
-            if (bounds.length > 1)
-            {
+            if (bounds.length > 1) {
                 throw new IllegalArgumentException("Illegal use of wild card type with more than one upper bound: " + wildcardType);
-            }
-            else if (bounds.length == 0)
-            {
+            } else if (bounds.length == 0) {
                 return Object.class;
-            }
-            else
-            {
+            } else {
                 return getClass(bounds[0]);
             }
-        }
-        else if (type instanceof TypeVariable)
-        {
-            TypeVariable<?> typeVariable = (TypeVariable<?>)type;
-            if (typeVariable.getBounds().length > 1)
-            {
+        } else if (type instanceof TypeVariable) {
+            TypeVariable<?> typeVariable = (TypeVariable<?>) type;
+            if (typeVariable.getBounds().length > 1) {
                 throw new IllegalArgumentException("Illegal use of type variable with more than one bound: " + typeVariable);
-            }
-            else
-            {
+            } else {
                 Type[] bounds = typeVariable.getBounds();
-                if (bounds.length == 0)
-                {
+                if (bounds.length == 0) {
                     return Object.class;
-                }
-                else
-                {
+                } else {
                     return getClass(bounds[0]);
                 }
             }
-        }
-        else
-        {
+        } else {
             throw new IllegalArgumentException("Unsupported type " + type);
         }
     }
 
 
-    public static boolean isRawClassEquals(Type ipType, Type apiType)
-    {
+    public static boolean isRawClassEquals(Type ipType, Type apiType) {
         Class ipClass = getRawPrimitiveType(ipType);
-        Class apiClass  = getRawPrimitiveType(apiType);
+        Class apiClass = getRawPrimitiveType(apiType);
 
-        if (ipClass == null || apiClass == null)
-        {
+        if (ipClass == null || apiClass == null) {
             // we found some illegal generics
             return false;
         }
@@ -225,19 +194,15 @@ public final class ClassUtil
         return ipClass.equals(apiClass);
     }
 
-    private static Class getRawPrimitiveType(Type type)
-    {
-        if (type instanceof Class)
-        {
-            if (((Class) type).isPrimitive())
-            {
+    private static Class getRawPrimitiveType(Type type) {
+        if (type instanceof Class) {
+            if (((Class) type).isPrimitive()) {
                 return getPrimitiveWrapper((Class) type);
             }
             return (Class) type;
         }
 
-        if (type instanceof ParameterizedType)
-        {
+        if (type instanceof ParameterizedType) {
             return getRawPrimitiveType(((ParameterizedType) type).getRawType());
         }
 

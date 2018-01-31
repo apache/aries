@@ -22,54 +22,43 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 
 
-public class OwbGenericArrayTypeImpl implements GenericArrayType
-{
+public class OwbGenericArrayTypeImpl implements GenericArrayType {
 
     private Type componentType;
-    
-    public OwbGenericArrayTypeImpl(Type componentType)
-    {
+
+    public OwbGenericArrayTypeImpl(Type componentType) {
         this.componentType = componentType;
     }
 
     @Override
-    public Type getGenericComponentType()
-    {
+    public Type getGenericComponentType() {
         return componentType;
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
-    public int hashCode()
-    {
-       return componentType.hashCode();
+    public int hashCode() {
+        return componentType.hashCode();
     }
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj)
-    {
-       if (this == obj)
-       {
-          return true;
-       }
-       else if (obj instanceof GenericArrayType)
-       {
-           return ((GenericArrayType)obj).getGenericComponentType().equals(componentType);
-       }
-       else
-       {
-          return false;
-       }
-       
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof GenericArrayType) {
+            return ((GenericArrayType) obj).getGenericComponentType().equals(componentType);
+        } else {
+            return false;
+        }
+
     }
 
-    public String toString()
-    {
+    public String toString() {
         return componentType + "[]";
     }
 }

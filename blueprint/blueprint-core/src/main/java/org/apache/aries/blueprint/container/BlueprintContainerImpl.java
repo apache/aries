@@ -212,7 +212,7 @@ public class BlueprintContainerImpl
 
     private void readDirectives() {
         Dictionary headers = bundle.getHeaders();
-        String symbolicName = (String)headers.get(Constants.BUNDLE_SYMBOLICNAME);
+        String symbolicName = (String) headers.get(Constants.BUNDLE_SYMBOLICNAME);
         List<PathElement> paths = HeaderParser.parseHeader(symbolicName);
 
         String timeoutDirective = paths.get(0).getDirective(BlueprintConstants.TIMEOUT_DIRECTIVE);
@@ -411,17 +411,17 @@ public class BlueprintContainerImpl
                     case Create:
                         cancelFutureIfPresent();
                         instantiateEagerComponents();
-			//Register the services after the eager components are ready, as per 121.6
-			registerServices();
+                        //Register the services after the eager components are ready, as per 121.6
+                        registerServices();
                         // Register the BlueprintContainer in the OSGi registry
                         int bs = bundle.getState();
                         if (registration == null && (bs == Bundle.ACTIVE || bs == Bundle.STARTING)) {
                             Properties props = new Properties();
                             props.put(BlueprintConstants.CONTAINER_SYMBOLIC_NAME_PROPERTY,
-                                      bundle.getSymbolicName());
+                                    bundle.getSymbolicName());
                             props.put(BlueprintConstants.CONTAINER_VERSION_PROPERTY,
-                                      JavaUtils.getBundleVersion(bundle));
-                            registration = registerService(new String [] { BlueprintContainer.class.getName() }, this, props);
+                                    JavaUtils.getBundleVersion(bundle));
+                            registration = registerService(new String[]{BlueprintContainer.class.getName()}, this, props);
                         }
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundle(), getExtenderBundle()));
                         state = State.Created;
@@ -904,16 +904,15 @@ public class BlueprintContainerImpl
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundle(), getExtenderBundle()));
         LOGGER.debug("Blueprint container {} destroyed", getBundle().getSymbolicName(), getBundle().getVersion());
     }
-    
-    public static void safeUnregisterService(ServiceRegistration reg) 
-    {
-      if(reg != null) {
-        try {
-          reg.unregister();
-        } catch (IllegalStateException e) {
-          //This can be safely ignored
+
+    public static void safeUnregisterService(ServiceRegistration reg) {
+        if (reg != null) {
+            try {
+                reg.unregister();
+            } catch (IllegalStateException e) {
+                //This can be safely ignored
+            }
         }
-      }
     }
     
     protected void quiesce() {
@@ -929,11 +928,10 @@ public class BlueprintContainerImpl
         LOGGER.debug("Blueprint container {} quiesced", getBundle().getSymbolicName(), getBundle().getVersion());
     }
 
-    private void cancelFutureIfPresent()
-    {
-      if (timeoutFuture != null) {
-          timeoutFuture.cancel(false);
-      }
+    private void cancelFutureIfPresent() {
+        if (timeoutFuture != null) {
+            timeoutFuture.cancel(false);
+        }
     }
 
     public void namespaceHandlerRegistered(URI uri) {
@@ -963,17 +961,16 @@ public class BlueprintContainerImpl
         }
     }
 
-    private void tidyupComponents()
-    {
-      unregisterServices();
-      destroyComponents();
-      untrackServiceReferences();
+    private void tidyupComponents() {
+        unregisterServices();
+        destroyComponents();
+        untrackServiceReferences();
     }
 
-    public void injectBeanInstance(BeanMetadata bmd, Object o) 
-        throws IllegalArgumentException, ComponentDefinitionException {
-        ExecutionContext origContext 
-            = ExecutionContext.Holder.setContext((ExecutionContext)getRepository());
+    public void injectBeanInstance(BeanMetadata bmd, Object o)
+            throws IllegalArgumentException, ComponentDefinitionException {
+        ExecutionContext origContext
+                = ExecutionContext.Holder.setContext((ExecutionContext) getRepository());
         try {
             ComponentMetadata cmd = componentDefinitionRegistry.getComponentDefinition(bmd.getId());
             if (cmd == null || cmd != bmd) {
@@ -981,7 +978,7 @@ public class BlueprintContainerImpl
             }
             Recipe r = this.getRepository().getRecipe(bmd.getId());
             if (r instanceof BeanRecipe) {
-                BeanRecipe br = (BeanRecipe)r;
+                BeanRecipe br = (BeanRecipe) r;
                 if (!br.getType().isInstance(o)) {
                     throw new IllegalArgumentException("Instance class " + o.getClass().getName() 
                                                        + " is not an instance of " + br.getClass());

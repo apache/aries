@@ -23,14 +23,13 @@ public final class ServiceUtil {
     private ServiceUtil() {
     }
     
-    public static void safeUnregisterService(ServiceRegistration<?> reg) 
-    {
-      if(reg != null) {
-        try {
-          reg.unregister();
-        } catch (IllegalStateException e) {
-          //This can be safely ignored
+    public static void safeUnregisterService(ServiceRegistration<?> reg) {
+        if (reg != null) {
+            try {
+                reg.unregister();
+            } catch (IllegalStateException e) {
+                //This can be safely ignored
+            }
         }
-      }
     }
 }

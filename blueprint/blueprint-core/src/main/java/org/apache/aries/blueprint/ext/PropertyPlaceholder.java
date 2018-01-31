@@ -210,7 +210,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         if (evaluator == null) {
             return super.retrieveValue(expression);
         } else {
-            return evaluator.evaluate(expression, new Dictionary<String, String>(){
+            return evaluator.evaluate(expression, new Dictionary<String, String>() {
                 @Override
                 public String get(Object key) {
                     return getProperty((String) key);

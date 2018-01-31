@@ -58,7 +58,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     private List<String> interfaces;
     private int autoExport;
     private int ranking;
-    private Map<Object,Object> serviceProperties;
+    private Map<Object, Object> serviceProperties;
     private String managedComponentName;
     private String componentDestroyMethod;
     private List<ServiceListener> listeners;

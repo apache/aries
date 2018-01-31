@@ -83,10 +83,10 @@ public class CollectionRecipe extends AbstractRecipe {
             Object value;
             if (recipe != null) {
                 try {
-                	conversionType = defaultConversionType.getRawClass();
+                    conversionType = defaultConversionType.getRawClass();
                     if (recipe instanceof ValueRecipe) {
-                    	conversionType = ((ValueRecipe)recipe).getValueType();
-                    } 
+                        conversionType = ((ValueRecipe) recipe).getValueType();
+                    }
                     value = convert(recipe.create(), conversionType);
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Unable to convert value " + recipe + " to type " + conversionType, e);

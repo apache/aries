@@ -24,115 +24,102 @@ import java.util.Arrays;
 
 /**
  * Custom parametrized type implementation.
- * @version $Rev: 1621935 $ $Date: 2014-09-02 09:07:32 +0200 (Tue, 02 Sep 2014) $
  *
+ * @version $Rev: 1621935 $ $Date: 2014-09-02 09:07:32 +0200 (Tue, 02 Sep 2014) $
  */
-public class OwbParametrizedTypeImpl implements ParameterizedType
-{
-    /**Owner type*/
+public class OwbParametrizedTypeImpl implements ParameterizedType {
+    /**
+     * Owner type
+     */
     private final Type owner;
-    
-    /**Raw type*/
+
+    /**
+     * Raw type
+     */
     private final Type rawType;
-    
-    /**Actual type arguments*/
+
+    /**
+     * Actual type arguments
+     */
     private final Type[] types;
 
     /**
      * New instance.
+     *
      * @param owner owner
-     * @param raw raw
+     * @param raw   raw
      */
-    public OwbParametrizedTypeImpl(Type owner, Type raw, Type... types)
-    {
+    public OwbParametrizedTypeImpl(Type owner, Type raw, Type... types) {
         this.owner = owner;
         rawType = raw;
         this.types = types;
     }
-    
+
     @Override
-    public Type[] getActualTypeArguments()
-    {
+    public Type[] getActualTypeArguments() {
         return types.clone();
     }
-    
+
     @Override
-    public Type getOwnerType()
-    {
+    public Type getOwnerType() {
         return owner;
     }
 
     @Override
-    public Type getRawType()
-    {
+    public Type getRawType() {
         return rawType;
     }
 
-    
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
-    public int hashCode()
-    {
-       return Arrays.hashCode(types) ^ (owner == null ? 0 : owner.hashCode()) ^ (rawType == null ? 0 : rawType.hashCode());
+    public int hashCode() {
+        return Arrays.hashCode(types) ^ (owner == null ? 0 : owner.hashCode()) ^ (rawType == null ? 0 : rawType.hashCode());
     }
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj)
-    {
-       if (this == obj)
-       {
-          return true;
-       }
-       else if (obj instanceof ParameterizedType)
-       {
-          ParameterizedType that = (ParameterizedType) obj;
-          Type thatOwnerType = that.getOwnerType();
-          Type thatRawType = that.getRawType();
-          return (owner == null ? thatOwnerType == null : owner.equals(thatOwnerType))
-                  && (rawType == null ? thatRawType == null : rawType.equals(thatRawType))
-                  && Arrays.equals(types, that.getActualTypeArguments());
-       }
-       else
-       {
-          return false;
-       }
-       
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof ParameterizedType) {
+            ParameterizedType that = (ParameterizedType) obj;
+            Type thatOwnerType = that.getOwnerType();
+            Type thatRawType = that.getRawType();
+            return (owner == null ? thatOwnerType == null : owner.equals(thatOwnerType))
+                    && (rawType == null ? thatRawType == null : rawType.equals(thatRawType))
+                    && Arrays.equals(types, that.getActualTypeArguments());
+        } else {
+            return false;
+        }
+
     }
 
-    public String toString()
-    {
+    public String toString() {
         StringBuilder buffer = new StringBuilder();
         buffer.append(((Class<?>) rawType).getName());
         Type[] actualTypes = getActualTypeArguments();
-        if(actualTypes.length > 0)
-        {
+        if (actualTypes.length > 0) {
             buffer.append("<");
             int length = actualTypes.length;
-            for(int i=0;i<length;i++)
-            {
-                if (actualTypes[i] instanceof Class)
-                {
-                    buffer.append(((Class<?>)actualTypes[i]).getSimpleName());
-                }
-                else
-                {
+            for (int i = 0; i < length; i++) {
+                if (actualTypes[i] instanceof Class) {
+                    buffer.append(((Class<?>) actualTypes[i]).getSimpleName());
+                } else {
                     buffer.append(actualTypes[i].toString());
                 }
-                if(i != actualTypes.length-1)
-                {
+                if (i != actualTypes.length - 1) {
                     buffer.append(", ");
                 }
             }
-            
+
             buffer.append(">");
         }
-        
+
         return buffer.toString();
     }
 }

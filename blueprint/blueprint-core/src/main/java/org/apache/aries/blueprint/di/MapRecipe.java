@@ -64,7 +64,7 @@ public class MapRecipe extends AbstractRecipe {
     }
     
     private ReifiedType getType(Object o) {
-    	ReifiedType type;
+        ReifiedType type;
         if (o instanceof Class) {
             type = new ReifiedType((Class) o);
         } else if (o instanceof String) {
@@ -112,29 +112,27 @@ public class MapRecipe extends AbstractRecipe {
                 instance.put(key, value);
             }
         } catch (Exception e) {
-        	throw new ComponentDefinitionException(e);
+            throw new ComponentDefinitionException(e);
         }
         return instance;
     }
 
-   protected ReifiedType workOutConversionType(Recipe entry, ReifiedType defaultType) {
-       if (entry instanceof ValueRecipe)
-       {
-          return getType(((ValueRecipe) entry).getValueType());
-       } else 
-       {
-          return defaultType;
-       }
-   }
+    protected ReifiedType workOutConversionType(Recipe entry, ReifiedType defaultType) {
+        if (entry instanceof ValueRecipe) {
+            return getType(((ValueRecipe) entry).getValueType());
+        } else {
+            return defaultType;
+        }
+    }
 
     public void put(Recipe key, Recipe value) {
         if (key == null) throw new NullPointerException("key is null");
-        entries.add(new Recipe[] { key, value});
+        entries.add(new Recipe[]{key, value});
     }
 
-    public void putAll(Map<Recipe,Recipe> map) {
+    public void putAll(Map<Recipe, Recipe> map) {
         if (map == null) throw new NullPointerException("map is null");
-        for (Map.Entry<Recipe,Recipe> entry : map.entrySet()) {
+        for (Map.Entry<Recipe, Recipe> entry : map.entrySet()) {
             Recipe key = entry.getKey();
             Recipe value = entry.getValue();
             put(key, value);

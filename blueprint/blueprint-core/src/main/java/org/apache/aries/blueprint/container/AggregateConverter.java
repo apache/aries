@@ -107,7 +107,7 @@ public class AggregateConverter implements Converter {
         if (fromValue == null) {
             return true;
         } else if (fromValue instanceof UnwrapperedBeanHolder) {
-        	fromValue = ((UnwrapperedBeanHolder) fromValue).unwrapperedBean;
+            fromValue = ((UnwrapperedBeanHolder) fromValue).unwrapperedBean;
         }
         if (isAssignable(fromValue, toType)) {
             return true;
@@ -147,14 +147,14 @@ public class AggregateConverter implements Converter {
         if (fromValue instanceof Convertible) {
             return ((Convertible) fromValue).convert(type);
         } else if (fromValue instanceof UnwrapperedBeanHolder) {
-        	UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) fromValue;
-        	if (isAssignable(holder.unwrapperedBean, type)) {
+            UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) fromValue;
+            if (isAssignable(holder.unwrapperedBean, type)) {
                 return BeanRecipe.wrap(holder, type.getRawClass());
             } else {
-            	fromValue = BeanRecipe.wrap(holder, Object.class);
+                fromValue = BeanRecipe.wrap(holder, Object.class);
             }
         } else if (isAssignable(fromValue, type)) {
-        	 // If the object is an instance of the type, just return it
+            // If the object is an instance of the type, just return it
             return fromValue;
         }
         
@@ -200,17 +200,17 @@ public class AggregateConverter implements Converter {
     }
 
     private boolean canConvertWithConverters(Object source, ReifiedType type) {
-        return selectMatchingConverter(source,type) != null;
+        return selectMatchingConverter(source, type) != null;
     }
     
     private ConversionResult convertWithConverters(Object source, ReifiedType type) throws Exception {
 
-        Converter converter = selectMatchingConverter(source,type);
+        Converter converter = selectMatchingConverter(source, type);
 
-        if (converter == null)  return null;
+        if (converter == null) return null;
 
         Object value = converter.convert(source, type);
-        return new ConversionResult(converter,value);
+        return new ConversionResult(converter, value);
     }
     
     public Object convertToNumber(Number value, Class toType) throws Exception {
@@ -293,7 +293,7 @@ public class AggregateConverter implements Converter {
         } else if (Character.class == toType) {
             if (value.length() == 6 && value.startsWith("\\u")) {
                 int code = Integer.parseInt(value.substring(2), 16);
-                return (char)code;
+                return (char) code;
             } else if (value.length() == 1) {
                 return value.charAt(0);
             } else {
@@ -377,7 +377,7 @@ public class AggregateConverter implements Converter {
             return converted ? newDic : obj;
         } else {
             Dictionary newDic = new Hashtable();
-            for (Map.Entry e : ((Map<Object,Object>) obj).entrySet()) {
+            for (Map.Entry e : ((Map<Object, Object>) obj).entrySet()) {
                 try {
                     newDic.put(convert(e.getKey(), keyType), convert(e.getValue(), valueType));
                 } catch (Exception t) {
@@ -406,7 +406,7 @@ public class AggregateConverter implements Converter {
             return newMap;
         } else {
             boolean converted = false;
-            for (Map.Entry e : ((Map<Object,Object>) obj).entrySet()) {
+            for (Map.Entry e : ((Map<Object, Object>) obj).entrySet()) {
                 try {
                     Object nk = convert(e.getKey(), keyType);
                     Object nv = convert(e.getValue(), valueType);
@@ -505,7 +505,7 @@ public class AggregateConverter implements Converter {
         if (!to.isAssignableFrom(from.getRawClass())) {
             return null;
         }
-        for (ReifiedType superType: getExactDirectSuperTypes(from)) {
+        for (ReifiedType superType : getExactDirectSuperTypes(from)) {
             ReifiedType result = getExactSuperType(superType, to);
             if (result != null)
                 return result;
@@ -606,7 +606,7 @@ public class AggregateConverter implements Converter {
     }
 
     public Object convert(Object source, Type target) throws Exception {
-        return convert( source, new GenericType(target));
+        return convert(source, new GenericType(target));
     }
 
     private Class toClass(ReifiedType type) {

@@ -25,53 +25,45 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class WrappedScheduledFuture<T> implements ScheduledFuture<T>
-{
-  private Discardable<?> _discardable;
-  private ScheduledFuture<T> _future;
-  
-  public WrappedScheduledFuture(ScheduledFuture<T> f, Discardable<?> d) {
-    _future = f;
-    _discardable = d;
-  }
+public class WrappedScheduledFuture<T> implements ScheduledFuture<T> {
+    private Discardable<?> _discardable;
+    private ScheduledFuture<T> _future;
 
-  public long getDelay(TimeUnit timeunit)
-  {
-    return _future.getDelay(timeunit);
-  }
+    public WrappedScheduledFuture(ScheduledFuture<T> f, Discardable<?> d) {
+        _future = f;
+        _discardable = d;
+    }
 
-  public int compareTo(Delayed other)
-  {
-    return _future.compareTo(other);
-  }
+    public long getDelay(TimeUnit timeunit) {
+        return _future.getDelay(timeunit);
+    }
 
-  public boolean cancel(boolean arg0)
-  {
-    boolean result = _future.cancel(arg0);
-    
-    if (result) _discardable.discard();
-    
-    return result;
-  }
+    public int compareTo(Delayed other) {
+        return _future.compareTo(other);
+    }
 
-  public T get() throws InterruptedException, ExecutionException
-  {
-    return _future.get();
-  }
+    public boolean cancel(boolean arg0) {
+        boolean result = _future.cancel(arg0);
 
-  public T get(long timeout, TimeUnit timeunit) throws InterruptedException, ExecutionException,
-      TimeoutException
-  {
-    return _future.get(timeout, timeunit);
-  }
+        if (result) _discardable.discard();
 
-  public boolean isCancelled()
-  {
-    return _future.isCancelled();
-  }
+        return result;
+    }
 
-  public boolean isDone()
-  {
-    return _future.isDone();
-  }
+    public T get() throws InterruptedException, ExecutionException {
+        return _future.get();
+    }
+
+    public T get(long timeout, TimeUnit timeunit) throws InterruptedException, ExecutionException,
+            TimeoutException {
+        return _future.get(timeout, timeunit);
+    }
+
+    public boolean isCancelled() {
+        return _future.isCancelled();
+    }
+
+    public boolean isDone() {
+        return _future.isDone();
+    }
 }

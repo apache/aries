@@ -74,11 +74,10 @@ class BlueprintEventDispatcher implements BlueprintListener {
         assert bundleContext != null;
 
         executor = new ScheduledExecutorServiceWrapper(bundleContext, "Blueprint Event Dispatcher", new ScheduledExecutorServiceFactory() {
-          
-          public ScheduledExecutorService create(String name)
-          {
-            return Executors.newScheduledThreadPool(1, new BlueprintThreadFactory(name));
-          }
+
+            public ScheduledExecutorService create(String name) {
+                return Executors.newScheduledThreadPool(1, new BlueprintThreadFactory(name));
+            }
         });
 
         EventAdminListener listener = null;

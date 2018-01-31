@@ -23,43 +23,37 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class WrappedFuture<T> implements Future<T>
-{
-  private Discardable<?> _discardable;
-  private Future<T> _future;
-  
-  public WrappedFuture(Future<T> f, Discardable<?> d) {
-    _future = f;
-    _discardable = d;
-  }
-  
-  public boolean cancel(boolean arg0)
-  {
-    boolean result = _future.cancel(arg0);
-    
-    if (result) _discardable.discard();
-    
-    return result;
-  }
+public class WrappedFuture<T> implements Future<T> {
+    private Discardable<?> _discardable;
+    private Future<T> _future;
 
-  public T get() throws InterruptedException, ExecutionException
-  {
-    return _future.get();
-  }
+    public WrappedFuture(Future<T> f, Discardable<?> d) {
+        _future = f;
+        _discardable = d;
+    }
 
-  public T get(long timeout, TimeUnit timeunit) throws InterruptedException, ExecutionException,
-      TimeoutException
-  {
-    return _future.get(timeout, timeunit);
-  }
+    public boolean cancel(boolean arg0) {
+        boolean result = _future.cancel(arg0);
 
-  public boolean isCancelled()
-  {
-    return _future.isCancelled();
-  }
+        if (result) _discardable.discard();
 
-  public boolean isDone()
-  {
-    return _future.isDone();
-  }
+        return result;
+    }
+
+    public T get() throws InterruptedException, ExecutionException {
+        return _future.get();
+    }
+
+    public T get(long timeout, TimeUnit timeunit) throws InterruptedException, ExecutionException,
+            TimeoutException {
+        return _future.get(timeout, timeunit);
+    }
+
+    public boolean isCancelled() {
+        return _future.isCancelled();
+    }
+
+    public boolean isDone() {
+        return _future.isDone();
+    }
 }

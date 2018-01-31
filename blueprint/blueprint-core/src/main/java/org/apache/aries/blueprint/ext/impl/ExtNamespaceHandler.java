@@ -185,9 +185,9 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         } else if (node instanceof Element && nodeNameEquals(node, ADDITIONAL_INTERFACES)) {
             return decorateAdditionalInterfaces(node, component, context);
         } else if (node instanceof Element && nodeNameEquals(node, BEAN)) {
-            return context.parseElement(BeanMetadata.class, component, (Element)node);
+            return context.parseElement(BeanMetadata.class, component, (Element) node);
         } else if (node instanceof Element && nodeNameEquals(node, REFERENCE)) {
-            RefMetadata rd = context.parseElement(RefMetadata.class, component, (Element)node);
+            RefMetadata rd = context.parseElement(RefMetadata.class, component, (Element) node);
             return createReference(context, rd.getComponentId());
         } else if (node instanceof Attr && nodeNameEquals(node, DAMPING_ATTRIBUTE)) {
             return decorateDamping(node, component, context);
@@ -207,12 +207,12 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         if (!(component instanceof MutableReferenceMetadata)) {
             throw new ComponentDefinitionException("Expected an instanceof MutableReferenceMetadata");
         }
-        MutableReferenceMetadata mrm = (MutableReferenceMetadata)component;
+        MutableReferenceMetadata mrm = (MutableReferenceMetadata) component;
         List<String> list = new ArrayList<String>();
         Node nd = node.getFirstChild();
         while (nd != null) {
             if (nd instanceof Element && nodeNameEquals(nd, INTERFACE_VALUE)) {
-                list.add(((Element)nd).getTextContent());
+                list.add(((Element) nd).getTextContent());
             }
             nd = nd.getNextSibling();
         }

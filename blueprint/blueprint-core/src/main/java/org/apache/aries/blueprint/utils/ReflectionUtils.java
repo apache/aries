@@ -211,8 +211,8 @@ public class ReflectionUtils {
         
         if (properties[index] == null) {
             Set<String> propertyNames = new HashSet<String>();
-            Map<String,Method> getters = new HashMap<String, Method>();
-            Map<String,List<Method>> setters = new HashMap<String, List<Method>>();
+            Map<String, Method> getters = new HashMap<String, Method>();
+            Map<String, List<Method>> setters = new HashMap<String, List<Method>>();
             Set<String> illegalProperties = new HashSet<String>();
             
             for (Method method : getPublicMethods(clazz)) {

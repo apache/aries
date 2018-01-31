@@ -94,10 +94,9 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
 
         handlers = new NamespaceHandlerRegistryImpl(trackingContext);
         executors = new ScheduledExecutorServiceWrapper(ctx, "Blueprint Extender", new ScheduledExecutorServiceFactory() {
-          public ScheduledExecutorService create(String name)
-          {
-            return Executors.newScheduledThreadPool(3, new BlueprintThreadFactory(name));
-          }
+            public ScheduledExecutorService create(String name) {
+                return Executors.newScheduledThreadPool(3, new BlueprintThreadFactory(name));
+            }
         });
         eventDispatcher = new BlueprintEventDispatcher(ctx);
 
@@ -108,40 +107,42 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         // handled.
         context.addBundleListener(this);
         int mask = Bundle.INSTALLED | Bundle.RESOLVED | Bundle.STARTING | Bundle.STOPPING | Bundle.ACTIVE;
-        bt = useSystemContext ? new BundleTracker(trackingContext, mask, this) : new  RecursiveBundleTracker(ctx, mask, this);
         
+        bt = useSystemContext ? new BundleTracker(trackingContext, mask, this) : new RecursiveBundleTracker(ctx, mask, this);
         proxyManager = new SingleServiceTracker<ProxyManager>(ctx, ProxyManager.class, new SingleServiceListener() {
-          public void serviceFound() {
-            LOGGER.debug("Found ProxyManager service, starting to process blueprint bundles");
-            if (bt instanceof BundleTracker) {
-            	((BundleTracker) bt).open();
-            } else if (bt instanceof RecursiveBundleTracker) {
-            	((RecursiveBundleTracker) bt).open();
+            public void serviceFound() {
+                LOGGER.debug("Found ProxyManager service, starting to process blueprint bundles");
+                if (bt instanceof BundleTracker) {
+                    ((BundleTracker) bt).open();
+                } else if (bt instanceof RecursiveBundleTracker) {
+                    ((RecursiveBundleTracker) bt).open();
+                }
             }
-          }
-          public void serviceLost() {
-            while (!containers.isEmpty()) {
-              for (Bundle bundle : getBundlesToDestroy()) {
-                destroyContainer(bundle);
-              }
+
+            public void serviceLost() {
+                while (!containers.isEmpty()) {
+                    for (Bundle bundle : getBundlesToDestroy()) {
+                        destroyContainer(bundle);
+                    }
+                }
+                if (bt instanceof BundleTracker) {
+                    ((BundleTracker) bt).close();
+                } else if (bt instanceof RecursiveBundleTracker) {
+                    ((RecursiveBundleTracker) bt).close();
+                }
             }
-            if (bt instanceof BundleTracker) {
-            	((BundleTracker) bt).close();
-            } else if (bt instanceof RecursiveBundleTracker) {
-            	((RecursiveBundleTracker) bt).close();
+
+            public void serviceReplaced() {
             }
-          }
-          public void serviceReplaced() {
-          }
         });
         proxyManager.open();
         
         // Determine if the ParserService should ignore unknown namespace handlers
         boolean ignoreUnknownNamespaceHandlers = Boolean.parseBoolean(ctx.getProperty(BlueprintConstants.IGNORE_UNKNOWN_NAMESPACE_HANDLERS_PROPERTY));
         // Create and publish a ParserService
-        parserServiceReg = ctx.registerService(ParserService.class.getName(), 
-            new ParserServiceImpl (handlers, ignoreUnknownNamespaceHandlers), 
-            new Hashtable<String, Object>());
+        parserServiceReg = ctx.registerService(ParserService.class.getName(),
+                new ParserServiceImpl(handlers, ignoreUnknownNamespaceHandlers),
+                new Hashtable<String, Object>());
 
         // Create and publish a BlueprintContainerService
         blueprintServiceReg = ctx.registerService(
@@ -149,16 +150,14 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                 new BlueprintContainerServiceImpl(),
                 new Hashtable<String, Object>());
 
-        try{
+        try {
             ctx.getBundle().loadClass(QUIESCE_PARTICIPANT_CLASS);
             //Class was loaded, register
 
-            quiesceParticipantReg = ctx.registerService(QUIESCE_PARTICIPANT_CLASS, 
-              new BlueprintQuiesceParticipant(ctx, this), 
-              new Hashtable<String, Object>());
-        } 
-        catch (ClassNotFoundException e) 
-        {
+            quiesceParticipantReg = ctx.registerService(QUIESCE_PARTICIPANT_CLASS,
+                    new BlueprintQuiesceParticipant(ctx, this),
+                    new Hashtable<String, Object>());
+        } catch (ClassNotFoundException e) {
             LOGGER.info("No quiesce support is available, so blueprint components will not participate in quiesce operations");
         }
         
@@ -182,9 +181,9 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
 
         if (bt instanceof BundleTracker) {
-        	((BundleTracker) bt).close();
+            ((BundleTracker) bt).close();
         } else if (bt instanceof RecursiveBundleTracker) {
-        	((RecursiveBundleTracker) bt).close();
+            ((RecursiveBundleTracker) bt).close();
         }
         proxyManager.close();
 
@@ -529,7 +528,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
 
     interface ExecutorServiceFinder {
 
-        public ExecutorService find( Bundle bundle );
+        public ExecutorService find(Bundle bundle);
 
     }
 
@@ -584,16 +583,15 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         while (e != null && e.hasMoreElements()) {
             URL u = (URL) e.nextElement();
             URL override = getOverrideURL(bundle, u, path);
-            if(override == null) {
+            if (override == null) {
                 pathList.add(u);
             } else {
                 pathList.add(override);
             }
         }
     }
-    
-    protected BlueprintContainerImpl getBlueprintContainerImpl(Bundle bundle)
-    {
+
+    protected BlueprintContainerImpl getBlueprintContainerImpl(Bundle bundle) {
         return containers.get(bundle);
     }
 

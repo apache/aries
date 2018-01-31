@@ -261,7 +261,7 @@ public final class Helper {
      * Provides an iterable collection of references, even if the original array is <code>null</code>.
      */
     private static Collection<ServiceReference> asCollection(ServiceReference[] references) {
-        return references  == null ? new ArrayList<ServiceReference>(0) : Arrays.asList(references);
+        return references == null ? new ArrayList<ServiceReference>(0) : Arrays.asList(references);
     }
 
     /**
@@ -497,12 +497,12 @@ public final class Helper {
         if (value == null) {
             return Collections.emptyList().iterator();
         } else if (value instanceof Iterator) {
-            return (Iterator<Object>)value;
+            return (Iterator<Object>) value;
         } else if (value instanceof Iterable) {
-            return ((Iterable<Object>)value).iterator();
+            return ((Iterable<Object>) value).iterator();
         } else if (value.getClass().isArray()) {
             // TODO we should handle primitive array types?
-            List<Object> list = Arrays.asList((Object[])value);
+            List<Object> list = Arrays.asList((Object[]) value);
             return list.iterator();
         } else if (value instanceof NodeList) {
             // lets iterate through DOM results after performing XPaths
@@ -530,7 +530,7 @@ public final class Helper {
 
             if (delimiter != null && s.contains(delimiter)) {
                 // use a scanner if it contains the delimiter
-                Scanner scanner = new Scanner((String)value);
+                Scanner scanner = new Scanner((String) value);
 
                 if (DEFAULT_DELIMITER.equals(delimiter)) {
                     // we use the default delimiter which is a comma, then cater for bean expressions with OGNL
