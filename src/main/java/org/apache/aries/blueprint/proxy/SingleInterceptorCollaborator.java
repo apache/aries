@@ -56,9 +56,9 @@ public class SingleInterceptorCollaborator implements InvocationListener, Serial
             throws Throwable {
         Object callToken = NON_INVOKED;
         try {
-              callToken = interceptor.preCall(cm, m, parameters);
+            callToken = interceptor.preCall(cm, m, parameters);
         } catch (Throwable t) {
-        	// using null token here to be consistent with what Collaborator does
+            // using null token here to be consistent with what Collaborator does
             postInvokeExceptionalReturn(null, o, m, t);
             throw t;
         }
@@ -68,10 +68,10 @@ public class SingleInterceptorCollaborator implements InvocationListener, Serial
     /**
      * Called when the method is called and returned normally
      */
-    public void postInvoke(Object token, Object o, Method method, 
-         Object returnType) throws Throwable {
+    public void postInvoke(Object token, Object o, Method method,
+                           Object returnType) throws Throwable {
 
-        if(token != NON_INVOKED) {
+        if (token != NON_INVOKED) {
             try {
                 interceptor.postCallWithReturn(cm, method, returnType, token);
             } catch (Throwable t) {
@@ -85,7 +85,7 @@ public class SingleInterceptorCollaborator implements InvocationListener, Serial
      * Called when the method is called and returned with an exception
      */
     public void postInvokeExceptionalReturn(Object token, Object o, Method method,
-                 Throwable exception) throws Throwable {
+                                            Throwable exception) throws Throwable {
         try {
             interceptor.postCallWithException(cm, method, exception, token);
         } catch (Throwable t) {

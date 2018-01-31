@@ -72,8 +72,8 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
      * Throws IllegalArgumentException if the bean metadata does not exist in this blueprint container
      * Throws ComponentDefinitionException if the injection process fails - this may have rendered the supplied Object unusable by partially completing the injection process
      */
-    void injectBeanInstance(BeanMetadata bmd, Object o) 
-        throws IllegalArgumentException, ComponentDefinitionException;
+    void injectBeanInstance(BeanMetadata bmd, Object o)
+            throws IllegalArgumentException, ComponentDefinitionException;
 
     ExecutorService getExecutors();
 

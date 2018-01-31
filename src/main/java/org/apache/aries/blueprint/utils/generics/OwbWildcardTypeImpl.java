@@ -21,79 +21,58 @@ package org.apache.aries.blueprint.utils.generics;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 
-public class OwbWildcardTypeImpl implements WildcardType
-{
+public class OwbWildcardTypeImpl implements WildcardType {
 
     private Type[] upperBounds;
     private Type[] lowerBounds;
-    
-    public OwbWildcardTypeImpl(Type[] upperBounds, Type[] lowerBounds)
-    {
+
+    public OwbWildcardTypeImpl(Type[] upperBounds, Type[] lowerBounds) {
         this.upperBounds = upperBounds.clone();
         this.lowerBounds = lowerBounds.clone();
     }
 
     @Override
-    public Type[] getUpperBounds()
-    {
+    public Type[] getUpperBounds() {
         return upperBounds.clone();
     }
 
     @Override
-    public Type[] getLowerBounds()
-    {
+    public Type[] getLowerBounds() {
         return lowerBounds.clone();
     }
 
-    public String toString()
-    {
+    public String toString() {
         StringBuilder buffer = new StringBuilder("?");
-        if (upperBounds.length > 0)
-        {
+        if (upperBounds.length > 0) {
             buffer.append(" extends");
             boolean first = true;
-            for (Type upperBound: upperBounds)
-            {
-                if (first)
-                {
+            for (Type upperBound : upperBounds) {
+                if (first) {
                     first = false;
-                }
-                else
-                {
+                } else {
                     buffer.append(',');
                 }
                 buffer.append(' ');
-                if (upperBound instanceof Class)
-                {
-                    buffer.append(((Class<?>)upperBound).getSimpleName());
-                }
-                else
-                {
+                if (upperBound instanceof Class) {
+                    buffer.append(((Class<?>) upperBound).getSimpleName());
+                } else {
                     buffer.append(upperBound);
                 }
             }
         }
-        if (lowerBounds.length > 0)
-        {
+        if (lowerBounds.length > 0) {
             buffer.append(" super");
             boolean first = true;
-            for (Type lowerBound: lowerBounds)
-            {
-                if (first)
-                {
+            for (Type lowerBound : lowerBounds) {
+                if (first) {
                     first = false;
-                }
-                else
-                {
+                } else {
                     buffer.append(',');
                 }
                 buffer.append(' ');
-                if (lowerBound instanceof Class)
-                {
-                    buffer.append(((Class<?>)lowerBound).getSimpleName());
-                }
-                else
-                {
+                if (lowerBound instanceof Class) {
+                    buffer.append(((Class<?>) lowerBound).getSimpleName());
+                } else {
                     buffer.append(lowerBound);
                 }
             }

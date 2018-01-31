@@ -269,7 +269,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     @SuppressWarnings("unchecked")
     protected void createListeners() {
         if (listenersRecipe != null) {
-            List<Listener> listeners = (List<Listener>)listenersRecipe.create();
+            List<Listener> listeners = (List<Listener>) listenersRecipe.create();
             for (Listener listener : listeners) {
                 List<Class> classList = new ArrayList<Class>();
                 Class clz = getInterfaceClass();
@@ -334,20 +334,20 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     public void serviceChanged(ServiceEvent event) {
-      int eventType = event.getType();
-      ServiceReference ref = event.getServiceReference();
-      switch (eventType) {
-          case ServiceEvent.REGISTERED:
-              serviceAdded(ref, event);
-              break;
-          case ServiceEvent.MODIFIED:
-              serviceModified(ref, event);
-              break;
-          case ServiceEvent.UNREGISTERING:
-              serviceRemoved(ref, event);
-              break;
-      }
-    }  
+        int eventType = event.getType();
+        ServiceReference ref = event.getServiceReference();
+        switch (eventType) {
+            case ServiceEvent.REGISTERED:
+                serviceAdded(ref, event);
+                break;
+            case ServiceEvent.MODIFIED:
+                serviceModified(ref, event);
+                break;
+            case ServiceEvent.UNREGISTERING:
+                serviceRemoved(ref, event);
+                break;
+        }
+    }
 
 
     private void serviceAdded(ServiceReference ref, ServiceEvent event) {
@@ -395,16 +395,16 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     
     protected static Class getRuntimeClass(ServiceReferenceMetadata metadata) {
         if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
-           return ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface();
-        } 
+            return ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface();
+        }
         return null;
     }
 
     protected BundleContext getBundleContextForServiceLookup() {
         if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
             BundleContext context = ((ExtendedServiceReferenceMetadata) metadata).getBundleContext();
-            if(context != null) {
-              return context;
+            if (context != null) {
+                return context;
             }
         }
          
@@ -625,7 +625,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         }
         if (interfaceName != null && interfaceName.length() > 0) {
             if (metadata instanceof ExtendedReferenceMetadata) {
-                ExtendedReferenceMetadata erm = (ExtendedReferenceMetadata)metadata;
+                ExtendedReferenceMetadata erm = (ExtendedReferenceMetadata) metadata;
                 if (!erm.getExtraInterfaces().isEmpty()) {
                     StringBuilder sb = new StringBuilder("(&");
                     sb.append("(" + Constants.OBJECTCLASS + "=" + interfaceName + ")");

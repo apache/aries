@@ -80,7 +80,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     /**
      * Contains partial objects.
      */
-    private final ThreadLocal<Map<String, Object>> partialObjects = new ThreadLocal<Map<String,Object>>();
+    private final ThreadLocal<Map<String, Object>> partialObjects = new ThreadLocal<Map<String, Object>>();
 
     /**
      * Before each recipe is executed it is pushed on the stack.  The
@@ -159,11 +159,11 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     public Object create(String name, Collection<Class<?>> proxyInterfaces) throws ComponentDefinitionException {
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
-            Object instance = createInstance(name); 
-            if(instance instanceof UnwrapperedBeanHolder)
+            Object instance = createInstance(name);
+            if (instance instanceof UnwrapperedBeanHolder)
                 instance = BeanRecipe.wrap((UnwrapperedBeanHolder) instance, proxyInterfaces);
             return convert(name, instance);
-		} finally {
+        } finally {
             ExecutionContext.Holder.setContext(oldContext);
         }
     }
@@ -174,8 +174,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
             Map<String, Object> instances = createInstances(names);
             for (String name : instances.keySet()) {
                 Object obj = instances.get(name);
-                if(obj instanceof UnwrapperedBeanHolder)
-                	obj = BeanRecipe.wrap((UnwrapperedBeanHolder) obj, proxyInterfaces);
+                if (obj instanceof UnwrapperedBeanHolder)
+                    obj = BeanRecipe.wrap((UnwrapperedBeanHolder) obj, proxyInterfaces);
                 instances.put(name, convert(name, obj));
             }
             return instances;
@@ -335,8 +335,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     private Object createInstance(String name) {
         Object instance = getInstance(name);
         if (instance == null) {
-            Map <String, Object> instances = createInstances(Arrays.asList(name));
-            instance = instances.get(name); 
+            Map<String, Object> instances = createInstances(Arrays.asList(name));
+            instance = instances.get(name);
             if (instance == null) {
                 throw new NoSuchComponentException(name);
             }

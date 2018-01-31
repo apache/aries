@@ -113,7 +113,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             if (clz != null) interfaces.add(clz);
             
             if (metadata instanceof ExtendedReferenceMetadata) {
-                interfaces.addAll(loadAllClasses(((ExtendedReferenceMetadata)metadata).getExtraInterfaces()));
+                interfaces.addAll(loadAllClasses(((ExtendedReferenceMetadata) metadata).getExtraInterfaces()));
             }
 
             Object result;
@@ -193,14 +193,14 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             voidProxiedChildren();
             bind(trackedServiceReference, proxy);
             if (ref != oldReference) {
-              if (oldReference != null && trackedService != null) {
-                try {
-                  blueprintContainer.getBundleContext().ungetService(oldReference);
-                } catch (IllegalStateException ise) {
-                  // In case the service no longer exists lets just cope and ignore.
+                if (oldReference != null && trackedService != null) {
+                    try {
+                        blueprintContainer.getBundleContext().ungetService(oldReference);
+                    } catch (IllegalStateException ise) {
+                        // In case the service no longer exists lets just cope and ignore.
+                    }
                 }
-              }
-              trackedService = null;
+                trackedService = null;
             }
             monitor.notifyAll();
         }
@@ -214,13 +214,13 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 ServiceReference oldReference = trackedServiceReference;
                 trackedServiceReference = null;
                 voidProxiedChildren();
-                if(trackedService != null){
-                  try {
-                    getBundleContextForServiceLookup().ungetService(oldReference);
-                  } catch (IllegalStateException ise) {
-                    // In case the service no longer exists lets just cope and ignore.
-                  }
-                  trackedService = null;
+                if (trackedService != null) {
+                    try {
+                        getBundleContextForServiceLookup().ungetService(oldReference);
+                    } catch (IllegalStateException ise) {
+                        // In case the service no longer exists lets just cope and ignore.
+                    }
+                    trackedService = null;
                 }
                 monitor.notifyAll();
             }
@@ -238,54 +238,54 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             Object result = null;
             if (trackedServiceReference == null) {
                 if (isStarted()) {
-                  boolean failed = true;
-                  if (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL && 
-                      metadata instanceof ExtendedReferenceMetadata) {
-                     if (defaultBean == null) {
-                         String defaultBeanId = ((ExtendedReferenceMetadata)metadata).getDefaultBean();
-                         if (defaultBeanId != null) {
-                           defaultBean = blueprintContainer.getComponentInstance(defaultBeanId);
-                           failed = false;
-                         }
-                     } else {
-                         failed = false;
-                     }
-                     result = defaultBean;
-                  } 
-                  
-                  if (failed) {
-                    if (metadata.getAvailability() == ServiceReferenceMetadata.AVAILABILITY_MANDATORY) {
-                        LOGGER.info("Timeout expired when waiting for mandatory OSGi service reference {}", getOsgiFilter());
-                        throw new ServiceUnavailableException("Timeout expired when waiting for mandatory OSGi service reference: " + getOsgiFilter(), getOsgiFilter());
-                    } else {
-                        LOGGER.info("No matching service for optional OSGi service reference {}", getOsgiFilter());
-                        throw new ServiceUnavailableException("No matching service for optional OSGi service reference: " + getOsgiFilter(), getOsgiFilter());
+                    boolean failed = true;
+                    if (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL &&
+                            metadata instanceof ExtendedReferenceMetadata) {
+                        if (defaultBean == null) {
+                            String defaultBeanId = ((ExtendedReferenceMetadata) metadata).getDefaultBean();
+                            if (defaultBeanId != null) {
+                                defaultBean = blueprintContainer.getComponentInstance(defaultBeanId);
+                                failed = false;
+                            }
+                        } else {
+                            failed = false;
+                        }
+                        result = defaultBean;
                     }
-                  }
+
+                    if (failed) {
+                        if (metadata.getAvailability() == ServiceReferenceMetadata.AVAILABILITY_MANDATORY) {
+                            LOGGER.info("Timeout expired when waiting for mandatory OSGi service reference {}", getOsgiFilter());
+                            throw new ServiceUnavailableException("Timeout expired when waiting for mandatory OSGi service reference: " + getOsgiFilter(), getOsgiFilter());
+                        } else {
+                            LOGGER.info("No matching service for optional OSGi service reference {}", getOsgiFilter());
+                            throw new ServiceUnavailableException("No matching service for optional OSGi service reference: " + getOsgiFilter(), getOsgiFilter());
+                        }
+                    }
                 } else {
                     throw new ServiceUnavailableException("The Blueprint container is being or has been destroyed: " + getOsgiFilter(), getOsgiFilter());
                 }
             } else {
-            
-              if (trackedService == null) {
-            	  trackedService = getServiceSecurely(trackedServiceReference);
-              }
-              
-              if (trackedService == null) {
-                  throw new IllegalStateException("getService() returned null for " + trackedServiceReference);
-              }
-              
-              result = trackedService;
+
+                if (trackedService == null) {
+                    trackedService = getServiceSecurely(trackedServiceReference);
+                }
+
+                if (trackedService == null) {
+                    throw new IllegalStateException("getService() returned null for " + trackedServiceReference);
+                }
+
+                result = trackedService;
             }
             return result;
         }
     }
 
     private BlueprintEvent createWaitingevent() {
-        return new BlueprintEvent(BlueprintEvent.WAITING, 
-                                  blueprintContainer.getBundleContext().getBundle(), 
-                                  blueprintContainer.getExtenderBundle(), 
-                                  new String[] { getOsgiFilter() });
+        return new BlueprintEvent(BlueprintEvent.WAITING,
+                blueprintContainer.getBundleContext().getBundle(),
+                blueprintContainer.getExtenderBundle(),
+                new String[]{getOsgiFilter()});
     }
 
     private ServiceReference getServiceReference() throws InterruptedException {
@@ -298,21 +298,21 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     }
     
     private void voidProxiedChildren() {
-        if(proxyChildBeanClasses != null) {
-            synchronized(proxiedChildren) {
-                for(Iterator<WeakReference<Voidable>> it = proxiedChildren.iterator(); it.hasNext();) {
+        if (proxyChildBeanClasses != null) {
+            synchronized (proxiedChildren) {
+                for (Iterator<WeakReference<Voidable>> it = proxiedChildren.iterator(); it.hasNext(); ) {
                     Voidable v = it.next().get();
-                    if(v == null)
+                    if (v == null)
                         it.remove();
                     else
-                      v.voidReference();
+                        v.voidReference();
                 }
             }
         }
     }
     
     public void addVoidableChild(Voidable v) {
-        if(proxyChildBeanClasses != null) {
+        if (proxyChildBeanClasses != null) {
             synchronized (proxiedChildren) {
                 proxiedChildren.add(new WeakReference<Voidable>(v));
             }

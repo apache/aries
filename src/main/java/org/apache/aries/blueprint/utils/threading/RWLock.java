@@ -23,51 +23,46 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-public class RWLock
-{
-  private ReentrantReadWriteLock _lock = new ReentrantReadWriteLock();
-  
-  public <T> T runReadOperation(Callable<T> call) throws Exception
-  {
-    ReadLock rl = _lock.readLock();
-    rl.lock();
-    try {
-      return call.call();
-    } finally {
-      rl.unlock();
+public class RWLock {
+    private ReentrantReadWriteLock _lock = new ReentrantReadWriteLock();
+
+    public <T> T runReadOperation(Callable<T> call) throws Exception {
+        ReadLock rl = _lock.readLock();
+        rl.lock();
+        try {
+            return call.call();
+        } finally {
+            rl.unlock();
+        }
     }
-  }
-  
-  public void runReadOperation(Runnable r)
-  {
-    ReadLock rl = _lock.readLock();
-    rl.lock();
-    try {
-      r.run();
-    } finally {
-      rl.unlock();
+
+    public void runReadOperation(Runnable r) {
+        ReadLock rl = _lock.readLock();
+        rl.lock();
+        try {
+            r.run();
+        } finally {
+            rl.unlock();
+        }
     }
-  }
-  
-  public <T> T runWriteOperation(Callable<T> call) throws Exception
-  {
-    WriteLock wl = _lock.writeLock();
-    wl.lock();
-    try {
-      return call.call();
-    } finally {
-      wl.unlock();
+
+    public <T> T runWriteOperation(Callable<T> call) throws Exception {
+        WriteLock wl = _lock.writeLock();
+        wl.lock();
+        try {
+            return call.call();
+        } finally {
+            wl.unlock();
+        }
     }
-  }
-  
-  public void runWriteOperation(Runnable r)
-  {
-    WriteLock wl = _lock.writeLock();
-    wl.lock();
-    try {
-      r.run();
-    } finally {
-      wl.unlock();
+
+    public void runWriteOperation(Runnable r) {
+        WriteLock wl = _lock.writeLock();
+        wl.lock();
+        try {
+            r.run();
+        } finally {
+            wl.unlock();
+        }
     }
-  }
 }

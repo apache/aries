@@ -315,7 +315,7 @@ public class BeanRecipe extends AbstractRecipe {
                 throw wrapAsCompDefEx(e);
             }
         } else if (factoryObj instanceof UnwrapperedBeanHolder) {
-                factoryObj = wrap((UnwrapperedBeanHolder) factoryObj, Object.class);
+            factoryObj = wrap((UnwrapperedBeanHolder) factoryObj, Object.class);
         }
         return factoryObj;
     }
@@ -436,7 +436,7 @@ public class BeanRecipe extends AbstractRecipe {
             }
             if (assignable) {
                 return obj instanceof UnwrapperedBeanHolder
-                            ? ((UnwrapperedBeanHolder) obj).unwrapperedBean : obj;
+                        ? ((UnwrapperedBeanHolder) obj).unwrapperedBean : obj;
             }
         }
         return convert(obj, to);
@@ -534,7 +534,7 @@ public class BeanRecipe extends AbstractRecipe {
                                 BeanProcessor parentBeanProcessor,
                                 BeanMetadata beanData,
                                 String beanName,
-                                ChainType when){
+                                ChainType when) {
             this.parentBeanCreator = parentBeanCreator;
             this.parentBeanProcessor = parentBeanProcessor;
             this.beanData = beanData;
@@ -545,19 +545,19 @@ public class BeanRecipe extends AbstractRecipe {
         public Object getBean() {
             Object previousBean = parentBeanCreator.getBean();
             Object processed = null;
-            switch(when){
-                case Before :
-                  processed = parentBeanProcessor.beforeInit(previousBean, beanName, parentBeanCreator, beanData);
-                  break;
+            switch (when) {
+                case Before:
+                    processed = parentBeanProcessor.beforeInit(previousBean, beanName, parentBeanCreator, beanData);
+                    break;
                 case After:
-                  processed = parentBeanProcessor.afterInit(previousBean, beanName, parentBeanCreator, beanData);
-                  break;
+                    processed = parentBeanProcessor.afterInit(previousBean, beanName, parentBeanCreator, beanData);
+                    break;
             }
             return processed;
         }   
     }
     
-    private Object runBeanProcPreInit(Object obj){
+    private Object runBeanProcPreInit(Object obj) {
         String beanName = getName();
         BeanMetadata beanData = (BeanMetadata) blueprintContainer
           .getComponentDefinitionRegistry().getComponentDefinition(beanName);        
@@ -576,7 +576,7 @@ public class BeanRecipe extends AbstractRecipe {
         };
 
         BeanProcessor.BeanCreator currentCreator = initialBeanCreator;
-        for(BeanProcessor processor : processors){
+        for (BeanProcessor processor : processors) {
             obj = processor.beforeInit(obj, getName(), currentCreator, beanData);
             currentCreator = new BeanCreatorChain(currentCreator, processor, beanData, beanName, BeanCreatorChain.ChainType.Before);
         }
@@ -594,10 +594,10 @@ public class BeanRecipe extends AbstractRecipe {
         }   
     }
     
-    private Object runBeanProcPostInit(Object obj){
+    private Object runBeanProcPostInit(Object obj) {
         String beanName = getName();
         BeanMetadata beanData = (BeanMetadata) blueprintContainer
-          .getComponentDefinitionRegistry().getComponentDefinition(beanName);        
+                .getComponentDefinitionRegistry().getComponentDefinition(beanName);
         List<BeanProcessor> processors = blueprintContainer.getProcessors(BeanProcessor.class);
         
         //The start link of the chain, that provides the 
@@ -618,7 +618,7 @@ public class BeanRecipe extends AbstractRecipe {
         };
 
         BeanProcessor.BeanCreator currentCreator = initialBeanCreator;
-        for(BeanProcessor processor : processors){
+        for (BeanProcessor processor : processors) {
             obj = processor.afterInit(obj, getName(), currentCreator, beanData);
             currentCreator = new BeanCreatorChain(currentCreator, processor, beanData, beanName, BeanCreatorChain.ChainType.After);
         }
@@ -629,9 +629,9 @@ public class BeanRecipe extends AbstractRecipe {
             throws ComponentDefinitionException {
 
         Object intercepted = null;
-        if(requiredInterfaces.isEmpty())
-        	requiredInterfaces.add(original.getClass());
-        
+        if (requiredInterfaces.isEmpty())
+            requiredInterfaces.add(original.getClass());
+
         ComponentDefinitionRegistry reg = blueprintContainer
                 .getComponentDefinitionRegistry();
         List<Interceptor> interceptors = reg.getInterceptors(interceptorLookupKey);
@@ -643,7 +643,7 @@ public class BeanRecipe extends AbstractRecipe {
                     b = blueprintContainer.getBundleContext().getBundle();
                 }
                 intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
-                requiredInterfaces, original, CollaboratorFactory.create(interceptorLookupKey, interceptors));
+                        requiredInterfaces, original, CollaboratorFactory.create(interceptorLookupKey, interceptors));
             } catch (org.apache.aries.proxy.UnableToProxyException e) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
                 throw new ComponentDefinitionException("Unable to create proxy for bean " + name + " in bundle " + b.getSymbolicName() + "/" + b.getVersion(), e);
@@ -714,11 +714,11 @@ public class BeanRecipe extends AbstractRecipe {
     }
     
     static Object wrap(UnwrapperedBeanHolder holder, Class<?> requiredView) {
-        if(requiredView == Object.class) {
-          //We don't know what we need so we have to do everything
+        if (requiredView == Object.class) {
+            //We don't know what we need so we have to do everything
             return holder.recipe.addInterceptors(holder.unwrapperedBean, new ArrayList<Class<?>>(1));
         } else {
-        	return holder.recipe.addInterceptors(holder.unwrapperedBean, ProxyUtils.asList(requiredView));
+            return holder.recipe.addInterceptors(holder.unwrapperedBean, ProxyUtils.asList(requiredView));
         }
     }
     
@@ -730,8 +730,8 @@ public class BeanRecipe extends AbstractRecipe {
             return;
         }
     
-        obj = ((UnwrapperedBeanHolder)obj).unwrapperedBean;
     
+        obj = ((UnwrapperedBeanHolder) obj).unwrapperedBean;
         for (BeanProcessor processor : blueprintContainer.getProcessors(BeanProcessor.class)) {
             processor.beforeDestroy(obj, getName());
         }
@@ -744,10 +744,10 @@ public class BeanRecipe extends AbstractRecipe {
             // This exception occurs if the destroy method does not exist, so we just output the exception message.
             LOGGER.error(e.getMessage());
         } catch (InvocationTargetException ite) {
-          Throwable t = ite.getTargetException();
-          BundleContext ctx = blueprintContainer.getBundleContext();
-          Bundle b = ctx.getBundle();
-          LOGGER.error("The blueprint bean {} in bundle {}/{} incorrectly threw an exception from its destroy method.", getName(), b.getSymbolicName(), b.getVersion(), t);
+            Throwable t = ite.getTargetException();
+            BundleContext ctx = blueprintContainer.getBundleContext();
+            Bundle b = ctx.getBundle();
+            LOGGER.error("The blueprint bean {} in bundle {}/{} incorrectly threw an exception from its destroy method.", getName(), b.getSymbolicName(), b.getVersion(), t);
         } catch (Exception e) {
             BundleContext ctx = blueprintContainer.getBundleContext();
             Bundle b = ctx.getBundle();
@@ -760,7 +760,7 @@ public class BeanRecipe extends AbstractRecipe {
 
     public void setProperties(Object instance) throws ComponentDefinitionException {
         // clone the properties so they can be used again
-        Map<String,Object> propertyValues = new LinkedHashMap<String,Object>(properties);
+        Map<String, Object> propertyValues = new LinkedHashMap<String, Object>(properties);
         setProperties(propertyValues, instance, instance.getClass());
     }
 
@@ -917,20 +917,20 @@ public class BeanRecipe extends AbstractRecipe {
                 } else if (arg != null) {
                     if (convert) {
                         
-                        if(canConvert(arg, entry.type)) {
+                        if (canConvert(arg, entry.type)) {
                             try {
-								val = convert(arg, entry.type);
-							} catch (Exception e) {
-								throw new ComponentDefinitionException(e);
-							}
-                        } else { 
+                                val = convert(arg, entry.type);
+                            } catch (Exception e) {
+                                throw new ComponentDefinitionException(e);
+                            }
+                        } else {
                             continue;
                         }
                     } else {
-                    	UnwrapperedBeanHolder holder = null;
-                        if(arg instanceof UnwrapperedBeanHolder) {
-                        	holder = (UnwrapperedBeanHolder)arg;
-                        	arg = holder.unwrapperedBean;
+                        UnwrapperedBeanHolder holder = null;
+                        if (arg instanceof UnwrapperedBeanHolder) {
+                            holder = (UnwrapperedBeanHolder) arg;
+                            arg = holder.unwrapperedBean;
                         }
                         if (!AggregateConverter.isAssignable(arg, entry.type)) {
                             continue;

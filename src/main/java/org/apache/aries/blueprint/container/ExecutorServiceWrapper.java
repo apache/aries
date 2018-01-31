@@ -86,7 +86,7 @@ public class ExecutorServiceWrapper extends AbstractExecutorService implements R
     }
 
     protected void triggerExecution() {
-        if( triggered.compareAndSet(false, true) ) {
+        if (triggered.compareAndSet(false, true)) {
             delegate.execute(this);
         }
     }

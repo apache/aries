@@ -41,7 +41,7 @@ import org.osgi.service.blueprint.container.ReifiedType;
  */
 public class GenericType extends ReifiedType {
 
-	private static final GenericType[] EMPTY = new GenericType[0];
+    private static final GenericType[] EMPTY = new GenericType[0];
 
     private static final Map<String, Class> primitiveClasses = new HashMap<String, Class>();
 
@@ -65,9 +65,9 @@ public class GenericType extends ReifiedType {
     private GenericType[] parameters;
     private BoundType boundType;
 
-	public GenericType(Type type) {
-		this(getConcreteClass(type), boundType(type), parametersOf(type));
-	}
+    public GenericType(Type type) {
+        this(getConcreteClass(type), boundType(type), parametersOf(type));
+    }
 
     public GenericType(Class clazz, GenericType... parameters) {
         this(clazz, BoundType.Exact, parameters);
@@ -119,17 +119,17 @@ public class GenericType extends ReifiedType {
             return new GenericType(((ClassLoader) loader).loadClass(type));
         } else if (loader instanceof Bundle) {
             try {
-              return AccessController.doPrivileged(new PrivilegedExceptionAction<GenericType>() {
-                public GenericType run() throws ClassNotFoundException {
-                  return new GenericType(((Bundle) loader).loadClass(type));
-                }
-              });
+                return AccessController.doPrivileged(new PrivilegedExceptionAction<GenericType>() {
+                    public GenericType run() throws ClassNotFoundException {
+                        return new GenericType(((Bundle) loader).loadClass(type));
+                    }
+                });
             } catch (PrivilegedActionException pae) {
-              Exception e = pae.getException();
-              if (e instanceof ClassNotFoundException) 
-                throw (ClassNotFoundException) e;
-              else
-                throw (RuntimeException) e;
+                Exception e = pae.getException();
+                if (e instanceof ClassNotFoundException)
+                    throw (ClassNotFoundException) e;
+                else
+                    throw (RuntimeException) e;
             }
         } else if (loader instanceof ExecutionContext) {
             return new GenericType(((ExecutionContext) loader).loadClass(type));
@@ -178,7 +178,7 @@ public class GenericType extends ReifiedType {
                 }
                 sb.append(parameters[i].toString());
             }
-            sb.append(">");   
+            sb.append(">");
         }
         return sb.toString();
     }
@@ -239,30 +239,30 @@ public class GenericType extends ReifiedType {
     }
 
     static GenericType[] parametersOf(Type type) {
-		if (type instanceof Class) {
-		    Class clazz = (Class) type;
-		    if (clazz.isArray()) {
+        if (type instanceof Class) {
+            Class clazz = (Class) type;
+            if (clazz.isArray()) {
                 GenericType t = new GenericType(clazz.getComponentType());
                 if (t.size() > 0) {
 		            return new GenericType[] { t };
                 } else {
                     return EMPTY;
                 }
-		    } else {
-		        return EMPTY;
-		    }
-		}
+            } else {
+                return EMPTY;
+            }
+        }
         if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
-            Type [] parameters = pt.getActualTypeArguments();
+            Type[] parameters = pt.getActualTypeArguments();
             GenericType[] gts = new GenericType[parameters.length];
-            for ( int i =0; i<gts.length; i++) {
+            for (int i = 0; i < gts.length; i++) {
                 gts[i] = new GenericType(parameters[i]);
             }
             return gts;
         }
         if (type instanceof GenericArrayType) {
-            return new GenericType[] { new GenericType(((GenericArrayType) type).getGenericComponentType()) };
+            return new GenericType[]{new GenericType(((GenericArrayType) type).getGenericComponentType())};
         }
         if (type instanceof WildcardType) {
             return EMPTY;
@@ -271,38 +271,38 @@ public class GenericType extends ReifiedType {
             return EMPTY;
         }
         throw new IllegalStateException();
-	}
+    }
 
-	static Class<?> getConcreteClass(Type type) {
-		Type ntype = collapse(type);
-		if ( ntype instanceof Class )
-			return (Class<?>) ntype;
+    static Class<?> getConcreteClass(Type type) {
+        Type ntype = collapse(type);
+        if (ntype instanceof Class)
+            return (Class<?>) ntype;
 
-		if ( ntype instanceof ParameterizedType )
-			return getConcreteClass(collapse(((ParameterizedType)ntype).getRawType()));
+        if (ntype instanceof ParameterizedType)
+            return getConcreteClass(collapse(((ParameterizedType) ntype).getRawType()));
 
-		throw new RuntimeException("Unknown type " + type );
-	}
+        throw new RuntimeException("Unknown type " + type);
+    }
 
-	static Type collapse(Type target) {
-		if (target instanceof Class || target instanceof ParameterizedType ) {
-			return target;
-		} else if (target instanceof TypeVariable) {
-			return collapse(((TypeVariable<?>) target).getBounds()[0]);
-		} else if (target instanceof GenericArrayType) {
-			Type t = collapse(((GenericArrayType) target)
-					.getGenericComponentType());
-			while ( t instanceof ParameterizedType )
-				t = collapse(((ParameterizedType)t).getRawType());
-			return Array.newInstance((Class<?>)t, 0).getClass();
-		} else if (target instanceof WildcardType) {
-			WildcardType wct = (WildcardType) target;
-			if (wct.getLowerBounds().length == 0)
-				return collapse(wct.getUpperBounds()[0]);
-			else
-				return collapse(wct.getLowerBounds()[0]);
-		}
-		throw new RuntimeException("Huh? " + target);
-	}
+    static Type collapse(Type target) {
+        if (target instanceof Class || target instanceof ParameterizedType) {
+            return target;
+        } else if (target instanceof TypeVariable) {
+            return collapse(((TypeVariable<?>) target).getBounds()[0]);
+        } else if (target instanceof GenericArrayType) {
+            Type t = collapse(((GenericArrayType) target)
+                    .getGenericComponentType());
+            while (t instanceof ParameterizedType)
+                t = collapse(((ParameterizedType) t).getRawType());
+            return Array.newInstance((Class<?>) t, 0).getClass();
+        } else if (target instanceof WildcardType) {
+            WildcardType wct = (WildcardType) target;
+            if (wct.getLowerBounds().length == 0)
+                return collapse(wct.getUpperBounds()[0]);
+            else
+                return collapse(wct.getLowerBounds()[0]);
+        }
+        throw new RuntimeException("Huh? " + target);
+    }
 
 }

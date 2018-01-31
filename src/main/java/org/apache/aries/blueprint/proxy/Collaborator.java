@@ -52,33 +52,30 @@ public class Collaborator implements InvocationListener, Serializable {
 
     /**
      * Invoke the preCall method on the interceptor
-     * 
-     * @param o
-     *            : The Object being invoked
-     * @param m
-     *            : method
-     * @param parameters
-     *            : method paramters
+     *
+     * @param o          : The Object being invoked
+     * @param m          : method
+     * @param parameters : method paramters
      * @throws Throwable
      */
     public Object preInvoke(Object o, Method m, Object[] parameters)
             throws Throwable {
         Deque<StackElement> stack = new ArrayDeque<StackElement>(interceptors.size());
         if (interceptors != null) {
-          try{
-            for (Interceptor im : interceptors) {
-                Collaborator.StackElement se = new StackElement(im);
+            try {
+                for (Interceptor im : interceptors) {
+                    Collaborator.StackElement se = new StackElement(im);
 
-                // should we do this before or after the preCall ?
-                stack.push(se);
+                    // should we do this before or after the preCall ?
+                    stack.push(se);
 
-                // allow exceptions to propagate
-                se.setPreCallToken(im.preCall(cm, m, parameters));
+                    // allow exceptions to propagate
+                    se.setPreCallToken(im.preCall(cm, m, parameters));
+                }
+            } catch (Throwable t) {
+                postInvokeExceptionalReturn(stack, o, m, t);
+                throw t;
             }
-          } catch (Throwable t) {
-            postInvokeExceptionalReturn(stack, o, m, t);
-            throw t;
-          }
         }
         return stack;
     }
@@ -86,12 +83,12 @@ public class Collaborator implements InvocationListener, Serializable {
     /**
      * Called when the method is called and returned normally
      */
-    public void postInvoke(Object token, Object o, Method method, 
-         Object returnType) throws Throwable {
-        
+    public void postInvoke(Object token, Object o, Method method,
+                           Object returnType) throws Throwable {
+
         Deque<StackElement> calledInterceptors =
-                    (Deque<StackElement>) token;
-        if(calledInterceptors != null) {
+                (Deque<StackElement>) token;
+        if (calledInterceptors != null) {
             while (!calledInterceptors.isEmpty()) {
                 Collaborator.StackElement se = calledInterceptors.pop();
                 try {
@@ -111,10 +108,10 @@ public class Collaborator implements InvocationListener, Serializable {
      * Called when the method is called and returned with an exception
      */
     public void postInvokeExceptionalReturn(Object token, Object o, Method method,
-                 Throwable exception) throws Throwable {
+                                            Throwable exception) throws Throwable {
         Throwable tobeRethrown = null;
         Deque<StackElement> calledInterceptors =
-          (Deque<StackElement>) token;
+                (Deque<StackElement>) token;
         while (!calledInterceptors.isEmpty()) {
             Collaborator.StackElement se = calledInterceptors.pop();
 
@@ -127,7 +124,7 @@ public class Collaborator implements InvocationListener, Serializable {
                 if (tobeRethrown == null) {
                     tobeRethrown = t;
                 } else {
-                  LOGGER.warn("Discarding post-call with interceptor exception", t);
+                    LOGGER.warn("Discarding post-call with interceptor exception", t);
                 }
             }
 

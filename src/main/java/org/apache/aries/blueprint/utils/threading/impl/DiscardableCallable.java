@@ -25,44 +25,39 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DiscardableCallable<V> implements Callable<V>, Runnable, Discardable<Runnable>
-{
-  private AtomicReference<Callable<V>> c = new AtomicReference<Callable<V>>();
-  private Queue<Discardable<Runnable>> _removeFromListOnCall;
-  
-  public DiscardableCallable(Callable<V> call, Queue<Discardable<Runnable>> _unprocessedWork) {
-    c.set(call);
-    _removeFromListOnCall = _unprocessedWork;
-    _removeFromListOnCall.add(this);
-  }
+public class DiscardableCallable<V> implements Callable<V>, Runnable, Discardable<Runnable> {
+    private AtomicReference<Callable<V>> c = new AtomicReference<Callable<V>>();
+    private Queue<Discardable<Runnable>> _removeFromListOnCall;
 
-  private DiscardableCallable(Callable<V> call)
-  {
-    c.set(call);
-    _removeFromListOnCall = new LinkedBlockingQueue<Discardable<Runnable>>();
-  }
-
-  public Runnable discard()
-  {
-    _removeFromListOnCall.remove(this);
-    return new DiscardableCallable<V>(c.getAndSet(null)) ;
-  }
-
-  public V call() throws Exception
-  {
-    _removeFromListOnCall.remove(this);
-    Callable<V> call = c.get();
-    if (call != null) {
-      return call.call();
+    public DiscardableCallable(Callable<V> call, Queue<Discardable<Runnable>> _unprocessedWork) {
+        c.set(call);
+        _removeFromListOnCall = _unprocessedWork;
+        _removeFromListOnCall.add(this);
     }
-    throw new CancellationException();
-  }
 
-  public void run()
-  {
-    try {
-      call();
-    } catch (Exception e) {
+    private DiscardableCallable(Callable<V> call) {
+        c.set(call);
+        _removeFromListOnCall = new LinkedBlockingQueue<Discardable<Runnable>>();
     }
-  }
+
+    public Runnable discard() {
+        _removeFromListOnCall.remove(this);
+        return new DiscardableCallable<V>(c.getAndSet(null));
+    }
+
+    public V call() throws Exception {
+        _removeFromListOnCall.remove(this);
+        Callable<V> call = c.get();
+        if (call != null) {
+            return call.call();
+        }
+        throw new CancellationException();
+    }
+
+    public void run() {
+        try {
+            call();
+        } catch (Exception e) {
+        }
+    }
 }

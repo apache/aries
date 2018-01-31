@@ -23,34 +23,29 @@ import java.lang.reflect.Method;
 import org.apache.aries.blueprint.Interceptor;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 
-public class QuiesceInterceptor implements Interceptor{
+public class QuiesceInterceptor implements Interceptor {
 
-	private ServiceRecipe serviceRecipe;
-	
-	public QuiesceInterceptor(ServiceRecipe serviceRecipe)
-	{
-		this.serviceRecipe = serviceRecipe;
-	}
-	
-    public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable
-    {
-   		serviceRecipe.incrementActiveCalls();
-    	
-    	return null;
-    }
-    
-    public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken) throws Throwable
-    {
-    	serviceRecipe.decrementActiveCalls();
+    private ServiceRecipe serviceRecipe;
+
+    public QuiesceInterceptor(ServiceRecipe serviceRecipe) {
+        this.serviceRecipe = serviceRecipe;
     }
 
-    public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) throws Throwable
-    {
-    	serviceRecipe.decrementActiveCalls();
+    public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
+        serviceRecipe.incrementActiveCalls();
+
+        return null;
     }
-   
-    public int getRank()
-    {
-    	return 0;
+
+    public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken) throws Throwable {
+        serviceRecipe.decrementActiveCalls();
+    }
+
+    public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) throws Throwable {
+        serviceRecipe.decrementActiveCalls();
+    }
+
+    public int getRank() {
+        return 0;
     }
 }
