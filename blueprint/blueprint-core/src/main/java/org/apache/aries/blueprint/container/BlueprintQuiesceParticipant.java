@@ -37,127 +37,118 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class BlueprintQuiesceParticipant implements QuiesceParticipant 
-{
-	private final BundleContext ctx;
-	private final BlueprintExtender extender;
-	
-	public BlueprintQuiesceParticipant(BundleContext context, BlueprintExtender extender)
-	{
-		this.ctx = context;
-		this.extender = extender;
-	}
+public class BlueprintQuiesceParticipant implements QuiesceParticipant {
+    private final BundleContext ctx;
+    private final BlueprintExtender extender;
 
-	/**
-	 * A Threadpool for running quiesce operations
-	 */
-	private final ExecutorService executor = new ThreadPoolExecutor(0, 10, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactory() 
-	{
-		public Thread newThread(Runnable r) 
-		{
-	        Thread t = new Thread(r, "Blueprint-Container-ThreadPool");
-	        t.setDaemon(true);
-	        return t;
-		}
-    });
-	
-	public void quiesce(QuiesceCallback callback, List<Bundle> bundlesToQuiesce) 
-	{
-	    boolean shutdownMe = false;
-		for(Bundle b : bundlesToQuiesce) 
-		{
-		  try 
-		  {
-		    executor.execute(new QuiesceBundle(callback, b, extender));
-		  } 
-		  catch (RejectedExecutionException re) {
-		  }
-		  
-          //If we are quiescing, then we need to quiesce this threadpool!
-		  shutdownMe |= b.equals(ctx.getBundle());
-		}
-		
-		if (shutdownMe) executor.shutdown();
-	}
+    public BlueprintQuiesceParticipant(BundleContext context, BlueprintExtender extender) {
+        this.ctx = context;
+        this.extender = extender;
+    }
 
-  /**
-   * A runnable Quiesce operation for a single bundle
-   */
-	private static final class QuiesceBundle implements Runnable 
-	{
-		/** The bundle being quiesced */
-		private final Bundle bundleToQuiesce;
-		private final QuiesceCallback callback;
-		private final BlueprintExtender extender;
-		
-		public QuiesceBundle(QuiesceCallback callback, Bundle bundleToQuiesce, 
-				BlueprintExtender extender) 
-		{	
-			super();
-			this.callback = callback;
-			this.bundleToQuiesce = bundleToQuiesce;
-			this.extender = extender;
-		}
-
-		public void run() 
-		{
-			BlueprintContainerImpl container = extender.getBlueprintContainerImpl(bundleToQuiesce);
-						
-			// have we got an actual blueprint bundle
-			if (container != null) {
-  			BlueprintRepository repository = container.getRepository();
-  			Set<String> names = repository.getNames();
-  			container.quiesce();
-  			
-  			QuiesceDelegatingCallback qdcbk = new QuiesceDelegatingCallback(callback, bundleToQuiesce);
-  			for (String name: names)
-  			{
-  				Recipe recipe = repository.getRecipe(name);
-  				if (recipe instanceof ServiceRecipe)
-  				{
-  					qdcbk.callCountDown.incrementAndGet();
-  					((ServiceRecipe)recipe).quiesce(qdcbk);
-  				}
-  			}
-  			//Either there were no services and we win, or there were services but they
-  			//have all finished and we win, or they still have tidy up to do, but we
-  			//end up at 0 eventually
-  			qdcbk.callback();
-		  } else {
-			  // for non-Blueprint bundles just call return completed
-			  
-			  callback.bundleQuiesced(bundleToQuiesce);
-			}
-		}
-	}
-	
     /**
-	 * A wrapper to protect our internals from the Quiesce API so that we can make it
-	 * an optional dependency
-	 */
-	private static final class QuiesceDelegatingCallback implements DestroyCallback 
-	{
-	  
-	  /** The callback to delegate to */
-	  private final QuiesceCallback callback;
-	
-	  /** The single bundle being quiesced by this DestroyCallback */
-	  private final Bundle toQuiesce;
-	  /** A countdown that starts at one so it can't finish before we do! */
-	  private final AtomicInteger callCountDown = new AtomicInteger(1);
-	    
-	  public QuiesceDelegatingCallback(QuiesceCallback cbk, Bundle b) 
-	  {
-	    callback = cbk;
-	    toQuiesce = b;
-	  }
-	    
-	  public void callback() 
-	  {
-	    if (callCountDown.decrementAndGet() == 0)
-	    {
-	 	  	callback.bundleQuiesced(toQuiesce);
-	    }
-	  }
-	}
+     * A Threadpool for running quiesce operations
+     */
+    private final ExecutorService executor = new ThreadPoolExecutor(0, 10, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(), new ThreadFactory() {
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r, "Blueprint-Container-ThreadPool");
+            t.setDaemon(true);
+            return t;
+        }
+    });
+
+    public void quiesce(QuiesceCallback callback, List<Bundle> bundlesToQuiesce) {
+        boolean shutdownMe = false;
+        for (Bundle b : bundlesToQuiesce) {
+            try {
+                executor.execute(new QuiesceBundle(callback, b, extender));
+            } catch (RejectedExecutionException re) {
+            }
+
+            //If we are quiescing, then we need to quiesce this threadpool!
+            shutdownMe |= b.equals(ctx.getBundle());
+        }
+
+        if (shutdownMe) executor.shutdown();
+    }
+
+    /**
+     * A runnable Quiesce operation for a single bundle
+     */
+    private static final class QuiesceBundle implements Runnable {
+        /**
+         * The bundle being quiesced
+         */
+        private final Bundle bundleToQuiesce;
+        private final QuiesceCallback callback;
+        private final BlueprintExtender extender;
+
+        public QuiesceBundle(QuiesceCallback callback, Bundle bundleToQuiesce,
+                             BlueprintExtender extender) {
+            super();
+            this.callback = callback;
+            this.bundleToQuiesce = bundleToQuiesce;
+            this.extender = extender;
+        }
+
+        public void run() {
+            BlueprintContainerImpl container = extender.getBlueprintContainerImpl(bundleToQuiesce);
+
+            // have we got an actual blueprint bundle
+            if (container != null) {
+                BlueprintRepository repository = container.getRepository();
+                Set<String> names = repository.getNames();
+                container.quiesce();
+
+                QuiesceDelegatingCallback qdcbk = new QuiesceDelegatingCallback(callback, bundleToQuiesce);
+                for (String name : names) {
+                    Recipe recipe = repository.getRecipe(name);
+                    if (recipe instanceof ServiceRecipe) {
+                        qdcbk.callCountDown.incrementAndGet();
+                        ((ServiceRecipe) recipe).quiesce(qdcbk);
+                    }
+                }
+                //Either there were no services and we win, or there were services but they
+                //have all finished and we win, or they still have tidy up to do, but we
+                //end up at 0 eventually
+                qdcbk.callback();
+            } else {
+                // for non-Blueprint bundles just call return completed
+
+                callback.bundleQuiesced(bundleToQuiesce);
+            }
+        }
+    }
+
+    /**
+     * A wrapper to protect our internals from the Quiesce API so that we can make it
+     * an optional dependency
+     */
+    private static final class QuiesceDelegatingCallback implements DestroyCallback {
+
+        /**
+         * The callback to delegate to
+         */
+        private final QuiesceCallback callback;
+
+        /**
+         * The single bundle being quiesced by this DestroyCallback
+         */
+        private final Bundle toQuiesce;
+        /**
+         * A countdown that starts at one so it can't finish before we do!
+         */
+        private final AtomicInteger callCountDown = new AtomicInteger(1);
+
+        public QuiesceDelegatingCallback(QuiesceCallback cbk, Bundle b) {
+            callback = cbk;
+            toQuiesce = b;
+        }
+
+        public void callback() {
+            if (callCountDown.decrementAndGet() == 0) {
+                callback.bundleQuiesced(toQuiesce);
+            }
+        }
+    }
 }

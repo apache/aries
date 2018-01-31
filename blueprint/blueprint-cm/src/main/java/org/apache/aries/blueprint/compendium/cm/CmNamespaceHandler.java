@@ -333,12 +333,12 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     private String extractSystemPropertiesAttribute(Element element) {
-      for (String uri : EXT_URIS) {
-          if (element.hasAttributeNS(uri, SYSTEM_PROPERTIES_ATTRIBUTE)) {
-              return element.getAttributeNS(uri, SYSTEM_PROPERTIES_ATTRIBUTE);
-          }
-      }
-      return null;
+        for (String uri : EXT_URIS) {
+            if (element.hasAttributeNS(uri, SYSTEM_PROPERTIES_ATTRIBUTE)) {
+                return element.getAttributeNS(uri, SYSTEM_PROPERTIES_ATTRIBUTE);
+            }
+        }
+        return null;
     }
 
     private String extractIgnoreMissingLocations(Element element) {

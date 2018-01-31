@@ -56,27 +56,25 @@ public class BundleDelegatingClassLoader extends ClassLoader {
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         try {
             return AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
-                public Class<?> run() throws ClassNotFoundException 
-                {
+                public Class<?> run() throws ClassNotFoundException {
                     return bundle.loadClass(name);
                 }
-            
+
             });
         } catch (PrivilegedActionException e) {
             Exception cause = e.getException();
           
-            if (cause instanceof ClassNotFoundException) throw (ClassNotFoundException)cause;
-            else throw (RuntimeException)cause;
-        }    
+            if (cause instanceof ClassNotFoundException) throw (ClassNotFoundException) cause;
+            else throw (RuntimeException) cause;
+        }
     }
 
     protected URL findResource(final String name) {
         URL resource = AccessController.doPrivileged(new PrivilegedAction<URL>() {
-            public URL run()
-            {
+            public URL run() {
                 return bundle.getResource(name);
             }
-        });        
+        });
         if (classLoader != null && resource == null) {
             resource = classLoader.getResource(name);
         }
@@ -86,26 +84,25 @@ public class BundleDelegatingClassLoader extends ClassLoader {
     protected Enumeration<URL> findResources(final String name) throws IOException {
         Enumeration<URL> urls;
         try {
-            urls =  AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>() {
+            urls = AccessController.doPrivileged(new PrivilegedExceptionAction<Enumeration<URL>>() {
                 @SuppressWarnings("unchecked")
-                public Enumeration<URL> run() throws IOException
-                {
-                    return (Enumeration<URL>)bundle.getResources(name);
+                public Enumeration<URL> run() throws IOException {
+                    return (Enumeration<URL>) bundle.getResources(name);
                 }
           
             });
         } catch (PrivilegedActionException e) {
             Exception cause = e.getException();
         
-            if (cause instanceof IOException) throw (IOException)cause;
-            else throw (RuntimeException)cause;
+            if (cause instanceof IOException) throw (IOException) cause;
+            else throw (RuntimeException) cause;
         }
       
         if (urls == null) {
             urls = Collections.enumeration(new ArrayList<URL>());
         }
       
-        return urls;    
+        return urls;
     }
 
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {

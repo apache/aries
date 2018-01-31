@@ -671,7 +671,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
 
         public void registerHandler(URI uri, NamespaceHandler handler) {
             if (namespaces.contains(uri) && handlers.get(uri) == null) {
-                if (findCompatibleNamespaceHandler(uri) !=  null) {
+                if (findCompatibleNamespaceHandler(uri) != null) {
                     for (Listener listener : listeners) {
                         try {
                             listener.namespaceHandlerRegistered(uri);
@@ -812,12 +812,12 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
     }
 
-    public static class LRUMap<K,V> extends AbstractMap<K,V> {
+    public static class LRUMap<K, V> extends AbstractMap<K, V> {
 
         private final int bound;
-        private final LinkedList<Entry<K,V>> entries = new LinkedList<Entry<K,V>>();
+        private final LinkedList<Entry<K, V>> entries = new LinkedList<Entry<K, V>>();
 
-        private static class LRUEntry<K,V> implements Entry<K,V> {
+        private static class LRUEntry<K, V> implements Entry<K, V> {
             private final K key;
             private final V value;
 
@@ -847,7 +847,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
             if (key == null) {
                 throw new NullPointerException();
             }
-            for (Entry<K,V> e : entries) {
+            for (Entry<K, V> e : entries) {
                 if (e.getKey().equals(key)) {
                     entries.remove(e);
                     entries.addFirst(e);
@@ -862,7 +862,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 throw new NullPointerException();
             }
             V old = null;
-            for (Entry<K,V> e : entries) {
+            for (Entry<K, V> e : entries) {
                 if (e.getKey().equals(key)) {
                     entries.remove(e);
                     old = e.getValue();
@@ -870,7 +870,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 }
             }
             if (value != null) {
-                entries.addFirst(new LRUEntry<K,V>(key, value));
+                entries.addFirst(new LRUEntry<K, V>(key, value));
                 while (entries.size() > bound) {
                     entries.removeLast();
                 }
@@ -879,7 +879,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
 
         public Set<Entry<K, V>> entrySet() {
-            return new AbstractSet<Entry<K,V>>() {
+            return new AbstractSet<Entry<K, V>>() {
                 public Iterator<Entry<K, V>> iterator() {
                     return entries.iterator();
                 }

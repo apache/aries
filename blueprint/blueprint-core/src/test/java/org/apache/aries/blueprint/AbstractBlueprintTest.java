@@ -37,30 +37,37 @@ import org.xml.sax.SAXException;
 public abstract class AbstractBlueprintTest extends TestCase {
 
     protected ComponentDefinitionRegistryImpl parse(String name) throws Exception {
-      NamespaceHandlerSet handlers = new NamespaceHandlerSet() {
+        NamespaceHandlerSet handlers = new NamespaceHandlerSet() {
             public Set<URI> getNamespaces() {
                 return null;
             }
+
             public NamespaceHandler getNamespaceHandler(URI namespace) {
                 if (ExtNamespaceHandler.isExtNamespace(namespace.toString())) {
-                  return new ExtNamespaceHandler();
+                    return new ExtNamespaceHandler();
                 } else {
-                  return null;
+                    return null;
                 }
             }
+
             public void removeListener(NamespaceHandlerSet.Listener listener) {
             }
+
             public Schema getSchema() throws SAXException, IOException {
                 return null;
             }
+
             public Schema getSchema(Map<String, String> locations) throws SAXException, IOException {
-              return null;
+                return null;
             }
+
             public boolean isComplete() {
                 return false;
             }
+
             public void addListener(NamespaceHandlerSet.Listener listener) {
             }
+
             public void destroy() {
             }
         };

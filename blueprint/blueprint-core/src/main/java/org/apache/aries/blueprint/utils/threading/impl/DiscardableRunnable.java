@@ -23,35 +23,31 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DiscardableRunnable implements Runnable, Discardable<Runnable>
-{
-  private AtomicReference<Runnable> r = new AtomicReference<Runnable>();
-  private Queue<Discardable<Runnable>> _removeFromListOnRun;
-  
-  public DiscardableRunnable(Runnable run, Queue<Discardable<Runnable>> _unprocessedWork) {
-    r.set(run);
-    _removeFromListOnRun = _unprocessedWork;
-    _removeFromListOnRun.add(this);
-  }
+public class DiscardableRunnable implements Runnable, Discardable<Runnable> {
+    private AtomicReference<Runnable> r = new AtomicReference<Runnable>();
+    private Queue<Discardable<Runnable>> _removeFromListOnRun;
 
-  private DiscardableRunnable(Runnable run)
-  {
-    r.set(run);
-    _removeFromListOnRun = new LinkedBlockingQueue<Discardable<Runnable>>();
-  }
-
-  public void run()
-  {
-    _removeFromListOnRun.remove(this);
-    Runnable run = r.get();
-    if (run != null) {
-      run.run();
+    public DiscardableRunnable(Runnable run, Queue<Discardable<Runnable>> _unprocessedWork) {
+        r.set(run);
+        _removeFromListOnRun = _unprocessedWork;
+        _removeFromListOnRun.add(this);
     }
-  }
 
-  public Runnable discard()
-  {
-    _removeFromListOnRun.remove(this);
-    return new DiscardableRunnable(r.getAndSet(null));
-  }
+    private DiscardableRunnable(Runnable run) {
+        r.set(run);
+        _removeFromListOnRun = new LinkedBlockingQueue<Discardable<Runnable>>();
+    }
+
+    public void run() {
+        _removeFromListOnRun.remove(this);
+        Runnable run = r.get();
+        if (run != null) {
+            run.run();
+        }
+    }
+
+    public Runnable discard() {
+        _removeFromListOnRun.remove(this);
+        return new DiscardableRunnable(r.getAndSet(null));
+    }
 }

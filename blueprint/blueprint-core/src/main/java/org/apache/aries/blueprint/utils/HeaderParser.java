@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @version $Rev$, $Date$
  */
-public class HeaderParser  {
+public class HeaderParser {
 
     /**
      * Parse a given OSGi header into a list of paths
