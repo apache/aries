@@ -52,6 +52,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private boolean processor;
     private boolean fieldInjection;
     private boolean rawConversion;
+    private boolean nonStandardSetters;
     
     public BeanMetadataImpl() {
         this.fieldInjection = false;
@@ -77,9 +78,11 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
             this.runtimeClass = ((ExtendedBeanMetadata) source).getRuntimeClass();
             this.fieldInjection = ((ExtendedBeanMetadata) source).getFieldInjection();
             this.rawConversion = ((ExtendedBeanMetadata) source).getRawConversion();
+            this.nonStandardSetters = ((ExtendedBeanMetadata) source).getNonStandardSetters();
         } else {
             this.fieldInjection = false;
             this.rawConversion = false;
+            this.nonStandardSetters = false;
         }
     }
     
@@ -223,6 +226,15 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
 
     public void setRawConversion(boolean rawConversion) {
         this.rawConversion = rawConversion;
+    }
+
+    public boolean getNonStandardSetters() {
+        return nonStandardSetters;
+    }
+
+    @Override
+    public void setNonStandardSetters(boolean nonStandardSetters) {
+        this.nonStandardSetters = nonStandardSetters;
     }
 
     @Override

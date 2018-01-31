@@ -63,4 +63,5 @@ public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableCompon
 
     void setRawConversion(boolean rawConversion);
 
+    void setNonStandardSetters(boolean nonStandardSetters);
 }
