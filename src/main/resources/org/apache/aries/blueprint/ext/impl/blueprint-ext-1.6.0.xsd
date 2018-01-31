@@ -149,5 +149,11 @@
             </xsd:restriction>
         </xsd:simpleType>
     </xsd:attribute>
+    
+    <xsd:element name="null-proxy">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:ID" />
+        </xsd:complexType>
+    </xsd:element>
 
 </xsd:schema>
