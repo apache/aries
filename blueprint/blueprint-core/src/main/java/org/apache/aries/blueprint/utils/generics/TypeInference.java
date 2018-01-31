@@ -207,9 +207,7 @@ public class TypeInference {
             }
             methods.add(method);
         }
-        if (!instance) {
-            methods = applyStaticHidingRules(methods);
-        }
+        methods = applyStaticHidingRules(methods);
         List<Executable<Method>> executables = new ArrayList<Executable<Method>>();
         for (Method method : methods) {
             executables.add(new MethodExecutable(method));

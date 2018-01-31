@@ -44,17 +44,7 @@ import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
-import org.apache.aries.blueprint.pojos.AmbiguousPojo;
-import org.apache.aries.blueprint.pojos.BeanD;
-import org.apache.aries.blueprint.pojos.BeanF;
-import org.apache.aries.blueprint.pojos.FITestBean;
-import org.apache.aries.blueprint.pojos.Multiple;
-import org.apache.aries.blueprint.pojos.PojoA;
-import org.apache.aries.blueprint.pojos.PojoB;
-import org.apache.aries.blueprint.pojos.PojoGenerics;
-import org.apache.aries.blueprint.pojos.PojoListener;
-import org.apache.aries.blueprint.pojos.PojoRecursive;
-import org.apache.aries.blueprint.pojos.Primavera;
+import org.apache.aries.blueprint.pojos.*;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
@@ -520,6 +510,12 @@ public class WiringTest extends AbstractBlueprintTest {
         repository.create("executorService");
     }
 
+    public void testCachePojo() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-cache.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        Thread.currentThread().setContextClassLoader(CachePojos.CacheContainer.class.getClassLoader());
+        repository.create("queueCountCache");
+    }
 
     public void testCircular() throws Exception {
         BlueprintRepository repository = createBlueprintContainer().getRepository();
