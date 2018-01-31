@@ -103,7 +103,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testGetterOnly() throws Exception {
-        loadProps(GetterOnly.class, true);
+        loadProps(GetterOnly.class, true, false);
         
         assertEquals(2, sut.length);
         assertEquals("class", sut[0].getName());
@@ -124,7 +124,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testSetterOnly() throws Exception {
-        loadProps(SetterOnly.class, false);
+        loadProps(SetterOnly.class, false, false);
         
         assertEquals(2, sut.length);
         assertEquals("field", sut[1].getName());
@@ -146,7 +146,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testSetterAndGetter() throws Exception {
-        loadProps(SetterAndGetter.class, false);
+        loadProps(SetterAndGetter.class, false, false);
         
         assertEquals(2, sut.length);
         assertEquals("field", sut[1].getName());
@@ -166,7 +166,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testDuplicateGetter() {
-        loadProps(DuplicateGetter.class, false);
+        loadProps(DuplicateGetter.class, false, false);
         
         assertEquals(1, sut.length);
         assertEquals("class", sut[0].getName());
@@ -181,7 +181,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testFieldsAndProps() throws Exception {
-        loadProps(FieldsAndProps.class, true);
+        loadProps(FieldsAndProps.class, true, false);
         
         assertEquals(3, sut.length);
         
@@ -213,7 +213,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testOverloadedSetters() throws Exception {
-        loadProps(OverloadedSetters.class, false);
+        loadProps(OverloadedSetters.class, false, false);
         
         OverloadedSetters os = new OverloadedSetters();
 
@@ -230,7 +230,7 @@ public class ReflectionUtilsTest {
     
     @Test(expected=ComponentDefinitionException.class)
     public void testApplicableSetter() throws Exception {
-        loadProps(OverloadedSetters.class, false);
+        loadProps(OverloadedSetters.class, false, false);
         
         sut[1].set(new OverloadedSetters(), new Inconvertible(), mockBlueprint);
     }
@@ -242,7 +242,7 @@ public class ReflectionUtilsTest {
     
     @Test(expected=ComponentDefinitionException.class)
     public void testMultipleMatchesByConversion() throws Exception {
-        loadProps(MultipleMatchesByConversion.class, false);
+        loadProps(MultipleMatchesByConversion.class, false, false);
         
         sut[1].set(new MultipleMatchesByConversion(), new HashSet<String>(), mockBlueprint);
     }
@@ -259,14 +259,14 @@ public class ReflectionUtilsTest {
     
     @Test(expected=ComponentDefinitionException.class)
     public void testMultipleSettersMatchByType() throws Exception {
-        loadProps(MultipleMatchesByType.class, false);
+        loadProps(MultipleMatchesByType.class, false, false);
         
         sut[1].set(new MultipleMatchesByType(), new LinkedList<String>(), mockBlueprint);
     }
     
     @Test
     public void testDisambiguationByHierarchy() throws Exception {
-        loadProps(MultipleMatchesByType.class, false);
+        loadProps(MultipleMatchesByType.class, false, false);
         
         sut[2].set(new MultipleMatchesByType(), new ArrayList<String>(), mockBlueprint);
         assertEquals(2, MultipleMatchesByType.field);
@@ -281,16 +281,16 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testNullDisambiguation() throws Exception {
-        loadProps(NullSetterDisambiguation.class, false);
+        loadProps(NullSetterDisambiguation.class, false, false);
         
         sut[1].set(new NullSetterDisambiguation(), null, mockBlueprint);
         assertEquals(-1, NullSetterDisambiguation.field);
     }
     
-    private void loadProps(Class<?> clazz, boolean allowsFieldInjection)
+    private void loadProps(Class<?> clazz, boolean allowFieldInjection, boolean allowNonStandardSetters)
     {
         List<PropertyDescriptor> props = new ArrayList<PropertyDescriptor>(
-                Arrays.asList(ReflectionUtils.getPropertyDescriptors(clazz, allowsFieldInjection)));
+                Arrays.asList(ReflectionUtils.getPropertyDescriptors(clazz, allowFieldInjection, allowNonStandardSetters)));
         
         Collections.sort(props, new Comparator<PropertyDescriptor>() {
             public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {
