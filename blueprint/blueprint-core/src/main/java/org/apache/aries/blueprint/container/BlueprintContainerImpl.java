@@ -227,7 +227,10 @@ public class BlueprintContainerImpl
             waitForDependencies = Boolean.parseBoolean(graceperiod);
         }
 
-        xmlValidation = paths.get(0).getDirective(BlueprintConstants.XML_VALIDATION);
+        xmlValidation = bundleContext.getProperty(BlueprintConstants.XML_VALIDATION_PROPERTY);
+        if (xmlValidation == null) {
+            xmlValidation = paths.get(0).getDirective(BlueprintConstants.XML_VALIDATION);
+        }
         // enabled if null or "true"; structure-only if "structure"; disabled otherwise
         LOGGER.debug("Xml-validation directive: {}", xmlValidation);
     }
