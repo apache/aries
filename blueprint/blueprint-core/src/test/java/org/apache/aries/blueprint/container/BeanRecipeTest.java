@@ -63,6 +63,17 @@ public class BeanRecipeTest {
 		public static Object getBasic(int n) { return 1; }
 	}
 
+    static public interface EventMessage<T> {
+    }
+    static public interface SequentialPolicy<T> {
+    }
+    static public class DummySequentialPolicy implements SequentialPolicy<Object> {
+    }
+    static public class MessageDriven {
+        public MessageDriven(SequentialPolicy<? super EventMessage<?>> policy) {
+        }
+    }
+
     static public interface Example<A> {}
     static public class ExampleImpl implements Example<String> {}
     static public class ExampleService {
@@ -154,6 +165,16 @@ public class BeanRecipeTest {
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
         BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false, false);
         recipe.setArguments(Arrays.<Object>asList(new MyClass3()));
+        recipe.setArgTypes(Arrays.<String>asList((String) null));
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        recipe.create();
+    }
+
+    @Test
+    public void constructorWithGenerics() throws Exception {
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+        BeanRecipe recipe = new BeanRecipe("example", container, MessageDriven.class, false, false);
+        recipe.setArguments(Arrays.<Object>asList(new DummySequentialPolicy()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         recipe.create();
