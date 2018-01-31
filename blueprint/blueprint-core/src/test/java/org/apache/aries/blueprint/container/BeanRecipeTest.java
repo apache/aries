@@ -139,6 +139,10 @@ public class BeanRecipeTest {
         }
     }
 
+    static public class VarArg {
+	    public VarArg(String... as) {
+        }
+    }
 
     @Test
     public void parameterWithGenerics() throws Exception {
@@ -175,6 +179,16 @@ public class BeanRecipeTest {
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
         BeanRecipe recipe = new BeanRecipe("example", container, MessageDriven.class, false, false);
         recipe.setArguments(Arrays.<Object>asList(new DummySequentialPolicy()));
+        recipe.setArgTypes(Arrays.<String>asList((String) null));
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        recipe.create();
+    }
+
+    @Test
+    public void constructorWithVarArg() throws Exception {
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+        BeanRecipe recipe = new BeanRecipe("example", container, VarArg.class, false, false);
+        recipe.setArguments(Arrays.<Object>asList(Arrays.asList("-web")));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
         recipe.create();
