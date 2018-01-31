@@ -45,4 +45,7 @@ public interface BlueprintConstants  {
     String PREEMPTIVE_SHUTDOWN_PROPERTY = "org.apache.aries.blueprint.preemptiveShutdown";
 
     String SYNCHRONOUS_PROPERTY = "org.apache.aries.blueprint.synchronous";
+
+    String XML_VALIDATION_PROPERTY = "org.apache.aries.blueprint.xml.validation";
+
 }
