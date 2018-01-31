@@ -95,6 +95,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     
     public static final String FIELD_INJECTION_ATTRIBUTE = "field-injection";
     
+    public static final String NON_STANDARD_SETTERS_ATTRIBUTE = "non-standard-setters";
+
     public static final String DEFAULT_REFERENCE_BEAN = "default";
 
     public static final String FILTER_ATTRIBUTE = "filter";
@@ -182,6 +184,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             return decorateRole(node, component, context);
         } else if (node instanceof Attr && nodeNameEquals(node, FIELD_INJECTION_ATTRIBUTE)) {
             return decorateFieldInjection(node, component, context);
+        } else if (node instanceof Attr && nodeNameEquals(node, NON_STANDARD_SETTERS_ATTRIBUTE)) {
+            return decorateNonStandardSetters(node, component, context);
         } else if (node instanceof Attr && nodeNameEquals(node, DEFAULT_REFERENCE_BEAN)) {
             return decorateDefaultBean(node, component, context);
         } else if (node instanceof Attr && nodeNameEquals(node, FILTER_ATTRIBUTE)) {
@@ -259,6 +263,20 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         
         String value = ((Attr) node).getValue();
         ((MutableBeanMetadata) component).setFieldInjection("true".equals(value) || "1".equals(value));
+        return component;
+    }
+
+    private ComponentMetadata decorateNonStandardSetters(Node node, ComponentMetadata component, ParserContext context) {
+        if (!(component instanceof BeanMetadata)) {
+            throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <bean> element");
+        }
+
+        if (!(component instanceof MutableBeanMetadata)) {
+            throw new ComponentDefinitionException("Expected an instanceof MutableBeanMetadata");
+        }
+
+        String value = ((Attr) node).getValue();
+        ((MutableBeanMetadata) component).setNonStandardSetters("true".equals(value) || "1".equals(value));
         return component;
     }
 

@@ -117,6 +117,8 @@
     
     <xsd:attribute default="false" name="field-injection" type="xsd:boolean"/>
 
+    <xsd:attribute default="false" name="non-standard-setters" type="xsd:boolean"/>
+
     <!-- Default reference bean -->
     <xsd:attribute name="default" type="bp:Tidref"/>
 

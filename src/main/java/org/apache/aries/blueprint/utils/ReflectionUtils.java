@@ -201,11 +201,15 @@ public class ReflectionUtils {
     }
 
     public static PropertyDescriptor[] getPropertyDescriptors(Class clazz, boolean allowFieldInjection) {
+        return getPropertyDescriptors(clazz, allowFieldInjection, false);
+    }
+
+    public static PropertyDescriptor[] getPropertyDescriptors(Class clazz, boolean allowFieldInjection, boolean allowNonStandardSetters) {
         PropertyDescriptor[][] properties = beanInfos.get(clazz);
-        int index = allowFieldInjection ? 0 : 1;
+        int index = (allowFieldInjection ? 0 : 2) + (allowNonStandardSetters ? 0 : 1);
         
         if (properties == null) {
-            properties = new PropertyDescriptor[2][];
+            properties = new PropertyDescriptor[4][];
             beanInfos.put(clazz, properties);
         }
         
@@ -216,33 +220,61 @@ public class ReflectionUtils {
             Set<String> illegalProperties = new HashSet<String>();
             
             for (Method method : getPublicMethods(clazz)) {
-                if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) continue;
-                
+                if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) {
+                    continue;
+                }
+
                 String name = method.getName();
                 Class<?> argTypes[] = method.getParameterTypes();
                 Class<?> resultType = method.getReturnType();
                 
                 if (name.length() > 3 && name.startsWith("set") && resultType == Void.TYPE && argTypes.length == 1) {
                     name = decapitalize(name.substring(3));
-                    if (!!!setters.containsKey(name)) setters.put(name, new ArrayList<Method>());
+                    if (!setters.containsKey(name)) {
+                        setters.put(name, new ArrayList<Method>());
+                    }
                     setters.get(name).add(method);
                     propertyNames.add(name);
                 } else if (name.length() > 3 && name.startsWith("get") && resultType != Void.TYPE && argTypes.length == 0) {
                     name = decapitalize(name.substring(3));
-
-                    if (getters.containsKey(name)) illegalProperties.add(name);
-                    else propertyNames.add(name);
-                    
-                    getters.put(name, method);                    
+                    if (getters.containsKey(name)) {
+                        illegalProperties.add(name);
+                    } else {
+                        propertyNames.add(name);
+                    }
+                    getters.put(name, method);
                 } else if (name.length() > 2 && name.startsWith("is") && argTypes.length == 0 && resultType == boolean.class) {
                     name = decapitalize(name.substring(2));
-
-                    if (getters.containsKey(name)) illegalProperties.add(name);
-                    else propertyNames.add(name);
-                    
-                    getters.put(name, method);                    
+                    if (getters.containsKey(name)) {
+                        illegalProperties.add(name);
+                    } else {
+                        propertyNames.add(name);
+                    }
+                    getters.put(name, method);
                 }
-                
+            }
+
+            if (allowNonStandardSetters) {
+                for (Method method : getPublicMethods(clazz)) {
+                    if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) {
+                        continue;
+                    }
+
+                    String name = method.getName();
+                    Class<?> argTypes[] = method.getParameterTypes();
+                    Class<?> resultType = method.getReturnType();
+
+                    if (!name.startsWith("get") && resultType != Void.TYPE && argTypes.length == 0 && !getters.containsKey(name)) {
+                        getters.put(name, method);
+                        propertyNames.add(name);
+                    } else if (!name.startsWith("set") && resultType == clazz && argTypes.length == 1) {
+                        if (!setters.containsKey(name)) {
+                            setters.put(name, new ArrayList<Method>());
+                        }
+                        setters.get(name).add(method);
+                        propertyNames.add(name);
+                    }
+                }
             }
 
             Map<String, PropertyDescriptor> props = new HashMap<String, PropertyDescriptor>();

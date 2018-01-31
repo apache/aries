@@ -230,16 +230,23 @@ public class RecipeBuilder {
         return beanMetadata.getClassName();        
     }
 
-    private boolean allowsFieldInjection(BeanMetadata beanMetadata) {
+    private boolean allowFieldInjection(BeanMetadata beanMetadata) {
         if (beanMetadata instanceof ExtendedBeanMetadata) {
             return ((ExtendedBeanMetadata) beanMetadata).getFieldInjection();
         }
         return false;
     }
 
-    private boolean allowsRawConversion(BeanMetadata beanMetadata) {
+    private boolean allowRawConversion(BeanMetadata beanMetadata) {
         if (beanMetadata instanceof ExtendedBeanMetadata) {
             return ((ExtendedBeanMetadata) beanMetadata).getRawConversion();
+        }
+        return false;
+    }
+
+    private boolean allowNonStandardSetters(BeanMetadata beanMetadata) {
+        if (beanMetadata instanceof ExtendedBeanMetadata) {
+            return ((ExtendedBeanMetadata) beanMetadata).getNonStandardSetters();
         }
         return false;
     }
@@ -249,8 +256,9 @@ public class RecipeBuilder {
                 getName(beanMetadata.getId()),
                 blueprintContainer,
                 getBeanClass(beanMetadata),
-                allowsFieldInjection(beanMetadata),
-                allowsRawConversion(beanMetadata));
+                allowFieldInjection(beanMetadata),
+                allowRawConversion(beanMetadata),
+                allowNonStandardSetters(beanMetadata));
         // Create refs for explicit dependencies
         recipe.setExplicitDependencies(getDependencies(beanMetadata));
         recipe.setPrototype(MetadataUtil.isPrototypeScope(beanMetadata) || MetadataUtil.isCustomScope(beanMetadata));
@@ -288,7 +296,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(RegistrationListener listener) {
-        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class, false, false);
+        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class, false, false, false);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         if (listener.getRegistrationMethod() != null) {
             recipe.setProperty("registerMethod", listener.getRegistrationMethod());
@@ -301,7 +309,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(ReferenceListener listener) {
-        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, AbstractServiceReferenceRecipe.Listener.class, false, false);
+        BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, AbstractServiceReferenceRecipe.Listener.class, false, false, false);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
         recipe.setProperty("blueprintContainer", blueprintContainer);
