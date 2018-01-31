@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.di.CollectionRecipe;
+import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.ValueRecipe;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
@@ -250,7 +251,16 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                         } else {
                             failed = false;
                         }
-                        result = defaultBean;
+                        BlueprintRepository repository = ((BlueprintContainerImpl) blueprintContainer).getRepository();
+                        ExecutionContext oldContext = null;
+                        try {
+                            oldContext = ExecutionContext.Holder.setContext(repository);
+                            result = convert(defaultBean, new GenericType(getInterfaceClass()));
+                        } catch (Exception e) {
+                            throw new IllegalStateException("Wrong type for defaultBean", e);
+                        } finally {
+                            ExecutionContext.Holder.setContext(oldContext);
+                        }
                     }
 
                     if (failed) {

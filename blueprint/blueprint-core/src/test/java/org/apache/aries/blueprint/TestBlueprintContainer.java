@@ -64,4 +64,8 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
         return Thread.currentThread().getContextClassLoader().loadClass(name);
     }
 
+    @Override
+    public ClassLoader getClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
 }

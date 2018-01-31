@@ -21,10 +21,10 @@ package org.apache.aries.blueprint.ext.impl;
 import java.net.URL;
 import java.util.*;
 
-import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.ParserContext;
+import org.apache.aries.blueprint.container.NullProxy;
 import org.apache.aries.blueprint.ext.PlaceholdersUtils;
 import org.apache.aries.blueprint.ext.PropertyPlaceholder;
 import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
@@ -118,6 +118,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
 
     public static final String RAW_CONVERSION_ATTRIBUTE = "raw-conversion";
 
+    public static final String NULL_PROXY_ELEMENT = "null-proxy";
+
     private static final Set<String> EXT_URIS = Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
             BLUEPRINT_EXT_NAMESPACE_V1_0,
             BLUEPRINT_EXT_NAMESPACE_V1_1,
@@ -166,6 +168,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         } else if (nodeNameEquals(element, REFERENCE)) {
             RefMetadata rd = context.parseElement(RefMetadata.class, context.getEnclosingComponent(), element);
             return createReference(context, rd.getComponentId());
+        } else if (nodeNameEquals(element, NULL_PROXY_ELEMENT)) {
+            return parseNullProxy(element, context);
         } else {
             throw new ComponentDefinitionException("Unsupported element: " + element.getNodeName());
         }
@@ -201,7 +205,15 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             throw new ComponentDefinitionException("Unsupported node: " + node.getNodeName());
         }
     }
-    
+
+    private ComponentMetadata parseNullProxy(Element element, ParserContext context) {
+        MutableBeanMetadata mb = context.createMetadata(MutableBeanMetadata.class);
+        mb.setRuntimeClass(NullProxy.class);
+        mb.addArgument(createRef(context, "blueprintContainer"), null, -1);
+        mb.setId(element.hasAttribute(ID_ATTRIBUTE) ? element.getAttribute(ID_ATTRIBUTE) : "null-proxy");
+        return mb;
+    }
+
     private ComponentMetadata decorateAdditionalInterfaces(Node node, ComponentMetadata component,
                                                            ParserContext context) {
         if (!(component instanceof MutableReferenceMetadata)) {
