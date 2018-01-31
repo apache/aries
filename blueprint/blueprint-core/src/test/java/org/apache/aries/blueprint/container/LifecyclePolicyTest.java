@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.apache.aries.blueprint.reflect.BeanMetadataImpl;
@@ -122,6 +123,8 @@ public class LifecyclePolicyTest {
         EasyMock.expect(namespaceHandlerSet.getNamespaces()).andReturn(namespaces).anyTimes();
         namespaceHandlerSet.addListener(container);
         EasyMock.expectLastCall();
+        EasyMock.expect(bundleContext.getProperty(BlueprintConstants.XML_VALIDATION_PROPERTY))
+                .andReturn(null);
         Properties props = new Properties();
         props.put("osgi.blueprint.container.version", Version.emptyVersion);
         props.put("osgi.blueprint.container.symbolicname", "bundleSymbolicName");
