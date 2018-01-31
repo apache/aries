@@ -20,21 +20,29 @@ package org.apache.aries.blueprint;
 
 public interface BlueprintConstants  {
    
-    public static final String BUNDLE_BLUEPRINT_HEADER = "Bundle-Blueprint";
+    String BUNDLE_BLUEPRINT_HEADER = "Bundle-Blueprint";
     
-    public static final String BUNDLE_BLUEPRINT_ANNOTATION_HEADER = "Bundle-Blueprint-Annotation";
+    String BUNDLE_BLUEPRINT_ANNOTATION_HEADER = "Bundle-Blueprint-Annotation";
     
-    public static final String TIMEOUT_DIRECTIVE = "blueprint.timeout";
+    String TIMEOUT_DIRECTIVE = "blueprint.timeout";
     
-    public static final String GRACE_PERIOD = "blueprint.graceperiod";
+    String GRACE_PERIOD = "blueprint.graceperiod";
     
-    public static final String BUNDLE_VERSION = "bundle.version";
+    String BUNDLE_VERSION = "bundle.version";
     
-    public static final String COMPONENT_NAME_PROPERTY = "osgi.service.blueprint.compname";
+    String COMPONENT_NAME_PROPERTY = "osgi.service.blueprint.compname";
     
-    public static final String CONTAINER_SYMBOLIC_NAME_PROPERTY = "osgi.blueprint.container.symbolicname";
+    String CONTAINER_SYMBOLIC_NAME_PROPERTY = "osgi.blueprint.container.symbolicname";
     
-    public static final String CONTAINER_VERSION_PROPERTY = "osgi.blueprint.container.version";
+    String CONTAINER_VERSION_PROPERTY = "osgi.blueprint.container.version";
 
-    public static final String XML_VALIDATION = "blueprint.aries.xml-validation";
+    String XML_VALIDATION = "blueprint.aries.xml-validation";
+
+    String USE_SYSTEM_CONTEXT_PROPERTY = "org.apache.aries.blueprint.use.system.context";
+
+    String IGNORE_UNKNOWN_NAMESPACE_HANDLERS_PROPERTY = "org.apache.aries.blueprint.parser.service.ignore.unknown.namespace.handlers";
+
+    String PREEMPTIVE_SHUTDOWN_PROPERTY = "org.apache.aries.blueprint.preemptiveShutdown";
+
+    String SYNCHRONOUS_PROPERTY = "org.apache.aries.blueprint.synchronous";
 }

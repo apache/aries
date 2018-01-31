@@ -89,7 +89,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         LOGGER.debug("Starting blueprint extender...");
 
         this.context = ctx;
-        boolean useSystemContext = Boolean.parseBoolean(ctx.getProperty("org.apache.aries.blueprint.use.system.context"));
+        boolean useSystemContext = Boolean.parseBoolean(ctx.getProperty(BlueprintConstants.USE_SYSTEM_CONTEXT_PROPERTY));
         BundleContext trackingContext = useSystemContext ? ctx.getBundle(Constants.SYSTEM_BUNDLE_LOCATION).getBundleContext() : ctx;
 
         handlers = new NamespaceHandlerRegistryImpl(trackingContext);
@@ -137,7 +137,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         proxyManager.open();
         
         // Determine if the ParserService should ignore unknown namespace handlers
-        boolean ignoreUnknownNamespaceHandlers = Boolean.parseBoolean(ctx.getProperty("org.apache.aries.blueprint.parser.service.ignore.unknown.namespace.handlers"));
+        boolean ignoreUnknownNamespaceHandlers = Boolean.parseBoolean(ctx.getProperty(BlueprintConstants.IGNORE_UNKNOWN_NAMESPACE_HANDLERS_PROPERTY));
         // Create and publish a ParserService
         parserServiceReg = ctx.registerService(ParserService.class.getName(), 
             new ParserServiceImpl (handlers, ignoreUnknownNamespaceHandlers), 
@@ -224,7 +224,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         // do an orderly shutdown of all blueprint contexts now
         // so that service usage can actually be useful
         if (context.getBundle(0).equals(bundle) && bundle.getState() == Bundle.STOPPING) {
-            String val = context.getProperty("org.apache.aries.blueprint.preemptiveShutdown");
+            String val = context.getProperty(BlueprintConstants.PREEMPTIVE_SHUTDOWN_PROPERTY);
             if (val == null || Boolean.parseBoolean(val)) {
                 stop(context);
                 return;
@@ -294,7 +294,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                     return false;
                 }
             }
-            String val = context.getProperty("org.apache.aries.blueprint.synchronous");
+            String val = context.getProperty(BlueprintConstants.SYNCHRONOUS_PROPERTY);
             if (Boolean.parseBoolean(val)) {
                 LOGGER.debug("Starting creation of blueprint bundle {}/{} synchronously", bundle.getSymbolicName(), bundle.getVersion());
                 blueprintContainer.run();
