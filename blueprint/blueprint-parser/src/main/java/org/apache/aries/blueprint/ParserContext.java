@@ -17,6 +17,7 @@
 package org.apache.aries.blueprint;
 
 import java.net.URI;
+import java.util.Set;
 
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
@@ -88,6 +89,11 @@ public interface ParserContext  {
      * Get the default timeout setting for the current blueprint file
      */
     String getDefaultTimeout();
+
+    /**
+     * Retrieve the set of namespaces
+     */
+    Set<URI> getNamespaces();
 
     /**
      * Retrieve the namespace handler for the given uri

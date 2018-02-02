@@ -16,6 +16,8 @@
  */
 package org.apache.aries.blueprint.spring;
 
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Properties;
@@ -29,6 +31,8 @@ import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutablePassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableRefMetadata;
+import org.apache.aries.blueprint.parser.Parser;
+import org.apache.aries.blueprint.parser.ParserContextImpl;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -53,6 +57,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Blueprint NamespaceHandler wrapper for a spring NamespaceHandler
@@ -175,8 +182,13 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
             bm.addArgument(createRef(parserContext, SPRING_APPLICATION_CONTEXT_ID), null, 0);
             registry.registerComponentDefinition(bm);
         }
-        // Add the namespace handler's bundle to the application context classloader
-        applicationContext.addSourceBundle(bundle);
+        // Add the namespace handlers' bundle to the application context classloader
+        for (URI uri : parserContext.getNamespaces()) {
+            NamespaceHandler ns = parserContext.getNamespaceHandler(uri);
+            if (ns instanceof BlueprintNamespaceHandler) {
+                applicationContext.addSourceBundle(((BlueprintNamespaceHandler) ns).bundle);
+            }
+        }
         return springParserContext;
     }
 
@@ -246,7 +258,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
         }
     }
 
-    private org.springframework.beans.factory.xml.ParserContext createSpringParserContext(ParserContext parserContext, DefaultListableBeanFactory registry) {
+    private org.springframework.beans.factory.xml.ParserContext createSpringParserContext(final ParserContext parserContext, DefaultListableBeanFactory registry) {
         try {
             SpringVersionBridgeXmlBeanDefinitionReader xbdr = new SpringVersionBridgeXmlBeanDefinitionReader(registry);
             Resource resource = new UrlResource(parserContext.getSourceNode().getOwnerDocument().getDocumentURI());
@@ -258,6 +270,29 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
             xbdr.setEventListener(listener);
             xbdr.setSourceExtractor(extractor);
             xbdr.setNamespaceHandlerResolver(resolver);
+            xbdr.setEntityResolver(new EntityResolver() {
+                @Override
+                public InputSource resolveEntity(String publicId, String systemId) throws IOException {
+                    for (URI ns : parserContext.getNamespaces()) {
+                        NamespaceHandler nh = parserContext.getNamespaceHandler(ns);
+                        URL url = null;
+                        if (publicId != null) {
+                            url = nh.getSchemaLocation(publicId);
+                        }
+                        if (url == null && systemId != null) {
+                            url = nh.getSchemaLocation(systemId);
+                        }
+                        if (url != null) {
+                            InputSource is = new InputSource();
+                            is.setPublicId(publicId);
+                            is.setSystemId(systemId);
+                            is.setByteStream(url.openStream());
+                            return is;
+                        }
+                    }
+                    return null;
+                }
+            });
             XmlReaderContext xmlReaderContext = xbdr.createReaderContext(resource);
             BeanDefinitionParserDelegate bdpd = new BeanDefinitionParserDelegate(xmlReaderContext);
             return new org.springframework.beans.factory.xml.ParserContext(xmlReaderContext, bdpd);
