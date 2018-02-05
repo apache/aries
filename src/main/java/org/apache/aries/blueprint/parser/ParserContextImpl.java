@@ -19,6 +19,8 @@
 package org.apache.aries.blueprint.parser;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.Set;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.NamespaceHandler;
@@ -90,6 +92,11 @@ public class ParserContextImpl implements ParserContext {
 
     public String getDefaultTimeout() {
         return parser.getDefaultTimeout();
+    }
+
+    @Override
+    public Set<URI> getNamespaces() {
+        return Collections.unmodifiableSet(parser.getNamespaces());
     }
 
     @Override

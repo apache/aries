@@ -61,4 +61,7 @@ public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableCompon
     
     void setFieldInjection(boolean allowFieldInjection);
 
+    void setRawConversion(boolean rawConversion);
+
+    void setNonStandardSetters(boolean nonStandardSetters);
 }

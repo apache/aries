@@ -24,7 +24,7 @@ import org.osgi.service.blueprint.reflect.BeanMetadata;
  * TODO: javadoc
  *
  * Processors must be advertized as being such.  This can be done by using
- * the custom attribtue defined in the extension schema.
+ * the custom attribute defined in the extension schema.
  * <pre>
  *    &lt;bp:bean ext:role="processor" ...&gt;
  * </pre>
