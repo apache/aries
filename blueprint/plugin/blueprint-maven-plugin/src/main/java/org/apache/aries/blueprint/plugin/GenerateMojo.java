@@ -126,7 +126,7 @@ public class GenerateMojo extends AbstractMojo {
             getLog().info("Skipping blueprint generation because source files were not changed");
             return;
         }
-        
+
         try {
             BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, defaultActivation, customParameters, defaultAvailability, defaultTimeout);
             generateBlueprint(toScan, blueprintConfiguration);
