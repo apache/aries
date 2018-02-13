@@ -8,6 +8,12 @@ The Apache Software Foundation (http://www.apache.org/).
 This product includes software developed at
 the OSGi Alliance (http://www.osgi.org/).
 
+This product includes sofware developed at
+the World Wide Web Consortium (http://www.w3.org)
+and licensed under the W3C® Software License
+(http://www.w3.org/Consortium/Legal/copyright-software).
+This includes the xml.xsd xml schema.
+
 This product includes software developed at
 SpringSource. This includes the xml schemas
 named spring-osgi-*.xsd.
