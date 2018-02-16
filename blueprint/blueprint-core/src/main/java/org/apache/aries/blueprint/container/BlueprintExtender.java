@@ -303,7 +303,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
             }
             return true;
         } catch (Throwable t) {
-            LOGGER.warn("Error while creating blueprint container for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion(), t);
+            LOGGER.warn("Error while creating container for blueprint bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion(), t);
             return false;
         }
     }
@@ -311,19 +311,19 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     private void destroyContainer(final Bundle bundle) {
         FutureTask future;
         synchronized (containers) {
-            LOGGER.debug("Starting BlueprintContainer destruction process for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
+            LOGGER.debug("Starting container destruction process for blueprint bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
             future = destroying.get(bundle);
             if (future == null) {
                 final BlueprintContainerImpl blueprintContainer = containers.remove(bundle);
                 if (blueprintContainer != null) {
-                    LOGGER.debug("Scheduling BlueprintContainer destruction for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
+                    LOGGER.debug("Scheduling container destruction for blueprint bundle {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
                     future = new FutureTask<Void>(new Runnable() {
                         public void run() {
-                            LOGGER.info("Destroying BlueprintContainer for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
+                            LOGGER.info("Destroying container for blueprint bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
                             try {
                                 blueprintContainer.destroy();
                             } finally {
-                                LOGGER.debug("Finished destroying BlueprintContainer for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
+                                LOGGER.debug("Finished destroying container for blueprint bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion());
                                 eventDispatcher.removeBlueprintBundle(bundle);
                                 synchronized (containers) {
                                     destroying.remove(bundle);
@@ -333,19 +333,19 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                     }, null);
                     destroying.put(bundle, future);
                 } else {
-                    LOGGER.debug("Not a blueprint bundle or destruction of BlueprintContainer already finished for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
+                    LOGGER.debug("Not a blueprint bundle or destruction of container already finished for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
                 }
             } else {
-                LOGGER.debug("Destruction already scheduled for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
+                LOGGER.debug("Destruction already scheduled for blueprint bundle {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
             }
         }
         if (future != null) {
             try {
-                LOGGER.debug("Waiting for BlueprintContainer destruction for {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
+                LOGGER.debug("Waiting for container destruction for blueprint bundle {}/{}.", bundle.getSymbolicName(), bundle.getVersion());
                 future.run();
                 future.get();
             } catch (Throwable t) {
-                LOGGER.warn("Error while destroying blueprint container for bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion(), t);
+                LOGGER.warn("Error while destroying container for blueprint bundle {}/{}", bundle.getSymbolicName(), bundle.getVersion(), t);
             }
         }
     }
