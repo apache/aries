@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.reflect;
 
+import org.apache.aries.blueprint.ExtendedValueMetadata;
 import org.apache.aries.blueprint.mutable.MutableValueMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
@@ -30,6 +31,7 @@ public class ValueMetadataImpl implements MutableValueMetadata {
 
     private String stringValue;
     private String type;
+    private Object value;
 
     public ValueMetadataImpl() {
     }
@@ -43,9 +45,16 @@ public class ValueMetadataImpl implements MutableValueMetadata {
         this.type = type;
     }
 
+    public ValueMetadataImpl(Object value) {
+        this.value = value;
+    }
+
     public ValueMetadataImpl(ValueMetadata source) {
         this.stringValue = source.getStringValue();
         this.type = source.getType();
+        if (source instanceof ExtendedValueMetadata) {
+            this.value = ((ExtendedValueMetadata) source).getValue();
+        }
     }
 
     public String getStringValue() {
@@ -64,11 +73,20 @@ public class ValueMetadataImpl implements MutableValueMetadata {
         this.type = typeName;
     }
 
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         return "ValueMetadata[" +
                 "stringValue='" + stringValue + '\'' +
                 ", type='" + type + '\'' +
+                ", value='" + value + '\'' +
                 ']';
     }
 }
