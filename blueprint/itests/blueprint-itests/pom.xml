@@ -44,6 +44,17 @@
     <properties>
         <exam.version>4.10.0</exam.version>
         <url.version>2.2.0</url.version>
+
+        <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
+        <blueprint.core.version>${blueprint.core.dev.version}</blueprint.core.version>
+        <blueprint.cm.version>${blueprint.cm.dev.version}</blueprint.cm.version>
+        <blueprint.parser.version>${blueprint.parser.dev.version}</blueprint.parser.version>
+        <blueprint.authz.version>${blueprint.authz.dev.version}</blueprint.authz.version>
+        <blueprint.spring.version>${blueprint.spring.dev.version}</blueprint.spring.version>
+        <blueprint.spring.extender.version>${blueprint.spring.extender.dev.version}</blueprint.spring.extender.version>
+        <blueprint.jexl.evaluator.version>${blueprint.jexl.evaluator.dev.version}</blueprint.jexl.evaluator.version>
+        <blueprint.sample.version>${blueprint.sample.dev.version}</blueprint.sample.version>
+        <blueprint.sample.fragment.version>${blueprint.sample.fragment.dev.version}</blueprint.sample.fragment.version>
     </properties>
 
     <dependencies>
@@ -56,27 +67,27 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
+            <version>${blueprint.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-parser</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
+            <version>${blueprint.parser.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.authz</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>${blueprint.authz.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.spring</artifactId>
-            <version>0.6.0-SNAPSHOT</version>
+            <version>${blueprint.spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.spring.extender</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${blueprint.spring.extender.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
@@ -133,7 +144,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>${blueprint.cm.version}</version>
             <type>bundle</type>
             <scope>compile</scope>
             <exclusions>
@@ -147,7 +158,7 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.jexl.evaluator</artifactId>
             <scope>test</scope>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>${blueprint.jexl.evaluator.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.aries.blueprint</groupId>
@@ -165,7 +176,7 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample</artifactId>
             <scope>test</scope>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>${blueprint.sample.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
@@ -274,7 +285,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.testquiescebundle</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
             <type>bundle</type>
             <scope>compile</scope>
             <exclusions>
@@ -287,7 +298,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>1.0.0</version>
+            <version>${blueprint.api.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -299,7 +310,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.sample-fragment</artifactId>
-            <version>1.0.0</version>
+            <version>${blueprint.sample.fragment.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

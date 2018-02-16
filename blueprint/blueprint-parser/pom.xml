@@ -52,7 +52,16 @@
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
+                <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
+                <blueprint.core.version>${blueprint.core.dev.version}</blueprint.core.version>
+                <blueprint.cm.version>${blueprint.cm.dev.version}</blueprint.cm.version>
+                <blueprint.parser.version>${blueprint.parser.dev.version}</blueprint.parser.version>
+                <blueprint.authz.version>${blueprint.authz.dev.version}</blueprint.authz.version>
+                <blueprint.spring.version>${blueprint.spring.dev.version}</blueprint.spring.version>
+                <blueprint.spring.extender.version>${blueprint.spring.extender.dev.version}</blueprint.spring.extender.version>
+                <blueprint.jexl.evaluator.version>${blueprint.jexl.evaluator.dev.version}</blueprint.jexl.evaluator.version>
+                <blueprint.sample.version>${blueprint.sample.dev.version}</blueprint.sample.version>
+                <blueprint.sample.fragment.version>${blueprint.sample.fragment.dev.version}</blueprint.sample.fragment.version>
             </properties>
         </profile>
     </profiles>

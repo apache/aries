@@ -49,6 +49,15 @@
         <blueprint.web.version>1.0.0</blueprint.web.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint.web.version>${blueprint.web.dev.version}</blueprint.web.version>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>

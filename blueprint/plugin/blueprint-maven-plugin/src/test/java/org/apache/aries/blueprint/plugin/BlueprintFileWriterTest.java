@@ -65,11 +65,9 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
 import static org.junit.Assert.assertEquals;
@@ -641,26 +639,41 @@ public class BlueprintFileWriterTest {
     public void generatedXmlIsValid() throws Exception {
         Document document = readToDocument(xmlAsBytes, true);
 
-        Source[] schemas = new StreamSource[]{
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/example.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/blueprint.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.1.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.3.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.4.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.5.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/transaction/parsing/transactionv12.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/jpa/blueprint/namespace/jpa_110.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.0.0.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.3.0.xsd")),
-                new StreamSource(BlueprintFileWriterTest.class.getResourceAsStream("/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.2.0.xsd"))
-        };
+        List<String> sources = Arrays.asList(
+                "/schema/example.xsd",
+                "/schema/org/apache/aries/blueprint/blueprint.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.1.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.3.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.4.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.5.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.0.0.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.1.0.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.0.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.3.0.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.4.0.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.5.0.xsd",
+                "/schema/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.6.0.xsd",
+                "/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.0.0.xsd",
+                "/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd",
+                "/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.2.0.xsd",
+                "/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.3.0.xsd",
+                "/schema/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.4.0.xsd",
+                "/schema/org/apache/aries/transaction/parsing/transactionv12.xsd",
+                "/schema/org/apache/aries/jpa/blueprint/namespace/jpa_110.xsd"
+        );
+        List<Source> schemas = new ArrayList<>();
+        for (String source : sources) {
+            InputStream is = BlueprintFileWriterTest.class.getResourceAsStream(source);
+            if (is != null) {
+                schemas.add(new StreamSource(is));
+            }
+        }
 
         Source xmlFile = new DOMSource(document);
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(schemas);
+        Schema schema = schemaFactory.newSchema(schemas.toArray(new Source[schemas.size()]));
         Validator validator = schema.newValidator();
         validator.validate(xmlFile);
     }
