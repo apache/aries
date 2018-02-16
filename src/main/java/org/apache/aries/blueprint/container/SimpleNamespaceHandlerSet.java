@@ -45,8 +45,6 @@ import org.xml.sax.SAXException;
 
 public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
 
-    public static final URI EXT_1_2_NAMESPACE = URI.create("http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.2.0");
-
     private Map<URI, URL> namespaces;
     private Map<URI, NamespaceHandler> handlers;
     private Schema schema;
@@ -54,9 +52,10 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
     public SimpleNamespaceHandlerSet() {
         this.namespaces = new LinkedHashMap<URI, URL>();
         this.handlers = new LinkedHashMap<URI, NamespaceHandler>();
-        addNamespace(EXT_1_2_NAMESPACE,
-                getClass().getResource("/org/apache/aries/blueprint/ext/impl/blueprint-ext-1.2.xsd"),
-                new ExtNamespaceHandler());
+        ExtNamespaceHandler ext = new ExtNamespaceHandler();
+        for (String uri : ExtNamespaceHandler.EXT_URIS) {
+            addNamespace(URI.create(uri), ext.getSchemaLocation(uri), ext);
+        }
     }
 
     public Set<URI> getNamespaces() {
@@ -76,12 +75,17 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
         return handlers.get(uri);
     }
 
+    @Override
+    public Schema getSchema(Map<String, String> locations) throws SAXException, IOException {
+        return getSchema();
+    }
+
     public Schema getSchema() throws SAXException, IOException {
         if (schema == null) {
             final List<StreamSource> schemaSources = new ArrayList<StreamSource>();
             final List<InputStream> streams = new ArrayList<InputStream>();
             try {
-                InputStream is = getClass().getResourceAsStream("/org/apache/aries/blueprint/blueprint.xsd");
+                InputStream is = getClass().getResourceAsStream("/org/osgi/service/blueprint/blueprint.xsd");
                 streams.add(is);
                 schemaSources.add(new StreamSource(is));
                 for (URI uri : namespaces.keySet()) {
