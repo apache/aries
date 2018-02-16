@@ -19,7 +19,7 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" default-activation="lazy">
 
-	<service interface="org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator">
+	<service interface="org.apache.aries.blueprint.ext.evaluator.PropertyEvaluatorExt">
         <service-properties>
             <entry key="org.apache.aries.blueprint.ext.evaluator.name" value="jexl" />
         </service-properties>
