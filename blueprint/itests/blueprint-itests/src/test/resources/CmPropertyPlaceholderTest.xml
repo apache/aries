@@ -28,6 +28,7 @@
     <bean id="foo" class="org.apache.aries.blueprint.itests.cm.service.Foo">
         <property name="b" value="${pb}"/>
         <property name="c" value="${pc}"/>
+        <property name="d" value="${pd}"/>
     </bean>
     <service id="myService" interface="org.apache.aries.blueprint.itests.cm.service.FooInterface" ref="foo">
         <service-properties>

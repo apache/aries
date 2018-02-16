@@ -18,49 +18,32 @@
  */
 package org.apache.aries.blueprint.ext;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
+import org.apache.aries.blueprint.ExtendedValueMetadata;
+import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.blueprint.mutable.*;
+import org.osgi.framework.Bundle;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.reflect.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
-import org.apache.aries.blueprint.ExtendedValueMetadata;
-import org.apache.aries.blueprint.PassThroughMetadata;
-import org.apache.aries.blueprint.mutable.MutableBeanArgument;
-import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
-import org.apache.aries.blueprint.mutable.MutableBeanProperty;
-import org.apache.aries.blueprint.mutable.MutableCollectionMetadata;
-import org.apache.aries.blueprint.mutable.MutableMapEntry;
-import org.apache.aries.blueprint.mutable.MutableMapMetadata;
-import org.apache.aries.blueprint.mutable.MutablePropsMetadata;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.reflect.BeanArgument;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.MapMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.NonNullMetadata;
-import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Abstract class for property placeholders.
  *
- * @version $Rev: 1211548 $, $Date: 2011-12-07 17:26:22 +0000 (Wed, 07 Dec 2011) $
+ * @version $Rev$, $Date$
  */
-public abstract class AbstractPropertyPlaceholder implements ComponentDefinitionRegistryProcessor {
+public abstract class AbstractPropertyPlaceholderExt implements ComponentDefinitionRegistryProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholderExt.class);
 
-    private ExtendedBlueprintContainer blueprintContainer;
     private String placeholderPrefix = "${";
     private String placeholderSuffix = "}";
     private String nullValue = null;
@@ -68,6 +51,8 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     private LinkedList<String> processingStack = new LinkedList<String>();
 
+    private Bundle blueprintBundle;
+    
     public String getPlaceholderPrefix() {
         return placeholderPrefix;
     }
@@ -92,21 +77,16 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         this.nullValue = nullValue;
     }
 
-    public ExtendedBlueprintContainer getBlueprintContainer() {
-        return blueprintContainer;
-    }
-
-    public void setBlueprintContainer(ExtendedBlueprintContainer blueprintContainer) {
-        this.blueprintContainer = blueprintContainer;
-    }
-
     public void process(ComponentDefinitionRegistry registry) throws ComponentDefinitionException {
         try {
+             blueprintBundle = (Bundle) ((PassThroughMetadata)registry.getComponentDefinition("blueprintBundle")).getObject();
+            
             for (String name : registry.getComponentDefinitionNames()) {
                 processMetadata(registry.getComponentDefinition(name));
             }
         } finally {
-            processingStack.clear();
+          processingStack.clear();
+          blueprintBundle = null;
         }
     }
 
@@ -116,6 +96,18 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                 BeanMetadata bmd = (BeanMetadata) metadata;
                 processingStack.add("Bean named " + bmd.getId() + "->");
                 return processBeanMetadata(bmd);
+            } else if (metadata instanceof ReferenceListMetadata) {
+                ReferenceListMetadata rlmd = (ReferenceListMetadata) metadata;
+                processingStack.add("Reference List named " + rlmd.getId() + "->");
+                return processRefCollectionMetadata(rlmd);
+            } else if (metadata instanceof ReferenceMetadata) {
+                ReferenceMetadata rmd = (ReferenceMetadata) metadata;
+                processingStack.add("Reference named " + rmd.getId() + "->");
+                return processReferenceMetadata(rmd);
+            } else if (metadata instanceof ServiceMetadata) {
+                ServiceMetadata smd = (ServiceMetadata) metadata;
+                processingStack.add("Service named " + smd.getId() + "->");
+                return processServiceMetadata(smd);
             } else if (metadata instanceof CollectionMetadata) {
                 CollectionMetadata cmd = (CollectionMetadata) metadata;
                 processingStack.add("Collection of type " + cmd.getCollectionClass() + "->");
@@ -140,10 +132,10 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     protected Metadata processBeanMetadata(BeanMetadata component) {
         for (BeanArgument arg :  component.getArguments()) {
-
+            
             try {
                 processingStack.add(
-                        "Argument index " + arg.getIndex() + " and value type " + arg.getValueType() + "->");
+                    "Argument index " + arg.getIndex() + " and value type " + arg.getValueType() + "->");
                 if(arg instanceof MutableBeanArgument) {
                     ((MutableBeanArgument) arg).setValue(processMetadata(arg.getValue()));
                 } else {
@@ -157,7 +149,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
             }
         }
         for (BeanProperty prop : component.getProperties()) {
-
+          
             try {
                 processingStack.add("Property named " + prop.getName() + "->");
                 if(prop instanceof MutableBeanProperty) {
@@ -172,16 +164,16 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                 processingStack.removeLast();
             }
         }
-
+        
         Target factoryComponent = component.getFactoryComponent();
         if(factoryComponent != null) {
-
+            
             try {
-
+                
                 if(component instanceof MutableBeanMetadata) {
                     processingStack.add("Factory Component->");
                     ((MutableBeanMetadata) component).setFactoryComponent(
-                            (Target) processMetadata(factoryComponent));
+                        (Target) processMetadata(factoryComponent));
                 } else {
                     printWarning(component, "Factory Component");
                     processingStack.add("Factory Component->");
@@ -191,20 +183,114 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                 processingStack.removeLast();
             }
         }
-
+        
         return component;
     }
 
-    protected Metadata processPropsMetadata(PropsMetadata metadata) {
+    protected Metadata processServiceMetadata(ServiceMetadata component) {
+      
+        try {
+            if(component instanceof MutableServiceMetadata) {
+                processingStack.add("Service Component->");
+                ((MutableServiceMetadata) component).setServiceComponent(
+                    (Target) processMetadata(component.getServiceComponent()));
+            } else {
+                printWarning(component, "Service Component");
+                processingStack.add("Service Component->");
+                processMetadata(component.getServiceComponent());
+            }
+        } finally {
+            processingStack.removeLast();
+        }
+        
+        List<MapEntry> entries = new ArrayList<MapEntry>(component.getServiceProperties());
+        if(!!! entries.isEmpty()) {
+          
+            try {
+                if(component instanceof MutableServiceMetadata) {
+                    processingStack.add("Service Properties->");
+                    MutableServiceMetadata msm = (MutableServiceMetadata) component;
+                
+                    for (MapEntry entry : entries) {
+                        msm.removeServiceProperty(entry);
+                    }
+                    for (MapEntry entry : processMapEntries(entries)) {
+                        msm.addServiceProperty(entry);
+                    }
+                } else {
+                    printWarning(component, "Service Properties");
+                    processingStack.add("Service Properties->");
+                    processMapEntries(entries);
+                }
+            } finally {
+              processingStack.removeLast();
+            }
+        }
+        
+        for (RegistrationListener listener : component.getRegistrationListeners()) {
+            Target listenerComponent = listener.getListenerComponent();
+            try {
+                processingStack.add("Registration Listener " + listenerComponent + "->");
+                if(listener instanceof MutableRegistrationListener) {
+                    ((MutableRegistrationListener) listener).setListenerComponent((Target) processMetadata(listenerComponent));
+                } else {
+                    //Say that we can't change this listener, but continue processing
+                    //If the value is mutable then we may be ok!
+                    printWarning(listener, "Service Registration Listener");
+                    processMetadata(listenerComponent);
+                }
+            } finally {
+            processingStack.removeLast();
+            }
+        }
+        return component;
+    }
 
+    protected Metadata processReferenceMetadata(ReferenceMetadata component) {
+        return processServiceReferenceMetadata(component);
+    }
+
+    protected Metadata processRefCollectionMetadata(ReferenceListMetadata component) {
+        return processServiceReferenceMetadata(component);
+    }
+
+    private Metadata processServiceReferenceMetadata(ServiceReferenceMetadata component) {
+        if (component instanceof MutableServiceReferenceMetadata) {
+            ValueMetadata valueMetadata = ((MutableServiceReferenceMetadata) component).getExtendedFilter();
+            if (valueMetadata != null) {
+                ((MutableServiceReferenceMetadata) component).setExtendedFilter(
+                        doProcessValueMetadata(valueMetadata));
+            }
+        }
+        for (ReferenceListener listener : component.getReferenceListeners()) {
+            Target listenerComponent = listener.getListenerComponent();
+            try {
+                processingStack.add("Reference Listener " + listenerComponent + "->");
+                if(listener instanceof MutableReferenceListener) {
+                    ((MutableReferenceListener) listener).setListenerComponent((Target) processMetadata(listenerComponent));
+                } else {
+                    //Say that we can't change this listener, but continue processing
+                    //If the value is mutable then we may be ok!
+                    printWarning(listener, "Reference Binding Listener");
+                    processMetadata(listenerComponent);
+                }
+            } finally {
+            processingStack.removeLast();
+            }
+        }
+        return component;
+    }
+    
+    protected Metadata processPropsMetadata(PropsMetadata metadata) {
+      
         List<MapEntry> entries = new ArrayList<MapEntry>(metadata.getEntries());
         if(!!! entries.isEmpty()) {
-
+          
             try {
                 if(metadata instanceof MutablePropsMetadata) {
                     processingStack.add("Properties->");
                     MutablePropsMetadata mpm = (MutablePropsMetadata) metadata;
-
+                
                     for (MapEntry entry : entries) {
                         mpm.removeEntry(entry);
                     }
@@ -217,7 +303,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                     processMapEntries(entries);
                 }
             } finally {
-                processingStack.removeLast();
+              processingStack.removeLast();
             }
         }
         return metadata;
@@ -226,12 +312,12 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     protected Metadata processMapMetadata(MapMetadata metadata) {
         List<MapEntry> entries = new ArrayList<MapEntry>(metadata.getEntries());
         if(!!! entries.isEmpty()) {
-
+          
             try {
                 if(metadata instanceof MutableMapMetadata) {
                     processingStack.add("Map->");
                     MutableMapMetadata mmm = (MutableMapMetadata) metadata;
-
+                
                     for (MapEntry entry : entries) {
                         mmm.removeEntry(entry);
                     }
@@ -244,7 +330,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                     processMapEntries(entries);
                 }
             } finally {
-                processingStack.removeLast();
+              processingStack.removeLast();
             }
         }
         return metadata;
@@ -254,14 +340,14 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         for (MapEntry entry : entries) {
             try {
                 processingStack.add("Map Entry Key: " + entry.getKey() + " Value: " + entry.getValue() + "->" );
-
+            
                 if(entry instanceof MutableMapEntry) {
                     ((MutableMapEntry) entry).setKey((NonNullMetadata) processMetadata(entry.getKey()));
                     ((MutableMapEntry) entry).setValue(processMetadata(entry.getValue()));
                 } else {
-                    printWarning(entry, "Map Entry");
-                    processMetadata(entry.getKey());
-                    processMetadata(entry.getValue());
+                  printWarning(entry, "Map Entry");
+                  processMetadata(entry.getKey());
+                  processMetadata(entry.getValue());
                 }
             } finally {
                 processingStack.removeLast();
@@ -271,15 +357,15 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     protected Metadata processCollectionMetadata(CollectionMetadata metadata) {
-
+      
         List<Metadata> values = new ArrayList<Metadata>(metadata.getValues());
         if(!!! values.isEmpty()) {
-
+        
             try {
                 if(metadata instanceof MutableCollectionMetadata) {
                     processingStack.add("Collection type: " + metadata.getValueType() + "->");
                     MutableCollectionMetadata mcm = (MutableCollectionMetadata) metadata;
-
+                
                     for (Metadata value : values) {
                         mcm.removeValue(value);
                     }
@@ -290,40 +376,44 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                     printWarning(metadata, "Collection type: " + metadata.getValueType());
                     processingStack.add("Collection type: " + metadata.getValueType() + "->");
                     for (Metadata value : values) {
-                        processMetadata(value);
+                       processMetadata(value);
                     }
                 }
             } finally {
-                processingStack.removeLast();
+              processingStack.removeLast();
             }
         }
         return metadata;
     }
 
     protected Metadata processValueMetadata(ValueMetadata metadata) {
+        return doProcessValueMetadata(metadata);
+    }
 
+    protected ValueMetadata doProcessValueMetadata(ValueMetadata metadata) {
         return new LateBindingValueMetadata(metadata);
     }
 
     private void printWarning(Object immutable, String processingType) {
         StringBuilder sb = new StringBuilder("The property placeholder processor for ");
         sb.append(placeholderPrefix).append(',').append(" ").append(placeholderSuffix)
-                .append(" found an immutable ").append(processingType)
-                .append(" at location ");
-
+        .append(" in bundle ").append(blueprintBundle.getSymbolicName()).append("/")
+        .append(blueprintBundle.getVersion()).append(" found an immutable ").append(processingType)
+        .append(" at location ");
+        
         for(String s : processingStack) {
             sb.append(s);
         }
-
+        
         sb.append(". This may prevent properties, beans, or other items referenced by this component from being properly processed.");
-
+        
         LOGGER.info(sb.toString());
     }
-
+    
     protected Object retrieveValue(String expression) {
         return getProperty(expression);
     }
-
+    
     protected Object processString(String str) {
         // TODO: we need to handle escapes on the prefix / suffix
         Matcher matcher = getPattern().matcher(str);

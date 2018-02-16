@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
-public class PropertyPlaceholderTest extends PropertyPlaceholder {
+public class PropertyPlaceholderTest extends PropertyPlaceholderExt {
     private final Map<String,String> values = new HashMap<String,String>();
     private LateBindingValueMetadata sut;
     

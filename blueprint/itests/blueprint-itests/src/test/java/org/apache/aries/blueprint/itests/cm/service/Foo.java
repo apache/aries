@@ -29,6 +29,7 @@ public class Foo implements FooInterface {
     private int a;
     private String b;
     private Long c;
+    private Object d;
     private Properties props;
 
     public int getA() {
@@ -54,6 +55,14 @@ public class Foo implements FooInterface {
 
     public void setC(Long c) {
         this.c = c;
+    }
+
+    public Object getD() {
+        return d;
+    }
+
+    public void setD(Object d) {
+        this.d = d;
     }
 
     public Properties getProps() {

@@ -14,11 +14,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.apache.aries.blueprint.ext.evaluator;
+package org.apache.aries.blueprint;
 
-import java.util.Dictionary;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
-@Deprecated
-public interface PropertyEvaluator {
-    public String evaluate(String expression, Dictionary<String, String> properties);
+public interface ExtendedValueMetadata extends ValueMetadata {
+
+    Object getValue();
+
 }
