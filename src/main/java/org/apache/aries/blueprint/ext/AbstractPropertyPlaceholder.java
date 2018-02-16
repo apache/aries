@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
+import org.apache.aries.blueprint.ExtendedValueMetadata;
 import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanArgument;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
@@ -62,6 +63,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     private ExtendedBlueprintContainer blueprintContainer;
     private String placeholderPrefix = "${";
     private String placeholderSuffix = "}";
+    private String nullValue = null;
     private Pattern pattern;
 
     private LinkedList<String> processingStack = new LinkedList<String>();
@@ -80,6 +82,14 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     public void setPlaceholderSuffix(String placeholderSuffix) {
         this.placeholderSuffix = placeholderSuffix;
+    }
+
+    public String getNullValue() {
+        return nullValue;
+    }
+
+    public void setNullValue(String nullValue) {
+        this.nullValue = nullValue;
     }
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
@@ -310,11 +320,11 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         LOGGER.info(sb.toString());
     }
 
-    protected String retrieveValue(String expression) {
+    protected Object retrieveValue(String expression) {
         return getProperty(expression);
     }
 
-    protected String processString(String str) {
+    protected Object processString(String str) {
         // TODO: we need to handle escapes on the prefix / suffix
         Matcher matcher = getPattern().matcher(str);
         while (matcher.find()) {
@@ -324,16 +334,23 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                 matcher.region(matcher.start(1) + idx, str.length());
                 continue;
             }
-            String rep = retrieveValue(matcher.group(1));
+            Object rep = retrieveValue(matcher.group(1));
             if (rep != null) {
-                str = str.replace(matcher.group(0), rep);
-                matcher.reset(str);
+                if (rep instanceof String || !matcher.group(0).equals(str)) {
+                    str = str.replace(matcher.group(0), rep.toString());
+                    matcher.reset(str);
+                } else {
+                    return rep;
+                }
             }
+        }
+        if (nullValue != null && nullValue.equals(str)) {
+            return null;
         }
         return str;
     }
 
-    protected String getProperty(String val) {
+    protected Object getProperty(String val) {
         return null;
     }
 
@@ -344,30 +361,46 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         return pattern;
     }
 
-    public class LateBindingValueMetadata implements ValueMetadata {
+    public class LateBindingValueMetadata implements ExtendedValueMetadata {
 
         private final ValueMetadata metadata;
         private boolean retrieved;
-        private String retrievedValue;
+        private Object retrievedValue;
 
         public LateBindingValueMetadata(ValueMetadata metadata) {
             this.metadata = metadata;
         }
 
         public String getStringValue() {
-            if (!retrieved) {
-                String v = metadata.getStringValue();
-                LOGGER.debug("Before process: {}", v);
-                retrievedValue = processString(v);
-                LOGGER.debug("After process: {}", retrievedValue);
-
-                retrieved = true;
-            }
-            return retrievedValue;
+            retrieve();
+            return retrievedValue instanceof String ? (String) retrievedValue : null;
         }
 
         public String getType() {
             return metadata.getType();
+        }
+
+        public Object getValue() {
+            retrieve();
+            return retrievedValue instanceof String ? null : retrievedValue;
+        }
+
+        private void retrieve() {
+            if (!retrieved) {
+                Object o = null;
+                if (metadata instanceof ExtendedValueMetadata) {
+                    o = ((ExtendedValueMetadata) metadata).getValue();
+                }
+                if (o == null) {
+                    String v = metadata.getStringValue();
+                    LOGGER.debug("Before process: {}", v);
+                    retrievedValue = processString(v);
+                    LOGGER.debug("After process: {}", retrievedValue);
+                } else {
+                    LOGGER.debug("Skipping non string value: {}", o);
+                }
+                retrieved = true;
+            }
         }
     }
 }

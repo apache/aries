@@ -24,7 +24,6 @@ import java.util.*;
 import org.apache.aries.blueprint.*;
 import org.apache.aries.blueprint.container.NullProxy;
 import org.apache.aries.blueprint.ext.AbstractPropertyPlaceholder;
-import org.apache.aries.blueprint.ext.PlaceholdersUtils;
 import org.apache.aries.blueprint.ext.PropertyPlaceholder;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutableCollectionMetadata;
