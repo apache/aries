@@ -18,31 +18,31 @@
  */
 package org.apache.aries.blueprint.ext;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
+import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluatorExt;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.apache.felix.utils.properties.Properties;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.Dictionary;
-import java.util.Enumeration;
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
-import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.PassThroughMetadata;
-import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Set;
 
 /**
  * Property placeholder that looks for properties in the System properties.
  *
  * @version $Rev$, $Date$
  */
-@Deprecated
-public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
+public class PropertyPlaceholderExt extends AbstractPropertyPlaceholderExt {
 
     public enum SystemProperties {
         never,
@@ -50,21 +50,21 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         override
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertyPlaceholder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertyPlaceholderExt.class);
 
-    private Map defaultProperties;
+    private Map<String, Object> defaultProperties;
     private Properties properties;
     private List<URL> locations;
     private boolean ignoreMissingLocations;
     private SystemProperties systemProperties = SystemProperties.fallback;
-    private PropertyEvaluator evaluator = null;
+    private PropertyEvaluatorExt evaluator = null;
     private ExtendedBlueprintContainer container;
 
-    public Map getDefaultProperties() {
+    public Map<String, Object> getDefaultProperties() {
         return defaultProperties;
     }
 
-    public void setDefaultProperties(Map defaultProperties) {
+    public void setDefaultProperties(Map<String, Object> defaultProperties) {
         this.defaultProperties = defaultProperties;
     }
 
@@ -92,11 +92,11 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         this.systemProperties = systemProperties;
     }
 
-    public PropertyEvaluator getEvaluator() {
+    public PropertyEvaluatorExt getEvaluator() {
         return evaluator;
     }
 
-    public void setEvaluator(PropertyEvaluator evaluator) {
+    public void setEvaluator(PropertyEvaluatorExt evaluator) {
         this.evaluator = evaluator;
     }
 
@@ -131,7 +131,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         super.process(registry);
     }
 
-    protected String getProperty(String val) {
+    protected Object getProperty(String val) {
         LOGGER.debug("Retrieving property {}", val);
         Object v = null;
         if (v == null && systemProperties == SystemProperties.override) {
@@ -161,7 +161,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         if (v == null) {
             LOGGER.debug("Property {} not found", val);
         }
-        return v != null ? v.toString() : null;
+        return v;
     }
 
     protected String getSystemProperty(String val) {
@@ -203,49 +203,21 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
     }
 
     @Override
-    protected String retrieveValue(String expression) {
+    protected Object retrieveValue(String expression) {
         LOGGER.debug("Retrieving Value from expression: {}", expression);
         
         if (evaluator == null) {
             return super.retrieveValue(expression);
         } else {
-            return evaluator.evaluate(expression, new Dictionary<String, String>() {
+            return evaluator.evaluate(expression, new AbstractMap<String, Object>() {
                 @Override
-                public String get(Object key) {
+                public Object get(Object key) {
                     return getProperty((String) key);
                 }
-
-                // following are not important
                 @Override
-                public String put(String key, String value) {
+                public Set<Entry<String, Object>> entrySet() {
                     throw new UnsupportedOperationException();
                 }
-                
-                @Override
-                public Enumeration<String> elements() {
-                    throw new UnsupportedOperationException();
-                }
-                
-                @Override
-                public boolean isEmpty() {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public Enumeration<String> keys() {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public String remove(Object key) {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public int size() {
-                    throw new UnsupportedOperationException();
-                }
-                
             });
         }
 

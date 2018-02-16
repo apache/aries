@@ -26,6 +26,8 @@ public interface FooInterface {
 
     Long getC();
 
+    Object getD();
+
     Properties getProps();
 
 }

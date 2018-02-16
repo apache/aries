@@ -22,7 +22,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import org.apache.aries.blueprint.ext.PropertyPlaceholder;
+import org.apache.aries.blueprint.ext.PropertyPlaceholderExt;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
-public class CmPropertyPlaceholder extends PropertyPlaceholder implements ManagedObject {
+public class CmPropertyPlaceholder extends PropertyPlaceholderExt implements ManagedObject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CmPropertyPlaceholder.class);
 
@@ -102,7 +102,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
         managedObjectManager.unregister(this);
     }
 
-    protected String getProperty(String val) {
+    protected Object getProperty(String val) {
         LOGGER.debug("Retrieving property value {} from configuration with pid {}", val, persistentId);
         Object v = null;
         if (properties != null) {
@@ -116,7 +116,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholder implements Manage
         if (v == null) {
             v = super.getProperty(val);
         }
-        return v != null ? v.toString() : null;
+        return v;
     }
 
     public Bundle getBundle() {

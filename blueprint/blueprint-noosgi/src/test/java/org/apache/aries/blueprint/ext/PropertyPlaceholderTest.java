@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 public class PropertyPlaceholderTest extends PropertyPlaceholder {
-    private final Map<String,String> values = new HashMap<String,String>();
+    private final Map<String,Object> values = new HashMap<String,Object>();
     private LateBindingValueMetadata sut;
 
     @Before
@@ -113,7 +113,7 @@ public class PropertyPlaceholderTest extends PropertyPlaceholder {
      */
 
     // Override to simulate actual property retrieval
-    protected String getProperty(String prop) {
+    protected Object getProperty(String prop) {
         return values.get(prop);
     }
 

@@ -90,13 +90,23 @@ public class CmPropertyPlaceholderTest extends AbstractBlueprintIntegrationTest 
         assertThat(foo.getC(), nullValue());
 
         Configuration cf = ca.getConfiguration("blueprint-sample-properties.pid", null);
-        Hashtable<String,String> props = new Hashtable<String,String>();
+        Hashtable<String,Object> props = new Hashtable<String,Object>();
         props.put("pb", "43");
         cf.update(props);
         Thread.sleep(500);
         sr = getServiceRef(FooInterface.class, "(key=foo5)");
         foo = (FooInterface)context().getService(sr);
         assertEquals("43", foo.getB());
+
+        props.clear();
+        props.put("pc", 7);
+        props.put("pd", new int[] { 3, 4 });
+        cf.update(props);
+        Thread.sleep(500);
+        sr = getServiceRef(FooInterface.class, "(key=foo5)");
+        foo = (FooInterface)context().getService(sr);
+        assertEquals(7L, (long) foo.getC());
+        assertArrayEquals(new int[] { 3, 4 }, (int[]) foo.getD());
 
         cf.delete();
         Thread.sleep(500);

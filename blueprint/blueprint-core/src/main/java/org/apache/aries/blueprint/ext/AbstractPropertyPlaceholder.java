@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Rev$, $Date$
  */
+@Deprecated
 public abstract class AbstractPropertyPlaceholder implements ComponentDefinitionRegistryProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholder.class);

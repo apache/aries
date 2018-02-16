@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.blueprint.jexl.evaluator</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint JEXL evaluator</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <description>
         This bundle contains a plugin to the "ext" namespace handler for evaluating expressions using JEXL
     </description>
@@ -55,7 +55,7 @@
         <aries.osgi.private.pkg>
             org.apache.aries.blueprint.jexl.evaluator
         </aries.osgi.private.pkg>
-        <blueprint.core.version>1.0.0</blueprint.core.version>
+        <blueprint.core.version>1.10.0-SNAPSHOT</blueprint.core.version>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 

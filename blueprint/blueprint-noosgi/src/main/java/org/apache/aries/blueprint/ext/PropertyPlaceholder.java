@@ -21,13 +21,14 @@ package org.apache.aries.blueprint.ext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Dictionary;
-import java.util.Enumeration;
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
 
 import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
+import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluatorExt;
+import org.apache.felix.utils.properties.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +47,12 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertyPlaceholder.class);
 
-    private Map defaultProperties;
+    private Map<String, Object> defaultProperties;
     private Properties properties;
     private List<String> locations;
     private boolean ignoreMissingLocations;
     private SystemProperties systemProperties = SystemProperties.override;
-    private PropertyEvaluator evaluator = null;
+    private PropertyEvaluatorExt evaluator = null;
 
     public Map getDefaultProperties() {
         return defaultProperties;
@@ -85,11 +86,11 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         this.systemProperties = systemProperties;
     }
 
-    public PropertyEvaluator getEvaluator() {
+    public PropertyEvaluatorExt getEvaluator() {
         return evaluator;
     }
 
-    public void setEvaluator(PropertyEvaluator evaluator) {
+    public void setEvaluator(PropertyEvaluatorExt evaluator) {
         this.evaluator = evaluator;
     }
 
@@ -122,7 +123,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         }
     }
 
-    protected String getProperty(String val) {
+    protected Object getProperty(String val) {
         LOGGER.debug("Retrieving property {}", val);
         Object v = null;
         if (v == null && systemProperties == SystemProperties.override) {
@@ -152,53 +153,25 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         if (v == null) {
             LOGGER.debug("Property {} not found", val);
         }
-        return v != null ? v.toString() : null;
+        return v;
     }
 
     @Override
-    protected String retrieveValue(String expression) {
+    protected Object retrieveValue(String expression) {
         LOGGER.debug("Retrieving Value from expression: {}", expression);
 
         if (evaluator == null) {
             return super.retrieveValue(expression);
         } else {
-            return evaluator.evaluate(expression, new Dictionary<String, String>(){
+            return evaluator.evaluate(expression, new AbstractMap<String, Object>() {
                 @Override
-                public String get(Object key) {
+                public Object get(Object key) {
                     return getProperty((String) key);
                 }
-
-                // following are not important
                 @Override
-                public String put(String key, String value) {
+                public Set<Entry<String, Object>> entrySet() {
                     throw new UnsupportedOperationException();
                 }
-
-                @Override
-                public Enumeration<String> elements() {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public boolean isEmpty() {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public Enumeration<String> keys() {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public String remove(Object key) {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public int size() {
-                    throw new UnsupportedOperationException();
-                }
-
             });
         }
 
