@@ -298,7 +298,7 @@ public class BlueprintContainerImpl
                 if (bundle.getBundleContext() != bundleContext) {
                     return;
                 }
-                LOGGER.debug("Running blueprint container for bundle {}/{} in state {}", getBundle().getSymbolicName(), getBundle().getVersion(), state);
+                LOGGER.debug("Running container for blueprint bundle {}/{} in state {}", getBundle().getSymbolicName(), getBundle().getVersion(), state);
                 switch (state) {
                     case Unknown:
                         readDirectives();
@@ -324,7 +324,7 @@ public class BlueprintContainerImpl
                             }
                         }
                         if (missing.size() > 0) {
-                            LOGGER.info("Bundle {}/{} is waiting for namespace handlers {}", getBundle().getSymbolicName(), getBundle().getVersion(), missingURIs);
+                            LOGGER.info("Blueprint bundle {}/{} is waiting for namespace handlers {}", getBundle().getSymbolicName(), getBundle().getVersion(), missingURIs);
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
@@ -373,7 +373,7 @@ public class BlueprintContainerImpl
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
                                     tidyupComponents();
-                                    LOGGER.error("Unable to start blueprint container for bundle {}/{} due to unresolved dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependecies), t);
+                                    LOGGER.error("Unable to start container for blueprint bundle {}/{} due to unresolved dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependecies), t);
                                     eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundle(), getExtenderBundle(), missingDependecies, t));
                                 }
                             }
@@ -385,7 +385,7 @@ public class BlueprintContainerImpl
                         if (waitForDependencies) {
                             String[] missingDependencies = getMissingDependencies();
                             if (missingDependencies.length > 0) {
-                                LOGGER.info("Bundle {}/{} is waiting for dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependencies));
+                                LOGGER.info("Blueprint bundle {}/{} is waiting for dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependencies));
                                 eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundle(), getExtenderBundle(), missingDependencies));
                                 return;
                             }
@@ -401,7 +401,7 @@ public class BlueprintContainerImpl
                         if (waitForDependencies) {
                             String[] missingDependencies = getMissingDependencies();
                             if (missingDependencies.length > 0) {
-                                LOGGER.info("Bundle {}/{} is waiting for dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependencies));
+                                LOGGER.info("Blueprint bundle {}/{} is waiting for dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependencies));
                                 eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundle(), getExtenderBundle(), missingDependencies));
                                 return;
                             }
@@ -423,6 +423,7 @@ public class BlueprintContainerImpl
                                     JavaUtils.getBundleVersion(bundle));
                             registration = registerService(new String[]{BlueprintContainer.class.getName()}, this, props);
                         }
+                        LOGGER.info("Blueprint bundle {}/{} has been started", getBundle().getSymbolicName(), getBundle().getVersion());
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundle(), getExtenderBundle()));
                         state = State.Created;
                         break;
@@ -436,7 +437,7 @@ public class BlueprintContainerImpl
                 state = State.Failed;
                 cancelFutureIfPresent();
                 tidyupComponents();
-                LOGGER.error("Unable to start blueprint container for bundle {}/{}", getBundle().getSymbolicName(), getBundle().getVersion(), t);
+                LOGGER.error("Unable to start container for blueprint bundle {}/{}", getBundle().getSymbolicName(), getBundle().getVersion(), t);
                 eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundle(), getExtenderBundle(), t));
             } catch (RuntimeException re) {
                 LOGGER.debug("Tidying up components failed. ", re);
@@ -902,7 +903,7 @@ public class BlueprintContainerImpl
         tidyupComponents();
 
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundle(), getExtenderBundle()));
-        LOGGER.debug("Blueprint container {} destroyed", getBundle().getSymbolicName(), getBundle().getVersion());
+        LOGGER.debug("Container destroyed for blueprint bundle {}/{}", getBundle().getSymbolicName(), getBundle().getVersion());
     }
 
     public static void safeUnregisterService(ServiceRegistration reg) {
