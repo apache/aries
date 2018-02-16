@@ -16,9 +16,11 @@
  */
 package org.apache.aries.blueprint.ext.evaluator;
 
-import java.util.Dictionary;
+import java.util.Map;
 
-@Deprecated
-public interface PropertyEvaluator {
-    public String evaluate(String expression, Dictionary<String, String> properties);
+
+public interface PropertyEvaluatorExt {
+
+    Object evaluate(String expression, Map<String, Object> properties);
+
 }

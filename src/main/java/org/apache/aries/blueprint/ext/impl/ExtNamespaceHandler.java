@@ -26,8 +26,8 @@ import org.apache.aries.blueprint.ExtendedReferenceMetadata;
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.container.NullProxy;
 import org.apache.aries.blueprint.ext.PlaceholdersUtils;
-import org.apache.aries.blueprint.ext.PropertyPlaceholder;
-import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
+import org.apache.aries.blueprint.ext.PropertyPlaceholderExt;
+import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluatorExt;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutableCollectionMetadata;
 import org.apache.aries.blueprint.mutable.MutableComponentMetadata;
@@ -157,7 +157,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
 
     public Set<Class> getManagedClasses() {
         return new HashSet<Class>(Arrays.asList(
-                PropertyPlaceholder.class
+                PropertyPlaceholderExt.class
         ));
     }
 
@@ -424,7 +424,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         metadata.setProcessor(true);
         metadata.setId(getId(context, element));
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
-        metadata.setRuntimeClass(PropertyPlaceholder.class);
+        metadata.setRuntimeClass(PropertyPlaceholderExt.class);
         metadata.setInitMethod("init");
         String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
                                     ? element.getAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
@@ -547,11 +547,11 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         m.setComponentId(value);
         return m;
     }
-    
+
     private MutableReferenceMetadata createReference(ParserContext context, String value) {
         MutableReferenceMetadata m = context.createMetadata(MutableReferenceMetadata.class);
         // use the class instance directly rather than loading the class from the specified the interface name.
-        m.setRuntimeInterface(PropertyEvaluator.class);
+        m.setRuntimeInterface(PropertyEvaluatorExt.class);
         m.setFilter("(org.apache.aries.blueprint.ext.evaluator.name=" + value + ")");
         m.setBundleContext(ctx);
         return m;

@@ -18,57 +18,31 @@
  */
 package org.apache.aries.blueprint.ext;
 
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
+import org.apache.aries.blueprint.ExtendedValueMetadata;
+import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.blueprint.mutable.*;
+import org.osgi.framework.Bundle;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.reflect.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
-import org.apache.aries.blueprint.PassThroughMetadata;
-import org.apache.aries.blueprint.mutable.MutableBeanArgument;
-import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
-import org.apache.aries.blueprint.mutable.MutableBeanProperty;
-import org.apache.aries.blueprint.mutable.MutableCollectionMetadata;
-import org.apache.aries.blueprint.mutable.MutableMapEntry;
-import org.apache.aries.blueprint.mutable.MutableMapMetadata;
-import org.apache.aries.blueprint.mutable.MutablePropsMetadata;
-import org.apache.aries.blueprint.mutable.MutableReferenceListener;
-import org.apache.aries.blueprint.mutable.MutableRegistrationListener;
-import org.apache.aries.blueprint.mutable.MutableServiceMetadata;
-import org.apache.aries.blueprint.mutable.MutableServiceReferenceMetadata;
-import org.osgi.framework.Bundle;
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.reflect.BeanArgument;
-import org.osgi.service.blueprint.reflect.BeanMetadata;
-import org.osgi.service.blueprint.reflect.BeanProperty;
-import org.osgi.service.blueprint.reflect.CollectionMetadata;
-import org.osgi.service.blueprint.reflect.MapEntry;
-import org.osgi.service.blueprint.reflect.MapMetadata;
-import org.osgi.service.blueprint.reflect.Metadata;
-import org.osgi.service.blueprint.reflect.NonNullMetadata;
-import org.osgi.service.blueprint.reflect.PropsMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
-import org.osgi.service.blueprint.reflect.ReferenceListener;
-import org.osgi.service.blueprint.reflect.ReferenceMetadata;
-import org.osgi.service.blueprint.reflect.RegistrationListener;
-import org.osgi.service.blueprint.reflect.ServiceMetadata;
-import org.osgi.service.blueprint.reflect.ServiceReferenceMetadata;
-import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Abstract class for property placeholders.
  *
  * @version $Rev$, $Date$
  */
-@Deprecated
-public abstract class AbstractPropertyPlaceholder implements ComponentDefinitionRegistryProcessor {
+public abstract class AbstractPropertyPlaceholderExt implements ComponentDefinitionRegistryProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholderExt.class);
 
     private String placeholderPrefix = "${";
     private String placeholderSuffix = "}";
@@ -436,11 +410,11 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         LOGGER.info(sb.toString());
     }
     
-    protected String retrieveValue(String expression) {
+    protected Object retrieveValue(String expression) {
         return getProperty(expression);
     }
     
-    protected String processString(String str) {
+    protected Object processString(String str) {
         // TODO: we need to handle escapes on the prefix / suffix
         Matcher matcher = getPattern().matcher(str);
         while (matcher.find()) {
@@ -450,10 +424,14 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
                 matcher.region(matcher.start(1) + idx, str.length());
                 continue;
             }
-            String rep = retrieveValue(matcher.group(1));
+            Object rep = retrieveValue(matcher.group(1));
             if (rep != null) {
-                str = str.replace(matcher.group(0), rep);
-                matcher.reset(str);
+                if (rep instanceof String || !matcher.group(0).equals(str)) {
+                    str = str.replace(matcher.group(0), rep.toString());
+                    matcher.reset(str);
+                } else {
+                    return rep;
+                }
             }
         }
         if (nullValue != null && nullValue.equals(str)) {
@@ -462,7 +440,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         return str;
     }
 
-    protected String getProperty(String val) {
+    protected Object getProperty(String val) {
         return null;
     }
 
@@ -473,30 +451,46 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         return pattern;
     }
 
-    public class LateBindingValueMetadata implements ValueMetadata {
+    public class LateBindingValueMetadata implements ExtendedValueMetadata {
 
         private final ValueMetadata metadata;
         private boolean retrieved;
-        private String retrievedValue;
+        private Object retrievedValue;
 
         public LateBindingValueMetadata(ValueMetadata metadata) {
             this.metadata = metadata;
         }
 
         public String getStringValue() {
-            if (!retrieved) {
-                String v = metadata.getStringValue();
-                LOGGER.debug("Before process: {}", v);
-                retrievedValue = processString(v);
-                LOGGER.debug("After process: {}", retrievedValue);
-                
-                retrieved = true;
-            }
-            return retrievedValue;
+            retrieve();
+            return retrievedValue instanceof String ? (String) retrievedValue : null;
         }
 
         public String getType() {
             return metadata.getType();
+        }
+
+        public Object getValue() {
+            retrieve();
+            return retrievedValue instanceof String ? null : retrievedValue;
+        }
+
+        private void retrieve() {
+            if (!retrieved) {
+                Object o = null;
+                if (metadata instanceof ExtendedValueMetadata) {
+                    o = ((ExtendedValueMetadata) metadata).getValue();
+                }
+                if (o == null) {
+                    String v = metadata.getStringValue();
+                    LOGGER.debug("Before process: {}", v);
+                    retrievedValue = processString(v);
+                    LOGGER.debug("After process: {}", retrievedValue);
+                } else {
+                    LOGGER.debug("Skipping non string value: {}", o);
+                }
+                retrieved = true;
+            }
         }
     }
 }

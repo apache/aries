@@ -20,7 +20,6 @@ package org.apache.aries.blueprint.ext;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
-import org.apache.aries.blueprint.ext.AbstractPropertyPlaceholder;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -42,7 +41,7 @@ public class PlaceholdersUtils {
             ComponentMetadata component = registry.getComponentDefinition(id);
             if (component instanceof ExtendedBeanMetadata) {
                 ExtendedBeanMetadata bean = (ExtendedBeanMetadata) component;
-                if (bean.getRuntimeClass() != null && AbstractPropertyPlaceholder.class.isAssignableFrom(bean.getRuntimeClass())) {
+                if (bean.getRuntimeClass() != null && AbstractPropertyPlaceholderExt.class.isAssignableFrom(bean.getRuntimeClass())) {
                     String otherPrefix = getPlaceholderProperty(bean, "placeholderPrefix");
                     String otherSuffix = getPlaceholderProperty(bean, "placeholderSuffix");
                     if (prefix.equals(otherPrefix) && suffix.equals(otherSuffix)) {

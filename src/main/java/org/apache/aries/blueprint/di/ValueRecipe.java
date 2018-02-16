@@ -22,6 +22,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.aries.blueprint.ExtendedValueMetadata;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
@@ -51,7 +52,14 @@ public class ValueRecipe extends AbstractRecipe {
     protected Object internalCreate() throws ComponentDefinitionException {
         try {
             Type type = getValueType();
-            return convert(value.getStringValue(), type);
+            Object v = null;
+            if (value instanceof ExtendedValueMetadata) {
+                v = ((ExtendedValueMetadata) value).getValue();
+            }
+            if (v == null) {
+                v = value.getStringValue();
+            }
+            return convert(v, type);
         } catch (Exception e) {
             throw new ComponentDefinitionException(e);
         }
