@@ -56,7 +56,7 @@
         </aries.osgi.private.pkg>
 
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.core.version>1.8.4-SNAPSHOT</blueprint.core.version>
+        <blueprint.core.version>1.7.0</blueprint.core.version>
         <blueprint.parser.version>1.4.0</blueprint.parser.version>
         <lastReleaseVersion>1.1.0</lastReleaseVersion>
     </properties>
@@ -65,9 +65,16 @@
         <profile>
             <id>dev</id>
             <properties>
-                <blueprint.api.version>1.0.1</blueprint.api.version>
-                <blueprint.core.version>1.9.0-SNAPSHOT</blueprint.core.version>
-                <blueprint.parser.version>1.4.0</blueprint.parser.version>
+                <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
+                <blueprint.core.version>${blueprint.core.dev.version}</blueprint.core.version>
+                <blueprint.cm.version>${blueprint.cm.dev.version}</blueprint.cm.version>
+                <blueprint.parser.version>${blueprint.parser.dev.version}</blueprint.parser.version>
+                <blueprint.authz.version>${blueprint.authz.dev.version}</blueprint.authz.version>
+                <blueprint.spring.version>${blueprint.spring.dev.version}</blueprint.spring.version>
+                <blueprint.spring.extender.version>${blueprint.spring.extender.dev.version}</blueprint.spring.extender.version>
+                <blueprint.jexl.evaluator.version>${blueprint.jexl.evaluator.dev.version}</blueprint.jexl.evaluator.version>
+                <blueprint.sample.version>${blueprint.sample.dev.version}</blueprint.sample.version>
+                <blueprint.sample.fragment.version>${blueprint.sample.fragment.dev.version}</blueprint.sample.fragment.version>
             </properties>
         </profile>
     </profiles>
@@ -87,7 +94,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.7.0</version>
+            <version>${blueprint.core.version}</version>
             <exclusions>
             	<exclusion>
             		<groupId>org.apache.aries</groupId>
