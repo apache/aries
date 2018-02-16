@@ -51,13 +51,15 @@
             org.apache.aries.blueprint.reflect;deprecated="true",
         </aries.osgi.export>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
+
+        <blueprint.core.version>1.0.0</blueprint.core.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.0.0</version>
+            <version>${blueprint.core.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -99,6 +101,12 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint.core.version>${blueprint.core.dev.version}</blueprint.core.version>
+            </properties>
+        </profile>
         <profile>
             <id>deploy</id>
             <properties>

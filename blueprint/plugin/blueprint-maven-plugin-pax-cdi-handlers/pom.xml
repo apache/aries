@@ -34,10 +34,20 @@
     <name>Apache Aries Blueprint Maven Plugin Pax Cdi Handlers</name>
 
     <properties>
-        <blueprint-maven-plugin-spi.version>1.0.0</blueprint-maven-plugin-spi.version>
         <pax-cdi-api.version>0.8.0</pax-cdi-api.version>
         <guava.version>19.0</guava.version>
+
+        <blueprint-maven-plugin-spi.version>1.0.0</blueprint-maven-plugin-spi.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint-maven-plugin-spi.version>${blueprint-maven-plugin-spi.dev-version}</blueprint-maven-plugin-spi.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin-pax-cdi-handlers</connection>

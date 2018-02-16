@@ -52,7 +52,18 @@
             *
         </aries.osgi.import>
         <aries.osgi.private.pkg />
+
+        <blueprint.api.version>1.0.1</blueprint.api.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -64,7 +75,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>1.0.0</version>
+            <version>${blueprint.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>

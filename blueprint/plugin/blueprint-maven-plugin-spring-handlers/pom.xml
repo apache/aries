@@ -50,12 +50,24 @@
         </plugins>
     </build>
 
+    <properties>
+        <blueprint-maven-plugin-spi.version>1.0.0</blueprint-maven-plugin-spi.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <blueprint-maven-plugin-spi.version>${blueprint-maven-plugin-spi.dev-version}</blueprint-maven-plugin-spi.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-maven-plugin-spi</artifactId>
-            <version>1.0.0</version>
+            <version>${blueprint-maven-plugin-spi.version}</version>
         </dependency>
 
         <dependency>

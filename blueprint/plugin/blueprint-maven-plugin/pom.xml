@@ -64,10 +64,26 @@
 
         <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.core.version>1.7.1</org.apache.aries.blueprint.core.version>
+        <org.apache.aries.blueprint.cm.version>1.0.9</org.apache.aries.blueprint.cm.version>
         <org.apache.aries.transaction.blueprint.version>1.1.1</org.apache.aries.transaction.blueprint.version>
         <org.apache.aries.jpa.blueprint.aries.version>1.0.2</org.apache.aries.jpa.blueprint.aries.version>
-        <org.apache.aries.blueprint.cm.version>1.0.9</org.apache.aries.blueprint.cm.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <org.apache.aries.blueprint.api.version>${blueprint.api.dev.version}</org.apache.aries.blueprint.api.version>
+                <org.apache.aries.blueprint.core.version>${blueprint.core.dev.version}</org.apache.aries.blueprint.core.version>
+                <org.apache.aries.blueprint.cm.version>${blueprint.cm.dev.version}</org.apache.aries.blueprint.cm.version>
+
+                <blueprint-maven-plugin-spi.version>${blueprint-maven-plugin-spi.dev-version}</blueprint-maven-plugin-spi.version>
+                <blueprint-maven-plugin-spring-handlers.version>${blueprint-maven-plugin-spring-handlers.dev-version}</blueprint-maven-plugin-spring-handlers.version>
+                <blueprint-maven-plugin-annotation.version>${blueprint-maven-plugin-annotation.dev-version}</blueprint-maven-plugin-annotation.version>
+                <blueprint-maven-plugin-pax-cdi-handlers.version>${blueprint-maven-plugin-pax-cdi-handlers.dev-version}</blueprint-maven-plugin-pax-cdi-handlers.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin</connection>

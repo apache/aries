@@ -104,31 +104,33 @@
         </aries.osgi.failok>
         <lastReleaseVersion>1.1.0</lastReleaseVersion>
 
+        <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
+        <blueprint.core.version>${blueprint.core.dev.version}</blueprint.core.version>
+        <blueprint.cm.version>${blueprint.cm.dev.version}</blueprint.cm.version>
+        <blueprint.parser.version>${blueprint.parser.dev.version}</blueprint.parser.version>
+        <blueprint.authz.version>${blueprint.authz.dev.version}</blueprint.authz.version>
+        <blueprint.spring.version>${blueprint.spring.dev.version}</blueprint.spring.version>
+        <blueprint.spring.extender.version>${blueprint.spring.extender.dev.version}</blueprint.spring.extender.version>
+        <blueprint.jexl.evaluator.version>${blueprint.jexl.evaluator.dev.version}</blueprint.jexl.evaluator.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-            <version>1.0.0</version>
+            <version>${blueprint.api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
+            <version>${blueprint.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.cm</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>${blueprint.cm.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
