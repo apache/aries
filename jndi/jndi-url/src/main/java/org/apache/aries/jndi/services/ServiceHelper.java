@@ -52,7 +52,7 @@ public final class ServiceHelper {
     /**
      * A cache of proxies returned to the client
      */
-    private static final ConcurrentMap<ServiceKey, WeakReference<Object>> proxyCache = new ConcurrentHashMap<ServiceKey, WeakReference<Object>>();
+    private static final ConcurrentMap<ServiceKey, WeakReference<Object>> proxyCache = new ConcurrentHashMap<>();
     private static final CacheClearoutListener cacheClearoutListener = new CacheClearoutListener(proxyCache);
     private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(ServiceHelper.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
 
@@ -72,7 +72,7 @@ public final class ServiceHelper {
 
         ServicePair pair = null;
 
-        if (!!!lookupName.isServiceNameBased()) {
+        if (!lookupName.isServiceNameBased()) {
             pair = findService(ctx, interfaceName, filter);
         }
 
@@ -124,13 +124,9 @@ public final class ServiceHelper {
         }
 
         if (result == null) {
-            result = AccessController.doPrivileged(new PrivilegedAction<Object>() {
-                public Object run() {
-                    return proxyPrivileged(interface1, filter, rebind, ctx, pair, timeout);
-                }
-            });
+            result = AccessController.doPrivileged((PrivilegedAction<Object>) () -> proxyPrivileged(interface1, filter, rebind, ctx, pair, timeout));
 
-            proxyRef = new WeakReference<Object>(result);
+            proxyRef = new WeakReference<>(result);
             // if we have two threads doing a put and then clashing we ignore it. The code to ensure only
             // one wins is quite complex to save a few bytes of memory and millis of execution time.
             proxyCache.putIfAbsent(k, proxyRef);
@@ -141,14 +137,14 @@ public final class ServiceHelper {
     }
 
     private static Object proxyPrivileged(String interface1, String filter, boolean dynamicRebind, BundleContext ctx, ServicePair pair, int timeout) {
-        String[] interfaces = null;
+        String[] interfaces;
         if (interface1 != null) {
             interfaces = new String[]{interface1};
         } else {
             interfaces = (String[]) pair.ref.getProperty(Constants.OBJECTCLASS);
         }
 
-        List<Class<?>> clazz = new ArrayList<Class<?>>(interfaces.length);
+        List<Class<?>> clazz = new ArrayList<>(interfaces.length);
 
         // We load the interface classes the service is registered under using the defining bundle.
         // This is ok because the service must be able to see the classes to be registered using them.
@@ -172,7 +168,7 @@ public final class ServiceHelper {
         Bundle owningBundle = ctx.getBundle();
         ProxyManager proxyManager = Activator.getProxyManager();
 
-        Collection<String> classesNotFound = new ArrayList<String>();
+        Collection<String> classesNotFound = new ArrayList<>();
         for (String interfaceName : interfaces) {
             try {
                 Class<?> potentialClass = serviceProviderBundle.loadClass(interfaceName);
@@ -227,17 +223,13 @@ public final class ServiceHelper {
         ServicePair p = null;
 
         try {
-            ServiceReference[] refs = ctx.getServiceReferences(interface1, filter);
+            ServiceReference<?>[] refs = ctx.getServiceReferences(interface1, filter);
 
             if (refs != null) {
                 // natural order is the exact opposite of the order we desire.
-                Arrays.sort(refs, new Comparator<ServiceReference>() {
-                    public int compare(ServiceReference o1, ServiceReference o2) {
-                        return o2.compareTo(o1);
-                    }
-                });
+                Arrays.sort(refs, Comparator.reverseOrder());
 
-                for (ServiceReference ref : refs) {
+                for (ServiceReference<?> ref : refs) {
                     Object service = ctx.getService(ref);
 
                     if (service != null) {
@@ -259,9 +251,9 @@ public final class ServiceHelper {
         return p;
     }
 
-    public static ServiceReference[] getServiceReferences(BundleContext ctx, String interface1,
+    public static ServiceReference<?>[] getServiceReferences(BundleContext ctx, String interface1,
                                                           String filter, String serviceName, Map<String, Object> env) throws NamingException {
-        ServiceReference[] refs = null;
+        ServiceReference<?>[] refs;
 
         try {
             refs = ctx.getServiceReferences(interface1, filter);
@@ -276,17 +268,13 @@ public final class ServiceHelper {
 
         if (refs != null) {
             // natural order is the exact opposite of the order we desire.
-            Arrays.sort(refs, new Comparator<ServiceReference>() {
-                public int compare(ServiceReference o1, ServiceReference o2) {
-                    return o2.compareTo(o1);
-                }
-            });
+            Arrays.sort(refs, Comparator.reverseOrder());
         }
 
         return refs;
     }
 
-    public static Object getService(BundleContext ctx, ServiceReference ref) {
+    public static Object getService(BundleContext ctx, ServiceReference<?> ref) {
         Object service = ctx.getService(ref);
         if (service == null) {
             return null;
@@ -299,7 +287,7 @@ public final class ServiceHelper {
     }
 
     static Collection<Class<?>> getAllInterfaces(Class<?>[] baseInterfaces) {
-        Set<Class<?>> result = new HashSet<Class<?>>();
+        Set<Class<?>> result = new HashSet<>();
         for (Class<?> c : baseInterfaces) {
             if (!c.equals(Object.class)) {
                 result.add(c);
@@ -326,11 +314,7 @@ public final class ServiceHelper {
         public void bundleChanged(BundleEvent event) {
             if (event.getType() == BundleEvent.STOPPED) {
                 Bundle b = event.getBundle();
-                Iterator<ServiceKey> keys = cache.keySet().iterator();
-                while (keys.hasNext()) {
-                    ServiceKey key = keys.next();
-                    if (key.requesting == b) keys.remove();
-                }
+                cache.keySet().removeIf(key -> key.requesting == b);
             }
         }
 
@@ -352,11 +336,9 @@ public final class ServiceHelper {
 
         public void add(final BundleContext ctx, ServiceKey k) {
             // try to use the system bundle for our listener, if that fails we fall back to the calling context
-            BundleContext systemBundle = AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
-                public BundleContext run() {
-                    Bundle system = ctx.getBundle(0);
-                    return system == null ? null : system.getBundleContext();
-                }
+            BundleContext systemBundle = AccessController.doPrivileged((PrivilegedAction<BundleContext>) () -> {
+                Bundle system = ctx.getBundle(0);
+                return system == null ? null : system.getBundleContext();
             });
             if (systemBundle == null) systemBundle = ctx;
             systemBundle.addBundleListener(cacheClearoutListener);
@@ -439,7 +421,7 @@ public final class ServiceHelper {
     }
 
     private static class ServicePair {
-        private ServiceReference ref;
+        private ServiceReference<?> ref;
         private Object service;
     }
 }

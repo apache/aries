@@ -32,7 +32,7 @@ public abstract class AbstractName extends CompositeName {
     }
 
     protected static Enumeration<String> split(String name) {
-        List<String> elements = new ArrayList<String>();
+        List<String> elements = new ArrayList<>();
 
         StringBuilder builder = new StringBuilder();
 
