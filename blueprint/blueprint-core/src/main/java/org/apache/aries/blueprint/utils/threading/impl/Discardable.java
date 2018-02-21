@@ -19,5 +19,7 @@
 package org.apache.aries.blueprint.utils.threading.impl;
 
 public interface Discardable<T> {
-    public <T> T discard();
+
+    <T> T discard();
+
 }

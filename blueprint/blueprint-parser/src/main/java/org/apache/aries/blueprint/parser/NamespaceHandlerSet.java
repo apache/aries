@@ -83,7 +83,7 @@ public interface NamespaceHandlerSet {
      * @see NamespaceHandlerSet#addListener(org.apache.aries.blueprint.container.NamespaceHandlerRegistry.Listener)
      * @see NamespaceHandlerSet#removeListener(org.apache.aries.blueprint.container.NamespaceHandlerRegistry.Listener) 
      */
-    public interface Listener {
+    interface Listener {
 
         /**
          * Called when a NamespaceHandler has been registered for the specified URI.

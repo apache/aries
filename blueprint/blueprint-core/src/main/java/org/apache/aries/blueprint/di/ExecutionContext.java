@@ -23,14 +23,14 @@ import org.osgi.service.blueprint.container.ReifiedType;
 
 public interface ExecutionContext {
 
-    public static final class Holder {
+    final class Holder {
 
         private static final ThreadLocal<ExecutionContext> context = new ThreadLocal<ExecutionContext>();
 
         private Holder() {
         }
 
-        public static ExecutionContext getContext() {
+        static ExecutionContext getContext() {
             ExecutionContext executionContext = context.get();
             if (executionContext == null) {
                 throw new IllegalStateException("Execution container has not been set");
@@ -38,7 +38,7 @@ public interface ExecutionContext {
             return executionContext;
         }
 
-        public static ExecutionContext setContext(ExecutionContext newContext) {
+        static ExecutionContext setContext(ExecutionContext newContext) {
             ExecutionContext oldContext = context.get();
             context.set(newContext);
             return oldContext;
@@ -52,13 +52,13 @@ public interface ExecutionContext {
      * @param recipe the recipe to add to the stack
      * @throws CircularDependencyException if the recipe is already on the stack
      */
-    public void push(Recipe recipe) throws CircularDependencyException;
+    void push(Recipe recipe) throws CircularDependencyException;
 
     /**
      * Removes the top recipe from the execution stack.
      * @return the top recipe on the stack
      */
-    public Recipe pop();
+    Recipe pop();
 
     /**
      * Does this context contain a object with the specified name.
@@ -66,7 +66,7 @@ public interface ExecutionContext {
      * @param name the unique name of the object instance
      * @return true if this context contain a object with the specified name
      */
-    public boolean containsObject(String name);
+    boolean containsObject(String name);
 
     /**
      * Gets the object or recipe with the specified name from the repository.
@@ -74,7 +74,7 @@ public interface ExecutionContext {
      * @param name the unique name of the object instance
      * @return the object instance, a recipe to build the object or null
      */
-    public Object getObject(String name);
+    Object getObject(String name);
 
     /**
      * Try to add a full object and return the already registered future if available
@@ -82,21 +82,21 @@ public interface ExecutionContext {
      * @param object
      * @return
      */
-    public Future<Object> addFullObject(String name, Future<Object> object);
+    Future<Object> addFullObject(String name, Future<Object> object);
     
-    public void addPartialObject(String name, Object object);
+    void addPartialObject(String name, Object object);
     
-    public Object getPartialObject(String name);
+    Object getPartialObject(String name);
     
-    public void removePartialObject(String name);
+    void removePartialObject(String name);
 
-    public Object convert(Object value, ReifiedType type) throws Exception;
+    Object convert(Object value, ReifiedType type) throws Exception;
     
-    public boolean canConvert(Object value, ReifiedType type);
+    boolean canConvert(Object value, ReifiedType type);
 
-    public Class loadClass(String className) throws ClassNotFoundException;
+    Class loadClass(String className) throws ClassNotFoundException;
 
-    public Recipe getRecipe(String name);
+    Recipe getRecipe(String name);
     
 }
 

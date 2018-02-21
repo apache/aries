@@ -27,6 +27,6 @@ import org.osgi.service.blueprint.reflect.IdRefMetadata;
  */
 public interface MutableIdRefMetadata extends IdRefMetadata {
 
-    public void setComponentId(String componentId);
+    void setComponentId(String componentId);
 
 }
