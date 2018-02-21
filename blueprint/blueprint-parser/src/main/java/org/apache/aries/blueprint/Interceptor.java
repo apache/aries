@@ -34,7 +34,7 @@ public interface Interceptor {
      * @return token which will subsequently be passed to postCall
      * @throws Throwable
      */
-    public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable;
+    Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable;
     
     /**
      * This method is called after the method m is invoked and returned normally.
@@ -44,7 +44,7 @@ public interface Interceptor {
      * @param preCallToken token returned by preCall
      * @throws Throwable
      */
-    public void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken) throws Throwable;
+    void postCallWithReturn(ComponentMetadata cm, Method m, Object returnType, Object preCallToken) throws Throwable;
     
     /**
      * The method is called after the method m is invoked and causes an exception.
@@ -54,7 +54,7 @@ public interface Interceptor {
      * @param preCallToken token returned by preCall
      * @throws Throwable
      */
-    public void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) throws Throwable;
+    void postCallWithException(ComponentMetadata cm, Method m, Throwable ex, Object preCallToken) throws Throwable;
     
     
     /**
@@ -64,5 +64,5 @@ public interface Interceptor {
      * all others (except of the same rank).
      * @return the rank of the interceptor
      */
-    public int getRank();
+    int getRank();
 }

@@ -43,6 +43,6 @@ public interface ComponentDefinitionRegistryProcessor {
      * Process a <code>ComponentDefinitionRegistry</code>
      * @param registry 
      */
-    public void process(ComponentDefinitionRegistry registry);
+    void process(ComponentDefinitionRegistry registry);
 
 }

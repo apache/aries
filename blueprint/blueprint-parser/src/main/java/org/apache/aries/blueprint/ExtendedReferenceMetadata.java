@@ -24,22 +24,22 @@ import org.osgi.service.blueprint.reflect.ReferenceMetadata;
 
 public interface ExtendedReferenceMetadata extends ReferenceMetadata, ExtendedServiceReferenceMetadata
 {
-    public int DAMPING_RELUCTANT = 0;
+    int DAMPING_RELUCTANT = 0;
 
-    public int DAMPING_GREEDY = 1;
+    int DAMPING_GREEDY = 1;
 
-    public int LIFECYCLE_DYNAMIC = 0;
+    int LIFECYCLE_DYNAMIC = 0;
 
-    public int LIFECYCLE_STATIC = 1;
+    int LIFECYCLE_STATIC = 1;
 
-    public String getDefaultBean();
+    String getDefaultBean();
     
-    public Collection<Class<?>> getProxyChildBeanClasses();
+    Collection<Class<?>> getProxyChildBeanClasses();
     
-    public Collection<String> getExtraInterfaces();
+    Collection<String> getExtraInterfaces();
 
-    public int getDamping();
+    int getDamping();
 
-    public int getLifecycle();
+    int getLifecycle();
 
 }

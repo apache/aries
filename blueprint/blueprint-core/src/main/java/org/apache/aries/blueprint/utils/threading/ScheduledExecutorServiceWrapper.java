@@ -58,8 +58,11 @@ import org.osgi.framework.InvalidSyntaxException;
  * </p>
  */
 public class ScheduledExecutorServiceWrapper implements ScheduledExecutorService, SingleServiceListener {
-    public static interface ScheduledExecutorServiceFactory {
-        public ScheduledExecutorService create(String name);
+
+    public interface ScheduledExecutorServiceFactory {
+
+        ScheduledExecutorService create(String name);
+
     }
 
     private final AtomicReference<ScheduledExecutorService> _current = new AtomicReference<ScheduledExecutorService>();
