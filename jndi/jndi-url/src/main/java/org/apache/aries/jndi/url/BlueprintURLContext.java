@@ -19,7 +19,6 @@
 
 package org.apache.aries.jndi.url;
 
-import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -40,7 +39,6 @@ public class BlueprintURLContext implements Context {
     static final Pattern graceP = Pattern.compile(".*;\\s*blueprint.graceperiod\\s*:=\\s*\"?([A-Za-z]+).*");
     static final Pattern timeoutP = Pattern.compile(".*;\\s*blueprint.timeout\\s*:=\\s*\"?([0-9]+).*");
     private static final String BLUEPRINT_NAMESPACE = "blueprint:comp/";
-    private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(BlueprintURLContext.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
     private Bundle _callersBundle;
     private Map<String, Object> _env;
     private NameParser _parser = new BlueprintNameParser();
@@ -124,7 +122,7 @@ public class BlueprintURLContext implements Context {
             st.close();
         }
         if (result == null) {
-            throw new ServiceUnavailableException(MESSAGES.getMessage("no.blueprint.container", b.getSymbolicName() + '/' + b.getVersion()));
+            throw new ServiceUnavailableException("The BlueprintContainer service for bundle " + b.getSymbolicName() + '/' + b.getVersion() + " can not be located");
         }
         return result;
     }

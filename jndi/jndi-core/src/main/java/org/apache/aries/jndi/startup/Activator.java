@@ -151,12 +151,15 @@ public class Activator implements BundleActivator {
             }
             icfBuilder = builder;
         } catch (NamingException e) {
-            LOGGER.debug(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB"), e);
+            LOGGER.debug("A failure occurred when attempting to register an InitialContextFactoryBuilder with the NamingManager. " +
+                         "Support for calling new InitialContext() will not be enabled.", e);
         } catch (IllegalStateException e) {
             // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
             // don't want to see stack traces at info level when everything it working as expected.
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB.already.exists", getClassName(InitialContextFactoryBuilder.class)));
-            LOGGER.debug(Utils.MESSAGES.getMessage("unable.to.set.static.ICFB.already.exists", getClassName(InitialContextFactoryBuilder.class)), e);
+            String msg = "It was not possible to register an InitialContextFactoryBuilder with the NamingManager because " +
+                         "another builder called " + getClassName(InitialContextFactoryBuilder.class) + " was already registered. Support for calling new InitialContext() will not be enabled.";
+            LOGGER.info(msg);
+            LOGGER.debug(msg, e);
         }
 
         try {
@@ -171,12 +174,15 @@ public class Activator implements BundleActivator {
             }
             ofBuilder = builder;
         } catch (NamingException e) {
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB"), e);
+            LOGGER.info("A failure occurred when attempting to register an ObjectFactoryBuilder with the NamingManager. " +
+                        "Looking up certain objects may not work correctly.", e);
         } catch (IllegalStateException e) {
             // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
             // don't want to see stack traces at info level when everything it working as expected.
-            LOGGER.info(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(ObjectFactoryBuilder.class)));
-            LOGGER.debug(Utils.MESSAGES.getMessage("unable.to.set.static.OFB.already.exists", getClassName(ObjectFactoryBuilder.class)), e);
+            String msg = "It was not possible to register an ObjectFactoryBuilder with the NamingManager because " +
+                         "another builder called " + getClassName(ObjectFactoryBuilder.class) + " was already registered. Looking up certain objects may not work correctly.";
+            LOGGER.info(msg);
+            LOGGER.debug(msg, e);
         }
 
         context.registerService(JNDIProviderAdmin.class.getName(),
