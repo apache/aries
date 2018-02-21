@@ -89,19 +89,30 @@ public class Activator implements BundleActivator {
     }
 
     public static <T> T getService(BundleContext context, ServiceReference<T> ref) {
-        ServiceCache cache = instance.bundleServiceCaches.getObject(context.getBundle());
+        ServiceCache cache = getServiceCache(context);
         return cache.getService(ref);
     }
 
     public static <T> Collection<ServiceReference<T>> getReferences(BundleContext context, Class<T> clazz) {
-        ServiceCache cache = instance.bundleServiceCaches.getObject(context.getBundle());
+        ServiceCache cache = getServiceCache(context);
         return cache.getReferences(clazz);
     }
 
     public static <T> Iterable<T> getServices(BundleContext context, Class<T> clazz) {
-        ServiceCache cache = instance.bundleServiceCaches.getObject(context.getBundle());
+        ServiceCache cache = getServiceCache(context);
+        if (cache == null) {
+            cache = new ServiceCache(context);
+        }
         Collection<ServiceReference<T>> refs = cache.getReferences(clazz);
         return () -> Utils.map(refs.iterator(), ref -> Activator.getService(context, ref));
+    }
+
+    private static ServiceCache getServiceCache(BundleContext context) {
+        ServiceCache cache = instance.bundleServiceCaches.getObject(context.getBundle());
+        if (cache == null) {
+            cache = new ServiceCache(context);
+        }
+        return cache;
     }
 
 
