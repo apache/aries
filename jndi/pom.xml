@@ -38,6 +38,7 @@
     </description>
 
     <modules>
+        <module>parent</module>
         <module>jndi-api</module>
         <module>jndi-core</module>
         <module>jndi-url</module>
@@ -48,5 +49,15 @@
         <module>jndi-url-itest-web</module>
         <module>jndi-url-itest</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi.core</artifactId>
+                <version>6.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
