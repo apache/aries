@@ -19,22 +19,26 @@
 package org.apache.aries.jndi;
 
 import org.apache.aries.util.nls.MessageUtil;
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.BundleReference;
 import org.osgi.service.jndi.JNDIConstants;
 
 import javax.naming.NamingException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  */
 public final class Utils {
 
-    public static final Comparator<ServiceReference<?>> SERVICE_REFERENCE_COMPARATOR =
-            new ServiceReferenceComparator();
     public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(Utils.class, "org.apache.aries.jndi.nls.jndiMessages");
 
     /**
@@ -49,17 +53,12 @@ public final class Utils {
      * @return the bundle context for the caller.
      * @throws NamingException
      */
-    public static BundleContext getBundleContext(final Map<?, ?> env,
-                                                 final Class<?> namingClass) {
-        return AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
-            public BundleContext run() {
-                return doGetBundleContext(env, namingClass);
-            }
-        });
+    public static BundleContext getBundleContext(final Map<?, ?> env, final Class<?> namingClass) {
+        return doPrivileged(() -> doGetBundleContext(env, namingClass));
     }
 
     private static BundleContext doGetBundleContext(Map<?, ?> env, Class<?> namingClass) {
-        BundleContext result = null;
+        BundleContext result;
 
         Object bc = (env == null) ? null : env.get(JNDIConstants.BUNDLE_CONTEXT);
 
@@ -115,11 +114,7 @@ public final class Utils {
     }
 
     public static String getSystemProperty(final String key, final String defaultValue) {
-        return AccessController.doPrivileged(new PrivilegedAction<String>() {
-            public String run() {
-                return System.getProperty(key, defaultValue);
-            }
-        });
+        return doPrivileged(() -> System.getProperty(key, defaultValue));
     }
 
     public static Hashtable<?, ?> toHashtable(Map<?, ?> map) {
@@ -127,64 +122,15 @@ public final class Utils {
         if (map instanceof Hashtable<?, ?>) {
             env = (Hashtable<?, ?>) map;
         } else if (map == null) {
-            env = new Hashtable<Object, Object>();
+            env = new Hashtable<>();
         } else {
             env = new Hashtable<Object, Object>(map);
         }
         return env;
     }
 
-    public static <T> T doPrivileged(PrivilegedExceptionAction<T> action) throws Exception {
-        try {
-            return AccessController.doPrivileged(action);
-        } catch (PrivilegedActionException e) {
-            Exception cause = e.getException();
-            throw cause;
-        }
-    }
-
-    public static <T> T doPrivilegedNaming(PrivilegedExceptionAction<T> action) throws NamingException {
-        try {
-            return AccessController.doPrivileged(action);
-        } catch (PrivilegedActionException e) {
-            Exception cause = e.getException();
-            if (cause instanceof NamingException) {
-                throw (NamingException) cause;
-            } else {
-                NamingException ex = new NamingException(cause.getMessage());
-                ex.initCause(cause);
-                throw ex;
-            }
-        }
-    }
-
-    public static <T> Collection<ServiceReference<T>> getReferencesPrivileged(final BundleContext ctx, final Class<T> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Collection<ServiceReference<T>>>() {
-            public Collection<ServiceReference<T>> run() {
-                try {
-                    ServiceReference<?>[] refs = ctx.getServiceReferences(clazz.getName(), null);
-                    List<ServiceReference<T>> list = new ArrayList<ServiceReference<T>>();
-                    if (refs != null) {
-                        for (ServiceReference<?> ref : refs) {
-                            list.add((ServiceReference<T>) ref);
-                        }
-                    }
-                    Collections.sort(list, Utils.SERVICE_REFERENCE_COMPARATOR);
-                    return list;
-                } catch (InvalidSyntaxException ise) {
-                    // should not happen
-                    throw new RuntimeException(MESSAGES.getMessage("null.is.invalid.filter"), ise);
-                }
-            }
-        });
-    }
-
-    public static <T> T getServicePrivileged(final BundleContext ctx, final ServiceReference<T> ref) {
-        return AccessController.doPrivileged(new PrivilegedAction<T>() {
-            public T run() {
-                return ctx.getService(ref);
-            }
-        });
+    public static <T> T doPrivileged(Supplier<T> action) {
+        return AccessController.doPrivileged((PrivilegedAction<T>) action::get);
     }
 
     private static class StackFinder extends SecurityManager {
@@ -193,10 +139,48 @@ public final class Utils {
         }
     }
 
-    private static class ServiceReferenceComparator implements Comparator<ServiceReference<?>> {
-        public int compare(ServiceReference<?> o1, ServiceReference<?> o2) {
-            return o2.compareTo(o1);
-        }
+    public static <U, V> Iterator<V> map(Iterator<U> iterator, Function<U, V> mapper) {
+        return new MappedIterator<>(iterator, mapper);
     }
 
+    private static class MappedIterator<U, V> implements Iterator<V> {
+
+        private final Iterator<U> iterator;
+        private final Function<U, V> mapper;
+        private V nextElement;
+        private boolean hasNext;
+
+        public MappedIterator(Iterator<U> iterator, Function<U, V> mapper) {
+            this.iterator = iterator;
+            this.mapper = mapper;
+            nextMatch();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return hasNext;
+        }
+
+        @Override
+        public V next() {
+            if (!hasNext) {
+                throw new NoSuchElementException();
+            }
+            return nextMatch();
+        }
+
+        private V nextMatch() {
+            V oldMatch = nextElement;
+            while (iterator.hasNext()) {
+                V o = mapper.apply(iterator.next());
+                if (o != null) {
+                    hasNext = true;
+                    nextElement = o;
+                    return oldMatch;
+                }
+            }
+            hasNext = false;
+            return oldMatch;
+        }
+    }
 }

@@ -18,30 +18,40 @@
  */
 package org.apache.aries.jndi;
 
+import org.apache.aries.jndi.startup.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.spi.ObjectFactory;
-import java.util.Hashtable;
+import java.util.function.Supplier;
 
-public class URLContextProvider extends ContextProvider {
-    private final ObjectFactory factory;
-    private final Hashtable<?, ?> environment;
+public class ServicePair<T> implements Supplier<T> {
 
-    public URLContextProvider(BundleContext bc, ServiceReference<?> reference, ObjectFactory factory, Hashtable<?, ?> environment) {
-        super(bc, reference);
-        this.factory = factory;
-        this.environment = environment;
+    private BundleContext ctx;
+    private ServiceReference<?> ref;
+    private T svc;
+
+    public ServicePair(BundleContext context, ServiceReference<T> serviceRef) {
+        this.ctx = context;
+        this.ref = serviceRef;
     }
 
-    @Override
-    public Context getContext() throws NamingException {
-        try {
-            return (Context) factory.getObjectInstance(null, null, null, environment);
-        } catch (Exception e) {
-            throw (NamingException) new NamingException().initCause(e);
-        }
+    public ServicePair(BundleContext context, ServiceReference<?> serviceRef, T service) {
+        this.ctx = context;
+        this.ref = serviceRef;
+        this.svc = service;
     }
+
+    @SuppressWarnings("unchecked")
+    public T get() {
+        return svc != null ? svc : ref != null ? (T) Activator.getService(ctx, ref) : null;
+    }
+
+    public boolean isValid() {
+        return ref.getBundle() != null;
+    }
+
+    public ServiceReference<?> getReference() {
+        return ref;
+    }
+
 }

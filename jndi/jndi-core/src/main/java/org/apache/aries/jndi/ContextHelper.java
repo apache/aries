@@ -19,9 +19,7 @@
 package org.apache.aries.jndi;
 
 import org.apache.aries.jndi.startup.Activator;
-import org.apache.aries.jndi.tracker.ServiceTrackerCustomizers;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
-import org.apache.aries.util.service.registry.ServicePair;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -33,9 +31,9 @@ import javax.naming.NoInitialContextException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.ObjectFactory;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,12 +55,6 @@ public final class ContextHelper {
     /**
      * This method is used to create a URL Context. It does this by looking for
      * the URL context's ObjectFactory in the service registry.
-     *
-     * @param context
-     * @param urlScheme
-     * @param env
-     * @return a Context
-     * @throws NamingException
      */
     public static ContextProvider createURLContext(final BundleContext context,
                                                    final String urlScheme,
@@ -87,33 +79,25 @@ public final class ContextHelper {
             throws NamingException {
         ServicePair<ObjectFactory> result = null;
 
-        ServiceReference ref = ServiceTrackerCustomizers.URL_FACTORY_CACHE.find(urlScheme);
+        ServiceReference<ObjectFactory> ref = Activator.getUrlFactory(urlScheme);
 
         if (ref == null) {
-            ServiceReference<URLObjectFactoryFinder>[] refs = AccessController.doPrivileged(new PrivilegedAction<ServiceReference<URLObjectFactoryFinder>[]>() {
-                public ServiceReference<URLObjectFactoryFinder>[] run() {
-                    return Activator.getURLObjectFactoryFinderServices();
-                }
-            });
 
-            if (refs != null) {
-                for (final ServiceReference<URLObjectFactoryFinder> finderRef : refs) {
-                    URLObjectFactoryFinder finder = Utils.getServicePrivileged(ctx, finderRef);
+            Collection<ServiceReference<URLObjectFactoryFinder>> refs = Activator.getURLObjectFactoryFinderServices();
+            for (final ServiceReference<URLObjectFactoryFinder> finderRef : refs) {
+                URLObjectFactoryFinder finder = Activator.getService(ctx, finderRef);
 
-                    if (finder != null) {
-                        ObjectFactory f = finder.findFactory(urlScheme, environment);
+                if (finder != null) {
+                    ObjectFactory f = finder.findFactory(urlScheme, environment);
 
-                        if (f != null) {
-                            result = new ServicePair<ObjectFactory>(ctx, finderRef, f);
-                            break;
-                        } else {
-                            ctx.ungetService(finderRef);
-                        }
+                    if (f != null) {
+                        result = new ServicePair<>(ctx, finderRef, f);
+                        break;
                     }
                 }
             }
         } else {
-            result = new ServicePair<ObjectFactory>(ctx, ref);
+            result = new ServicePair<>(ctx, ref);
         }
 
         return result;
@@ -125,13 +109,7 @@ public final class ContextHelper {
         final Bundle jndiBundle = FrameworkUtil.getBundle(ContextHelper.class);
         // if we are outside OSGi (like in our unittests) then we would get Null back here, so just make sure we don't.
         if (jndiBundle != null) {
-
-            BundleContext jndiBundleContext = AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
-                public BundleContext run() {
-                    return jndiBundle.getBundleContext();
-                }
-            });
-
+            BundleContext jndiBundleContext = Utils.doPrivileged(jndiBundle::getBundleContext);
             if (!jndiBundleContext.getClass().equals(context.getClass())) {
                 //the context passed in must have come from a child framework
                 //use the parent context instead
@@ -161,97 +139,65 @@ public final class ContextHelper {
         String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (contextFactoryClass == null) {
             // 1. get ContextFactory using builder
-            provider = getInitialContextUsingBuilder(context, environment);
-
+            provider = getInitialContextUsingBuilder(context, environment)
             // 2. lookup all ContextFactory services
-            if (provider == null) {
+                    .orElseGet(() -> getInitialContextUsingFactoryServices(context, environment)
+                            .orElse(null));
 
-                ServiceReference<InitialContextFactory>[] references = AccessController.doPrivileged(new PrivilegedAction<ServiceReference<InitialContextFactory>[]>() {
-                    public ServiceReference<InitialContextFactory>[] run() {
-                        return Activator.getInitialContextFactoryServices();
-                    }
-                });
-
-                if (references != null) {
-                    Context initialContext;
-                    for (ServiceReference<InitialContextFactory> reference : references) {
-                        InitialContextFactory factory = Utils.getServicePrivileged(context, reference);
-                        try {
-                            initialContext = factory.getInitialContext(environment);
-                            if (initialContext != null) {
-                                provider = new SingleContextProvider(context, reference, initialContext);
-                                break;
-                            }
-                        } finally {
-                            if (provider == null) context.ungetService(reference);
-                        }
-                    }
-                }
-            }
         } else {
-            ServiceReference<InitialContextFactory> ref = ServiceTrackerCustomizers.ICF_CACHE.find(contextFactoryClass);
-
+            // 1. lookup using specified InitialContextFactory
+            ServiceReference<InitialContextFactory> ref = Activator.getInitialContextFactory(contextFactoryClass);
             if (ref != null) {
-                Context initialContext;
-                InitialContextFactory factory = Utils.getServicePrivileged(context, ref);
+                InitialContextFactory factory = Activator.getService(context, ref);
                 if (factory != null) {
-                    try {
-                        initialContext = factory.getInitialContext(environment);
-                        provider = new SingleContextProvider(context, ref, initialContext);
-                    } finally {
-                        if (provider == null) context.ungetService(ref);
-                    }
+                    Context initialContext = factory.getInitialContext(environment);
+                    provider = new SingleContextProvider(context, ref, initialContext);
                 }
             }
 
             // 2. get ContextFactory using builder
             if (provider == null) {
-                provider = getInitialContextUsingBuilder(context, environment);
+                provider = getInitialContextUsingBuilder(context, environment).orElse(null);
             }
         }
 
         return provider;
     }
 
-    private static ContextProvider getInitialContextUsingBuilder(BundleContext context,
-                                                                 Hashtable<?, ?> environment)
-            throws NamingException {
-
-        ContextProvider provider = null;
-        ServiceReference<InitialContextFactoryBuilder>[] refs = AccessController.doPrivileged(new PrivilegedAction<ServiceReference<InitialContextFactoryBuilder>[]>() {
-            public ServiceReference<InitialContextFactoryBuilder>[] run() {
-                return Activator.getInitialContextFactoryBuilderServices();
-            }
-        });
-
-        if (refs != null) {
-            InitialContextFactory factory = null;
-            for (ServiceReference<InitialContextFactoryBuilder> ref : refs) {
-                InitialContextFactoryBuilder builder = Utils.getServicePrivileged(context, ref);
-                try {
-                    factory = builder.createInitialContextFactory(environment);
-                } catch (NamingException ne) {
-                    // TODO: log
-                    // ignore this, if the builder fails we want to move onto the next one
-                } catch (NullPointerException npe) {
-                    logger.log(Level.SEVERE, "NPE caught in ContextHelper.getInitialContextUsingBuilder. context=" + context + " ref=" + ref);
-                    throw npe;
+    private static Optional<ContextProvider> getInitialContextUsingFactoryServices(BundleContext context, Hashtable<?, ?> environment) {
+        for (ServiceReference<InitialContextFactory> reference : Activator.getInitialContextFactoryServices()) {
+            try {
+                InitialContextFactory factory = Activator.getService(context, reference);
+                Context initialContext = factory.getInitialContext(environment);
+                if (initialContext != null) {
+                    return Optional.of(new SingleContextProvider(context, reference, initialContext));
                 }
-
-                if (factory != null) {
-                    try {
-                        provider = new SingleContextProvider(context, ref, factory.getInitialContext(environment));
-                    } finally {
-                        if (provider == null)
-                            context.ungetService(ref); // we didn't get something back, so this was no good.
-                    }
-                    break;
-                } else {
-                    context.ungetService(ref); // we didn't get something back, so this was no good.
-                }
+            } catch (NamingException e) {
+                // ignore this, if the builder fails we want to move onto the next one
+                logger.log(Level.FINE, "Exception caught", e);
             }
         }
-        return provider;
+        return Optional.empty();
+    }
+
+    private static Optional<ContextProvider> getInitialContextUsingBuilder(BundleContext context,
+                                                                           Hashtable<?, ?> environment) {
+        for (ServiceReference<InitialContextFactoryBuilder> ref : Activator.getInitialContextFactoryBuilderServices()) {
+            InitialContextFactoryBuilder builder = Activator.getService(context, ref);
+            try {
+                InitialContextFactory factory = builder.createInitialContextFactory(environment);
+                if (factory != null) {
+                    return Optional.of(new SingleContextProvider(context, ref, factory.getInitialContext(environment)));
+                }
+            } catch (NamingException ne) {
+                // ignore this, if the builder fails we want to move onto the next one
+                logger.log(Level.FINE, "Exception caught", ne);
+            } catch (NullPointerException npe) {
+                logger.log(Level.SEVERE, "NPE caught in ContextHelper.getInitialContextUsingBuilder. context=" + context + " ref=" + ref);
+                throw npe;
+            }
+        }
+        return Optional.empty();
     }
 
 }

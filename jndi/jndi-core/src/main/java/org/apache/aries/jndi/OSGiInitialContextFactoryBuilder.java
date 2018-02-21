@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jndi;
 
+import org.apache.aries.jndi.startup.Activator;
 import org.osgi.framework.BundleContext;
 
 import javax.naming.Context;
@@ -30,23 +31,17 @@ import java.util.Hashtable;
 
 public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBuilder, InitialContextFactory {
 
-    public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment)
-            throws NamingException {
+    public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) {
         return this;
     }
 
-    public Context getInitialContext(Hashtable<?, ?> environment)
-            throws NamingException {
-
-        AugmenterInvokerImpl.getInstance().augmentEnvironment(environment);
-
+    public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+        Activator.getAugmenterInvoker().augmentEnvironment(environment);
         BundleContext context = Utils.getBundleContext(environment, InitialContext.class);
         if (context == null) {
             throw new NoInitialContextException(Utils.MESSAGES.getMessage("cannot.find.callers.bundlecontext"));
         }
-
-        AugmenterInvokerImpl.getInstance().unaugmentEnvironment(environment);
-
+        Activator.getAugmenterInvoker().unaugmentEnvironment(environment);
         return ContextHelper.getInitialContext(context, environment);
     }
 }
