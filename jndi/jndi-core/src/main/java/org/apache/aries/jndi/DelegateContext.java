@@ -18,38 +18,26 @@
  */
 package org.apache.aries.jndi;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import org.osgi.framework.BundleContext;
 
-import javax.naming.Binding;
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.NameClassPair;
-import javax.naming.NameParser;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.NoInitialContextException;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
+import javax.naming.*;
+import javax.naming.directory.*;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.ExtendedRequest;
 import javax.naming.ldap.ExtendedResponse;
 import javax.naming.ldap.LdapContext;
-
-import org.osgi.framework.BundleContext;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class DelegateContext implements DirContext, LdapContext {
-    
+
     private final Hashtable<Object, Object> env = new Hashtable<Object, Object>();
 
     private final BundleContext bundleContext;
-    private ContextProvider contextProvider;
     private final Map<String, ContextProvider> urlContexts = new HashMap<String, ContextProvider>();
     private final boolean rebind;
+    private ContextProvider contextProvider;
 
     public DelegateContext(BundleContext bundleContext, Hashtable<?, ?> theEnv) {
         this.bundleContext = bundleContext;
@@ -70,7 +58,7 @@ public class DelegateContext implements DirContext, LdapContext {
         if (ctx != null) {
             ctx.addToEnvironment(propName, propVal);
         }
-        
+
         return env.put(propName, propVal);
     }
 
@@ -86,11 +74,11 @@ public class DelegateContext implements DirContext, LdapContext {
         if (contextProvider != null) {
             contextProvider.close();
         }
-        
+
         for (ContextProvider provider : urlContexts.values()) {
-          provider.close();
+            provider.close();
         }
-        
+
         urlContexts.clear();
         env.clear();
     }
@@ -183,7 +171,7 @@ public class DelegateContext implements DirContext, LdapContext {
         if (ctx != null) {
             ctx.removeFromEnvironment(propName);
         }
-        
+
         return env.remove(propName);
     }
 
@@ -243,12 +231,12 @@ public class DelegateContext implements DirContext, LdapContext {
             String scheme = name.substring(0, index);
 
             ContextProvider provider = urlContexts.get(scheme);
-            
-            if (provider == null || !!!provider.isValid()) {
-              provider = ContextHelper.createURLContext(bundleContext, scheme, env);
-              if (provider != null) urlContexts.put(scheme, provider);
+
+            if (provider == null || !provider.isValid()) {
+                provider = ContextHelper.createURLContext(bundleContext, scheme, env);
+                if (provider != null) urlContexts.put(scheme, provider);
             }
-            
+
             if (provider != null) ctx = provider.getContext();
         }
 
@@ -332,15 +320,15 @@ public class DelegateContext implements DirContext, LdapContext {
     }
 
     public NamingEnumeration<SearchResult> search(Name name,
-                                    Attributes matchingAttributes,
-                                    String[] attributesToReturn) throws NamingException {
+                                                  Attributes matchingAttributes,
+                                                  String[] attributesToReturn) throws NamingException {
         return ((DirContext) findContext(name))
                 .search(name, matchingAttributes, attributesToReturn);
     }
 
     public NamingEnumeration<SearchResult> search(String name,
-                                    Attributes matchingAttributes,
-                                    String[] attributesToReturn) throws NamingException {
+                                                  Attributes matchingAttributes,
+                                                  String[] attributesToReturn) throws NamingException {
         return ((DirContext) findContext(name))
                 .search(name, matchingAttributes, attributesToReturn);
     }
@@ -366,47 +354,47 @@ public class DelegateContext implements DirContext, LdapContext {
     }
 
     public NamingEnumeration<SearchResult> search(Name name,
-                                    String filterExpr,
-                                    Object[] filterArgs,
-                                    SearchControls cons) throws NamingException {
+                                                  String filterExpr,
+                                                  Object[] filterArgs,
+                                                  SearchControls cons) throws NamingException {
         return ((DirContext) findContext(name)).search(name, filterExpr, filterArgs, cons);
     }
 
     public NamingEnumeration<SearchResult> search(String name,
-                                    String filterExpr,
-                                    Object[] filterArgs,
-                                    SearchControls cons) throws NamingException {
+                                                  String filterExpr,
+                                                  Object[] filterArgs,
+                                                  SearchControls cons) throws NamingException {
         return ((DirContext) findContext(name)).search(name, filterExpr, filterArgs, cons);
     }
 
     public ExtendedResponse extendedOperation(ExtendedRequest request)
-        throws NamingException {
-      return ((LdapContext) getDefaultContext()).extendedOperation(request);
+            throws NamingException {
+        return ((LdapContext) getDefaultContext()).extendedOperation(request);
     }
 
     public Control[] getConnectControls() throws NamingException {
-      return ((LdapContext) getDefaultContext()).getConnectControls();
+        return ((LdapContext) getDefaultContext()).getConnectControls();
     }
 
     public Control[] getRequestControls() throws NamingException {
-      return ((LdapContext) getDefaultContext()).getRequestControls();
-    }
-
-    public Control[] getResponseControls() throws NamingException {
-      return ((LdapContext) getDefaultContext()).getResponseControls();
-    }
-
-    public LdapContext newInstance(Control[] requestControls)
-        throws NamingException {
-      return ((LdapContext) getDefaultContext()).newInstance(requestControls);
-    }
-
-    public void reconnect(Control[] connCtls) throws NamingException {
-      ((LdapContext) getDefaultContext()).reconnect(connCtls);
+        return ((LdapContext) getDefaultContext()).getRequestControls();
     }
 
     public void setRequestControls(Control[] requestControls)
-        throws NamingException {
-      ((LdapContext) getDefaultContext()).setRequestControls(requestControls);
+            throws NamingException {
+        ((LdapContext) getDefaultContext()).setRequestControls(requestControls);
+    }
+
+    public Control[] getResponseControls() throws NamingException {
+        return ((LdapContext) getDefaultContext()).getResponseControls();
+    }
+
+    public LdapContext newInstance(Control[] requestControls)
+            throws NamingException {
+        return ((LdapContext) getDefaultContext()).newInstance(requestControls);
+    }
+
+    public void reconnect(Control[] connCtls) throws NamingException {
+        ((LdapContext) getDefaultContext()).reconnect(connCtls);
     }
 }

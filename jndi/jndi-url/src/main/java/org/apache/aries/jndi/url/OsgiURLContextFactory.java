@@ -18,27 +18,26 @@
  */
 package org.apache.aries.jndi.url;
 
-import java.util.Hashtable;
+import org.osgi.framework.BundleContext;
 
 import javax.naming.ConfigurationException;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
-
-import org.osgi.framework.BundleContext;
+import java.util.Hashtable;
 
 /**
  * A factory for the aries JNDI context
  */
 public class OsgiURLContextFactory implements ObjectFactory {
-    
+
     private BundleContext callerContext;
-    
+
     public OsgiURLContextFactory(BundleContext callerContext) {
         this.callerContext = callerContext;
     }
-    
+
     public Object getObjectInstance(Object obj,
                                     Name name,
                                     Context nameCtx,
@@ -46,7 +45,7 @@ public class OsgiURLContextFactory implements ObjectFactory {
         if (obj == null) {
             return new ServiceRegistryContext(callerContext, environment);
         } else if (obj instanceof String) {
-        	return findAny(environment, (String)obj);
+            return findAny(environment, (String) obj);
         } else if (obj instanceof String[]) {
             return findAny(environment, (String[]) obj);
         } else {
@@ -57,25 +56,25 @@ public class OsgiURLContextFactory implements ObjectFactory {
     /**
      * Try each URL until either lookup succeeds or they all fail
      */
-	private Object findAny(Hashtable<?, ?> environment, String ... urls)
-			throws ConfigurationException, NamingException {
-		if (urls.length == 0) {
-		    throw new ConfigurationException("0");
-		}
-		Context context = new ServiceRegistryContext(callerContext, environment);
-		try {
-		    NamingException ne = null;
-		    for (int i = 0; i < urls.length; i++) {
-		        try {
-		            return context.lookup(urls[i]);
-		        } catch (NamingException e) {
-		            ne = e;
-		        }
-		    }
-		    throw ne;
-		} finally {
-		    context.close();
-		}
-	}
+    private Object findAny(Hashtable<?, ?> environment, String... urls)
+            throws ConfigurationException, NamingException {
+        if (urls.length == 0) {
+            throw new ConfigurationException("0");
+        }
+        Context context = new ServiceRegistryContext(callerContext, environment);
+        try {
+            NamingException ne = null;
+            for (int i = 0; i < urls.length; i++) {
+                try {
+                    return context.lookup(urls[i]);
+                } catch (NamingException e) {
+                    ne = e;
+                }
+            }
+            throw ne;
+        } finally {
+            context.close();
+        }
+    }
 
 }

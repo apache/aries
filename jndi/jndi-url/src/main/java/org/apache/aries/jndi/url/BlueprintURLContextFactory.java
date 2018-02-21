@@ -19,60 +19,57 @@
 
 package org.apache.aries.jndi.url;
 
-import java.util.Hashtable;
-
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.spi.ObjectFactory;
-
+import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIConstants;
 
-import org.apache.aries.jndi.spi.AugmenterInvoker;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.spi.ObjectFactory;
+import java.util.Hashtable;
 
 public class BlueprintURLContextFactory implements ObjectFactory {
 
-  final private Bundle _callersBundle;
+    private static AugmenterInvoker augmenterInvoker = null;
+    final private Bundle _callersBundle;
 
-  private static AugmenterInvoker augmenterInvoker = null;
-
-  public BlueprintURLContextFactory(Bundle callersBundle) {
-    _callersBundle = callersBundle;
-  }
-
-  @Override
-  public Object getObjectInstance(Object obj, Name name, Context callersCtx, Hashtable<?, ?> envmt) throws Exception {
-
-    if (augmenterInvoker == null && _callersBundle != null) {
-      BundleContext callerBundleContext = _callersBundle.getBundleContext();
-      ServiceReference augmenterSR = callerBundleContext.getServiceReference(AugmenterInvoker.class.getName());
-      if (augmenterSR != null) augmenterInvoker = (AugmenterInvoker) callerBundleContext.getService(augmenterSR);
+    public BlueprintURLContextFactory(Bundle callersBundle) {
+        _callersBundle = callersBundle;
     }
-    if (augmenterInvoker != null) augmenterInvoker.augmentEnvironment(envmt);
 
-    BundleContext bc = (BundleContext) envmt.get(JNDIConstants.BUNDLE_CONTEXT);
-    if (augmenterInvoker != null) augmenterInvoker.unaugmentEnvironment(envmt);
-   
-    Bundle b = (bc != null)? bc.getBundle() : null;
-    Object result = null;
-    if (obj == null) {
-      result = new BlueprintURLContext((b == null) ? _callersBundle : b,
-          envmt);
-    } else if (obj instanceof String) {
-      Context ctx = null;
-      try {
-        ctx = new BlueprintURLContext((b == null) ? _callersBundle : b,
-            envmt);
-        result = ctx.lookup((String) obj);
-      } finally {
-        if (ctx != null) {
-          ctx.close();
+    @Override
+    public Object getObjectInstance(Object obj, Name name, Context callersCtx, Hashtable<?, ?> envmt) throws Exception {
+
+        if (augmenterInvoker == null && _callersBundle != null) {
+            BundleContext callerBundleContext = _callersBundle.getBundleContext();
+            ServiceReference augmenterSR = callerBundleContext.getServiceReference(AugmenterInvoker.class.getName());
+            if (augmenterSR != null) augmenterInvoker = (AugmenterInvoker) callerBundleContext.getService(augmenterSR);
         }
-      }
-    } 
-    return result;
-  }
+        if (augmenterInvoker != null) augmenterInvoker.augmentEnvironment(envmt);
+
+        BundleContext bc = (BundleContext) envmt.get(JNDIConstants.BUNDLE_CONTEXT);
+        if (augmenterInvoker != null) augmenterInvoker.unaugmentEnvironment(envmt);
+
+        Bundle b = (bc != null) ? bc.getBundle() : null;
+        Object result = null;
+        if (obj == null) {
+            result = new BlueprintURLContext((b == null) ? _callersBundle : b,
+                    envmt);
+        } else if (obj instanceof String) {
+            Context ctx = null;
+            try {
+                ctx = new BlueprintURLContext((b == null) ? _callersBundle : b,
+                        envmt);
+                result = ctx.lookup((String) obj);
+            } finally {
+                if (ctx != null) {
+                    ctx.close();
+                }
+            }
+        }
+        return result;
+    }
 
 }

@@ -18,29 +18,24 @@
  */
 package org.apache.aries.jndi;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.jndi.JNDIContextManager;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-
-import org.osgi.framework.BundleContext;
-import org.osgi.service.jndi.JNDIContextManager;
+import java.util.*;
 
 public class ContextManagerService implements JNDIContextManager {
 
     private Set<Context> contexts = Collections.synchronizedSet(new HashSet<Context>());
     private BundleContext callerContext;
-    
+
     public ContextManagerService(BundleContext callerContext) {
         this.callerContext = callerContext;
     }
-    
-    public void close() {      
+
+    public void close() {
         synchronized (contexts) {
             for (Context context : contexts) {
                 try {
@@ -52,12 +47,12 @@ public class ContextManagerService implements JNDIContextManager {
             contexts.clear();
         }
     }
-    
+
     public Context newInitialContext() throws NamingException {
         return newInitialContext(new Hashtable<Object, Object>());
     }
 
-    public Context newInitialContext(Map<?,?> environment) throws NamingException {
+    public Context newInitialContext(Map<?, ?> environment) throws NamingException {
         return getInitialContext(environment);
     }
 
@@ -65,12 +60,12 @@ public class ContextManagerService implements JNDIContextManager {
         return newInitialDirContext(new Hashtable<Object, Object>());
     }
 
-    public DirContext newInitialDirContext(Map<?,?> environment) throws NamingException {
-        return DirContext.class.cast( getInitialContext(environment) );
+    public DirContext newInitialDirContext(Map<?, ?> environment) throws NamingException {
+        return DirContext.class.cast(getInitialContext(environment));
     }
-    
-    private Context getInitialContext(Map<?,?> environment) throws NamingException {        
-        Hashtable<?,?> env = Utils.toHashtable(environment);
+
+    private Context getInitialContext(Map<?, ?> environment) throws NamingException {
+        Hashtable<?, ?> env = Utils.toHashtable(environment);
         Context context = ContextHelper.getInitialContext(callerContext, env);
         contexts.add(context);
         return context;

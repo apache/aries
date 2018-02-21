@@ -26,33 +26,29 @@ import javax.naming.NamingException;
 /**
  * A parser for the aries namespace
  */
-public final class BlueprintNameParser implements NameParser
-{
-  private static final String BLUEPRINT_SCHEME = "blueprint";
-  private static final String COMP_PATH = "comp";
-  
-  @Override
-  public Name parse(String name) throws NamingException
-  {
-    BlueprintName result = new BlueprintName(name);
-    String urlScheme = result.getScheme();
-    String schemePath = result.getSchemePath();
-    
-    if (!BLUEPRINT_SCHEME.equals(urlScheme) || !COMP_PATH.equals(schemePath)) {
-      throw new InvalidNameException(name);
-    }
-    return result;
-  }
+public final class BlueprintNameParser implements NameParser {
+    private static final String BLUEPRINT_SCHEME = "blueprint";
+    private static final String COMP_PATH = "comp";
 
-  @Override
-  public boolean equals(Object other)
-  {
-    return other instanceof OsgiNameParser;
-  }
-  
-  @Override
-  public int hashCode()
-  {
-    return 100004;
-  }
+    @Override
+    public Name parse(String name) throws NamingException {
+        BlueprintName result = new BlueprintName(name);
+        String urlScheme = result.getScheme();
+        String schemePath = result.getSchemePath();
+
+        if (!BLUEPRINT_SCHEME.equals(urlScheme) || !COMP_PATH.equals(schemePath)) {
+            throw new InvalidNameException(name);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof OsgiNameParser;
+    }
+
+    @Override
+    public int hashCode() {
+        return 100004;
+    }
 }

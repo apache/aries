@@ -22,29 +22,25 @@ package org.apache.aries.jndi.url;
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
 
-public class BlueprintName extends AbstractName 
-{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 7460901600614300179L;
+public class BlueprintName extends AbstractName {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 7460901600614300179L;
 
-  public BlueprintName(String name) throws InvalidNameException
-  {
-    super(name);
-  }
+    public BlueprintName(String name) throws InvalidNameException {
+        super(name);
+    }
 
-  public BlueprintName(Name name) throws InvalidNameException
-  {
-    this(name.toString());
-  }
+    public BlueprintName(Name name) throws InvalidNameException {
+        this(name.toString());
+    }
 
-  public String getComponentId()
-  {
-    return get(1);
-  }
-  
-  public boolean hasComponent() { 
-    return size() > 1;
-  }
+    public String getComponentId() {
+        return get(1);
+    }
+
+    public boolean hasComponent() {
+        return size() > 1;
+    }
 }

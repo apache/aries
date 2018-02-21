@@ -19,9 +19,11 @@
 package org.apache.aries.jndi.api;
 
 
-public final class JNDIConstants
-{
-  public static final String REBIND_TIMEOUT = "org.apache.aries.jndi.rebind.timeout";
-  
-  private JNDIConstants() {}
+public final class JNDIConstants {
+
+    public static final String REBIND_TIMEOUT = "org.apache.aries.jndi.rebind.timeout";
+
+    private JNDIConstants() {
+    }
+
 }

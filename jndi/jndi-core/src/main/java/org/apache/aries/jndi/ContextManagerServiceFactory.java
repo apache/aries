@@ -22,14 +22,14 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
-public class ContextManagerServiceFactory implements ServiceFactory {
+public class ContextManagerServiceFactory implements ServiceFactory<ContextManagerService> {
 
-    public Object getService(Bundle bundle, ServiceRegistration registration) {
+    public ContextManagerService getService(Bundle bundle, ServiceRegistration<ContextManagerService> registration) {
         return new ContextManagerService(bundle.getBundleContext());
     }
 
-    public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
-        ((ContextManagerService) service).close();
+    public void ungetService(Bundle bundle, ServiceRegistration<ContextManagerService> registration, ContextManagerService service) {
+        service.close();
     }
 
 }

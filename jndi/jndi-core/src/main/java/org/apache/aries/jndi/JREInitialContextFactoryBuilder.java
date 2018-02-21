@@ -18,19 +18,18 @@
  */
 package org.apache.aries.jndi;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Hashtable;
-
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Hashtable;
 
 public class JREInitialContextFactoryBuilder implements InitialContextFactoryBuilder {
 
     public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment)
-        throws NamingException {
+            throws NamingException {
         final String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (contextFactoryClass != null) {
             return AccessController.doPrivileged(new PrivilegedAction<InitialContextFactory>() {
@@ -38,7 +37,7 @@ public class JREInitialContextFactoryBuilder implements InitialContextFactoryBui
                     try {
                         @SuppressWarnings("unchecked")
                         Class<? extends InitialContextFactory> clazz = (Class<? extends InitialContextFactory>) ClassLoader.
-                            getSystemClassLoader().loadClass(contextFactoryClass);
+                                getSystemClassLoader().loadClass(contextFactoryClass);
                         return InitialContextFactory.class.cast(clazz.newInstance());
                     } catch (Exception e) {
                         return null;
@@ -47,5 +46,5 @@ public class JREInitialContextFactoryBuilder implements InitialContextFactoryBui
             });
         }
         return null;
-    }   
+    }
 }

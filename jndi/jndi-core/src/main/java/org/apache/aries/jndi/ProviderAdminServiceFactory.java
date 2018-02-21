@@ -26,11 +26,11 @@ import org.osgi.framework.ServiceRegistration;
 public class ProviderAdminServiceFactory implements ServiceFactory {
 
     private BundleContext defaultContext;
-    
+
     public ProviderAdminServiceFactory(BundleContext defaultContext) {
         this.defaultContext = defaultContext;
     }
-    
+
     public Object getService(Bundle bundle, ServiceRegistration registration) {
         return new ProviderAdminService(defaultContext, bundle.getBundleContext());
     }

@@ -18,43 +18,42 @@
  */
 package org.apache.aries.jndi;
 
-import java.util.Hashtable;
-import java.util.Map;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.jndi.JNDIProviderAdmin;
 
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.directory.Attributes;
-
-import org.osgi.framework.BundleContext;
-import org.osgi.service.jndi.JNDIProviderAdmin;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class ProviderAdminService implements JNDIProviderAdmin {
 
     private DirObjectFactoryHelper helper;
-    
+
     public ProviderAdminService(BundleContext defaultContext, BundleContext callerContext) {
         helper = new DirObjectFactoryHelper(defaultContext, callerContext);
     }
-    
-    public Object getObjectInstance(Object obj, 
-                                    Name name, 
-                                    Context context, 
-                                    Map<?,?> environment)
-        throws Exception {
-        Hashtable<?,?> env = Utils.toHashtable(environment);
+
+    public Object getObjectInstance(Object obj,
+                                    Name name,
+                                    Context context,
+                                    Map<?, ?> environment)
+            throws Exception {
+        Hashtable<?, ?> env = Utils.toHashtable(environment);
         return helper.getObjectInstance(obj, name, context, env);
     }
 
     public Object getObjectInstance(Object obj,
                                     Name name,
                                     Context context,
-                                    Map<?,?> environment,
-                                    Attributes attributes) 
-        throws Exception {
-        Hashtable<?,?> env = Utils.toHashtable(environment);
+                                    Map<?, ?> environment,
+                                    Attributes attributes)
+            throws Exception {
+        Hashtable<?, ?> env = Utils.toHashtable(environment);
         return helper.getObjectInstance(obj, name, context, env, attributes);
     }
 
-    public void close() {        
+    public void close() {
     }
 }

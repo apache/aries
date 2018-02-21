@@ -27,16 +27,14 @@ import org.osgi.framework.ServiceRegistration;
 /**
  * A factory for the aries blueprint context
  */
-public class BlueprintURLContextServiceFactory implements ServiceFactory 
-{
+public class BlueprintURLContextServiceFactory implements ServiceFactory {
 
-  @Override
-  public Object getService(Bundle bundle, ServiceRegistration registration) {
-    return new BlueprintURLContextFactory(bundle);
-  }
+    @Override
+    public Object getService(Bundle bundle, ServiceRegistration registration) {
+        return new BlueprintURLContextFactory(bundle);
+    }
 
-  @Override
-  public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) 
-  {
-  }
+    @Override
+    public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+    }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -18,20 +18,20 @@
  */
 package org.apache.aries.jndi.legacy.support;
 
-import javax.naming.spi.InitialContextFactoryBuilder;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import javax.naming.spi.InitialContextFactoryBuilder;
+
 public class Activator implements BundleActivator {
 
-	@Override
-	public void start(BundleContext context) throws Exception 
-	{
-		context.registerService(InitialContextFactoryBuilder.class.getName(), new LegacyInitialContextFinder(), null);
-	}
+    @Override
+    public void start(BundleContext context) throws Exception {
+        context.registerService(InitialContextFactoryBuilder.class.getName(), new LegacyInitialContextFinder(), null);
+    }
 
-	@Override
-	public void stop(BundleContext context) throws Exception { }
+    @Override
+    public void stop(BundleContext context) throws Exception {
+    }
 
 }

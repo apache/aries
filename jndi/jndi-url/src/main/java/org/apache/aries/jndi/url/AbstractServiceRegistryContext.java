@@ -18,213 +18,184 @@
  */
 package org.apache.aries.jndi.url;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.NameParser;
-import javax.naming.NamingException;
-import javax.naming.OperationNotSupportedException;
-
+import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIConstants;
 
-import org.apache.aries.jndi.spi.AugmenterInvoker;
+import javax.naming.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
-public abstract class AbstractServiceRegistryContext implements Context
-{
+public abstract class AbstractServiceRegistryContext implements Context {
 
-  protected BundleContext callerContext;
-  /** The environment for this context */
-  protected Map<String, Object> env;
-  /** The name parser for the service registry name space */
-  protected NameParser parser = new OsgiNameParser();
-  private static final String ARIES_SERVICES = "aries:services/";
+    private static final String ARIES_SERVICES = "aries:services/";
+    private static AugmenterInvoker augmenterInvoker = null;
+    protected BundleContext callerContext;
+    /**
+     * The environment for this context
+     */
+    protected Map<String, Object> env;
+    /**
+     * The name parser for the service registry name space
+     */
+    protected NameParser parser = new OsgiNameParser();
 
-  private static AugmenterInvoker augmenterInvoker = null;
-
-  @SuppressWarnings("unchecked")
-  public AbstractServiceRegistryContext(BundleContext callerContext, Hashtable<?, ?> environment)
-  {
-    env = new HashMap<String, Object>();
-    env.putAll((Map<? extends String, ? extends Object>) environment);
-    // ARIES-397:, If the caller has provided a BundleContext
-    // in the hashtable, use this in preference to callerContext
-    if (augmenterInvoker == null && callerContext != null) {
-      ServiceReference augmenterSR = callerContext.getServiceReference(AugmenterInvoker.class.getName());
-      if (augmenterSR != null) augmenterInvoker = (AugmenterInvoker) callerContext.getService(augmenterSR);
+    @SuppressWarnings("unchecked")
+    public AbstractServiceRegistryContext(BundleContext callerContext, Hashtable<?, ?> environment) {
+        env = new HashMap<String, Object>();
+        env.putAll((Map<? extends String, ? extends Object>) environment);
+        // ARIES-397:, If the caller has provided a BundleContext
+        // in the hashtable, use this in preference to callerContext
+        if (augmenterInvoker == null && callerContext != null) {
+            ServiceReference augmenterSR = callerContext.getServiceReference(AugmenterInvoker.class.getName());
+            if (augmenterSR != null) augmenterInvoker = (AugmenterInvoker) callerContext.getService(augmenterSR);
+        }
+        if (augmenterInvoker != null) augmenterInvoker.augmentEnvironment(environment);
+        BundleContext bc = (BundleContext) env.get(JNDIConstants.BUNDLE_CONTEXT);
+        if (augmenterInvoker != null) augmenterInvoker.unaugmentEnvironment(environment);
+        if (bc != null) {
+            this.callerContext = bc;
+        } else {
+            this.callerContext = callerContext;
+        }
     }
-    if (augmenterInvoker != null) augmenterInvoker.augmentEnvironment(environment);
-    BundleContext bc = (BundleContext) env.get(JNDIConstants.BUNDLE_CONTEXT);
-    if (augmenterInvoker != null) augmenterInvoker.unaugmentEnvironment(environment);
-    if (bc != null) { 
-      this.callerContext = bc;
-    } else { 
-      this.callerContext = callerContext;    
+
+    @SuppressWarnings("unchecked")
+    public AbstractServiceRegistryContext(BundleContext callerContext, Map<?, ?> environment) {
+        env = new HashMap<String, Object>();
+        env.putAll((Map<? extends String, ? extends Object>) environment);
+        Hashtable<String, Object> environmentHT = new Hashtable<String, Object>();
+        environmentHT.putAll(env);
+        // ARIES-397: If the caller has provided a BundleContext
+        // in the hashtable, use this in preference to callerContext
+        if (augmenterInvoker == null && callerContext != null) {
+            ServiceReference augmenterSR = callerContext.getServiceReference(AugmenterInvoker.class.getName());
+            if (augmenterSR != null) augmenterInvoker = (AugmenterInvoker) callerContext.getService(augmenterSR);
+        }
+        if (augmenterInvoker != null) augmenterInvoker.augmentEnvironment(environmentHT);
+        BundleContext bc = (BundleContext) env.get(JNDIConstants.BUNDLE_CONTEXT);
+        if (augmenterInvoker != null) augmenterInvoker.unaugmentEnvironment(environmentHT);
+        if (bc != null) {
+            this.callerContext = bc;
+        } else {
+            this.callerContext = callerContext;
+        }
     }
-  }
 
-  @SuppressWarnings("unchecked")
-  public AbstractServiceRegistryContext(BundleContext callerContext, Map<?, ?> environment)
-  {
-    env = new HashMap<String, Object>();
-    env.putAll((Map<? extends String, ? extends Object>) environment);
-    Hashtable<String, Object> environmentHT = new Hashtable<String,Object>();
-    environmentHT.putAll(env);
-    // ARIES-397: If the caller has provided a BundleContext
-    // in the hashtable, use this in preference to callerContext
-    if (augmenterInvoker == null && callerContext != null) {
-      ServiceReference augmenterSR = callerContext.getServiceReference(AugmenterInvoker.class.getName());
-      if (augmenterSR != null) augmenterInvoker = (AugmenterInvoker) callerContext.getService(augmenterSR);
+    public Object addToEnvironment(String propName, Object propVal) throws NamingException {
+        return env.put(propName, propVal);
     }
-    if (augmenterInvoker != null) augmenterInvoker.augmentEnvironment(environmentHT); 
-    BundleContext bc = (BundleContext) env.get(JNDIConstants.BUNDLE_CONTEXT);
-    if (augmenterInvoker != null) augmenterInvoker.unaugmentEnvironment(environmentHT);
-    if (bc != null) { 
-      this.callerContext = bc;
-    } else { 
-      this.callerContext = callerContext;    
+
+    public void bind(Name name, Object obj) throws NamingException {
+        throw new OperationNotSupportedException();
     }
-  }
 
-  public Object addToEnvironment(String propName, Object propVal) throws NamingException
-  {
-    return env.put(propName, propVal);
-  }
-
-  public void bind(Name name, Object obj) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
-
-  public void bind(String name, Object obj) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
-
-  public void close() throws NamingException
-  {
-    env = null;
-    parser = null;
-  }
-
-  public Name composeName(Name name, Name prefix) throws NamingException
-  {
-    String result = prefix + "/" + name;
-  
-    String ns = ARIES_SERVICES;
-    
-    if (result.startsWith(ns)) {
-      ns = "";
+    public void bind(String name, Object obj) throws NamingException {
+        throw new OperationNotSupportedException();
     }
-    
-    return parser.parse(ns + result);
-  }
 
-  public String composeName(String name, String prefix) throws NamingException
-  {
-    String result = prefix + "/" + name;
-  
-    String ns = ARIES_SERVICES;
-    
-    if (result.startsWith(ns)) {
-      ns = "";
+    public void close() throws NamingException {
+        env = null;
+        parser = null;
     }
-    
-    parser.parse(ns + result);
-    
-    return result;
-  }
 
-  public Context createSubcontext(Name name) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+    public Name composeName(Name name, Name prefix) throws NamingException {
+        String result = prefix + "/" + name;
 
-  public Context createSubcontext(String name) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+        String ns = ARIES_SERVICES;
 
-  public void destroySubcontext(Name name) throws NamingException
-  {
-    //No-op we don't support sub-contexts in our context   
-  }
+        if (result.startsWith(ns)) {
+            ns = "";
+        }
 
-  public void destroySubcontext(String name) throws NamingException
-  {
-    //No-op we don't support sub-contexts in our context
-    
-  }
+        return parser.parse(ns + result);
+    }
 
-  public Hashtable<?, ?> getEnvironment() throws NamingException
-  {
-    Hashtable<Object, Object> environment = new Hashtable<Object, Object>();
-    environment.putAll(env);
-    return environment;
-  }
+    public String composeName(String name, String prefix) throws NamingException {
+        String result = prefix + "/" + name;
 
-  public String getNameInNamespace() throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+        String ns = ARIES_SERVICES;
 
-  public NameParser getNameParser(Name name) throws NamingException
-  {
-    return parser;
-  }
+        if (result.startsWith(ns)) {
+            ns = "";
+        }
 
-  public NameParser getNameParser(String name) throws NamingException
-  {
-    return parser;
-  }
+        parser.parse(ns + result);
 
-  public Object lookupLink(Name name) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+        return result;
+    }
 
-  public Object lookupLink(String name) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+    public Context createSubcontext(Name name) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
 
-  public void rebind(Name name, Object obj) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+    public Context createSubcontext(String name) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
 
-  public void rebind(String name, Object obj) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+    public void destroySubcontext(Name name) throws NamingException {
+        //No-op we don't support sub-contexts in our context
+    }
 
-  public Object removeFromEnvironment(String propName) throws NamingException
-  {
-    return env.remove(propName);
-  }
+    public void destroySubcontext(String name) throws NamingException {
+        //No-op we don't support sub-contexts in our context
 
-  public void rename(Name oldName, Name newName) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+    }
 
-  public void rename(String oldName, String newName) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+    public Hashtable<?, ?> getEnvironment() throws NamingException {
+        Hashtable<Object, Object> environment = new Hashtable<Object, Object>();
+        environment.putAll(env);
+        return environment;
+    }
 
-  public void unbind(Name name) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+    public String getNameInNamespace() throws NamingException {
+        throw new OperationNotSupportedException();
+    }
 
-  public void unbind(String name) throws NamingException
-  {
-    throw new OperationNotSupportedException();
-  }
+    public NameParser getNameParser(Name name) throws NamingException {
+        return parser;
+    }
+
+    public NameParser getNameParser(String name) throws NamingException {
+        return parser;
+    }
+
+    public Object lookupLink(Name name) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
+
+    public Object lookupLink(String name) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
+
+    public void rebind(Name name, Object obj) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
+
+    public void rebind(String name, Object obj) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
+
+    public Object removeFromEnvironment(String propName) throws NamingException {
+        return env.remove(propName);
+    }
+
+    public void rename(Name oldName, Name newName) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
+
+    public void rename(String oldName, String newName) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
+
+    public void unbind(Name name) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
+
+    public void unbind(String name) throws NamingException {
+        throw new OperationNotSupportedException();
+    }
 
 }

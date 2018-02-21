@@ -18,30 +18,25 @@
  */
 package org.apache.aries.jndi;
 
-import java.util.Hashtable;
+import org.osgi.framework.BundleContext;
 
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
-import javax.naming.spi.DirObjectFactory;
-import javax.naming.spi.DirectoryManager;
-import javax.naming.spi.NamingManager;
-import javax.naming.spi.ObjectFactory;
-import javax.naming.spi.ObjectFactoryBuilder;
-
-import org.osgi.framework.BundleContext;
+import javax.naming.spi.*;
+import java.util.Hashtable;
 
 public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFactory, DirObjectFactory {
 
     private BundleContext defaultContext;
-    
+
     public OSGiObjectFactoryBuilder(BundleContext ctx) {
         defaultContext = ctx;
     }
 
     public ObjectFactory createObjectFactory(Object obj, Hashtable<?, ?> environment)
-        throws NamingException {
+            throws NamingException {
         return this;
     }
 
@@ -49,11 +44,11 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Name name,
                                     Context nameCtx,
                                     Hashtable<?, ?> environment) throws Exception {
-        
+
         if (environment == null) {
             environment = new Hashtable();
         }
-        
+
         BundleContext callerContext = getCallerBundleContext(environment);
         if (callerContext == null) {
             return obj;
@@ -67,11 +62,11 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Context nameCtx,
                                     Hashtable<?, ?> environment,
                                     Attributes attrs) throws Exception {
-        
+
         if (environment == null) {
             environment = new Hashtable();
         }
-        
+
         BundleContext callerContext = getCallerBundleContext(environment);
         if (callerContext == null) {
             return obj;
@@ -82,7 +77,7 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
 
     private BundleContext getCallerBundleContext(Hashtable<?, ?> environment) throws NamingException {
         AugmenterInvokerImpl.getInstance().augmentEnvironment(environment);
-        BundleContext context = Utils.getBundleContext(environment, NamingManager.class);        
+        BundleContext context = Utils.getBundleContext(environment, NamingManager.class);
         if (context == null) {
             context = Utils.getBundleContext(environment, DirectoryManager.class);
         }

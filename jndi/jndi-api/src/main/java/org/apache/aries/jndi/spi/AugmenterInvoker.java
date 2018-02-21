@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -20,8 +20,10 @@ package org.apache.aries.jndi.spi;
 
 import java.util.Hashtable;
 
-public interface AugmenterInvoker 
-{
-  public void augmentEnvironment(Hashtable<?, ?> environment);
-  public void unaugmentEnvironment(Hashtable<?, ?> environment);
+public interface AugmenterInvoker {
+
+    void augmentEnvironment(Hashtable<?, ?> environment);
+
+    void unaugmentEnvironment(Hashtable<?, ?> environment);
+
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -18,12 +18,12 @@
  */
 package org.apache.aries.jndi.urls;
 
-import java.util.Hashtable;
-
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
+import java.util.Hashtable;
 
-public interface URLObjectFactoryFinder 
-{
-  public ObjectFactory findFactory(String url, Hashtable<?, ?> env) throws NamingException;
+public interface URLObjectFactoryFinder {
+
+    ObjectFactory findFactory(String url, Hashtable<?, ?> env) throws NamingException;
+
 }
