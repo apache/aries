@@ -52,19 +52,29 @@
         </aries.osgi.private.pkg>
         <aries.osgi.export.pkg />
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
+
+        <jndi-api.version>1.0.0</jndi-api.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <jndi-api.version>${jndi-api.dev-version}</jndi-api.version>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
             <scope>provided</scope>
-            <version>1.0.0</version>
+            <version>${jndi-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

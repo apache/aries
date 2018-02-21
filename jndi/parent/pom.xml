@@ -44,11 +44,41 @@
         <url>http://svn.apache.org/viewvc/aries/trunk/jndi/jndi-parent</url>
     </scm>
 
+    <properties>
+        <jndi-api.dev-version>1.1.1-SNAPSHOT</jndi-api.dev-version>
+        <jndi-core.dev-version>1.1.0-SNAPSHOT</jndi-core.dev-version>
+        <jndi-bundle.dev-version>1.0.1-SNAPSHOT</jndi-bundle.dev-version>
+        <jndi-url.dev-version>1.1.1-SNAPSHOT</jndi-url.dev-version>
+        <jndi-rmi.dev-version>1.0.1-SNAPSHOT</jndi-rmi.dev-version>
+        <jndi-url-itest-web.dev-version>1.0.1-SNAPSHOT</jndi-url-itest-web.dev-version>
+        <jndi-url-itest-biz.dev-version>1.0.1-SNAPSHOT</jndi-url-itest-biz.dev-version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.proxy</groupId>
+                <artifactId>org.apache.aries.proxy.api</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.proxy</groupId>
+                <artifactId>org.apache.aries.proxy.impl</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.api</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>org.apache.aries.blueprint.core</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>

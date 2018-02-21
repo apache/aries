@@ -62,31 +62,36 @@
             org.apache.aries.jndi.priv.Activator
         </aries.osgi.activator>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
+
+        <jndi-api.version>1.0.0</jndi-api.version>
+        <jndi-core.version>1.0.0</jndi-core.version>
+        <jndi-url.version>1.0.0</jndi-url.version>
+        <jndi-rmi.version>1.0.0</jndi-rmi.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.core</artifactId>
-            <version>1.0.0</version>
+            <version>${jndi-core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.url</artifactId>
-            <version>1.0.0</version>
+            <version>${jndi-url.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.api</artifactId>
-            <version>1.0.0</version>
+            <version>${jndi-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
             <artifactId>org.apache.aries.jndi.rmi</artifactId>
-            <version>1.0.0</version>
+            <version>${jndi-rmi.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -167,6 +172,15 @@
 
     <profiles>
         <profile>
+            <id>dev</id>
+            <properties>
+                <jndi-api.version>${jndi-api.dev-version}</jndi-api.version>
+                <jndi-core.version>${jndi-core.dev-version}</jndi-core.version>
+                <jndi-url.version>${jndi-url.dev-version}</jndi-url.version>
+                <jndi-rmi.version>${jndi-rmi.dev-version}</jndi-rmi.version>
+            </properties>
+        </profile>
+        <profile>
             <id>deploy</id>
             <properties>
                 <createSourcesJar>true</createSourcesJar>
@@ -243,7 +257,6 @@
                             <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                     </plugin>
-                    
 		            <plugin>
 		                <groupId>org.apache.aries.versioning</groupId>
 		                <artifactId>org.apache.aries.versioning.plugin</artifactId>

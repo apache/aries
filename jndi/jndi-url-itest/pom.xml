@@ -43,11 +43,45 @@
      </scm>
      
      <properties>
-        <exam.version>4.11.0</exam.version>
-        <url.version>1.6.0</url.version>
+        <pax-exam.version>4.11.0</pax-exam.version>
+        <pax-url.version>1.6.0</pax-url.version>
+
+         <jndi-api.version>${jndi-api.dev-version}</jndi-api.version>
+         <jndi-bundle.version>${jndi-bundle.dev-version}</jndi-bundle.version>
+         <jndi-url.version>${jndi-url.dev-version}</jndi-url.version>
+         <jndi-url-itest-web.version>${jndi-url-itest-web.dev-version}</jndi-url-itest-web.version>
+         <jndi-url-itest-biz.version>${jndi-url-itest-biz.dev-version}</jndi-url-itest-biz.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.jndi</groupId>
+            <artifactId>org.apache.aries.jndi</artifactId>
+            <scope>test</scope>
+            <version>${jndi-bundle.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.jndi</groupId>
+            <artifactId>org.apache.aries.jndi.url</artifactId>
+            <scope>test</scope>
+            <version>${jndi-url.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.jndi</groupId>
+            <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
+            <scope>test</scope>
+            <version>${jndi-url-itest-web.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.jndi</groupId>
+            <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
+            <scope>test</scope>
+            <version>${jndi-url-itest-biz.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
@@ -61,7 +95,7 @@
         <dependency>
           <groupId>org.apache.aries.testsupport</groupId>
           <artifactId>org.apache.aries.testsupport.unit</artifactId>
-          <version>2.0.0-SNAPSHOT</version>
+            <version>2.0.0-SNAPSHOT</version>
           <scope>test</scope>
         </dependency>
 
@@ -69,44 +103,30 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
         </dependency>
         
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
-            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
-            <artifactId>org.apache.aries.proxy</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
+            <artifactId>org.apache.aries.proxy.api</artifactId>
         </dependency>
-        
         <dependency>
-            <groupId>org.apache.aries.jndi</groupId>
-            <artifactId>org.apache.aries.jndi.url.itest.web</artifactId>
-            <scope>test</scope>
-            <version>1.0.0</version>
+            <groupId>org.apache.aries.proxy</groupId>
+            <artifactId>org.apache.aries.proxy.impl</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.aries.jndi</groupId>
-            <artifactId>org.apache.aries.jndi.url.itest.biz</artifactId>
-            <scope>test</scope>
-            <version>1.0.0</version>
-        </dependency>
-        
-		<!-- pax exam -->
+ 		<!-- pax exam -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -115,31 +135,31 @@
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-forked</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-mvn</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
-            <version>${url.version}</version>
+            <version>${pax-url.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -231,20 +251,6 @@
             <version>3.4.0</version>
 		</dependency>
         
-		<dependency>
-			<groupId>org.apache.aries.jndi</groupId>
-			<artifactId>org.apache.aries.jndi</artifactId>
-            <scope>test</scope>
-            <version>1.0.1-SNAPSHOT</version>
-		</dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.jndi</groupId>
-            <artifactId>org.apache.aries.jndi.url</artifactId>
-            <scope>test</scope>
-            <version>1.1.1-SNAPSHOT</version>
-        </dependency>
-
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
