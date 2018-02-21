@@ -58,7 +58,9 @@ public class InitialContextTest {
      */
     @Before
     public void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        bc = Skeleton.newMock(new BundleContextMock(), BundleContext.class);
+        BundleContextMock mock = new BundleContextMock();
+        mock.addBundle(mock.getBundle());
+        bc = Skeleton.newMock(mock, BundleContext.class);
         activator = new Activator();
         activator.start(bc);
     }

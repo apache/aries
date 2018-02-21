@@ -32,10 +32,10 @@ import java.util.Map;
 
 public class DelegateContext implements DirContext, LdapContext {
 
-    private final Hashtable<Object, Object> env = new Hashtable<Object, Object>();
+    private final Hashtable<Object, Object> env = new Hashtable<>();
 
     private final BundleContext bundleContext;
-    private final Map<String, ContextProvider> urlContexts = new HashMap<String, ContextProvider>();
+    private final Map<String, ContextProvider> urlContexts = new HashMap<>();
     private final boolean rebind;
     private ContextProvider contextProvider;
 
@@ -108,7 +108,7 @@ public class DelegateContext implements DirContext, LdapContext {
     }
 
     public Hashtable<?, ?> getEnvironment() throws NamingException {
-        Hashtable<Object, Object> theEnv = new Hashtable<Object, Object>();
+        Hashtable<Object, Object> theEnv = new Hashtable<>();
         theEnv.putAll(env);
         return theEnv;
     }
@@ -196,7 +196,7 @@ public class DelegateContext implements DirContext, LdapContext {
     }
 
     protected Context findContext(String name) throws NamingException {
-        Context toReturn = null;
+        Context toReturn;
 
         if (name.contains(":")) {
             toReturn = getURLContext(name);

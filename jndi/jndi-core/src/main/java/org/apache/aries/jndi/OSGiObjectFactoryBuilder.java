@@ -18,6 +18,7 @@
  */
 package org.apache.aries.jndi;
 
+import org.apache.aries.jndi.startup.Activator;
 import org.osgi.framework.BundleContext;
 
 import javax.naming.Context;
@@ -35,8 +36,7 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
         defaultContext = ctx;
     }
 
-    public ObjectFactory createObjectFactory(Object obj, Hashtable<?, ?> environment)
-            throws NamingException {
+    public ObjectFactory createObjectFactory(Object obj, Hashtable<?, ?> environment) {
         return this;
     }
 
@@ -45,16 +45,7 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Context nameCtx,
                                     Hashtable<?, ?> environment) throws Exception {
 
-        if (environment == null) {
-            environment = new Hashtable();
-        }
-
-        BundleContext callerContext = getCallerBundleContext(environment);
-        if (callerContext == null) {
-            return obj;
-        }
-        DirObjectFactoryHelper helper = new DirObjectFactoryHelper(defaultContext, callerContext);
-        return helper.getObjectInstance(obj, name, nameCtx, environment);
+        return getObjectInstance(obj, name, nameCtx, environment, null);
     }
 
     public Object getObjectInstance(Object obj,
@@ -75,13 +66,13 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
         return helper.getObjectInstance(obj, name, nameCtx, environment, attrs);
     }
 
-    private BundleContext getCallerBundleContext(Hashtable<?, ?> environment) throws NamingException {
-        AugmenterInvokerImpl.getInstance().augmentEnvironment(environment);
+    private BundleContext getCallerBundleContext(Hashtable<?, ?> environment) {
+        Activator.getAugmenterInvoker().augmentEnvironment(environment);
         BundleContext context = Utils.getBundleContext(environment, NamingManager.class);
         if (context == null) {
             context = Utils.getBundleContext(environment, DirectoryManager.class);
         }
-        AugmenterInvokerImpl.getInstance().unaugmentEnvironment(environment);
+        Activator.getAugmenterInvoker().unaugmentEnvironment(environment);
         return context;
     }
 }

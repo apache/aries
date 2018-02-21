@@ -38,7 +38,6 @@ public abstract class ContextProvider {
     }
 
     public void close() throws NamingException {
-        if (bc != null) bc.ungetService(reference);
     }
 
     public abstract Context getContext() throws NamingException;
