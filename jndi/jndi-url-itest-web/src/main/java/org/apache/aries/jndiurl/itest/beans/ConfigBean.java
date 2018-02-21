@@ -20,23 +20,23 @@
 package org.apache.aries.jndiurl.itest.beans;
 
 public class ConfigBean {
-  
-  SimpleBean _simple;
-  String _version;
-  
-  public SimpleBean getSimple() { 
-    return _simple;
-  }
-  
-  public void setSimple (SimpleBean s) { 
-    _simple = s;
-  }
-  
-  public String getVersion() { 
-    return _version;
-  }
-  
-  public void setVersion(String v) { 
-    _version = v;
-  }
+
+    SimpleBean _simple;
+    String _version;
+
+    public SimpleBean getSimple() {
+        return _simple;
+    }
+
+    public void setSimple(SimpleBean s) {
+        _simple = s;
+    }
+
+    public String getVersion() {
+        return _version;
+    }
+
+    public void setVersion(String v) {
+        _version = v;
+    }
 }

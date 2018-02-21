@@ -19,44 +19,42 @@
 
 package org.apache.aries.jndiurl.itest;
 
-import java.io.IOException;
-import java.util.List;
+import org.apache.aries.jndiurl.itest.beans.ConfigBean;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 
-import org.apache.aries.jndiurl.itest.beans.ConfigBean;
+public class JndiUrlItestServlet extends HttpServlet {
 
-public class JndiUrlItestServlet extends HttpServlet{
+    private static final long serialVersionUID = -4610850218411296469L;
 
-  private static final long serialVersionUID = -4610850218411296469L;
+    @Override
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        StringBuilder result = new StringBuilder();
+        try {
+            InitialContext ctx = new InitialContext();
+            ConfigBean cb = (ConfigBean) ctx.lookup("blueprint:comp/config");
+            result.append(cb.getSimple().getOwner());
+            result.append(".");
+            result.append(cb.getVersion());  // Expected output is now "Mark.2.0"
 
-  @Override
-  public void doGet (HttpServletRequest req, HttpServletResponse resp) throws IOException 
-  { 
-    StringBuilder result = new StringBuilder();
-    try { 
-      InitialContext ctx = new InitialContext();
-      ConfigBean cb = (ConfigBean) ctx.lookup("blueprint:comp/config");
-      result.append(cb.getSimple().getOwner());
-      result.append(".");
-      result.append(cb.getVersion());  // Expected output is now "Mark.2.0"
-      
-      // Now lookup and use a service published from another bundle
-      @SuppressWarnings("unchecked")
-      List<String> listService = (List<String>) ctx.lookup("blueprint:comp/listRef");
-      result.append(".");
-      String thirdListEntry = listService.get(2);
-      result.append(thirdListEntry);
-    } catch (NamingException nx) { 
-      IOException ex = new IOException (nx.getMessage());
-      ex.initCause(nx);
-      throw ex;
+            // Now lookup and use a service published from another bundle
+            @SuppressWarnings("unchecked")
+            List<String> listService = (List<String>) ctx.lookup("blueprint:comp/listRef");
+            result.append(".");
+            String thirdListEntry = listService.get(2);
+            result.append(thirdListEntry);
+        } catch (NamingException nx) {
+            IOException ex = new IOException(nx.getMessage());
+            ex.initCause(nx);
+            throw ex;
+        }
+        resp.getWriter().print(result.toString());
+        resp.getWriter().close();
     }
-    resp.getWriter().print(result.toString());
-    resp.getWriter().close();
-  }
 }

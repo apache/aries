@@ -18,36 +18,32 @@
  */
 package org.apache.aries.jndi.url;
 
-import java.security.AccessControlException;
-import java.security.AccessController;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.naming.Binding;
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.NameClassPair;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-
 import org.apache.aries.jndi.services.ServiceHelper;
 import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.AdminPermission;
 import org.osgi.framework.BundleContext;
 
+import javax.naming.*;
+import java.security.AccessControlException;
+import java.security.AccessController;
+import java.util.Hashtable;
+import java.util.Map;
+
 /**
  * A JNDI context for looking stuff up from the service registry.
  */
 public class ServiceRegistryContext extends AbstractServiceRegistryContext implements Context {
-    /** The parent name, if one is provided, of this context */
+    private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(ServiceRegistryContext.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
+    /**
+     * The parent name, if one is provided, of this context
+     */
     private OsgiName parentName;
 
     /**
      * Why Mr Java this class does indeed take a fine copy of the provided
      * environment. One might imagine that it is worried that the provider is
      * not to be trusted.
-     * 
+     *
      * @param environment
      */
     public ServiceRegistryContext(BundleContext callerContext, Hashtable<?, ?> environment) {
@@ -75,8 +71,6 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
         return listBindings(parse(name));
     }
 
-    private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(ServiceRegistryContext.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
-
     public Object lookup(Name name) throws NamingException {
         Object result;
 
@@ -87,8 +81,8 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
 
         if (validName.hasInterface()) {
             if (OsgiName.FRAMEWORK_PATH.equals(pathFragment) && "bundleContext".equals(validName.getServiceName())) {
-                AdminPermission adminPermission = 
-                    new AdminPermission(callerContext.getBundle(), AdminPermission.CONTEXT);                
+                AdminPermission adminPermission =
+                        new AdminPermission(callerContext.getBundle(), AdminPermission.CONTEXT);
                 try {
                     AccessController.checkPermission(adminPermission);
                     return callerContext;
@@ -98,7 +92,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
                     throw namingException;
                 }
             } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName))
-                       || (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
+                    || (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
                 result = ServiceHelper.getService(callerContext, validName, null, true, env, OsgiName.OSGI_SCHEME.equals(schemeName));
             } else if (OsgiName.SERVICE_LIST_PATH.equals(pathFragment)) {
                 result = new ServiceRegistryListContext(callerContext, env, validName);

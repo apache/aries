@@ -18,82 +18,74 @@
  */
 package org.apache.aries.jndi.url;
 
-import java.util.Enumeration;
-
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
+import java.util.Enumeration;
 
 /**
  * A composite name for the aries namespace. This provides useful utility methods
  * for accessing the name.
- * 
+ * <p>
  * component 0: osgi:service, aries:services, osgi:servicelist
  * component 1: interface
  * component 2: filter
  */
-public final class OsgiName extends AbstractName
-{
-  /** The serial version UID */
-  private static final long serialVersionUID = 6617580228852444656L;
-  public static final String OSGI_SCHEME = "osgi";
-  public static final String ARIES_SCHEME = "aries";
-  public static final String SERVICE_PATH = "service";
-  public static final String SERVICES_PATH = "services";
-  public static final String SERVICE_LIST_PATH = "servicelist";
-  public static final String FRAMEWORK_PATH = "framework";
-  
-  public OsgiName(String name) throws InvalidNameException
-  {
-    super(name);
-  }
+public final class OsgiName extends AbstractName {
+    public static final String OSGI_SCHEME = "osgi";
+    public static final String ARIES_SCHEME = "aries";
+    public static final String SERVICE_PATH = "service";
+    public static final String SERVICES_PATH = "services";
+    public static final String SERVICE_LIST_PATH = "servicelist";
+    public static final String FRAMEWORK_PATH = "framework";
+    /**
+     * The serial version UID
+     */
+    private static final long serialVersionUID = 6617580228852444656L;
 
-  public OsgiName(Name name) throws InvalidNameException
-  {
-    this(name.toString());
-  }
-
-  public boolean hasFilter()
-  {
-    return size() == 3;
-  }
-  
-  public boolean isServiceNameBased()
-  {
-    return size() > 3;
-  }
-  
-  public String getInterface()
-  {
-    return get(1);
-  }
-  
-  public String getFilter()
-  {
-    return hasFilter() ? get(2) : null;
-  }
-  
-  public String getServiceName()
-  {
-    Enumeration<String> parts = getAll();
-    parts.nextElement();
-    
-    StringBuilder builder = new StringBuilder();
-    
-    if (parts.hasMoreElements()) {
-
-      while (parts.hasMoreElements()) {
-        builder.append(parts.nextElement());
-        builder.append('/');
-      }
-    
-      builder.deleteCharAt(builder.length() - 1);
+    public OsgiName(String name) throws InvalidNameException {
+        super(name);
     }
-    
-    return builder.toString();
-  }
 
-  public boolean hasInterface()
-  {
-    return size() > 1;
-  }
+    public OsgiName(Name name) throws InvalidNameException {
+        this(name.toString());
+    }
+
+    public boolean hasFilter() {
+        return size() == 3;
+    }
+
+    public boolean isServiceNameBased() {
+        return size() > 3;
+    }
+
+    public String getInterface() {
+        return get(1);
+    }
+
+    public String getFilter() {
+        return hasFilter() ? get(2) : null;
+    }
+
+    public String getServiceName() {
+        Enumeration<String> parts = getAll();
+        parts.nextElement();
+
+        StringBuilder builder = new StringBuilder();
+
+        if (parts.hasMoreElements()) {
+
+            while (parts.hasMoreElements()) {
+                builder.append(parts.nextElement());
+                builder.append('/');
+            }
+
+            builder.deleteCharAt(builder.length() - 1);
+        }
+
+        return builder.toString();
+    }
+
+    public boolean hasInterface() {
+        return size() > 1;
+    }
 }

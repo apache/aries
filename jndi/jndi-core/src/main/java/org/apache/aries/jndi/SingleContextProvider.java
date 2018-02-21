@@ -18,24 +18,24 @@
  */
 package org.apache.aries.jndi;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
 
 public class SingleContextProvider extends ContextProvider {
     private final Context context;
 
-    public SingleContextProvider(BundleContext bc, ServiceReference ref, Context ctx) {
+    public SingleContextProvider(BundleContext bc, ServiceReference<?> ref, Context ctx) {
         super(bc, ref);
         this.context = ctx;
     }
-    
+
     public Context getContext() {
         return context;
     }
-    
+
     public void close() throws NamingException {
         super.close();
         context.close();

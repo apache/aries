@@ -21,13 +21,13 @@ package org.apache.aries.jndiurl.itest.beans;
 
 public class SimpleBean {
 
-  private String _owner;
-  
-  public void setOwner (String s) {
-    _owner = s;
-  }
-  
-  public String getOwner() { 
-    return _owner;
-  }
+    private String _owner;
+
+    public String getOwner() {
+        return _owner;
+    }
+
+    public void setOwner(String s) {
+        _owner = s;
+    }
 }

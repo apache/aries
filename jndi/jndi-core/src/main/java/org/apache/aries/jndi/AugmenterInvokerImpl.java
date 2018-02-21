@@ -18,49 +18,47 @@
  */
 package org.apache.aries.jndi;
 
-import java.util.Hashtable;
-
+import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.apache.aries.jndi.spi.EnvironmentAugmentation;
 import org.apache.aries.jndi.spi.EnvironmentUnaugmentation;
-import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.apache.aries.jndi.startup.Activator;
+
+import java.util.Hashtable;
 
 
 public class AugmenterInvokerImpl implements AugmenterInvoker {
-  
+
     private static AugmenterInvokerImpl instance = null;
-    
+
     public static AugmenterInvokerImpl getInstance() {
-      if (instance == null) {
-        instance = new AugmenterInvokerImpl();
-      }
-      return instance;
+        if (instance == null) {
+            instance = new AugmenterInvokerImpl();
+        }
+        return instance;
     }
 
 
-    public void augmentEnvironment(Hashtable<?, ?> environment) 
-    {
-      Object[] objects = Activator.getEnvironmentAugmentors();
-      
-      if (objects != null) {
-        for (Object obj : objects) {
-          if (obj instanceof EnvironmentAugmentation) {
-            ((EnvironmentAugmentation)obj).augmentEnvironment(environment);
-          }
+    public void augmentEnvironment(Hashtable<?, ?> environment) {
+        Object[] objects = Activator.getEnvironmentAugmentors();
+
+        if (objects != null) {
+            for (Object obj : objects) {
+                if (obj instanceof EnvironmentAugmentation) {
+                    ((EnvironmentAugmentation) obj).augmentEnvironment(environment);
+                }
+            }
         }
-      }
     }
-    
-    public void unaugmentEnvironment(Hashtable<?, ?> environment) 
-    {
-      Object[] objects = Activator.getEnvironmentUnaugmentors();
-      
-      if (objects != null) {
-        for (Object obj : objects) {
-          if (obj instanceof EnvironmentUnaugmentation) {
-            ((EnvironmentUnaugmentation)obj).unaugmentEnvironment(environment);
-          }
+
+    public void unaugmentEnvironment(Hashtable<?, ?> environment) {
+        Object[] objects = Activator.getEnvironmentUnaugmentors();
+
+        if (objects != null) {
+            for (Object obj : objects) {
+                if (obj instanceof EnvironmentUnaugmentation) {
+                    ((EnvironmentUnaugmentation) obj).unaugmentEnvironment(environment);
+                }
+            }
         }
-      }
     }
 }

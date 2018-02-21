@@ -18,20 +18,19 @@
  */
 package org.apache.aries.jndi;
 
-import java.util.Hashtable;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
-
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import java.util.Hashtable;
 
 public class URLContextProvider extends ContextProvider {
     private final ObjectFactory factory;
     private final Hashtable<?, ?> environment;
-    
-    public URLContextProvider(BundleContext bc, ServiceReference reference, ObjectFactory factory, Hashtable<?, ?> environment) {
+
+    public URLContextProvider(BundleContext bc, ServiceReference<?> reference, ObjectFactory factory, Hashtable<?, ?> environment) {
         super(bc, reference);
         this.factory = factory;
         this.environment = environment;
@@ -46,5 +45,5 @@ public class URLContextProvider extends ContextProvider {
             ne.initCause(e);
             throw ne;
         }
-    }    
+    }
 }

@@ -18,7 +18,7 @@
  */
 package org.apache.aries.jndi;
 
-import java.util.Hashtable;
+import org.osgi.framework.BundleContext;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -26,28 +26,27 @@ import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
-
-import org.osgi.framework.BundleContext;
+import java.util.Hashtable;
 
 public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBuilder, InitialContextFactory {
 
-	public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) 
-	    throws NamingException {
-	    return this;
-	}
-  
-	public Context getInitialContext(Hashtable<?, ?> environment) 
-	    throws NamingException {
-	    
-	    AugmenterInvokerImpl.getInstance().augmentEnvironment(environment);
-	  
-	    BundleContext context = Utils.getBundleContext(environment, InitialContext.class);	    
-	    if (context == null) {
-            throw new NoInitialContextException(Utils.MESSAGES.getMessage("cannot.find.callers.bundlecontext"));
-	    }
-	    	    
-      AugmenterInvokerImpl.getInstance().unaugmentEnvironment(environment);
+    public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment)
+            throws NamingException {
+        return this;
+    }
 
-	    return ContextHelper.getInitialContext(context, environment);
-	}
+    public Context getInitialContext(Hashtable<?, ?> environment)
+            throws NamingException {
+
+        AugmenterInvokerImpl.getInstance().augmentEnvironment(environment);
+
+        BundleContext context = Utils.getBundleContext(environment, InitialContext.class);
+        if (context == null) {
+            throw new NoInitialContextException(Utils.MESSAGES.getMessage("cannot.find.callers.bundlecontext"));
+        }
+
+        AugmenterInvokerImpl.getInstance().unaugmentEnvironment(environment);
+
+        return ContextHelper.getInitialContext(context, environment);
+    }
 }
