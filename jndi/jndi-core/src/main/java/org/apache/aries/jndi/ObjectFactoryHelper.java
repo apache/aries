@@ -59,7 +59,14 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                     Context nameCtx,
                                     Hashtable<?, ?> environment,
                                     Attributes attrs) throws Exception {
+        return Utils.doPrivilegedE(() -> doGetObjectInstance(obj, name, nameCtx, environment, attrs));
+    }
 
+    private Object doGetObjectInstance(Object obj,
+                                    Name name,
+                                    Context nameCtx,
+                                    Hashtable<?, ?> environment,
+                                    Attributes attrs) throws Exception {
         // Step 1
         if (obj instanceof Referenceable) {
             obj = ((Referenceable) obj).getReference();
@@ -113,12 +120,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
             if (canCallObjectFactory(obj, ref)) {
                 ObjectFactory factory = Activator.getService(callerContext, ref);
                 if (factory != null) {
-                    Object result;
-                    if (factory instanceof DirObjectFactory) {
-                        result = ((DirObjectFactory) factory).getObjectInstance(obj, name, nameCtx, environment, attrs);
-                    } else {
-                        result = factory.getObjectInstance(obj, name, nameCtx, environment);
-                    }
+                    Object result = getObjectFromFactory(obj, name, nameCtx, environment, attrs, factory);
                     // if the result comes back and is not null and not the reference
                     // object then we should return the result, so break out of the
                     // loop we are in.
@@ -150,11 +152,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
 
         ObjectFactory factory = ObjectFactoryHelper.findObjectFactoryByClassName(defaultContext, className);
         if (factory != null) {
-            if (factory instanceof DirObjectFactory) {
-                result = ((DirObjectFactory) factory).getObjectInstance(reference, name, nameCtx, environment, attrs);
-            } else {
-                result = factory.getObjectInstance(reference, name, nameCtx, environment);
-            }
+            result = getObjectFromFactory(reference, name, nameCtx, environment, attrs, factory);
         }
 
         return (result == null) ? obj : result;
@@ -181,11 +179,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
         Object result = null;
 
         if (factory != null) {
-            if (factory instanceof DirObjectFactory) {
-                result = ((DirObjectFactory) factory).getObjectInstance(obj, name, nameCtx, environment, attrs);
-            } else {
-                result = factory.getObjectInstance(obj, name, nameCtx, environment);
-            }
+            result = getObjectFromFactory(obj, name, nameCtx, environment, attrs, factory);
         }
 
         return (result == null) ? obj : result;
@@ -216,11 +210,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
                 }
                 if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE, "cand=" + cand + " factory=" + factory);
                 if (factory != null) {
-                    if (factory instanceof DirObjectFactory) {
-                        result = ((DirObjectFactory) factory).getObjectInstance(obj, name, nameCtx, environment, attrs);
-                    } else {
-                        result = factory.getObjectInstance(obj, name, nameCtx, environment);
-                    }
+                    result = getObjectFromFactory(obj, name, nameCtx, environment, attrs, factory);
                 }
                 if (result != null && result != obj) break;
             }
@@ -246,14 +236,8 @@ public class ObjectFactoryHelper implements ObjectFactory {
                 if (factoryService != null) {
                     ObjectFactory factory = factoryService.get();
 
-                    Object result;
-
                     String value = (String) address.getContent();
-                    if (factory instanceof DirObjectFactory) {
-                        result = ((DirObjectFactory) factory).getObjectInstance(value, name, nameCtx, environment, attrs);
-                    } else {
-                        result = factory.getObjectInstance(value, name, nameCtx, environment);
-                    }
+                    Object result = getObjectFromFactory(value, name, nameCtx, environment, attrs, factory);
 
                     // if the result comes back and is not null and not the reference
                     // object then we should return the result, so break out of the
@@ -266,6 +250,16 @@ public class ObjectFactoryHelper implements ObjectFactory {
         }
 
         return obj;
+    }
+
+    private Object getObjectFromFactory(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment, Attributes attrs, ObjectFactory factory) throws Exception {
+        Object result;
+        if (factory instanceof DirObjectFactory) {
+            result = ((DirObjectFactory) factory).getObjectInstance(obj, name, nameCtx, environment, attrs);
+        } else {
+            result = factory.getObjectInstance(obj, name, nameCtx, environment);
+        }
+        return result;
     }
 
     private static String getUrlScheme(String name) {
