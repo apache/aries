@@ -33,7 +33,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -130,7 +129,11 @@ public final class Utils {
     }
 
     public static <T> T doPrivileged(Supplier<T> action) {
-        return AccessController.doPrivileged((PrivilegedAction<T>) action::get);
+        if (System.getSecurityManager() != null) {
+            return AccessController.doPrivileged((PrivilegedAction<T>) action::get);
+        } else {
+            return action.get();
+        }
     }
 
     public interface Callable<V, E extends Exception> {
@@ -138,16 +141,21 @@ public final class Utils {
          * Computes a result, or throws an exception if unable to do so.
          *
          * @return computed result
-         * @throws Exception if unable to compute a result
+         * @throws E if unable to compute a result
          */
         V call() throws E;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T, E extends Exception> T doPrivilegedE(Callable<T, E> action) throws E {
-        try {
-            return AccessController.doPrivileged((PrivilegedExceptionAction<T>) action::call);
-        } catch (PrivilegedActionException e) {
-            throw (E) e.getException();
+        if (System.getSecurityManager() != null) {
+            try {
+                return AccessController.doPrivileged((PrivilegedExceptionAction<T>) action::call);
+            } catch (PrivilegedActionException e) {
+                throw (E) e.getException();
+            }
+        } else {
+            return action.call();
         }
     }
 
