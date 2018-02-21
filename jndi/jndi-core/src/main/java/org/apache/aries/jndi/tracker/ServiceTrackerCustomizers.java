@@ -33,105 +33,106 @@ import org.osgi.service.jndi.JNDIConstants;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 
-public class ServiceTrackerCustomizers 
-{
-  public static interface CachingServiceTracker extends ServiceTrackerCustomizer {
-    public ServiceReference find(String identifier);
-  }
-  
-  private static abstract class BaseCachingServiceTracker implements CachingServiceTracker {
-    /** The cached references */
-    protected ConcurrentMap<String, ServiceReference> cache = new ConcurrentHashMap<String, ServiceReference>();
-    /** A list of service references that are being tracked */
-    protected List<ServiceReference> trackedReferences = new ArrayList<ServiceReference>();
+public class ServiceTrackerCustomizers {
 
-    public ServiceReference find(String identifier) 
-    {
-      return cache.get(identifier);
+    public interface CachingServiceTracker extends ServiceTrackerCustomizer {
+        ServiceReference find(String identifier);
     }
 
-    public synchronized Object addingService(ServiceReference reference) 
-    {
-      List<String> cacheKeys = getProperty(reference);
-      
-      for (String key : cacheKeys) { 
-        cache.putIfAbsent(key, reference);
-      }
-      
-      trackedReferences.add(reference);
-      
-      return reference;
-    }
+    private static abstract class BaseCachingServiceTracker implements CachingServiceTracker {
+        /** The cached references */
+        protected ConcurrentMap<String, ServiceReference> cache = new ConcurrentHashMap<String, ServiceReference>();
+        /** A list of service references that are being tracked */
+        protected List<ServiceReference> trackedReferences = new ArrayList<ServiceReference>();
 
-    protected abstract List<String> getProperty(ServiceReference reference);
+        public ServiceReference find(String identifier) {
+            return cache.get(identifier);
+        }
 
-    public synchronized void removedService(ServiceReference reference, Object service) 
-    {
-      trackedReferences.remove(reference);
-      
-      List<String> keysToProcess = new ArrayList<String>(getProperty(reference));
-      
-      refLoop: for (ServiceReference ref : trackedReferences) {
-        List<String> refInt = getProperty(ref);
-        for (String interfaceName : refInt) {
-          int index = keysToProcess.indexOf(interfaceName);
-          if (index >= 0) {
-            keysToProcess.remove(index);
-            if (cache.replace(interfaceName, reference, ref)) {
-              if (keysToProcess.isEmpty()) break refLoop;
+        public synchronized Object addingService(ServiceReference reference) {
+            List<String> cacheKeys = getProperty(reference);
+
+            for (String key : cacheKeys) {
+                cache.putIfAbsent(key, reference);
             }
-          }
+
+            trackedReferences.add(reference);
+
+            return reference;
         }
-      }
-      
-      for (String interfaceName : keysToProcess) {
-        cache.remove(interfaceName, reference);
-      }
+
+        protected abstract List<String> getProperty(ServiceReference reference);
+
+        public synchronized void removedService(ServiceReference reference, Object service) {
+            trackedReferences.remove(reference);
+
+            List<String> keysToProcess = new ArrayList<String>(getProperty(reference));
+
+            refLoop:
+            for (ServiceReference ref : trackedReferences) {
+                List<String> refInt = getProperty(ref);
+                for (String interfaceName : refInt) {
+                    int index = keysToProcess.indexOf(interfaceName);
+                    if (index >= 0) {
+                        keysToProcess.remove(index);
+                        if (cache.replace(interfaceName, reference, ref)) {
+                            if (keysToProcess.isEmpty()) break refLoop;
+                        }
+                    }
+                }
+            }
+
+            for (String interfaceName : keysToProcess) {
+                cache.remove(interfaceName, reference);
+            }
+        }
+
+        public void modifiedService(ServiceReference reference, Object service) {
+        }
     }
 
-    public void modifiedService(ServiceReference reference, Object service) { }
-  }
-  
-  public static final ServiceTrackerCustomizer LAZY = new ServiceTrackerCustomizer() {
-    public Object addingService(ServiceReference reference) 
-    {
-      return reference;
-    }
-    public void modifiedService(ServiceReference reference, Object service)  { }
-    public void removedService(ServiceReference reference, Object service)  { }
-  };
-
-  public static final CachingServiceTracker ICF_CACHE = new BaseCachingServiceTracker() {
-    public List<String> getProperty(ServiceReference ref)
-    {
-      String[] interfaces = (String[]) ref.getProperty(Constants.OBJECTCLASS);
-      List<String> resultList = new ArrayList<String>();
-      for (String interfaceName : interfaces) {
-        if (!!!InitialContextFactory.class.getName().equals(interfaceName)) {
-          resultList.add(interfaceName);
+    public static final ServiceTrackerCustomizer LAZY = new ServiceTrackerCustomizer() {
+        public Object addingService(ServiceReference reference) {
+            return reference;
         }
-      }
-      
-      return resultList;
-    }
-  };
-  
-  // TODO we should probably cope with the url.scheme property changing.
-  public static final CachingServiceTracker URL_FACTORY_CACHE = new BaseCachingServiceTracker() {
-    protected List<String> getProperty(ServiceReference reference) {
-      Object scheme = reference.getProperty(JNDIConstants.JNDI_URLSCHEME);
-      List<String> result;
-      
-      if (scheme instanceof String) {
-        result = new ArrayList<String>();
-        result.add((String) scheme);
-      } else if (scheme instanceof String[]) {
-        result = Arrays.asList((String[])scheme);
-      } else {
-        result = Collections.emptyList();
-      }
-      
-      return result;
-    }
-  };
+
+        public void modifiedService(ServiceReference reference, Object service) {
+        }
+
+        public void removedService(ServiceReference reference, Object service) {
+        }
+    };
+
+    public static final CachingServiceTracker ICF_CACHE = new BaseCachingServiceTracker() {
+        public List<String> getProperty(ServiceReference ref) {
+            String[] interfaces = (String[]) ref.getProperty(Constants.OBJECTCLASS);
+            List<String> resultList = new ArrayList<String>();
+            for (String interfaceName : interfaces) {
+                if (!!!InitialContextFactory.class.getName().equals(interfaceName)) {
+                    resultList.add(interfaceName);
+                }
+            }
+
+            return resultList;
+        }
+    };
+
+    // TODO we should probably cope with the url.scheme property changing.
+    public static final CachingServiceTracker URL_FACTORY_CACHE = new BaseCachingServiceTracker() {
+        protected List<String> getProperty(ServiceReference reference) {
+            Object scheme = reference.getProperty(JNDIConstants.JNDI_URLSCHEME);
+            List<String> result;
+
+            if (scheme instanceof String) {
+                result = new ArrayList<String>();
+                result.add((String) scheme);
+            } else if (scheme instanceof String[]) {
+                result = Arrays.asList((String[]) scheme);
+            } else {
+                result = Collections.emptyList();
+            }
+
+            return result;
+        }
+    };
 }
