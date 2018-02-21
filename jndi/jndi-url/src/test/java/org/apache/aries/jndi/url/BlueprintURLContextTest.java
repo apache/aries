@@ -100,6 +100,7 @@ public class BlueprintURLContextTest {
   
   @BeforeClass
   public static void setup() throws Exception {
+    System.setProperty("org.apache.aries.jndi.disable.builder", "false");
     bundle = Skeleton.newMock(new BundleMock("aBundle", new Hashtable<String, String>()), Bundle.class);
     BundleContext bc = bundle.getBundleContext();
     new org.apache.aries.jndi.startup.Activator().start(bc);

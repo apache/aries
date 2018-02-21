@@ -58,6 +58,7 @@ public class InitialContextTest {
      */
     @Before
     public void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        System.setProperty("org.apache.aries.jndi.disable.builder", "false");
         BundleContextMock mock = new BundleContextMock();
         mock.addBundle(mock.getBundle());
         bc = Skeleton.newMock(mock, BundleContext.class);

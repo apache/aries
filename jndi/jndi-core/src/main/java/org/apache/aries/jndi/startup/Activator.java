@@ -45,6 +45,7 @@ public class Activator implements BundleActivator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class.getName());
 
+    private static final String DISABLE_BUILDER = "org.apache.aries.jndi.disable.builder";
     private static final String FORCE_BUILDER = "org.apache.aries.jndi.force.builder";
 
     private static volatile Activator instance;
@@ -139,50 +140,52 @@ public class Activator implements BundleActivator {
         icfBuilders = new CachingServiceTracker<>(context, InitialContextFactoryBuilder.class);
         urlObjectFactoryFinders = new CachingServiceTracker<>(context, URLObjectFactoryFinder.class);
 
-        try {
-            OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder();
+        if (!disableBuilder(context)) {
             try {
-                NamingManager.setInitialContextFactoryBuilder(builder);
-            } catch (IllegalStateException e) {
-                // use reflection to force the builder to be used
-                if (forceBuilder(context)) {
-                    originalICFBuilder = swapStaticField(InitialContextFactoryBuilder.class, builder);
+                OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder();
+                try {
+                    NamingManager.setInitialContextFactoryBuilder(builder);
+                } catch (IllegalStateException e) {
+                    // use reflection to force the builder to be used
+                    if (forceBuilder(context)) {
+                        originalICFBuilder = swapStaticField(InitialContextFactoryBuilder.class, builder);
+                    }
                 }
+                icfBuilder = builder;
+            } catch (NamingException e) {
+                LOGGER.debug("A failure occurred when attempting to register an InitialContextFactoryBuilder with the NamingManager. " +
+                        "Support for calling new InitialContext() will not be enabled.", e);
+            } catch (IllegalStateException e) {
+                // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
+                // don't want to see stack traces at info level when everything it working as expected.
+                String msg = "It was not possible to register an InitialContextFactoryBuilder with the NamingManager because " +
+                        "another builder called " + getClassName(InitialContextFactoryBuilder.class) + " was already registered. Support for calling new InitialContext() will not be enabled.";
+                LOGGER.info(msg);
+                LOGGER.debug(msg, e);
             }
-            icfBuilder = builder;
-        } catch (NamingException e) {
-            LOGGER.debug("A failure occurred when attempting to register an InitialContextFactoryBuilder with the NamingManager. " +
-                         "Support for calling new InitialContext() will not be enabled.", e);
-        } catch (IllegalStateException e) {
-            // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
-            // don't want to see stack traces at info level when everything it working as expected.
-            String msg = "It was not possible to register an InitialContextFactoryBuilder with the NamingManager because " +
-                         "another builder called " + getClassName(InitialContextFactoryBuilder.class) + " was already registered. Support for calling new InitialContext() will not be enabled.";
-            LOGGER.info(msg);
-            LOGGER.debug(msg, e);
-        }
 
-        try {
-            OSGiObjectFactoryBuilder builder = new OSGiObjectFactoryBuilder(context);
             try {
-                NamingManager.setObjectFactoryBuilder(builder);
-            } catch (IllegalStateException e) {
-                // use reflection to force the builder to be used
-                if (forceBuilder(context)) {
-                    originalOFBuilder = swapStaticField(ObjectFactoryBuilder.class, builder);
+                OSGiObjectFactoryBuilder builder = new OSGiObjectFactoryBuilder(context);
+                try {
+                    NamingManager.setObjectFactoryBuilder(builder);
+                } catch (IllegalStateException e) {
+                    // use reflection to force the builder to be used
+                    if (forceBuilder(context)) {
+                        originalOFBuilder = swapStaticField(ObjectFactoryBuilder.class, builder);
+                    }
                 }
-            }
-            ofBuilder = builder;
-        } catch (NamingException e) {
-            LOGGER.info("A failure occurred when attempting to register an ObjectFactoryBuilder with the NamingManager. " +
+                ofBuilder = builder;
+            } catch (NamingException e) {
+                LOGGER.info("A failure occurred when attempting to register an ObjectFactoryBuilder with the NamingManager. " +
                         "Looking up certain objects may not work correctly.", e);
-        } catch (IllegalStateException e) {
-            // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
-            // don't want to see stack traces at info level when everything it working as expected.
-            String msg = "It was not possible to register an ObjectFactoryBuilder with the NamingManager because " +
-                         "another builder called " + getClassName(ObjectFactoryBuilder.class) + " was already registered. Looking up certain objects may not work correctly.";
-            LOGGER.info(msg);
-            LOGGER.debug(msg, e);
+            } catch (IllegalStateException e) {
+                // Log the problem at info level, but only log the exception at debug level, as in many cases this is not a real issue and people
+                // don't want to see stack traces at info level when everything it working as expected.
+                String msg = "It was not possible to register an ObjectFactoryBuilder with the NamingManager because " +
+                        "another builder called " + getClassName(ObjectFactoryBuilder.class) + " was already registered. Looking up certain objects may not work correctly.";
+                LOGGER.info(msg);
+                LOGGER.debug(msg, e);
+            }
         }
 
         context.registerService(JNDIProviderAdmin.class.getName(),
@@ -227,10 +230,19 @@ public class Activator implements BundleActivator {
     private boolean forceBuilder(BundleContext context) {
         String forceBuilderProp = context.getProperty(FORCE_BUILDER);
         if (forceBuilderProp != null) {
-            return true;
+            return !"false".equals(forceBuilderProp) && !"no".equals(forceBuilderProp);
         }
         BundleRevision revision = context.getBundle().adapt(BundleRevision.class);
         return !(revision.getDeclaredCapabilities(FORCE_BUILDER).isEmpty());
+    }
+
+    private boolean disableBuilder(BundleContext context) {
+        String disableBuilder = context.getProperty(DISABLE_BUILDER);
+        if (disableBuilder != null) {
+            return !"false".equals(disableBuilder) && !"no".equals(disableBuilder);
+        }
+        BundleRevision revision = context.getBundle().adapt(BundleRevision.class);
+        return !(revision.getDeclaredCapabilities(DISABLE_BUILDER).isEmpty());
     }
 
     private String getClassName(Class<?> expectedType) {
