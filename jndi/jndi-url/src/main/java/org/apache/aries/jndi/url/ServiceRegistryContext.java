@@ -79,16 +79,19 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
 
         if (validName.hasInterface()) {
             if (OsgiName.FRAMEWORK_PATH.equals(pathFragment) && "bundleContext".equals(validName.getServiceName())) {
-                AdminPermission adminPermission =
-                        new AdminPermission(callerContext.getBundle(), AdminPermission.CONTEXT);
                 try {
-                    AccessController.checkPermission(adminPermission);
-                    return callerContext;
+                    SecurityManager sm = System.getSecurityManager();
+                    if (sm != null) {
+                        AdminPermission adminPermission =
+                                new AdminPermission(callerContext.getBundle(), AdminPermission.CONTEXT);
+                        sm.checkPermission(adminPermission);
+                    }
                 } catch (AccessControlException accessControlException) {
                     NamingException namingException = new NameNotFoundException("The Caller does not have permissions to get the BundleContext.");
                     namingException.setRootCause(accessControlException);
                     throw namingException;
                 }
+                return callerContext;
             } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName))
                     || (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
                 result = ServiceHelper.getService(callerContext, validName, null, true, env, OsgiName.OSGI_SCHEME.equals(schemeName));
