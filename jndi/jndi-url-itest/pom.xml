@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries</groupId>
-        <artifactId>parent</artifactId>
-        <version>2.0.1</version>
-        <relativePath>../../parent/pom.xml</relativePath>
+        <groupId>org.apache.aries.jndi</groupId>
+        <artifactId>jndi-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.jndi</groupId>
@@ -43,19 +43,19 @@
      </scm>
      
      <properties>
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.11.0</exam.version>
         <url.version>1.6.0</url.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -160,8 +160,8 @@
             <version>2.0.0</version>
             <exclusions>
             	<exclusion>
+                    <groupId>org.osgi</groupId>
             		<artifactId>org.osgi.core</artifactId>
-            		<groupId>org.osgi</groupId>
             	</exclusion>
             </exclusions>
         </dependency>
@@ -171,9 +171,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse</groupId>
+            <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.8.0.v20120529-1548</version>
+            <version>3.11.3</version>
         </dependency>
 
         <dependency>
@@ -214,13 +214,14 @@
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-extender-war</artifactId>
-            <version>1.1.17</version>
+            <scope>test</scope>
+            <version>1.1.18</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
 			<artifactId>pax-web-jetty-bundle</artifactId>
             <scope>test</scope>
-            <version>1.1.17</version>
+            <version>1.1.18</version>
 		</dependency>
 
 		<dependency>
