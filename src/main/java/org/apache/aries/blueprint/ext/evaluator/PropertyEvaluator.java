@@ -20,5 +20,7 @@ import java.util.Dictionary;
 
 @Deprecated
 public interface PropertyEvaluator {
-    public String evaluate(String expression, Dictionary<String, String> properties);
+
+    String evaluate(String expression, Dictionary<String, String> properties);
+
 }

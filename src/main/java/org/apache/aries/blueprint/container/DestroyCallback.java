@@ -22,5 +22,7 @@ package org.apache.aries.blueprint.container;
  * A callback to indicate that a destroy operation has completed
  */
 public interface DestroyCallback {
-    public void callback();
+
+    void callback();
+
 }

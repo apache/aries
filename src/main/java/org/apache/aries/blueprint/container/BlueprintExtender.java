@@ -528,7 +528,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
 
     interface ExecutorServiceFinder {
 
-        public ExecutorService find(Bundle bundle);
+        ExecutorService find(Bundle bundle);
 
     }
 
