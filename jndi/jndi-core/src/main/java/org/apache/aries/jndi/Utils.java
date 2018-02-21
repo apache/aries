@@ -28,10 +28,13 @@ import org.osgi.service.jndi.JNDIConstants;
 import javax.naming.NamingException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -131,6 +134,24 @@ public final class Utils {
 
     public static <T> T doPrivileged(Supplier<T> action) {
         return AccessController.doPrivileged((PrivilegedAction<T>) action::get);
+    }
+
+    public interface Callable<V, E extends Exception> {
+        /**
+         * Computes a result, or throws an exception if unable to do so.
+         *
+         * @return computed result
+         * @throws Exception if unable to compute a result
+         */
+        V call() throws E;
+    }
+
+    public static <T, E extends Exception> T doPrivilegedE(Callable<T, E> action) throws E {
+        try {
+            return AccessController.doPrivileged((PrivilegedExceptionAction<T>) action::call);
+        } catch (PrivilegedActionException e) {
+            throw (E) e.getException();
+        }
     }
 
     private static class StackFinder extends SecurityManager {
