@@ -18,7 +18,6 @@
  */
 package org.apache.aries.jndi;
 
-import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -41,8 +40,6 @@ import java.util.function.Supplier;
 /**
  */
 public final class Utils {
-
-    public static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(Utils.class, "org.apache.aries.jndi.nls.jndiMessages");
 
     /**
      * Ensure no one constructs us

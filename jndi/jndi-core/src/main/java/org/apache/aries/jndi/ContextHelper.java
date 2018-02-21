@@ -126,7 +126,7 @@ public final class ContextHelper {
             if (contextFactoryClass == null) {
                 return new DelegateContext(context, environment);
             } else {
-                throw new NoInitialContextException(Utils.MESSAGES.getMessage("no.initial.context.factory", contextFactoryClass));
+                throw new NoInitialContextException("Unable to find the InitialContextFactory " + contextFactoryClass + ".");
             }
         }
     }

@@ -22,7 +22,6 @@ import org.apache.aries.jndi.url.Activator;
 import org.apache.aries.jndi.url.OsgiName;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
-import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.*;
 import org.osgi.service.jndi.JNDIConstants;
 
@@ -54,7 +53,6 @@ public final class ServiceHelper {
      */
     private static final ConcurrentMap<ServiceKey, WeakReference<Object>> proxyCache = new ConcurrentHashMap<>();
     private static final CacheClearoutListener cacheClearoutListener = new CacheClearoutListener(proxyCache);
-    private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(ServiceHelper.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
 
     public static Object getService(BundleContext ctx, OsgiName lookupName, String id,
                                     boolean dynamicRebind, Map<String, Object> env, boolean requireProxy) throws NamingException {
@@ -214,7 +212,7 @@ public final class ServiceHelper {
         } catch (UnableToProxyException e) {
             throw new IllegalArgumentException(e);
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException(MESSAGES.getMessage("unable.to.create.proxy", pair.ref), e);
+            throw new IllegalArgumentException("Unable to create a proxy for " + pair.ref + ".", e);
         }
     }
 

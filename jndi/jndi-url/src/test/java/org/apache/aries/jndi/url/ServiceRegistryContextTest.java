@@ -83,7 +83,7 @@ public class ServiceRegistryContextTest
    * @throws IllegalArgumentException 
    */
   @Before
-  public void registerService() throws NamingException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException 
+  public void registerService() throws Exception
   {
     bc =  Skeleton.newMock(new BundleContextMock(), BundleContext.class);
     registerProxyManager();

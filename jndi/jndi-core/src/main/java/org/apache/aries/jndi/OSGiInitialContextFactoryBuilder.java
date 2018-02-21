@@ -39,7 +39,7 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
         Activator.getAugmenterInvoker().augmentEnvironment(environment);
         BundleContext context = Utils.getBundleContext(environment, InitialContext.class);
         if (context == null) {
-            throw new NoInitialContextException(Utils.MESSAGES.getMessage("cannot.find.callers.bundlecontext"));
+            throw new NoInitialContextException("The calling code's BundleContext could not be determined.");
         }
         Activator.getAugmenterInvoker().unaugmentEnvironment(environment);
         return ContextHelper.getInitialContext(context, environment);

@@ -19,7 +19,6 @@
 package org.apache.aries.jndi.url;
 
 import org.apache.aries.jndi.services.ServiceHelper;
-import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.AdminPermission;
 import org.osgi.framework.BundleContext;
 
@@ -33,7 +32,6 @@ import java.util.Map;
  * A JNDI context for looking stuff up from the service registry.
  */
 public class ServiceRegistryContext extends AbstractServiceRegistryContext implements Context {
-    private static final MessageUtil MESSAGES = MessageUtil.createMessageUtil(ServiceRegistryContext.class, "org.apache.aries.jndi.nls.jndiUrlMessages");
     /**
      * The parent name, if one is provided, of this context
      */
@@ -87,7 +85,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
                     AccessController.checkPermission(adminPermission);
                     return callerContext;
                 } catch (AccessControlException accessControlException) {
-                    NamingException namingException = new NameNotFoundException(MESSAGES.getMessage("caller.not.priviledged"));
+                    NamingException namingException = new NameNotFoundException("The Caller does not have permissions to get the BundleContext.");
                     namingException.setRootCause(accessControlException);
                     throw namingException;
                 }

@@ -18,8 +18,6 @@
  */
 package org.apache.aries.jndi.rmi;
 
-import org.apache.aries.util.AriesFrameworkUtil;
-import org.apache.aries.util.nls.MessageUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -28,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.spi.ObjectFactory;
-import java.util.Dictionary;
 import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
@@ -41,20 +38,29 @@ public class Activator implements BundleActivator {
         LOGGER.debug("Registering RMI url handler");
 
         try {
-            Hashtable<Object, Object> props = new Hashtable<Object, Object>();
+            Hashtable<String, Object> props = new Hashtable<>();
             props.put(JNDIConstants.JNDI_URLSCHEME, new String[]{"rmi"});
             reg = context.registerService(
                     ObjectFactory.class.getName(),
                     ClassLoader.getSystemClassLoader().loadClass("com.sun.jndi.url.rmi.rmiURLContextFactory").newInstance(),
-                    (Dictionary) props);
+                    props);
         } catch (Exception e) {
-            MessageUtil msg = MessageUtil.createMessageUtil(Activator.class, "org.apache.aries.jndi.nls.jndiRmiMessages");
-            LOGGER.info(msg.getMessage("rmi.factory.creation.failed"), e);
+            LOGGER.info("A failure occurred while attempting to create the handler for the rmi JNDI URL scheme.", e);
         }
     }
 
     public void stop(BundleContext context) {
-        AriesFrameworkUtil.safeUnregisterService(reg);
+        safeUnregisterService(reg);
+    }
+
+    private static void safeUnregisterService(ServiceRegistration reg) {
+        if (reg != null) {
+            try {
+                reg.unregister();
+            } catch (IllegalStateException e) {
+                //This can be safely ignored
+            }
+        }
     }
 
 }

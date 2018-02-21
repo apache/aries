@@ -22,6 +22,9 @@ package org.apache.aries.jndi.url;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -38,6 +41,7 @@ import javax.naming.NamingException;
 
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.mocks.BundleMock;
+import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -95,13 +99,17 @@ public class BlueprintURLContextTest {
   
   
   @BeforeClass
-  public static void setup() { 
+  public static void setup() throws Exception {
     bundle = Skeleton.newMock(new BundleMock("aBundle", new Hashtable<String, String>()), Bundle.class);
     BundleContext bc = bundle.getBundleContext();
     new org.apache.aries.jndi.startup.Activator().start(bc);
     Activator a = new Activator();
     a.start(bc);
-    a.serviceFound();
+    ProxyManager pm = (ProxyManager) Proxy.newProxyInstance(
+            BlueprintURLContext.class.getClassLoader(),
+            new Class[]{ProxyManager.class},
+            (proxy, method, args) -> null);
+    a.serviceChanged(null, pm);
     
     // Register a BlueprintContainer mock that will answer getComponentInstance(String id) calls
     BlueprintContainer bpc = Skeleton.newMock(new BlueprintContainerStub(), BlueprintContainer.class);
