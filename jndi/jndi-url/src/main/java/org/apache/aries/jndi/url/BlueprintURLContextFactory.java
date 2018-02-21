@@ -44,7 +44,7 @@ public class BlueprintURLContextFactory implements ObjectFactory {
 
         if (augmenterInvoker == null && _callersBundle != null) {
             BundleContext callerBundleContext = _callersBundle.getBundleContext();
-            ServiceReference augmenterSR = callerBundleContext.getServiceReference(AugmenterInvoker.class.getName());
+            ServiceReference<?> augmenterSR = callerBundleContext.getServiceReference(AugmenterInvoker.class.getName());
             if (augmenterSR != null) augmenterInvoker = (AugmenterInvoker) callerBundleContext.getService(augmenterSR);
         }
         if (augmenterInvoker != null) augmenterInvoker.augmentEnvironment(envmt);
@@ -55,18 +55,13 @@ public class BlueprintURLContextFactory implements ObjectFactory {
         Bundle b = (bc != null) ? bc.getBundle() : null;
         Object result = null;
         if (obj == null) {
-            result = new BlueprintURLContext((b == null) ? _callersBundle : b,
-                    envmt);
+            result = new BlueprintURLContext((b == null) ? _callersBundle : b, envmt);
         } else if (obj instanceof String) {
-            Context ctx = null;
+            Context ctx = new BlueprintURLContext((b == null) ? _callersBundle : b, envmt);
             try {
-                ctx = new BlueprintURLContext((b == null) ? _callersBundle : b,
-                        envmt);
                 result = ctx.lookup((String) obj);
             } finally {
-                if (ctx != null) {
-                    ctx.close();
-                }
+                ctx.close();
             }
         }
         return result;

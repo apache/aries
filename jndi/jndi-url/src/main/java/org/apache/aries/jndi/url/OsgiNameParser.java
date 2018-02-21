@@ -40,17 +40,17 @@ public final class OsgiNameParser implements NameParser {
         String urlScheme = result.getScheme();
         String schemePath = result.getSchemePath();
 
-        if (!!!(OSGI_SCHEME.equals(urlScheme) || ARIES_SCHEME.equals(urlScheme))) {
+        if (!(OSGI_SCHEME.equals(urlScheme) || ARIES_SCHEME.equals(urlScheme))) {
             throw new InvalidNameException(name);
         }
 
-        if (ARIES_SCHEME.equals(urlScheme) && !!!SERVICES_PATH.equals(schemePath)) {
+        if (ARIES_SCHEME.equals(urlScheme) && !SERVICES_PATH.equals(schemePath)) {
             throw new InvalidNameException(name);
         }
 
-        if (OSGI_SCHEME.equals(urlScheme) && !!!(SERVICE_PATH.equals(schemePath) ||
-                SERVICE_LIST_PATH.equals(schemePath) ||
-                FRAMEWORK_PATH.equals(schemePath))) {
+        if (OSGI_SCHEME.equals(urlScheme) && !(SERVICE_PATH.equals(schemePath)
+                || SERVICE_LIST_PATH.equals(schemePath)
+                || FRAMEWORK_PATH.equals(schemePath))) {
             throw new InvalidNameException(name);
         }
 

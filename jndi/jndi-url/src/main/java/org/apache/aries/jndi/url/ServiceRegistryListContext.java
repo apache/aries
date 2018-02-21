@@ -43,17 +43,17 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
     }
 
     public NamingEnumeration<NameClassPair> list(String name) throws NamingException {
-        if (!!!"".equals(name)) throw new NameNotFoundException(name);
+        if (!"".equals(name)) throw new NameNotFoundException(name);
         final ServiceReference[] refs = getServiceRefs();
-        return new ServiceNamingEnumeration<NameClassPair>(callerContext, refs, new ThingManager<NameClassPair>() {
-            public NameClassPair get(BundleContext ctx, ServiceReference ref) {
+        return new ServiceNamingEnumeration<>(callerContext, refs, new ThingManager<NameClassPair>() {
+            public NameClassPair get(BundleContext ctx, ServiceReference<?> ref) {
                 Object service = ctx.getService(ref);
                 String className = (service != null) ? service.getClass().getName() : null;
                 ctx.ungetService(ref);
                 return new NameClassPair(serviceId(ref), className, true);
             }
 
-            public void release(BundleContext ctx, ServiceReference ref) {
+            public void release(BundleContext ctx, ServiceReference<?> ref) {
             }
         });
     }
@@ -63,15 +63,15 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
     }
 
     public NamingEnumeration<Binding> listBindings(String name) throws NamingException {
-        if (!!!"".equals(name)) throw new NameNotFoundException(name);
-        final ServiceReference[] refs = getServiceRefs();
-        return new ServiceNamingEnumeration<Binding>(callerContext, refs, new ThingManager<Binding>() {
-            public Binding get(BundleContext ctx, ServiceReference ref) {
+        if (!"".equals(name)) throw new NameNotFoundException(name);
+        final ServiceReference<?>[] refs = getServiceRefs();
+        return new ServiceNamingEnumeration<>(callerContext, refs, new ThingManager<Binding>() {
+            public Binding get(BundleContext ctx, ServiceReference<?> ref) {
                 Object service = ServiceHelper.getService(ctx, ref);
                 return new Binding(serviceId(ref), service, true);
             }
 
-            public void release(BundleContext ctx, ServiceReference ref) {
+            public void release(BundleContext ctx, ServiceReference<?> ref) {
                 ctx.ungetService(ref);
             }
         });
@@ -84,7 +84,7 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
     public Object lookup(String name) throws NamingException {
         Object result = ServiceHelper.getService(callerContext, parentName, name, false, env, true);
         if (result == null) {
-            throw new NameNotFoundException(name.toString());
+            throw new NameNotFoundException(name);
         }
         return result;
     }
@@ -93,24 +93,24 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
         return String.valueOf(ref.getProperty(Constants.SERVICE_ID));
     }
 
-    private ServiceReference[] getServiceRefs() throws NamingException {
+    private ServiceReference<?>[] getServiceRefs() throws NamingException {
         return ServiceHelper.getServiceReferences(callerContext, parentName.getInterface(), parentName.getFilter(), parentName.getServiceName(), env);
     }
 
     private interface ThingManager<T> {
-        public T get(BundleContext ctx, ServiceReference ref);
+        T get(BundleContext ctx, ServiceReference<?> ref);
 
-        public void release(BundleContext ctx, ServiceReference ref);
+        void release(BundleContext ctx, ServiceReference<?> ref);
     }
 
     private static class ServiceNamingEnumeration<T> implements NamingEnumeration<T> {
         private BundleContext ctx;
-        private ServiceReference[] refs;
+        private ServiceReference<?>[] refs;
         private int position = 0;
         private ThingManager<T> mgr;
         private T last;
 
-        private ServiceNamingEnumeration(BundleContext context, ServiceReference[] theRefs, ThingManager<T> manager) {
+        private ServiceNamingEnumeration(BundleContext context, ServiceReference<?>[] theRefs, ThingManager<T> manager) {
             ctx = context;
             refs = (theRefs != null) ? theRefs : new ServiceReference[0];
             mgr = manager;
@@ -134,7 +134,7 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
         }
 
         public T nextElement() {
-            if (!!!hasMoreElements()) throw new NoSuchElementException();
+            if (!hasMoreElements()) throw new NoSuchElementException();
 
             if (position > 0) mgr.release(ctx, refs[position - 1]);
 

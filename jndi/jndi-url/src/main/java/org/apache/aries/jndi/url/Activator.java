@@ -28,7 +28,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jndi.JNDIConstants;
 
 import javax.naming.spi.ObjectFactory;
-import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +45,7 @@ public class Activator implements BundleActivator, SingleServiceListener {
     @Override
     public void start(BundleContext context) {
         ctx = context;
-        proxyManager = new SingleServiceTracker<ProxyManager>(context, ProxyManager.class, this);
+        proxyManager = new SingleServiceTracker<>(context, ProxyManager.class, this);
         proxyManager.open();
         // Blueprint URL scheme requires access to the BlueprintContainer service.
         // We have an optional import
@@ -54,10 +53,10 @@ public class Activator implements BundleActivator, SingleServiceListener {
         // scheme if it's present
         try {
             ctx.getBundle().loadClass("org.osgi.service.blueprint.container.BlueprintContainer");
-            Hashtable<Object, Object> blueprintURlSchemeProps = new Hashtable<Object, Object>();
+            Hashtable<String, Object> blueprintURlSchemeProps = new Hashtable<>();
             blueprintURlSchemeProps.put(JNDIConstants.JNDI_URLSCHEME, new String[]{"blueprint"});
             blueprintUrlReg = ctx.registerService(ObjectFactory.class.getName(),
-                    new BlueprintURLContextServiceFactory(), (Dictionary) blueprintURlSchemeProps);
+                    new BlueprintURLContextServiceFactory(), blueprintURlSchemeProps);
         } catch (ClassNotFoundException cnfe) {
             // The blueprint packages aren't available, so do nothing. That's fine.
             Logger logger = Logger.getLogger("org.apache.aries.jndi");
@@ -75,10 +74,10 @@ public class Activator implements BundleActivator, SingleServiceListener {
 
     @Override
     public void serviceFound() {
-        Hashtable<Object, Object> osgiUrlprops = new Hashtable<Object, Object>();
+        Hashtable<String, Object> osgiUrlprops = new Hashtable<>();
         osgiUrlprops.put(JNDIConstants.JNDI_URLSCHEME, new String[]{"osgi", "aries"});
         osgiUrlReg = ctx.registerService(ObjectFactory.class.getName(),
-                new OsgiURLContextServiceFactory(), (Dictionary) osgiUrlprops);
+                new OsgiURLContextServiceFactory(), osgiUrlprops);
     }
 
     @Override

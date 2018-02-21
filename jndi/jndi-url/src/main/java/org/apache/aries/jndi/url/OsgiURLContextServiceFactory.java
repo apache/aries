@@ -22,16 +22,18 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
+import javax.naming.spi.ObjectFactory;
+
 /**
  * A factory for the aries JNDI context
  */
-public class OsgiURLContextServiceFactory implements ServiceFactory {
+public class OsgiURLContextServiceFactory implements ServiceFactory<ObjectFactory> {
 
-    public Object getService(Bundle bundle, ServiceRegistration registration) {
+    public ObjectFactory getService(Bundle bundle, ServiceRegistration<ObjectFactory> registration) {
         return new OsgiURLContextFactory(bundle.getBundleContext());
     }
 
-    public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
+    public void ungetService(Bundle bundle, ServiceRegistration<ObjectFactory> registration, ObjectFactory service) {
     }
 
 }

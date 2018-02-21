@@ -64,9 +64,9 @@ public abstract class AbstractServiceRegistryContext implements Context {
 
     @SuppressWarnings("unchecked")
     public AbstractServiceRegistryContext(BundleContext callerContext, Map<?, ?> environment) {
-        env = new HashMap<String, Object>();
-        env.putAll((Map<? extends String, ? extends Object>) environment);
-        Hashtable<String, Object> environmentHT = new Hashtable<String, Object>();
+        env = new HashMap<>();
+        env.putAll((Map<? extends String, Object>) environment);
+        Hashtable<String, Object> environmentHT = new Hashtable<>();
         environmentHT.putAll(env);
         // ARIES-397: If the caller has provided a BundleContext
         // in the hashtable, use this in preference to callerContext
