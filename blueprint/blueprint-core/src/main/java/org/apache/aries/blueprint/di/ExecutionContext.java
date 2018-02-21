@@ -30,7 +30,7 @@ public interface ExecutionContext {
         private Holder() {
         }
 
-        static ExecutionContext getContext() {
+        public static ExecutionContext getContext() {
             ExecutionContext executionContext = context.get();
             if (executionContext == null) {
                 throw new IllegalStateException("Execution container has not been set");
@@ -38,7 +38,7 @@ public interface ExecutionContext {
             return executionContext;
         }
 
-        static ExecutionContext setContext(ExecutionContext newContext) {
+        public static ExecutionContext setContext(ExecutionContext newContext) {
             ExecutionContext oldContext = context.get();
             context.set(newContext);
             return oldContext;
