@@ -272,7 +272,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
     }
 
     private static ObjectFactory findObjectFactoryByClassName(final BundleContext ctx, final String className) {
-        return AccessController.doPrivileged((PrivilegedAction<ObjectFactory>) () -> {
+        return Utils.doPrivileged(() -> {
             ServiceReference<?> ref = ctx.getServiceReference(className);
             if (ref != null) {
                 return (ObjectFactory) Activator.getService(ctx, ref);

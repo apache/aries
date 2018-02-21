@@ -42,11 +42,12 @@ public class LegacyInitialContextFinder implements InitialContextFactoryBuilder 
             Hashtable<?, ?> environment) throws NamingException {
         String icf = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (icf != null) {
-            ClassLoader cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                public ClassLoader run() {
-                    return Thread.currentThread().getContextClassLoader();
-                }
-            });
+            ClassLoader cl;
+            if (System.getSecurityManager() != null) {
+                cl = AccessController.doPrivileged((PrivilegedAction<ClassLoader>) Thread.currentThread()::getContextClassLoader);
+            } else {
+                cl = Thread.currentThread().getContextClassLoader();
+            }
 
             try {
                 Class<?> icfClass = Class.forName(icf, false, cl);

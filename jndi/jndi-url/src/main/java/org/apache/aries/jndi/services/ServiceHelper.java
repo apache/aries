@@ -122,7 +122,11 @@ public final class ServiceHelper {
         }
 
         if (result == null) {
-            result = AccessController.doPrivileged((PrivilegedAction<Object>) () -> proxyPrivileged(interface1, filter, rebind, ctx, pair, timeout));
+            if (System.getSecurityManager() != null) {
+                result = AccessController.doPrivileged((PrivilegedAction<Object>) () -> proxyPrivileged(interface1, filter, rebind, ctx, pair, timeout));
+            } else {
+                result = proxyPrivileged(interface1, filter, rebind, ctx, pair, timeout);
+            }
 
             proxyRef = new WeakReference<>(result);
             // if we have two threads doing a put and then clashing we ignore it. The code to ensure only
@@ -334,11 +338,17 @@ public final class ServiceHelper {
 
         public void add(final BundleContext ctx, ServiceKey k) {
             // try to use the system bundle for our listener, if that fails we fall back to the calling context
-            BundleContext systemBundle = AccessController.doPrivileged((PrivilegedAction<BundleContext>) () -> {
-                Bundle system = ctx.getBundle(0);
-                return system == null ? null : system.getBundleContext();
-            });
-            if (systemBundle == null) systemBundle = ctx;
+            BundleContext systemBundle;
+            Bundle system = ctx.getBundle(0);
+            if (system != null) {
+                if (System.getSecurityManager() != null) {
+                    systemBundle = AccessController.doPrivileged((PrivilegedAction<BundleContext>) system::getBundleContext);
+                } else {
+                    systemBundle = system.getBundleContext();
+                }
+            } else {
+                systemBundle = ctx;
+            }
             systemBundle.addBundleListener(cacheClearoutListener);
             systemBundle.addServiceListener(cacheClearoutListener);
         }
