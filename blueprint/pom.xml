@@ -54,6 +54,7 @@
         <module>blueprint-authz</module>
         <module>blueprint-spring</module>
         <module>blueprint-spring-extender</module>
+        <module>blueprint-spring-camel</module>
         <module>plugin</module>
         <module>examples</module>
         <module>itests</module>
