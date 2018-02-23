@@ -186,17 +186,39 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	static <T> OSGi<ServiceRegistration<T>> register(
 		Class<T> clazz, T service, Map<String, Object> properties) {
 
+		return register(clazz, () -> service, () -> properties);
+	}
+
+	static <T> OSGi<ServiceRegistration<T>> register(
+		Class<T> clazz, ServiceFactory<T> service,
+		Map<String, Object> properties) {
+
+		return register(clazz, service, () -> properties);
+	}
+
+	static OSGi<ServiceRegistration<?>> register(
+		String[] classes, Object service, Map<String, ?> properties) {
+
+		return new ServiceRegistrationOSGiImpl(
+			classes, () -> service, () -> properties);
+	}
+
+	static <T> OSGi<ServiceRegistration<T>> register(
+		Class<T> clazz, Supplier<T> service, Supplier<Map<String, ?>> properties) {
+
 		return new ServiceRegistrationOSGiImpl<>(clazz, service, properties);
 	}
 
 	static <T> OSGi<ServiceRegistration<T>> register(
-		Class<T> clazz, ServiceFactory<T> service, Map<String, Object> properties) {
+		Class<T> clazz, ServiceFactory<T> service,
+		Supplier<Map<String, ?>> properties) {
 
 		return new ServiceRegistrationOSGiImpl<>(clazz, service, properties);
 	}
 
 	static OSGi<ServiceRegistration<?>> register(
-		String[] classes, Object service, Map<String, ?> properties) {
+		String[] classes, Supplier<Object> service,
+		Supplier<Map<String, ?>> properties) {
 
 		return new ServiceRegistrationOSGiImpl(classes, service, properties);
 	}
