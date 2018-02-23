@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author Carlos Sierra Andrés
@@ -33,12 +34,13 @@ public class ServiceRegistrationOSGiImpl<T>
 	extends OSGiImpl<ServiceRegistration<T>> {
 
 	public ServiceRegistrationOSGiImpl(
-		Class<T> clazz, T service, Map<String, Object> properties) {
+		Class<T> clazz, Supplier<T> service,
+		Supplier<Map<String, ?>> properties) {
 
 		super((bundleContext, op) -> {
 			ServiceRegistration<?> serviceRegistration =
 				bundleContext.registerService(
-					clazz, service, getProperties(properties));
+					clazz, service.get(), getProperties(properties.get()));
 
 			return getServiceRegistrationOSGiResult(serviceRegistration, op);
 		});
@@ -46,31 +48,33 @@ public class ServiceRegistrationOSGiImpl<T>
 
 	public ServiceRegistrationOSGiImpl(
 		Class<T> clazz, ServiceFactory<T> serviceFactory,
-		Map<String, Object> properties) {
+		Supplier<Map<String, ?>> properties) {
 
 		super((bundleContext, op) -> {
 			ServiceRegistration<?> serviceRegistration =
 				bundleContext.registerService(
-					clazz, serviceFactory, getProperties(properties));
+					clazz, serviceFactory,
+					getProperties(properties.get()));
 
 			return getServiceRegistrationOSGiResult(serviceRegistration, op);
 		});
 	}
 
 	public ServiceRegistrationOSGiImpl(
-		String[] clazz, Object service, Map<String, ?> properties) {
+		String[] clazz, Supplier<Object> service,
+		Supplier<Map<String, ?>> properties) {
 
 		super((bundleContext, op) -> {
 			ServiceRegistration<?> serviceRegistration =
 				bundleContext.registerService(
-					clazz, service, new Hashtable<>(properties));
+					clazz, service, new Hashtable<>(properties.get()));
 
 			return getServiceRegistrationOSGiResult(serviceRegistration, op);
 		});
 	}
 
 	private static Hashtable<String, Object> getProperties(
-		Map<String, Object> properties) {
+		Map<String, ?> properties) {
 
 		if (properties == null) {
 			return new Hashtable<>();
