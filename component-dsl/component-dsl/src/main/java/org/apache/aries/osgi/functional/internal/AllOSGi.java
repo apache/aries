@@ -44,22 +44,9 @@ public class AllOSGi<T> extends OSGiImpl<T> {
                                 bundleContext, op)).
                             collect(Collectors.toList()));
 
-                    results.forEach(osGiResult -> {
-                        try {
-                            osGiResult.start();
-                        }
-                        catch (Exception e) {}
-                    });
+                    results.forEach(OSGiResult::start);
                 },
-                () -> {
-                    for (OSGiResult result : results) {
-                        try {
-                            result.close();
-                        }
-                        catch (Exception ignored) {
-                        }
-                    }
-                }
+                () -> results.forEach(OSGiResult::close)
             );
         });
     }
