@@ -18,49 +18,53 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.Publisher;
-import org.apache.aries.osgi.functional.Transformer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.apache.aries.osgi.functional.OSGi.NOOP;
 
 /**
  * @author Carlos Sierra Andrés
  */
-public class AccumulateTransformer<T> implements Transformer<T, List<T>> {
+public class OnlyLastPublisher<T> implements Publisher<T> {
 
-    @Override
-    public Publisher<T> transform(Publisher<List<T>> op) {
-        ConcurrentDoublyLinkedList<T> list =
-            new ConcurrentDoublyLinkedList<>();
-
-        AtomicReference<Runnable> terminator = new AtomicReference<>(NOOP);
-
-        return t -> {
-            ConcurrentDoublyLinkedList.Node node = list.addLast(t);
-
-            publish(op, list, terminator);
-
-            return () -> {
-                node.remove();
-
-                publish(op, list, terminator);
-            };
-        };
+    public OnlyLastPublisher(Publisher<T> op) {
+       this(op, null);
     }
 
-    private static <T> void publish(
-        Function<List<T>, Runnable> op, ConcurrentDoublyLinkedList<T> list,
-        AtomicReference<Runnable> terminator) {
+    public OnlyLastPublisher(Publisher<T> op, Supplier<T> injectOnLeave) {
+        _op = op;
+        _injectOnLeave = injectOnLeave;
+        _terminator = NOOP;
+    }
 
-        Runnable runnable = terminator.get();
+    private final Publisher<T> _op;
+    private Supplier<T> _injectOnLeave;
+    private Runnable _terminator;
 
-        runnable.run();
+    @Override
+    public synchronized Runnable publish(T t) {
+        _terminator.run();
 
-        terminator.set(op.apply(new ArrayList<>(list)));
+        _terminator = _op.publish(t);
+
+        if (_injectOnLeave == null) {
+            return NOOP;
+        }
+        else {
+            return () -> {
+                _terminator.run();
+
+                _terminator = _op.publish(_injectOnLeave.get());
+            };
+        }
+    }
+
+    @Override
+    public synchronized void close() {
+        _terminator.run();
     }
 
 }
