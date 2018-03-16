@@ -19,7 +19,7 @@ public interface Utils {
     static <T> OSGi<T> highest(
         OSGi<T> program, Comparator<? super T> comparator) {
 
-        return highest(program, comparator, __ -> __);
+        return highest(program, comparator, __ -> OSGi.nothing());
     }
 
     static <T> OSGi<T> highest(
