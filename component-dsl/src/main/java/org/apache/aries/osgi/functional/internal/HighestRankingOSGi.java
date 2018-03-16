@@ -41,7 +41,7 @@ public class HighestRankingOSGi<T> extends OSGiImpl<T> {
             AtomicReference<Tuple<T>> sent = new AtomicReference<>();
 
             Pad<T, T> notHighestPad = new Pad<>(
-                bundleContext, notHighest, __ -> NOOP);
+                bundleContext, notHighest, highestPipe);
 
             OSGiResultImpl result = ((OSGiImpl<T>) previous)._operation.run(
                 bundleContext,
