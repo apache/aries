@@ -320,7 +320,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 	@Override
 	public <S> OSGi<S> transform(Transformer<T, S> fun) {
-
 		return new TransformerOSGi<>(this, fun);
 	}
 
