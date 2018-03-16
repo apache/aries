@@ -47,14 +47,16 @@ public class OSGiResultImpl implements OSGiResult {
 	@Override
 	public void start() {
 		if (_working.compareAndSet(false, true)) {
+			try {
+				if (!_started && !_closed.get()) {
+                    start.run();
 
-			if (!_started && !_closed.get()) {
-				start.run();
-
-				_started = true;
+                    _started = true;
+                }
 			}
-
-			_working.set(false);
+			finally {
+				_working.set(false);
+			}
 		}
 
 	}
