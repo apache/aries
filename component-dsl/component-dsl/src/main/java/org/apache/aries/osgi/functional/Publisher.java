@@ -30,4 +30,11 @@ public interface Publisher<T> extends Function<T, Runnable> {
 
     Runnable publish(T t);
 
+    default void close() {
+
+    }
+
+    default void start() {
+
+    }
 }
