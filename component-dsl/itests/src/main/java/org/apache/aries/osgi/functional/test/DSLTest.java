@@ -20,6 +20,8 @@ package org.apache.aries.osgi.functional.test;
 import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.Utils;
+import org.apache.aries.osgi.functional.internal.OnlyLastPublisher;
 import org.apache.aries.osgi.functional.internal.ProbeImpl;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
@@ -40,6 +42,8 @@ import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,8 +51,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import static org.apache.aries.osgi.functional.OSGi.NOOP;
+import static org.apache.aries.osgi.functional.OSGi.all;
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
+import static org.apache.aries.osgi.functional.OSGi.join;
 import static org.apache.aries.osgi.functional.OSGi.just;
 import static org.apache.aries.osgi.functional.OSGi.nothing;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
@@ -56,6 +63,7 @@ import static org.apache.aries.osgi.functional.OSGi.once;
 import static org.apache.aries.osgi.functional.OSGi.register;
 import static org.apache.aries.osgi.functional.OSGi.serviceReferences;
 import static org.apache.aries.osgi.functional.OSGi.services;
+import static org.apache.aries.osgi.functional.Utils.accumulate;
 import static org.apache.aries.osgi.functional.Utils.highest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -584,7 +592,8 @@ public class DSLTest {
     public void testHighestRankingDiscards() {
         ArrayList<ServiceReference<?>> discards = new ArrayList<>();
 
-        OSGi<CachingServiceReference<Service>> program = highest(serviceReferences(Service.class),
+        OSGi<CachingServiceReference<Service>> program = highest(
+            serviceReferences(Service.class),
             Comparator.naturalOrder(),
             dp ->
                 dp.map(CachingServiceReference::getServiceReference).effects(
@@ -651,6 +660,165 @@ public class DSLTest {
             serviceRegistrationMinusOne.unregister();
             serviceRegistrationOne.unregister();
         }
+    }
+
+    @Test
+    public void testAccumulate() {
+        ArrayList<List<String>> lists = new ArrayList<>();
+
+        ArrayList<List<String>> expected = new ArrayList<>();
+
+        ArrayList<List<String>> gone = new ArrayList<>();
+
+        expected.add(Collections.emptyList());
+
+        OSGi<List<String>> osgi = accumulate(
+            serviceReferences(Service.class).map(
+                this::getId
+            )
+        ).effects(lists::add, gone::add);
+
+        OSGiResult run = osgi.run(bundleContext);
+
+        ServiceRegistration<Service> serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Collections.singletonList(getId(serviceRegistrationOne)));
+
+        serviceRegistrationOne.unregister();
+
+        expected.add(Collections.emptyList());
+
+        serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Collections.singletonList(getId(serviceRegistrationOne)));
+
+        ServiceRegistration<Service> serviceRegistrationTwo =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Arrays.asList(
+                getId(serviceRegistrationOne),
+                getId(serviceRegistrationTwo)));
+
+        serviceRegistrationOne.unregister();
+
+        expected.add(
+            Collections.singletonList(
+                getId(serviceRegistrationTwo)));
+
+        serviceRegistrationTwo.unregister();
+
+        expected.add(Collections.emptyList());
+
+        assertEquals(expected, lists);
+
+        run.close();
+
+        assertEquals(lists, gone);
+    }
+
+    public String getId(CachingServiceReference<?> csr) {
+        return csr.getProperty("service.id").toString();
+    }
+
+    public String getId(ServiceRegistration<?> sr) {
+        return sr.getReference().getProperty("service.id").toString();
+    }
+
+    @Test
+    public void testAccumulateAtLeastOne() {
+        ArrayList<List<String>> lists = new ArrayList<>();
+
+        ArrayList<List<String>> expected = new ArrayList<>();
+
+        ArrayList<List<String>> gone = new ArrayList<>();
+
+        OSGi<List<String>> osgi =
+            accumulate(
+            serviceReferences(Service.class).map(this::getId)
+        ).filter(l -> !l.isEmpty()).effects(
+            lists::add, gone::add
+        );
+
+        OSGiResult run = osgi.run(bundleContext);
+
+        ServiceRegistration<Service> serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Collections.singletonList(getId(serviceRegistrationOne)));
+
+        serviceRegistrationOne.unregister();
+
+        serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Collections.singletonList(getId(serviceRegistrationOne)));
+
+        ServiceRegistration<Service> serviceRegistrationTwo =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Arrays.asList(
+                getId(serviceRegistrationOne),
+                getId(serviceRegistrationTwo)));
+
+        serviceRegistrationOne.unregister();
+
+        expected.add(
+            Collections.singletonList(
+                getId(serviceRegistrationTwo)));
+
+        serviceRegistrationTwo.unregister();
+
+        assertEquals(expected, lists);
+
+        run.close();
+
+        assertEquals(lists, gone);
+    }
+
+    @Test
+    public void testCreateMap() {
+        List<Map<String, String>> maps = new ArrayList<>();
+        List<Map<String, String>> gone = new ArrayList<>();
+
+        OSGi<Map<String, String>> mapOSGi =
+            Utils.accumulateMap(
+                just(Arrays.asList("aaa", "bbb", "ccc", "ayyyy", "bhhh")),
+                Function.identity(), Function.identity());
+
+        OSGi<Map<String, String>> effects = mapOSGi.effects(
+            maps::add, gone::add);
+
+        OSGiResult run = effects.run(bundleContext);
+
+        run.close();
+
+        assertEquals(maps, gone);
     }
 
     @Test
