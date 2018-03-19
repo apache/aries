@@ -235,7 +235,7 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
         cm.setName(name);
         cm.init();
 
-        delegate = (DataSource) mcf.getConnectionFactory().createConnectionFactory(cm.getConnectionManager());
+        delegate = (DataSource) cm.getManagedConnectionFactory().createConnectionFactory(cm.getConnectionManager());
 
         if (dataSource instanceof XADataSource) {
             Recovery.recover(name, (XADataSource) dataSource, transactionManager);
