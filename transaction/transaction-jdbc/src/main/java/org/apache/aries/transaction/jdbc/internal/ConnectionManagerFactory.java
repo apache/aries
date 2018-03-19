@@ -77,6 +77,10 @@ public class ConnectionManagerFactory {
         if (managedConnectionFactory == null) {
             throw new IllegalArgumentException("managedConnectionFactory must be set");
         }
+        if (validateOnMatch || backgroundValidation) {
+            // Validation requires per-connection matching, see #ARIES-1790
+            allConnectionsEqual = false;
+        }
         // Apply the default value for property if necessary
         if (transactionSupport == null) {
             // No transaction
