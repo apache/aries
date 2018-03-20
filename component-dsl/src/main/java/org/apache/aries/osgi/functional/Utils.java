@@ -32,23 +32,28 @@ public interface Utils {
             );
     }
 
-    static <K, V, T extends Comparable<T>> OSGi<Map<K, V>> accumulateMap(
-        OSGi<T> program, Function<T, K> keyFun,
-        Function<T, V> valueFun) {
+    static <K, V, T extends Comparable<T>> OSGi<Map<K, V>> accumulateInMap(
+        OSGi<T> program, Function<T, OSGi<K>> keyFun,
+        Function<T, OSGi<V>> valueFun) {
 
-        return just(HashMap::new).flatMap(map ->
+        return just(HashMap<K, V>::new).flatMap(map ->
             all(
                 just(HashMap::new),
                 program.splitBy(
                     keyFun,
-                    p -> highest(p, Comparator.naturalOrder(), q -> nothing())).
-                    effects(
-                        t -> map.put(keyFun.apply(t), valueFun.apply(t)),
-                        t -> map.remove(keyFun.apply(t))).
-                    then(just(() -> new HashMap<>(map)))
+                    (k, p) ->
+                        highest(p, Comparator.naturalOrder(), q -> nothing()).
+                            flatMap(t ->
+                                valueFun.apply(t).effects(
+                                    v -> map.put(k, v),
+                                    __ -> map.remove(k)
+                                )
+                            )
+                ).then(just(() -> new HashMap<>(map)))
             ).transform(
-                op -> new OnlyLastPublisher(op, () -> new HashMap<>(map)
-            )));
+                op -> new OnlyLastPublisher(op, () -> new HashMap<>(map))
+            )
+        );
     }
 
     static <T> OSGi<T> onlyLast(OSGi<T> program) {
