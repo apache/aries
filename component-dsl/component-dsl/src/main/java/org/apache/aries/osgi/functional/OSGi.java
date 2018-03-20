@@ -317,7 +317,7 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	OSGi<T> recoverWith(BiFunction<T, Exception, OSGi<T>> onError);
 
 	<K, S> OSGi<S> splitBy(
-		Function<T, K> mapper, Function<OSGi<T>, OSGi<S>> fun);
+		Function<T, OSGi<K>> mapper, BiFunction<K, OSGi<T>, OSGi<S>> fun);
 
 	<S> OSGi<S> then(OSGi<S> next);
 

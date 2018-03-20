@@ -37,6 +37,7 @@ import org.osgi.service.cm.ManagedServiceFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Dictionary;
@@ -802,21 +803,91 @@ public class DSLTest {
     }
 
     @Test
-    public void testCreateMap() {
+    public void testServicesMap() {
+        AtomicReference<Map<String, String>> map = new AtomicReference<>(
+            new HashMap<>());
         List<Map<String, String>> maps = new ArrayList<>();
         List<Map<String, String>> gone = new ArrayList<>();
 
         OSGi<Map<String, String>> mapOSGi =
-            Utils.accumulateMap(
-                just(Arrays.asList("aaa", "bbb", "ccc", "ayyyy", "bhhh")),
-                Function.identity(), Function.identity());
+            Utils.accumulateInMap(
+                serviceReferences(Service.class),
+                csr -> just(Arrays.asList(canonicalize(csr.getProperty("key")))),
+                csr -> just(getId(csr)));
 
-        OSGi<Map<String, String>> effects = mapOSGi.effects(
-            maps::add, gone::add);
+        OSGi<Map<String, String>> effects =
+            mapOSGi.
+                effects(map::set, __ -> {}).
+                effects(maps::add, gone::add);
 
-        OSGiResult run = effects.run(bundleContext);
+        OSGiResult result = effects.run(bundleContext);
 
-        run.close();
+        assertEquals(Collections.emptyMap(), map.get());
+
+        ServiceRegistration<Service> serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                    put("key", new String[]{"a"});
+                }});
+
+        assertEquals(
+            new HashMap<String, String>() {{
+                put("a", getId(serviceRegistrationOne));
+            }},
+            map.get());
+
+        ServiceRegistration<Service> serviceRegistrationTwo =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                    put("key", new String[]{"b"});
+                }});
+
+        assertEquals(
+            new HashMap<String, String>() {{
+                put("a", getId(serviceRegistrationOne));
+                put("b", getId(serviceRegistrationTwo));
+            }},
+            map.get());
+
+        ServiceRegistration<Service> serviceRegistrationThree =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                    put("key", new String[]{"a", "b"});
+                    put("service.ranking", 10);
+                }});
+
+        assertEquals(
+            new HashMap<String, String>() {{
+                put("a", getId(serviceRegistrationThree));
+                put("b", getId(serviceRegistrationThree));
+            }},
+            map.get());
+
+        serviceRegistrationThree.unregister();
+
+        assertEquals(
+            new HashMap<String, String>() {{
+                put("a", getId(serviceRegistrationOne));
+                put("b", getId(serviceRegistrationTwo));
+            }},
+            map.get());
+
+        serviceRegistrationTwo.unregister();
+
+        assertEquals(
+            new HashMap<String, String>() {{
+                put("a", getId(serviceRegistrationOne));
+            }},
+            map.get());
+
+        serviceRegistrationOne.unregister();
+
+        assertEquals(Collections.emptyMap(), map.get());
+
+        result.close();
 
         assertEquals(maps, gone);
     }
@@ -1044,5 +1115,25 @@ public class DSLTest {
     }
 
     private class Service {}
+
+    private static String[] canonicalize(Object propertyValue) {
+        if (propertyValue == null) {
+            return new String[0];
+        }
+        if (propertyValue instanceof String[]) {
+            return (String[]) propertyValue;
+        }
+        if (propertyValue instanceof Collection) {
+            return
+                ((Collection<?>)propertyValue).stream().
+                    map(
+                        Object::toString
+                    ).toArray(
+                    String[]::new
+                );
+        }
+
+        return new String[]{propertyValue.toString()};
+    }
 
 }

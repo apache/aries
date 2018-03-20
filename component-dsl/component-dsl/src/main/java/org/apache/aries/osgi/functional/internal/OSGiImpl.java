@@ -36,6 +36,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.apache.aries.osgi.functional.OSGi.just;
+
 /**
  * @author Carlos Sierra Andrés
  */
@@ -289,18 +291,31 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 	@Override
 	public <K, S> OSGi<S> splitBy(
-		Function<T, K> mapper, Function<OSGi<T>, OSGi<S>> fun) {
+		Function<T, OSGi<K>> mapper, BiFunction<K, OSGi<T>, OSGi<S>> fun) {
 
 		return new OSGiImpl<>((bundleContext, op) -> {
 			HashMap<K, Pad<T, S>> pads = new HashMap<>();
 
 			OSGiResultImpl result = _operation.run(
 				bundleContext,
-				t ->
-					pads.computeIfAbsent(
-						mapper.apply(t),
-						__ -> new Pad<>(bundleContext, fun, op)
-					).apply(t)
+				t -> {
+					OSGiImpl<K> osgiMapper = (OSGiImpl<K>) mapper.apply(t);
+
+					OSGiResult run =
+						osgiMapper._operation.run(
+							bundleContext,
+							k -> pads.computeIfAbsent(
+								k,
+								__ -> new Pad<>(
+										bundleContext,
+										___ -> fun.apply(k, ___), op)
+							).publish(t)
+						);
+
+					run.start();
+
+					return run::close;
+				}
 			);
 
 			return new OSGiResultImpl(
