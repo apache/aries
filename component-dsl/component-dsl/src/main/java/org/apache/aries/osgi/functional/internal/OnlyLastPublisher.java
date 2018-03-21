@@ -41,6 +41,7 @@ public class OnlyLastPublisher<T> implements Publisher<T> {
     }
 
     private final Publisher<T> _op;
+    private volatile boolean _closed;
     private Supplier<T> _injectOnLeave;
     private Runnable _terminator;
 
@@ -57,14 +58,16 @@ public class OnlyLastPublisher<T> implements Publisher<T> {
             return () -> {
                 _terminator.run();
 
-                _terminator = _op.publish(_injectOnLeave.get());
+                if (!_closed) {
+                    _terminator = _op.publish(_injectOnLeave.get());
+                }
             };
         }
     }
 
     @Override
     public synchronized void close() {
-        _terminator.run();
+        _closed = true;
     }
 
 }
