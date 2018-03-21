@@ -40,9 +40,9 @@ public class TransformerOSGi<T, R> extends OSGiImpl<R> {
                     publisher.start();
                 },
                 () -> {
-                    osGiResult.close();
-
                     publisher.close();
+
+                    osGiResult.close();
                 }
             );
         });
