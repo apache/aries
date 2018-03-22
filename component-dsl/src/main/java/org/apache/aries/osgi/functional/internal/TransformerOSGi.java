@@ -34,16 +34,8 @@ public class TransformerOSGi<T, R> extends OSGiImpl<R> {
                 bundleContext, publisher);
 
             return new OSGiResultImpl(
-                () -> {
-                    osGiResult.start();
-
-                    publisher.start();
-                },
-                () -> {
-                    publisher.close();
-
-                    osGiResult.close();
-                }
+                osGiResult::start,
+                osGiResult::close
             );
         });
     }
