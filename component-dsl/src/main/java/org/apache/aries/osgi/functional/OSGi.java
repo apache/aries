@@ -111,6 +111,12 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new EffectsOSGi(onAdding, onRemoving);
 	}
 
+	static OSGi<Void> effect(Effect<Void> effect) {
+		return new EffectsOSGi(
+			() -> effect.getOnIncoming().accept(null),
+			() -> effect.getOnLeaving().accept(null));
+	}
+
 	static OSGi<Void> ignore(OSGi<?> program) {
 		return new IgnoreImpl(program);
 	}
@@ -298,8 +304,9 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 	<S> OSGi<S> distribute(Function<OSGi<T>, OSGi<S>> ... funs);
 
-	OSGi<T> effects(
-		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
+	OSGi<T> effects(Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
+
+	OSGi<T> effects(Effect<? super T> effect);
 
 	OSGi<T> filter(Predicate<T> predicate);
 
