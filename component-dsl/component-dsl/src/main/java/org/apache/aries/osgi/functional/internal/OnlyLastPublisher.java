@@ -69,8 +69,4 @@ public class OnlyLastPublisher<T> implements Publisher<T> {
         }
     }
 
-    @Override
-    public synchronized void close() {
-    }
-
 }
