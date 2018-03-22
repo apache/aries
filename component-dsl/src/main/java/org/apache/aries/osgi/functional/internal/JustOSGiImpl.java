@@ -21,6 +21,8 @@ package org.apache.aries.osgi.functional.internal;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -37,13 +39,21 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 	public JustOSGiImpl(Supplier<Collection<T>> t) {
 		super((bundleContext, op) -> {
 
-			AtomicReference<Collection<Runnable>> references =
+			AtomicReference<List<Runnable>> references =
 				new AtomicReference<>();
 
 			return new OSGiResultImpl(
 				() -> references.set(
 					t.get().stream().map(op).collect(Collectors.toList())),
-				() -> references.get().forEach(Runnable::run));
+				() -> {
+					List<Runnable> runnables = references.get();
+					ListIterator<Runnable> iterator =
+						runnables.listIterator(runnables.size());
+
+					while (iterator.hasPrevious()) {
+						iterator.previous().run();
+					}
+				});
 		});
 	}
 

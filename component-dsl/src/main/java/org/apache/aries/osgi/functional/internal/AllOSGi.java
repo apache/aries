@@ -23,6 +23,7 @@ import org.apache.aries.osgi.functional.OSGiResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class AllOSGi<T> extends OSGiImpl<T> {
     @SafeVarargs
     public AllOSGi(OSGi<T>... programs) {
         super((bundleContext, op) -> {
-            List<OSGiResult> results = new ArrayList<>();
+            ArrayList<OSGiResult> results = new ArrayList<>();
 
             return new OSGiResultImpl(
                 () -> {
@@ -46,7 +47,14 @@ public class AllOSGi<T> extends OSGiImpl<T> {
 
                     results.forEach(OSGiResult::start);
                 },
-                () -> results.forEach(OSGiResult::close)
+                () -> {
+                    ListIterator<OSGiResult> iterator =
+                        results.listIterator(results.size());
+
+                    while (iterator.hasPrevious()) {
+                        iterator.previous().close();
+                    }
+                }
             );
         });
     }
