@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.Effect;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.apache.aries.osgi.functional.Publisher;
@@ -211,6 +212,11 @@ public class OSGiImpl<T> implements OSGi<T> {
 						terminator.run();
 					};
 				}));
+	}
+
+	@Override
+	public OSGi<T> effects(Effect<? super T> effect) {
+		return effects(effect.getOnIncoming(), effect.getOnLeaving());
 	}
 
 	@Override
