@@ -21,6 +21,8 @@ import org.apache.aries.osgi.functional.Publisher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import static org.apache.aries.osgi.functional.OSGi.NOOP;
@@ -41,7 +43,7 @@ public class OnlyLastPublisher<T> implements Publisher<T> {
     }
 
     private final Publisher<T> _op;
-    private volatile boolean _closed;
+    private AtomicLong _counter = new AtomicLong();
     private Supplier<T> _injectOnLeave;
     private Runnable _terminator;
 
@@ -55,10 +57,12 @@ public class OnlyLastPublisher<T> implements Publisher<T> {
             return NOOP;
         }
         else {
+            _counter.incrementAndGet();
+
             return () -> {
                 _terminator.run();
 
-                if (!_closed) {
+                if (_counter.decrementAndGet() > 0) {
                     _terminator = _op.publish(_injectOnLeave.get());
                 }
             };
@@ -67,7 +71,6 @@ public class OnlyLastPublisher<T> implements Publisher<T> {
 
     @Override
     public synchronized void close() {
-        _closed = true;
     }
 
 }
