@@ -56,11 +56,13 @@ public class HighestRankingOSGi<T> extends OSGiImpl<T> {
 
                             if (old != null) {
                                 old._runnable.run();
-
-                                old._runnable = notHighestPad.publish(old._t);
                             }
 
                             tuple._runnable = highestPipe.apply(t);
+
+                            if (old != null) {
+                                old._runnable = notHighestPad.publish(old._t);
+                            }
 
                             sent.set(tuple);
                         } else {
