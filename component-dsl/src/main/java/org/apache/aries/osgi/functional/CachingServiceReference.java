@@ -170,10 +170,67 @@ public class CachingServiceReference<T>
 
     @Override
     public String toString() {
-        return "CachingServiceReference{" +
-            "cachedProperties=" + _properties + ", " +
-            "serviceReference=" + _serviceReference +
-            '}';
+        return "CachingServiceReference {" +
+            System.lineSeparator() +
+            "cachedProperties=" +
+            mapToString(_properties) +
+            System.lineSeparator() +
+            "serviceReference=" +
+            _serviceReference +
+            System.lineSeparator() +
+            "}";
+    }
+
+    private String mapToString(Map<String, Object> map) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("{");
+
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            stringBuilder.append(entry.getKey());
+            stringBuilder.append("=");
+
+            Object value = entry.getValue();
+
+            if (value instanceof int[]) {
+                stringBuilder.append(Arrays.toString((int[]) value));
+            }
+            else if (value instanceof long[]) {
+                stringBuilder.append(Arrays.toString((long[]) value));
+            }
+            else if (value instanceof float[]) {
+                stringBuilder.append(Arrays.toString((float[]) value));
+            }
+            else if (value instanceof double[]) {
+                stringBuilder.append(Arrays.toString((double[]) value));
+            }
+            else if (value instanceof byte[]) {
+                stringBuilder.append(Arrays.toString((byte[]) value));
+            }
+            else if (value instanceof short[]) {
+                stringBuilder.append(Arrays.toString((short[]) value));
+            }
+            else if (value instanceof char[]) {
+                stringBuilder.append(Arrays.toString((char[]) value));
+            }
+            else if (value instanceof Object[]) {
+                stringBuilder.append(Arrays.deepToString((Object[]) value));
+            }
+            else {
+                stringBuilder.append(value);
+            }
+
+            stringBuilder.append(", ");
+        }
+
+        if (!map.isEmpty()) {
+            stringBuilder.delete(
+                stringBuilder.length() - 2, stringBuilder.length());
+        }
+
+        stringBuilder.append("}");
+
+        return stringBuilder.toString();
     }
 
     /**
