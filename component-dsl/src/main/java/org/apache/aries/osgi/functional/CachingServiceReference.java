@@ -11,18 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * This class is an explicit wrapper around {@link ServiceReference} (it DOES NOT
- * implement {@link ServiceReference}) and provides methods to access underlying
- * {@link ServiceReference} properties and caches them so future access to the same
- * properties return the same values.
+ * This class is an explicit wrapper around {@link ServiceReference} (it DOES
+ * NOT implement {@link ServiceReference}) and provides methods to access
+ * underlying {@link ServiceReference} properties and caches them so future
+ * access to the same properties return the same values.
  *
  * Property values are cached <i>on demand</i>. Values that have never been
  * queried through the method are not cached.
  *
  * Properties that did not exist when queried will no longer exist even though
- * they were available at a later time in the underlying {@link ServiceReference}.
- *
- * Method {@link CachingServiceReference#isDirty()} will return t
+ * they were available at a later time in the underlying
+ * {@link ServiceReference}.
  *
  * @author Carlos Sierra Andrés
  */
@@ -66,17 +65,21 @@ public class CachingServiceReference<T>
     }
 
     /**
-     * Returns the value associated with a key from the underlying {@link ServiceReference}
+     * Returns the value associated with a key from the underlying
+     * {@link ServiceReference}
+     *
      * The returned value is then cached and the {@link ServiceReference} is
      * never queried again for the same value.
      *
      * Values that are not present in the {@link ServiceReference} return null.
      *
-     * Values that were present in the moment they were first queried will return
-     * the same value even if they disappear from they underlying {@link ServiceReference}.
+     * Values that were present in the moment they were first queried will
+     * return the same value even if they disappear from they underlying
+     * {@link ServiceReference}.
      *
-     * Values that were not present when queried the first time will continue to return
-     * null even though they exist in future queries.
+     * Values that were not present when queried the first time will continue
+     * to return null even though they exist in future queries.
+     *
      * @param key the key of the property to be returned
      * @return the value associated with that key
      */
@@ -107,7 +110,8 @@ public class CachingServiceReference<T>
 
     /**
      * @return a union of the properties keys already cached by the instance
-     * and the property keys available in the underlying {@link ServiceReference}.
+     * and the property keys available in the underlying
+     * {@link ServiceReference}.
      *
      * Cached property keys that returned null are not returned here.
      */
@@ -151,6 +155,7 @@ public class CachingServiceReference<T>
 
         return _serviceReference.equals(that._serviceReference);
     }
+
     /**
      * Checks if any of the cached properties has a different value in the
      * underlying {@link ServiceReference}. Only properties that have been
@@ -237,8 +242,10 @@ public class CachingServiceReference<T>
      * Checks if the property is dirty in this instance without caching the
      * value. Trying to do the same using getProperty would cache the property
      * which might not be desirable everytime.
-     * @param key
-     * @return
+     *
+     * @param key the key to check for <i>dirtiness</i>
+     * @return true if the cached value for the key is different than the
+     * current value in the underlying {@link ServiceReference}
      */
     public boolean isDirty(String key) {
         Object value = _properties.get(key);
