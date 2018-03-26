@@ -118,7 +118,7 @@ public class CachingServiceReference<T>
         set.addAll(_properties.keySet());
 
         List<String> nullProperties = _properties.entrySet().stream().filter(
-            e -> e.getValue().equals(null)
+            e -> e.getValue().equals(NULL.INSTANCE)
         ).map(
             Map.Entry::getKey
         ).collect(
