@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.OSGiOperation;
 import org.apache.aries.osgi.functional.Publisher;
 import org.osgi.framework.BundleContext;
 
@@ -29,22 +30,22 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
         super(new ProbeOperationImpl<>());
     }
 
-    public Publisher<T> getPublisher() {
+    public Publisher<? super T> getPublisher() {
         return ((ProbeOperationImpl<T>) _operation)._op;
     }
 
-    private static class ProbeOperationImpl<T> implements OSGiOperationImpl<T> {
+    private static class ProbeOperationImpl<T> implements OSGiOperation<T> {
 
         @Override
         public OSGiResultImpl run(
-            BundleContext bundleContext, Publisher<T> op) {
+            BundleContext bundleContext, Publisher<? super T> op) {
             _bundleContext = bundleContext;
             _op = op;
 
-            return new OSGiResultImpl(NOOP, NOOP);
+            return new OSGiResultImpl(NOOP);
         }
         BundleContext _bundleContext;
-        Publisher<T> _op;
+        Publisher<? super T> _op;
     }
 
 }

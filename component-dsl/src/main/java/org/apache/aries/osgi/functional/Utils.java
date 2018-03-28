@@ -57,7 +57,7 @@ public interface Utils {
     }
 
     static <T> OSGi<T> onlyLast(OSGi<T> program) {
-        return program.transform(OnlyLastPublisher::new);
+        return program.transform(o -> new OnlyLastPublisher<>(o));
     }
 
     static <T> OSGi<T> highest(

@@ -18,6 +18,7 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.CachingServiceReference;
+import org.apache.aries.osgi.functional.Publisher;
 import org.apache.aries.osgi.functional.Refresher;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -48,8 +49,9 @@ public class ServiceReferenceOSGi<T>
 					buildFilter(bundleContext, filterString, clazz),
 					new DefaultServiceTrackerCustomizer<>(op, refresher));
 
-			return new OSGiResultImpl(
-				serviceTracker::open, serviceTracker::close);
+			serviceTracker.open();
+
+			return new OSGiResultImpl(serviceTracker::close);
 		});
 	}
 
@@ -57,7 +59,7 @@ public class ServiceReferenceOSGi<T>
 		implements ServiceTrackerCustomizer<T, Tracked<T>> {
 
 		public DefaultServiceTrackerCustomizer(
-			Function<CachingServiceReference<T>, Runnable> addedSource,
+			Publisher<? super CachingServiceReference<T>> addedSource,
 			Refresher<? super CachingServiceReference<T>> refresher) {
 
 			_addedSource = addedSource;
@@ -94,8 +96,7 @@ public class ServiceReferenceOSGi<T>
 			tracked.runnable.run();
 		}
 
-		private final Function<CachingServiceReference<T>, Runnable>
-			_addedSource;
+		private final Publisher<? super CachingServiceReference<T>> _addedSource;
 		private Refresher<? super CachingServiceReference<T>> _refresher;
 
 	}

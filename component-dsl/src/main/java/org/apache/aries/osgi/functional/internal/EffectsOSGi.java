@@ -17,8 +17,6 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * @author Carlos Sierra Andrés
  */
@@ -26,17 +24,13 @@ public class EffectsOSGi extends OSGiImpl<Void> {
 
     public EffectsOSGi(Runnable onAdding, Runnable onRemoving) {
         super((bundleContext, op) -> {
-            AtomicReference<Runnable> reference = new AtomicReference<>();
+            onAdding.run();
+
+            Runnable terminator = op.publish(null);
 
             return new OSGiResultImpl(
                 () -> {
-                    onAdding.run();
-
-                    reference.set(op.apply(null));
-
-                },
-                () -> {
-                    reference.get().run();
+                    terminator.run();
 
                     onRemoving.run();
                 });

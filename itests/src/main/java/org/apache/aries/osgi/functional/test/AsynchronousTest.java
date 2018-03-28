@@ -19,6 +19,7 @@ package org.apache.aries.osgi.functional.test;
 
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.Publisher;
 import org.apache.aries.osgi.functional.internal.ProbeImpl;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -78,8 +79,6 @@ public class AsynchronousTest {
             i -> closed[i[0]][i[1]][i[2]].set(true));
 
         OSGiResult result = program.run(bundleContext);
-
-        result.start();
 
         ExecutorService executor = Executors.newFixedThreadPool(RUNS);
 
@@ -144,6 +143,8 @@ public class AsynchronousTest {
 
         boolean finished = executor.awaitTermination(1, TimeUnit.MINUTES);
 
+        result.close();
+
         System.out.println("******** FINISHED: " + finished);
 
         int executedCount = 0;
@@ -201,8 +202,6 @@ public class AsynchronousTest {
             i -> closed[i[0]][i[1]][i[2]].set(true));
 
         OSGiResult result = program.run(bundleContext);
-
-        result.start();
 
         ServiceReference<ConfigurationAdmin> configAdmin =
             bundleContext.getServiceReference(ConfigurationAdmin.class);
@@ -275,6 +274,8 @@ public class AsynchronousTest {
 
         boolean finished = executor.awaitTermination(1, TimeUnit.MINUTES);
 
+        result.close();
+
         System.out.println("******** FINISHED: " + finished);
 
         int executedCount = 0;
@@ -334,11 +335,9 @@ public class AsynchronousTest {
 
         OSGiResult result = program.run(bundleContext);
 
-        result.start();
-
-        Function<Integer, Runnable> opa = ((ProbeImpl<Integer>) as).getPublisher();
-        Function<Integer, Runnable> opb = ((ProbeImpl<Integer>) bs).getPublisher();
-        Function<Integer, Runnable> opc = ((ProbeImpl<Integer>) cs).getPublisher();
+        Publisher<? super Integer> opa = ((ProbeImpl<Integer>) as).getPublisher();
+        Publisher<? super Integer> opb = ((ProbeImpl<Integer>) bs).getPublisher();
+        Publisher<? super Integer> opc = ((ProbeImpl<Integer>) cs).getPublisher();
 
         ExecutorService executor = Executors.newFixedThreadPool(8);
 
@@ -384,6 +383,8 @@ public class AsynchronousTest {
         executor.shutdown();
 
         boolean finished = executor.awaitTermination(2, TimeUnit.MINUTES);
+
+        result.close();
 
         System.out.println("******** FINISHED: " + finished);
 

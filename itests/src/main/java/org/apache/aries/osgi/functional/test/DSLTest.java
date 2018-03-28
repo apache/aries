@@ -20,6 +20,7 @@ package org.apache.aries.osgi.functional.test;
 import org.apache.aries.osgi.functional.CachingServiceReference;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.Publisher;
 import org.apache.aries.osgi.functional.Utils;
 import org.apache.aries.osgi.functional.internal.ProbeImpl;
 import org.junit.Test;
@@ -51,6 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import static org.apache.aries.osgi.functional.OSGi.NOOP;
 import static org.apache.aries.osgi.functional.OSGi.configuration;
 import static org.apache.aries.osgi.functional.OSGi.configurations;
 import static org.apache.aries.osgi.functional.OSGi.just;
@@ -82,7 +84,11 @@ public class DSLTest {
         assertEquals(0, atomicInteger.get());
 
         try (OSGiResult result = just.run(
-            bundleContext, atomicInteger::set))
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
         {
             assertEquals(25, atomicInteger.get());
         }
@@ -92,7 +98,11 @@ public class DSLTest {
         OSGi<Integer> map = just(25).map(s -> s + 5);
 
         try (OSGiResult result = map.run(
-            bundleContext, atomicInteger::set))
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
         {
             assertEquals(30, atomicInteger.get());
         }
@@ -102,7 +112,11 @@ public class DSLTest {
         OSGi<Integer> flatMap = just(25).flatMap(s -> just(s + 10));
 
         try (OSGiResult result = flatMap.run(
-            bundleContext, atomicInteger::set))
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
         {
             assertEquals(35, atomicInteger.get());
         }
@@ -112,7 +126,11 @@ public class DSLTest {
         OSGi<Integer> filter = just(25).filter(s -> s % 2 == 0);
 
         try (OSGiResult result = filter.run(
-            bundleContext, atomicInteger::set))
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
         {
             assertEquals(0, atomicInteger.get());
         }
@@ -122,7 +140,11 @@ public class DSLTest {
         filter = just(25).filter(s -> s % 2 != 0);
 
         try (OSGiResult result = filter.run(
-            bundleContext, atomicInteger::set))
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
         {
             assertEquals(25, atomicInteger.get());
         }
@@ -139,7 +161,11 @@ public class DSLTest {
         try(
             OSGiResult osGiResult =
                 serviceReferences(Service.class).
-                run(bundleContext, atomicReference::set)
+                run(bundleContext, newValue -> {
+                    atomicReference.set(newValue);
+
+                    return NOOP;
+                })
         ) {
             assertNull(atomicReference.get());
 
@@ -172,7 +198,11 @@ public class DSLTest {
 
         try(
             OSGiResult osGiResult = program.run(
-            bundleContext, atomicReference::set)
+            bundleContext, newValue -> {
+                    atomicReference.set(newValue);
+
+                    return NOOP;
+                })
         ) {
             assertNull(atomicReference.get());
 
@@ -214,6 +244,8 @@ public class DSLTest {
                     atomicReference.set(x);
 
                     countDownLatch.countDown();
+
+                    return NOOP;
                 }))
         {
             assertNull(atomicReference.get());
@@ -259,6 +291,8 @@ public class DSLTest {
                     atomicReference.set(x);
 
                     countDownLatch.countDown();
+
+                    return NOOP;
                 }))
         {
             assertNull(atomicReference.get());
@@ -894,7 +928,11 @@ public class DSLTest {
 
         OSGi<Integer> program = just(5).applyTo(just((i) -> i + 5));
 
-        program.run(bundleContext, integer::set);
+        program.run(bundleContext, newValue -> {
+            integer.set(newValue);
+
+            return NOOP;
+        });
 
         assertEquals(10, integer.get());
     }
@@ -906,7 +944,11 @@ public class DSLTest {
         OSGi<Integer> program = OSGi.combine(
             (a, b, c) -> a + b + c, just(5), just(5), just(5));
 
-        program.run(bundleContext, integer::set);
+        program.run(bundleContext, newValue -> {
+            integer.set(newValue);
+
+            return NOOP;
+        });
 
         assertEquals(15, integer.get());
     }
@@ -920,12 +962,20 @@ public class DSLTest {
             (a, b, c) -> a + b + c, just(Arrays.asList(5, 20)),
             just(Arrays.asList(5, 40)), just(Arrays.asList(5, 60)));
 
-        OSGiResult or = program.run(bundleContext, results::add);
+        OSGiResult or = program.run(bundleContext, newValue -> {
+            results.add(newValue);
+
+            return NOOP;
+        });
 
         or.close();
 
         OSGiResult or2 = program.run(
-            bundleContext, i -> results2.accumulateAndGet(i, (a, b) -> a + b));
+            bundleContext, i -> {
+                results2.accumulateAndGet(i, (a, b) -> a + b);
+
+                return NOOP;
+            });
 
         or2.close();
 
@@ -947,7 +997,7 @@ public class DSLTest {
 
         once.run(bundleContext);
 
-        Function<Integer, Runnable> op = probe.getPublisher();
+        Publisher<? super Integer> op = probe.getPublisher();
 
         assertEquals(0, count.get());
 
@@ -996,7 +1046,11 @@ public class DSLTest {
                 Service.class, csr -> csr.isDirty("good")).map(
                     csr -> csr.getProperty("good"));
 
-            program.run(bundleContext, (__) -> atomicInteger.incrementAndGet());
+            program.run(bundleContext, (__) -> {
+                atomicInteger.incrementAndGet();
+
+                return NOOP;
+            });
 
             assertEquals(1, atomicInteger.get());
 
@@ -1043,7 +1097,11 @@ public class DSLTest {
             , __ -> {}
         );
 
-        try (OSGiResult run = program.run(bundleContext, result::add)) {
+        try (OSGiResult run = program.run(bundleContext, e -> {
+            result.add(e);
+
+            return NOOP;
+        })) {
             assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
             assertEquals(Arrays.asList(1, 0, 2, 3, 0, 4, 5, 0, 6), arrived);
             assertEquals(Arrays.asList(1, 3, 5), left);
@@ -1074,7 +1132,11 @@ public class DSLTest {
             , __ -> {}
         );
 
-        try (OSGiResult run = program.run(bundleContext, result::add)) {
+        try (OSGiResult run = program.run(bundleContext, e -> {
+            result.add(e);
+
+            return NOOP;
+        })) {
             assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
             assertEquals(Arrays.asList(1, 0, 2, 3, 0, 4, 5, 0, 6), arrived);
             assertEquals(Arrays.asList(1, 3, 5), left);
@@ -1104,7 +1166,11 @@ public class DSLTest {
             return just(t);
         });
 
-        try (OSGiResult run = program.run(bundleContext, result::add)) {
+        try (OSGiResult run = program.run(bundleContext, e -> {
+            result.add(e);
+
+            return NOOP;
+        })) {
             assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
             assertEquals(Arrays.asList(1, 3, 5), left);
         }

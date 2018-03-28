@@ -38,46 +38,42 @@ public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 			AtomicReference<Runnable>
 				terminatorAtomicReference = new AtomicReference<>(() -> {});
 
-			AtomicReference<ServiceRegistration<ManagedService>>
-				serviceRegistrationReferece = new AtomicReference<>(null);
-
 			AtomicBoolean closed = new AtomicBoolean();
 
-			Runnable start = () ->
-				serviceRegistrationReferece.set(
-					bundleContext.registerService(
-						ManagedService.class,
-						properties -> {
-							atomicReference.set(properties);
 
-							signalLeave(terminatorAtomicReference);
+			ServiceRegistration<ManagedService> serviceRegistration =
+				bundleContext.registerService(
+					ManagedService.class,
+					properties -> {
+						atomicReference.set(properties);
 
-							if (properties != null) {
-								terminatorAtomicReference.set(
-									op.apply(properties));
+						signalLeave(terminatorAtomicReference);
 
-								if (closed.get()) {
-									/*
-									if we have closed while executing the
-									effects we have to execute the terminator
-									directly instead of storing it
-									*/
-									signalLeave(terminatorAtomicReference);
+						if (properties != null) {
+							terminatorAtomicReference.set(
+								op.apply(properties));
 
-									return;
-								}
+							if (closed.get()) {
+								/*
+								if we have closed while executing the
+								effects we have to execute the terminator
+								directly instead of storing it
+								*/
+								signalLeave(terminatorAtomicReference);
+
+								return;
 							}
-						},
-						new Hashtable<String, Object>() {{
-							put("service.pid", pid);
-						}}));
+						}
+					},
+					new Hashtable<String, Object>() {{
+						put("service.pid", pid);
+					}});
 
 			return new OSGiResultImpl(
-				start,
 				() -> {
 					closed.set(true);
 
-					serviceRegistrationReferece.get().unregister();
+					serviceRegistration.unregister();
 
 					signalLeave(terminatorAtomicReference);
 				});

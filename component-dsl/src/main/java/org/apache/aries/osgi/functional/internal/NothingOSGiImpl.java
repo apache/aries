@@ -25,6 +25,6 @@ import org.apache.aries.osgi.functional.OSGi;
 public class NothingOSGiImpl<S> extends OSGiImpl<S> {
 
 	public NothingOSGiImpl() {
-		super((bundleContext, __) -> new OSGiResultImpl(OSGi.NOOP, OSGi.NOOP));
+		super((bundleContext, __) -> new OSGiResultImpl(OSGi.NOOP));
 	}
 }
