@@ -35,7 +35,7 @@ public class Pad<T, S> implements Publisher<T>, Closeable {
     public Pad(
         BundleContext bundleContext,
         Function<OSGi<T>, OSGi<S>> fun,
-        Publisher<S> continuation) {
+        Publisher<? super S> continuation) {
 
         ProbeImpl<T> probe = new ProbeImpl<>();
 
@@ -60,5 +60,5 @@ public class Pad<T, S> implements Publisher<T>, Closeable {
     }
 
     private final OSGiResult _result;
-    private final Publisher<T> _publisher;
+    private final Publisher<? super T> _publisher;
 }

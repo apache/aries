@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.Publisher;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
@@ -86,13 +87,11 @@ public class ServiceRegistrationOSGiImpl<T>
 	private static <T> OSGiResultImpl
 		getServiceRegistrationOSGiResult(
 		ServiceRegistration<?> serviceRegistration,
-		Function<ServiceRegistration<T>, Runnable> op) {
+		Publisher<? super ServiceRegistration<T>> op) {
 
-		AtomicReference<Runnable> reference = new AtomicReference<>();
+		Runnable terminator = ((Publisher)op).publish(serviceRegistration);
 
 		return new OSGiResultImpl(
-            () -> reference.set(
-            	(Runnable)((Function)op).apply(serviceRegistration)),
             () -> {
                 try {
                     serviceRegistration.unregister();
@@ -100,7 +99,7 @@ public class ServiceRegistrationOSGiImpl<T>
                 catch (Exception e) {
                 }
                 finally {
-                    reference.get().run();
+                    terminator.run();
                 }
             });
 	}

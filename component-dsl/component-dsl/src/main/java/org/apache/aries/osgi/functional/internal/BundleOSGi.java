@@ -57,8 +57,9 @@ public class BundleOSGi extends OSGiImpl<Bundle> {
 						}
 					});
 
-			return new OSGiResultImpl(
-				bundleTracker::open, bundleTracker::close);
+			bundleTracker.open();
+
+			return new OSGiResultImpl(bundleTracker::close);
 		});
 
 	}

@@ -39,16 +39,13 @@ public class JustOSGiImpl<T> extends OSGiImpl<T> {
 	public JustOSGiImpl(Supplier<Collection<T>> t) {
 		super((bundleContext, op) -> {
 
-			AtomicReference<List<Runnable>> references =
-				new AtomicReference<>();
+			List<Runnable> references =
+				t.get().stream().map(op).collect(Collectors.toList());
 
 			return new OSGiResultImpl(
-				() -> references.set(
-					t.get().stream().map(op).collect(Collectors.toList())),
 				() -> {
-					List<Runnable> runnables = references.get();
 					ListIterator<Runnable> iterator =
-						runnables.listIterator(runnables.size());
+						references.listIterator(references.size());
 
 					while (iterator.hasPrevious()) {
 						iterator.previous().run();

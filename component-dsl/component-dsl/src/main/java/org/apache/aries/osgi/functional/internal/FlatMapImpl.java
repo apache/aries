@@ -18,6 +18,7 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
+import org.apache.aries.osgi.functional.OSGiResult;
 
 import java.util.function.Function;
 
@@ -30,15 +31,12 @@ public class FlatMapImpl<T, S> extends OSGiImpl<S> {
 		OSGiImpl<T> previous, Function<? super T, OSGi<? extends S>> fun) {
 
 		super((bundleContext, op) ->
-			previous._operation.run(
+			previous.run(
 				bundleContext,
 				t -> {
-					OSGiImpl<S> program = (OSGiImpl<S>) fun.apply(t);
+					OSGi<? extends S> program = fun.apply(t);
 
-					OSGiResultImpl result =
-						program._operation.run(bundleContext, op);
-
-					result.start();
+					OSGiResult result = program.run(bundleContext, op);
 
 					return result::close;
 				}));

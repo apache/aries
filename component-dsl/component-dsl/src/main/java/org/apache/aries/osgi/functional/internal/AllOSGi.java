@@ -37,16 +37,12 @@ public class AllOSGi<T> extends OSGiImpl<T> {
         super((bundleContext, op) -> {
             ArrayList<OSGiResult> results = new ArrayList<>();
 
-            return new OSGiResultImpl(
-                () -> {
-                    results.addAll(
-                        Arrays.stream(programs).
-                            map(o -> ((OSGiImpl<T>) o)._operation.run(
-                                bundleContext, op)).
-                            collect(Collectors.toList()));
+            results.addAll(
+                Arrays.stream(programs).
+                    map(o -> o.run(bundleContext, op)).
+                    collect(Collectors.toList()));
 
-                    results.forEach(OSGiResult::start);
-                },
+            return new OSGiResultImpl(
                 () -> {
                     ListIterator<OSGiResult> iterator =
                         results.listIterator(results.size());
