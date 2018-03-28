@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.Publisher;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
@@ -39,28 +40,22 @@ public class ConfigurationsOSGiImpl
 		super((bundleContext, op) -> {
 			Map<String, Runnable> results = new ConcurrentHashMap<>();
 
-			AtomicReference<ServiceRegistration<ManagedServiceFactory>>
-				serviceRegistrationReference = new AtomicReference<>(null);
-
 			AtomicBoolean closed = new AtomicBoolean();
 
-			Runnable start = () ->
-				serviceRegistrationReference.set(
-					bundleContext.registerService(
-						ManagedServiceFactory.class,
-						new ConfigurationsManagedServiceFactory(
-							results, op, closed),
-						new Hashtable<String, Object>() {{
-							put("service.pid", factoryPid);
-						}}));
-
+			ServiceRegistration<ManagedServiceFactory> serviceRegistration =
+				bundleContext.registerService(
+					ManagedServiceFactory.class,
+					new ConfigurationsManagedServiceFactory(
+						results, op, closed),
+					new Hashtable<String, Object>() {{
+						put("service.pid", factoryPid);
+					}});
 
 			return new OSGiResultImpl(
-				start,
 				() -> {
 					closed.set(true);
 
-					serviceRegistrationReference.get().unregister();
+					serviceRegistration.unregister();
 
 					results.values().forEach(Runnable::run);
 
@@ -74,12 +69,12 @@ public class ConfigurationsOSGiImpl
 
 		private final Map<String, Runnable> _results;
 
-		private final Function<Dictionary<String, ?>, Runnable> _op;
+		private final Publisher<? super Dictionary<String, ?>> _op;
 		private AtomicBoolean _closed;
 
 		public ConfigurationsManagedServiceFactory(
 			Map<String, Runnable> results,
-			Function<Dictionary<String, ?>, Runnable> op,
+			Publisher<? super Dictionary<String, ?>> op,
 			AtomicBoolean closed) {
 
 			_results = results;

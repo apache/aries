@@ -18,6 +18,7 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
+import org.apache.aries.osgi.functional.OSGiResult;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -43,7 +44,7 @@ public class HighestRankingOSGi<T> extends OSGiImpl<T> {
             Pad<T, T> notHighestPad = new Pad<>(
                 bundleContext, notHighest, highestPipe);
 
-            OSGiResultImpl result = ((OSGiImpl<T>) previous)._operation.run(
+            OSGiResult result = previous.run(
                 bundleContext,
                 t -> {
                     Tuple<T> tuple = new Tuple<>(t);
@@ -94,7 +95,6 @@ public class HighestRankingOSGi<T> extends OSGiImpl<T> {
                 });
 
             return new OSGiResultImpl(
-                result::start,
                 () -> {
                     result.close();
 

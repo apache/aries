@@ -25,7 +25,9 @@ import java.util.function.Consumer;
  * @author Carlos Sierra Andrés
  */
 public interface OSGiRunnable<T> {
+
 	OSGiResult run(BundleContext bundleContext);
 
-	OSGiResult run(BundleContext bundleContext, Consumer<T> andThen);
+	OSGiResult run(BundleContext bundleContext, Publisher<? super T> andThen);
+
 }

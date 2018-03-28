@@ -18,6 +18,7 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
+import org.apache.aries.osgi.functional.Publisher;
 import org.apache.aries.osgi.functional.test.DSLTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import static org.apache.aries.osgi.functional.OSGi.NOOP;
 import static org.apache.aries.osgi.functional.OSGi.just;
 import static org.apache.aries.osgi.functional.OSGi.onClose;
 import static org.junit.Assert.assertEquals;
@@ -66,13 +68,17 @@ public class ProbeTests {
 
         ));
 
-        program.run(bundleContext, result::set);
+        program.run(bundleContext, newValue -> {
+            result.set(newValue);
 
-        Function<String, Runnable> opA = probeA.getPublisher();
+            return NOOP;
+        });
+
+        Publisher<? super String> opA = probeA.getPublisher();
 
         Runnable sentA = opA.apply("Hello");
 
-        Function<String, Runnable> opB = probeBreference.get().getPublisher();
+        Publisher<? super String> opB = probeBreference.get().getPublisher();
 
         sentA.run();
 
@@ -81,7 +87,11 @@ public class ProbeTests {
 
         assertEquals("", result.get());
 
-        program.run(bundleContext, result::set);
+        program.run(bundleContext, newValue -> {
+            result.set(newValue);
+
+            return NOOP;
+        });
 
         opA = probeA.getPublisher();
         sentA = opA.apply("Hello");
@@ -112,10 +122,15 @@ public class ProbeTests {
                         just(a + b)
                     ))));
 
-        program.run(bundleContext, result::set);
+        program.run(bundleContext, newValue -> {
+            result.set(newValue);
+
+            return NOOP;
+        });
+
         assertEquals(0, result.get());
 
-        Function<Integer, Runnable> opA = probeA.getPublisher();
+        Publisher<? super Integer> opA = probeA.getPublisher();
 
         Runnable sentA = opA.apply(5);
         assertEquals(15, result.get());

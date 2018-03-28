@@ -17,8 +17,6 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * @author Carlos Sierra Andrés
  */
@@ -26,25 +24,22 @@ public class OnCloseOSGiImpl extends OSGiImpl<Void> {
 
 	public OnCloseOSGiImpl(Runnable action) {
 		super((bundleContext, op) -> {
-			AtomicReference<Runnable> reference = new AtomicReference<>();
+			try {
+				Runnable terminator = op.publish(null);
 
-			return new OSGiResultImpl(
-				() -> {
-					try {
-						reference.set(op.apply(null));
-					}
-					catch (Exception e) {
+				return new OSGiResultImpl(
+					() -> {
 						action.run();
 
-						throw e;
+						terminator.run();
 					}
-				},
-				() -> {
-					action.run();
+				);
+			}
+			catch (Exception e) {
+				action.run();
 
-					reference.get().run();
-				}
-			);
+				throw e;
+			}
 		});
 	}
 }

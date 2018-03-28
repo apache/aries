@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.OSGiResult;
 import org.apache.aries.osgi.functional.Publisher;
 import org.apache.aries.osgi.functional.Transformer;
 
@@ -30,13 +31,9 @@ public class TransformerOSGi<T, R> extends OSGiImpl<R> {
         super((bundleContext, op) -> {
             Publisher<T> publisher = fun.transform(op);
 
-            OSGiResultImpl osGiResult = previous._operation.run(
-                bundleContext, publisher);
+            OSGiResult osgiResult = previous.run(bundleContext, publisher);
 
-            return new OSGiResultImpl(
-                osGiResult::start,
-                osGiResult::close
-            );
+            return new OSGiResultImpl(osgiResult::close);
         });
     }
 

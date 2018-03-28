@@ -32,17 +32,19 @@ import static org.apache.aries.osgi.functional.OSGi.NOOP;
  */
 public class OnlyLastPublisher<T> implements Publisher<T> {
 
-    public OnlyLastPublisher(Publisher<T> op) {
+    public OnlyLastPublisher(Publisher<? super T> op) {
        this(op, null);
     }
 
-    public OnlyLastPublisher(Publisher<T> op, Supplier<T> injectOnLeave) {
+    public OnlyLastPublisher(
+        Publisher<? super T> op, Supplier<T> injectOnLeave) {
+
         _op = op;
         _injectOnLeave = injectOnLeave;
         _terminator = NOOP;
     }
 
-    private final Publisher<T> _op;
+    private final Publisher<? super T> _op;
     private AtomicLong _counter = new AtomicLong();
     private Supplier<T> _injectOnLeave;
     private Runnable _terminator;

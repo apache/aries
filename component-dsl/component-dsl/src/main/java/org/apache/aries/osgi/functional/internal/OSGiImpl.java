@@ -19,6 +19,7 @@ package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.Effect;
 import org.apache.aries.osgi.functional.OSGi;
+import org.apache.aries.osgi.functional.OSGiOperation;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.apache.aries.osgi.functional.Publisher;
 import org.apache.aries.osgi.functional.Transformer;
@@ -30,23 +31,18 @@ import org.osgi.framework.InvalidSyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.apache.aries.osgi.functional.OSGi.just;
-
 /**
  * @author Carlos Sierra Andrés
  */
 public class OSGiImpl<T> implements OSGi<T> {
 
-	public OSGiOperationImpl<T> _operation;
-
-	public OSGiImpl(OSGiOperationImpl<T> operation) {
+	public OSGiImpl(OSGiOperation<T> operation) {
 		_operation = operation;
 	}
 
@@ -54,71 +50,56 @@ public class OSGiImpl<T> implements OSGi<T> {
 	public <S> OSGi<S> applyTo(OSGi<Function<T, S>> fun) {
 		return new OSGiImpl<>(
 			(bundleContext, op) -> {
-				AtomicReference<OSGiResult> myCloseReference =
-					new AtomicReference<>();
-
-				AtomicReference<OSGiResult> otherCloseReference =
-					new AtomicReference<>();
-
 				ConcurrentDoublyLinkedList<T> identities =
 					new ConcurrentDoublyLinkedList<>();
 
 				ConcurrentDoublyLinkedList<Function<T, S>> funs =
 					new ConcurrentDoublyLinkedList<>();
 
-				return new OSGiResultImpl(
-					() -> {
-						OSGiResultImpl or1 = _operation.run(
-							bundleContext,
-							t -> {
-								Node node = identities.addLast(t);
+				OSGiResult myResult = run(
+					bundleContext,
+					t -> {
+						Node node = identities.addLast(t);
 
-								List<Runnable> terminators = funs.stream().map(
-									f -> op.apply(f.apply(t))
+						List<Runnable> terminators = funs.stream().map(
+							f -> op.apply(f.apply(t))
+						).collect(
+							Collectors.toList()
+						);
+
+						return () -> {
+							node.remove();
+
+							terminators.forEach(Runnable::run);
+						};
+					}
+				);
+
+				OSGiResult funRun =
+					fun.run(
+						bundleContext,
+						f -> {
+							Node node = funs.addLast(f);
+
+							List<Runnable> terminators =
+								identities.stream().map(
+									t -> op.apply(f.apply(t))
 								).collect(
 									Collectors.toList()
 								);
 
-								return () -> {
-									node.remove();
+							return () -> {
+								node.remove();
 
-									terminators.forEach(Runnable::run);
-								};
-							}
-						);
+								terminators.forEach(Runnable::run);
+							};
+						});
 
-						myCloseReference.set(or1);
-
-						OSGiResultImpl funRun =
-							((OSGiImpl<Function<T, S>>) fun)._operation.run(
-								bundleContext,
-								f -> {
-									Node node = funs.addLast(f);
-
-									List<Runnable> terminators =
-										identities.stream().map(
-											t -> op.apply(f.apply(t))
-										).collect(
-											Collectors.toList()
-										);
-
-									return () -> {
-										node.remove();
-
-										terminators.forEach(Runnable::run);
-									};
-								});
-
-						otherCloseReference.set(funRun);
-
-						or1.start();
-
-						funRun.start();
-					},
+				return new OSGiResultImpl(
 					() -> {
-						myCloseReference.get().close();
+						myResult.close();
 
-						otherCloseReference.get().close();
+						funRun.close();
 					});
 			});
 	}
@@ -132,7 +113,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 			Pad<T, S> thenPad = new Pad<>(bundleContext, then, publisher);
 			Pad<T, S> elsePad = new Pad<>(bundleContext, otherwise, publisher);
 
-			OSGiResultImpl result = _operation.run(
+			OSGiResult result = run(
 				bundleContext,
 				t -> {
 					if (chooser.test(t)) {
@@ -142,7 +123,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 					}
 				});
 			return new OSGiResultImpl(
-				result::start,
 				() -> {
 					thenPad.close();
 					elsePad.close();
@@ -164,7 +144,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 					Collectors.toList()
 			);
 
-			OSGiResultImpl result = _operation.run(
+			OSGiResult result = run(
 				bundleContext,
 				t -> {
 					List<Runnable> terminators =
@@ -177,7 +157,6 @@ public class OSGiImpl<T> implements OSGi<T> {
 				});
 
 			return new OSGiResultImpl(
-				result::start,
 				() -> {
 					result.close();
 
@@ -191,7 +170,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
 
 		return new OSGiImpl<>((bundleContext, op) ->
-			_operation.run(
+			run(
 				bundleContext,
 				t -> {
 					onAdded.accept(t);
@@ -222,7 +201,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@Override
 	public OSGi<T> filter(Predicate<T> predicate) {
 		return new OSGiImpl<>((bundleContext, op) ->
-			_operation.run(
+			run(
 				bundleContext,
 				(t) -> {
 					if (predicate.test(t)) {
@@ -255,13 +234,13 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@Override
 	public <S> OSGi<S> map(Function<? super T, ? extends S> function) {
 		return new OSGiImpl<>((bundleContext, op) ->
-			_operation.run(bundleContext, t -> op.apply(function.apply(t))));
+			run(bundleContext, t -> op.apply(function.apply(t))));
 	}
 
 	@Override
 	public OSGi<T> recover(BiFunction<T, Exception, T> onError) {
 		return new OSGiImpl<>((bundleContext, op) ->
-			_operation.run(
+			run(
 				bundleContext,
 				t -> {
 					try {
@@ -277,7 +256,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@Override
 	public OSGi<T> recoverWith(BiFunction<T, Exception, OSGi<T>> onError) {
 		return new OSGiImpl<>((bundleContext, op) ->
-			_operation.run(
+			run(
 				bundleContext,
 				t -> {
 					try {
@@ -286,8 +265,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 					catch (Exception e) {
 						OSGi<T> errorProgram = onError.apply(t, e);
 
-						OSGiResult result =
-							((OSGiImpl<T>) errorProgram).run(bundleContext, op);
+						OSGiResult result = errorProgram.run(bundleContext, op);
 
 						return result::close;
 					}
@@ -302,13 +280,13 @@ public class OSGiImpl<T> implements OSGi<T> {
 		return new OSGiImpl<>((bundleContext, op) -> {
 			HashMap<K, Pad<T, S>> pads = new HashMap<>();
 
-			OSGiResultImpl result = _operation.run(
+			OSGiResult result = run(
 				bundleContext,
 				t -> {
-					OSGiImpl<K> osgiMapper = (OSGiImpl<K>) mapper.apply(t);
+					OSGi<K> osgiMapper = mapper.apply(t);
 
 					OSGiResult run =
-						osgiMapper._operation.run(
+						osgiMapper.run(
 							bundleContext,
 							k -> pads.computeIfAbsent(
 								k,
@@ -318,14 +296,11 @@ public class OSGiImpl<T> implements OSGi<T> {
 							).publish(t)
 						);
 
-					run.start();
-
 					return run::close;
 				}
 			);
 
 			return new OSGiResultImpl(
-				result::start,
 				() -> {
 					pads.values().forEach(Pad::close);
 
@@ -346,20 +321,13 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 	@Override
 	public OSGiResult run(BundleContext bundleContext) {
-		return run(bundleContext, x -> {});
+		return run(bundleContext, x -> NOOP);
 	}
 
-	@Override
-	public OSGiResult run(BundleContext bundleContext, Consumer<T> andThen) {
-		return run(bundleContext, t -> {andThen.accept(t); return NOOP;});
-	}
+	public OSGiResult run(
+		BundleContext bundleContext, Publisher<? super T> op) {
 
-	public OSGiResult run(BundleContext bundleContext, Publisher<T> op) {
-		OSGiResultImpl result = _operation.run(bundleContext, op);
-
-		result.start();
-
-		return result;
+		return _operation.run(bundleContext, op);
 	}
 
 	static Filter buildFilter(
@@ -410,6 +378,8 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 		return stringBuilder.toString();
 	}
+
+	OSGiOperation<T> _operation;
 
 }
 

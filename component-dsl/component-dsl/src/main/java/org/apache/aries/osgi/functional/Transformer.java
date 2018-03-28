@@ -6,13 +6,13 @@ import java.util.function.Function;
  * @author Carlos Sierra Andrés
  */
 public interface Transformer<T, R> extends
-    Function<Publisher<R>, Publisher<T>> {
+    Function<Publisher<? super R>, Publisher<? extends T>> {
 
     @Override
-    default Publisher<T> apply(Publisher<R> pipe) {
+    default Publisher<? extends T> apply(Publisher<? super R> pipe) {
         return transform(pipe);
     }
 
-    Publisher<T> transform(Publisher<R> pipe);
+    Publisher<T> transform(Publisher<? super R> pipe);
 
 }

@@ -24,6 +24,10 @@ import org.osgi.framework.BundleContext;
  */
 public interface OSGiOperation<T> {
 
-	OSGiResult run(BundleContext bundleContext);
+	OSGiResult run(BundleContext bundleContext, Publisher<? super T> op);
+
+	default OSGiResult run(BundleContext bundleContext) {
+		return run(bundleContext, (__) -> () -> {});
+	}
 
 }
