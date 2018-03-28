@@ -306,16 +306,32 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 	OSGi<T> effects(Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
 
-	OSGi<T> effects(Effect<? super T> effect);
+	default OSGi<T> effects(Effect<? super T> effect) {
+		return effects(effect.getOnIncoming(), effect.getOnLeaving());
+	}
 
-	OSGi<T> filter(Predicate<T> predicate);
+	default OSGi<T> filter(Predicate<T> predicate) {
+		return flatMap(t -> {
+			if (predicate.test(t)) {
+				return just(t);
+			}
+			else {
+				return nothing();
+			}
+		});
+	}
 
 	<S> OSGi<S> flatMap(Function<? super T, OSGi<? extends S>> fun);
 
-	OSGi<Void> foreach(Consumer<? super T> onAdded);
+	default public OSGi<Void> foreach(Consumer<? super T> onAdded) {
+		return foreach(onAdded, __ -> {});
+	}
 
-	OSGi<Void> foreach(
-		Consumer<? super T> onAdded, Consumer<? super T> onRemoved);
+	default public OSGi<Void> foreach(
+		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
+
+		return ignore(effects(onAdded, onRemoved));
+	}
 
 	<S> OSGi<S> map(Function<? super T, ? extends S> function);
 
@@ -326,7 +342,9 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	<K, S> OSGi<S> splitBy(
 		Function<T, OSGi<K>> mapper, BiFunction<K, OSGi<T>, OSGi<S>> fun);
 
-	<S> OSGi<S> then(OSGi<S> next);
+	default public <S> OSGi<S> then(OSGi<S> next) {
+		return flatMap(__ -> next);
+	}
 
 	<S> OSGi<S> transform(Transformer<T, S> fun);
 

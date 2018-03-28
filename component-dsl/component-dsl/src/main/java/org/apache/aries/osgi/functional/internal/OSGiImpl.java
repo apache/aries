@@ -17,7 +17,6 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import org.apache.aries.osgi.functional.Effect;
 import org.apache.aries.osgi.functional.OSGi;
 import org.apache.aries.osgi.functional.OSGiOperation;
 import org.apache.aries.osgi.functional.OSGiResult;
@@ -75,25 +74,23 @@ public class OSGiImpl<T> implements OSGi<T> {
 					}
 				);
 
-				OSGiResult funRun =
-					fun.run(
-						bundleContext,
-						f -> {
-							Node node = funs.addLast(f);
+				OSGiResult funRun = fun.run(
+					bundleContext,
+					f -> {
+						Node node = funs.addLast(f);
 
-							List<Runnable> terminators =
-								identities.stream().map(
-									t -> op.apply(f.apply(t))
-								).collect(
-									Collectors.toList()
-								);
+						List<Runnable> terminators = identities.stream().map(
+							t -> op.apply(f.apply(t))
+						).collect(
+							Collectors.toList()
+						);
 
-							return () -> {
-								node.remove();
+						return () -> {
+							node.remove();
 
-								terminators.forEach(Runnable::run);
-							};
-						});
+							terminators.forEach(Runnable::run);
+						};
+					});
 
 				return new OSGiResultImpl(
 					() -> {
@@ -194,21 +191,16 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
-	public OSGi<T> effects(Effect<? super T> effect) {
-		return effects(effect.getOnIncoming(), effect.getOnLeaving());
-	}
-
-	@Override
 	public OSGi<T> filter(Predicate<T> predicate) {
 		return new OSGiImpl<>((bundleContext, op) ->
 			run(
 				bundleContext,
-				(t) -> {
+				t -> {
 					if (predicate.test(t)) {
 						return op.apply(t);
 					}
 					else {
-						return () -> {};
+						return NOOP;
 					}
 				}
 			));
@@ -216,25 +208,25 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 	@Override
 	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
-		return new FlatMapImpl<>(this, fun);
-	}
+		return new OSGiImpl<>((bundleContext, op) ->
+			run(
+				bundleContext,
+				t -> {
+					OSGi<? extends S> program = fun.apply(t);
 
-	@Override
-	public OSGi<Void> foreach(Consumer<? super T> onAdded) {
-		return foreach(onAdded, ign -> {});
-	}
+					OSGiResult result = program.run(bundleContext, op);
 
-	@Override
-	public OSGi<Void> foreach(
-		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
-
-		return OSGi.ignore(effects(onAdded, onRemoved));
+					return result::close;
+				}
+			)
+		);
 	}
 
 	@Override
 	public <S> OSGi<S> map(Function<? super T, ? extends S> function) {
 		return new OSGiImpl<>((bundleContext, op) ->
-			run(bundleContext, t -> op.apply(function.apply(t))));
+			run(bundleContext, t -> op.apply(function.apply(t)))
+		);
 	}
 
 	@Override
@@ -310,13 +302,13 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
-	public <S> OSGi<S> then(OSGi<S> next) {
-		return flatMap(ignored -> next);
-	}
-
-	@Override
 	public <S> OSGi<S> transform(Transformer<T, S> fun) {
-		return new TransformerOSGi<>(this, fun);
+		return new OSGiImpl<>(
+			(bundleContext, op) -> {
+				OSGiResult result = run(bundleContext, fun.transform(op));
+
+				return new OSGiResultImpl(result::close);
+		});
 	}
 
 	@Override
