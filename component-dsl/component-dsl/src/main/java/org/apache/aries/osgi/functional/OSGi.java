@@ -78,7 +78,7 @@ import java.util.function.Supplier;
  * @author Carlos Sierra Andrés
  */
 public interface OSGi<T> extends OSGiRunnable<T> {
-	Runnable NOOP = () -> {};
+	OSGiResult NOOP = () -> {};
 
 	@SafeVarargs
 	static <T> OSGi<T> all(OSGi<T> ... programs) {

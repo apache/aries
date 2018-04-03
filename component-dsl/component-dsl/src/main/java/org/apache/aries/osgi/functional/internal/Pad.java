@@ -55,7 +55,7 @@ public class Pad<T, S> implements Publisher<T>, Closeable {
     }
 
     @Override
-    public Runnable publish(T t) {
+    public OSGiResult publish(T t) {
         return _publisher.publish(t);
     }
 

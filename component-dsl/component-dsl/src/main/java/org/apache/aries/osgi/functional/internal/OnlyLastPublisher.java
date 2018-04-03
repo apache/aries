@@ -17,6 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
+import org.apache.aries.osgi.functional.OSGiResult;
 import org.apache.aries.osgi.functional.Publisher;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class OnlyLastPublisher<T> implements Publisher<T> {
     private Runnable _terminator;
 
     @Override
-    public synchronized Runnable publish(T t) {
+    public synchronized OSGiResult publish(T t) {
         _terminator.run();
 
         _terminator = _op.publish(t);
