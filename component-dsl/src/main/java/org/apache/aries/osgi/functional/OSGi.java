@@ -458,7 +458,7 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	}
 
 	default <S> OSGi<S> choose(
-		Predicate<T> chooser, Function<OSGi<T>, OSGi<S>> then,
+		Function<T, OSGi<Boolean>> chooser, Function<OSGi<T>, OSGi<S>> then,
 		Function<OSGi<T>, OSGi<S>> otherwise) {
 
 		return fromOsgiRunnable((bundleContext, publisher) -> {
@@ -467,13 +467,16 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 			OSGiResult result = run(
 				bundleContext,
-				t -> {
-					if (chooser.test(t)) {
-						return thenPad.publish(t);
-					} else {
-						return elsePad.publish(t);
-					}
-				});
+				t -> chooser.apply(t).run(
+                    bundleContext,
+                    b -> {
+                        if (b) {
+                            return thenPad.publish(t);
+                        } else {
+                            return elsePad.publish(t);
+                        }
+                    }
+                ));
 			return () -> {
 				thenPad.close();
 				elsePad.close();
