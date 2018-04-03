@@ -207,7 +207,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 	}
 
 	@Override
-	public <S> OSGiImpl<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
+	public <S> OSGi<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
 		return new OSGiImpl<>((bundleContext, op) ->
 			run(
 				bundleContext,

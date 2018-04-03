@@ -50,7 +50,7 @@ public class ProbeTests {
         ProbeImpl<String> probeA = new ProbeImpl<>();
         AtomicReference<ProbeImpl<String>> probeBreference = new AtomicReference<>();
 
-        OSGiImpl<String> program =
+        OSGi<String> program =
             probeA.flatMap(a ->
             onClose(
                 () -> result.accumulateAndGet("Hello", (x, y) -> x.replace(y, ""))).
