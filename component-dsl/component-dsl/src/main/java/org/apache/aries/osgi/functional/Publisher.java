@@ -24,10 +24,10 @@ import java.util.function.Function;
  */
 public interface Publisher<T> extends Function<T, Runnable> {
 
-    default Runnable apply(T t) {
+    default OSGiResult apply(T t) {
         return publish(t);
     }
 
-    Runnable publish(T t);
+    OSGiResult publish(T t);
 
 }
