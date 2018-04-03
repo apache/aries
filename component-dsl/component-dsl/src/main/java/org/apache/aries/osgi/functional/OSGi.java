@@ -53,6 +53,8 @@ import org.apache.aries.osgi.functional.internal.EffectsOSGi;
 import org.apache.aries.osgi.functional.internal.IgnoreImpl;
 import org.apache.aries.osgi.functional.internal.JustOSGiImpl;
 import org.apache.aries.osgi.functional.internal.NothingOSGiImpl;
+import org.apache.aries.osgi.functional.internal.OSGiImpl;
+import org.apache.aries.osgi.functional.internal.OSGiResultImpl;
 import org.apache.aries.osgi.functional.internal.OnCloseOSGiImpl;
 import org.apache.aries.osgi.functional.internal.ServiceReferenceOSGi;
 import org.apache.aries.osgi.functional.internal.ServiceRegistrationOSGiImpl;
@@ -447,5 +449,14 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	}
 
 	<S> OSGi<S> transform(Transformer<T, S> fun);
+
+	static <T> OSGi<T> fromOsgiRunnable(OSGiRunnable<T> runnable) {
+		return getOsgiFactory().create(
+			(b, op) -> new OSGiResultImpl(runnable.run(b, op)));
+	}
+
+	static OSGiFactory getOsgiFactory() {
+		return OSGiImpl::new;
+	}
 
 }
