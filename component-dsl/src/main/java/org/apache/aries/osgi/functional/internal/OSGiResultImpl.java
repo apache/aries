@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class OSGiResultImpl implements OSGiResult {
 
-	public OSGiResultImpl(Runnable close) {
+	public OSGiResultImpl(OSGiResult close) {
 		this.close = close;
 	}
 
