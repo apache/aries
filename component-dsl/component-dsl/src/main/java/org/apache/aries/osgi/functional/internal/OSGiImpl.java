@@ -148,9 +148,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 						pads.stream().map(p -> p.publish(t)).collect(
 							Collectors.toList());
 
-					return () -> {
-						terminators.forEach(Runnable::run);
-					};
+					return () -> terminators.forEach(Runnable::run);
 				});
 
 			return new OSGiResultImpl(
@@ -209,16 +207,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 	@Override
 	public <S> OSGi<S> flatMap(Function<? super T, OSGi<? extends S>> fun) {
 		return new OSGiImpl<>((bundleContext, op) ->
-			run(
-				bundleContext,
-				t -> {
-					OSGi<? extends S> program = fun.apply(t);
-
-					OSGiResult result = program.run(bundleContext, op);
-
-					return result::close;
-				}
-			)
+			run(bundleContext, t -> fun.apply(t).run(bundleContext, op))
 		);
 	}
 
@@ -255,11 +244,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 						return op.apply(t);
 					}
 					catch (Exception e) {
-						OSGi<T> errorProgram = onError.apply(t, e);
-
-						OSGiResult result = errorProgram.run(bundleContext, op);
-
-						return result::close;
+						return onError.apply(t, e).run(bundleContext, op);
 					}
 				}
 			));
@@ -274,22 +259,15 @@ public class OSGiImpl<T> implements OSGi<T> {
 
 			OSGiResult result = run(
 				bundleContext,
-				t -> {
-					OSGi<K> osgiMapper = mapper.apply(t);
-
-					OSGiResult run =
-						osgiMapper.run(
+				t -> mapper.apply(t).run(
+					bundleContext,
+					k -> pads.computeIfAbsent(
+						k,
+						__ -> new Pad<>(
 							bundleContext,
-							k -> pads.computeIfAbsent(
-								k,
-								__ -> new Pad<>(
-										bundleContext,
-										___ -> fun.apply(k, ___), op)
-							).publish(t)
-						);
-
-					return run::close;
-				}
+							___ -> fun.apply(k, ___), op)
+					).publish(t)
+				)
 			);
 
 			return new OSGiResultImpl(
@@ -307,7 +285,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 			(bundleContext, op) -> {
 				OSGiResult result = run(bundleContext, fun.transform(op));
 
-				return new OSGiResultImpl(result::close);
+				return new OSGiResultImpl(result);
 		});
 	}
 
