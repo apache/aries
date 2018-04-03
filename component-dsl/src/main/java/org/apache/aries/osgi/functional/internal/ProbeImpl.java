@@ -17,7 +17,7 @@
 
 package org.apache.aries.osgi.functional.internal;
 
-import org.apache.aries.osgi.functional.OSGiOperation;
+import org.apache.aries.osgi.functional.OSGiRunnable;
 import org.apache.aries.osgi.functional.Publisher;
 import org.osgi.framework.BundleContext;
 
@@ -34,7 +34,7 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
         return ((ProbeOperationImpl<T>) _operation)._op;
     }
 
-    private static class ProbeOperationImpl<T> implements OSGiOperation<T> {
+    private static class ProbeOperationImpl<T> implements OSGiRunnable<T> {
 
         @Override
         public OSGiResultImpl run(

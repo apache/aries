@@ -18,8 +18,8 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
-import org.apache.aries.osgi.functional.OSGiOperation;
 import org.apache.aries.osgi.functional.OSGiResult;
+import org.apache.aries.osgi.functional.OSGiRunnable;
 import org.apache.aries.osgi.functional.Publisher;
 import org.apache.aries.osgi.functional.Transformer;
 import org.apache.aries.osgi.functional.internal.ConcurrentDoublyLinkedList.Node;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  */
 public class OSGiImpl<T> implements OSGi<T> {
 
-	public OSGiImpl(OSGiOperation<T> operation) {
+	public OSGiImpl(OSGiRunnable<T> operation) {
 		_operation = operation;
 	}
 
@@ -371,7 +371,7 @@ public class OSGiImpl<T> implements OSGi<T> {
 		return stringBuilder.toString();
 	}
 
-	OSGiOperation<T> _operation;
+	OSGiRunnable<T> _operation;
 
 }
 
