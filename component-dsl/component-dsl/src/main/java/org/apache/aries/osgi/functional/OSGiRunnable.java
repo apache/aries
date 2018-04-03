@@ -26,7 +26,9 @@ import java.util.function.Consumer;
  */
 public interface OSGiRunnable<T> {
 
-	OSGiResult run(BundleContext bundleContext);
+	default OSGiResult run(BundleContext bundleContext) {
+		return run(bundleContext, (__) -> () -> {});
+	}
 
 	OSGiResult run(BundleContext bundleContext, Publisher<? super T> andThen);
 
