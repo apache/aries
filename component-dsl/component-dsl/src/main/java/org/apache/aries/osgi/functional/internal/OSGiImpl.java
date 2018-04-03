@@ -18,7 +18,6 @@
 package org.apache.aries.osgi.functional.internal;
 
 import org.apache.aries.osgi.functional.OSGi;
-import org.apache.aries.osgi.functional.OSGiFactory;
 import org.apache.aries.osgi.functional.OSGiResult;
 import org.apache.aries.osgi.functional.OSGiRunnable;
 import org.apache.aries.osgi.functional.Publisher;
