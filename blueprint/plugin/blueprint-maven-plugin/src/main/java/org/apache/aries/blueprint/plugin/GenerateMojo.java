@@ -50,7 +50,7 @@ import java.util.Set;
  * Generates blueprint from CDI annotations
  */
 @Mojo(name = "blueprint-generate", requiresDependencyResolution = ResolutionScope.COMPILE,
-        defaultPhase = LifecyclePhase.PROCESS_CLASSES, inheritByDefault = false)
+        defaultPhase = LifecyclePhase.PROCESS_CLASSES, inheritByDefault = false, threadSafe = true)
 public class GenerateMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", required = true)

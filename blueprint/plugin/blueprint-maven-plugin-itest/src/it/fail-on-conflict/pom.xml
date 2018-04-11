@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.aries.blueprint.plugin.itest</groupId>
-    <artifactId>simple-project</artifactId>
+    <artifactId>fail-on-conflict</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
