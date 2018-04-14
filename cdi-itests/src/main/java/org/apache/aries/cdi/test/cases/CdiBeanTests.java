@@ -38,7 +38,7 @@ public class CdiBeanTests extends AbstractTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cdiContainer = waitForCdiContainer(cdiBundle.getBundleId());
+		containerDTO = getContainerDTO(cdiBundle);
 	}
 
 	public void testConstructorInjectedService() throws Exception {
@@ -232,7 +232,7 @@ public class CdiBeanTests extends AbstractTestCase {
 	}
 
 	public void testBundleContextInjection() throws Exception {
-		BeanManager beanManager = cdiContainer.getBeanManager();
+		BeanManager beanManager = getBeanManager(cdiBundle);
 
 		assertNotNull(beanManager);
 

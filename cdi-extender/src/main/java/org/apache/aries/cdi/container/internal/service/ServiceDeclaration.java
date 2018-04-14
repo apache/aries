@@ -16,17 +16,11 @@ package org.apache.aries.cdi.container.internal.service;
 
 import static org.apache.aries.cdi.container.internal.util.Reflection.cast;
 
-import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.stream.Collectors;
-
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
-import org.apache.aries.cdi.container.internal.component.ComponentProperties;
+import org.apache.aries.cdi.container.internal.component.OSGiBean;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.util.Types;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceFactory;
@@ -36,7 +30,7 @@ public class ServiceDeclaration {
 
 	public ServiceDeclaration(
 		ContainerState containerState,
-		ComponentModel componentModel,
+		OSGiBean componentModel,
 		Bean<?> bean,
 		CreationalContext<?> creationalContext) {
 
@@ -48,7 +42,7 @@ public class ServiceDeclaration {
 
 		Object instance = null;
 
-		if (_componentModel.getServiceScope() == ServiceScope.SINGLETON) {
+/*		if (_componentModel.getServiceScope() == ServiceScope.SINGLETON) {
 			instance = new SingletonScopeWrapper();
 		}
 		else if (_componentModel.getServiceScope() == ServiceScope.BUNDLE) {
@@ -57,11 +51,11 @@ public class ServiceDeclaration {
 		else if (_componentModel.getServiceScope() == ServiceScope.PROTOTYPE) {
 			instance = new PrototypeScopeWrapper();
 		}
-
+*/
 		_instance = instance;
 	}
 
-	public String[] getClassNames() {
+/*	public String[] getClassNames() {
 		return Arrays.stream(
 			Types.types(_componentModel, _componentModel.getBeanClass(), _containerState.classLoader())
 		).map(
@@ -80,12 +74,12 @@ public class ServiceDeclaration {
 	public ServiceScope getScope() {
 		return _componentModel.getServiceScope();
 	}
-
+*/
 	public Object getServiceInstance() {
 		return _instance;
 	}
 
-	public Dictionary<String, ?> getServiceProperties() {
+/*	public Dictionary<String, ?> getServiceProperties() {
 		return new ComponentProperties().bean(
 			_bean
 		).componentModel(
@@ -94,9 +88,9 @@ public class ServiceDeclaration {
 			_containerState
 		).build();
 	}
-
+*/
 	private final Bean<?> _bean;
-	private final ComponentModel _componentModel;
+	private final OSGiBean _componentModel;
 	private final ContainerState _containerState;
 	private final CreationalContext<?> _creationalContext;
 	private final Object _instance;

@@ -18,11 +18,8 @@ import java.util.Objects;
 
 import javax.enterprise.inject.Produces;
 
-import org.osgi.service.cdi.annotations.Reference;
-
 public class FooProducer {
 	@Produces
-	@Reference
 	public Foo getFoo() {
 		return new Foo() {
 			@Override

@@ -24,18 +24,17 @@ import javax.enterprise.util.AnnotationLiteral;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.CdiEventObserverQualifier;
-import org.osgi.service.cdi.CdiEvent;
 
 public class EventsTests extends AbstractTestCase {
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cdiContainer = waitForCdiContainer(cdiBundle.getBundleId());
+		containerDTO = getContainerDTO(cdiBundle);
 	}
 
 	public void testEventsGetSent() throws Exception {
-		BeanManager beanManager = cdiContainer.getBeanManager();
+		BeanManager beanManager = getBeanManager(cdiBundle);
 
 		assertNotNull(beanManager);
 
@@ -46,8 +45,8 @@ public class EventsTests extends AbstractTestCase {
 		Object bcb = beanManager.getReference(bean, Object.class, ctx);
 		assertNotNull(bcb);
 		@SuppressWarnings("unchecked")
-		BeanService<List<CdiEvent>> bti = (BeanService<List<CdiEvent>>)bcb;
-		List<CdiEvent> list = bti.get();
+		BeanService<List<Object>> bti = (BeanService<List<Object>>)bcb;
+		List<Object> list = bti.get();
 		assertNotNull(list);
 		assertEquals(1, list.size());
 	}

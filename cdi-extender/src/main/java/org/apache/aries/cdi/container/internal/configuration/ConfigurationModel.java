@@ -14,24 +14,18 @@
 
 package org.apache.aries.cdi.container.internal.configuration;
 
-import static org.apache.aries.cdi.container.internal.model.Model.*;
-import static org.apache.aries.cdi.container.internal.model.Constants.CDI10_URI;
-import static org.apache.aries.cdi.container.internal.model.Constants.CONFIGURATION_PID_ATTRIBUTE;
-import static org.apache.aries.cdi.container.internal.model.Constants.CONFIGURATION_POLICY_ATTRIBUTE;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
-import org.xml.sax.Attributes;
+import org.osgi.service.cdi.annotations.PID;
+import org.osgi.service.cdi.runtime.dto.template.ConfigurationPolicy;
+import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
+import org.osgi.service.cdi.runtime.dto.template.MaximumCardinality;
 
 public class ConfigurationModel {
 
@@ -42,59 +36,25 @@ public class ConfigurationModel {
 			_type = type;
 		}
 
-		public Builder attributes(Attributes attributes) {
-			_policy = ConfigurationPolicy.get(getValue(
-					CDI10_URI, CONFIGURATION_POLICY_ATTRIBUTE, attributes, ConfigurationPolicy.DEFAULT.toString()));
-			_pid = getValues(CDI10_URI, CONFIGURATION_PID_ATTRIBUTE, attributes, new String[] {Configuration.NAME});
-			return this;
-		}
-
 		public ConfigurationModel build() {
-			_pid = ((_pid == null) || (_pid.length == 0))? new String[] {Configuration.NAME}: _pid;
-
-			if (_policy == null) {
-				_policy = ConfigurationPolicy.OPTIONAL;
-			}
-
-			return new ConfigurationModel(_type, _pid, _policy, _qualifiers);
+			return new ConfigurationModel(_type, _pid, _qualifiers);
 		}
 
 		public Builder injectionPoint(InjectionPoint injectionPoint) {
 			_qualifiers = injectionPoint.getQualifiers();
-			Configuration configuration = injectionPoint.getAnnotated().getAnnotation(Configuration.class);
-			if (configuration != null) {
-				_policy = configuration.configurationPolicy();
-				_pid = configuration.value();
-			}
+			_pid = injectionPoint.getAnnotated().getAnnotation(PID.class);
 			return this;
 		}
 
-		public Builder pid(String[] pid) {
-			_pid = pid;
-			return this;
-		}
-
-		public Builder policy(ConfigurationPolicy policy) {
-			_policy = policy;
-			return this;
-		}
-
-		public Builder qualifiers(Set<Annotation> qualifiers) {
-			_qualifiers = qualifiers;
-			return this;
-		}
-
-		private String[] _pid;
-		private ConfigurationPolicy _policy;
+		private PID _pid;
 		private Set<Annotation> _qualifiers;
 		private Type _type;
 
 	}
 
-	private ConfigurationModel(Type type, String[] pids, ConfigurationPolicy policy, Set<Annotation> qualifiers) {
+	private ConfigurationModel(Type type, PID pid, Set<Annotation> qualifiers) {
 		_type = type;
-		_pid = pids;
-		_policy = policy;
+		_pid = pid;
 		_qualifiers = new LinkedHashSet<>();
 		if (qualifiers != null) {
 			_qualifiers.addAll(qualifiers);
@@ -105,7 +65,6 @@ public class ConfigurationModel {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((_policy == null) ? 0 : _policy.hashCode());
 		result = prime * result + ((_qualifiers == null) ? 0 : _qualifiers.hashCode());
 		result = prime * result + ((_type == null) ? 0 : _type.hashCode());
 		return result;
@@ -120,8 +79,6 @@ public class ConfigurationModel {
 		if (getClass() != obj.getClass())
 			return false;
 		ConfigurationModel other = (ConfigurationModel) obj;
-		if (_policy != other._policy)
-			return false;
 		if (_qualifiers == null) {
 			if (other._qualifiers != null)
 				return false;
@@ -135,19 +92,7 @@ public class ConfigurationModel {
 		return true;
 	}
 
-	public ConfigurationPolicy getConfigurationPolicy() {
-		return _policy;
-	}
-
-	public boolean found() {
-		return _found.get();
-	}
-
-	public void found(boolean found) {
-		_found.set(found);
-	}
-
-	public String[] getPid() {
+	public PID getPid() {
 		return _pid;
 	}
 
@@ -164,19 +109,30 @@ public class ConfigurationModel {
 		_qualifiers.addAll(qualifiers);
 	}
 
+	public ConfigurationTemplateDTO toDTO() {
+		if (_pid != null) {
+			ConfigurationTemplateDTO dto = new ConfigurationTemplateDTO();
+
+			dto.componentConfiguration = false;
+			dto.maximumCardinality = MaximumCardinality.ONE;
+			dto.pid = _pid.value();
+			dto.policy = (_pid.policy().toString().equals(ConfigurationPolicy.REQUIRED.toString()))
+				? ConfigurationPolicy.REQUIRED : ConfigurationPolicy.OPTIONAL;
+		}
+
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		if (_string == null) {
-			_string = String.format("configuration[type='%s', policy='%s', pid='%s']", _type, _policy, Arrays.toString(_pid));
+			_string = String.format("configuration[type='%s', pid='%s', policy='%s']", _type, _pid.value(), _pid.policy());
 		}
 		return _string;
 	}
 
-	private final AtomicBoolean _found = new AtomicBoolean();
-	private final String[] _pid;
-	private final ConfigurationPolicy _policy;
+	private final PID _pid;
 	private final Set<Annotation> _qualifiers;
 	private volatile String _string;
 	private final Type _type;
-
 }

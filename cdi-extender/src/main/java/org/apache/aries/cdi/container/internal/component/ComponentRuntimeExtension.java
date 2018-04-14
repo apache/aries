@@ -14,57 +14,11 @@
 
 package org.apache.aries.cdi.container.internal.component;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
-import javax.enterprise.inject.spi.ProcessAnnotatedType;
-import javax.enterprise.inject.spi.ProcessBean;
-import javax.enterprise.inject.spi.ProcessInjectionPoint;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
-
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationBean;
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationModel;
-import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.literal.ComponentLiteral;
-import org.apache.aries.cdi.container.internal.literal.ConfigurationLiteral;
-import org.apache.aries.cdi.container.internal.literal.ReferenceLiteral;
-import org.apache.aries.cdi.container.internal.model.ObserverMethodAnnotated;
-import org.apache.aries.cdi.container.internal.reference.ReferenceBean;
-import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
-import org.apache.aries.cdi.container.internal.service.ServiceDeclaration;
-import org.apache.aries.cdi.container.internal.util.Sets;
-import org.apache.aries.cdi.container.internal.util.Types;
-import org.osgi.service.cdi.annotations.Component;
-import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferencePolicy;
-import org.osgi.service.cdi.annotations.ServiceEvent;
-import org.osgi.service.cdi.annotations.ServiceScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ComponentRuntimeExtension implements Extension {
 
-	public ComponentRuntimeExtension(ContainerState containerState) {
+/*	public ComponentRuntimeExtension(ContainerState containerState) {
 		_containerState = containerState;
 	}
 
@@ -168,9 +122,9 @@ public class ComponentRuntimeExtension implements Extension {
 		return null;
 	}
 
-	/*
+
 	 * discover if an annotated class is a component
-	 */
+
 	<X> void processAnnotatedType(@Observes ProcessAnnotatedType<X> pat, BeanManager beanManager) {
 		final AnnotatedType<X> at = pat.getAnnotatedType();
 
@@ -396,5 +350,5 @@ public class ComponentRuntimeExtension implements Extension {
 	private final AtomicInteger _mark = new AtomicInteger();
 	private final ContainerState _containerState;
 	private final List<Bean<?>> _beans = new CopyOnWriteArrayList<>();
-
+*/
 }

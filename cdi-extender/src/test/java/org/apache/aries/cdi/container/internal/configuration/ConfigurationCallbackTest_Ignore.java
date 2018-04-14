@@ -14,19 +14,9 @@
 
 package org.apache.aries.cdi.container.internal.configuration;
 
-import static org.osgi.framework.Constants.SERVICE_PID;
-import static org.apache.aries.cdi.container.test.TestUtil.*;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
-
 public class ConfigurationCallbackTest_Ignore {
 
-	@Test
+/*	@Test
 	public void test_emptyAdd() throws Exception {
 		ConfigurationCallback callback = getCallback(POLICY);
 
@@ -351,5 +341,5 @@ public class ConfigurationCallbackTest_Ignore {
 	}
 
 	private ConfigurationPolicy POLICY = ConfigurationPolicy.IGNORE;
-
+*/
 }

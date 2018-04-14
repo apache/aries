@@ -8,5 +8,5 @@ ASL-2.0 license.
 The repackaging adds additional OSGi metadata following the directions
 located at [2].
 
-[1] https://jcp.org/en/jsr/detail?id=250
+[1] https://jcp.org/en/jsr/detail?id=330
 [2] http://apache.org/legal/resolved.html#osgi-category-b

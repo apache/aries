@@ -20,8 +20,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.aries.cdi.container.internal.command.CdiCommand;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
+import org.apache.aries.cdi.container.internal.phase.Init;
 import org.apache.aries.cdi.container.internal.phase.Phase;
-import org.apache.aries.cdi.container.internal.phase.Phase_Init;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class CdiBundle implements Extension {
 			_command.add(_bundle, _containerState);
 
 			try {
-				_nextPhase = new Phase_Init(_bundle, _containerState);
+				_nextPhase = new Init(_bundle, _containerState);
 
 				_nextPhase.open();
 			}
@@ -70,8 +70,6 @@ public class CdiBundle implements Extension {
 				}
 
 				_command.remove(_bundle);
-
-				_containerState.close();
 
 				_containerState = null;
 			}
@@ -104,8 +102,6 @@ public class CdiBundle implements Extension {
 			_nextPhase.close();
 
 			_nextPhase = null;
-
-			_containerState.close();
 
 			_containerState = null;
 

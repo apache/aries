@@ -15,22 +15,23 @@
 package org.apache.aries.cdi.container.internal.reference;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.apache.aries.cdi.container.internal.model.CollectionType;
-import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
+import org.apache.aries.cdi.container.internal.util.Sets;
 import org.apache.aries.cdi.container.test.MockInjectionPoint;
 import org.apache.aries.cdi.container.test.beans.Foo;
 import org.junit.Test;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
+import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.util.converter.TypeReference;
 
 public class ReferenceModel_ServiceReferenceTest {
@@ -44,7 +45,7 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -55,7 +56,7 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -66,28 +67,29 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test
 	public void withServiceDefined() throws Exception {
-		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			ServiceReference
+			ServiceReference<Integer>
 		>(){}.getType();
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
+		InjectionPoint injectionPoint = new MockInjectionPoint(type, Sets.hashSet(Reference.Literal.of(Integer.class, "")));
 
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
+		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
 		assertEquals(ServiceReference.class, referenceModel.getBeanClass());
-		assertEquals(Callable.class, referenceModel.getServiceClass());
+		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MANDATORY, referenceModel.getCardinality());
+		assertFalse(referenceModel.dynamic());
+		assertFalse(referenceModel.optional());
+		assertTrue(referenceModel.unary());
 		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void withServiceDefined_wildcard() throws Exception {
 		Type type = new TypeReference<
 			ServiceReference<?>
@@ -95,13 +97,7 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
-
-		assertEquals(ServiceReference.class, referenceModel.getBeanClass());
-		assertEquals(Callable.class, referenceModel.getServiceClass());
-		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MANDATORY, referenceModel.getCardinality());
-		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -113,7 +109,7 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -124,41 +120,25 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test
 	public void collectionWithServiceDefined() throws Exception {
-		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			Collection<ServiceReference>
+			Collection<ServiceReference<Integer>>
 		>(){}.getType();
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
+		InjectionPoint injectionPoint = new MockInjectionPoint(type, Sets.hashSet(Reference.Literal.of(Integer.class, "")));
 
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
-
-		assertEquals(Collection.class, referenceModel.getBeanClass());
-		assertEquals(Callable.class, referenceModel.getServiceClass());
-		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
-		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
-	}
-
-	@Test
-	public void collectionWithServiceDefined_wildcard() throws Exception {
-		Type type = new TypeReference<
-			Collection<ServiceReference<?>>
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
+		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
 		assertEquals(Collection.class, referenceModel.getBeanClass());
-		assertEquals(Callable.class, referenceModel.getServiceClass());
+		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
+		assertFalse(referenceModel.dynamic());
+		assertTrue(referenceModel.optional());
+		assertFalse(referenceModel.unary());
 		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
 	}
 
@@ -171,7 +151,7 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -182,106 +162,25 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test
 	public void listWithServiceDefined() throws Exception {
-		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			List<ServiceReference>
+			List<ServiceReference<Integer>>
 		>(){}.getType();
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
+		InjectionPoint injectionPoint = new MockInjectionPoint(type, Sets.hashSet(Reference.Literal.of(Integer.class, "")));
 
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
+		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
 		assertEquals(List.class, referenceModel.getBeanClass());
-		assertEquals(Callable.class, referenceModel.getServiceClass());
+		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
-		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
-	}
-
-	@Test
-	public void listWithServiceDefined_wildcard() throws Exception {
-		Type type = new TypeReference<
-			List<ServiceReference<?>>
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
-
-		assertEquals(List.class, referenceModel.getBeanClass());
-		assertEquals(Callable.class, referenceModel.getServiceClass());
-		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
-		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void instanceWithoutServiceDefined() throws Exception {
-		@SuppressWarnings("rawtypes")
-		Type type = new TypeReference<
-			Instance<ServiceReference>
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void instanceWithoutServiceDefined_wildcard() throws Exception {
-		Type type = new TypeReference<
-			Instance<ServiceReference<?>>
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
-	}
-
-	@Test
-	public void instanceWithServiceDefined() throws Exception {
-		@SuppressWarnings("rawtypes")
-		Type type = new TypeReference<
-			Instance<ServiceReference>
-		>(){}.getType();
-		@SuppressWarnings("rawtypes")
-		Type injectionPointType = new TypeReference<
-			ServiceReference
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
-
-		assertEquals(ServiceReference.class, referenceModel.getBeanClass());
-		assertEquals(Callable.class, referenceModel.getServiceClass());
-		assertEquals(injectionPointType, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
-		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
-	}
-
-	@Test
-	public void instanceWithServiceDefined_wildcard() throws Exception {
-		Type type = new TypeReference<
-			Instance<ServiceReference<?>>
-		>(){}.getType();
-		Type injectionPointType = new TypeReference<
-			ServiceReference<?>
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
-
-		assertEquals(ServiceReference.class, referenceModel.getBeanClass());
-		assertEquals(Callable.class, referenceModel.getServiceClass());
-		assertEquals(injectionPointType, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
+		assertFalse(referenceModel.dynamic());
+		assertTrue(referenceModel.optional());
+		assertFalse(referenceModel.unary());
 		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
 	}
 
@@ -295,16 +194,18 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
 		assertEquals(ServiceReference.class, referenceModel.getBeanClass());
-		assertEquals(Foo.class, referenceModel.getServiceClass());
+		assertEquals(Foo.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MANDATORY, referenceModel.getCardinality());
+		assertFalse(referenceModel.dynamic());
+		assertFalse(referenceModel.optional());
+		assertTrue(referenceModel.unary());
 		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void typed_withoutServiceDefined_wildcardExt() throws Exception {
 		Type type = new TypeReference<
 			ServiceReference<? extends Foo>
@@ -312,13 +213,7 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
-
-		assertEquals(ServiceReference.class, referenceModel.getBeanClass());
-		assertEquals(Foo.class, referenceModel.getServiceClass());
-		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MANDATORY, referenceModel.getCardinality());
-		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -327,9 +222,9 @@ public class ReferenceModel_ServiceReferenceTest {
 			ServiceReference<Foo>
 		>(){}.getType();
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
+		InjectionPoint injectionPoint = new MockInjectionPoint(type, Sets.hashSet(Reference.Literal.of(Integer.class, "")));
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test
@@ -340,12 +235,14 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
 		assertEquals(Collection.class, referenceModel.getBeanClass());
-		assertEquals(Foo.class, referenceModel.getServiceClass());
+		assertEquals(Foo.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
+		assertFalse(referenceModel.dynamic());
+		assertTrue(referenceModel.optional());
+		assertFalse(referenceModel.unary());
 		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
 	}
 
@@ -355,9 +252,9 @@ public class ReferenceModel_ServiceReferenceTest {
 			Collection<ServiceReference<Foo>>
 		>(){}.getType();
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
+		InjectionPoint injectionPoint = new MockInjectionPoint(type, Sets.hashSet(Reference.Literal.of(Integer.class, "")));
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
 
 	@Test
@@ -368,12 +265,14 @@ public class ReferenceModel_ServiceReferenceTest {
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(type);
 
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
+		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
 		assertEquals(List.class, referenceModel.getBeanClass());
-		assertEquals(Foo.class, referenceModel.getServiceClass());
+		assertEquals(Foo.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
+		assertFalse(referenceModel.dynamic());
+		assertTrue(referenceModel.optional());
+		assertFalse(referenceModel.unary());
 		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
 	}
 
@@ -383,51 +282,8 @@ public class ReferenceModel_ServiceReferenceTest {
 			List<ServiceReference<Foo>>
 		>(){}.getType();
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
+		InjectionPoint injectionPoint = new MockInjectionPoint(type, Sets.hashSet(Reference.Literal.of(Integer.class, "")));
 
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
+		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
-
-	@Test
-	public void typed_instanceWithoutServiceDefined() throws Exception {
-		Type type = new TypeReference<
-			Instance<ServiceReference<Foo>>
-		>(){}.getType();
-		Type injectionPointType = new TypeReference<
-			ServiceReference<Foo>
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		ReferenceModel referenceModel = new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).build();
-
-		assertEquals(ServiceReference.class, referenceModel.getBeanClass());
-		assertEquals(Foo.class, referenceModel.getServiceClass());
-		assertEquals(injectionPointType, referenceModel.getInjectionPointType());
-		assertEquals(ReferenceCardinality.MULTIPLE, referenceModel.getCardinality());
-		assertEquals(CollectionType.REFERENCE, referenceModel.getCollectionType());
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void typed_instanceWithServiceDefined() throws Exception {
-		Type type = new TypeReference<
-			Instance<ServiceReference<Foo>>
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void typed_instanceWithServiceDefined_wildcardExt() throws Exception {
-		Type type = new TypeReference<
-			Instance<ServiceReference<? extends Foo>>
-		>(){}.getType();
-
-		InjectionPoint injectionPoint = new MockInjectionPoint(type);
-
-		new ReferenceModel.Builder(injectionPoint.getQualifiers()).annotated(injectionPoint.getAnnotated()).service(Callable.class).build();
-	}
-
 }
