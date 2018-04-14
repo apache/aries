@@ -1,4 +1,4 @@
-Import-Package: javax.servlet;resoltion:=optional, *
--contract: JavaServlet;resoltion:=optional
+Import-Package: javax.servlet;resolution:=optional, *
+-contract: JavaServlet;resolution:=optional
 -exportcontents: ${packages;VERSIONED}
 -includeresource: META-INF/=LICENSE, META-INF/=NOTICE
