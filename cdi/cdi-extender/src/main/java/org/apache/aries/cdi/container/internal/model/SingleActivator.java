@@ -59,8 +59,10 @@ public class SingleActivator extends InstanceActivator {
 
 		@Override
 		public SingleActivator build() {
-			return new SingleActivator(this);
+			return _cache.computeIfAbsent(_instance, i -> new SingleActivator(this));
 		}
+
+		private final Map<ExtendedComponentInstanceDTO, SingleActivator> _cache = new ConcurrentHashMap<>();
 
 	}
 
@@ -93,7 +95,7 @@ public class SingleActivator extends InstanceActivator {
 
 	@Override
 	public Op closeOp() {
-		return Op.of(Mode.CLOSE, Op.Type.SINGLE_ACTIVATOR, instance.template.name);
+		return Op.of(Mode.CLOSE, Op.Type.SINGLE_ACTIVATOR, instance.ident());
 	}
 
 	@Override
@@ -226,7 +228,7 @@ public class SingleActivator extends InstanceActivator {
 
 	@Override
 	public Op openOp() {
-		return Op.of(Mode.OPEN, Op.Type.SINGLE_ACTIVATOR, instance.template.name);
+		return Op.of(Mode.OPEN, Op.Type.SINGLE_ACTIVATOR, instance.ident());
 	}
 
 	@Override

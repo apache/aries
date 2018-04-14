@@ -60,8 +60,10 @@ public class FactoryActivator extends InstanceActivator {
 
 		@Override
 		public FactoryActivator build() {
-			return new FactoryActivator(this);
+			return _cache.computeIfAbsent(_instance, i -> new FactoryActivator(this));
 		}
+
+		private final Map<ExtendedComponentInstanceDTO, FactoryActivator> _cache = new ConcurrentHashMap<>();
 
 	}
 
@@ -94,7 +96,7 @@ public class FactoryActivator extends InstanceActivator {
 
 	@Override
 	public Op closeOp() {
-		return Op.of(Mode.CLOSE, Type.FACTORY_ACTIVATOR, instance.template.name);
+		return Op.of(Mode.CLOSE, Type.FACTORY_ACTIVATOR, instance.ident());
 	}
 
 	@Override
@@ -227,7 +229,7 @@ public class FactoryActivator extends InstanceActivator {
 
 	@Override
 	public Op openOp() {
-		return Op.of(Mode.OPEN, Type.FACTORY_ACTIVATOR, instance.template.name);
+		return Op.of(Mode.OPEN, Type.FACTORY_ACTIVATOR, instance.ident());
 	}
 
 	@Override
