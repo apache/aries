@@ -19,11 +19,8 @@ import java.util.Collection;
 
 import javax.enterprise.inject.Produces;
 
-import org.osgi.service.cdi.annotations.Reference;
-
 public class CollectionFooProducer {
 	@Produces
-	@Reference
 	public Collection<Foo> getFoo() {
 		return Arrays.asList(new Foo() {});
 	}

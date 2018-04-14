@@ -14,20 +14,9 @@
 
 package org.apache.aries.cdi.container.internal.configuration;
 
-import static org.apache.aries.cdi.container.test.TestUtil.*;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
-import org.osgi.service.cm.ManagedService;
-
 public class ConfigurationManagedServiceTest_Optional {
 
-	@Test(expected = IllegalArgumentException.class)
+/*	@Test(expected = IllegalArgumentException.class)
 	public void test_emptyAdd() throws Exception {
 		ConfigurationCallback configurationCallback = getCallback(POLICY);
 
@@ -268,5 +257,5 @@ public class ConfigurationManagedServiceTest_Optional {
 	}
 
 	private ConfigurationPolicy POLICY = ConfigurationPolicy.OPTIONAL;
-
+*/
 }

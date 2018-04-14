@@ -29,16 +29,15 @@ import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Named;
 
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
+import org.apache.aries.cdi.container.internal.component.OSGiBean;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
 
 public class ReferenceBean implements Bean<Object> {
 
 	public ReferenceBean(
 		ContainerState containerState,
 		ReferenceModel referenceModel,
-		ComponentModel componentModel,
+		OSGiBean componentModel,
 		InjectionPoint injectionPoint,
 		BeanManager beanManager) {
 
@@ -72,7 +71,7 @@ public class ReferenceBean implements Bean<Object> {
 
 	@Override
 	public Class<?> getBeanClass() {
-		return _referenceModel.getBeanClass();
+		return null; // TODO _referenceModel.getBeanClass();
 	}
 
 	@Override
@@ -102,7 +101,7 @@ public class ReferenceBean implements Bean<Object> {
 
 	@Override
 	public Set<Type> getTypes() {
-		return _referenceModel.getTypes();
+		return null; // TODO _referenceModel.getTypes();
 	}
 
 	@Override
@@ -112,7 +111,7 @@ public class ReferenceBean implements Bean<Object> {
 
 	@Override
 	public boolean isNullable() {
-		return _referenceModel.getCardinality() == ReferenceCardinality.OPTIONAL ? true : false;
+		return false;//_referenceModel.getCardinality() == ReferenceCardinality.OPTIONAL ? true : false;
 	}
 
 	@Override
@@ -129,13 +128,13 @@ public class ReferenceBean implements Bean<Object> {
 	private Object _getInjectedInstance() {
 		Map<String, ReferenceCallback> map = _containerState.referenceCallbacks().get(_componentModel);
 
-		ReferenceCallback referenceCallback = map.get(_referenceModel.getName());
+//		ReferenceCallback referenceCallback = map.get(_referenceModel.getName());
 
-		return referenceCallback.tracked().values().iterator().next();
+		return null; // TODO referenceCallback.tracked().values().iterator().next();
 	}
 
 	private final BeanManager _beanManager;
-	private final ComponentModel _componentModel;
+	private final OSGiBean _componentModel;
 	private final ContainerState _containerState;
 	private final InjectionPoint _injectionPoint;
 	private final String _name;

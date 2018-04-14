@@ -24,13 +24,10 @@ import org.apache.aries.cdi.test.interfaces.SingletonScoped;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
-import org.osgi.service.cdi.annotations.ServiceScope;
+import org.osgi.service.cdi.annotations.Service;
 
-@Component(
-	service = {BeanService.class, Instance_ServiceReference.class},
-	scope = ServiceScope.SINGLETON
-)
+@Component
+@Service({BeanService.class, Instance_ServiceReference.class})
 @SuppressWarnings("rawtypes")
 public class Instance_ServiceReference implements BeanService<ServiceReference> {
 
@@ -50,7 +47,7 @@ public class Instance_ServiceReference implements BeanService<ServiceReference> 
 	}
 
 	@Inject
-	@Reference(service = SingletonScoped.class)
+	@Reference(SingletonScoped.class)
 	Instance<ServiceReference> _instance;
 
 }

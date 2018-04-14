@@ -14,8 +14,9 @@
 
 package org.apache.aries.cdi.test.cases;
 
+import javax.enterprise.inject.spi.BeanManager;
+
 import org.osgi.framework.Bundle;
-import org.osgi.service.cdi.CdiContainer;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class CdiExtenderTests extends AbstractTestCase {
@@ -23,7 +24,7 @@ public class CdiExtenderTests extends AbstractTestCase {
 	public void testStopExtender() throws Exception {
 		Bundle cdiExtenderBundle = getCdiExtenderBundle();
 
-		ServiceTracker<CdiContainer,CdiContainer> serviceTracker = getServiceTracker(cdiBundle.getBundleId());
+		ServiceTracker<BeanManager,BeanManager> serviceTracker = getServiceTracker(cdiBundle);
 
 		try {
 			assertNotNull(serviceTracker.waitForService(timeout));

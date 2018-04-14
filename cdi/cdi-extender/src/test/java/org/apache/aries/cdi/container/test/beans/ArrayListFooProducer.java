@@ -18,11 +18,8 @@ import java.util.ArrayList;
 
 import javax.enterprise.inject.Produces;
 
-import org.osgi.service.cdi.annotations.Reference;
-
 public class ArrayListFooProducer {
 	@Produces
-	@Reference
 	public ArrayList<Foo> getFoo() {
 		ArrayList<Foo> al = new ArrayList<>();
 		al.add(new Foo() {});

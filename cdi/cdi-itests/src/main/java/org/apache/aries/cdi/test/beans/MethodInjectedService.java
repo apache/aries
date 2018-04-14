@@ -19,12 +19,10 @@ import javax.inject.Inject;
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.service.cdi.annotations.Component;
-import org.osgi.service.cdi.annotations.ServiceScope;
+import org.osgi.service.cdi.annotations.Service;
 
-@Component(
-	service = {MethodInjectedService.class, BeanService.class},
-	scope = ServiceScope.SINGLETON
-)
+@Component
+@Service({MethodInjectedService.class, BeanService.class})
 public class MethodInjectedService implements BeanService<Pojo> {
 
 	@Inject

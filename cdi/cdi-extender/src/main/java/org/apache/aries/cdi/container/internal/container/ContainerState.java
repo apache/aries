@@ -25,7 +25,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
+import org.apache.aries.cdi.container.internal.component.OSGiBean;
 import org.apache.aries.cdi.container.internal.configuration.ConfigurationCallback;
 import org.apache.aries.cdi.container.internal.extension.ExtensionDependency;
 import org.apache.aries.cdi.container.internal.loader.BundleClassLoader;
@@ -91,6 +91,7 @@ public class ContainerState {
 
 		_msRegistrator = new Registrator<ManagedService>() {
 
+			@Override
 			public void registerService(String[] classNames, ManagedService service, Dictionary<String, ?> properties) {
 				registrations.add(bundleContext().registerService(ManagedService.class, service, properties));
 			}
@@ -158,11 +159,7 @@ public class ContainerState {
 		return _bundle.map(b -> _classLoader).orElse(getClass().getClassLoader());
 	}
 
-	public synchronized void close() {
-		// no op
-	}
-
-	public Map<ComponentModel, Map<String, ConfigurationCallback>> configurationCallbacks() {
+	public Map<OSGiBean, Map<String, ConfigurationCallback>> configurationCallbacks() {
 		return _configurationCallbacksMap;
 	}
 
@@ -191,15 +188,15 @@ public class ContainerState {
 		return _msRegistrator;
 	}
 
-	public Map<ComponentModel, Map<String, ReferenceCallback>> referenceCallbacks() {
+	public Map<OSGiBean, Map<String, ReferenceCallback>> referenceCallbacks() {
 		return _referenceCallbacksMap;
 	}
 
-	public Map<ComponentModel, Map<String, ObserverMethod<ReferenceEvent<?>>>> referenceObservers() {
+	public Map<OSGiBean, Map<String, ObserverMethod<ReferenceEvent<?>>>> referenceObservers() {
 		return _referenceObserversMap;
 	}
 
-	public Map<ComponentModel, ServiceDeclaration> serviceComponents() {
+	public Map<OSGiBean, ServiceDeclaration> serviceComponents() {
 		return _serviceComponents;
 	}
 
@@ -225,14 +222,14 @@ public class ContainerState {
 	private final Registrator<BeanManager> _bmRegistrator;
 	private final Optional<Bundle> _bundle;
 	private ClassLoader _classLoader;
-	private final Map<ComponentModel, Map<String, ConfigurationCallback>> _configurationCallbacksMap = new ConcurrentHashMap<>();
+	private final Map<OSGiBean, Map<String, ConfigurationCallback>> _configurationCallbacksMap = new ConcurrentHashMap<>();
 	private final Context _context;
 	private final Bundle _extenderBundle;
 	private List<ExtensionDependency> _extensionDependencies;
 	private final Registrator<ManagedService> _msRegistrator;
-	private final Map<ComponentModel, Map<String, ReferenceCallback>> _referenceCallbacksMap = new ConcurrentHashMap<>();
-	private final Map<ComponentModel, Map<String, ObserverMethod<ReferenceEvent<?>>>> _referenceObserversMap = new ConcurrentHashMap<>();
-	private final Map<ComponentModel, ServiceDeclaration> _serviceComponents = new ConcurrentHashMap<>();
+	private final Map<OSGiBean, Map<String, ReferenceCallback>> _referenceCallbacksMap = new ConcurrentHashMap<>();
+	private final Map<OSGiBean, Map<String, ObserverMethod<ReferenceEvent<?>>>> _referenceObserversMap = new ConcurrentHashMap<>();
+	private final Map<OSGiBean, ServiceDeclaration> _serviceComponents = new ConcurrentHashMap<>();
 	private final Registrator<Object> _serviceRegistrator;
 	private final Tracker _tracker;
 

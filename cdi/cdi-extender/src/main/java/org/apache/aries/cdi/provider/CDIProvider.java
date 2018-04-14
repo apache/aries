@@ -15,19 +15,12 @@
 package org.apache.aries.cdi.provider;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.util.TypeLiteral;
-
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 
 public class CDIProvider implements javax.enterprise.inject.spi.CDIProvider {
 
@@ -45,36 +38,7 @@ public class CDIProvider implements javax.enterprise.inject.spi.CDIProvider {
 
 		@Override
 		public BeanManager getBeanManager() {
-			ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-			while (!(loader instanceof BundleReference)) {
-				if (loader == null) {
-					throw new IllegalStateException("Loader is not an OSGi classLoader!");
-				}
-				loader = loader.getParent();
-			}
-
-			BundleReference bundleReference = (BundleReference)loader;
-
-			Bundle bundle = bundleReference.getBundle();
-
-			BundleContext bundleContext = bundle.getBundleContext();
-
-			try {
-				Collection<ServiceReference<BeanManager>> serviceReferences = bundleContext.getServiceReferences(
-					BeanManager.class,
-					"(&(objectClass=" + BeanManager.class.getName() + ")(service.bundleid=" + bundle.getBundleId() +
-						"))");
-
-				if (serviceReferences.isEmpty()) {
-					throw new IllegalStateException("BeanManager not found for " + bundle);
-				}
-
-				return bundleContext.getService(serviceReferences.iterator().next());
-			}
-			catch (InvalidSyntaxException e) {
-				throw new IllegalArgumentException(e);
-			}
+			throw new UnsupportedOperationException();
 		}
 
 		@Override

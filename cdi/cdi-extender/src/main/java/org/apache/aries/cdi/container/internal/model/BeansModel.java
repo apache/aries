@@ -16,19 +16,24 @@ package org.apache.aries.cdi.container.internal.model;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
+import org.apache.aries.cdi.container.internal.component.OSGiBean;
 import org.jboss.weld.bootstrap.spi.BeansXml;
 import org.jboss.weld.xml.BeansXmlParser;
 
 public class BeansModel {
 
 	public BeansModel(
-		Map<String, ComponentModel> components,
+		Map<String, OSGiBean> beans,
+		List<Class<?>> qualifierBlackList,
+		List<Throwable> errors,
 		Collection<URL> beanDescriptorURLs) {
 
-		_components = components;
+		_beans = beans;
+		_qualifierBlackList = qualifierBlackList;
+		_errors = errors;
 
 		BeansXml beansXml = BeansXml.EMPTY_BEANS_XML;
 
@@ -40,31 +45,37 @@ public class BeansModel {
 		_beansXml = beansXml;
 	}
 
-	public void addComponentModel(String componentClass, ComponentModel componentModel) {
-		_components.put(componentClass, componentModel);
-	}
-
 	public Collection<String> getBeanClassNames() {
-		return _components.keySet();
+		return _beans.keySet();
 	}
 
 	public BeansXml getBeansXml() {
 		return _beansXml;
 	}
 
-	public ComponentModel getComponentModel(String componentClass) {
-		return _components.get(componentClass);
+	public List<Class<?>> getQualifierBlackList() {
+		return _qualifierBlackList;
 	}
 
-	public Collection<ComponentModel> getComponentModels() {
-		return _components.values();
+	public List<Throwable> getErrors() {
+		return _errors;
 	}
 
-	public void removeComponentModel(String beanClassName) {
-		_components.remove(beanClassName);
+	public OSGiBean getOSGiBean(String beanClass) {
+		return _beans.get(beanClass);
 	}
 
+	public Collection<OSGiBean> getOSGiBeans() {
+		return _beans.values();
+	}
+
+	public void putOSGiBean(String beanClass, OSGiBean osgiBean) {
+		_beans.put(beanClass, osgiBean);
+	}
+
+	private final Map<String, OSGiBean> _beans;
 	private final BeansXml _beansXml;
-	private final Map<String, ComponentModel> _components;
+	private final List<Throwable> _errors;
+	private final List<Class<?>> _qualifierBlackList;
 
 }

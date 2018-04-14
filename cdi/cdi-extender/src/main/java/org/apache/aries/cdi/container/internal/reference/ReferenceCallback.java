@@ -14,39 +14,30 @@
 
 package org.apache.aries.cdi.container.internal.reference;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
-
-import javax.enterprise.inject.spi.ObserverMethod;
-
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
-import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.model.CollectionType;
-import org.apache.aries.cdi.container.internal.model.Context;
-import org.apache.aries.cdi.container.internal.model.ServiceEventImpl;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
-import org.osgi.service.cdi.annotations.ServiceEvent;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class ReferenceCallback implements ServiceTrackerCustomizer<Object, Object> {
 
-	public static class Builder {
+	@Override
+	public Object addingService(ServiceReference<Object> reference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void modifiedService(ServiceReference<Object> reference, Object service) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void removedService(ServiceReference<Object> reference, Object service) {
+		// TODO Auto-generated method stub
+
+	}
+
+/*	public static class Builder {
 
 		public Builder(Context context) {
 			this(null, null, context);
@@ -182,7 +173,7 @@ public class ReferenceCallback implements ServiceTrackerCustomizer<Object, Objec
 			else {
 				_tracked.put(reference, object);
 
-				observer().ifPresent(o -> o.notify(event(object, ServiceEventImpl.Event.ADDING)));
+				observer().ifPresent(o -> o.notify(event(object, ReferenceEventImpl.Event.ADDING)));
 			}
 
 			_onAdd.ifPresent(f -> f.accept(this));
@@ -204,7 +195,7 @@ public class ReferenceCallback implements ServiceTrackerCustomizer<Object, Objec
 				entry -> {
 					_tracked.put(entry.getKey(), entry.getValue());
 
-					observer().ifPresent(o -> o.notify(event(entry.getValue(), ServiceEventImpl.Event.ADDING)));
+					observer().ifPresent(o -> o.notify(event(entry.getValue(), ReferenceEventImpl.Event.ADDING)));
 
 					return true;
 				}
@@ -251,7 +242,7 @@ public class ReferenceCallback implements ServiceTrackerCustomizer<Object, Objec
 				else {
 					_tracked.put(reference, object);
 
-					observer().ifPresent(o -> o.notify(event(object, ServiceEventImpl.Event.MODIFIED)));
+					observer().ifPresent(o -> o.notify(event(object, ReferenceEventImpl.Event.MODIFIED)));
 				}
 			}
 
@@ -275,7 +266,7 @@ public class ReferenceCallback implements ServiceTrackerCustomizer<Object, Objec
 			else {
 				final Object instance = _tracked.remove(reference);
 
-				observer().ifPresent(o -> o.notify(event(instance, ServiceEventImpl.Event.REMOVED)));
+				observer().ifPresent(o -> o.notify(event(instance, ReferenceEventImpl.Event.REMOVED)));
 			}
 
 			_onRemove.ifPresent(f -> f.accept(this));
@@ -285,8 +276,8 @@ public class ReferenceCallback implements ServiceTrackerCustomizer<Object, Objec
 		}
 	}
 
-	<T> ServiceEvent<T> event(T t, ServiceEventImpl.Event event) {
-		return new ServiceEventImpl<T>(t, event);
+	<T> ServiceEvent<T> event(T t, ReferenceEventImpl.Event event) {
+		return new ReferenceEventImpl<T>(t, event);
 	}
 
 	public boolean resolved() {
@@ -404,5 +395,5 @@ public class ReferenceCallback implements ServiceTrackerCustomizer<Object, Objec
 		private List<String> _keys;
 
 	}
-
+*/
 }

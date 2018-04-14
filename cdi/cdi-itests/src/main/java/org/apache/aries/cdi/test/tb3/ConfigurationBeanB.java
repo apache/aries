@@ -14,22 +14,33 @@
 
 package org.apache.aries.cdi.test.tb3;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
+import javax.inject.Qualifier;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
-import org.osgi.service.cdi.annotations.ServiceScope;
+import org.osgi.service.cdi.annotations.PID;
+import org.osgi.service.cdi.annotations.PID.Policy;
 
-@Component(
-	property = "bean=B",
-	scope = ServiceScope.SINGLETON
-)
+@Component
+@PID(value = "org.apache.aries.cdi.test.tb3.ConfigurationBeanA", policy = Policy.REQUIRED)
+@PID(policy = Policy.REQUIRED)
+@ConfigurationBeanB.Props
 public class ConfigurationBeanB implements BeanService<Callable<int[]>> {
+
+	@Qualifier @Retention(RUNTIME) @Target(TYPE )
+	public @interface Props {
+		String bean() default "B";
+	}
 
 	@Override
 	public String doSomething() {
@@ -46,10 +57,7 @@ public class ConfigurationBeanB implements BeanService<Callable<int[]>> {
 		};
 	}
 
-	@Configuration(
-		configurationPolicy = ConfigurationPolicy.REQUIRE,
-		value = {"org.apache.aries.cdi.test.tb3.ConfigurationBeanA", "$"}
-	)
+	@Configuration
 	@Inject
 	Map<String, Object> config;
 

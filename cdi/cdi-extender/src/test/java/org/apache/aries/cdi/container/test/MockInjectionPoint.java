@@ -19,6 +19,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
@@ -31,6 +32,13 @@ public class MockInjectionPoint implements InjectionPoint {
 	public MockInjectionPoint(Type type) {
 		_type = type;
 		_annotated = new MockAnnotated(_type);
+		_qualifiers = Collections.emptySet();
+	}
+
+	public MockInjectionPoint(Type type, Set<Annotation> qualifiers) {
+		_type = type;
+		_annotated = new MockAnnotated(_type);
+		_qualifiers = qualifiers;
 	}
 
 	@Override
@@ -40,7 +48,7 @@ public class MockInjectionPoint implements InjectionPoint {
 
 	@Override
 	public Set<Annotation> getQualifiers() {
-		return Collections.emptySet();
+		return _qualifiers;
 	}
 
 	@Override
@@ -75,26 +83,33 @@ public class MockInjectionPoint implements InjectionPoint {
 
 	private final Type _type;
 	private final Annotated _annotated;
+	private final Set<Annotation> _qualifiers;
 
-	private static class MockAnnotated implements Annotated {
+	private class MockAnnotated implements Annotated {
 
 		public MockAnnotated(Type service) {
 			_service = service;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-			return null;
+			return _qualifiers.stream().filter(
+				ann -> ann.annotationType().equals(annotationType)
+			).map(ann -> (T)ann).findFirst().orElse(null);
 		}
 
 		@Override
 		public Set<Annotation> getAnnotations() {
-			return Collections.emptySet();
+			return _qualifiers;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <T extends Annotation> Set<T> getAnnotations(Class<T> annotationType) {
-			return null;
+			return _qualifiers.stream().filter(
+				ann -> ann.annotationType().equals(annotationType)
+			).map(ann -> (T)ann).collect(Collectors.toSet());
 		}
 
 		@Override
@@ -104,12 +119,14 @@ public class MockInjectionPoint implements InjectionPoint {
 
 		@Override
 		public Set<Type> getTypeClosure() {
-			return Sets.hashSet(_service);
+			return Sets.hashSet(_service, Object.class);
 		}
 
 		@Override
 		public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-			return false;
+			return _qualifiers.stream().filter(
+				ann -> ann.annotationType().equals(annotationType)
+			).findFirst().isPresent();
 		}
 
 		private final Type _service;

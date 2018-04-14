@@ -22,8 +22,7 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.EventMetadata;
 
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
-import org.osgi.service.cdi.annotations.ServiceEvent;
+import org.osgi.service.cdi.reference.ReferenceEvent;
 
 @ApplicationScoped
 public class ObserverFoo {
@@ -33,21 +32,21 @@ public class ObserverFoo {
 	}
 
 	void foos(
-		@Observes
-		@Reference(cardinality = ReferenceCardinality.MULTIPLE)
-		ServiceEvent<Foo> event,
+		@Observes @Reference ReferenceEvent<Foo> event,
 		EventMetadata eventMetadata) {
 
-		event.adding(
+		event.onAdding(
 			foo -> {
 				System.out.printf("Adding %s, %s%n", foo, eventMetadata);
 				_foos.add(foo);
 			}
-		).modified(
+		);
+		event.onUpdate(
 			foo -> {
 				System.out.printf("Modified %s, %s%n", foo, eventMetadata);
 			}
-		).removed(
+		);
+		event.onRemove(
 			foo -> {
 				System.out.printf("Removed %s, %s%n", foo, eventMetadata);
 				_foos.remove(foo);
