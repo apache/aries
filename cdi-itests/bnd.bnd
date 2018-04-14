@@ -29,7 +29,8 @@ p = org.apache.aries.cdi.test
 	tb7.jar,\
 	tb8.jar,\
 	tb9.jar,\
-	tb10.jar
+	tb10.jar,\
+	tb11.jar
 
 # Don't forget that we had to coax the `maven-jar-plugin` NOT to include the `sub-bundle` packages in
 # the root bundle:

@@ -103,10 +103,6 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 			if (requiresUpdate) {
 				InstanceActivator activator = _builder.setInstance(
 					_componentInstanceDTO
-				).setReferenceDTO(
-					_referenceDTO
-				).setReference(
-					reference
 				).build();
 
 				updateStatically(activator);
@@ -172,10 +168,6 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 			if (requiresUpdate) {
 				InstanceActivator activator = _builder.setInstance(
 					_componentInstanceDTO
-				).setReferenceDTO(
-					_referenceDTO
-				).setReference(
-					reference
 				).build();
 
 				updateStatically(activator);

@@ -64,7 +64,7 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 	}
 
 	public boolean close() {
-		_containerState.submit(Op.of(Mode.CLOSE, Type.REFERENCES, template.name),
+		_containerState.submit(Op.of(Mode.CLOSE, Type.REFERENCES, ident()),
 			() -> {
 				references.removeIf(
 					r -> {
@@ -186,7 +186,7 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 		);
 
 		_containerState.submit(
-			Op.of(Mode.OPEN, Type.REFERENCES, template.name),
+			Op.of(Mode.OPEN, Type.REFERENCES, ident()),
 			() -> {
 				references.stream().map(ExtendedReferenceDTO.class::cast).forEach(
 					r -> r.serviceTracker.open()
@@ -249,7 +249,9 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 			);
 		}
 
-		props.put(Constants.SERVICE_PID, servicePids);
+		if (!servicePids.isEmpty()) {
+			props.put(Constants.SERVICE_PID, servicePids);
+		}
 		props.put("component.id", _componentId);
 		props.put("component.name", template.name);
 

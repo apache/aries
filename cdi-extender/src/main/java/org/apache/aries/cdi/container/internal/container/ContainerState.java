@@ -270,7 +270,7 @@ public class ContainerState {
 			String query = "(service.pid=".concat(pid).concat(")");
 
 			if (factory) {
-				query = "(factory.pid=".concat(pid).concat(")");
+				query = "(service.factoryPid=".concat(pid).concat(")");
 			}
 
 			return Optional.ofNullable(
