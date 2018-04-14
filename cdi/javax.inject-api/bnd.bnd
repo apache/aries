@@ -2,7 +2,7 @@ Bundle-License: ASL-2.0;link="http://www.apache.org/licenses/LICENSE-2.0.txt"
 Provide-Capability: \
 	osgi.contract; \
 		osgi.contract=JavaInject; \
-		uses:="javax.inject"; \
+		uses:="${packages}"; \
 		version:Version='1'
 
 -includeresource: META-INF/README=README

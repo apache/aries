@@ -14,27 +14,30 @@
 
 package org.apache.aries.cdi.test.beans;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Qualifier;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
-import org.osgi.service.cdi.annotations.Component;
+import org.osgi.service.cdi.annotations.ComponentPropertyType;
 import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.SingleComponent;
 
-@Component
+@SingleComponent
 @Service({ServiceWithProperties.class, BeanService.class})
 @ServiceWithProperties.Props
 @ServiceWithProperties.MoreProperties(glub_integer = 45, goo_string = "green")
 public class ServiceWithProperties implements BeanService<Pojo> {
 
-	@Qualifier @Retention(RUNTIME) @Target(TYPE)
+	@Retention(RUNTIME) @Target(TYPE)
+	@ComponentPropertyType
 	public @interface Props {
 		String test_key_b1() default "test.value.b1";
 		String test_key_b2() default "test.value.b2";
@@ -58,7 +61,8 @@ public class ServiceWithProperties implements BeanService<Pojo> {
 		String[] p_String_array() default {"black", "green"};
 	}
 
-	@Qualifier @Retention(RUNTIME) @Target(TYPE )
+	@Retention(RUNTIME) @Target(TYPE )
+	@ComponentPropertyType
 	public @interface MoreProperties {
 		String goo_string();
 		int glub_integer();
@@ -76,5 +80,15 @@ public class ServiceWithProperties implements BeanService<Pojo> {
 
 	@Inject
 	private PojoImpl _pojo;
+
+	@PostConstruct
+	private void postConstructed() {
+		System.out.println("PostConstructed " + this);
+	}
+
+	@PreDestroy
+	private void preDestroyed() {
+		System.out.println("PreDestroyed " + this);
+	}
 
 }

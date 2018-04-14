@@ -14,6 +14,14 @@
 
 package org.apache.aries.cdi.container.test.beans;
 
+import org.osgi.service.cdi.annotations.Service;
+
+@Service(Foo.class)
 public class FooService implements Foo, Cloneable {
+
+	@Override
+	public String function(String input) {
+		return "#".concat(input).concat("#");
+	}
 
 }

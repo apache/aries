@@ -1,12 +1,6 @@
 Bundle-Description: Integration Test bundle for the CDI Extender
 Export-Package: ${p}.cases.*,${p}.interfaces.*
-Require-Capability:\
-	osgi.cdi.extension;filter:='(&(osgi.cdi.extension=http)(version>=0.0.1)(!(version>=1.0.0)))',\
-	osgi.cdi.extension;filter:='(&(osgi.cdi.extension=jndi)(version>=0.0.1)(!(version>=1.0.0)))',\
-	osgi.service;filter:="(objectClass=org.osgi.service.cm.ConfigurationAdmin)";effective:=active
-Test-Cases: \
-	${classes;CONCRETE;EXTENDS;${p}.cases.AbstractTestCase},\
-	${classes;CONCRETE;ANNOTATED;org.junit.Test}
+Test-Cases: ${classes;CONCRETE;ANNOTATED;org.junit.Test}
 
 ##
 ## All of remainder is to make bnd's `-make` function work in our maven project.
@@ -31,7 +25,11 @@ p = org.apache.aries.cdi.test
 	tb3.jar,\
 	tb4.jar,\
 	tb5.jar,\
-	tb6.jar
+	tb6.jar,\
+	tb7.jar,\
+	tb8.jar,\
+	tb9.jar,\
+	tb10.jar
 
 # Don't forget that we had to coax the `maven-jar-plugin` NOT to include the `sub-bundle` packages in
 # the root bundle:

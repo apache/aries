@@ -16,12 +16,15 @@ package org.apache.aries.cdi.container.test.beans;
 
 import javax.inject.Inject;
 
+import org.osgi.service.cdi.annotations.Configuration;
+
 public class BarWithConfig {
 
 	@Inject
 	public Bar bar;
 
 	@Inject
+	@Configuration
 	public Config config;
 
 }

@@ -30,9 +30,9 @@
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.extension.http</artifactId>
-	<name>CDI Http Extender</name>
+	<name>Aries CDI Http Extension</name>
 	<description>
-		Provides support to CDI bundles for http servlet scopes such as @RequestScoped,
+		Provides support to CDI bundles for http servlet scopes; @RequestScoped,
 		@ApplicationScoped, @SessionScoped and @ConversationScoped.
 	</description>
 
@@ -57,37 +57,37 @@
 			<version>1.1.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.weld</groupId>
-			<artifactId>weld-osgi-bundle</artifactId>
-			<version>3.0.1.Final</version>
+			<groupId>org.jboss.weld.module</groupId>
+			<artifactId>weld-web</artifactId>
+			<version>${weld.release}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.enterprise</groupId>
 					<artifactId>cdi-api</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>javax.inject</groupId>
-					<artifactId>javax.inject</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.spec.javax.annotation</groupId>
-					<artifactId>jboss-annotations-api_1.2_spec</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.spec.javax.el</groupId>
-					<artifactId>jboss-el-api_3.0_spec</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.jboss.spec.javax.interceptor</groupId>
-					<artifactId>jboss-interceptors-api_1.2_spec</artifactId>
-				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.annotation.bundle</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.namespace.extender</artifactId>
 			<version>1.0.1</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.namespace.implementation</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.namespace.service</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>

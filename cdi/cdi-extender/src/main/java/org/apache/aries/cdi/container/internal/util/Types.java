@@ -14,115 +14,122 @@
 
 package org.apache.aries.cdi.container.internal.util;
 
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.cdi.annotations.Service;
 
 public class Types {
 
-	public static String getName(InjectionPoint injectionPoint) {
-		return getName(injectionPoint.getType());
+	private Types() {
+		// no instances
 	}
 
-	public static String getName(Type type) {
-		if (type instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType)type;
+	public static List<Class<?>> collectServiceTypes(Annotated annotated) {
+		List<Class<?>> serviceTypes = new ArrayList<>();
 
-			Type rawType = pt.getRawType();
+		List<java.lang.reflect.AnnotatedType> ats = new ArrayList<>();
 
-			if (rawType instanceof Class) {
-				Class<?> clazz = (Class<?>)rawType;
+		if (annotated instanceof AnnotatedType) {
+			Class<?> annotatedClass = ((AnnotatedType<?>)annotated).getJavaClass();
+			Optional.ofNullable(annotatedClass.getAnnotatedSuperclass()).ifPresent(at -> ats.add(at));
+			ats.addAll(Arrays.asList(annotatedClass.getAnnotatedInterfaces()));
 
-				return clazz.getSimpleName();
-			}
-			else {
-				return rawType.getTypeName();
-			}
-		}
-		else if (type instanceof GenericArrayType) {
-			GenericArrayType gat = (GenericArrayType)type;
+			for (java.lang.reflect.AnnotatedType at : ats) {
+				Optional.ofNullable(at.getAnnotation(Service.class)).ifPresent(
+					service -> {
+						if (service.value().length > 0) {
+							throw new IllegalArgumentException(
+								String.format(
+									"@Service on type_use must not specify a value: %s",
+									annotatedClass));
+						}
 
-			Type genericComponentType = gat.getGenericComponentType();
+						Type type = at.getType();
 
-			if (genericComponentType instanceof ParameterizedType) {
-				ParameterizedType pt = (ParameterizedType)genericComponentType;
+						if (!(type instanceof Class)) {
+							throw new IllegalArgumentException(
+								String.format(
+									"@Service on type_use must only be specified on non-generic types: %s",
+									annotatedClass));
+						}
 
-				Type rawType = pt.getRawType();
-
-				if (rawType instanceof Class) {
-					Class<?> clazz = (Class<?>)rawType;
-
-					return clazz.getSimpleName();
-				}
-				else {
-					return rawType.getTypeName();
-				}
-			}
-			else if (genericComponentType instanceof Class) {
-				Class<?> clazz = (Class<?>)genericComponentType;
-
-				return clazz.getSimpleName();
-			}
-			else {
-				return genericComponentType.getTypeName();
-			}
-		}
-		else if (type instanceof Class) {
-			Class<?> clazz = (Class<?>)type;
-
-			String simpleName = clazz.getSimpleName();
-
-			char lowerCase = Character.toLowerCase(simpleName.charAt(0));
-
-			return lowerCase + simpleName.substring(1, simpleName.length());
-		}
-
-		return type.getTypeName();
-	}
-
-/*	public static Class<?>[] types(
-		ComponentModel componentModel, Class<?> beanClass, ClassLoader classLoader) {
-
-		List<Class<?>> classes = new ArrayList<>();
-
-		if (!componentModel.isService()) {
-			return new Class<?>[0];
-		}
-		else if (!componentModel.getProvides().isEmpty()) {
-			for (String provide : componentModel.getProvides()) {
-				try {
-					classes.add(classLoader.loadClass(provide));
-				}
-				catch (ReflectiveOperationException roe) {
-					if (_log.isWarnEnabled()) {
-						_log.warn(
-							"CDIe - component {} cannot load provided type {}. Skipping!",
-							componentModel.getBeanClass(), provide, roe);
+						serviceTypes.add((Class<?>)type);
 					}
-				}
+				);
 			}
-		}
-		else {
-			Class<?>[] interfaces = beanClass.getInterfaces();
 
-			if (interfaces.length > 0) {
-				for (Class<?> iface : interfaces) {
-					classes.add(iface);
-				}
+			Service service = annotated.getAnnotation(Service.class);
+
+			if (service == null) {
+				return serviceTypes;
+			}
+
+			if (!serviceTypes.isEmpty()) {
+				throw new IllegalArgumentException(
+					String.format(
+						"@Service must not be applied to type and type_use: %s",
+						annotated));
+			}
+
+			if (service.value().length > 0) {
+				serviceTypes.addAll(Arrays.asList(service.value()));
+			}
+			else if (annotatedClass.getInterfaces().length > 0) {
+				serviceTypes.addAll(Arrays.asList(annotatedClass.getInterfaces()));
 			}
 			else {
-				classes.add(beanClass);
+				serviceTypes.add(annotatedClass);
+			}
+		}
+		else if (annotated instanceof AnnotatedMethod) {
+			Service service = annotated.getAnnotation(Service.class);
+
+			if (service == null) {
+				return serviceTypes;
+			}
+
+			Class<?> returnType = ((AnnotatedMethod<?>)annotated).getJavaMember().getReturnType();
+
+			if (service.value().length > 0) {
+				serviceTypes.addAll(Arrays.asList(service.value()));
+			}
+			else if (returnType.getInterfaces().length > 0) {
+				serviceTypes.addAll(Arrays.asList(returnType.getInterfaces()));
+			}
+			else {
+				serviceTypes.add(returnType);
+			}
+		}
+		else if (annotated instanceof AnnotatedField) {
+			Service service = annotated.getAnnotation(Service.class);
+
+			if (service == null) {
+				return serviceTypes;
+			}
+
+			Class<?> fieldType = ((AnnotatedField<?>)annotated).getJavaMember().getType();
+
+			if (service.value().length > 0) {
+				serviceTypes.addAll(Arrays.asList(service.value()));
+			}
+			else if (fieldType.getInterfaces().length > 0) {
+				serviceTypes.addAll(Arrays.asList(fieldType.getInterfaces()));
+			}
+			else {
+				serviceTypes.add(fieldType);
 			}
 		}
 
-		return classes.toArray(new Class[0]);
+		return serviceTypes;
 	}
-*/
-	public static final Logger _log = LoggerFactory.getLogger(Types.class);
 
 }

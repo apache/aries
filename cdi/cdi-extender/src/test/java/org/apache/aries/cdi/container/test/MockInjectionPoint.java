@@ -15,30 +15,42 @@
 package org.apache.aries.cdi.container.test;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Qualifier;
 
-import org.apache.aries.cdi.container.internal.util.Sets;
+import org.jboss.weld.exceptions.IllegalArgumentException;
 
 public class MockInjectionPoint implements InjectionPoint {
 
-	public MockInjectionPoint(Type type) {
-		_type = type;
-		_annotated = new MockAnnotated(_type);
-		_qualifiers = Collections.emptySet();
+	public MockInjectionPoint(AnnotatedElement annotatedElement) {
+		_annotatedElement = annotatedElement;
+		if (annotatedElement instanceof Parameter) {
+			_annotated = AnnotatedCache.getAnnotatedParameter((Parameter)annotatedElement);
+			_type = ((Parameter)annotatedElement).getParameterizedType();
+			_member = ((Parameter)annotatedElement).getDeclaringExecutable();
+		}
+		else if (annotatedElement instanceof Field) {
+			_annotated = AnnotatedCache.getAnnotatedField((Field)annotatedElement);
+			_type = ((Field)annotatedElement).getGenericType();
+			_member = (Field)_annotatedElement;
+		}
+		else {
+			throw new IllegalArgumentException("InjectionPoints are parameters or fields");
+		}
 	}
 
-	public MockInjectionPoint(Type type, Set<Annotation> qualifiers) {
-		_type = type;
-		_annotated = new MockAnnotated(_type);
-		_qualifiers = qualifiers;
+	protected String getFoo() {
+		return foo;
 	}
 
 	@Override
@@ -48,7 +60,9 @@ public class MockInjectionPoint implements InjectionPoint {
 
 	@Override
 	public Set<Annotation> getQualifiers() {
-		return _qualifiers;
+		return _annotated.getAnnotations().stream().filter(
+			ann -> ann.annotationType().isAnnotationPresent(Qualifier.class)
+		).collect(Collectors.toSet());
 	}
 
 	@Override
@@ -58,7 +72,7 @@ public class MockInjectionPoint implements InjectionPoint {
 
 	@Override
 	public Member getMember() {
-		return null;
+		return _member;
 	}
 
 	@Override
@@ -78,59 +92,13 @@ public class MockInjectionPoint implements InjectionPoint {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "[" + _type + "]";
+		return getClass().getSimpleName() + "[" + _annotated.getBaseType() + "]";
 	}
 
-	private final Type _type;
 	private final Annotated _annotated;
-	private final Set<Annotation> _qualifiers;
-
-	private class MockAnnotated implements Annotated {
-
-		public MockAnnotated(Type service) {
-			_service = service;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-			return _qualifiers.stream().filter(
-				ann -> ann.annotationType().equals(annotationType)
-			).map(ann -> (T)ann).findFirst().orElse(null);
-		}
-
-		@Override
-		public Set<Annotation> getAnnotations() {
-			return _qualifiers;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T extends Annotation> Set<T> getAnnotations(Class<T> annotationType) {
-			return _qualifiers.stream().filter(
-				ann -> ann.annotationType().equals(annotationType)
-			).map(ann -> (T)ann).collect(Collectors.toSet());
-		}
-
-		@Override
-		public Type getBaseType() {
-			return _service;
-		}
-
-		@Override
-		public Set<Type> getTypeClosure() {
-			return Sets.hashSet(_service, Object.class);
-		}
-
-		@Override
-		public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-			return _qualifiers.stream().filter(
-				ann -> ann.annotationType().equals(annotationType)
-			).findFirst().isPresent();
-		}
-
-		private final Type _service;
-
-	}
+	private final AnnotatedElement _annotatedElement;
+	private final String foo = "bar";
+	private final Member _member;
+	private final Type _type;
 
 }

@@ -14,27 +14,30 @@
 
 package org.apache.aries.cdi.test.tb5;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
-import javax.inject.Qualifier;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
-import org.osgi.service.cdi.annotations.Component;
+import org.osgi.service.cdi.annotations.ComponentPropertyType;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.PID;
+import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.SingleComponent;
 
-@Component
+@Service(BeanService.class)
+@SingleComponent
 @PID("foo.bar")
 @ConfigurationBeanC.Props
 public class ConfigurationBeanC implements BeanService<Callable<int[]>> {
 
-	@Qualifier @Retention(RUNTIME) @Target(TYPE )
+	@Retention(RUNTIME) @Target(TYPE )
+	@ComponentPropertyType
 	public @interface Props {
 		String bean() default "C";
 	}

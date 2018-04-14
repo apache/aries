@@ -14,70 +14,93 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
-import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
-import static org.osgi.service.cdi.CdiConstants.CDI_CAPABILITY_NAME;
+import static org.apache.aries.cdi.container.internal.util.Reflection.*;
+import static org.osgi.service.cdi.CDIConstants.*;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRequirement;
-import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.service.log.Logger;
 
-public class BeansModelBuilder extends AbstractModelBuilder {
+public class BeansModelBuilder {
 
-	public BeansModelBuilder(ClassLoader classLoader, BundleWiring bundleWiring) {
-		_classLoader = classLoader;
+	public BeansModelBuilder(
+		ContainerState containerState,
+		ClassLoader aggregateClassLoader,
+		BundleWiring bundleWiring,
+		Map<String, Object> cdiAttributes) {
+
+		_containerState = containerState;
+		_aggregateClassLoader = aggregateClassLoader;
 		_bundleWiring = bundleWiring;
+		_attributes = cdiAttributes;
 		_bundle = _bundleWiring.getBundle();
+		_log = containerState.containerLogs().getLogger(getClass());
+	}
 
-		List<BundleWire> wires = bundleWiring.getRequiredWires(EXTENDER_NAMESPACE);
+	public BeansModel build() {
+		List<URL> beanDescriptorURLs = new ArrayList<URL>();
+		Map<String, Object> attributes = getAttributes();
 
-		Map<String, Object> cdiAttributes = Collections.emptyMap();
+		List<String> beanDescriptorPaths = cast(attributes.get(REQUIREMENT_BEANS_ATTRIBUTE));
 
-		for (BundleWire wire : wires) {
-			BundleCapability capability = wire.getCapability();
-			Map<String, Object> attributes = capability.getAttributes();
-			String extender = (String)attributes.get(EXTENDER_NAMESPACE);
+		if (beanDescriptorPaths != null) {
+			for (String descriptorPath : beanDescriptorPaths) {
+				URL url = getResource(descriptorPath);
 
-			if (extender.equals(CDI_CAPABILITY_NAME)) {
-				BundleRequirement requirement = wire.getRequirement();
-				cdiAttributes = requirement.getAttributes();
-				break;
+				if (url != null) {
+					beanDescriptorURLs.add(url);
+				}
 			}
 		}
 
-		_attributes = cdiAttributes;
+		@SuppressWarnings("unchecked")
+		List<String> beanClassNames = Optional.ofNullable(
+			_attributes.get(REQUIREMENT_OSGI_BEANS_ATTRIBUTE)
+		).map(v -> (List<String>)v).orElse(Collections.emptyList());
+
+		Map<String, OSGiBean> beans = new HashMap<>();
+
+		for (String beanClassName : beanClassNames) {
+			try {
+				Class<?> clazz = _aggregateClassLoader.loadClass(beanClassName);
+
+				beans.put(beanClassName, new OSGiBean.Builder(_containerState.containerLogs(), clazz).build());
+
+				_log.debug(l -> l.debug("CCR found bean {} on {}", beanClassName, _containerState.bundle()));
+			}
+			catch (Exception e) {
+				_log.error(l -> l.error("CCR Error loading class {} on {}", beanClassName, _containerState.bundle(), e));
+
+				_containerState.error(e);
+			}
+		}
+
+		return new BeansModel(beans, beanDescriptorURLs);
 	}
 
-	@Override
 	public Map<String, Object> getAttributes() {
 		return _attributes;
 	}
 
-	@Override
-	public ClassLoader getClassLoader() {
-		return _classLoader;
-	}
-
-	@Override
 	public URL getResource(String resource) {
 		return _bundle.getResource(resource);
 	}
 
-	@Override
-	public List<String> getDefaultResources() {
-		return new ArrayList<>(_bundleWiring.listResources("OSGI-INF/cdi", "*.xml", BundleWiring.LISTRESOURCES_LOCAL));
-	}
 
+	private final ClassLoader _aggregateClassLoader;
 	private final Map<String, Object> _attributes;
 	private final Bundle _bundle;
-	private final ClassLoader _classLoader;
 	private final BundleWiring _bundleWiring;
+	private final ContainerState _containerState;
+	private final Logger _log;
 
 }

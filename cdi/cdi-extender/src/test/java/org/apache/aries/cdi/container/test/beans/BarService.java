@@ -14,6 +14,11 @@
 
 package org.apache.aries.cdi.container.test.beans;
 
+import org.osgi.service.cdi.annotations.FactoryComponent;
+import org.osgi.service.cdi.annotations.Service;
+
+@FactoryComponent
+@Service
 public class BarService implements Bar {
 
 }

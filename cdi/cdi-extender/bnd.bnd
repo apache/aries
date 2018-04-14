@@ -1,20 +1,6 @@
-Bundle-Activator: org.apache.aries.cdi.container.internal.Activator
 Conditional-Package: \
-	org.apache.felix.converter.dto,\
-	org.apache.felix.converter.impl,\
 	org.apache.felix.utils.extender,\
-	org.osgi.util.converter,\
-	org.osgi.util.function
-Export-Package: \
-	org.apache.aries.cdi.provider
-Provide-Capability: \
-	osgi.extender; \
-		osgi.extender='osgi.cdi'; \
-		uses:="org.osgi.service.cdi,org.osgi.service.cdi.annotations,javax.enterprise.inject.spi"; \
-		version:Version="${Bundle-Version}",\
-	osgi.implementation; \
-		osgi.implementation='osgi.cdi'; \
-		uses:="org.osgi.service.cdi,org.osgi.service.cdi.annotations,javax.enterprise.inject.spi"; \
-		version:Version="${Bundle-Version}"
+	org.osgi.util.converter
+
 -contract: JavaAnnotation, JavaCDI, JavaEL, JavaInject, JavaInterceptor
 -includeresource: META-INF/=LICENSE, META-INF/=NOTICE

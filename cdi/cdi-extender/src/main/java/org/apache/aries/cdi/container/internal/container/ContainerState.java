@@ -14,42 +14,58 @@
 
 package org.apache.aries.cdi.container.internal.container;
 
-import java.util.Dictionary;
+import static org.apache.aries.cdi.container.internal.util.Filters.*;
+import static org.osgi.namespace.extender.ExtenderNamespace.*;
+import static org.osgi.service.cdi.CDIConstants.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.apache.aries.cdi.container.internal.component.OSGiBean;
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationCallback;
-import org.apache.aries.cdi.container.internal.extension.ExtensionDependency;
+import org.apache.aries.cdi.container.internal.ChangeCount;
 import org.apache.aries.cdi.container.internal.loader.BundleClassLoader;
 import org.apache.aries.cdi.container.internal.loader.BundleResourcesLoader;
 import org.apache.aries.cdi.container.internal.model.BeansModel;
-import org.apache.aries.cdi.container.internal.model.Context;
-import org.apache.aries.cdi.container.internal.model.Registrator;
-import org.apache.aries.cdi.container.internal.model.Tracker;
-import org.apache.aries.cdi.container.internal.reference.ReferenceCallback;
-import org.apache.aries.cdi.container.internal.service.ServiceDeclaration;
+import org.apache.aries.cdi.container.internal.model.BeansModelBuilder;
+import org.apache.aries.cdi.container.internal.model.ExtendedConfigurationTemplateDTO;
+import org.apache.aries.cdi.container.internal.model.ExtendedExtensionTemplateDTO;
+import org.apache.aries.cdi.container.internal.util.Logs;
+import org.apache.aries.cdi.container.internal.util.Throw;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.jboss.weld.serialization.spi.ProxyServices;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Filter;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceObjects;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.dto.BundleDTO;
+import org.osgi.framework.namespace.PackageNamespace;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.cdi.reference.ReferenceEvent;
-import org.osgi.service.cm.ManagedService;
+import org.osgi.service.cdi.ComponentType;
+import org.osgi.service.cdi.ConfigurationPolicy;
+import org.osgi.service.cdi.MaximumCardinality;
+import org.osgi.service.cdi.runtime.dto.ContainerDTO;
+import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
+import org.osgi.service.cdi.runtime.dto.template.ContainerTemplateDTO;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.log.Logger;
+import org.osgi.util.promise.Deferred;
+import org.osgi.util.promise.Promise;
+import org.osgi.util.promise.PromiseFactory;
 import org.osgi.util.tracker.ServiceTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ContainerState {
 
@@ -57,86 +73,131 @@ public class ContainerState {
 		private static final long serialVersionUID = 1L;
 	};
 
+	@SuppressWarnings("unchecked")
 	public ContainerState(
-		Bundle bundle, Bundle extenderBundle) {
+		Bundle bundle,
+		Bundle extenderBundle,
+		ChangeCount ccrChangeCount,
+		PromiseFactory promiseFactory,
+		ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> caTracker,
+		Logs ccrLogs) {
 
-		_bundle = Optional.ofNullable(bundle);
+		_bundle = bundle;
 		_extenderBundle = extenderBundle;
+		_ccrLogs = ccrLogs;
+		_log = _ccrLogs.getLogger(getClass());
+		_containerLogs = new Logs.Builder(_bundle.getBundleContext()).build();
 
-		_bundle.ifPresent(
-			b -> {
-				_classLoader = new BundleClassLoader(
-					BundleResourcesLoader.getBundles(bundle, extenderBundle));
+		_changeCount = new ChangeCount();
+		_changeCount.addObserver(ccrChangeCount);
+
+		_promiseFactory = promiseFactory;
+		_caTracker = caTracker;
+
+		BundleWiring bundleWiring = _bundle.adapt(BundleWiring.class);
+
+		List<BundleWire> wires = bundleWiring.getRequiredWires(EXTENDER_NAMESPACE);
+
+		Map<String, Object> cdiAttributes = Collections.emptyMap();
+
+		for (BundleWire wire : wires) {
+			BundleCapability capability = wire.getCapability();
+			Map<String, Object> attributes = capability.getAttributes();
+			String extender = (String)attributes.get(EXTENDER_NAMESPACE);
+
+			if (extender.equals(CDI_CAPABILITY_NAME)) {
+				BundleRequirement requirement = wire.getRequirement();
+				cdiAttributes = requirement.getAttributes();
+				break;
 			}
+		}
+
+		_containerDTO = new ContainerDTO();
+		_containerDTO.bundle = _bundle.adapt(BundleDTO.class);
+		_containerDTO.changeCount = _changeCount.get();
+		_containerDTO.components = new CopyOnWriteArrayList<>();
+		_containerDTO.errors = new CopyOnWriteArrayList<>();
+		_containerDTO.extensions = new CopyOnWriteArrayList<>();
+		_containerDTO.template = new ContainerTemplateDTO();
+		_containerDTO.template.components = new CopyOnWriteArrayList<>();
+		_containerDTO.template.extensions = new CopyOnWriteArrayList<>();
+		_containerDTO.template.id = Optional.ofNullable(
+			(String)cdiAttributes.get(CDI_CONTAINER_ID)
+		).orElse(
+			_bundle.getSymbolicName()
 		);
 
-		_context = new Context() {
+		Optional.ofNullable(
+			(List<String>)cdiAttributes.get(REQUIREMENT_EXTENSIONS_ATTRIBUTE)
+		).ifPresent(
+			list -> list.stream().forEach(
+				extensionFilter -> {
+					ExtendedExtensionTemplateDTO extensionTemplateDTO = new ExtendedExtensionTemplateDTO();
 
-			@Override
-			public <T> T getService(ServiceReference<T> reference) {
-				return bundleContext().getService(reference);
-			}
+					try {
+						extensionTemplateDTO.filter = asFilter(extensionFilter);
+						extensionTemplateDTO.serviceFilter = extensionFilter;
 
-			@Override
-			public <T> ServiceObjects<T> getServiceObjects(ServiceReference<T> reference) {
-				return bundleContext().getServiceObjects(reference);
-			}
-
-			@Override
-			public <T> boolean ungetService(ServiceReference<T> reference) {
-				return bundleContext().ungetService(reference);
-			}
-
-		};
-
-		_msRegistrator = new Registrator<ManagedService>() {
-
-			@Override
-			public void registerService(String[] classNames, ManagedService service, Dictionary<String, ?> properties) {
-				registrations.add(bundleContext().registerService(ManagedService.class, service, properties));
-			}
-
-		};
-
-		_bmRegistrator = new Registrator<BeanManager>() {
-
-			@Override
-			public void registerService(String[] classNames, BeanManager service, Dictionary<String, ?> properties) {
-				registrations.add(bundleContext().registerService(BeanManager.class, service, properties));
-			}
-
-		};
-
-		_serviceRegistrator = new Registrator<Object>() {
-
-			@Override
-			public void registerService(String[] classNames, Object service, Dictionary<String, ?> properties) {
-				registrations.add(bundleContext().registerService(classNames, service, properties));
-			}
-
-		};
-
-		_tracker = new Tracker() {
-
-			@Override
-			public <T> void track(String targetFilter, ReferenceCallback callback) {
-				try {
-					Filter filter = bundleContext().createFilter(targetFilter);
-
-					trackers.add(new ServiceTracker<>(bundleContext(), filter, callback));
-				}
-				catch (InvalidSyntaxException ise) {
-					if (_log.isErrorEnabled()) {
-						_log.error("CDIe - Invalid filter syntax in {}", targetFilter, ise);
+						_containerDTO.template.extensions.add(extensionTemplateDTO);
+					}
+					catch (Exception e) {
+						_containerDTO.errors.add(Throw.asString(e));
 					}
 				}
-			}
+			)
+		);
 
-		};
+		_containerComponentTemplateDTO = new ComponentTemplateDTO();
+		_containerComponentTemplateDTO.activations = new CopyOnWriteArrayList<>();
+		_containerComponentTemplateDTO.beans = new CopyOnWriteArrayList<>();
+		_containerComponentTemplateDTO.configurations = new CopyOnWriteArrayList<>();
+		_containerComponentTemplateDTO.name = _containerDTO.template.id;
+		_containerComponentTemplateDTO.properties = Collections.emptyMap();
+		_containerComponentTemplateDTO.references = new CopyOnWriteArrayList<>();
+		_containerComponentTemplateDTO.type = ComponentType.CONTAINER;
+
+		ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
+		configurationTemplate.componentConfiguration = true;
+		configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
+		configurationTemplate.pid = Optional.ofNullable(
+			(String)cdiAttributes.get(CDI_CONTAINER_ID)
+		).orElse(
+			"osgi.cdi." + _bundle.getSymbolicName()
+		);
+		configurationTemplate.policy = ConfigurationPolicy.OPTIONAL;
+
+		_containerComponentTemplateDTO.configurations.add(configurationTemplate);
+
+		_containerDTO.template.components.add(_containerComponentTemplateDTO);
+
+		_aggregateClassLoader = new BundleClassLoader(getBundles(_bundle, _extenderBundle));
+
+		_beansModel = new BeansModelBuilder(this, _aggregateClassLoader, bundleWiring, cdiAttributes).build();
+
+		_bundleClassLoader = bundleWiring.getClassLoader();
+
+		try {
+			new ContainerDiscovery(this);
+		}
+		catch (Exception e) {
+			_log.error(l -> l.error("CCR Discovery resulted in errors on {}", bundle, e));
+
+			_containerDTO.errors.add(Throw.asString(e));
+		}
 	}
 
-	public Registrator<BeanManager> beanManagerRegistrator() {
-		return _bmRegistrator;
+	public <T, R> Promise<R> addCallback(CheckedCallback<T, R> checkedCallback) {
+		Deferred<R> deferred = _promiseFactory.deferred();
+		_callbacks.put(checkedCallback, deferred);
+		return deferred.getPromise();
+	}
+
+	public BeanManager beanManager() {
+		return _beanManager;
+	}
+
+	public void beanManager(BeanManager beanManager) {
+		_beanManager = beanManager;
 	}
 
 	public BeansModel beansModel() {
@@ -144,93 +205,186 @@ public class ContainerState {
 	}
 
 	public Bundle bundle() {
-		return _bundle.orElse(null);
+		return _bundle;
 	}
 
 	public ClassLoader bundleClassLoader() {
-		return _bundle.map(b -> b.adapt(BundleWiring.class).getClassLoader()).orElse(getClass().getClassLoader());
+		return _bundleClassLoader;
 	}
 
 	public BundleContext bundleContext() {
-		return _bundle.map(b -> b.getBundleContext()).orElse(null);
+		return _bundle.getBundleContext();
+	}
+
+	public ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> caTracker() {
+		return _caTracker;
+	}
+
+	public Logs ccrLogs() {
+		return _ccrLogs;
 	}
 
 	public ClassLoader classLoader() {
-		return _bundle.map(b -> _classLoader).orElse(getClass().getClassLoader());
+		return _aggregateClassLoader;
 	}
 
-	public Map<OSGiBean, Map<String, ConfigurationCallback>> configurationCallbacks() {
-		return _configurationCallbacksMap;
+	public void closing() {
+		try {
+			_closing.set(_promiseFactory.submit(() -> Boolean.TRUE).getValue());
+		} catch (InvocationTargetException | InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public Context context() {
-		return _context;
+	public ComponentContext componentContext() {
+		return _componentContext;
+	}
+
+	public ComponentTemplateDTO containerComponentTemplateDTO() {
+		return _containerComponentTemplateDTO;
+	}
+
+	public ContainerDTO containerDTO() {
+		_containerDTO.changeCount = _changeCount.get();
+		return _containerDTO;
+	}
+
+	public Logs containerLogs() {
+		return _containerLogs;
+	}
+
+	public void error(Throwable t) {
+		containerDTO().errors.add(Throw.asString(t));
 	}
 
 	public Bundle extenderBundle() {
 		return _extenderBundle;
 	}
 
-	public List<ExtensionDependency> extensionDependencies() {
-		return _extensionDependencies;
+	public Optional<Configuration> findConfig(String pid) {
+		return findConfigs(pid, false).map(arr -> arr[0]);
+	}
+
+	public Optional<Configuration[]> findConfigs(String pid, boolean factory) {
+		try {
+			String query = "(service.pid=".concat(pid).concat(")");
+
+			if (factory) {
+				query = "(factory.pid=".concat(pid).concat(")");
+			}
+
+			return Optional.ofNullable(
+				_caTracker.getService().listConfigurations(query)
+			);
+		}
+		catch (Exception e) {
+			_log.error(l -> l.error("CCR unexpected failure fetching configuration for {}", pid, e));
+
+			return Throw.exception(e);
+		}
 	}
 
 	public String id() {
-		return _bundle.map(b -> b.getSymbolicName() + ":" + b.getBundleId()).orElse("null");
+		return _containerDTO.template.id;
+	}
+
+	public void incrementChangeCount() {
+		_changeCount.incrementAndGet();
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends ResourceLoader & ProxyServices> T loader() {
-		return (T)_bundle.map(b -> new BundleResourcesLoader(b, _extenderBundle)).orElse(null);
+		return (T)new BundleResourcesLoader(_bundle, _extenderBundle);
 	}
 
-	public Registrator<ManagedService> managedServiceRegistrator() {
-		return _msRegistrator;
+	public PromiseFactory promiseFactory() {
+		return _promiseFactory;
 	}
 
-	public Map<OSGiBean, Map<String, ReferenceCallback>> referenceCallbacks() {
-		return _referenceCallbacksMap;
+	@SuppressWarnings("unchecked")
+	public <T, R> Promise<T> submit(Op op, Callable<T> task) {
+		try {
+			switch (op.mode) {
+				case CLOSE: {
+					// always perform close synchronously
+					_log.debug(l -> l.debug("CCR submit {}", op));
+					return _promiseFactory.resolved(task.call());
+				}
+				case OPEN:
+					// when closing don't do perform any opens
+					// also, don't log it since it's just going to be noise
+					if (_closing.get()) {
+						return _promiseFactory.resolved((T)new Object());
+					}
+			}
+		}
+		catch (Exception e) {
+			return _promiseFactory.failed(e);
+		}
+
+		_log.debug(l -> l.debug("CCR submit {}", op));
+
+		Promise<T> promise = _promiseFactory.submit(task);
+
+		for (Entry<CheckedCallback<?, ?>, Deferred<?>> entry : _callbacks.entrySet()) {
+			CheckedCallback<T, R> cc = (CheckedCallback<T, R>)entry.getKey();
+			if (cc.test(op)) {
+				((Deferred<R>)entry.getValue()).resolveWith(promise.then(cc, cc)).then(
+					s -> {
+						_callbacks.remove(cc);
+						return s;
+					},
+					f -> _callbacks.remove(cc)
+				);
+			}
+		}
+
+		return promise;
 	}
 
-	public Map<OSGiBean, Map<String, ObserverMethod<ReferenceEvent<?>>>> referenceObservers() {
-		return _referenceObserversMap;
+	private static Bundle[] getBundles(Bundle bundle, Bundle extenderBundle) {
+		List<Bundle> bundles = new ArrayList<>();
+
+		bundles.add(bundle);
+		bundles.add(extenderBundle);
+
+		BundleWiring extenderWiring = extenderBundle.adapt(BundleWiring.class);
+
+		List<BundleWire> requiredWires = extenderWiring.getRequiredWires(PackageNamespace.PACKAGE_NAMESPACE);
+
+		for (BundleWire bundleWire : requiredWires) {
+			BundleCapability capability = bundleWire.getCapability();
+			Map<String, Object> attributes = capability.getAttributes();
+			String packageName = (String)attributes.get(PackageNamespace.PACKAGE_NAMESPACE);
+			if (!packageName.startsWith("org.jboss.weld.")) {
+				continue;
+			}
+
+			Bundle wireBundle = bundleWire.getProvider().getBundle();
+			if (!bundles.contains(wireBundle)) {
+				bundles.add(wireBundle);
+			}
+		}
+
+		return bundles.toArray(new Bundle[0]);
 	}
 
-	public Map<OSGiBean, ServiceDeclaration> serviceComponents() {
-		return _serviceComponents;
-	}
-
-	public Registrator<Object> serviceRegistrator() {
-		return _serviceRegistrator;
-	}
-
-	public void setBeansModel(BeansModel beansModel) {
-		_beansModel = beansModel;
-	}
-
-	public void setExtensionDependencies(List<ExtensionDependency> extensionDependencies) {
-		_extensionDependencies = extensionDependencies;
-	}
-
-	public Tracker tracker() {
-		return _tracker;
-	}
-
-	private static final Logger _log = LoggerFactory.getLogger(ContainerState.class);
-
-	private BeansModel _beansModel;
-	private final Registrator<BeanManager> _bmRegistrator;
-	private final Optional<Bundle> _bundle;
-	private ClassLoader _classLoader;
-	private final Map<OSGiBean, Map<String, ConfigurationCallback>> _configurationCallbacksMap = new ConcurrentHashMap<>();
-	private final Context _context;
+	private final ClassLoader _aggregateClassLoader;
+	private volatile BeanManager _beanManager;
+	private final BeansModel _beansModel;
+	private final Bundle _bundle;
+	private final ClassLoader _bundleClassLoader;
+	private final Map<CheckedCallback<?, ?>, Deferred<?>> _callbacks = new ConcurrentHashMap<>();
+	private final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> _caTracker;
+	private final Logger _log;
+	private final Logs _ccrLogs;
+	private final ChangeCount _changeCount;
+	private final AtomicBoolean _closing = new AtomicBoolean(false);
+	private final ComponentContext _componentContext = new ComponentContext();
+	private final ContainerDTO _containerDTO;
+	private final Logs _containerLogs;
+	private final ComponentTemplateDTO _containerComponentTemplateDTO;
 	private final Bundle _extenderBundle;
-	private List<ExtensionDependency> _extensionDependencies;
-	private final Registrator<ManagedService> _msRegistrator;
-	private final Map<OSGiBean, Map<String, ReferenceCallback>> _referenceCallbacksMap = new ConcurrentHashMap<>();
-	private final Map<OSGiBean, Map<String, ObserverMethod<ReferenceEvent<?>>>> _referenceObserversMap = new ConcurrentHashMap<>();
-	private final Map<OSGiBean, ServiceDeclaration> _serviceComponents = new ConcurrentHashMap<>();
-	private final Registrator<Object> _serviceRegistrator;
-	private final Tracker _tracker;
+	private final PromiseFactory _promiseFactory;
 
 }

@@ -14,8 +14,8 @@
 
 package org.apache.aries.cdi.extension.http;
 
-import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
-import static org.osgi.service.cdi.CdiConstants.CDI_CAPABILITY_NAME;
+import static org.osgi.namespace.extender.ExtenderNamespace.*;
+import static org.osgi.service.cdi.CDIConstants.*;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -23,6 +23,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Priority;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -51,7 +52,10 @@ public class HttpExtension implements Extension {
 		_bundle = bundle;
 	}
 
-	void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
+	void afterDeploymentValidation(
+		@Observes @Priority(javax.interceptor.Interceptor.Priority.LIBRARY_AFTER+800)
+		AfterDeploymentValidation adv, BeanManager beanManager) {
+
 		Dictionary<String, Object> properties = new Hashtable<>();
 
 		properties.put(
