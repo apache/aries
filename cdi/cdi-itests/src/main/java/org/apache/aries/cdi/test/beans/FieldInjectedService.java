@@ -18,10 +18,8 @@ import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
-import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Service;
 
-@Component
 @Service({FieldInjectedService.class, BeanService.class})
 public class FieldInjectedService implements BeanService<Pojo> {
 

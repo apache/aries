@@ -16,4 +16,8 @@ package org.apache.aries.cdi.container.test.beans;
 
 public interface Foo {
 
+	default String function(String input) {
+		return "_".concat(input).concat("_");
+	}
+
 }

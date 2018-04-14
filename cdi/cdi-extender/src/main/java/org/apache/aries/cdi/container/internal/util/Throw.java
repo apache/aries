@@ -14,6 +14,9 @@
 
 package org.apache.aries.cdi.container.internal.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Throw {
 
 	private Throw() {
@@ -27,6 +30,12 @@ public class Throw {
 	@SuppressWarnings("unchecked")
 	private static <T, E extends Throwable> T _exception(Throwable throwable) throws E {
 		throw (E)throwable;
+	}
+
+	public static String asString(Throwable t) {
+		StringWriter sw = new StringWriter();
+		t.printStackTrace(new PrintWriter(sw));
+		return sw.toString();
 	}
 
 }

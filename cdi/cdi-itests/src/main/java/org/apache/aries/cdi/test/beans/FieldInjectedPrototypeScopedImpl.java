@@ -23,11 +23,11 @@ import javax.inject.Inject;
 import org.apache.aries.cdi.test.interfaces.FieldInjectedReference;
 import org.apache.aries.cdi.test.interfaces.PrototypeScoped;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.SingleComponent;
 
-@Component
+@SingleComponent
 @Service({FieldInjectedPrototypeScopedImpl.class, FieldInjectedReference.class})
 public class FieldInjectedPrototypeScopedImpl implements FieldInjectedReference<PrototypeScoped> {
 

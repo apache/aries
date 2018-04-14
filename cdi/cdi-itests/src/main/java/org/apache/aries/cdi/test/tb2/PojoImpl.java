@@ -15,7 +15,9 @@
 package org.apache.aries.cdi.test.tb2;
 
 import org.apache.aries.cdi.test.interfaces.Pojo;
+import org.osgi.service.cdi.annotations.Service;
 
+@Service
 public class PojoImpl implements Pojo {
 
 	@Override

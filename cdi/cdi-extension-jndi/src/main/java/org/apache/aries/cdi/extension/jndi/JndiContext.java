@@ -14,6 +14,7 @@
 
 package org.apache.aries.cdi.extension.jndi;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 
 import javax.enterprise.inject.spi.BeanManager;
@@ -26,9 +27,13 @@ import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
 
+import org.osgi.service.log.Logger;
+import org.osgi.util.promise.Promise;
+
 public class JndiContext implements Context {
 
-	public JndiContext(BeanManager beanManager) {
+	public JndiContext(Logger log, Promise<BeanManager> beanManager) {
+		_log = log;
 		_beanManager = beanManager;
 	}
 
@@ -40,10 +45,15 @@ public class JndiContext implements Context {
 	@Override
 	public Object lookup(String name) throws NamingException {
 		if (name.length() == 0) {
-			return new JndiContext(_beanManager);
+			return new JndiContext(_log, _beanManager);
 		}
 		if (name.equals("java:comp/BeanManager")) {
-			return _beanManager;
+			try {
+				return _beanManager.timeout(5000).getValue();
+			}
+			catch (InvocationTargetException | InterruptedException e) {
+				_log.error(l -> l.error(e.getMessage(), e));
+			}
 		}
 		throw new NamingException("Could not find " + name);
 	}
@@ -183,6 +193,7 @@ public class JndiContext implements Context {
 		throw new OperationNotSupportedException();
 	}
 
-	private final BeanManager _beanManager;
+	private final Logger _log;
+	private final Promise<BeanManager> _beanManager;
 
 }

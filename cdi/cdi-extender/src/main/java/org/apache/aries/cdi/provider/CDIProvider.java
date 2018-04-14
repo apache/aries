@@ -22,6 +22,14 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.util.TypeLiteral;
 
+import org.apache.aries.cdi.container.internal.util.Filters;
+import org.jboss.weld.exceptions.IllegalStateException;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
+import org.osgi.framework.Filter;
+import org.osgi.util.tracker.ServiceTracker;
+
 public class CDIProvider implements javax.enterprise.inject.spi.CDIProvider {
 
 	private static class CdiExtenderCDI extends CDI<Object> {
@@ -38,7 +46,33 @@ public class CDIProvider implements javax.enterprise.inject.spi.CDIProvider {
 
 		@Override
 		public BeanManager getBeanManager() {
-			throw new UnsupportedOperationException();
+			ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+
+			if (contextClassLoader instanceof BundleReference) {
+				BundleReference br = (BundleReference)contextClassLoader;
+
+				Bundle bundle = br.getBundle();
+				BundleContext bundleContext = bundle.getBundleContext();
+
+				Filter filter = Filters.asFilter(
+					"(&(objectClass=%s)(service.bundleid=%d))",
+					BeanManager.class.getName(), bundle.getBundleId());
+
+				ServiceTracker<BeanManager, BeanManager> bmt = new ServiceTracker<>(
+					bundleContext, filter, null);
+
+				bmt.open();
+
+				try {
+					return bmt.waitForService(1000);
+				}
+				catch (InterruptedException e) {
+					return null;
+				}
+			}
+
+			throw new IllegalStateException(
+				"This method can only be used when the Thread context classloader has been set to a bundle's classloader.");
 		}
 
 		@Override

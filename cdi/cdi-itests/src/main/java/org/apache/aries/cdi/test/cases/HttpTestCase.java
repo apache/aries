@@ -14,6 +14,8 @@
 
 package org.apache.aries.cdi.test.cases;
 
+import static org.junit.Assert.*;
+
 import java.io.InputStream;
 import java.net.URI;
 
@@ -29,6 +31,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.osgi.services.HttpClientBuilderFactory;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.runtime.HttpServiceRuntime;
@@ -37,6 +42,7 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class HttpTestCase extends AbstractTestCase {
 
+	@Test
 	public void testSessionScoped() throws Exception {
 		Bundle tb6Bundle = installBundle("tb6.jar");
 		Bundle tb2Bundle = installBundle("tb2.jar");
@@ -100,6 +106,7 @@ public class HttpTestCase extends AbstractTestCase {
 		}
 	}
 
+	@Test
 	public void testRequestScopedWithReference() throws Exception {
 		Bundle tb6Bundle = installBundle("tb6.jar");
 		Bundle tb2Bundle = installBundle("tb2.jar");
@@ -169,8 +176,9 @@ public class HttpTestCase extends AbstractTestCase {
 		return endpoints[0];
 	}
 
+	@Before
 	@Override
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		hsrTracker = new ServiceTracker<>(bundleContext, HttpServiceRuntime.class, null);
 
 		hsrTracker.open();
@@ -188,8 +196,9 @@ public class HttpTestCase extends AbstractTestCase {
 		assertNotNull(hsr);
 	}
 
+	@After
 	@Override
-	protected void tearDown() throws Exception {
+	public void tearDown() throws Exception {
 		hsrTracker.close();
 		hcbfTracker.close();
 	}

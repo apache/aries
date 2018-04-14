@@ -1,11 +1,2 @@
-Bundle-Activator: org.apache.aries.cdi.extension.http.Activator
-Provide-Capability: \
-	osgi.cdi.extension;\
-		osgi.cdi.extension=http;\
-		implementation="org.apache.aries.cdi.extension.http.HttpExtension";\
-		version:Version="${Bundle-Version}"
-Require-Capability:\
-	osgi.implementation;filter:='(&(osgi.implementation=osgi.cdi)(version>=0.0.1)(!(version>=1.0.0)))',\
-	osgi.implementation;filter:="(&(osgi.implementation=osgi.http)(version>=1.0)(!(version>=2.0)))"
--contract: JavaCDI, JavaServlet
+-contract: JavaAnnotation, JavaCDI, JavaServlet
 -includeresource: META-INF/=LICENSE, META-INF/=NOTICE

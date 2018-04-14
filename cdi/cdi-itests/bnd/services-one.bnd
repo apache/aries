@@ -1,1 +1,1 @@
-Export-Package: ${p}.components.*
+Export-Package: ${p}.components.*;-split-package:=first

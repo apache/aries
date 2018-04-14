@@ -2,7 +2,7 @@ Bundle-License: ASL-2.0;link="http://www.apache.org/licenses/LICENSE-2.0.txt"
 Provide-Capability: \
 	osgi.contract; \
 		osgi.contract=JavaCDI; \
-		uses:="javax.decorator,javax.enterprise.context,javax.enterprise.context.spi,javax.enterprise.event,javax.enterprise.inject,javax.enterprise.inject.spi,javax.enterprise.util"; \
+		uses:="${packages}"; \
 		version:List<Version>='2.0,1.2,1.1,1.0'
 
 -exportcontents: \

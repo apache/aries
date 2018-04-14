@@ -15,41 +15,34 @@
 package org.apache.aries.cdi.test.beans;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
+import java.util.Iterator;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
-import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.SingleComponent;
 
-@Component
+@SingleComponent
 @Service({BeanService.class, Instance_Optional.class})
-@SuppressWarnings("rawtypes")
-public class Instance_Optional implements BeanService<Callable<String>> {
+public class Instance_Optional implements BeanService<Integer> {
 
 	@Override
 	public String doSomething() {
-		int count = 0;
-		Collection<Callable> callables = _instance.get();
-		for (Callable callable : callables) {
-			System.out.println(callable);
-			count++;
-		}
-		return String.valueOf(count);
+		return String.valueOf(_instance.size());
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Callable<String> get() {
-		Collection<Callable> iterator = _instance.get();
-		return iterator.iterator().next();
+	public Integer get() {
+		Iterator<Integer> iterator = _instance.iterator();
+		if (iterator.hasNext())
+			return iterator.next();
+		return null;
 	}
 
 	@Inject
-	@Reference
-	Instance<Collection<Callable>> _instance;
+	@Reference(target = "(foo=bar)")
+	Collection<Integer> _instance;
 
 }

@@ -33,9 +33,7 @@ public class ContainerDeploymentArchive
 
 		_id = id;
 		_beanClassNames = beanClassNames;
-		_beanDeploymentArchives = Collections.emptyList();
 		_beansXml = beansXml;
-		_ejbs = Collections.emptyList();
 		_services = new SimpleServiceRegistry();
 
 		if (loader != null) {
@@ -51,7 +49,7 @@ public class ContainerDeploymentArchive
 
 	@Override
 	public Collection<BeanDeploymentArchive> getBeanDeploymentArchives() {
-		return _beanDeploymentArchives;
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -61,7 +59,7 @@ public class ContainerDeploymentArchive
 
 	@Override
 	public Collection<EjbDescriptor<?>> getEjbs() {
-		return _ejbs;
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -75,9 +73,7 @@ public class ContainerDeploymentArchive
 	}
 
 	private final Collection<String> _beanClassNames;
-	private final Collection<BeanDeploymentArchive> _beanDeploymentArchives;
 	private final BeansXml _beansXml;
-	private final Collection<EjbDescriptor<?>> _ejbs;
 	private final String _id;
 	private final ServiceRegistry _services;
 

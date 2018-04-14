@@ -14,6 +14,8 @@
 
 package org.apache.aries.cdi.test.cases;
 
+import static org.junit.Assert.*;
+
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -23,11 +25,13 @@ import javax.enterprise.util.TypeLiteral;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class OSGiBeanDescriptorTests extends AbstractTestCase {
 
+	@Test
 	public void testServices() throws Exception {
 		Bundle tb2Bundle = installBundle("tb2.jar");
 
@@ -45,6 +49,7 @@ public class OSGiBeanDescriptorTests extends AbstractTestCase {
 	}
 
 	@SuppressWarnings("serial")
+	@Test
 	public void testReferences() throws Exception {
 		Bundle tb1Bundle = installBundle("tb1.jar");
 		Bundle tb2Bundle = installBundle("tb2.jar");
@@ -64,14 +69,6 @@ public class OSGiBeanDescriptorTests extends AbstractTestCase {
 			tb2Bundle.uninstall();
 			tb1Bundle.uninstall();
 		}
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
 	}
 
 }
