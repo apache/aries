@@ -14,18 +14,18 @@
 
 package org.apache.aries.cdi.container.test;
 
-import static org.apache.aries.cdi.container.test.TestUtil.getContainerState;
+import static org.apache.aries.cdi.container.test.TestUtil.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.cdi.container.internal.component.OSGiBean;
-import org.apache.aries.cdi.container.internal.container.ContainerDiscovery;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
+import org.apache.aries.cdi.container.internal.container.ExtensionPhase;
+import org.apache.aries.cdi.container.internal.container.Phase;
 import org.apache.aries.cdi.container.internal.model.BeansModel;
-import org.apache.aries.cdi.container.internal.phase.Phase;
-import org.apache.aries.cdi.container.internal.phase.Phase_Configuration;
+import org.apache.aries.cdi.container.internal.model.OSGiBean;
+import org.apache.aries.cdi.container.internal.util.Logs;
 
 public class MockCdiContainerAndComponents implements AutoCloseable {
 
@@ -35,16 +35,14 @@ public class MockCdiContainerAndComponents implements AutoCloseable {
 		for (String className : beanClasses) {
 			Class<?> clazz = Class.forName(className);
 
-			beans.put(className, new OSGiBean.Builder(clazz).build());
+			beans.put(className, new OSGiBean.Builder(new Logs.Builder(null).build(), clazz).build());
 		}
 
-		_beansModel = new BeansModel(beans, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+		_beansModel = new BeansModel(beans, Collections.emptyList());
 
 		_containerState = getContainerState(_beansModel);
 
-		ContainerDiscovery.discover(_containerState);
-
-		_nextPhase = new Phase_Configuration(_containerState, Collections.emptyList());
+		_nextPhase = new ExtensionPhase(_containerState, null);
 
 		_nextPhase.open();
 	}

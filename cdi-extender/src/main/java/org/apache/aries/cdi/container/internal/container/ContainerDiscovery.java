@@ -17,13 +17,9 @@ package org.apache.aries.cdi.container.internal.container;
 import java.util.Collections;
 import java.util.List;
 
-import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.Extension;
 
-import org.apache.aries.cdi.container.internal.component.DiscoveryExtension;
-import org.apache.aries.cdi.container.internal.extension.ExtensionMetadata;
 import org.apache.aries.cdi.container.internal.model.BeansModel;
-import org.apache.aries.cdi.container.internal.v2.component.ContainerComponent;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.Deployment;
@@ -31,7 +27,7 @@ import org.jboss.weld.bootstrap.spi.Metadata;
 
 public class ContainerDiscovery {
 
-	public static void discover(ContainerState containerState) {
+	public ContainerDiscovery(ContainerState containerState) {
 		String id = containerState.id() + "-discovery";
 
 		BeansModel beansModel = containerState.beansModel();
@@ -40,10 +36,8 @@ public class ContainerDiscovery {
 			containerState.loader(), id, beansModel.getBeanClassNames(),
 			beansModel.getBeansXml());
 
-		ContainerComponent containerComponent = new ContainerComponent(id);
-
 		ExtensionMetadata extension = new ExtensionMetadata(
-			new DiscoveryExtension(beansModel, containerComponent), id);
+			new DiscoveryExtension(containerState), id);
 
 		List<Metadata<Extension>> extensions = Collections.singletonList(extension);
 
@@ -52,31 +46,11 @@ public class ContainerDiscovery {
 
 		WeldBootstrap _bootstrap = new WeldBootstrap();
 
-		try {
-			_bootstrap.startExtensions(extensions);
-			_bootstrap.startContainer(id, new ContainerEnvironment(), deployment);
-			_bootstrap.startInitialization();
-			_bootstrap.deployBeans();
-			_bootstrap.shutdown();
-		}
-		catch (DefinitionException de) {
-			throw de;
-		}
-
-		validate(containerState);
-	}
-
-	private static void validate(ContainerState containerState) {
-		containerState.beansModel().getOSGiBeans().stream().forEach(
-			osgiBean -> {
-				if (!osgiBean.found()) {
-					throw new DefinitionException(
-						String.format(
-							"Did not find bean for <component> description %s",
-							osgiBean));
-				}
-			}
-		);
+		_bootstrap.startExtensions(extensions);
+		_bootstrap.startContainer(id, new ContainerEnvironment(), deployment);
+		_bootstrap.startInitialization();
+		_bootstrap.deployBeans();
+		_bootstrap.shutdown();
 	}
 
 }

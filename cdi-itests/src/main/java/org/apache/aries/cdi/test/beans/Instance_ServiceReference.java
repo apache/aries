@@ -15,39 +15,37 @@
 package org.apache.aries.cdi.test.beans;
 
 import java.util.Iterator;
+import java.util.List;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.SingletonScoped;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.SingleComponent;
 
-@Component
+@SingleComponent
 @Service({BeanService.class, Instance_ServiceReference.class})
 @SuppressWarnings("rawtypes")
 public class Instance_ServiceReference implements BeanService<ServiceReference> {
 
 	@Override
 	public String doSomething() {
-		int count = 0;
-		for (Iterator<?> iterator = _instance.iterator();iterator.hasNext();) {
-			iterator.next();
-			count++;
-		}
-		return String.valueOf(count);
+		return String.valueOf(_instance.size());
 	}
 
 	@Override
 	public ServiceReference get() {
-		return _instance.iterator().next();
+		Iterator<ServiceReference> iterator = _instance.iterator();
+		if (iterator.hasNext())
+			return iterator.next();
+		return null;
 	}
 
 	@Inject
 	@Reference(SingletonScoped.class)
-	Instance<ServiceReference> _instance;
+	List<ServiceReference> _instance;
 
 }

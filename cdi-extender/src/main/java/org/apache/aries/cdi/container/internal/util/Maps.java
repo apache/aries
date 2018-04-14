@@ -14,12 +14,30 @@
 
 package org.apache.aries.cdi.container.internal.util;
 
-import java.lang.reflect.Array;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
+import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
+import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.AnnotatedType;
+
+import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.util.converter.TypeReference;
 
 public class Maps {
 
@@ -39,78 +57,97 @@ public class Maps {
 			sb.append(entry.getValue());
 			sb.append(")");
 		}
-
 	}
 
-	public static Map<String, Object> map(String[] properties) {
-		Map<String,Object> map = new HashMap<>();
+	public static Map<String, Object> of(Dictionary<String, ?> dict) {
+		Map<String, Object> map = new HashMap<>();
 
-		for (String property : properties) {
-			map(map, property);
+		for (Enumeration<String> enu = dict.keys(); enu.hasMoreElements();) {
+			String key = enu.nextElement();
+			map.put(key, dict.get(key));
 		}
 
 		return map;
 	}
 
-	static void map(Map<String, Object> map, String property) {
-		int eq = property.indexOf('=');
+	public static Dictionary<String, ?> dict(Map<String, Object> map) {
+		Dictionary<String, Object> dict = new Hashtable<>();
 
-		String key = property.substring(0, eq);
-		String type = "String";
-		String value = property.substring(eq + 1, property.length());
-
-		int colon = key.indexOf(':');
-
-		if (colon != -1) {
-			property = key;
-			key = property.substring(0, colon);
-			type = property.substring(colon + 1, property.length());
+		if (map != null) {
+			for (Entry<String, Object> entry : map.entrySet()) {
+				dict.put(entry.getKey(), entry.getValue());
+			}
 		}
 
-		map(map, key, type, value);
+		return dict;
 	}
 
-	@SuppressWarnings("unchecked")
-	static void map(Map<String, Object> map, String key, String type, String value) {
-		PropertyType propertyType = PropertyType.find(type);
+	public static Dictionary<String, ?> dict(Object... args) {
+		Dictionary<String, Object> map = new Hashtable<>();
 
-		Object object = map.get(key);
+		if ((args.length % 2) != 0) throw new IllegalArgumentException("requires even number of args");
 
-		if (object == null) {
-			Object valueObject = Conversions.convert(value).to(propertyType.getType());
-
-			map.put(key, valueObject);
-
-			return;
+		for (int i = 0; i < args.length; i+=2) {
+			map.put(String.valueOf(args[i]), args[i+1]);
 		}
 
-		Object valueObject = Conversions.convert(value).to(propertyType.componentType());
+		return map;
+	}
 
-		if (propertyType.isRaw()) {
-			if (!object.getClass().isArray()) {
-				Object array = Array.newInstance(propertyType.componentType(), 2);
-				Array.set(array, 0, object);
-				Array.set(array, 1, valueObject);
-				map.put(key, array);
-			}
-			else {
-				int length = Array.getLength(object);
-				Object array = Array.newInstance(propertyType.componentType(), length + 1);
-				System.arraycopy(object, 0, array, 0, length);
-				Array.set(array, length, valueObject);
-				map.put(key, array);
-			}
+	@SafeVarargs
+	public static <T> Map<String, T> of(T... args) {
+		Map<String, T> map = new HashMap<>();
+
+		if ((args.length % 2) != 0) throw new IllegalArgumentException("requires even number of args");
+
+		for (int i = 0; i < args.length; i+=2) {
+			map.put(String.valueOf(args[i]), args[i+1]);
 		}
-		else if (propertyType.isList()) {
-			@SuppressWarnings("rawtypes")
-			List list = Collections.checkedList((List)object, propertyType.componentType());
-			list.add(valueObject);
+
+		return map;
+	}
+
+	public static Map<String, Object> componentProperties(Annotated annotated) {
+		if (annotated instanceof AnnotatedType) {
+			return merge(Arrays.asList(((AnnotatedType<?>)annotated).getJavaClass().getAnnotations()));
 		}
-		else if (propertyType.isSet()) {
-			@SuppressWarnings("rawtypes")
-			Set set = Collections.checkedSet((Set)object, propertyType.componentType());
-			set.add(valueObject);
+		else if (annotated instanceof AnnotatedParameter) {
+			return merge(Arrays.asList(((AnnotatedParameter<?>)annotated).getJavaParameter().getAnnotations()));
 		}
+		else if (annotated instanceof AnnotatedField) {
+			return merge(Arrays.asList(((AnnotatedField<?>)annotated).getJavaMember().getAnnotations()));
+		}
+		else if (annotated instanceof AnnotatedConstructor) {
+			return merge(Arrays.asList(((AnnotatedConstructor<?>)annotated).getJavaMember().getAnnotations()));
+		}
+		else if (annotated instanceof AnnotatedMethod) {
+			return merge(Arrays.asList(((AnnotatedMethod<?>)annotated).getJavaMember().getAnnotations()));
+		}
+		return merge(new ArrayList<>(annotated.getAnnotations()));
+	}
+
+	public static Map<String, Object> merge(List<Annotation> annotations) {
+		return annotations.stream().filter(
+			ann -> Objects.nonNull(ann.annotationType().getAnnotation(ComponentPropertyType.class))
+		).map(
+			ann -> Conversions.convert(ann).sourceAs(ann.annotationType()).to(new TypeReference<Map<String, Object>>() {})
+		).map(Map::entrySet).flatMap(Collection::stream).collect(
+			Collectors.toMap(
+				Map.Entry::getKey,
+				Map.Entry::getValue,
+				Maps::merge
+			)
+		);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<?> merge(Object a, Object b) {
+		List<?> aList = Conversions.convert(a).to(new TypeReference<List<?>>() {});
+		List<?> bList = Conversions.convert(b).to(new TypeReference<List<?>>() {});
+		List checkedList = Collections.checkedList(new ArrayList(), aList.get(0).getClass());
+		checkedList.addAll(aList);
+		checkedList.addAll(bList);
+		return checkedList;
 	}
 
 }

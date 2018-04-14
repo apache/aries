@@ -14,8 +14,8 @@
 
 package org.apache.aries.cdi.test.tb6;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.RetentionPolicy.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,22 +23,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import javax.inject.Inject;
-import javax.inject.Qualifier;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.cdi.annotations.Component;
+import org.osgi.service.cdi.annotations.ComponentPropertyType;
 import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.SingleComponent;
 
-@Component
+@SingleComponent
 @Service(Servlet.class)
 @BarServlet.Props
 public class BarServlet extends HttpServlet {
 
-	@Qualifier @Retention(RUNTIME) @Target(TYPE )
+	@Retention(RUNTIME) @Target(TYPE )
+	@ComponentPropertyType
 	public @interface Props {
 		String osgi_http_whiteboard_servlet_name() default "bar";
 		String osgi_http_whiteboard_servlet_pattern() default "/bar";

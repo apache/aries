@@ -17,10 +17,10 @@ package org.apache.aries.cdi.extension.http;
 import javax.enterprise.inject.spi.Extension;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
-public class HttpExtensionFactory implements ServiceFactory<Extension> {
+public class HttpExtensionFactory implements PrototypeServiceFactory<Extension> {
 
 	@Override
 	public Extension getService(

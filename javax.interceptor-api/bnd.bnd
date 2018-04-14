@@ -2,8 +2,8 @@ Bundle-License: CDDL-1.1;link="https://spdx.org/licenses/CDDL-1.1.html"
 Provide-Capability: \
 	osgi.contract; \
 		osgi.contract=JavaInterceptor; \
-		uses:="javax.interceptor"; \
-		version:List<Version>='1.1,1.2'
+		uses:="${packages}"; \
+		version:List<Version>='1.2,1.1'
 
 -exportcontents: javax.interceptor.*;version='1.2'
 

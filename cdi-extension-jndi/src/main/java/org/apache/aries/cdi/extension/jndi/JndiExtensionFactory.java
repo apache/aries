@@ -15,19 +15,28 @@
 package org.apache.aries.cdi.extension.jndi;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.log.Logger;
+import org.osgi.service.log.LoggerFactory;
 
-public class JndiExtensionFactory implements ServiceFactory {
+@SuppressWarnings("rawtypes")
+public class JndiExtensionFactory implements PrototypeServiceFactory {
+
+	public JndiExtensionFactory(LoggerFactory loggerFactory) {
+		_loggerFactory = loggerFactory;
+	}
 
 	@Override
 	public Object getService(Bundle bundle, ServiceRegistration registration) {
-		return new JndiExtension();
+		return new JndiExtension(_loggerFactory.getLogger(bundle, JndiContext.class.getName(), Logger.class));
 	}
 
 	@Override
 	public void ungetService(
 		Bundle bundle, ServiceRegistration registration, Object extension) {
 	}
+
+	private final LoggerFactory _loggerFactory;
 
 }

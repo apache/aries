@@ -14,20 +14,54 @@
 
 package org.apache.aries.cdi.test.cases;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
+import org.osgi.service.cdi.ConfigurationPolicy;
+import org.osgi.service.cdi.runtime.CDIComponentRuntime;
+import org.osgi.service.cdi.runtime.dto.ComponentDTO;
+import org.osgi.service.cdi.runtime.dto.ContainerDTO;
+import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class ConfigurationTests extends AbstractTestCase {
 
+	@Before
+	@Override
+	public void setUp() throws Exception {
+		testHeader();
+
+		runtimeTracker = new ServiceTracker<>(
+			bundleContext, CDIComponentRuntime.class, null);
+		runtimeTracker.open();
+
+		cdiRuntime = runtimeTracker.waitForService(timeout);
+
+		adminTracker = new ServiceTracker<>(bundleContext, ConfigurationAdmin.class, null);
+		adminTracker.open();
+		configurationAdmin = adminTracker.getService();
+	}
+
+	@After
+	@Override
+	public void tearDown() throws Exception {
+		runtimeTracker.close();
+		adminTracker.close();
+	}
+
+	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void testConfiguration() throws Exception {
 		Bundle tb3Bundle = installBundle("tb3.jar");
@@ -35,26 +69,50 @@ public class ConfigurationTests extends AbstractTestCase {
 		Configuration configurationA = null, configurationB = null;
 
 		try {
-			containerDTO = getContainerDTO();
+			int attempts = 50;
+			ComponentDTO configurationBeanA = null;
 
-//			assertEquals(
-//				WAITING_FOR_CONFIGURATIONS,
-//				containerDTO...);
+			while (--attempts > 0) {
+				ContainerDTO containerDTO = cdiRuntime.getContainerDTO(tb3Bundle);
 
-			configurationA = configurationAdmin.getConfiguration("org.apache.aries.cdi.test.tb3.ConfigurationBeanA", "?");
+				configurationBeanA = containerDTO.components.stream().filter(
+					c -> c.template.name.equals("configurationBeanA")
+				).findFirst().orElse(null);
 
-			Dictionary<String, Object> properties = new Hashtable<>();
-			properties.put("ports", new int[] {12, 4567});
-			configurationA.update(properties);
+				if (configurationBeanA != null) {
+					break;
+				}
+				Thread.sleep(100);
+			}
 
-			configurationB = configurationAdmin.getConfiguration("org.apache.aries.cdi.test.tb3.ConfigurationBeanB", "?");
+			List<ConfigurationTemplateDTO> requiredConfigs = configurationBeanA.template.configurations.stream().filter(
+				tconf -> tconf.policy == ConfigurationPolicy.REQUIRED
+			).collect(Collectors.toList());
 
-			properties = new Hashtable<>();
-			properties.put("color", "green");
-			properties.put("ports", new int[] {80});
-			configurationB.update(properties);
+			assertTrue(
+				configurationBeanA.instances.get(0).configurations.stream().noneMatch(
+					iconf -> requiredConfigs.stream().anyMatch(rc -> rc == iconf.template)
+				)
+			);
 
-			// after this we should eventually get the bean manager...
+			configurationA = configurationAdmin.getConfiguration("configurationBeanA", "?");
+
+			Dictionary<String, Object> p1 = new Hashtable<>();
+			p1.put("ports", new int[] {12, 4567});
+			configurationA.update(p1);
+
+			assertTrue(
+				configurationBeanA.instances.get(0).configurations.stream().allMatch(
+					iconf -> requiredConfigs.stream().anyMatch(rc -> rc == iconf.template)
+				)
+			);
+
+			configurationB = configurationAdmin.getConfiguration("configurationBeanB", "?");
+
+			Dictionary<String, Object> p2 = new Hashtable<>();
+			p2.put("color", "green");
+			p2.put("ports", new int[] {80});
+			configurationB.update(p2);
 
 			ServiceTracker<BeanService, BeanService> stA = new ServiceTracker<BeanService, BeanService>(
 				bundleContext, bundleContext.createFilter(
@@ -99,6 +157,7 @@ public class ConfigurationTests extends AbstractTestCase {
 		}
 	}
 
+	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void testOptionalConfiguration() throws Exception {
 		Bundle tb5Bundle = installBundle("tb5.jar");
@@ -106,11 +165,7 @@ public class ConfigurationTests extends AbstractTestCase {
 		Configuration configurationC = null;
 
 		try {
-			containerDTO = getContainerDTO();
-
-//			assertEquals(
-//				SHOULD BE OK,
-//				containerDTO...);
+			Thread.sleep(1000); // <---- TODO fix this
 
 			ServiceTracker<BeanService, BeanService> stC = new ServiceTracker<BeanService, BeanService>(
 				bundleContext, bundleContext.createFilter(
@@ -165,20 +220,6 @@ public class ConfigurationTests extends AbstractTestCase {
 			}
 			tb5Bundle.uninstall();
 		}
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-		adminTracker = new ServiceTracker<>(bundleContext, ConfigurationAdmin.class, null);
-
-		adminTracker.open();
-
-		configurationAdmin = adminTracker.getService();
-	}
-
-	@Override
-	protected void tearDown() throws Exception {
-		adminTracker.close();
 	}
 
 	private ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> adminTracker;

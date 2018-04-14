@@ -1,5 +1,6 @@
-Export-Package: ${p}.beans.*
+Export-Package: ${p}.beans.*;-split-package:=first
 Require-Capability:\
-	osgi.extender;filter:='(&(osgi.extender=osgi.cdi)(version>=0.0.1)(!(version>=1.0.0)))',\
-	osgi.cdi.extension;filter:='(&(osgi.cdi.extension=jndi)(version>=0.0.1)(!(version>=1.0.0)))'
--includeresource: OSGI-INF/cdi/osgi-beans.xml=bnd/basic-beans.xml
+	osgi.extender;\
+		filter:='(&(osgi.extender=osgi.cdi)(version>=1.0.0)(!(version>=2.0.0)))';\
+		extensions:List<String>='(osgi.cdi.extension=aries.cdi.jndi)';\
+		osgi.beans:List<String>='${classes;PUBLIC;CONCRETE;NAMED;${p}.beans.*}'

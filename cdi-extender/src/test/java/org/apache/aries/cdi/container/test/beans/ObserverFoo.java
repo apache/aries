@@ -21,7 +21,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.EventMetadata;
 
-import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.reference.ReferenceEvent;
 
 @ApplicationScoped
@@ -32,7 +31,7 @@ public class ObserverFoo {
 	}
 
 	void foos(
-		@Observes @Reference ReferenceEvent<Foo> event,
+		@Observes ReferenceEvent<Foo> event,
 		EventMetadata eventMetadata) {
 
 		event.onAdding(

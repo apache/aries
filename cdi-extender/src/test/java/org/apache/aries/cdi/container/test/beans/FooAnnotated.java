@@ -14,26 +14,28 @@
 
 package org.apache.aries.cdi.container.test.beans;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Qualifier;
 
+import org.apache.aries.cdi.extra.propertytypes.ServiceRanking;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
-
-@Qualifier @Retention(RUNTIME) @Target(TYPE)
-@interface ServiceRanking {
-	int value();
-}
+import org.osgi.service.cdi.reference.ReferenceEvent;
 
 @SingleComponent
 @Named("foo.annotated")
 @Service(Foo.class)
 @ServiceRanking(12)
 public class FooAnnotated implements Foo, Cloneable {
+
+	void watchFoos(@Observes ReferenceEvent<Integer> numbers) {
+		numbers.onAddingServiceReference(number -> System.out.println("Added: " + number));
+		numbers.onUpdateServiceReference(number -> System.out.println("Updated: " + number));
+		numbers.onRemoveServiceReference(number -> System.out.println("Removed: " + number));
+	}
+
+	@Inject
+	FooWithReferenceAndConfig fooWithReferenceAndConfig;
+
 }

@@ -18,37 +18,38 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 
+import org.apache.aries.cdi.extra.propertytypes.JaxrsResource;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.PID;
 import org.osgi.service.cdi.annotations.Prototype;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Service;
 
 public class BarAnnotated {
 
 	@Inject
-	@Reference
-	Optional<Foo> foo;
-
-	@Inject
-	@Named("foos")
-	@Reference
-	Instance<Foo> instanceFoos;
-
-	@Inject
-	@Reference
-	Provider<Collection<Foo>> collectionFoos;
-
-	@Inject
 	@Greedy
 	@Reference
-	Collection<Map.Entry<Map<String, Object>, Foo>> tupleFoos;
+	Foo foo;
+
+	@Inject
+	@Reference
+	Optional<Foo> fooOptional;
+
+	@Inject
+	@Reference
+	Provider<Collection<Foo>> dynamicFoos;
+
+	@Inject
+	@Reference
+	Collection<Map.Entry<Map<String, Object>, Integer>> tupleIntegers;
 
 	@Inject
 	@Prototype
@@ -60,8 +61,13 @@ public class BarAnnotated {
 	Collection<Map<String, Object>> propertiesFoos;
 
 	@Inject
-	@PID("foo.config")
+	@PID(value = "foo.config", policy = ConfigurationPolicy.REQUIRED)
 	@Configuration
 	Config config;
+
+	@Produces
+	@Service
+	@JaxrsResource
+	Baz baz = new Baz() {};
 
 }

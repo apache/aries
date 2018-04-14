@@ -58,7 +58,12 @@ public enum CollectionType {
 	 * ordering as {@code ServiceReference.compareTo} based upon service ranking
 	 * and service id.
 	 */
-	TUPLE("tuple");
+	TUPLE("tuple"),
+
+	/**
+	 * The observer type is used to indicate the reference is targeted to a observer method.
+	 */
+	OBSERVER("observer");
 
 	private final String value;
 

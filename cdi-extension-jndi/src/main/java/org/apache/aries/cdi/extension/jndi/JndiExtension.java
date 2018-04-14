@@ -16,14 +16,23 @@ package org.apache.aries.cdi.extension.jndi;
 
 import java.util.Hashtable;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.naming.Name;
 import javax.naming.spi.ObjectFactory;
 
+import org.osgi.service.log.Logger;
+import org.osgi.util.promise.Deferred;
+
 public class JndiExtension implements Extension, ObjectFactory {
+
+	public JndiExtension(Logger log) {
+		_beanManager = new Deferred<>();
+		_jndiContext = new JndiContext(log, _beanManager.getPromise());
+	}
 
 	@Override
 	public Object getObjectInstance(
@@ -37,10 +46,11 @@ public class JndiExtension implements Extension, ObjectFactory {
 		return null;
 	}
 
-	void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager beanManager) {
-		_jndiContext = new JndiContext(beanManager);
+	void applicationScopedInitialized(@Observes @Initialized(ApplicationScoped.class) Object o, BeanManager bm) {
+		_beanManager.resolve(bm);
 	}
 
-	private JndiContext _jndiContext;
+	private final Deferred<BeanManager> _beanManager;
+	private final JndiContext _jndiContext;
 
 }
