@@ -17,12 +17,9 @@ package org.apache.aries.cdi.container.internal.util;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +85,7 @@ public class Types {
 		return type.getTypeName();
 	}
 
-	public static Class<?>[] types(
+/*	public static Class<?>[] types(
 		ComponentModel componentModel, Class<?> beanClass, ClassLoader classLoader) {
 
 		List<Class<?>> classes = new ArrayList<>();
@@ -125,7 +122,7 @@ public class Types {
 
 		return classes.toArray(new Class[0]);
 	}
-
+*/
 	public static final Logger _log = LoggerFactory.getLogger(Types.class);
 
 }

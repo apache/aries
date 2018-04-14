@@ -21,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
-import org.apache.aries.cdi.container.internal.component.ComponentRuntimeExtension;
 import org.apache.aries.cdi.container.internal.context.BundleContextExtension;
 import org.apache.aries.cdi.container.internal.extension.ExtensionMetadata;
 import org.apache.aries.cdi.container.internal.model.BeansModel;
@@ -29,7 +28,6 @@ import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.bootstrap.spi.Metadata;
-import org.jboss.weld.manager.BeanManagerImpl;
 import org.jboss.weld.util.ServiceLoader;
 
 public class ContainerBootstrap {
@@ -50,10 +48,10 @@ public class ContainerBootstrap {
 			new ExtensionMetadata(
 				new BundleContextExtension(_containerState.bundleContext()),
 				_containerState.id()));
-		extensions.add(
-			new ExtensionMetadata(
-				new ComponentRuntimeExtension(_containerState),
-				_containerState.id()));
+//		extensions.add(
+//			new ExtensionMetadata(
+//				new ComponentRuntimeExtension(_containerState),
+//				_containerState.id()));
 
 		// Add extensions found from the bundle's classloader, such as those in the Bundle-ClassPath
 		for (Metadata<Extension> meta : ServiceLoader.load(Extension.class, _containerState.classLoader())) {
@@ -77,7 +75,7 @@ public class ContainerBootstrap {
 		_bootstrap.startContainer(_containerState.id(), new ContainerEnvironment(), deployment);
 
 		_beanManager = _bootstrap.getManager(beanDeploymentArchive);
-		_containerState.setBeanManager(_beanManager);
+//		_containerState.setBeanManager(_beanManager);
 
 		_bootstrap.startInitialization();
 		_bootstrap.deployBeans();

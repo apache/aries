@@ -14,31 +14,83 @@
 
 package org.apache.aries.cdi.container.internal.configuration;
 
-import static org.apache.aries.cdi.container.internal.util.Reflection.cast;
-
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.Decorator;
 import javax.enterprise.inject.spi.InjectionPoint;
-
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
-import org.apache.aries.cdi.container.internal.component.ComponentProperties;
-import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.util.Conversions;
 
 public class ConfigurationBean implements Bean<Object> {
 
-	public ConfigurationBean(
+	@Override
+	public Object create(CreationalContext<Object> creationalContext) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void destroy(Object instance, CreationalContext<Object> creationalContext) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Set<Type> getTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Annotation> getQualifiers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class<? extends Annotation> getScope() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Class<? extends Annotation>> getStereotypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isAlternative() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Class<?> getBeanClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<InjectionPoint> getInjectionPoints() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isNullable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+/*	public ConfigurationBean(
 		ContainerState containerState,
 		ConfigurationModel configurationModel,
 		ComponentModel componentModel,
@@ -160,5 +212,5 @@ public class ConfigurationBean implements Bean<Object> {
 	private final ContainerState _containerState;
 	private final InjectionPoint _injectionPoint;
 	private String _string;
-
+*/
 }

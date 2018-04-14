@@ -14,53 +14,9 @@
 
 package org.apache.aries.cdi.container.internal.container;
 
-import static org.apache.aries.cdi.container.test.TestUtil.*;
-import static org.junit.Assert.*;
-
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.enterprise.inject.spi.DefinitionException;
-
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationModel;
-import org.apache.aries.cdi.container.internal.model.AbstractModelBuilder;
-import org.apache.aries.cdi.container.internal.model.BeansModel;
-import org.apache.aries.cdi.container.internal.model.CollectionType;
-import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
-import org.apache.aries.cdi.container.internal.util.Sets;
-import org.apache.aries.cdi.container.test.beans.Bar;
-import org.apache.aries.cdi.container.test.beans.BarAnnotated;
-import org.apache.aries.cdi.container.test.beans.BarReference;
-import org.apache.aries.cdi.container.test.beans.BarWithConfig;
-import org.apache.aries.cdi.container.test.beans.BarWithReference;
-import org.apache.aries.cdi.container.test.beans.Config;
-import org.apache.aries.cdi.container.test.beans.Foo;
-import org.apache.aries.cdi.container.test.beans.FooAnnotated;
-import org.apache.aries.cdi.container.test.beans.FooReference;
-import org.apache.aries.cdi.container.test.beans.FooWithConfig;
-import org.apache.aries.cdi.container.test.beans.FooWithReference;
-import org.jboss.weld.resources.spi.ResourceLoader;
-import org.jboss.weld.serialization.spi.ProxyServices;
-import org.junit.Test;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
-import org.osgi.service.cdi.annotations.ReferencePolicy;
-import org.osgi.service.cdi.annotations.ReferencePolicyOption;
-import org.osgi.service.cdi.annotations.ReferenceScope;
-import org.osgi.service.cdi.annotations.ServiceScope;
-import org.osgi.util.converter.TypeReference;
-
 public class ContainerDiscoveryTest {
 
-	@Test
+/*	@Test
 	public void testBeansOnly() throws Exception {
 		AbstractModelBuilder builder = getModelBuilder(Collections.singletonList("OSGI-INF/cdi/beans-only.xml"), null);
 
@@ -496,5 +452,5 @@ public class ContainerDiscoveryTest {
 		assertEquals(target, referenceModel.getTarget());
 		assertEquals(types, referenceModel.getTypes());
 	}
-
+*/
 }

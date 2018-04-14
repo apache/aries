@@ -14,33 +14,9 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
-import static org.apache.aries.cdi.container.test.TestUtil.*;
-import static org.junit.Assert.*;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
-import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.literal.AnyLiteral;
-import org.apache.aries.cdi.container.internal.reference.ReferenceCallback;
-import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
-import org.apache.aries.cdi.container.test.MockCdiContainerAndComponents;
-import org.apache.aries.cdi.container.test.MockServiceReference;
-import org.apache.aries.cdi.container.test.beans.Foo;
-import org.apache.aries.cdi.container.test.beans.ObserverFoo;
-import org.junit.Test;
-import org.osgi.framework.Constants;
-import org.osgi.service.cdi.CdiEvent;
-
 public class EventsTest {
 
-	@Test
+/*	@Test
 	public void test_Event() throws Exception {
 		try (MockCdiContainerAndComponents container = new MockCdiContainerAndComponents(
 				"test", ObserverFoo.class.getName())) {
@@ -93,5 +69,5 @@ public class EventsTest {
 			assertEquals(0, observerFoo.foos().size());
 		}
 	}
-
+*/
 }

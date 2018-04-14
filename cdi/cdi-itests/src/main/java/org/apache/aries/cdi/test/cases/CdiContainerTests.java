@@ -17,6 +17,7 @@ package org.apache.aries.cdi.test.cases;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 
+import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.framework.wiring.BundleWiring;
 
 public class CdiContainerTests extends AbstractTestCase {
@@ -24,14 +25,14 @@ public class CdiContainerTests extends AbstractTestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		cdiContainer = waitForCdiContainer(cdiBundle.getBundleId());
+		containerDTO = getContainerDTO(cdiBundle);
 	}
 
 	public void testGetBeanFromCdiContainerService() throws Exception {
-		BeanManager beanManager = cdiContainer.getBeanManager();
+		BeanManager beanManager = getBeanManager(cdiBundle);
 
 		assertNotNull(beanManager);
-		assertPojoExists(beanManager);
+		assertBeanExists(Pojo.class, beanManager);
 	}
 
 	public void testGetBeanManagerFromCDI() throws Exception {
@@ -46,7 +47,7 @@ public class CdiContainerTests extends AbstractTestCase {
 			BeanManager beanManager = CDI.current().getBeanManager();
 
 			assertNotNull(beanManager);
-			assertPojoExists(beanManager);
+			assertBeanExists(Pojo.class, beanManager);
 		}
 		finally {
 			currentThread.setContextClassLoader(contextClassLoader);

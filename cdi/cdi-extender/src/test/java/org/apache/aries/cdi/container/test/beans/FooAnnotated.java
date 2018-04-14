@@ -14,14 +14,26 @@
 
 package org.apache.aries.cdi.container.test.beans;
 
-import org.osgi.service.cdi.annotations.Component;
-import org.osgi.service.cdi.annotations.ServiceScope;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Component(
-	name = "foo.annotated",
-	property = {"service.ranking:Integer=12"},
-	service = Foo.class,
-	scope = ServiceScope.SINGLETON
-)
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Named;
+import javax.inject.Qualifier;
+
+import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.SingleComponent;
+
+@Qualifier @Retention(RUNTIME) @Target(TYPE)
+@interface ServiceRanking {
+	int value();
+}
+
+@SingleComponent
+@Named("foo.annotated")
+@Service(Foo.class)
+@ServiceRanking(12)
 public class FooAnnotated implements Foo, Cloneable {
 }

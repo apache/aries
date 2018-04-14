@@ -14,39 +14,22 @@
 
 package org.apache.aries.cdi.container.internal.command;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Formatter;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationCallback;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.extension.ExtensionDependency;
-import org.apache.aries.cdi.container.internal.model.BeansModel;
-import org.apache.aries.cdi.container.internal.reference.ReferenceCallback;
-import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
-import org.apache.aries.cdi.container.internal.service.ServiceDeclaration;
-import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.osgi.framework.Bundle;
 
 public class CdiCommand {
 
-	public String list() {
-		try (Formatter f = new Formatter()) {
-			for (ContainerState cdiContainerState : _states.values()) {
-				f.format("[%s]%n", cdiContainerState.id());
-			}
-			return f.toString();
-		}
+	public Collection<ContainerState> list() {
+		return _states.values();
 	}
 
-	public String info(Bundle bundle) {
+	public ContainerState info(Bundle bundle) {
+		return _states.get(bundle);
+		/*
 		try (Formatter f = new Formatter()) {
 			ContainerState containerState = _states.get(bundle);
 
@@ -138,6 +121,7 @@ public class CdiCommand {
 
 			return f.toString();
 		}
+		 */
 	}
 
 	public void add(Bundle bundle, ContainerState cdiContainerState) {
@@ -149,6 +133,5 @@ public class CdiCommand {
 	}
 
 	private final Map<Bundle, ContainerState> _states = new ConcurrentHashMap<>();
-
 
 }

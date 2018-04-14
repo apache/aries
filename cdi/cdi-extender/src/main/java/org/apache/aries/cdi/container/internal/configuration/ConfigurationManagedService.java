@@ -21,7 +21,13 @@ import org.osgi.service.cm.ManagedService;
 
 public class ConfigurationManagedService implements ManagedService {
 
-	public ConfigurationManagedService(String pid, ConfigurationCallback callback) {
+	@Override
+	public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
+		// TODO Auto-generated method stub
+
+	}
+
+/*	public ConfigurationManagedService(String pid, ConfigurationCallback callback) {
 		_pid = pid;
 		_callback = callback;
 	}
@@ -59,5 +65,5 @@ public class ConfigurationManagedService implements ManagedService {
 	private final String _pid;
 	private volatile Dictionary<String, ?> _properties;
 	private volatile String _string;
-
+*/
 }

@@ -14,7 +14,7 @@
 
 package org.apache.aries.cdi.test.beans;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import javax.enterprise.inject.Instance;
@@ -23,33 +23,33 @@ import javax.inject.Inject;
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
-import org.osgi.service.cdi.annotations.ServiceScope;
+import org.osgi.service.cdi.annotations.Service;
 
-@Component(
-	service = {BeanService.class, Instance_Optional.class},
-	scope = ServiceScope.SINGLETON
-)
+@Component
+@Service({BeanService.class, Instance_Optional.class})
+@SuppressWarnings("rawtypes")
 public class Instance_Optional implements BeanService<Callable<String>> {
 
 	@Override
 	public String doSomething() {
 		int count = 0;
-		for (Iterator<?> iterator = _instance.iterator();iterator.hasNext();) {
-			System.out.println(iterator.next());
+		Collection<Callable> callables = _instance.get();
+		for (Callable callable : callables) {
+			System.out.println(callable);
 			count++;
 		}
 		return String.valueOf(count);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Callable<String> get() {
-		Iterator<Callable<String>> iterator = _instance.iterator();
-		return iterator.hasNext() ? iterator.next() : null;
+		Collection<Callable> iterator = _instance.get();
+		return iterator.iterator().next();
 	}
 
 	@Inject
-	@Reference(cardinality = ReferenceCardinality.MULTIPLE)
-	Instance<Callable<String>> _instance;
+	@Reference
+	Instance<Collection<Callable>> _instance;
 
 }

@@ -14,271 +14,136 @@
 
 package org.apache.aries.cdi.container.internal.reference;
 
-import static org.apache.aries.cdi.container.internal.model.Model.*;
 import static org.apache.aries.cdi.container.internal.util.Reflection.cast;
-import static java.lang.String.format;
-import static org.apache.aries.cdi.container.internal.model.Constants.CARDINALITY_ATTRIBUTE;
-import static org.apache.aries.cdi.container.internal.model.Constants.CDI10_URI;
-import static org.apache.aries.cdi.container.internal.model.Constants.NAME_ATTRIBUTE;
-import static org.apache.aries.cdi.container.internal.model.Constants.POLICY_ATTRIBUTE;
-import static org.apache.aries.cdi.container.internal.model.Constants.POLICY_OPTION_ATTRIBUTE;
-import static org.apache.aries.cdi.container.internal.model.Constants.SCOPE_ATTRIBUTE;
-import static org.apache.aries.cdi.container.internal.model.Constants.TARGET_ATTRIBUTE;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.AnnotatedCallable;
+import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
+import javax.enterprise.inject.spi.InjectionPoint;
+import javax.inject.Named;
+import javax.inject.Provider;
 
 import org.apache.aries.cdi.container.internal.model.CollectionType;
 import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.apache.aries.cdi.container.internal.util.Maps;
-import org.apache.aries.cdi.container.internal.util.Sets;
-import org.apache.aries.cdi.container.internal.util.Types;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
-import org.osgi.service.cdi.annotations.ReferencePolicy;
-import org.osgi.service.cdi.annotations.ReferencePolicyOption;
-import org.osgi.service.cdi.annotations.ReferenceScope;
-import org.osgi.service.cdi.annotations.ServiceEvent;
+import org.osgi.service.cdi.reference.ReferenceServiceObjects;
+import org.osgi.service.cdi.runtime.dto.template.MaximumCardinality;
+import org.osgi.service.cdi.runtime.dto.template.ReferenceTemplateDTO;
+import org.osgi.service.cdi.runtime.dto.template.ReferenceTemplateDTO.Policy;
+import org.osgi.service.cdi.runtime.dto.template.ReferenceTemplateDTO.PolicyOption;
 import org.osgi.util.converter.TypeReference;
-import org.xml.sax.Attributes;
 
 public class ReferenceModel {
 
 	public static class Builder {
 
-		public Builder(Attributes attributes) {
-			_cardinality = _cardinality(attributes);
-			_name = _name(attributes);
-			_option = _option(attributes);
-			_policy = _policy(attributes);
-			_scope = _scope(attributes);
-			_target = _target(attributes);
-		}
-
-		public Builder(Set<Annotation> qualifiers) {
-			_qualifiers = qualifiers;
-			Reference reference = getQualifier(_qualifiers, Reference.class);
-			if (reference != null) {
-				_cardinality = reference.cardinality();
-				_name = reference.name();
-				_option = reference.policyOption();
-				_policy = reference.policy();
-				_scope = reference.scope();
-				_service = reference.service();
-				_target = reference.target();
-			}
-		}
-
 		public ReferenceModel build() {
-			if ((_annotated == null) && (_service == null)) {
-				throw new IllegalArgumentException(
-					"Either injectionPoint or service must be set!");
+			return new ReferenceModel(_annotated, _member, _qualifiers, _type, _referenceClass);
+		}
+
+		public Builder injectionPoint(InjectionPoint injectionPoint) {
+			_annotated = injectionPoint.getAnnotated();
+			_member = injectionPoint.getMember();
+			_qualifiers = injectionPoint.getQualifiers();
+			_type = injectionPoint.getType();
+
+			if (_annotated instanceof AnnotatedParameter) {
+				AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)_annotated;
+
+				_referenceClass = parameter.getDeclaringCallable().getDeclaringType().getJavaClass();
+			}
+			if (_annotated instanceof AnnotatedField) {
+				AnnotatedField<?> field = (AnnotatedField<?>)_annotated;
+
+				_referenceClass = field.getDeclaringType().getJavaClass();
 			}
 
-			if (_annotated == null) {
-				_annotated = new ReferenceAnnotated(_service);
-			}
-
-			Type type = upwrapCDITypes(_annotated.getBaseType());
-
-			_policy = calculatePolicy(_policy);
-			_option = calculatePolicyOption(_option);
-			_scope = calculateScope(_scope);
-			Multiplicity multiplicity = calculateMultiplicity(_annotated.getBaseType());// we need the pure type to check "Instance"
-			_cardinality = calculateCardinality(_cardinality, multiplicity, type);
-			CollectionType collectionType = calculateCollectionType(type);
-			Class<?> beanClass = calculateBeanClass(type);
-			_service = calculateServiceClass(_service, _cardinality, collectionType, type, _annotated);
-			_name = calculateName(_name, _service, _annotated);
-
-			return new ReferenceModel(_service, _cardinality, _name, _policy, _option, _target, _scope, _qualifiers, beanClass, type, collectionType);
-		}
-
-		public Builder cardinality(ReferenceCardinality cardinality) {
-			_cardinality = cardinality;
 			return this;
 		}
 
-		public Builder annotated(Annotated annotated) {
-			_annotated = annotated;
-			return this;
-		}
-
-		public Builder name(String name) {
-			_name = name;
-			return this;
-		}
-
-		public Builder option(ReferencePolicyOption option) {
-			_option = option;
-			return this;
-		}
-
-		public Builder policy(ReferencePolicy policy) {
-			_policy = policy;
-			return this;
-		}
-
-		public Builder scope(ReferenceScope scope) {
-			_scope = scope;
-			return this;
-		}
-
-		public Builder service(Class<?> service) {
-			_service = service;
-			return this;
-		}
-
-		public Builder target(String target) {
-			_target = target;
-			return this;
-		}
-
-		@SuppressWarnings("unchecked")
-		private static <T extends Annotation> T getQualifier(
-			Set<Annotation> qualifiers, Class<T> clazz) {
-			for (Annotation annotation : qualifiers) {
-				if (clazz.isAssignableFrom(annotation.annotationType())) {
-					return (T)annotation;
-				}
-			}
-			return null;
-		}
-
-		private ReferenceCardinality _cardinality;
 		private Annotated _annotated;
-		private String _name;
-		private ReferencePolicyOption _option;
-		private ReferencePolicy _policy;
+		private Member _member;
 		private Set<Annotation> _qualifiers;
-		private ReferenceScope _scope;
-		private Class<?> _service;
-		private String _target;
+		private Class<?> _referenceClass;
+		private Type _type;
 
+	}
+
+	public static enum Scope {
+		BUNDLE, PROTOTYPE, SINGLETON
 	}
 
 	private ReferenceModel(
-		Class<?> service,
-		ReferenceCardinality cardinality,
-		String name,
-		ReferencePolicy policy,
-		ReferencePolicyOption option,
-		String target,
-		ReferenceScope scope,
+		Annotated annotated,
+		Member member,
 		Set<Annotation> qualifiers,
-		Class<?> beanClass,
-		Type injectionPointType,
-		CollectionType collectionType) {
+		Type type,
+		Class<?> referenceClass) {
 
-		_service = service;
-		_cardinality = cardinality;
-		_name = name;
-		_policy = policy;
-		_option = option;
-		_target = target;
-		_scope = scope;
-		_qualifiers = new LinkedHashSet<>();
-		if (qualifiers != null) {
-			_qualifiers.addAll(qualifiers);
+		_annotated = annotated;
+		_member = member;
+		_qualifiers = qualifiers;
+		_injectionPointType = type;
+		_referenceClass = referenceClass;
+
+		calculateServiceType(_injectionPointType);
+
+		Reference reference = _annotated.getAnnotation(Reference.class);
+
+		if ((reference != null) && (reference.value() != null) && (reference.value() != Object.class)) {
+			if (!_serviceType.isAssignableFrom(reference.value())) {
+				throw new IllegalArgumentException(
+					"The service type specified in @Reference (" + reference.value() +
+						") is not compatible with the type calculated from the injection point: " +
+							_serviceType);
+			}
+			_serviceType = reference.value();
 		}
-		_beanClass = beanClass;
-		_injectionPointType = injectionPointType;
-		_collectionType = collectionType;
 
-		_types = Sets.immutableHashSet(_injectionPointType, Object.class);
+		Type rawType = _injectionPointType;
+
+		if (rawType instanceof ParameterizedType) {
+			ParameterizedType pt = cast(_injectionPointType);
+
+			rawType = pt.getRawType();
+		}
+
+		_beanClass = cast(rawType);
+
+		_name = calculateName(_serviceType, _annotated);
+
+		if (_annotated.isAnnotationPresent(Greedy.class)) {
+			_greedy = true;
+		}
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((_beanClass == null) ? 0 : _beanClass.hashCode());
-		result = prime * result + ((_cardinality == null) ? 0 : _cardinality.hashCode());
-		result = prime * result + ((_name == null) ? 0 : _name.hashCode());
-		result = prime * result + ((_option == null) ? 0 : _option.hashCode());
-		result = prime * result + ((_policy == null) ? 0 : _policy.hashCode());
-		result = prime * result + ((_scope == null) ? 0 : _scope.hashCode());
-		result = prime * result + ((_service == null) ? 0 : _service.hashCode());
-		result = prime * result + ((_target == null) ? 0 : _target.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ReferenceModel other = (ReferenceModel) obj;
-		if (_beanClass == null) {
-			if (other._beanClass != null)
-				return false;
-		} else if (!_beanClass.equals(other._beanClass))
-			return false;
-		if (_cardinality != other._cardinality)
-			return false;
-		if (_name == null) {
-			if (other._name != null)
-				return false;
-		} else if (!_name.equals(other._name))
-			return false;
-		if (_option != other._option)
-			return false;
-		if (_policy != other._policy)
-			return false;
-		if (_scope != other._scope)
-			return false;
-		if (_service == null) {
-			if (other._service != null)
-				return false;
-		} else if (!_service.equals(other._service))
-			return false;
-		if (_target == null) {
-			if (other._target != null)
-				return false;
-		} else if (!_target.equals(other._target))
-			return false;
-		return true;
-	}
-
-	public boolean found() {
-		return _found.get();
-	}
-
-	public void found(boolean found) {
-		_found.set(found);
+	public Annotated getAnnotated() {
+		return _annotated;
 	}
 
 	public Class<?> getBeanClass() {
 		return _beanClass;
-	}
-
-	public ReferenceCardinality getCardinality() {
-		return _cardinality;
 	}
 
 	public CollectionType getCollectionType() {
@@ -293,43 +158,43 @@ public class ReferenceModel {
 		return _name;
 	}
 
-	public ReferencePolicy getPolicy() {
-		return _policy;
-	}
-
-	public ReferencePolicyOption getPolicyOption() {
-		return _option;
+	public Member getMember() {
+		return _member;
 	}
 
 	public Set<Annotation> getQualifiers() {
 		return _qualifiers;
 	}
 
-	public ReferenceScope getScope() {
-		return _scope;
-	}
-
-	public Class<?> getServiceClass() {
-		return _service;
+	public Class<?> getServiceType() {
+		return _serviceType;
 	}
 
 	public String getTarget() {
-		return _target;
+		return _targetFilter;
 	}
 
 	public Set<Type> getTypes() {
-		return _types;
+		return null; // TODO _types;
 	}
 
-	public void setQualifiers(Set<Annotation> qualifiers) {
-		_qualifiers.clear();
-		_qualifiers.addAll(qualifiers);
+	public boolean dynamic() {
+		return _dynamic;
+	}
+
+	public boolean optional() {
+		return _optional;
+	}
+
+	public boolean unary() {
+		return _multiplicity == MaximumCardinality.ONE;
 	}
 
 	@Override
 	public String toString() {
 		if (_string == null) {
-			_string = String.format("reference[name='%s', service='%s', scope='%s', target='%s']", _name, _service, _scope, _target);
+			//_string = String.format("reference[name='%s', service='%s', scope='%s', target='%s']", _name, _service, _scope, _target);
+			_string = super.toString();
 		}
 		return _string;
 	}
@@ -337,7 +202,7 @@ public class ReferenceModel {
 	public static String buildFilter(
 			Class<?> serviceType,
 			String target,
-			ReferenceScope scope,
+			Scope scope,
 			Set<Annotation> qualifiers)
 		throws InvalidSyntaxException {
 
@@ -349,25 +214,11 @@ public class ReferenceModel {
 		sb.append(serviceType.getName());
 		sb.append(")");
 
-		if (scope == ReferenceScope.PROTOTYPE) {
+		if (scope == Scope.PROTOTYPE) {
 			sb.append("(");
 			sb.append(Constants.SERVICE_SCOPE);
 			sb.append("=");
 			sb.append(Constants.SCOPE_PROTOTYPE);
-			sb.append(")");
-		}
-		else if (scope == ReferenceScope.SINGLETON) {
-			sb.append("(");
-			sb.append(Constants.SERVICE_SCOPE);
-			sb.append("=");
-			sb.append(Constants.SCOPE_SINGLETON);
-			sb.append(")");
-		}
-		else if (scope == ReferenceScope.BUNDLE) {
-			sb.append("(");
-			sb.append(Constants.SERVICE_SCOPE);
-			sb.append("=");
-			sb.append(Constants.SCOPE_BUNDLE);
 			sb.append(")");
 		}
 
@@ -400,343 +251,397 @@ public class ReferenceModel {
 		return sb.toString();
 	}
 
-	private static Class<?> calculateBeanClass(Type type) {
-		if (type instanceof ParameterizedType) {
-			ParameterizedType pType = (ParameterizedType)type;
+//	private static Class<?> calculateBeanClass(Type type) {
+//		if (type instanceof ParameterizedType) {
+//			ParameterizedType pType = (ParameterizedType)type;
+//
+//			type = pType.getRawType();
+//		}
+//		else if (type instanceof WildcardType) {
+//			throw new IllegalArgumentException(
+//				"Cannot use a wildcard as the bean: " + type);
+//		}
+//
+//		return cast(type);
+//	}
 
-			type = pType.getRawType();
-		}
-		else if (type instanceof WildcardType) {
-			throw new IllegalArgumentException(
-				"Cannot use a wildcard as the bean: " + type);
+//	private static CollectionType calculateCollectionType(Type type) {
+//		if (type instanceof ParameterizedType) {
+//			ParameterizedType parameterizedType = cast(type);
+//
+//			Type rawType = parameterizedType.getRawType();
+//
+//			if ((List.class == cast(rawType)) ||
+//				Collection.class.isAssignableFrom(cast(rawType))) {
+//
+//				Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+//
+//				return calculateCollectionType(actualTypeArguments[0]);
+//			}
+//			else if (Map.class == cast(rawType)) {
+//				Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+//
+//				Type first = actualTypeArguments[0];
+//				Type second = actualTypeArguments[1];
+//
+//				if (!(first instanceof ParameterizedType) &&
+//					String.class.isAssignableFrom(cast(first))) {
+//
+//					if ((!(second instanceof ParameterizedType) && (second == Object.class)) ||
+//						(second instanceof WildcardType)) {
+//
+//						return CollectionType.PROPERTIES;
+//					}
+//				}
+//			}
+//			else if (Map.Entry.class == cast(rawType)) {
+//				return CollectionType.TUPLE;
+//			}
+//			else if (ServiceObjects.class == cast(rawType)) {
+//				return CollectionType.SERVICEOBJECTS;
+//			}
+//			else if (ServiceReference.class == cast(rawType)) {
+//				return CollectionType.REFERENCE;
+//			}
+//		}
+//		else if (Map.Entry.class == cast(type)) {
+//			return CollectionType.TUPLE;
+//		}
+//		else if (ServiceObjects.class == cast(type)) {
+//			return CollectionType.SERVICEOBJECTS;
+//		}
+//		else if (ServiceReference.class == cast(type)) {
+//			return CollectionType.REFERENCE;
+//		}
+//
+//		return CollectionType.SERVICE;
+//	}
+
+//	private static ReferenceCardinality calculateCardinality(
+//		ReferenceCardinality cardinality, Multiplicity multiplicity, Type type) {
+//
+//		if ((multiplicity == Multiplicity.UNARY) &&
+//			((cardinality == ReferenceCardinality.AT_LEAST_ONE) || (cardinality == ReferenceCardinality.MULTIPLE))) {
+//
+//			throw new IllegalArgumentException(
+//				format(
+//					"Unary injection point type %s cannot be defined by multiple cardinality %s",
+//					type, cardinality));
+//		}
+//		else if ((multiplicity == Multiplicity.MULTIPLE) &&
+//				((cardinality == ReferenceCardinality.OPTIONAL) || (cardinality == ReferenceCardinality.MANDATORY))) {
+//
+//			throw new IllegalArgumentException(
+//				format(
+//					"Multiple injection point type %s cannot be defined by unary cardinality %s",
+//					type, cardinality));
+//		}
+//
+//		if ((cardinality == null) || (cardinality == ReferenceCardinality.DEFAULT)) {
+//			switch(multiplicity) {
+//				case MULTIPLE:
+//					return ReferenceCardinality.MULTIPLE;
+//				case UNARY:
+//					return ReferenceCardinality.MANDATORY;
+//			}
+//		}
+//
+//		return cardinality;
+//	}
+
+//	private static Multiplicity calculateMultiplicity(Type type) {
+//		if (type instanceof ParameterizedType) {
+//			ParameterizedType parameterizedType = cast(type);
+//
+//			Type rawType = parameterizedType.getRawType();
+//
+//			if ((Instance.class == cast(rawType)) ||
+//				Collection.class.isAssignableFrom(cast(rawType)) ||
+//				ServiceEvent.class == cast(rawType)) {
+//
+//				return Multiplicity.MULTIPLE;
+//			}
+//		}
+//
+//		return Multiplicity.UNARY;
+//	}
+
+	private String calculateName(Class<?> service, Annotated annotated) {
+		Named named = annotated.getAnnotation(Named.class);
+
+		if (named != null) {
+			if (named.value() == null | named.value().equals("")) {
+				throw new IllegalArgumentException(
+					"It's illegal to specify @Name without specifying a value with @Reference: " +
+						annotated);
+			}
+			return named.value();
 		}
 
-		return cast(type);
+		String prefix = _referenceClass.getName() + ".";
+
+		if (annotated instanceof AnnotatedParameter) {
+			AnnotatedParameter<?> parameter = (AnnotatedParameter<?>)annotated;
+
+			AnnotatedCallable<?> declaringCallable = parameter.getDeclaringCallable();
+
+			if (declaringCallable instanceof AnnotatedConstructor) {
+				return prefix + "new" + parameter.getPosition();
+			}
+			else {
+				AnnotatedMethod<?> method = (AnnotatedMethod<?>)declaringCallable;
+
+				return prefix + method.getJavaMember().getName() + parameter.getPosition();
+			}
+		}
+		else {
+			AnnotatedField<?> annotatedField = (AnnotatedField<?>)annotated;
+
+			return prefix + annotatedField.getJavaMember().getName();
+		}
 	}
 
-	private static CollectionType calculateCollectionType(Type type) {
-		if (type instanceof ParameterizedType) {
-			ParameterizedType parameterizedType = cast(type);
-
-			Type rawType = parameterizedType.getRawType();
-
-			if ((List.class == cast(rawType)) ||
-				Collection.class.isAssignableFrom(cast(rawType))) {
-
-				Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-
-				return calculateCollectionType(actualTypeArguments[0]);
-			}
-			else if (Map.class == cast(rawType)) {
-				Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-
-				Type first = actualTypeArguments[0];
-				Type second = actualTypeArguments[1];
-
-				if (!(first instanceof ParameterizedType) &&
-					String.class.isAssignableFrom(cast(first))) {
-
-					if ((!(second instanceof ParameterizedType) && (second == Object.class)) ||
-						(second instanceof WildcardType)) {
-
-						return CollectionType.PROPERTIES;
-					}
-				}
-			}
-			else if (Map.Entry.class == cast(rawType)) {
-				return CollectionType.TUPLE;
-			}
-			else if (ServiceObjects.class == cast(rawType)) {
-				return CollectionType.SERVICEOBJECTS;
-			}
-			else if (ServiceReference.class == cast(rawType)) {
-				return CollectionType.REFERENCE;
-			}
-		}
-		else if (Map.Entry.class == cast(type)) {
-			return CollectionType.TUPLE;
-		}
-		else if (ServiceObjects.class == cast(type)) {
-			return CollectionType.SERVICEOBJECTS;
-		}
-		else if (ServiceReference.class == cast(type)) {
-			return CollectionType.REFERENCE;
-		}
-
-		return CollectionType.SERVICE;
-	}
-
-	private static ReferenceCardinality calculateCardinality(
-		ReferenceCardinality cardinality, Multiplicity multiplicity, Type type) {
-
-		if ((multiplicity == Multiplicity.UNARY) &&
-			((cardinality == ReferenceCardinality.AT_LEAST_ONE) || (cardinality == ReferenceCardinality.MULTIPLE))) {
-
-			throw new IllegalArgumentException(
-				format(
-					"Unary injection point type %s cannot be defined by multiple cardinality %s",
-					type, cardinality));
-		}
-		else if ((multiplicity == Multiplicity.MULTIPLE) &&
-				((cardinality == ReferenceCardinality.OPTIONAL) || (cardinality == ReferenceCardinality.MANDATORY))) {
-
-			throw new IllegalArgumentException(
-				format(
-					"Multiple injection point type %s cannot be defined by unary cardinality %s",
-					type, cardinality));
-		}
-
-		if ((cardinality == null) || (cardinality == ReferenceCardinality.DEFAULT)) {
-			switch(multiplicity) {
-				case MULTIPLE:
-					return ReferenceCardinality.MULTIPLE;
-				case UNARY:
-					return ReferenceCardinality.MANDATORY;
-			}
-		}
-
-		return cardinality;
-	}
-
-	private static Multiplicity calculateMultiplicity(Type type) {
-		if (type instanceof ParameterizedType) {
-			ParameterizedType parameterizedType = cast(type);
-
-			Type rawType = parameterizedType.getRawType();
-
-			if ((Instance.class == cast(rawType)) ||
-				Collection.class.isAssignableFrom(cast(rawType)) ||
-				ServiceEvent.class == cast(rawType)) {
-
-				return Multiplicity.MULTIPLE;
-			}
-		}
-
-		return Multiplicity.UNARY;
-	}
-
-	public static String calculateName(String name, Class<?> service, Annotated annotated) {
-		if ((name != null) && (name.length() > 0)) {
-			return name;
-		}
-
-		if (annotated != null) {
-			if (annotated instanceof AnnotatedParameter) {
-				AnnotatedParameter<?> annotatedParameter = (AnnotatedParameter<?>)annotated;
-
-				return Types.getName(service) + annotatedParameter.getPosition();
-			}
-			if (annotated instanceof AnnotatedField) {
-				AnnotatedField<?> annotatedField = (AnnotatedField<?>)annotated;
-
-				return annotatedField.getJavaMember().getName();
-			}
-		}
-
-		return Types.getName(service);
-	}
-
-	private static ReferencePolicy calculatePolicy(ReferencePolicy policy) {
-		if ((policy == null) || (policy == ReferencePolicy.DEFAULT)) {
-			return ReferencePolicy.STATIC;
-		}
-
-		return policy;
-	}
-
-	private static ReferencePolicyOption calculatePolicyOption(ReferencePolicyOption option) {
-		if ((option == null) || (option == ReferencePolicyOption.DEFAULT)) {
-			return ReferencePolicyOption.RELUCTANT;
-		}
-
-		return option;
-	}
-
-	private static ReferenceScope calculateScope(ReferenceScope scope) {
-		if ((scope == null) || (scope == ReferenceScope.DEFAULT)) {
-			return ReferenceScope.DEFAULT;
-		}
-
-		return scope;
-	}
-
-	private static Class<?> calculateServiceClass(Type injectionPointType) {
-		Type type = injectionPointType;
-
+	private void calculateServiceType(Type type) {
 		if (!(type instanceof ParameterizedType)) {
-			return cast(type);
+			if (!(type instanceof Class)) {
+				throw new IllegalArgumentException(
+					"The service type must not be generic: " + type);
+			}
+			else if (Map.class == cast(type)) {
+				throw new IllegalArgumentException(
+					"Map must specify a generic type arguments: " + type);
+			}
+			else if (Map.Entry.class == cast(type)) {
+				throw new IllegalArgumentException(
+					"Map.Entry must specify a generic type arguments: " + type);
+			}
+			else if (ReferenceServiceObjects.class == cast(type)) {
+				throw new IllegalArgumentException(
+					"ReferenceServiceObjects must specify a generic type argument: " + type);
+			}
+			else if (ServiceReference.class == cast(type)) {
+				throw new IllegalArgumentException(
+					"ServiceReference must specify a generic type argument: " + type);
+			}
+
+			_serviceType = cast(type);
+
+			return;
 		}
 
 		ParameterizedType parameterizedType = cast(type);
 
 		Type rawType = parameterizedType.getRawType();
 
-		if ((List.class == cast(rawType)) ||
-			Collection.class.isAssignableFrom(cast(rawType))) {
-
-			Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-
-			type = actualTypeArguments[0];
-
-			if (type instanceof ParameterizedType) {
-				parameterizedType = (ParameterizedType)type;
-
-				rawType = parameterizedType.getRawType();
-			}
-			else if ((type instanceof WildcardType) ||
-					Map.Entry.class.isAssignableFrom(cast(type))) {
-
-				return null;
-			}
-			else {
-				rawType = type;
-			}
+		if (Instance.class == cast(rawType)) {
+			throw new IllegalArgumentException(
+				"Instance<T> is not supported with @Reference: " + type);
 		}
 
-		if (!Map.Entry.class.isAssignableFrom(cast(rawType)) &&
-			!ServiceObjects.class.isAssignableFrom(cast(rawType)) &&
-			!ServiceReference.class.isAssignableFrom(cast(rawType))) {
+		if ((!_dynamic) && (Provider.class == cast(rawType))) {
+			_dynamic = true;
 
-			return cast(rawType);
+			calculateServiceType(parameterizedType.getActualTypeArguments()[0]);
+
+			return;
+		}
+
+		if ((!_optional) && (Optional.class == cast(rawType))) {
+			_optional = true;
+
+			calculateServiceType(parameterizedType.getActualTypeArguments()[0]);
+
+			return;
+		}
+
+		if ((_multiplicity == MaximumCardinality.ONE) &&
+			((Collection.class == cast(rawType)) ||
+			(Iterable.class == cast(rawType)) ||
+			(List.class == cast(rawType)))) {
+
+			_optional = true;
+			_multiplicity = MaximumCardinality.MANY;
+
+			calculateServiceType(parameterizedType.getActualTypeArguments()[0]);
+
+			return;
 		}
 
 		Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
 		Type argument = actualTypeArguments[0];
 
-		if (Map.Entry.class.isAssignableFrom(cast(rawType))) {
-			if (!checkKey(argument)) {
+		if (Map.class == cast(rawType)) {
+			if (String.class != cast(argument)) {
 				throw new IllegalArgumentException(
-					"Tuples must have a key of type Map<String, [? or Object]>: " + argument);
+					"Maps of properties must use the form Map<String, (? | Object)>: " + type);
 			}
 
 			argument = actualTypeArguments[1];
-		}
 
-		if (argument instanceof ParameterizedType) {
-			ParameterizedType parameterizedType1 = cast(argument);
+			if ((Object.class != cast(argument)) &&
+				(!(argument instanceof WildcardType))) {
 
-			return cast(parameterizedType1.getRawType());
-		}
-		else if (argument instanceof WildcardType) {
-			WildcardType wildcardType = (WildcardType)argument;
-
-			if ((wildcardType.getUpperBounds().length == 1)) {
-				argument = wildcardType.getUpperBounds()[0];
-
-				if (Object.class.equals(argument)) {
-					return null;
-				}
-				else if (argument instanceof Class) {
-					return cast(argument);
-				}
-			}
-
-			throw new IllegalArgumentException(
-				"@Reference cannot use nested parameterized types or multiple upper bounds: " + injectionPointType);
-		}
-
-		return cast(argument);
-	}
-
-	private static Class<?> calculateServiceClass(
-		Class<?> service, ReferenceCardinality cardinality, CollectionType collectionType, Type injectionPointType, Annotated annotated) {
-
-		Class<?> calculatedServiceClass = calculateServiceClass(injectionPointType);
-
-		if ((service == null) || (service == Object.class)) {
-			if (calculatedServiceClass == null) {
 				throw new IllegalArgumentException(
-					"Could not determine the service type from @Reference on annotated " +
-						annotated);
+					"Maps of properties must use the form Map<String, (? | Object)>: " + type);
 			}
 
-			switch(collectionType) {
-				case PROPERTIES:
-					if (calculatedServiceClass == Map.class) {
-						throw new IllegalArgumentException(
-							"A @Reference cannot bind service properties to a Map<String, Object> without " +
-								"specifying the @Reference.service property: " + annotated);
-					}
-					break;
-				case REFERENCE:
-					if (calculatedServiceClass == ServiceReference.class) {
-						throw new IllegalArgumentException(
-							"A @Reference cannot bind a ServiceReference without specifying either the " +
-								"@Reference.service property or a generic type argument (e.g. ServiceReference<Foo>: " +
-									annotated);
-					}
-					break;
-				case SERVICEOBJECTS:
-					if	(calculatedServiceClass == ServiceObjects.class) {
-						throw new IllegalArgumentException(
-							"A @Reference cannot bind a ServiceObjects without specifying either the " +
-								"@Reference.service property or a generic type argument (e.g. ServiceObjects<Foo>: " +
-									annotated);
-					}
-					break;
-				case TUPLE:
-					if (calculatedServiceClass == Map.Entry.class) {
-						throw new IllegalArgumentException(
-							"A @Reference cannot bind a Map.Entry without specifying either the " +
-								"@Reference.service property or a generic type argument (e.g. Map.Entry<Map<String, Object>, Foo>: " +
-									annotated);
-					}
-					break;
-				default:
+			_collectionType = CollectionType.PROPERTIES;
+
+			Reference reference = _annotated.getAnnotation(Reference.class);
+
+			if ((reference == null) || (reference.value() == null)) {
+				throw new IllegalArgumentException(
+					"Maps of properties must specify service type with @Reference.value(): " + argument);
 			}
 
-			return calculatedServiceClass;
+			_serviceType = reference.value();
+
+			return;
 		}
 
-		switch(collectionType) {
-			case PROPERTIES:
-				if (Map.class.isAssignableFrom(calculatedServiceClass)) {
-					return service;
-				}
-				break;
-			case REFERENCE:
-				if ((calculatedServiceClass == null) ||
-					ServiceReference.class.isAssignableFrom(calculatedServiceClass)) {
-					return service;
-				}
-				break;
-			case SERVICEOBJECTS:
-				if ((calculatedServiceClass == null) ||
-					ServiceObjects.class.isAssignableFrom(calculatedServiceClass)) {
-					return service;
-				}
-				break;
-			case TUPLE:
-				if ((calculatedServiceClass != null) &&
-					Map.Entry.class.isAssignableFrom(calculatedServiceClass)) {
+		if (Map.Entry.class == cast(rawType)) {
+			if (!checkKey(argument)) {
+				throw new IllegalArgumentException(
+					"Tuples must have a key of type Map<String, (? | Object)>: " + argument);
+			}
 
-					if (!checkKey(calculatedServiceClass)) {
-						throw new IllegalArgumentException(
-							"Tuples must have a key of type Map<String, [? or Object]>: " + calculatedServiceClass);
-					}
+			argument = actualTypeArguments[1];
 
-					return service;
-				}
-				else if ((calculatedServiceClass == null) ||
-					calculatedServiceClass.isAssignableFrom(service)) {
+			if (!(argument instanceof Class)) {
+				throw new IllegalArgumentException(
+					"The service type must not be generic: " + argument);
+			}
 
-					return service;
-				}
-				break;
-			case SERVICE:
-				if (((calculatedServiceClass == null) &&
-						((cardinality == ReferenceCardinality.MULTIPLE) ||
-						(cardinality == ReferenceCardinality.AT_LEAST_ONE))) ||
-					((calculatedServiceClass != null) &&
-						calculatedServiceClass.isAssignableFrom(service))) {
-					return service;
-				}
+			_collectionType = CollectionType.TUPLE;
+
+			_serviceType = cast(argument);
+
+			return;
 		}
 
-		throw new IllegalArgumentException(
-			"@Reference.service " + service + " is not compatible with annotated " + annotated);
+		if (ReferenceServiceObjects.class == cast(rawType)) {
+			_collectionType = CollectionType.SERVICEOBJECTS;
+
+			calculateServiceType(argument);
+
+			return;
+		}
+
+		if (ServiceReference.class == cast(rawType)) {
+			_collectionType = CollectionType.REFERENCE;
+
+			calculateServiceType(argument);
+
+			return;
+		}
+
+		_serviceType = cast(rawType);
+
+		if (_serviceType.getTypeParameters().length > 0) {
+			throw new IllegalArgumentException(
+				"Illegal service type: " + argument);
+		}
 	}
+
+//	private static Class<?> calculateServiceClass(
+//		Class<?> service, ReferenceCardinality cardinality, CollectionType collectionType, Type injectionPointType, Annotated annotated) {
+//
+//		Class<?> calculatedServiceClass = calculateServiceClass(injectionPointType);
+//
+//		if ((service == null) || (service == Object.class)) {
+//			if (calculatedServiceClass == null) {
+//				throw new IllegalArgumentException(
+//					"Could not determine the service type from @Reference on annotated " +
+//						annotated);
+//			}
+//
+//			switch(collectionType) {
+//				case PROPERTIES:
+//					if (calculatedServiceClass == Map.class) {
+//						throw new IllegalArgumentException(
+//							"A @Reference cannot bind service properties to a Map<String, Object> without " +
+//								"specifying the @Reference.service property: " + annotated);
+//					}
+//					break;
+//				case REFERENCE:
+//					if (calculatedServiceClass == ServiceReference.class) {
+//						throw new IllegalArgumentException(
+//							"A @Reference cannot bind a ServiceReference without specifying either the " +
+//								"@Reference.service property or a generic type argument (e.g. ServiceReference<Foo>: " +
+//									annotated);
+//					}
+//					break;
+//				case SERVICEOBJECTS:
+//					if	(calculatedServiceClass == ServiceObjects.class) {
+//						throw new IllegalArgumentException(
+//							"A @Reference cannot bind a ServiceObjects without specifying either the " +
+//								"@Reference.service property or a generic type argument (e.g. ServiceObjects<Foo>: " +
+//									annotated);
+//					}
+//					break;
+//				case TUPLE:
+//					if (calculatedServiceClass == Map.Entry.class) {
+//						throw new IllegalArgumentException(
+//							"A @Reference cannot bind a Map.Entry without specifying either the " +
+//								"@Reference.service property or a generic type argument (e.g. Map.Entry<Map<String, Object>, Foo>: " +
+//									annotated);
+//					}
+//					break;
+//				default:
+//			}
+//
+//			return calculatedServiceClass;
+//		}
+//
+//		switch(collectionType) {
+//			case PROPERTIES:
+//				if (Map.class.isAssignableFrom(calculatedServiceClass)) {
+//					return service;
+//				}
+//				break;
+//			case REFERENCE:
+//				if ((calculatedServiceClass == null) ||
+//					ServiceReference.class.isAssignableFrom(calculatedServiceClass)) {
+//					return service;
+//				}
+//				break;
+//			case SERVICEOBJECTS:
+//				if ((calculatedServiceClass == null) ||
+//					ServiceObjects.class.isAssignableFrom(calculatedServiceClass)) {
+//					return service;
+//				}
+//				break;
+//			case TUPLE:
+//				if ((calculatedServiceClass != null) &&
+//					Map.Entry.class.isAssignableFrom(calculatedServiceClass)) {
+//
+//					if (!checkKey(calculatedServiceClass)) {
+//						throw new IllegalArgumentException(
+//							"Tuples must have a key of type Map<String, [? or Object]>: " + calculatedServiceClass);
+//					}
+//
+//					return service;
+//				}
+//				else if ((calculatedServiceClass == null) ||
+//					calculatedServiceClass.isAssignableFrom(service)) {
+//
+//					return service;
+//				}
+//				break;
+//			case SERVICE:
+//				if (((calculatedServiceClass == null) &&
+//						((cardinality == ReferenceCardinality.MULTIPLE) ||
+//						(cardinality == ReferenceCardinality.AT_LEAST_ONE))) ||
+//					((calculatedServiceClass != null) &&
+//						calculatedServiceClass.isAssignableFrom(service))) {
+//					return service;
+//				}
+//		}
+//
+//		throw new IllegalArgumentException(
+//			"@Reference.service " + service + " is not compatible with annotated " + annotated);
+//	}
 
 	// check the key type to make sure it complies with Map<String, ?> OR Map<String, Object>
 	private static boolean checkKey(Type mapEntryType) {
@@ -766,105 +671,51 @@ public class ReferenceModel {
 		return true;
 	}
 
-	private static ReferenceCardinality _cardinality(Attributes attributes) {
-		return ReferenceCardinality.get(
-			getValue(CDI10_URI, CARDINALITY_ATTRIBUTE, attributes, ReferenceCardinality.DEFAULT.toString()));
+//	private static Type upwrapCDITypes(Type type) {
+//		if (type instanceof ParameterizedType) {
+//			ParameterizedType pType = (ParameterizedType)type;
+//
+//			Type rawType = pType.getRawType();
+//
+//			if (Instance.class == Reflection.cast(rawType) ||
+//				ServiceEvent.class == Reflection.cast(rawType)) {
+//
+//				type = pType.getActualTypeArguments()[0];
+//			}
+//		}
+//
+//		return type;
+//	}
+
+	public ReferenceTemplateDTO toDTO() {
+		ReferenceTemplateDTO dto = new ReferenceTemplateDTO();
+		dto.maximumCardinality = _multiplicity;
+		dto.minimumCardinality = (_multiplicity == MaximumCardinality.ONE) ? (_optional?0:1) : (0);
+		dto.name = _name;
+		dto.policy = (_dynamic) ? Policy.DYNAMIC : Policy.STATIC;
+		dto.policyOption = (_greedy) ? PolicyOption.GREEDY: PolicyOption.RELUCTANT;
+		dto.targetFilter = _targetFilter;
+		dto.serviceType = _serviceType.getName();
+		return dto;
 	}
 
-	private static String _name(Attributes attributes) {
-		return getValue(CDI10_URI, NAME_ATTRIBUTE, attributes);
-	}
-
-	private static ReferencePolicyOption _option(Attributes attributes) {
-		return ReferencePolicyOption.get(
-			getValue(CDI10_URI, POLICY_OPTION_ATTRIBUTE, attributes, ReferencePolicyOption.DEFAULT.toString()));
-	}
-
-	private static ReferencePolicy _policy(Attributes attributes) {
-		return ReferencePolicy.get(
-			getValue(CDI10_URI, POLICY_ATTRIBUTE, attributes, ReferencePolicy.DEFAULT.toString()));
-	}
-
-	private static ReferenceScope _scope(Attributes attributes) {
-		return ReferenceScope.get(getValue(
-			CDI10_URI, SCOPE_ATTRIBUTE, attributes, ReferenceScope.DEFAULT.toString()));
-	}
-
-	private static String _target(Attributes attributes) {
-		return getValue(CDI10_URI, TARGET_ATTRIBUTE, attributes);
-	}
-
-	private static Type upwrapCDITypes(Type type) {
-		if (type instanceof ParameterizedType) {
-			ParameterizedType pType = (ParameterizedType)type;
-
-			Type rawType = pType.getRawType();
-
-			if (Instance.class == cast(rawType) ||
-				ServiceEvent.class == cast(rawType)) {
-
-				type = pType.getActualTypeArguments()[0];
-			}
-		}
-
-		return type;
-	}
+	private static final String _emptyFilter = "";
 
 	private static final TypeReference<Map<String, String>> _mapType = new TypeReference<Map<String, String>>(){};
 
-	private final Class<?> _beanClass;
-	private final ReferenceCardinality _cardinality;
-	private final CollectionType _collectionType;
-	private final AtomicBoolean _found = new AtomicBoolean();
+	private final Annotated _annotated;
+	private Class<?> _beanClass;
+	private CollectionType _collectionType = CollectionType.SERVICE;
+	private boolean _dynamic = false;
+	private boolean _greedy = false;
 	private final Type _injectionPointType;
-	private final String _name;
-	private final ReferencePolicyOption _option;
-	private final ReferencePolicy _policy;
+	private final Member _member;
+	private MaximumCardinality _multiplicity = MaximumCardinality.ONE;
+	private String _name;
+	private boolean _optional = false;
 	private final Set<Annotation> _qualifiers;
-	private final ReferenceScope _scope;
-	private final Class<?> _service;
+	private Class<?> _referenceClass;
+	private Class<?> _serviceType;
 	private String _string;
-	private final String _target;
-	private final Set<Type> _types;
-
-	private static class ReferenceAnnotated implements Annotated {
-
-		public ReferenceAnnotated(Class<?> service) {
-			_service = service;
-		}
-
-		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
-			return null;
-		}
-
-		@Override
-		public Set<Annotation> getAnnotations() {
-			return Collections.emptySet();
-		}
-
-		@Override
-		public <T extends Annotation> Set<T> getAnnotations(Class<T> annotationType) {
-			return null;
-		}
-
-		@Override
-		public Type getBaseType() {
-			return _service;
-		}
-
-		@Override
-		public Set<Type> getTypeClosure() {
-			return Sets.hashSet(_service);
-		}
-
-		@Override
-		public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
-			return false;
-		}
-
-		private final Class<?> _service;
-
-	}
-
+	private String _targetFilter = _emptyFilter;
 }

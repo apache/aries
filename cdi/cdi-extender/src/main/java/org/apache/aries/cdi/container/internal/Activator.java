@@ -22,7 +22,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.enterprise.inject.spi.CDI;
+
 import org.apache.aries.cdi.container.internal.command.CdiCommand;
+import org.apache.aries.cdi.provider.CDIProvider;
 import org.apache.felix.utils.extender.AbstractExtender;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.framework.Bundle;
@@ -34,6 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Activator extends AbstractExtender {
+
+	static {
+		CDI.setCDIProvider(new CDIProvider());
+	}
 
 	public Activator() {
 		setSynchronous(true);

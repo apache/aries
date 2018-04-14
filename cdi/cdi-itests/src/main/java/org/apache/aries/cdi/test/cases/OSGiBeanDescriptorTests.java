@@ -24,7 +24,6 @@ import javax.enterprise.util.TypeLiteral;
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.framework.Bundle;
-import org.osgi.service.cdi.CdiContainer;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class OSGiBeanDescriptorTests extends AbstractTestCase {
@@ -50,10 +49,8 @@ public class OSGiBeanDescriptorTests extends AbstractTestCase {
 		Bundle tb1Bundle = installBundle("tb1.jar");
 		Bundle tb2Bundle = installBundle("tb2.jar");
 
-		CdiContainer cdiContainer = waitForCdiContainer(tb1Bundle.getBundleId());
-
 		try {
-			BeanManager beanManager = cdiContainer.getBeanManager();
+			BeanManager beanManager = getBeanManager(tb1Bundle);
 			Set<Bean<?>> beans = beanManager.getBeans("beanimpl");
 			Bean<?> bean = beanManager.resolve(beans);
 			CreationalContext<?> ctx = beanManager.createCreationalContext(bean);

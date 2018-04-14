@@ -14,26 +14,12 @@
 
 package org.apache.aries.cdi.container.internal.phase;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 
 import javax.enterprise.inject.spi.Extension;
 
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationCallback;
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationManagedService;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.jboss.weld.bootstrap.spi.Metadata;
-import org.osgi.framework.Constants;
-import org.osgi.service.cdi.CdiEvent;
-import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
 
 public class Phase_Configuration implements Phase {
 
@@ -41,13 +27,25 @@ public class Phase_Configuration implements Phase {
 		ContainerState containerState,
 		Collection<Metadata<Extension>> extensions) {
 
-		_containerState = containerState;
-		_extensions = extensions;
-
-		_componentModels = _containerState.beansModel().getComponentModels();
+//		_containerState = containerState;
+//		_extensions = extensions;
+//
+//		_componentModels = _containerState.beansModel().getComponentModels();
 	}
 
 	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void open() {
+		// TODO Auto-generated method stub
+
+	}
+
+/*	@Override
 	public void close() {
 		_lock.lock();
 
@@ -224,4 +222,4 @@ public class Phase_Configuration implements Phase {
 	private final Collection<Metadata<Extension>> _extensions;
 	private final Lock _lock = new ReentrantLock();
 	private volatile Phase _nextPhase;
-}
+*/}

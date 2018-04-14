@@ -14,21 +14,31 @@
 
 package org.apache.aries.cdi.test.tb3;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
+import javax.inject.Qualifier;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
-import org.osgi.service.cdi.annotations.ServiceScope;
+import org.osgi.service.cdi.annotations.PID;
+import org.osgi.service.cdi.annotations.PID.Policy;
 
-@Component(
-	property = "bean=A",
-	scope = ServiceScope.SINGLETON
-)
+@Component
+@PID(policy = Policy.REQUIRED)
+@ConfigurationBeanA.Props
 public class ConfigurationBeanA implements BeanService<Callable<int[]>> {
+
+	@Qualifier @Retention(RUNTIME) @Target(TYPE )
+	public @interface Props {
+		String bean() default "A";
+	}
 
 	@Override
 	public String doSomething() {
@@ -45,7 +55,7 @@ public class ConfigurationBeanA implements BeanService<Callable<int[]>> {
 		};
 	}
 
-	@Configuration(configurationPolicy = ConfigurationPolicy.REQUIRE)
+	@Configuration
 	@Inject
 	Config config;
 

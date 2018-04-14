@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationCallback;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.model.AbstractModelBuilder;
 import org.apache.aries.cdi.container.internal.model.BeansModel;
@@ -40,23 +39,19 @@ import org.jboss.weld.serialization.spi.ProxyServices;
 import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.CdiConstants;
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 public class TestUtil {
 
-	public static ConfigurationCallback getCallback(ConfigurationPolicy policy) {
-		return new ConfigurationCallback.Builder().policy(policy).build();
-	}
-
 	public static AbstractModelBuilder getModelBuilder(final String osgiBeansFile) {
 		return getModelBuilder(
 			Arrays.asList(
-				"OSGI-INF/cdi/beans-configuration.xml",
-				"OSGI-INF/cdi/beans-only.xml",
-				"OSGI-INF/cdi/beans-references.xml",
-				"OSGI-INF/cdi/beans-services.xml"
+				"OSGI-INF/cdi/org.apache.aries.cdi.container.test.beans.Bar.xml",
+				"OSGI-INF/cdi/org.apache.aries.cdi.container.test.beans.BarAnnotated.xml",
+				"OSGI-INF/cdi/org.apache.aries.cdi.container.test.beans.BarBadlyAnnotated.xml",
+				"OSGI-INF/cdi/org.apache.aries.cdi.container.test.beans.FooAnnotated.xml",
+				"OSGI-INF/cdi/org.apache.aries.cdi.container.test.beans.FooService.xml"
 			),  osgiBeansFile);
 	}
 
@@ -92,7 +87,7 @@ public class TestUtil {
 		};
 	}
 
-	public static <T> Collection<T> sort(Collection<T> set) {
+	public static <T extends Comparable<T>> Collection<T> sort(Collection<T> set) {
 		return sort(set, (c1, c2) -> c1.getClass().getName().compareTo(c2.getClass().getName()));
 	}
 
@@ -118,6 +113,7 @@ public class TestUtil {
 				return beansModel;
 			}
 
+			@Override
 			public <T extends ResourceLoader & ProxyServices> T loader() {
 				return null;
 			}

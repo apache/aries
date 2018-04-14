@@ -21,11 +21,11 @@ import java.util.Set;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
-import org.apache.aries.cdi.container.internal.literal.AnyLiteral;
-import org.apache.aries.cdi.container.internal.literal.DefaultLiteral;
 import org.apache.aries.cdi.container.internal.util.Sets;
 import org.osgi.framework.BundleContext;
 
@@ -99,7 +99,7 @@ public class BundleContextBean implements Bean<BundleContext> {
 	}
 
 	private static final Set<Annotation> DEFAULT_QUALIFIERS = Sets.hashSet(
-		DefaultLiteral.INSTANCE, AnyLiteral.INSTANCE);
+		Default.Literal.INSTANCE, Any.Literal.INSTANCE);
 	private static final Set<Type> TYPES = Sets.immutableHashSet(BundleContext.class, Object.class);
 
 	private final BundleContext _bundleContext;

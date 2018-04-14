@@ -16,46 +16,52 @@ package org.apache.aries.cdi.container.test.beans;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.annotations.Configuration;
+import org.osgi.service.cdi.annotations.Greedy;
+import org.osgi.service.cdi.annotations.PID;
+import org.osgi.service.cdi.annotations.Prototype;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
-import org.osgi.service.cdi.annotations.ReferencePolicy;
-import org.osgi.service.cdi.annotations.ReferencePolicyOption;
-import org.osgi.service.cdi.annotations.ReferenceScope;
 
 public class BarAnnotated {
 
 	@Inject
-	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
-	Foo foo;
+	@Reference
+	Optional<Foo> foo;
 
 	@Inject
-	@Reference(name = "foos")
+	@Named("foos")
+	@Reference
 	Instance<Foo> instanceFoos;
 
 	@Inject
-	@Reference(policy = ReferencePolicy.DYNAMIC)
-	Collection<Foo> collectionFoos;
+	@Reference
+	Provider<Collection<Foo>> collectionFoos;
 
 	@Inject
-	@Reference(policyOption = ReferencePolicyOption.GREEDY)
+	@Greedy
+	@Reference
 	Collection<Map.Entry<Map<String, Object>, Foo>> tupleFoos;
 
 	@Inject
-	@Reference(scope = ReferenceScope.PROTOTYPE)
+	@Prototype
+	@Reference
 	Collection<ServiceReference<Foo>> serviceReferencesFoos;
 
 	@Inject
-	@Reference(service = Foo.class)
+	@Reference(Foo.class)
 	Collection<Map<String, Object>> propertiesFoos;
 
 	@Inject
-	@Configuration("foo.config")
+	@PID("foo.config")
+	@Configuration
 	Config config;
 
 }

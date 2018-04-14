@@ -15,10 +15,11 @@
 package org.apache.aries.cdi.container.test.beans;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.osgi.service.cdi.annotations.Reference;
 
 public class MethodBindFooNamed {
 	@Inject
-	public void bindFoo(@Reference(name = "_foo_") Foo foo) {}
+	public void bindFoo(@Reference @Named("_foo_") Foo foo) {}
 }

@@ -14,36 +14,12 @@
 
 package org.apache.aries.cdi.container.internal.phase;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.enterprise.inject.spi.Extension;
-
 import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.extension.ExtensionDependency;
-import org.apache.aries.cdi.container.internal.extension.ExtensionMetadata;
-import org.jboss.weld.bootstrap.spi.Metadata;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Filter;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.BundleWire;
-import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.cdi.CdiConstants;
-import org.osgi.service.cdi.CdiEvent;
-import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Phase_Extension implements Phase {
 
 	public Phase_Extension(ContainerState containerState) {
-		_containerState = containerState;
+/*		_containerState = containerState;
 		_bundleContext = _containerState.bundle().getBundleContext();
 
 		BundleWiring bundleWiring = _containerState.bundle().adapt(BundleWiring.class);
@@ -52,9 +28,21 @@ public class Phase_Extension implements Phase {
 		_extensions = new ConcurrentSkipListMap<>(Comparator.reverseOrder());
 
 		_containerState.setExtensionDependencies(_extensionDependencies);
+*/	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
+	public void open() {
+		// TODO Auto-generated method stub
+
+	}
+
+/*	@Override
 	public void close() {
 		if (_extensionTracker != null) {
 			_extensionTracker.close();
@@ -197,5 +185,5 @@ public class Phase_Extension implements Phase {
 		}
 
 	}
-
+*/
 }

@@ -14,23 +14,9 @@
 
 package org.apache.aries.cdi.container.internal.component;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.enterprise.inject.spi.Bean;
-
-import org.apache.aries.cdi.container.internal.configuration.ConfigurationCallback;
-import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.util.Conversions;
-import org.apache.aries.cdi.container.internal.util.Maps;
-import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.util.converter.TypeReference;
-
 public class ComponentProperties {
 
-	public ComponentProperties bean(Bean<?> bean) {
+/*	public ComponentProperties bean(Bean<?> bean) {
 		_bean = bean;
 		return this;
 	}
@@ -115,5 +101,5 @@ public class ComponentProperties {
 	private ContainerState _containerState;
 	private String[] _pid;
 	private boolean _hidePrivate = false;
-
+*/
 }

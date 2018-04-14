@@ -18,13 +18,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 
 import org.apache.aries.cdi.container.internal.container.ContainerDeployment;
 import org.apache.aries.cdi.container.internal.container.ContainerEnvironment;
-import org.apache.aries.cdi.container.internal.literal.AnyLiteral;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.Deployment;
@@ -63,7 +63,7 @@ public class MockCdiContainer implements AutoCloseable {
 		final BeanManager managerImpl = getBeanManager();
 
 		Set<javax.enterprise.inject.spi.Bean<?>> beans =
-			managerImpl.getBeans(clazz, AnyLiteral.INSTANCE);
+			managerImpl.getBeans(clazz, Any.Literal.INSTANCE);
 
 		Assert.assertFalse(beans.isEmpty());
 

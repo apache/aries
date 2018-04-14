@@ -19,19 +19,14 @@ import java.util.Map;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
-import org.apache.aries.cdi.test.interfaces.SingletonScoped;
 import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceCardinality;
-import org.osgi.service.cdi.annotations.ServiceScope;
+import org.osgi.service.cdi.annotations.Service;
 
-@Component(
-	service = {BeanService.class, Instance_ServiceProperties.class},
-	scope = ServiceScope.SINGLETON
-)
+@Component
+@Service({BeanService.class, Instance_ServiceProperties.class})
 public class Instance_ServiceProperties implements BeanService<Map<String, Object>> {
 
 	@Override
@@ -50,7 +45,7 @@ public class Instance_ServiceProperties implements BeanService<Map<String, Objec
 	}
 
 	@Inject
-	@Reference(service = SingletonScoped.class)
+	@Reference
 	Instance<Map<String, Object>> _instance;
 
 }

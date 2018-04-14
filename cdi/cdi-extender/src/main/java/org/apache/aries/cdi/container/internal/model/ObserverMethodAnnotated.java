@@ -9,11 +9,11 @@ import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.ObserverMethod;
 
 import org.apache.aries.cdi.container.internal.util.Sets;
-import org.osgi.service.cdi.annotations.ServiceEvent;
+import org.osgi.service.cdi.reference.ReferenceEvent;
 
 public class ObserverMethodAnnotated implements Annotated {
 
-	public ObserverMethodAnnotated(ObserverMethod<ServiceEvent<?>> observerMethod) {
+	public ObserverMethodAnnotated(ObserverMethod<ReferenceEvent<?>> observerMethod) {
 		_observerMethod = observerMethod;
 		_qualifiers = _observerMethod.getObservedQualifiers();
 	}
@@ -67,7 +67,7 @@ public class ObserverMethodAnnotated implements Annotated {
 		return null;
 	}
 
-	private final ObserverMethod<ServiceEvent<?>> _observerMethod;
+	private final ObserverMethod<ReferenceEvent<?>> _observerMethod;
 	private final Set<Annotation> _qualifiers;
 
 }

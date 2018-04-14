@@ -14,19 +14,11 @@
 
 package org.apache.aries.cdi.container.internal.configuration;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
-
-import org.osgi.service.cdi.annotations.ConfigurationPolicy;
-
 public class ConfigurationCallback {
 
 	public static enum State {STARTED, ADDED, UPDATED, REMOVED}
 
-	public static class Builder {
+/*	public static class Builder {
 
 		public ConfigurationCallback build() {
 			//Objects.requireNonNull(_pid);
@@ -182,5 +174,5 @@ public class ConfigurationCallback {
 	private final Optional<Consumer<ConfigurationCallback>> _onRemove;
 	private volatile State _state;
 	private volatile String _string;
-
+*/
 }

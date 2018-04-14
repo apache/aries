@@ -25,13 +25,10 @@ import org.apache.aries.cdi.test.interfaces.PrototypeScoped;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.annotations.Component;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ReferenceScope;
-import org.osgi.service.cdi.annotations.ServiceScope;
+import org.osgi.service.cdi.annotations.Service;
 
-@Component(
-	service = {FieldInjectedPrototypeScopedImpl.class, FieldInjectedReference.class},
-	scope = ServiceScope.SINGLETON
-)
+@Component
+@Service({FieldInjectedPrototypeScopedImpl.class, FieldInjectedReference.class})
 public class FieldInjectedPrototypeScopedImpl implements FieldInjectedReference<PrototypeScoped> {
 
 	@Inject
@@ -39,15 +36,11 @@ public class FieldInjectedPrototypeScopedImpl implements FieldInjectedReference<
 	private ServiceReference<PrototypeScoped> genericReference;
 
 	@Inject
-	@Reference(service = PrototypeScoped.class, target = "(key=value)")
+	@Reference(value = PrototypeScoped.class, target = "(key=value)")
 	private Map<String, Object> properties;
 
 	@Inject
-	@Reference(
-		scope = ReferenceScope.PROTOTYPE,
-		service = PrototypeScoped.class,
-		target = "(key=value)"
-	)
+	@Reference(value = PrototypeScoped.class, target = "(key=value)")
 	@SuppressWarnings("rawtypes")
 	private ServiceReference rawReference;
 

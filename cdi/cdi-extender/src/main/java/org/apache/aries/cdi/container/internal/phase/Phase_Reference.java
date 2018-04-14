@@ -15,25 +15,11 @@
 package org.apache.aries.cdi.container.internal.phase;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.ObserverMethod;
 
-import org.apache.aries.cdi.container.internal.component.ComponentModel;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.reference.ReferenceCallback;
-import org.apache.aries.cdi.container.internal.reference.ReferenceModel;
 import org.jboss.weld.bootstrap.spi.Metadata;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.cdi.CdiEvent;
-import org.osgi.service.cdi.annotations.ServiceEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Phase_Reference implements Phase {
 
@@ -41,13 +27,25 @@ public class Phase_Reference implements Phase {
 		ContainerState containerState,
 		Collection<Metadata<Extension>> extensions) {
 
-		_containerState = containerState;
+/*		_containerState = containerState;
 		_extensions = extensions;
 
 		_componentModels = _containerState.beansModel().getComponentModels();
+*/	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
+	public void open() {
+		// TODO Auto-generated method stub
+
+	}
+
+/*	@Override
 	public void close() {
 		_lock.lock();
 
@@ -185,5 +183,5 @@ public class Phase_Reference implements Phase {
 	private final Collection<Metadata<Extension>> _extensions;
 	private final Lock _lock = new ReentrantLock(true);
 	private volatile Phase _nextPhase;
-
+*/
 }

@@ -18,14 +18,8 @@ import java.util.Collection;
 
 import javax.enterprise.inject.spi.Extension;
 
-import org.apache.aries.cdi.container.internal.container.ContainerBootstrap;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.Metadata;
-import org.osgi.service.cdi.CdiEvent;
-import org.osgi.service.cdi.annotations.ServiceScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Phase_Publish implements Phase {
 
@@ -33,11 +27,23 @@ public class Phase_Publish implements Phase {
 		ContainerState containerState,
 		Collection<Metadata<Extension>> extensions) {
 
-		_containerState = containerState;
+/*		_containerState = containerState;
 		_extensions = extensions;
+*/	}
+
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
+	public void open() {
+		// TODO Auto-generated method stub
+
+	}
+
+/*	@Override
 	public void close() {
 		_containerState.serviceRegistrator().close();
 		_containerState.beanManagerRegistrator().close();
@@ -99,5 +105,5 @@ public class Phase_Publish implements Phase {
 	private volatile ContainerBootstrap _cb;
 	private final ContainerState _containerState;
 	private final Collection<Metadata<Extension>> _extensions;
-
+*/
 }
