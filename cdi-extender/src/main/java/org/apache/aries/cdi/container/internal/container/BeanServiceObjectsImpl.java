@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.osgi.framework.ServiceObjects;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.reference.ReferenceServiceObjects;
+import org.osgi.service.cdi.reference.BeanServiceObjects;
 
-public class ReferenceServiceObjectsImpl<T> implements ReferenceServiceObjects<T> {
+public class BeanServiceObjectsImpl<T> implements BeanServiceObjects<T> {
 
-	public ReferenceServiceObjectsImpl(ServiceObjects<T> so) {
+	public BeanServiceObjectsImpl(ServiceObjects<T> so) {
 		_so = so;
 	}
 

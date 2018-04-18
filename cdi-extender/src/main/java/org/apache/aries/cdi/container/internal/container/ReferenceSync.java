@@ -16,13 +16,11 @@ package org.apache.aries.cdi.container.internal.container;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 
-import org.apache.aries.cdi.container.internal.container.ComponentContext.With;
 import org.apache.aries.cdi.container.internal.model.CollectionType;
 import org.apache.aries.cdi.container.internal.model.ExtendedComponentInstanceDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedReferenceDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedReferenceTemplateDTO;
 import org.apache.aries.cdi.container.internal.model.InstanceActivator;
-import org.apache.aries.cdi.container.internal.model.ReferenceEventImpl;
 import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.apache.aries.cdi.container.internal.util.Maps;
 import org.apache.aries.cdi.container.internal.util.SRs;
@@ -65,21 +63,13 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 		_referenceDTO.matches = SRs.from(_referenceDTO.serviceTracker.getServiceReferences(), reference);
 
 		try {
-			if (collectionType == CollectionType.OBSERVER) {
-				@SuppressWarnings("unchecked")
-				ReferenceEventImpl<Object> event = new ReferenceEventImpl<>(_containerState, (Class<Object>)_templateDTO.serviceClass);
-				event.addingService(reference);
-				if (active) {
-					_componentInstanceDTO.activations.forEach(
-						a -> {
-							try (With with = new With(a)) {
-								_templateDTO.bean.fireEvent(event);
-							}
-						}
-					);
-					requiresUpdate = false;
-				}
-				return event;
+			if (collectionType == CollectionType.BINDER_OBJECT ||
+				collectionType == CollectionType.BINDER_REFERENCE ||
+				collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+
+				requiresUpdate = false;
+
+				return _referenceDTO.binder.addingService(reference);
 			}
 			else if (collectionType == CollectionType.PROPERTIES) {
 				return Maps.of(reference.getProperties());
@@ -88,7 +78,7 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 				return reference;
 			}
 			else if (collectionType == CollectionType.SERVICEOBJECTS) {
-				return new ReferenceServiceObjectsImpl<>(
+				return new BeanServiceObjectsImpl<>(
 					_containerState.bundleContext().getServiceObjects(reference));
 			}
 			else if (collectionType == CollectionType.TUPLE) {
@@ -111,12 +101,14 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void modifiedService(ServiceReference<Object> reference, Object service) {
 		CollectionType collectionType = _templateDTO.collectionType;
 
-		if (collectionType == CollectionType.OBSERVER) {
-			((ReferenceEventImpl<Object>)service).modifiedService(reference);
+		if (collectionType == CollectionType.BINDER_OBJECT ||
+			collectionType == CollectionType.BINDER_REFERENCE ||
+			collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+
+			_referenceDTO.binder.modifiedService(reference);
 		}
 		else if (collectionType == CollectionType.PROPERTIES ||
 				collectionType == CollectionType.REFERENCE ||
@@ -145,8 +137,13 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 		_referenceDTO.matches.removeIf(d -> d.id == SRs.id(reference));
 
 		try {
-			if (collectionType == CollectionType.OBSERVER) {
-				((ReferenceEventImpl<Object>)service).removedService(reference);
+			if (collectionType == CollectionType.BINDER_OBJECT ||
+				collectionType == CollectionType.BINDER_REFERENCE ||
+				collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+
+				requiresUpdate = false;
+
+				_referenceDTO.binder.removedService(reference);
 
 				return;
 			}
@@ -157,7 +154,7 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 				return;
 			}
 			else if (collectionType == CollectionType.SERVICEOBJECTS) {
-				((ReferenceServiceObjectsImpl<Object>)service).close();
+				((BeanServiceObjectsImpl<Object>)service).close();
 
 				return;
 			}

@@ -28,7 +28,7 @@ import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.PID;
-import org.osgi.service.cdi.annotations.Prototype;
+import org.osgi.service.cdi.annotations.PrototypeRequired;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
 
@@ -52,7 +52,7 @@ public class BarAnnotated {
 	Collection<Map.Entry<Map<String, Object>, Integer>> tupleIntegers;
 
 	@Inject
-	@Prototype
+	@PrototypeRequired
 	@Reference
 	Collection<ServiceReference<Foo>> serviceReferencesFoos;
 

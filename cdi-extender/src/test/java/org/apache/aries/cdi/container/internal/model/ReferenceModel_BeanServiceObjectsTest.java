@@ -14,9 +14,7 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -26,16 +24,14 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
-import org.apache.aries.cdi.container.internal.model.CollectionType;
-import org.apache.aries.cdi.container.internal.model.ReferenceModel;
 import org.apache.aries.cdi.container.test.MockInjectionPoint;
 import org.apache.aries.cdi.container.test.beans.Foo;
 import org.junit.Test;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.reference.ReferenceServiceObjects;
+import org.osgi.service.cdi.reference.BeanServiceObjects;
 import org.osgi.util.converter.TypeReference;
 
-public class ReferenceModel_ReferenceServiceObjectsTest {
+public class ReferenceModel_BeanServiceObjectsTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void withoutServiceDefined_raw() throws Exception {
@@ -43,7 +39,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 			@SuppressWarnings("rawtypes")
 			@Inject
 			@Reference
-			public ReferenceServiceObjects m;
+			public BeanServiceObjects m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -56,7 +52,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@Inject
 			@Reference
-			public ReferenceServiceObjects<?> m;
+			public BeanServiceObjects<?> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -67,20 +63,20 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void withoutServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			ReferenceServiceObjects<Integer>
+			BeanServiceObjects<Integer>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference
-			public ReferenceServiceObjects<Integer> m;
+			public BeanServiceObjects<Integer> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
 
 		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
-		assertEquals(ReferenceServiceObjects.class, referenceModel.getBeanClass());
+		assertEquals(BeanServiceObjects.class, referenceModel.getBeanClass());
 		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
 		assertFalse(referenceModel.dynamic());
@@ -93,21 +89,21 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void withServiceDefined_raw() throws Exception {
 		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			ReferenceServiceObjects
+			BeanServiceObjects
 		>(){}.getType();
 
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
 			@Reference(Integer.class)
-			public ReferenceServiceObjects m;
+			public BeanServiceObjects m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
 
 		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
-		assertEquals(ReferenceServiceObjects.class, referenceModel.getBeanClass());
+		assertEquals(BeanServiceObjects.class, referenceModel.getBeanClass());
 		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
 		assertFalse(referenceModel.dynamic());
@@ -119,20 +115,20 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void withServiceDefined_wildcard() throws Exception {
 		Type type = new TypeReference<
-			ReferenceServiceObjects<?>
+			BeanServiceObjects<?>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public ReferenceServiceObjects<?> m;
+			public BeanServiceObjects<?> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
 
 		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
-		assertEquals(ReferenceServiceObjects.class, referenceModel.getBeanClass());
+		assertEquals(BeanServiceObjects.class, referenceModel.getBeanClass());
 		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
 		assertFalse(referenceModel.dynamic());
@@ -144,20 +140,20 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void withServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			ReferenceServiceObjects<Integer>
+			BeanServiceObjects<Integer>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public ReferenceServiceObjects<Integer> m;
+			public BeanServiceObjects<Integer> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
 
 		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
-		assertEquals(ReferenceServiceObjects.class, referenceModel.getBeanClass());
+		assertEquals(BeanServiceObjects.class, referenceModel.getBeanClass());
 		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
 		assertFalse(referenceModel.dynamic());
@@ -171,7 +167,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public ReferenceServiceObjects<Foo> m;
+			public BeanServiceObjects<Foo> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -185,7 +181,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 			@SuppressWarnings("rawtypes")
 			@Inject
 			@Reference
-			public Collection<ReferenceServiceObjects> m;
+			public Collection<BeanServiceObjects> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -198,7 +194,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@Inject
 			@Reference
-			public Collection<ReferenceServiceObjects<?>> m;
+			public Collection<BeanServiceObjects<?>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -209,13 +205,13 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void collectionWithoutServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			Collection<ReferenceServiceObjects<Integer>>
+			Collection<BeanServiceObjects<Integer>>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference
-			public Collection<ReferenceServiceObjects<Integer>> m;
+			public Collection<BeanServiceObjects<Integer>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -235,14 +231,14 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void collectionWithServiceDefined_raw() throws Exception {
 		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			Collection<ReferenceServiceObjects>
+			Collection<BeanServiceObjects>
 		>(){}.getType();
 
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
 			@Reference(Integer.class)
-			public Collection<ReferenceServiceObjects> m;
+			public Collection<BeanServiceObjects> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -260,13 +256,13 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void collectionWithServiceDefined_wildcard() throws Exception {
 		Type type = new TypeReference<
-			Collection<ReferenceServiceObjects<?>>
+			Collection<BeanServiceObjects<?>>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public Collection<ReferenceServiceObjects<?>> m;
+			public Collection<BeanServiceObjects<?>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -286,13 +282,13 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void collectionWithServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			Collection<ReferenceServiceObjects<Integer>>
+			Collection<BeanServiceObjects<Integer>>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public Collection<ReferenceServiceObjects<Integer>> m;
+			public Collection<BeanServiceObjects<Integer>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -313,7 +309,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public Collection<ReferenceServiceObjects<Foo>> m;
+			public Collection<BeanServiceObjects<Foo>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -327,7 +323,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 			@SuppressWarnings("rawtypes")
 			@Inject
 			@Reference
-			public List<ReferenceServiceObjects> m;
+			public List<BeanServiceObjects> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -340,7 +336,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@Inject
 			@Reference
-			public List<ReferenceServiceObjects<?>> m;
+			public List<BeanServiceObjects<?>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -351,13 +347,13 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void listWithoutServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			List<ReferenceServiceObjects<Integer>>
+			List<BeanServiceObjects<Integer>>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference
-			public List<ReferenceServiceObjects<Integer>> m;
+			public List<BeanServiceObjects<Integer>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -377,14 +373,14 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void listWithServiceDefined_raw() throws Exception {
 		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			List<ReferenceServiceObjects>
+			List<BeanServiceObjects>
 		>(){}.getType();
 
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
 			@Reference(Integer.class)
-			public List<ReferenceServiceObjects> m;
+			public List<BeanServiceObjects> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -403,13 +399,13 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void listWithServiceDefined_wildcard() throws Exception {
 		Type type = new TypeReference<
-			List<ReferenceServiceObjects<?>>
+			List<BeanServiceObjects<?>>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public List<ReferenceServiceObjects<?>> m;
+			public List<BeanServiceObjects<?>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -428,13 +424,13 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void listWithServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			List<ReferenceServiceObjects<Integer>>
+			List<BeanServiceObjects<Integer>>
 		>(){}.getType();
 
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public List<ReferenceServiceObjects<Integer>> m;
+			public List<BeanServiceObjects<Integer>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -455,7 +451,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@Inject
 			@Reference(Integer.class)
-			public List<ReferenceServiceObjects<Foo>> m;
+			public List<BeanServiceObjects<Foo>> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -469,7 +465,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 			@SuppressWarnings("rawtypes")
 			@Inject
 			@Reference
-			public Instance<ReferenceServiceObjects> m;
+			public Instance<BeanServiceObjects> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -483,7 +479,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 			@SuppressWarnings("rawtypes")
 			@Inject
 			@Reference
-			public Instance<ReferenceServiceObjects> m;
+			public Instance<BeanServiceObjects> m;
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getField("m"));
@@ -502,10 +498,10 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
-			public void set(@Reference ReferenceServiceObjects m) {};
+			public void set(@Reference BeanServiceObjects m) {};
 		}
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", ReferenceServiceObjects.class).getParameters()[0]);
+		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", BeanServiceObjects.class).getParameters()[0]);
 
 		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
@@ -514,10 +510,10 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_withoutServiceDefined_wildcard() throws Exception {
 		class C {
 			@Inject
-			public void set(@Reference ReferenceServiceObjects<?> m) {};
+			public void set(@Reference BeanServiceObjects<?> m) {};
 		}
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", ReferenceServiceObjects.class).getParameters()[0]);
+		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", BeanServiceObjects.class).getParameters()[0]);
 
 		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
@@ -525,19 +521,19 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_withoutServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			ReferenceServiceObjects<Integer>
+			BeanServiceObjects<Integer>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference ReferenceServiceObjects<Integer> m) {};
+			public void set(@Reference BeanServiceObjects<Integer> m) {};
 		}
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", ReferenceServiceObjects.class).getParameters()[0]);
+		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", BeanServiceObjects.class).getParameters()[0]);
 
 		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
-		assertEquals(ReferenceServiceObjects.class, referenceModel.getBeanClass());
+		assertEquals(BeanServiceObjects.class, referenceModel.getBeanClass());
 		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
 		assertFalse(referenceModel.dynamic());
@@ -550,19 +546,19 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_withServiceDefined_raw() throws Exception {
 		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			ReferenceServiceObjects
+			BeanServiceObjects
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@SuppressWarnings("rawtypes") @Reference(Integer.class) ReferenceServiceObjects m) {};
+			public void set(@SuppressWarnings("rawtypes") @Reference(Integer.class) BeanServiceObjects m) {};
 		}
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", ReferenceServiceObjects.class).getParameters()[0]);
+		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", BeanServiceObjects.class).getParameters()[0]);
 
 		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
-		assertEquals(ReferenceServiceObjects.class, referenceModel.getBeanClass());
+		assertEquals(BeanServiceObjects.class, referenceModel.getBeanClass());
 		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
 		assertFalse(referenceModel.dynamic());
@@ -574,19 +570,19 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_withServiceDefined_wildcard() throws Exception {
 		Type type = new TypeReference<
-			ReferenceServiceObjects<?>
+			BeanServiceObjects<?>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) ReferenceServiceObjects<?> m) {};
+			public void set(@Reference(Integer.class) BeanServiceObjects<?> m) {};
 		}
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", ReferenceServiceObjects.class).getParameters()[0]);
+		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", BeanServiceObjects.class).getParameters()[0]);
 
 		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
-		assertEquals(ReferenceServiceObjects.class, referenceModel.getBeanClass());
+		assertEquals(BeanServiceObjects.class, referenceModel.getBeanClass());
 		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
 		assertFalse(referenceModel.dynamic());
@@ -598,19 +594,19 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_withServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			ReferenceServiceObjects<Integer>
+			BeanServiceObjects<Integer>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) ReferenceServiceObjects<Integer> m) {};
+			public void set(@Reference(Integer.class) BeanServiceObjects<Integer> m) {};
 		}
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", ReferenceServiceObjects.class).getParameters()[0]);
+		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", BeanServiceObjects.class).getParameters()[0]);
 
 		ReferenceModel referenceModel = new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 
-		assertEquals(ReferenceServiceObjects.class, referenceModel.getBeanClass());
+		assertEquals(BeanServiceObjects.class, referenceModel.getBeanClass());
 		assertEquals(Integer.class, referenceModel.getServiceType());
 		assertEquals(type, referenceModel.getInjectionPointType());
 		assertFalse(referenceModel.dynamic());
@@ -623,10 +619,10 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_withServiceDefined_wrongtype() throws Exception {
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) ReferenceServiceObjects<Foo> m) {};
+			public void set(@Reference(Integer.class) BeanServiceObjects<Foo> m) {};
 		}
 
-		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", ReferenceServiceObjects.class).getParameters()[0]);
+		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", BeanServiceObjects.class).getParameters()[0]);
 
 		new ReferenceModel.Builder().injectionPoint(injectionPoint).build();
 	}
@@ -636,7 +632,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
-			public void set(@Reference Collection<ReferenceServiceObjects> m) {};
+			public void set(@Reference Collection<BeanServiceObjects> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Collection.class).getParameters()[0]);
@@ -648,7 +644,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_collectionWithoutServiceDefined_wildcard() throws Exception {
 		class C {
 			@Inject
-			public void set(@Reference Collection<ReferenceServiceObjects<?>> m) {};
+			public void set(@Reference Collection<BeanServiceObjects<?>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Collection.class).getParameters()[0]);
@@ -659,12 +655,12 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_collectionWithoutServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			Collection<ReferenceServiceObjects<Integer>>
+			Collection<BeanServiceObjects<Integer>>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference Collection<ReferenceServiceObjects<Integer>> m) {};
+			public void set(@Reference Collection<BeanServiceObjects<Integer>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Collection.class).getParameters()[0]);
@@ -684,12 +680,12 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_collectionWithServiceDefined_raw() throws Exception {
 		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			Collection<ReferenceServiceObjects>
+			Collection<BeanServiceObjects>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@SuppressWarnings("rawtypes") @Reference(Integer.class) Collection<ReferenceServiceObjects> m) {};
+			public void set(@SuppressWarnings("rawtypes") @Reference(Integer.class) Collection<BeanServiceObjects> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Collection.class).getParameters()[0]);
@@ -708,12 +704,12 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_collectionWithServiceDefined_wildcard() throws Exception {
 		Type type = new TypeReference<
-			Collection<ReferenceServiceObjects<?>>
+			Collection<BeanServiceObjects<?>>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) Collection<ReferenceServiceObjects<?>> m) {};
+			public void set(@Reference(Integer.class) Collection<BeanServiceObjects<?>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Collection.class).getParameters()[0]);
@@ -732,12 +728,12 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_collectionWithServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			Collection<ReferenceServiceObjects<Integer>>
+			Collection<BeanServiceObjects<Integer>>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) Collection<ReferenceServiceObjects<Integer>> m) {};
+			public void set(@Reference(Integer.class) Collection<BeanServiceObjects<Integer>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Collection.class).getParameters()[0]);
@@ -757,7 +753,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_collectionWithServiceDefined_wrongtype() throws Exception {
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) Collection<ReferenceServiceObjects<Foo>> m) {};
+			public void set(@Reference(Integer.class) Collection<BeanServiceObjects<Foo>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Collection.class).getParameters()[0]);
@@ -770,7 +766,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
-			public void set(@Reference List<ReferenceServiceObjects> m) {};
+			public void set(@Reference List<BeanServiceObjects> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", List.class).getParameters()[0]);
@@ -782,7 +778,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_listWithoutServiceDefined_wildcard() throws Exception {
 		class C {
 			@Inject
-			public void set(@Reference List<ReferenceServiceObjects<?>> m) {};
+			public void set(@Reference List<BeanServiceObjects<?>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", List.class).getParameters()[0]);
@@ -793,12 +789,12 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_listWithoutServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			List<ReferenceServiceObjects<Foo>>
+			List<BeanServiceObjects<Foo>>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference List<ReferenceServiceObjects<Foo>> m) {};
+			public void set(@Reference List<BeanServiceObjects<Foo>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", List.class).getParameters()[0]);
@@ -818,13 +814,13 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_listWithServiceDefined_raw() throws Exception {
 		@SuppressWarnings("rawtypes")
 		Type type = new TypeReference<
-			List<ReferenceServiceObjects>
+			List<BeanServiceObjects>
 		>(){}.getType();
 
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
-			public void set(@Reference(Integer.class) List<ReferenceServiceObjects> m) {};
+			public void set(@Reference(Integer.class) List<BeanServiceObjects> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", List.class).getParameters()[0]);
@@ -843,12 +839,12 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_listWithServiceDefined_wildcard() throws Exception {
 		Type type = new TypeReference<
-			List<ReferenceServiceObjects<?>>
+			List<BeanServiceObjects<?>>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) List<ReferenceServiceObjects<?>> m) {};
+			public void set(@Reference(Integer.class) List<BeanServiceObjects<?>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", List.class).getParameters()[0]);
@@ -867,12 +863,12 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	@Test
 	public void p_listWithServiceDefined_typed() throws Exception {
 		Type type = new TypeReference<
-			List<ReferenceServiceObjects<Integer>>
+			List<BeanServiceObjects<Integer>>
 		>(){}.getType();
 
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) List<ReferenceServiceObjects<Integer>> m) {};
+			public void set(@Reference(Integer.class) List<BeanServiceObjects<Integer>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", List.class).getParameters()[0]);
@@ -892,7 +888,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 	public void p_listWithServiceDefined_wrongtype() throws Exception {
 		class C {
 			@Inject
-			public void set(@Reference(Integer.class) List<ReferenceServiceObjects<Foo>> m) {};
+			public void set(@Reference(Integer.class) List<BeanServiceObjects<Foo>> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", List.class).getParameters()[0]);
@@ -905,7 +901,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
-			public void set(@Reference Instance<ReferenceServiceObjects> m) {};
+			public void set(@Reference Instance<BeanServiceObjects> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Instance.class).getParameters()[0]);
@@ -918,7 +914,7 @@ public class ReferenceModel_ReferenceServiceObjectsTest {
 		class C {
 			@SuppressWarnings("rawtypes")
 			@Inject
-			public void set(@Reference Instance<ReferenceServiceObjects> m) {};
+			public void set(@Reference Instance<BeanServiceObjects> m) {};
 		}
 
 		InjectionPoint injectionPoint = new MockInjectionPoint(C.class.getMethod("set", Instance.class).getParameters()[0]);

@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.EventMetadata;
+import javax.inject.Inject;
 
-import org.osgi.service.cdi.reference.ReferenceEvent;
+import org.osgi.service.cdi.reference.BindObject;
 
 @ApplicationScoped
 public class ObserverFoo {
@@ -30,27 +30,24 @@ public class ObserverFoo {
 		return _foos;
 	}
 
-	void foos(
-		@Observes ReferenceEvent<Foo> event,
-		EventMetadata eventMetadata) {
+	@Inject
+	void foos(BindObject<Foo> event, EventMetadata eventMetadata) {
 
-		event.onAdding(
+		event.adding(
 			foo -> {
 				System.out.printf("Adding %s, %s%n", foo, eventMetadata);
 				_foos.add(foo);
 			}
-		);
-		event.onUpdate(
+		).modified(
 			foo -> {
 				System.out.printf("Modified %s, %s%n", foo, eventMetadata);
 			}
-		);
-		event.onRemove(
+		).removed(
 			foo -> {
 				System.out.printf("Removed %s, %s%n", foo, eventMetadata);
 				_foos.remove(foo);
 			}
-		);
+		).bind();
 	}
 
 	private List<Foo> _foos = new CopyOnWriteArrayList<>();

@@ -17,41 +17,39 @@ package org.apache.aries.cdi.test.tb10;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
-import org.osgi.service.cdi.reference.ReferenceEvent;
+import org.osgi.service.cdi.reference.BindServiceReference;
 
 @Service
 @SingleComponent
 public class SingleReferenceEventHandler implements Pojo {
 
-	void integers(@Observes ReferenceEvent<Integer> event) {
-		event.onAddingServiceObjects(
-			so -> {
-				ServiceReference<Integer> serviceReference = so.getServiceReference();
-				System.out.println("=====ADDING==>>> " + serviceReference);
-
-				_services.put(so.getServiceReference(), "ADDED");
-			}
-		);
-		event.onUpdateServiceObjects(
-			so -> {
-				System.out.println("=====UPDATING==>>> " + so.getServiceReference());
-
-				_services.put(so.getServiceReference(), "UPDATED");
-			}
-		);
-		event.onRemoveServiceReference(
+	@Inject
+	void integers(BindServiceReference<Integer> binder) {
+		binder.adding(
 			sr -> {
-				System.out.println("=====REMOVING==>>> " + sr);
+				System.out.println("=====ADDING==>>> " + sr + " " + SingleReferenceEventHandler.this);
+
+				_services.put(sr, "ADDED");
+			}
+		).modified(
+			sr -> {
+				System.out.println("=====UPDATING==>>> " + sr + " " + SingleReferenceEventHandler.this);
+
+				_services.put(sr, "UPDATED");
+			}
+		).removed(
+			sr -> {
+				System.out.println("=====REMOVING==>>> " + sr + " " + SingleReferenceEventHandler.this);
 
 				_services.remove(sr);
 			}
-		);
+		).bind();
 	}
 
 	@Override

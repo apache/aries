@@ -79,7 +79,7 @@ public class JndiExtensionTests extends AbstractTestCase {
 		extensionBundle.start();
 
 		for (int i = 20; (i > 0) && (bmTracker.getTrackingCount() == trackingCount); i--) {
-			Thread.sleep(20);
+			Thread.sleep(100);
 		}
 
 		assertNotNull(bmTracker.getService());
