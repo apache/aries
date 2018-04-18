@@ -38,7 +38,6 @@ import org.apache.aries.cdi.container.internal.container.Mark;
 import org.apache.aries.cdi.container.internal.model.CollectionType;
 import org.apache.aries.cdi.container.internal.model.ExtendedReferenceDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedReferenceTemplateDTO;
-import org.apache.aries.cdi.container.internal.model.ReferenceEventImpl;
 import org.apache.aries.cdi.container.internal.util.Logs;
 import org.apache.aries.cdi.container.internal.util.Sets;
 import org.osgi.framework.ServiceReference;
@@ -47,7 +46,6 @@ import org.osgi.service.cdi.MaximumCardinality;
 import org.osgi.service.cdi.ReferencePolicy;
 import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.reference.ReferenceEvent;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 import org.osgi.service.log.Logger;
 
@@ -68,8 +66,6 @@ public class ReferenceBean implements Bean<Object> {
 
 	@Override
 	public Object create(CreationalContext<Object> c) {
-		if (_template.collectionType == CollectionType.OBSERVER) return null;
-
 		Objects.requireNonNull(_bm);
 		Objects.requireNonNull(_snapshot);
 
@@ -77,7 +73,13 @@ public class ReferenceBean implements Bean<Object> {
 
 		final SortedMap<ServiceReference<Object>, Object> tracked = _snapshot.serviceTracker.getTracked();
 
-		if (_template.policy == ReferencePolicy.DYNAMIC) {
+		if (_template.collectionType == CollectionType.BINDER_OBJECT ||
+			_template.collectionType == CollectionType.BINDER_REFERENCE ||
+			_template.collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+
+			return _snapshot.binder;
+		}
+		else if (_template.policy == ReferencePolicy.DYNAMIC) {
 			if (_template.maximumCardinality == MaximumCardinality.MANY) {
 				return new Provider<List<Object>>() {
 					@Override
@@ -165,34 +167,6 @@ public class ReferenceBean implements Bean<Object> {
 
 	@Override
 	public void destroy(Object instance, CreationalContext<Object> creationalContext) {
-	}
-
-	public boolean fireEvents() {
-		if (_template.collectionType != CollectionType.OBSERVER) return true;
-
-		_snapshot.serviceTracker.getTracked().values().stream().map(
-			ReferenceEvent.class::cast
-		).forEach(this::fireEvent);
-
-		return true;
-	}
-
-	public boolean fireEvent(ReferenceEvent<?> event) {
-		try {
-//			TODO this is the spec way to do it, but parameterized types are not supported,
-//			so we need to cheat.
-//			_bm.getEvent().select(
-//				Reference.Literal.of(_template.serviceClass, _template.targetFilter)
-//			).fire(event);
-
-			((org.jboss.weld.bean.builtin.BeanManagerProxy)_bm).delegate().getGlobalLenientObserverNotifier().fireEvent(
-				(Type)event, event, Reference.Literal.of(_template.serviceClass, _template.targetFilter));
-		}
-		catch (Exception e) {
-			_log.error(l -> l.error("CCR observer method error on {}", _snapshot, e));
-		}
-
-		return ((ReferenceEventImpl<?>)event).flush();
 	}
 
 	@Override

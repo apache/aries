@@ -47,10 +47,12 @@ import org.osgi.service.cdi.MaximumCardinality;
 import org.osgi.service.cdi.ReferencePolicy;
 import org.osgi.service.cdi.ReferencePolicyOption;
 import org.osgi.service.cdi.annotations.Greedy;
-import org.osgi.service.cdi.annotations.Prototype;
+import org.osgi.service.cdi.annotations.PrototypeRequired;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.reference.ReferenceEvent;
-import org.osgi.service.cdi.reference.ReferenceServiceObjects;
+import org.osgi.service.cdi.reference.BindObject;
+import org.osgi.service.cdi.reference.BindServiceObjects;
+import org.osgi.service.cdi.reference.BindServiceReference;
+import org.osgi.service.cdi.reference.BeanServiceObjects;
 
 public class ReferenceModel {
 
@@ -127,7 +129,7 @@ public class ReferenceModel {
 		_referenceType = getReferenceType();
 		_referenceTarget = getReferenceTarget();
 		_prototype = getQualifiers().stream().filter(
-			ann -> ann.annotationType().equals(Prototype.class)
+			ann -> ann.annotationType().equals(PrototypeRequired.class)
 		).findFirst().isPresent();
 
 		calculateServiceType(_injectionPointType);
@@ -356,7 +358,7 @@ public class ReferenceModel {
 				throw new IllegalArgumentException(
 					"Map.Entry must specify a generic type arguments: " + clazz);
 			}
-			else if ((ReferenceServiceObjects.class == clazz) && !_referenceType.isPresent()) {
+			else if ((BeanServiceObjects.class == clazz) && !_referenceType.isPresent()) {
 				throw new IllegalArgumentException(
 					"ReferenceServiceObjects must specify a generic type argument: " + clazz);
 			}
@@ -370,7 +372,7 @@ public class ReferenceModel {
 				throw new IllegalArgumentException(
 					type + " must specify a generic type argument");
 			}
-			else if (ReferenceServiceObjects.class == clazz) {
+			else if (BeanServiceObjects.class == clazz) {
 				_collectionType = CollectionType.SERVICEOBJECTS;
 				return;
 			}
@@ -403,8 +405,8 @@ public class ReferenceModel {
 				"Instance<T> is not supported with @Reference: " + type);
 		}
 
-		if (ReferenceEvent.class == cast(rawType)) {
-			_collectionType = CollectionType.OBSERVER;
+		if (BindObject.class.isAssignableFrom(cast(rawType))) {
+			_collectionType = CollectionType.BINDER_OBJECT;
 			_dynamic = true;
 			_multiplicity = MaximumCardinality.MANY;
 			_optional = true;
@@ -414,7 +416,45 @@ public class ReferenceModel {
 				argument instanceof ParameterizedType) {
 
 				throw new IllegalArgumentException(
-					"Type argument <S> of ReferenceEvent must not be generic: " + argument);
+					"Type argument <S> of BindObject must not be generic: " + argument);
+			}
+
+			_serviceType = cast(argument);
+
+			return;
+		}
+
+		if (BindServiceReference.class.isAssignableFrom(cast(rawType))) {
+			_collectionType = CollectionType.BINDER_REFERENCE;
+			_dynamic = true;
+			_multiplicity = MaximumCardinality.MANY;
+			_optional = true;
+			_greedy = true;
+
+			if (argument instanceof WildcardType ||
+				argument instanceof ParameterizedType) {
+
+				throw new IllegalArgumentException(
+					"Type argument <S> of BindServiceReference must not be generic: " + argument);
+			}
+
+			_serviceType = cast(argument);
+
+			return;
+		}
+
+		if (BindServiceObjects.class.isAssignableFrom(cast(rawType))) {
+			_collectionType = CollectionType.BINDER_SERVICE_OBJECTS;
+			_dynamic = true;
+			_multiplicity = MaximumCardinality.MANY;
+			_optional = true;
+			_greedy = true;
+
+			if (argument instanceof WildcardType ||
+				argument instanceof ParameterizedType) {
+
+				throw new IllegalArgumentException(
+					"Type argument <S> of BindServiceObjects must not be generic: " + argument);
 			}
 
 			_serviceType = cast(argument);
@@ -508,7 +548,7 @@ public class ReferenceModel {
 			return;
 		}
 
-		if (ReferenceServiceObjects.class == cast(rawType)) {
+		if (BeanServiceObjects.class == cast(rawType)) {
 			_collectionType = CollectionType.SERVICEOBJECTS;
 
 			if ((argument instanceof WildcardType) && _referenceType.isPresent()) {

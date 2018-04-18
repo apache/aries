@@ -14,14 +14,16 @@
 
 package org.apache.aries.cdi.container.test.beans;
 
+import static org.osgi.service.cdi.ServiceInstanceType.*;
+
 import java.math.BigDecimal;
 
 import javax.enterprise.inject.Produces;
 
 import org.apache.aries.cdi.extra.propertytypes.ServiceRanking;
-import org.osgi.service.cdi.annotations.Bundle;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ServiceInstance;
 
 public class BarProducer {
 	@Produces
@@ -32,7 +34,7 @@ public class BarProducer {
 
 	@Produces
 	@Service(Integer.class)
-	@Bundle
+	@ServiceInstance(BUNDLE)
 	@ServiceRanking(100)
 	Number fum = new BigDecimal(25);
 

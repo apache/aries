@@ -33,7 +33,6 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -41,12 +40,10 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DefinitionException;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.inject.spi.ObserverMethod;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessManagedBean;
-import javax.enterprise.inject.spi.ProcessObserverMethod;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.ProcessSessionBean;
@@ -66,15 +63,16 @@ import org.osgi.service.cdi.ComponentType;
 import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.MaximumCardinality;
 import org.osgi.service.cdi.ServiceScope;
-import org.osgi.service.cdi.annotations.Bundle;
 import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.FactoryComponent;
 import org.osgi.service.cdi.annotations.PID;
-import org.osgi.service.cdi.annotations.Prototype;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.ServiceInstance;
 import org.osgi.service.cdi.annotations.SingleComponent;
-import org.osgi.service.cdi.reference.ReferenceEvent;
+import org.osgi.service.cdi.reference.BindObject;
+import org.osgi.service.cdi.reference.BindServiceObjects;
+import org.osgi.service.cdi.reference.BindServiceReference;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 
 public class DiscoveryExtension implements Extension {
@@ -403,6 +401,108 @@ public class DiscoveryExtension implements Extension {
 		}
 	}
 
+	void processBindObject(@Observes ProcessInjectionPoint<?, BindObject<?>> pip) {
+		InjectionPoint injectionPoint = pip.getInjectionPoint();
+
+		Class<?> declaringClass = getDeclaringClass(injectionPoint);
+
+		String className = declaringClass.getName();
+
+		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
+
+		if (osgiBean == null) {
+			return;
+		}
+
+		Annotated annotated = injectionPoint.getAnnotated();
+
+		Builder builder = null;
+
+		if (annotated instanceof AnnotatedParameter) {
+			builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
+		}
+		else {
+			builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
+		}
+
+		try {
+			ReferenceModel referenceModel = builder.type(injectionPoint.getType()).build();
+
+			osgiBean.addReference(referenceModel.toDTO());
+		}
+		catch (Exception e) {
+			_containerState.error(e);
+		}
+	}
+
+	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindServiceObjects<?>> pip) {
+		InjectionPoint injectionPoint = pip.getInjectionPoint();
+
+		Class<?> declaringClass = getDeclaringClass(injectionPoint);
+
+		String className = declaringClass.getName();
+
+		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
+
+		if (osgiBean == null) {
+			return;
+		}
+
+		Annotated annotated = injectionPoint.getAnnotated();
+
+		Builder builder = null;
+
+		if (annotated instanceof AnnotatedParameter) {
+			builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
+		}
+		else {
+			builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
+		}
+
+		try {
+			ReferenceModel referenceModel = builder.type(injectionPoint.getType()).build();
+
+			osgiBean.addReference(referenceModel.toDTO());
+		}
+		catch (Exception e) {
+			_containerState.error(e);
+		}
+	}
+
+	void processBindServiceReference(@Observes ProcessInjectionPoint<?, BindServiceReference<?>> pip) {
+		InjectionPoint injectionPoint = pip.getInjectionPoint();
+
+		Class<?> declaringClass = getDeclaringClass(injectionPoint);
+
+		String className = declaringClass.getName();
+
+		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
+
+		if (osgiBean == null) {
+			return;
+		}
+
+		Annotated annotated = injectionPoint.getAnnotated();
+
+		Builder builder = null;
+
+		if (annotated instanceof AnnotatedParameter) {
+			builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
+		}
+		else {
+			builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
+		}
+
+		try {
+			ReferenceModel referenceModel = builder.type(injectionPoint.getType()).build();
+
+			osgiBean.addReference(referenceModel.toDTO());
+		}
+		catch (Exception e) {
+			_containerState.error(e);
+		}
+	}
+
 	void processInjectionPoint(@Observes ProcessInjectionPoint<?, ?> pip) {
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 
@@ -468,70 +568,18 @@ public class DiscoveryExtension implements Extension {
 		}
 	}
 
-	void processObserverMethod(@Observes ProcessObserverMethod<ReferenceEvent<?>, ?> pom) {
-		ObserverMethod<ReferenceEvent<?>> observerMethod = pom.getObserverMethod();
-
-		AnnotatedMethod<?> annotatedMethod = pom.getAnnotatedMethod();
-
-		Configuration configuration = annotatedMethod.getAnnotation(Configuration.class);
-
-		if (configuration != null) {
-			pom.addDefinitionError(
-				new IllegalArgumentException(
-					String.format(
-						"Cannot use @Configuration on ReferenceEvent observer method {}",
-						observerMethod))
-			);
-
-			return;
-		}
-
-		Class<?> beanClass = observerMethod.getBeanClass();
-
-		final String className = beanClass.getName();
-
-		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
-
-		if (osgiBean == null) {
-			pom.addDefinitionError(
-				new DefinitionException(
-					String.format(
-						"The observer method %s was not declared as <cdi:bean class=\"%s\">",
-						observerMethod, className))
-			);
-
-			return;
-		}
-
-		try {
-			ReferenceModel referenceModel = new ReferenceModel.Builder(
-				pom.getAnnotatedMethod().getParameters().get(0)
-			).type(observerMethod.getObservedType()).build();
-
-			osgiBean.addReference(referenceModel.toDTO());
-		}
-		catch (Exception e) {
-			pom.addDefinitionError(e);
-		}
-	}
-
 	ServiceScope getScope(Annotated annotated) {
-		Prototype prototype = annotated.getAnnotation(Prototype.class);
-		Bundle bundle = annotated.getAnnotation(Bundle.class);
+		ServiceInstance serviceInstance = annotated.getAnnotation(ServiceInstance.class);
 
-		if (prototype != null) {
-			if (bundle != null) {
-				throw new IllegalArgumentException(
-					String.format(
-						"@Prototype and @Bundle must not be used to gether: %s",
-						annotated));
+		if (serviceInstance != null) {
+			switch (serviceInstance.value()) {
+				case BUNDLE:
+					return ServiceScope.BUNDLE;
+				case PROTOTYPE:
+					return ServiceScope.PROTOTYPE;
+				case SINGLETON:
+					return ServiceScope.SINGLETON;
 			}
-
-			return ServiceScope.PROTOTYPE;
-		}
-
-		if (bundle != null) {
-			return ServiceScope.BUNDLE;
 		}
 
 		return ServiceScope.SINGLETON;
