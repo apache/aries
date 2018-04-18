@@ -263,7 +263,6 @@ public class FactoryActivator extends InstanceActivator {
 						instance.activations.remove(a);
 					}
 				};
-				instance.fireEvents();
 				return new AbstractMap.SimpleImmutableEntry<>(activationDTO, object);
 			}
 			catch (Throwable t) {

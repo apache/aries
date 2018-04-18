@@ -3,8 +3,8 @@
 	namespace = ExtenderNamespace.EXTENDER_NAMESPACE,
 	uses = {
 		org.osgi.service.cdi.ServiceScope.class,
-		org.osgi.service.cdi.annotations.Bundle.class,
-		org.osgi.service.cdi.reference.ReferenceEvent.class,
+		org.osgi.service.cdi.annotations.Reference.class,
+		org.osgi.service.cdi.reference.BindObject.class,
 		org.osgi.service.cdi.runtime.CDIComponentRuntime.class,
 		org.osgi.service.cdi.runtime.dto.ActivationDTO.class,
 		org.osgi.service.cdi.runtime.dto.template.ActivationTemplateDTO.class
@@ -16,8 +16,8 @@
 	namespace = ImplementationNamespace.IMPLEMENTATION_NAMESPACE,
 	uses = {
 		org.osgi.service.cdi.ServiceScope.class,
-		org.osgi.service.cdi.annotations.Bundle.class,
-		org.osgi.service.cdi.reference.ReferenceEvent.class,
+		org.osgi.service.cdi.annotations.Reference.class,
+		org.osgi.service.cdi.reference.BindObject.class,
 		org.osgi.service.cdi.runtime.CDIComponentRuntime.class,
 		org.osgi.service.cdi.runtime.dto.ActivationDTO.class,
 		org.osgi.service.cdi.runtime.dto.template.ActivationTemplateDTO.class

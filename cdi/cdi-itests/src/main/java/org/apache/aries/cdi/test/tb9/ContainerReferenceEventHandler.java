@@ -17,40 +17,38 @@ package org.apache.aries.cdi.test.tb9;
 import java.util.TreeMap;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.annotations.Service;
-import org.osgi.service.cdi.reference.ReferenceEvent;
+import org.osgi.service.cdi.reference.BindServiceReference;
 
 @ApplicationScoped
 @Service
 public class ContainerReferenceEventHandler implements Pojo {
 
-	void integers(@Observes ReferenceEvent<Integer> event) {
-		event.onAddingServiceObjects(
-			so -> {
-				ServiceReference<Integer> serviceReference = so.getServiceReference();
-				System.out.println("=====ADDING==>>> " + serviceReference);
+	@Inject
+	void integers(BindServiceReference<Integer> binder) {
+		binder.adding(
+			sr -> {
+				System.out.println("=====ADDING==>>> " + sr);
 
-				_services.put(so.getServiceReference(), "ADDED");
+				_services.put(sr, "ADDED");
 			}
-		);
-		event.onUpdateServiceObjects(
-			so -> {
-				System.out.println("=====UPDATING==>>> " + so.getServiceReference());
+		).modified(
+			sr -> {
+				System.out.println("=====UPDATING==>>> " + sr);
 
-				_services.put(so.getServiceReference(), "UPDATED");
+				_services.put(sr, "UPDATED");
 			}
-		);
-		event.onRemoveServiceReference(
+		).removed(
 			sr -> {
 				System.out.println("=====REMOVING==>>> " + sr);
 
 				_services.remove(sr);
 			}
-		);
+		).bind();
 	}
 
 	@Override

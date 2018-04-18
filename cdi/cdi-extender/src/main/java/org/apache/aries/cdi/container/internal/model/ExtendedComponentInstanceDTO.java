@@ -126,20 +126,6 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 		return true;
 	}
 
-	public final boolean fireEvents() {
-		references.stream().map(ExtendedReferenceDTO.class::cast).filter(
-			r -> ((ExtendedReferenceTemplateDTO)r.template).collectionType == CollectionType.OBSERVER
-		).map(
-			r -> (ExtendedReferenceTemplateDTO)r.template
-		).forEach(
-			t -> {
-				t.bean.fireEvents();
-			}
-		);
-
-		return true;
-	}
-
 	public final boolean referencesResolved() {
 		for (ReferenceTemplateDTO template : template.references) {
 			if (template.minimumCardinality > 0) {
@@ -171,6 +157,16 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 		template.references.stream().map(ExtendedReferenceTemplateDTO.class::cast).forEach(
 			t -> {
 				ExtendedReferenceDTO referenceDTO = new ExtendedReferenceDTO();
+
+				if (t.collectionType == CollectionType.BINDER_OBJECT) {
+					referenceDTO.binder = new BindObjectImpl<>(_containerState);
+				}
+				else if (t.collectionType == CollectionType.BINDER_REFERENCE) {
+					referenceDTO.binder = new BindServiceReferenceImpl<>(_containerState);
+				}
+				else if (t.collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+					referenceDTO.binder = new BindServiceObjectsImpl<>(_containerState);
+				}
 
 				referenceDTO.matches = new CopyOnWriteArrayList<>();
 				referenceDTO.minimumCardinality = minimumCardinality(t.name, t.minimumCardinality);

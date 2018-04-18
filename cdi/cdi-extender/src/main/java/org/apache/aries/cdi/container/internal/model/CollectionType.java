@@ -61,9 +61,22 @@ public enum CollectionType {
 	TUPLE("tuple"),
 
 	/**
-	 * The observer type is used to indicate the reference is targeted to a observer method.
+	 * Used to indicate the reference is a binder for registering handler
+	 * methods for tracking service instances.
 	 */
-	OBSERVER("observer");
+	BINDER_OBJECT("binder_object"),
+
+	/**
+	 * Used to indicate the reference is a binder for registering handler
+	 * methods for tracking service references.
+	 */
+	BINDER_REFERENCE("binder_reference"),
+
+	/**
+	 * Used to indicate the reference is a binder for registering handler
+	 * methods for tracking service objects.
+	 */
+	BINDER_SERVICE_OBJECTS("binder_service_objects");
 
 	private final String value;
 

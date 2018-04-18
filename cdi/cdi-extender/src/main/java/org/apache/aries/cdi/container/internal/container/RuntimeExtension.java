@@ -46,7 +46,6 @@ import org.apache.aries.cdi.container.internal.bean.ConfigurationBean;
 import org.apache.aries.cdi.container.internal.bean.ReferenceBean;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
-import org.apache.aries.cdi.container.internal.model.CollectionType;
 import org.apache.aries.cdi.container.internal.model.ConfigurationModel;
 import org.apache.aries.cdi.container.internal.model.ExtendedActivationDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedActivationTemplateDTO;
@@ -71,6 +70,9 @@ import org.osgi.service.cdi.ServiceScope;
 import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.reference.BindObject;
+import org.osgi.service.cdi.reference.BindServiceObjects;
+import org.osgi.service.cdi.reference.BindServiceReference;
 import org.osgi.service.cdi.runtime.dto.ComponentDTO;
 import org.osgi.service.cdi.runtime.dto.ConfigurationDTO;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
@@ -103,13 +105,13 @@ public class RuntimeExtension implements Extension {
 	}
 
 	void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
-		bbd.addQualifier(org.osgi.service.cdi.annotations.Bundle.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.Configuration.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.Greedy.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.PID.class);
-		bbd.addQualifier(org.osgi.service.cdi.annotations.Prototype.class);
+		bbd.addQualifier(org.osgi.service.cdi.annotations.PrototypeRequired.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.Reference.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.Service.class);
+		bbd.addQualifier(org.osgi.service.cdi.annotations.ServiceInstance.class);
 		bbd.addScope(ComponentScoped.class, false, false);
 		bbd.addStereotype(org.osgi.service.cdi.annotations.FactoryComponent.class);
 		bbd.addStereotype(org.osgi.service.cdi.annotations.SingleComponent.class);
@@ -136,15 +138,8 @@ public class RuntimeExtension implements Extension {
 			properties);
 
 		_containerState.submit(
-			Op.of(Mode.OPEN, Type.CONTAINER_FIRE_EVENTS, _containerState.id()),
-			_containerInstanceDTO::fireEvents
-		).then(
-			s-> {
-				return _containerState.submit(
-					Op.of(Mode.OPEN, Type.CONTAINER_PUBLISH_SERVICES, _containerState.id()),
-					() -> registerServices(_containerComponentDTO, _containerInstanceDTO, bm)
-				);
-			}
+			Op.of(Mode.OPEN, Type.CONTAINER_PUBLISH_SERVICES, _containerState.id()),
+			() -> registerServices(_containerComponentDTO, _containerInstanceDTO, bm)
 		).then(
 			s -> initComponents()
 		);
@@ -180,7 +175,23 @@ public class RuntimeExtension implements Extension {
 		);
 	}
 
-	void processInjectionPoint(@Observes ProcessInjectionPoint<?, ?> pip, BeanManager beanManager) {
+	void processBindObject(@Observes ProcessInjectionPoint<?, BindObject<?>> pip) {
+		processInjectionPoint(pip, true);
+	}
+
+	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindServiceObjects<?>> pip) {
+		processInjectionPoint(pip, true);
+	}
+
+	void processBindServiceReference(@Observes ProcessInjectionPoint<?, BindServiceReference<?>> pip) {
+		processInjectionPoint(pip, true);
+	}
+
+	void processInjectionPoint(@Observes ProcessInjectionPoint<?, ?> pip) {
+		processInjectionPoint(pip, false);
+	}
+
+	void processInjectionPoint(ProcessInjectionPoint<?, ?> pip, boolean special) {
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 
 		Class<?> declaringClass = DiscoveryExtension.getDeclaringClass(injectionPoint);
@@ -197,7 +208,7 @@ public class RuntimeExtension implements Extension {
 		Configuration configuration = annotated.getAnnotation(Configuration.class);
 		Reference reference = annotated.getAnnotation(Reference.class);
 
-		if ((reference != null) && matchReference(osgiBean, reference, pip)) {
+		if (((reference != null) || special) && matchReference(osgiBean, pip)) {
 			return;
 		}
 
@@ -220,11 +231,10 @@ public class RuntimeExtension implements Extension {
 						r -> bean.setReferenceDTO(r)
 					);
 				}
-				if (t.collectionType != CollectionType.OBSERVER) {
-					_log.debug(l -> l.debug("CCR Adding synthetic bean {} on {}", bean, _containerState.bundle()));
 
-					abd.addBean(bean);
-				}
+				_log.debug(l -> l.debug("CCR Adding synthetic bean {} on {}", bean, _containerState.bundle()));
+
+				abd.addBean(bean);
 			}
 		);
 
@@ -350,7 +360,7 @@ public class RuntimeExtension implements Extension {
 		).orElse(false);
 	}
 
-	private boolean matchReference(OSGiBean osgiBean, Reference reference, ProcessInjectionPoint<?, ?> pip) {
+	private boolean matchReference(OSGiBean osgiBean, ProcessInjectionPoint<?, ?> pip) {
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 
 		Annotated annotated = injectionPoint.getAnnotated();
@@ -382,6 +392,8 @@ public class RuntimeExtension implements Extension {
 				pip.setInjectionPoint(markedInjectionPoint);
 
 				t.bean.setMark(markedInjectionPoint.getMark());
+
+				_log.debug(l -> l.debug("CCR maping InjectionPoint {} to reference template {}", injectionPoint, t));
 
 				return true;
 			}

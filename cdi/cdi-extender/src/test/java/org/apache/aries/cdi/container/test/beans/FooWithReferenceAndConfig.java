@@ -14,21 +14,22 @@
 
 package org.apache.aries.cdi.container.test.beans;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.reference.ReferenceEvent;
+import org.osgi.service.cdi.reference.BindObject;
 
 @ComponentScoped
 public class FooWithReferenceAndConfig {
 
-	void watchNumbers(@Observes ReferenceEvent<Integer> numbers) {
-		numbers.onAddingServiceReference(number -> System.out.println("Added: " + number));
-		numbers.onUpdateServiceReference(number -> System.out.println("Updated: " + number));
-		numbers.onRemoveServiceReference(number -> System.out.println("Removed: " + number));
+	@Inject
+	void watchNumbers(BindObject<Integer> numbers) {
+		numbers.adding(number -> System.out.println("Added: " + number)
+		).modified(number -> System.out.println("Updated: " + number)
+		).removed(number -> System.out.println("Removed: " + number)
+		).bind();
 	}
 
 	@Inject
