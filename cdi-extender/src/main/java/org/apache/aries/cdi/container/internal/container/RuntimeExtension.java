@@ -19,7 +19,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.Context;
@@ -58,7 +57,6 @@ import org.apache.aries.cdi.container.internal.model.FactoryComponent;
 import org.apache.aries.cdi.container.internal.model.OSGiBean;
 import org.apache.aries.cdi.container.internal.model.ReferenceModel;
 import org.apache.aries.cdi.container.internal.model.SingleComponent;
-import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.apache.aries.cdi.container.internal.util.SRs;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
@@ -74,7 +72,6 @@ import org.osgi.service.cdi.reference.BindObject;
 import org.osgi.service.cdi.reference.BindServiceObjects;
 import org.osgi.service.cdi.reference.BindServiceReference;
 import org.osgi.service.cdi.runtime.dto.ComponentDTO;
-import org.osgi.service.cdi.runtime.dto.ConfigurationDTO;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
 import org.osgi.service.log.Logger;
@@ -96,12 +93,6 @@ public class RuntimeExtension implements Extension {
 		_configurationBuilder = configurationBuilder;
 		_singleBuilder = singleBuilder;
 		_factoryBuilder = factoryBuilder;
-
-		_containerComponentDTO = _containerState.containerDTO().components.stream().filter(
-			c -> c.template.type == ComponentType.CONTAINER
-		).findFirst().get();
-
-		_containerInstanceDTO = (ExtendedComponentInstanceDTO)_containerComponentDTO.instances.get(0);
 	}
 
 	void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
@@ -137,9 +128,11 @@ public class RuntimeExtension implements Extension {
 			new String[] {BeanManager.class.getName()}, bm,
 			properties);
 
+		ComponentDTO componentDTO = _containerState.containerDTO().components.get(0);
+
 		_containerState.submit(
 			Op.of(Mode.OPEN, Type.CONTAINER_PUBLISH_SERVICES, _containerState.id()),
-			() -> registerServices(_containerComponentDTO, _containerInstanceDTO, bm)
+			() -> registerServices(componentDTO, bm)
 		).then(
 			s -> initComponents()
 		);
@@ -159,8 +152,6 @@ public class RuntimeExtension implements Extension {
 				return true;
 			}
 		);
-
-		_containerInstanceDTO.activations.clear();
 
 		_registrations.removeIf(
 			r -> {
@@ -218,12 +209,14 @@ public class RuntimeExtension implements Extension {
 	}
 
 	private void addBeans(ComponentTemplateDTO componentTemplate, AfterBeanDiscovery abd, BeanManager bm) {
+		ComponentDTO componentDTO = _containerState.containerDTO().components.get(0);
+
 		componentTemplate.references.stream().map(ExtendedReferenceTemplateDTO.class::cast).forEach(
 			t -> {
 				ReferenceBean bean = t.bean;
 				bean.setBeanManager(bm);
 				if (componentTemplate.type == ComponentType.CONTAINER) {
-					_containerInstanceDTO.references.stream().filter(
+					componentDTO.instances.get(0).references.stream().filter(
 						r -> r.template == t
 					).findFirst().map(
 						ExtendedReferenceDTO.class::cast
@@ -248,7 +241,7 @@ public class RuntimeExtension implements Extension {
 						bean.setProperties(componentTemplate.properties);
 					}
 					else {
-						bean.setProperties(_containerInstanceDTO.properties);
+						bean.setProperties(componentDTO.instances.get(0).properties);
 					}
 				}
 
@@ -273,43 +266,23 @@ public class RuntimeExtension implements Extension {
 		return producerFactory.createProducer(bean);
 	}
 
-	private Promise<List<Boolean>> initComponents() {
+	private Promise<Boolean> initComponents() {
 		_containerState.containerDTO().template.components.stream().filter(
 			t -> t.type != ComponentType.CONTAINER
-		).map(ExtendedComponentTemplateDTO.class::cast).map(
+		).map(ExtendedComponentTemplateDTO.class::cast).forEach(
 			this::initComponent
-		).collect(Collectors.toList());
+		);
 
 		return null;
 	}
 
-	private Promise<Boolean> initComponent(ExtendedComponentTemplateDTO componentTemplateDTO) {
-		List<ConfigurationDTO> configurations = _containerInstanceDTO.configurations;
-
-		if (!configurations.isEmpty()) {
-			ConfigurationDTO defaultContainerConfiguration = configurations.get(0);
-
-			Boolean enabled = Conversions.convert(
-				defaultContainerConfiguration.properties.get(
-					componentTemplateDTO.name.concat(".enabled"))
-			).defaultValue(Boolean.TRUE).to(Boolean.class);
-
-			if (!enabled) {
-				_containerState.containerDTO().components.stream().filter(
-					c -> c.template == componentTemplateDTO
-				).findFirst().ifPresent(
-					c -> c.enabled = false
-				);
-
-				return _containerState.promiseFactory().resolved(Boolean.TRUE);
-			}
-		}
-
+	private void initComponent(ExtendedComponentTemplateDTO componentTemplateDTO) {
 		if (componentTemplateDTO.type == ComponentType.FACTORY) {
-			return initFactoryComponent(componentTemplateDTO);
+			initFactoryComponent(componentTemplateDTO);
 		}
-
-		return initSingleComponent(componentTemplateDTO);
+		else {
+			initSingleComponent(componentTemplateDTO);
+		}
 	}
 
 	private Promise<Boolean> initFactoryComponent(ExtendedComponentTemplateDTO componentTemplateDTO) {
@@ -486,22 +459,20 @@ public class RuntimeExtension implements Extension {
 		return serviceRegistration;
 	}
 
-	private boolean registerServices(ComponentDTO componentDTO, ExtendedComponentInstanceDTO instance, BeanManager bm) {
+	private boolean registerServices(ComponentDTO componentDTO, BeanManager bm) {
 		componentDTO.template.activations.stream().map(
 			ExtendedActivationTemplateDTO.class::cast
 		).forEach(
-			a -> registerService(instance, a, bm)
+			a -> registerService((ExtendedComponentInstanceDTO)componentDTO.instances.get(0), a, bm)
 		);
 
 		return true;
 	}
 
-	private final ComponentDTO _containerComponentDTO;
 	private final ConfigurationListener.Builder _configurationBuilder;
 	private final List<ConfigurationListener> _configurationListeners = new CopyOnWriteArrayList<>();
 	private final ContainerState _containerState;
 	private final FactoryComponent.Builder _factoryBuilder;
-	private final ExtendedComponentInstanceDTO _containerInstanceDTO;
 	private final Logger _log;
 	private final List<ServiceRegistration<?>> _registrations = new CopyOnWriteArrayList<>();
 	private final SingleComponent.Builder _singleBuilder;

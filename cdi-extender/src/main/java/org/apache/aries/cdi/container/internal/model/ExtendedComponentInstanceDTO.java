@@ -30,8 +30,10 @@ import org.apache.aries.cdi.container.internal.container.Op;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
 import org.apache.aries.cdi.container.internal.container.ReferenceSync;
+import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.osgi.framework.Constants;
 import org.osgi.service.cdi.ConfigurationPolicy;
+import org.osgi.service.cdi.runtime.dto.ComponentDTO;
 import org.osgi.service.cdi.runtime.dto.ComponentInstanceDTO;
 import org.osgi.service.cdi.runtime.dto.ConfigurationDTO;
 import org.osgi.service.cdi.runtime.dto.ReferenceDTO;
@@ -152,6 +154,28 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 			return false;
 		}
 
+		ConfigurationDTO containerConfiguration = containerConfiguration();
+
+		if (containerConfiguration != null) {
+			Boolean enabled = Conversions.convert(
+				containerConfiguration.properties.get(
+					template.name.concat(".enabled"))
+			).defaultValue(Boolean.TRUE).to(Boolean.class);
+
+			if (!enabled) {
+				_containerState.containerDTO().components.stream().filter(
+					c -> c.template == template
+				).forEach(c -> c.enabled = false);
+
+				return false;
+			}
+			else {
+				_containerState.containerDTO().components.stream().filter(
+					c -> c.template == template
+				).forEach(c -> c.enabled = true);
+			}
+		}
+
 		properties = componentProperties(null);
 
 		template.references.stream().map(ExtendedReferenceTemplateDTO.class::cast).forEach(
@@ -213,6 +237,28 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 		);
 
 		return true;
+	}
+
+	private ConfigurationDTO containerConfiguration() {
+		List<ComponentDTO> components = _containerState.containerDTO().components;
+
+		if (components.isEmpty()) {
+			return null;
+		}
+
+		List<ComponentInstanceDTO> instances = components.get(0).instances;
+
+		if (instances.isEmpty()) {
+			return null;
+		}
+
+		List<ConfigurationDTO> configurations = instances.get(0).configurations;
+
+		if (configurations.isEmpty()) {
+			return null;
+		}
+
+		return configurations.get(0);
 	}
 
 	public Op openOp() {

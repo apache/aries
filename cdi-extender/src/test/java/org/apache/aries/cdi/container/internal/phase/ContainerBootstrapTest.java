@@ -82,7 +82,7 @@ public class ContainerBootstrapTest extends BaseCDIBundleTest {
 		ExtendedComponentInstanceDTO componentInstanceDTO = new ExtendedComponentInstanceDTO(containerState, new ContainerActivator.Builder(containerState, containerBootstrap));
 		componentInstanceDTO.activations = new CopyOnWriteArrayList<>();
 		componentInstanceDTO.configurations = new CopyOnWriteArrayList<>();
-		componentInstanceDTO.pid = componentDTO.template.configurations.get(0).pid;
+		//componentInstanceDTO.pid = componentDTO.template.configurations.get(0).pid;
 		componentInstanceDTO.properties = null;
 		componentInstanceDTO.references = new CopyOnWriteArrayList<>();
 		componentInstanceDTO.template = componentDTO.template;

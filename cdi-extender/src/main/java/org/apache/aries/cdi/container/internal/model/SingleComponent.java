@@ -14,18 +14,20 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
-import java.util.Collections;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.container.Op;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
+import org.apache.aries.cdi.container.internal.util.Throw;
 import org.osgi.service.cdi.runtime.dto.ComponentDTO;
 import org.osgi.service.cdi.runtime.dto.ComponentInstanceDTO;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
 import org.osgi.service.log.Logger;
+import org.osgi.util.promise.Promise;
 
 public class SingleComponent extends Component {
 
@@ -45,34 +47,39 @@ public class SingleComponent extends Component {
 	protected SingleComponent(Builder builder) {
 		super(builder);
 
-		_log = containerState.containerLogs().getLogger(getClass());
-
 		_template = builder._templateDTO;
-
-		_snapshot = new ComponentDTO();
-		_snapshot.instances = new CopyOnWriteArrayList<>();
-		_snapshot.template = _template;
-
-		_instanceDTO = new ExtendedComponentInstanceDTO(containerState, builder._activatorBuilder);
-		_instanceDTO.activations = new CopyOnWriteArrayList<>();
-		_instanceDTO.configurations = new CopyOnWriteArrayList<>();
-		_instanceDTO.pid = _template.configurations.get(0).pid;
-		_instanceDTO.properties = null;
-		_instanceDTO.references = new CopyOnWriteArrayList<>();
-		_instanceDTO.template = builder._templateDTO;
-
-		_snapshot.instances.add(_instanceDTO);
-
-		containerState.containerDTO().components.add(_snapshot);
+		_activatorBuilder = builder._activatorBuilder;
+		_log = containerState.containerLogs().getLogger(getClass());
 	}
 
 	@Override
 	public boolean close() {
-		submit(_instanceDTO.closeOp(), _instanceDTO::close).onFailure(
-			f -> {
-				_log.error(l -> l.error("CCR Error in single component close for {} on {}", _instanceDTO.ident(), containerState.bundle()));
+		if (_snapshot == null) {
+			return true;
+		}
+
+		_snapshot.instances.removeIf(
+			instance -> {
+				ExtendedComponentInstanceDTO einstance = (ExtendedComponentInstanceDTO)instance;
+
+				Promise<Boolean> result = submit(einstance.closeOp(), einstance::close).onFailure(
+					f -> {
+						_log.error(l -> l.error("CCR Error in single component close for {} on {}", einstance.ident(), bundle(), f));
+					}
+				);
+
+				try {
+					return result.getValue();
+				}
+				catch (InvocationTargetException | InterruptedException e) {
+					return Throw.exception(e);
+				}
 			}
 		);
+
+		containerState.containerDTO().components.remove(_snapshot);
+
+		_snapshot = null;
 
 		return true;
 	}
@@ -89,7 +96,7 @@ public class SingleComponent extends Component {
 
 	@Override
 	public List<ComponentInstanceDTO> instances() {
-		return Collections.singletonList(_instanceDTO);
+		return _snapshot.instances;
 	}
 
 	@Override
@@ -99,13 +106,24 @@ public class SingleComponent extends Component {
 
 	@Override
 	public boolean open() {
-		if (!snapshot().enabled || !containerState.containerDTO().components.get(0).enabled) {
-			return false;
-		}
+		_snapshot = new ComponentDTO();
+		_snapshot.instances = new CopyOnWriteArrayList<>();
+		_snapshot.template = _template;
 
-		submit(_instanceDTO.openOp(), _instanceDTO::open).onFailure(
+		containerState.containerDTO().components.add(_snapshot);
+
+		ExtendedComponentInstanceDTO instanceDTO = new ExtendedComponentInstanceDTO(
+			containerState, _activatorBuilder);
+		instanceDTO.activations = new CopyOnWriteArrayList<>();
+		instanceDTO.configurations = new CopyOnWriteArrayList<>();
+		instanceDTO.references = new CopyOnWriteArrayList<>();
+		instanceDTO.template = _template;
+
+		_snapshot.instances.add(instanceDTO);
+
+		submit(instanceDTO.openOp(), instanceDTO::open).onFailure(
 			f -> {
-				_log.error(l -> l.error("CCR Error in single component open for {} on {}", _instanceDTO.ident(), containerState.bundle()));
+				_log.error(l -> l.error("CCR Error in single component open for {} on {}", instanceDTO.ident(), containerState.bundle()));
 			}
 		);
 
@@ -122,9 +140,9 @@ public class SingleComponent extends Component {
 		return _template;
 	}
 
-	private final ExtendedComponentInstanceDTO _instanceDTO;
+	private final InstanceActivator.Builder<?> _activatorBuilder;
 	private final Logger _log;
-	private final ComponentDTO _snapshot;
+	private volatile ComponentDTO _snapshot;
 	private final ComponentTemplateDTO _template;
 
 }

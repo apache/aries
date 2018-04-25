@@ -161,8 +161,10 @@ public class ContainerState {
 		configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
 		configurationTemplate.pid = Optional.ofNullable(
 			(String)cdiAttributes.get(CDI_CONTAINER_ID)
+		).map(
+			s -> s.replaceAll("-", ".")
 		).orElse(
-			"osgi.cdi." + _bundle.getSymbolicName()
+			"osgi.cdi." + _bundle.getSymbolicName().replaceAll("-", ".")
 		);
 		configurationTemplate.policy = ConfigurationPolicy.OPTIONAL;
 

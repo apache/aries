@@ -63,7 +63,7 @@ public class DisableComponentTests extends AbstractTestCase {
 		Configuration configurationA = null;
 
 		try {
-			configurationA = configurationAdmin.getConfiguration("osgi.cdi.cdi-itests.tb8", "?");
+			configurationA = configurationAdmin.getConfiguration("osgi.cdi.cdi.itests.tb8", "?");
 
 			Dictionary<String, Object> p1 = new Hashtable<>();
 			p1.put("cdi-itests.tb8.enabled", false);
@@ -71,7 +71,7 @@ public class DisableComponentTests extends AbstractTestCase {
 			configurationA.update(p1);
 
 			for (int i = 20; (i > 0) && (!tracker.isEmpty()); i--) {
-				Thread.sleep(200);
+				Thread.sleep(20);
 			}
 
 			pojo = tracker.getService();
@@ -121,7 +121,7 @@ public class DisableComponentTests extends AbstractTestCase {
 		Configuration configurationA = null;
 
 		try {
-			configurationA = configurationAdmin.getConfiguration("osgi.cdi.cdi-itests.tb8", "?");
+			configurationA = configurationAdmin.getConfiguration("osgi.cdi.cdi.itests.tb8", "?");
 
 			Dictionary<String, Object> p1 = new Hashtable<>();
 			p1.put("singleComponentBean.enabled", false);
@@ -141,7 +141,7 @@ public class DisableComponentTests extends AbstractTestCase {
 
 			configurationA.update(p1);
 
-			for (int i = 10; (i > 0) && (tracker.isEmpty()); i--) {
+			for (int i = 20; (i > 0) && (tracker.isEmpty()); i--) {
 				Thread.sleep(20);
 			}
 
