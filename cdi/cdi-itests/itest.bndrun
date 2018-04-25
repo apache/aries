@@ -70,6 +70,6 @@
 	eclipse.log.enabled=false,\
 	logback.configurationFile=file:${.}/logback.xml,\
 	org.jboss.logging.provider=slf4j,\
-	org.osgi.service.http.port=8080,\
+	org.osgi.service.http.port=0,\
 	osgi.console.enable.builtin=false, \
 	osgi.console=
