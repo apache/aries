@@ -173,6 +173,11 @@ public class HttpTestCase extends AbstractTestCase {
 	private String getEndpoint() {
 		String[] endpoints = (String[])hsrReference.getProperty("osgi.http.endpoint");
 
+		if (endpoints == null || endpoints.length == 0) {
+			String port = (String)hsrReference.getProperty("org.osgi.service.http.port");
+			return "http://localhost:" + port;
+		}
+
 		return endpoints[0];
 	}
 
