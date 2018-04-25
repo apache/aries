@@ -231,7 +231,7 @@
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.annotation.bundle</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -249,7 +249,7 @@
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.cm</artifactId>
-			<version>1.6.0-SNAPSHOT</version>
+			<version>1.6.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -273,23 +273,17 @@
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.util.function</artifactId>
-			<version>1.1.0-SNAPSHOT</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.util.promise</artifactId>
-			<version>1.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.util.pushstream</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>runtime</scope>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>osgi.core</artifactId>
-			<version>7.0.0-SNAPSHOT</version>
+			<version>7.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -305,7 +299,7 @@
 			<id>my-local-repo</id>
 			<url>file://${project.basedir}/local-repo/</url>
 			<releases>
-				<enabled>false</enabled>
+				<enabled>true</enabled>
 				<checksumPolicy>ignore</checksumPolicy>
 			</releases>
 			<snapshots>
