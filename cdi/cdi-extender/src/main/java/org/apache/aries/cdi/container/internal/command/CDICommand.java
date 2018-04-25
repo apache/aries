@@ -50,7 +50,7 @@ public class CDICommand {
 			ContainerDTO containerDTO = _ccr.getContainerDTO(bundle);
 
 			if (containerDTO == null) {
-				f.format("No matching CDI bundles");
+				f.format(NO_BUNDLES);
 				return f.toString();
 			}
 
@@ -65,7 +65,7 @@ public class CDICommand {
 			Collection<ContainerDTO> containerDTOs = _ccr.getContainerDTOs(bundles);
 
 			if (containerDTOs.isEmpty()) {
-				f.format("No matching CDI bundles");
+				f.format(NO_BUNDLES);
 				return f.toString();
 			}
 
@@ -84,8 +84,8 @@ public class CDICommand {
 	}
 
 	private void list0(Formatter f, ContainerDTO containerDTO, boolean hasNext, boolean verbose) {
-		String curb = hasNext ? "├── " : "└── ";
-		String prefix = hasNext ? "│       " : "        ";
+		String curb = hasNext ? TLLS : CLLS;
+		String prefix = hasNext ? PSSSSSSS : SSSSSSSS;
 
 		f.format(
 			"%s%s[%s]%n",
@@ -95,7 +95,7 @@ public class CDICommand {
 
 		f.format(
 			"%s%sCOMPONENTS%n",
-			(hasNext ? "│   " : "    "),
+			(hasNext ? PSSS : SSSS),
 			curb);
 
 		Map<Boolean, List<ComponentTemplateDTO>> componentTemplateDTOs = containerDTO.template.components.stream().collect(
@@ -137,20 +137,20 @@ public class CDICommand {
 			f.format(
 				"%s%sNAME: %s%n",
 				prefix,
-				(hasNext ? "├── " : "└── "),
+				(hasNext ? TLLS : CLLS),
 				componentTemplateDTO.name);
 			f.format(
 				"%s%s%sTYPE: %s%n",
 				prefix,
-				(hasNext ? "│   " : "    "),
-				"├── ",
+				(hasNext ? PSSS : SSSS),
+				TLLS,
 				componentTemplateDTO.type);
 		}
 		else {
 			f.format(
 				"%s%sNAME: %s (%s%s)%n",
 				prefix,
-				(hasNext ? "├── " : "└── "),
+				(hasNext ? TLLS : CLLS),
 				componentTemplateDTO.name,
 				componentTemplateDTO.type,
 				factoryPid(configMap));
@@ -199,15 +199,15 @@ public class CDICommand {
 			f.format(
 				"%s%s%sBEANS: %s%n",
 				prefix,
-				(hasNext ? "│   " : "    "),
-				"├── ",
+				(hasNext ? PSSS : SSSS),
+				TLLS,
 				componentDTO.template.beans.toString());
 
 			f.format(
 				"%s%s%sCONFIGURATIONS%n",
 				prefix,
-				(hasNext ? "│   " : "    "),
-				"├── ");
+				(hasNext ? PSSS : SSSS),
+				TLLS);
 
 			for (Iterator<ConfigurationTemplateDTO> itr = componentDTO.template.configurations.iterator();itr.hasNext();) {
 				ConfigurationTemplateDTO conf = itr.next();
@@ -226,30 +226,30 @@ public class CDICommand {
 				f.format(
 					"%s%s%sPID: %s%n",
 					prefix,
-					(hasNext ? "│   │   " : "    │   "),
-					(itr.hasNext() ? "├── " : "└── "),
-					(configurationDTO != null ? configurationDTO.properties.get(Constants.SERVICE_PID) + "*" : conf.pid));
+					(hasNext ? PSSSPSSS : SSSSPSSS),
+					(itr.hasNext() ? TLLS : CLLS),
+					(configurationDTO != null ? configurationDTO.properties.get(Constants.SERVICE_PID) + STAR : conf.pid));
 				f.format(
 					"%s%s%sPOLICY: %s%n",
 					prefix,
-					(hasNext ? "│   │   " : "    │   "),
-					(itr.hasNext() ? "│   ├── " : "    ├── "),
+					(hasNext ? PSSSPSSS : SSSSPSSS),
+					(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
 					conf.policy);
 
 				if (conf.maximumCardinality == MaximumCardinality.MANY) {
 					f.format(
 						"%s%s%sFACTORY PID: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
 						conf.pid);
 				}
 
 				f.format(
 					"%s%s%sCOMPONENT CONFIGURATION: %s%n",
 					prefix,
-					(hasNext ? "│   │   " : "    │   "),
-					(itr.hasNext() ? "│   └── " : "    └── "),
+					(hasNext ? PSSSPSSS : SSSSPSSS),
+					(itr.hasNext() ? PSSSCLLS : SSSSCLLS),
 					conf.componentConfiguration);
 			}
 
@@ -257,8 +257,8 @@ public class CDICommand {
 				f.format(
 					"%s%s%sCOMPONENT PROPERTIES*%n",
 					prefix,
-					(hasNext ? "│   " : "    "),
-					"├── ");
+					(hasNext ? PSSS : SSSS),
+					TLLS);
 
 				for (Iterator<String> itr = instanceDTO.properties.keySet().iterator(); itr.hasNext();) {
 					String key = itr.next();
@@ -266,8 +266,8 @@ public class CDICommand {
 					f.format(
 						"%s%s%s%s=%s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "├── " : "└── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? TLLS : CLLS),
 						key,
 						instanceDTO.properties.get(key));
 				}
@@ -277,8 +277,8 @@ public class CDICommand {
 				f.format(
 					"%s%s%sREFERENCES%n",
 					prefix,
-					(hasNext ? "│   " : "    "),
-					"├── ");
+					(hasNext ? PSSS : SSSS),
+					TLLS);
 
 				for (Iterator<ReferenceTemplateDTO> itr = componentDTO.template.references.iterator(); itr.hasNext();) {
 					ReferenceTemplateDTO dto = itr.next();
@@ -300,53 +300,53 @@ public class CDICommand {
 					f.format(
 						"%s%s%sNAME: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "├── " : "└── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? TLLS : CLLS),
 						dto.name);
 					f.format(
 						"%s%s%sSERVICE TYPE: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
 						dto.serviceType);
 					f.format(
 						"%s%s%sTARGET FILTER: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "│   ├── " : "    ├── "),
-						(referenceDTO != null ? referenceDTO.targetFilter + "*" : dto.targetFilter));
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
+						(referenceDTO != null ? referenceDTO.targetFilter + STAR : dto.targetFilter));
 					f.format(
 						"%s%s%sMAX CARDINALITY: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
 						dto.maximumCardinality);
 					f.format(
 						"%s%s%sMIN CARDINALITY: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "│   ├── " : "    ├── "),
-						(referenceDTO != null ? referenceDTO.minimumCardinality + "*" : dto.minimumCardinality));
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
+						(referenceDTO != null ? referenceDTO.minimumCardinality + STAR : dto.minimumCardinality));
 					f.format(
 						"%s%s%sPOLICY: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
 						dto.policy);
 					f.format(
 						"%s%s%s%sPOLICY OPTION: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "│   " : "    "),
-						(referenceDTO != null ? "├── " : "└── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? PSSS : SSSS),
+						(referenceDTO != null ? TLLS : CLLS),
 						dto.policyOption);
 
 					if (referenceDTO != null) {
 						f.format(
 							"%s%s%sMATCHES: %s*%n",
 							prefix,
-							(hasNext ? "│   │   " : "    │   "),
-							(itr.hasNext() ? "│   └── " : "    └── "),
+							(hasNext ? PSSSPSSS : SSSSPSSS),
+							(itr.hasNext() ? PSSSCLLS : SSSSCLLS),
 							referenceDTO.matches);
 					}
 				}
@@ -356,8 +356,8 @@ public class CDICommand {
 				f.format(
 					"%s%s%sACTIVATIONS%n",
 					prefix,
-					(hasNext ? "│   " : "    "),
-					"├── ");
+					(hasNext ? PSSS : SSSS),
+					TLLS);
 
 				for (Iterator<ActivationTemplateDTO> itr = componentDTO.template.activations.iterator(); itr.hasNext();) {
 					ActivationTemplateDTO dto = itr.next();
@@ -375,24 +375,24 @@ public class CDICommand {
 					f.format(
 						"%s%s%sSERVICE TYPES: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "├── " : "└── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? TLLS : CLLS),
 						dto.serviceClasses);
 					f.format(
 						"%s%s%s%sSERVICE SCOPE: %s%n",
 						prefix,
-						(hasNext ? "│   │   " : "    │   "),
-						(itr.hasNext() ? "│   " : "    "),
-						(activationDTO != null ? "├── " : "└── "),
+						(hasNext ? PSSSPSSS : SSSSPSSS),
+						(itr.hasNext() ? PSSS : SSSS),
+						(activationDTO != null ? TLLS : CLLS),
 						dto.scope.toString().toLowerCase());
 
 					if (activationDTO != null) {
 						f.format(
 							"%s%s%sSERVICE REFERENCE: %s%n",
 							prefix,
-							(hasNext ? "│   │   " : "    │   "),
-							(itr.hasNext() ? "│   └── " : "    └── "),
-							activationDTO.service + "*");
+							(hasNext ? PSSSPSSS : SSSSPSSS),
+							(itr.hasNext() ? PSSSCLLS : SSSSCLLS),
+							activationDTO.service + STAR);
 					}
 				}
 			}
@@ -400,8 +400,8 @@ public class CDICommand {
 			f.format(
 				"%s%s%sSTATE: %s*%n",
 				prefix,
-				(hasNext ? "│   " : "    "),
-				(hasNext2 ? "├── " : "└── "),
+				(hasNext ? PSSS : SSSS),
+				(hasNext2 ? TLLS : CLLS),
 				state(componentDTO));
 
 			return;
@@ -410,8 +410,8 @@ public class CDICommand {
 		f.format(
 			"%s%s%sSTATE: %s %s%n",
 			prefix,
-			(hasNext ? "│   " : "    "),
-			(hasNext2 ? "├── " : "└── "),
+			(hasNext ? PSSS : SSSS),
+			(hasNext2 ? TLLS : CLLS),
 			state(componentDTO),
 			pids);
 	}
@@ -429,14 +429,14 @@ public class CDICommand {
 		return configMap.values().stream().flatMap(v -> v.stream()).map(c -> c.pid).map(
 			c -> {
 				String pid = resolvedPids.stream().filter(
-					rp -> rp.startsWith(c + "~") || rp.startsWith(c + ".")
+					rp -> rp.startsWith(c + '~') || rp.startsWith(c + '.')
 				).findFirst().orElse(null);
 
 				if (pid != null) {
-					return pid + "*";
+					return pid + STAR;
 				}
 				else if (resolvedPids.stream().anyMatch(rp -> rp.equals(c))) {
-					return c + "*";
+					return c + STAR;
 				}
 				return c;
 			}
@@ -455,22 +455,43 @@ public class CDICommand {
 		return configMap.get(Boolean.TRUE).stream().map(
 			c -> c.pid
 		).findFirst().map(
-			c -> "=" + c
-		).orElse("");
+			c -> EQUAL + c
+		).orElse(BLANK);
 	}
 
 	private Object state(ComponentDTO componentDTO) {
 		if (componentDTO == null) {
-			return "null";
+			return NULL;
 		}
 		else if (!componentDTO.enabled) {
-			return "disabled";
+			return DISABLED;
 		}
 		else if (componentDTO.instances.size() == 0) {
-			return "waiting";
+			return WAITING;
 		}
-		return "active";
+		return ACTIVE;
 	}
+
+	private static final String BLANK = "";
+	private static final String ACTIVE = "active";
+	private static final String DISABLED = "disabled";
+	private static final String EQUAL = "=";
+	private static final String NULL = "null";
+	private static final String STAR = "*";
+	private static final String WAITING = "waiting";
+	private static final String CLLS = "└── ";
+	private static final String PSSS = "│   ";
+	private static final String SSSS = "    ";
+	private static final String TLLS = "├── ";
+	private static final String SSSSSSSS = "        ";
+	private static final String PSSSSSSS = "│       ";
+	private static final String PSSSPSSS = "│   │   ";
+	private static final String PSSSTLLS = "│   ├── ";
+	private static final String SSSSTLLS = "    ├── ";
+	private static final String SSSSPSSS = "    │   ";
+	private static final String SSSSCLLS = "    └── ";
+	private static final String PSSSCLLS = "│   └── ";
+	private static final String NO_BUNDLES = "No matching CDI bundles";
 
 	private final CCR _ccr;
 
