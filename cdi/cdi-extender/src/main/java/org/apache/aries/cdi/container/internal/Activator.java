@@ -48,7 +48,6 @@ import org.osgi.annotation.bundle.Header;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleRequirement;
@@ -75,18 +74,19 @@ public class Activator extends AbstractExtender {
 
 	public Activator() {
 		setSynchronous(true);
-
-		_logs = new Logs.Builder(FrameworkUtil.getBundle(getClass()).getBundleContext()).build();
-		_log = _logs.getLogger(getClass());
-		_ccr = new CCR(_promiseFactory, _logs);
-		_command = new CDICommand(_ccr);
 	}
 
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
+		_logs = new Logs.Builder(bundleContext).build();
+		_log = _logs.getLogger(getClass());
+
 		if (_log.isDebugEnabled()) {
 			_log.debug("CCR starting {}", bundleContext.getBundle());
 		}
+
+		_ccr = new CCR(_promiseFactory, _logs);
+		_command = new CDICommand(_ccr);
 
 		_bundleContext = bundleContext;
 
@@ -231,13 +231,13 @@ public class Activator extends AbstractExtender {
 
 
 	private BundleContext _bundleContext;
-	private final CCR _ccr;
+	private volatile CCR _ccr;
 	private final ChangeCount _ccrChangeCount = new ChangeCount();
 	private ServiceRegistration<CDIComponentRuntime> _ccrRegistration;
-	private final CDICommand _command;
+	private volatile CDICommand _command;
 	private ServiceRegistration<?> _commandRegistration;
-	private final Logs _logs;
-	private final Logger _log;
+	private volatile Logs _logs;
+	private volatile Logger _log;
 	private final PromiseFactory _promiseFactory = new PromiseFactory(Executors.newFixedThreadPool(1));
 
 	private class ChangeObserverFactory implements Observer, ServiceFactory<CDIComponentRuntime> {

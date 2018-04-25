@@ -14,7 +14,7 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -22,12 +22,13 @@ import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.container.Op;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
-import org.osgi.service.cdi.MaximumCardinality;
+import org.apache.aries.cdi.container.internal.util.Throw;
 import org.osgi.service.cdi.runtime.dto.ComponentDTO;
 import org.osgi.service.cdi.runtime.dto.ComponentInstanceDTO;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
 import org.osgi.service.log.Logger;
+import org.osgi.util.promise.Promise;
 
 public class FactoryComponent extends Component {
 
@@ -47,52 +48,38 @@ public class FactoryComponent extends Component {
 	protected FactoryComponent(Builder builder) {
 		super(builder);
 
-		_log = containerState.containerLogs().getLogger(getClass());
-
 		_template = builder._templateDTO;
-
-		_snapshot = new ComponentDTO();
-		_snapshot.instances = new CopyOnWriteArrayList<>();
-		_snapshot.template = _template;
-
-		containerState.containerDTO().components.add(_snapshot);
-
-		configurationTemplates().stream().filter(
-			t -> t.maximumCardinality == MaximumCardinality.MANY
-		).forEach(
-			t -> {
-				containerState.findConfigs(t.pid, true).ifPresent(
-					arr -> Arrays.stream(arr).forEach(
-						c -> {
-							ExtendedComponentInstanceDTO instanceDTO = new ExtendedComponentInstanceDTO(containerState, builder._activatorBuilder);
-							instanceDTO.activations = new CopyOnWriteArrayList<>();
-							instanceDTO.configurations = new CopyOnWriteArrayList<>();
-							instanceDTO.pid = c.getPid();
-							instanceDTO.properties = null;
-							instanceDTO.references = new CopyOnWriteArrayList<>();
-							instanceDTO.template = builder._templateDTO;
-
-							_snapshot.instances.add(instanceDTO);
-						}
-					)
-				);
-			}
-		);
+		_log = containerState.containerLogs().getLogger(getClass());
 	}
 
 	@Override
 	public boolean close() {
-		_snapshot.instances.stream().map(
-			instance -> (ExtendedComponentInstanceDTO)instance
-		).forEach(
+		if (_snapshot == null) {
+			return true;
+		}
+
+		_snapshot.instances.removeIf(
 			instance -> {
-				submit(instance.closeOp(), instance::close).onFailure(
+				ExtendedComponentInstanceDTO einstance = (ExtendedComponentInstanceDTO)instance;
+
+				Promise<Boolean> result = submit(einstance.closeOp(), einstance::close).onFailure(
 					f -> {
-						_log.error(l -> l.error("CCR Error in factory component close for {} on {}", instance.ident(), containerState.bundle()));
+						_log.error(l -> l.error("CCR Error in factory component close for {} on {}", einstance.ident(), bundle(), f));
 					}
 				);
+
+				try {
+					return result.getValue();
+				}
+				catch (InvocationTargetException | InterruptedException e) {
+					return Throw.exception(e);
+				}
 			}
 		);
+
+		containerState.containerDTO().components.remove(_snapshot);
+
+		_snapshot = null;
 
 		return true;
 	}
@@ -119,21 +106,11 @@ public class FactoryComponent extends Component {
 
 	@Override
 	public boolean open() {
-		if (!snapshot().enabled || !containerState.containerDTO().components.get(0).enabled) {
-			return false;
-		}
+		_snapshot = new ComponentDTO();
+		_snapshot.instances = new CopyOnWriteArrayList<>();
+		_snapshot.template = _template;
 
-		_snapshot.instances.stream().map(
-			instance -> (ExtendedComponentInstanceDTO)instance
-		).forEach(
-			instance -> {
-				submit(instance.openOp(), instance::open).onFailure(
-					f -> {
-						_log.error(l -> l.error("CCR Error in factory component open for {} on {}", instance.ident(), containerState.bundle()));
-					}
-				);
-			}
-		);
+		containerState.containerDTO().components.add(_snapshot);
 
 		return true;
 	}
@@ -149,7 +126,7 @@ public class FactoryComponent extends Component {
 	}
 
 	private final Logger _log;
-	private final ComponentDTO _snapshot;
+	private volatile ComponentDTO _snapshot;
 	private final ComponentTemplateDTO _template;
 
 }

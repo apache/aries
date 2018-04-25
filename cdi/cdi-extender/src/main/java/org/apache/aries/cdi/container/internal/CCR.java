@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.aries.cdi.container.internal.container.ContainerState;
-import org.apache.aries.cdi.container.internal.util.Conversions;
+import org.apache.aries.cdi.container.internal.util.DTOs;
 import org.apache.aries.cdi.container.internal.util.Logs;
 import org.apache.aries.cdi.container.internal.util.Throw;
 import org.osgi.framework.Bundle;
@@ -52,14 +52,14 @@ public class CCR implements CDIComponentRuntime {
 				).map(
 					b -> _states.get(b)
 				).map(
-					cs -> Conversions.convert(cs.containerDTO()).to(ContainerDTO.class)
+					cs -> DTOs.copy(cs.containerDTO(), true)
 				).collect(Collectors.toList())
 			);
 		}
 
 		return call(
 			() -> _states.values().stream().map(
-				cs -> Conversions.convert(cs.containerDTO()).to(ContainerDTO.class)
+				cs -> DTOs.copy(cs.containerDTO(), true)
 			).collect(Collectors.toList())
 		);
 	}
@@ -68,7 +68,7 @@ public class CCR implements CDIComponentRuntime {
 	public ContainerDTO getContainerDTO(Bundle bundle) {
 		return call(
 			() -> Optional.ofNullable(_states.get(bundle)).map(
-				cs -> Conversions.convert(cs.containerDTO()).to(ContainerDTO.class)
+				cs -> DTOs.copy(cs.containerDTO(), true)
 			).orElse(null)
 		);
 	}
@@ -86,7 +86,7 @@ public class CCR implements CDIComponentRuntime {
 	public ContainerTemplateDTO getContainerTemplateDTO(Bundle bundle) {
 		return call(
 			() -> Optional.ofNullable(_states.get(bundle)).map(
-				cs -> Conversions.convert(cs.containerDTO().template).to(ContainerTemplateDTO.class)
+				cs -> DTOs.copy(cs.containerDTO().template, true)
 			).orElse(null)
 		);
 	}
