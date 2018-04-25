@@ -10,6 +10,7 @@
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.extension.jndi)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.itests)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.jndi.core)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.fileinstall)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)'
 
@@ -42,6 +43,7 @@
 	org.apache.aries.util;version='[1.0.0,1.0.1)',\
 	org.apache.commons.logging;version='[1.2.0,1.2.1)',\
 	org.apache.felix.configadmin;version='[1.9.0,1.9.1)',\
+	org.apache.felix.fileinstall;version='[3.6.0,3.6.1)',\
 	org.apache.felix.gogo.command;version='[1.0.2,1.0.3)',\
 	org.apache.felix.gogo.runtime;version='[1.0.2,1.0.3)',\
 	org.apache.felix.gogo.shell;version='[1.0.0,1.0.1)',\
