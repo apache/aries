@@ -67,7 +67,7 @@ public class ConfigurationListenerTest extends BaseCDIBundleTest {
 
 		Promise<Boolean> p0 = containerState.addCallback(
 			(CheckedCallback<Boolean, Boolean>) op -> {
-				return op.mode == Op.Mode.OPEN && op.type == Op.Type.CONTAINER_COMPONENT;
+				return op.mode == Op.Mode.OPEN && op.type == Op.Type.CONTAINER_INSTANCE;
 			}
 		);
 
@@ -125,7 +125,7 @@ public class ConfigurationListenerTest extends BaseCDIBundleTest {
 		listener.get().configurationEvent(
 			new ConfigurationEvent(caTracker.getServiceReference(), ConfigurationEvent.CM_UPDATED, null, pid));
 
-		p2.timeout(200).getValue();
+		p2.timeout(200).getFailure();
 
 		assertNotNull(containerState.containerDTO().components.get(0).instances.get(0).properties);
 		assertEquals("bar", containerState.containerDTO().components.get(0).instances.get(0).properties.get("foo"));
@@ -139,7 +139,7 @@ public class ConfigurationListenerTest extends BaseCDIBundleTest {
 		listener.get().configurationEvent(
 			new ConfigurationEvent(caTracker.getServiceReference(), ConfigurationEvent.CM_UPDATED, null, "foo.config"));
 
-		p3.timeout(200).getValue();
+		p3.timeout(200).getFailure();
 
 		Map<String, Object> properties = containerState.containerDTO().components.get(0).instances.get(0).properties;
 		assertNotNull(properties);

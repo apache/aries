@@ -14,11 +14,30 @@
 
 package org.apache.aries.cdi.container.internal.command;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.Collection;
+import java.util.Formatter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.apache.aries.cdi.container.internal.CCR;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
+import org.osgi.service.cdi.ComponentType;
+import org.osgi.service.cdi.MaximumCardinality;
+import org.osgi.service.cdi.runtime.dto.ActivationDTO;
+import org.osgi.service.cdi.runtime.dto.ComponentDTO;
+import org.osgi.service.cdi.runtime.dto.ComponentInstanceDTO;
+import org.osgi.service.cdi.runtime.dto.ConfigurationDTO;
 import org.osgi.service.cdi.runtime.dto.ContainerDTO;
+import org.osgi.service.cdi.runtime.dto.ReferenceDTO;
+import org.osgi.service.cdi.runtime.dto.template.ActivationTemplateDTO;
+import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
+import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
+import org.osgi.service.cdi.runtime.dto.template.ReferenceTemplateDTO;
 
 public class CDICommand {
 
@@ -26,105 +45,431 @@ public class CDICommand {
 		_ccr = ccr;
 	}
 
-	public Collection<ContainerDTO> list() {
-		return _ccr.getContainerDTOs();
-	}
-
-	public ContainerDTO info(Bundle bundle) {
-		return _ccr.getContainerDTO(bundle);
-		/*
+	public String info(Bundle bundle) {
 		try (Formatter f = new Formatter()) {
-			ContainerState containerState = _states.get(bundle);
+			ContainerDTO containerDTO = _ccr.getContainerDTO(bundle);
 
-			if (containerState == null) {
-				f.format("No CDI Bundle found matching {}", bundle);
-
+			if (containerDTO == null) {
+				f.format("No matching CDI bundles");
 				return f.toString();
 			}
 
-			f.format("[%s]%n", containerState.id());
+			list0(f, containerDTO, false, true);
 
-			List<ExtensionDependency> extensionDependencies = containerState.extensionDependencies();
+			return f.toString();
+		}
+	}
 
-			if (!extensionDependencies.isEmpty()) {
-				f.format("  [EXTENSIONS]");
+	public String list(Bundle... bundles) {
+		try (Formatter f = new Formatter()) {
+			Collection<ContainerDTO> containerDTOs = _ccr.getContainerDTOs(bundles);
 
-				for (ExtensionDependency extensionDependency : extensionDependencies) {
-					f.format("    Extension: %s%s%n", extensionDependency.toString(), " ???is this resolved???");
-				}
+			if (containerDTOs.isEmpty()) {
+				f.format("No matching CDI bundles");
+				return f.toString();
 			}
 
-			BeansModel beansModel = containerState.beansModel();
-			Collection<ComponentModel> componentModels = beansModel.getComponentModels();
+			List<ContainerDTO> containerDTOList = containerDTOs.stream().sorted(
+				(a, b) -> Long.compare(a.bundle.id,b.bundle.id)
+			).collect(toList());
 
-			if (!componentModels.isEmpty()) {
-				for (ComponentModel componentModel : componentModels) {
-					ServiceDeclaration serviceDeclaration = containerState.serviceComponents().get(componentModel);
+			for (Iterator<ContainerDTO> itr = containerDTOList.iterator(); itr.hasNext();) {
+				ContainerDTO containerDTO = itr.next();
 
-					f.format("[COMPONENT]%n");
-					f.format(
-						"  Name: %s%n    BeanClass: %s%n    ServiceScope: %s%n    Provides: %s%n",
-						componentModel.getName(),
-						componentModel.getBeanClass().getName(),
-						componentModel.getServiceScope(),
-						serviceDeclaration != null ? Arrays.toString(serviceDeclaration.getClassNames()): "not yet ready!");
-
-					f.format("  [CONFIGURATIONS]%n");
-
-					Map<String, ConfigurationCallback> configurationCallbacks = containerState.configurationCallbacks().get(componentModel);
-
-					for (Entry<String, ConfigurationCallback> entry : configurationCallbacks.entrySet()) {
-						f.format(
-							"    PID: %s%n      Policy: %s%n      Resolved: %s%n",
-							entry.getKey(),
-							entry.getValue().policy(),
-							entry.getValue().resolved() ? "YES" : "NO");
-					}
-
-					if (serviceDeclaration != null) {
-						Dictionary<String, ?> configuration = serviceDeclaration.getServiceProperties();
-
-						if (!configuration.isEmpty()) {
-							f.format("    Properties:%n");
-
-							List<String> keys = Collections.list(configuration.keys());
-
-							Collections.sort(keys);
-
-							for (String key : keys) {
-								String value = Conversions.toString(configuration.get(key));
-
-								f.format("      %s = %s%n", key, value);
-							}
-						}
-					}
-
-					List<ReferenceModel> references = componentModel.getReferences();
-
-					if (!references.isEmpty()) {
-						f.format("  [REFERENCES]%n");
-
-						Map<String, ReferenceCallback> referenceCallbacks = containerState.referenceCallbacks().get(componentModel);
-
-						for (ReferenceModel referenceModel : references) {
-							f.format(
-								"    Name: %s%n      Service: %s%n      Target: %s%n      Cardinality: %s%n      Policy: %s%n      Policy Option: %s%n      Scope: %s%n      Resolved: %s%n",
-								referenceModel.getName(),
-								referenceModel.getServiceClass().getName(),
-								referenceModel.getTarget(),
-								referenceModel.getCardinality(),
-								referenceModel.getPolicy(),
-								referenceModel.getPolicyOption(),
-								referenceModel.getScope(),
-								referenceCallbacks.get(referenceModel.getName()).resolved() ? "YES" : "NO");
-						}
-					}
-				}
+				list0(f, containerDTO, itr.hasNext(), false);
 			}
 
 			return f.toString();
 		}
-		 */
+	}
+
+	private void list0(Formatter f, ContainerDTO containerDTO, boolean hasNext, boolean verbose) {
+		String curb = hasNext ? "├── " : "└── ";
+		String prefix = hasNext ? "│       " : "        ";
+
+		f.format(
+			"%s%s[%s]%n",
+			curb,
+			containerDTO.bundle.symbolicName,
+			containerDTO.bundle.id);
+
+		f.format(
+			"%s%sCOMPONENTS%n",
+			(hasNext ? "│   " : "    "),
+			curb);
+
+		Map<Boolean, List<ComponentTemplateDTO>> componentTemplateDTOs = containerDTO.template.components.stream().collect(
+			partitioningBy(c -> c.type == ComponentType.CONTAINER)
+		);
+
+		ComponentTemplateDTO componentTemplateDTO = componentTemplateDTOs.get(Boolean.TRUE).get(0);
+
+		List<ComponentTemplateDTO> singleAndFactory = componentTemplateDTOs.get(Boolean.FALSE);
+
+		list0(
+			f,
+			containerDTO,
+			componentTemplateDTO,
+			prefix,
+			true,
+			!singleAndFactory.isEmpty(),
+			verbose);
+
+		for (Iterator<ComponentTemplateDTO> itr2 = singleAndFactory.iterator(); itr2.hasNext();) {
+			componentTemplateDTO = itr2.next();
+
+			list0(
+				f,
+				containerDTO,
+				componentTemplateDTO,
+				prefix,
+				itr2.hasNext(),
+				false, verbose);
+		}
+	}
+
+	private void list0(
+		Formatter f, ContainerDTO containerDTO, ComponentTemplateDTO componentTemplateDTO, String prefix,
+		boolean hasNext, boolean curb, boolean verbose) {
+		Map<Boolean, List<ConfigurationTemplateDTO>> configMap = configMap(componentTemplateDTO);
+
+		if (verbose) {
+			f.format(
+				"%s%sNAME: %s%n",
+				prefix,
+				(hasNext ? "├── " : "└── "),
+				componentTemplateDTO.name);
+			f.format(
+				"%s%s%sTYPE: %s%n",
+				prefix,
+				(hasNext ? "│   " : "    "),
+				"├── ",
+				componentTemplateDTO.type);
+		}
+		else {
+			f.format(
+				"%s%sNAME: %s (%s%s)%n",
+				prefix,
+				(hasNext ? "├── " : "└── "),
+				componentTemplateDTO.name,
+				componentTemplateDTO.type,
+				factoryPid(configMap));
+		}
+
+		ComponentDTO componentDTO = containerDTO.components.stream().filter(
+			c -> c.template.name.equals(componentTemplateDTO.name)
+		).findFirst().orElse(null);
+
+		if ((componentDTO != null) && !componentDTO.instances.isEmpty()) {
+			Iterator<ComponentInstanceDTO> itr3 = componentDTO.instances.iterator();
+
+			for (;itr3.hasNext();) {
+				ComponentInstanceDTO instanceDTO = itr3.next();
+
+				formatInstance(
+					f,
+					prefix,
+					componentDTO,
+					instanceDTO,
+					pids(instanceDTO, configMap),
+					hasNext,
+					itr3.hasNext(),
+					verbose);
+			}
+		}
+		else {
+			formatInstance(
+				f,
+				prefix,
+				componentDTO,
+				null,
+				configMap.get(Boolean.FALSE).stream().map(c -> c.pid).collect(toList()).toString(),
+				hasNext,
+				false,
+				verbose);
+		}
+	}
+
+	private void formatInstance(
+		Formatter f, String prefix, ComponentDTO componentDTO,
+		ComponentInstanceDTO instanceDTO, String pids,
+		boolean hasNext, boolean hasNext2, boolean verbose) {
+
+		if (verbose) {
+			f.format(
+				"%s%s%sBEANS: %s%n",
+				prefix,
+				(hasNext ? "│   " : "    "),
+				"├── ",
+				componentDTO.template.beans.toString());
+
+			f.format(
+				"%s%s%sCONFIGURATIONS%n",
+				prefix,
+				(hasNext ? "│   " : "    "),
+				"├── ");
+
+			for (Iterator<ConfigurationTemplateDTO> itr = componentDTO.template.configurations.iterator();itr.hasNext();) {
+				ConfigurationTemplateDTO conf = itr.next();
+
+				ConfigurationDTO configurationDTO = null;
+
+				if (instanceDTO != null) {
+					configurationDTO = instanceDTO.configurations.stream().filter(
+						c -> c.template.componentConfiguration == conf.componentConfiguration &&
+							c.template.maximumCardinality == conf.maximumCardinality &&
+							c.template.pid == conf.pid &&
+							c.template.policy == conf.policy
+					).findFirst().orElse(null);
+				}
+
+				f.format(
+					"%s%s%sPID: %s%n",
+					prefix,
+					(hasNext ? "│   │   " : "    │   "),
+					(itr.hasNext() ? "├── " : "└── "),
+					(configurationDTO != null ? configurationDTO.properties.get(Constants.SERVICE_PID) + "*" : conf.pid));
+				f.format(
+					"%s%s%sPOLICY: %s%n",
+					prefix,
+					(hasNext ? "│   │   " : "    │   "),
+					(itr.hasNext() ? "│   ├── " : "    ├── "),
+					conf.policy);
+
+				if (conf.maximumCardinality == MaximumCardinality.MANY) {
+					f.format(
+						"%s%s%sFACTORY PID: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						conf.pid);
+				}
+
+				f.format(
+					"%s%s%sCOMPONENT CONFIGURATION: %s%n",
+					prefix,
+					(hasNext ? "│   │   " : "    │   "),
+					(itr.hasNext() ? "│   └── " : "    └── "),
+					conf.componentConfiguration);
+			}
+
+			if (instanceDTO != null) {
+				f.format(
+					"%s%s%sCOMPONENT PROPERTIES*%n",
+					prefix,
+					(hasNext ? "│   " : "    "),
+					"├── ");
+
+				for (Iterator<String> itr = instanceDTO.properties.keySet().iterator(); itr.hasNext();) {
+					String key = itr.next();
+
+					f.format(
+						"%s%s%s%s=%s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "├── " : "└── "),
+						key,
+						instanceDTO.properties.get(key));
+				}
+			}
+
+			if (!componentDTO.template.references.isEmpty()) {
+				f.format(
+					"%s%s%sREFERENCES%n",
+					prefix,
+					(hasNext ? "│   " : "    "),
+					"├── ");
+
+				for (Iterator<ReferenceTemplateDTO> itr = componentDTO.template.references.iterator(); itr.hasNext();) {
+					ReferenceTemplateDTO dto = itr.next();
+
+					ReferenceDTO referenceDTO = null;
+
+					if (instanceDTO != null) {
+						referenceDTO = instanceDTO.references.stream().filter(
+							r -> r.template.maximumCardinality == dto.maximumCardinality &&
+								r.template.minimumCardinality == dto.minimumCardinality &&
+								r.template.name == dto.name &&
+								r.template.policy == dto.policy &&
+								r.template.policyOption == dto.policyOption &&
+								r.template.serviceType == dto.serviceType &&
+								r.template.targetFilter == dto.targetFilter
+						).findFirst().orElse(null);
+					}
+
+					f.format(
+						"%s%s%sNAME: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "├── " : "└── "),
+						dto.name);
+					f.format(
+						"%s%s%sSERVICE TYPE: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						dto.serviceType);
+					f.format(
+						"%s%s%sTARGET FILTER: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						(referenceDTO != null ? referenceDTO.targetFilter + "*" : dto.targetFilter));
+					f.format(
+						"%s%s%sMAX CARDINALITY: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						dto.maximumCardinality);
+					f.format(
+						"%s%s%sMIN CARDINALITY: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						(referenceDTO != null ? referenceDTO.minimumCardinality + "*" : dto.minimumCardinality));
+					f.format(
+						"%s%s%sPOLICY: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "│   ├── " : "    ├── "),
+						dto.policy);
+					f.format(
+						"%s%s%s%sPOLICY OPTION: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "│   " : "    "),
+						(referenceDTO != null ? "├── " : "└── "),
+						dto.policyOption);
+
+					if (referenceDTO != null) {
+						f.format(
+							"%s%s%sMATCHES: %s*%n",
+							prefix,
+							(hasNext ? "│   │   " : "    │   "),
+							(itr.hasNext() ? "│   └── " : "    └── "),
+							referenceDTO.matches);
+					}
+				}
+			}
+
+			if (!componentDTO.template.activations.isEmpty()) {
+				f.format(
+					"%s%s%sACTIVATIONS%n",
+					prefix,
+					(hasNext ? "│   " : "    "),
+					"├── ");
+
+				for (Iterator<ActivationTemplateDTO> itr = componentDTO.template.activations.iterator(); itr.hasNext();) {
+					ActivationTemplateDTO dto = itr.next();
+
+					ActivationDTO activationDTO = null;
+
+					if (instanceDTO != null) {
+						activationDTO = instanceDTO.activations.stream().filter(
+							a -> a.template.properties.equals(dto.properties) &&
+								a.template.scope == dto.scope &&
+								a.template.serviceClasses.equals(dto.serviceClasses)
+						).findFirst().orElse(null);
+					}
+
+					f.format(
+						"%s%s%sSERVICE TYPES: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "├── " : "└── "),
+						dto.serviceClasses);
+					f.format(
+						"%s%s%s%sSERVICE SCOPE: %s%n",
+						prefix,
+						(hasNext ? "│   │   " : "    │   "),
+						(itr.hasNext() ? "│   " : "    "),
+						(activationDTO != null ? "├── " : "└── "),
+						dto.scope.toString().toLowerCase());
+
+					if (activationDTO != null) {
+						f.format(
+							"%s%s%sSERVICE REFERENCE: %s%n",
+							prefix,
+							(hasNext ? "│   │   " : "    │   "),
+							(itr.hasNext() ? "│   └── " : "    └── "),
+							activationDTO.service + "*");
+					}
+				}
+			}
+
+			f.format(
+				"%s%s%sSTATE: %s*%n",
+				prefix,
+				(hasNext ? "│   " : "    "),
+				(hasNext2 ? "├── " : "└── "),
+				state(componentDTO));
+
+			return;
+		}
+
+		f.format(
+			"%s%s%sSTATE: %s %s%n",
+			prefix,
+			(hasNext ? "│   " : "    "),
+			(hasNext2 ? "├── " : "└── "),
+			state(componentDTO),
+			pids);
+	}
+
+	private String pids(
+		ComponentInstanceDTO instanceDTO,
+		Map<Boolean, List<ConfigurationTemplateDTO>> configMap) {
+
+		List<String> resolvedPids = instanceDTO.configurations.stream().map(
+			c -> c.properties
+		).filter(Objects::nonNull).map(
+			p -> (String)p.get(Constants.SERVICE_PID)
+		).collect(toList());
+
+		return configMap.values().stream().flatMap(v -> v.stream()).map(c -> c.pid).map(
+			c -> {
+				String pid = resolvedPids.stream().filter(
+					rp -> rp.startsWith(c + "~") || rp.startsWith(c + ".")
+				).findFirst().orElse(null);
+
+				if (pid != null) {
+					return pid + "*";
+				}
+				else if (resolvedPids.stream().anyMatch(rp -> rp.equals(c))) {
+					return c + "*";
+				}
+				return c;
+			}
+		).collect(toList()).toString();
+	}
+
+	private Map<Boolean, List<ConfigurationTemplateDTO>> configMap(ComponentTemplateDTO componentTemplateDTO) {
+		return componentTemplateDTO.configurations.stream().filter(
+			c -> c.pid != null
+		).collect(
+			partitioningBy(c -> c.maximumCardinality == MaximumCardinality.MANY)
+		);
+	}
+
+	private String factoryPid(Map<Boolean, List<ConfigurationTemplateDTO>> configMap) {
+		return configMap.get(Boolean.TRUE).stream().map(
+			c -> c.pid
+		).findFirst().map(
+			c -> "=" + c
+		).orElse("");
+	}
+
+	private Object state(ComponentDTO componentDTO) {
+		if (componentDTO == null) {
+			return "null";
+		}
+		else if (!componentDTO.enabled) {
+			return "disabled";
+		}
+		else if (componentDTO.instances.size() == 0) {
+			return "waiting";
+		}
+		return "active";
 	}
 
 	private final CCR _ccr;

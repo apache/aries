@@ -55,11 +55,7 @@ public class CDIBundle extends Phase implements Extension {
 
 	@Override
 	public void destroy() throws Exception {
-		submit(closeOp(), this::close).onFailure(
-			f -> {
-				_log.error(l -> l.error("CCR Error in closing cdi bundle {}", containerState.bundle(), f));
-			}
-		);
+		close();
 	}
 
 	@Override
@@ -68,14 +64,12 @@ public class CDIBundle extends Phase implements Extension {
 			next -> {
 				_ccr.add(containerState.bundle(), containerState);
 
-				submit(next.openOp(), next::open).then(
-					null,
+				submit(next.openOp(), next::open).onFailure(
 					f -> {
-						_log.error(l -> l.error("CCR Error in cdibundle OPEN on {}", bundle(), f.getFailure()));
+						_log.error(l -> l.error("CCR Error in cdibundle OPEN on {}", bundle(), f));
 
-						error(f.getFailure());
+						error(f);
 					}
-
 				);
 
 				return true;
@@ -90,13 +84,8 @@ public class CDIBundle extends Phase implements Extension {
 
 	@Override
 	public void start() throws Exception {
-		submit(openOp(), this::open).onFailure(
-			f -> {
-				_log.error(l -> l.error("CCR Error in starting cdi bundle {}", containerState.bundle(), f));
-			}
-		);
+		open();
 	}
-
 
 	private final CCR _ccr;
 	private final Logger _log;

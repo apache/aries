@@ -17,10 +17,8 @@ package org.apache.aries.cdi.container.internal.container;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
@@ -32,8 +30,8 @@ import org.apache.aries.cdi.container.internal.util.Predicates;
 import org.apache.aries.cdi.container.internal.util.Throw;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.MaximumCardinality;
-import org.osgi.service.cdi.runtime.dto.ComponentInstanceDTO;
 import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
 import org.osgi.service.cm.ConfigurationEvent;
 import org.osgi.service.log.Logger;
@@ -136,43 +134,49 @@ public class ConfigurationListener extends Phase implements org.osgi.service.cm.
 
 		return next.map(next -> (Component)next).map(
 			component -> {
-				component.configurationTemplates().stream().filter(
-					ct -> Objects.nonNull(ct.pid)
-				).forEach(
-					template -> {
-						if (template.maximumCardinality == MaximumCardinality.ONE) {
-							containerState.findConfig(template.pid).ifPresent(
-								c -> processEvent(
-										component,
-										template,
-										new ConfigurationEvent(
-											containerState.caTracker().getServiceReference(),
-											ConfigurationEvent.CM_UPDATED,
-											null,
-											c.getPid()))
-							);
-						}
-						else {
-							containerState.findConfigs(template.pid, true).ifPresent(
-								arr -> Arrays.stream(arr).forEach(
-									c -> processEvent(
+				submit(component.openOp(), component::open).then(
+					s -> {
+						component.configurationTemplates().stream().filter(
+							ct -> Objects.nonNull(ct.pid)
+						).forEach(
+							template -> {
+								if (template.maximumCardinality == MaximumCardinality.ONE) {
+									containerState.findConfig(template.pid).ifPresent(
+										c -> processEvent(
 											component,
 											template,
 											new ConfigurationEvent(
 												containerState.caTracker().getServiceReference(),
 												ConfigurationEvent.CM_UPDATED,
-												c.getFactoryPid(),
-												c.getPid())))
-							);
-						}
-					}
-				);
+												null,
+												c.getPid())
+										)
+									);
+								}
+								else {
+									containerState.findConfigs(template.pid, true).ifPresent(
+										arr -> Arrays.stream(arr).forEach(
+											c -> processEvent(
+												component,
+												template,
+												new ConfigurationEvent(
+													containerState.caTracker().getServiceReference(),
+													ConfigurationEvent.CM_UPDATED,
+													c.getFactoryPid(),
+													c.getPid())
+											)
+										)
+									);
+								}
+							}
+						);
 
-				submit(component.openOp(), component::open).onFailure(
+						return s;
+					},
 					f -> {
-						_log.error(l -> l.error("CCR Failure during configuration start on {}", next, f));
+						_log.error(l -> l.error("CCR Failure during configuration start on {}", next, f.getFailure()));
 
-						error(f);
+						error(f.getFailure());
 					}
 				);
 
@@ -192,86 +196,87 @@ public class ConfigurationListener extends Phase implements org.osgi.service.cm.
 	}
 
 	private void processEvent(Component component, ConfigurationTemplateDTO t, ConfigurationEvent event) {
-		final AtomicBoolean needToRefresh = new AtomicBoolean(false);
-
-		List<ComponentInstanceDTO> instances = component.instances();
-
-		instances.stream().forEach(
-			instance -> instance.configurations.stream().filter(
-				c -> c.template.equals(t)
-			).map(ExtendedConfigurationDTO.class::cast).filter(
-				c -> c.pid.equals(event.getPid())
-			).forEach(
-				c -> {
-					instance.configurations.remove(c);
-					needToRefresh.set(true);
-				}
-			)
-		);
+		boolean required = t.policy == ConfigurationPolicy.REQUIRED;
+		boolean single = t.maximumCardinality == MaximumCardinality.ONE;
 
 		switch (event.getType()) {
 			case ConfigurationEvent.CM_DELETED:
-				if (t.maximumCardinality == MaximumCardinality.MANY) {
-					instances.stream().map(
-						instance -> (ExtendedComponentInstanceDTO)instance
-					).filter(
-						instance -> event.getPid().equals(instance.pid)
-					).forEach(
-						instance -> {
-							if (instances.remove(instance)) {
-								submit(instance.closeOp(), instance::close).onFailure(
-									f -> {
-										_log.error(l -> l.error("CCR Error closing {} on {}", instance.ident(), bundle()));
-									}
-								);
+				component.instances().stream().map(
+					ExtendedComponentInstanceDTO.class::cast
+				).filter(
+					instance -> (!single && event.getPid().equals(instance.pid)) || single
+				).forEach(
+					instance -> {
+						submit(instance.closeOp(), instance::close).then(
+							s -> {
+								if (!required) {
+									instance.configurations.removeIf(
+										c -> c.template == t
+									);
+
+									submit(instance.openOp(), instance::open);
+								}
+								else {
+									component.instances().remove(instance);
+								}
+
+								return s;
 							}
-						}
-					);
-				}
-				break;
+						);
+					}
+				);
+				return;
 			case ConfigurationEvent.CM_LOCATION_CHANGED:
+				break;
 			case ConfigurationEvent.CM_UPDATED:
-				if ((t.maximumCardinality == MaximumCardinality.MANY) &&
-					!instances.stream().map(
-						instance -> (ExtendedComponentInstanceDTO)instance
+				if (!single &&
+					!component.instances().stream().map(
+						ExtendedComponentInstanceDTO.class::cast
 					).filter(
 						instance -> event.getPid().equals(instance.pid)
 					).findFirst().isPresent()) {
 
-					ExtendedComponentInstanceDTO instanceDTO = new ExtendedComponentInstanceDTO(
+					ExtendedComponentInstanceDTO instance = new ExtendedComponentInstanceDTO(
 						containerState, _component.activatorBuilder());
-					instanceDTO.activations = new CopyOnWriteArrayList<>();
-					instanceDTO.configurations = new CopyOnWriteArrayList<>();
-					instanceDTO.pid = event.getPid();
-					instanceDTO.properties = null;
-					instanceDTO.references = new CopyOnWriteArrayList<>();
-					instanceDTO.template = component.template();
+					instance.activations = new CopyOnWriteArrayList<>();
+					instance.configurations = new CopyOnWriteArrayList<>();
+					instance.pid = event.getPid();
+					instance.references = new CopyOnWriteArrayList<>();
+					instance.template = component.template();
 
-					instances.add(instanceDTO);
+					component.instances().add(instance);
 				}
 
 				containerState.findConfig(event.getPid()).ifPresent(
 					configuration -> {
-						ExtendedConfigurationDTO configurationDTO2 = new ExtendedConfigurationDTO();
+						ExtendedConfigurationDTO configurationDTO = new ExtendedConfigurationDTO();
 
-						configurationDTO2.configuration = configuration;
-						configurationDTO2.pid = event.getPid();
-						configurationDTO2.properties = Maps.of(configuration.getProcessedProperties(event.getReference()));
-						configurationDTO2.template = t;
+						configurationDTO.configuration = configuration;
+						configurationDTO.pid = configuration.getPid();
+						configurationDTO.properties = Maps.of(configuration.getProcessedProperties(event.getReference()));
+						configurationDTO.template = t;
 
-						instances.stream().forEach(
+						component.instances().stream().map(
+							ExtendedComponentInstanceDTO.class::cast
+						).filter(
+							instance -> (!single && event.getPid().equals(instance.pid)) || single
+						).forEach(
 							instance -> {
-								instance.configurations.add(configurationDTO2);
-								needToRefresh.set(true);
+								submit(instance.closeOp(), instance::close).then(
+									s -> {
+										instance.configurations.removeIf(c -> c.template == t);
+										instance.configurations.add(configurationDTO);
+
+										submit(instance.openOp(), instance::open);
+
+										return s;
+									}
+								);
 							}
 						);
 					}
 				);
 				break;
-		}
-
-		if (needToRefresh.get()) {
-			startComponent(component);
 		}
 	}
 
@@ -283,23 +288,6 @@ public class ConfigurationListener extends Phase implements org.osgi.service.cm.
 		if (event.getType() == ConfigurationEvent.CM_UPDATED)
 			return "UPDATED";
 		throw new IllegalArgumentException("CM Event type " + event.getType());
-	}
-
-	private void startComponent(Component component) {
-		submit(component.closeOp(), component::close).then(
-			s -> submit(component.openOp(), component::open).onFailure(
-				f -> {
-					_log.error(l -> l.error("CCR Error in configuration listener start on {}", component, f));
-
-					error(f);
-				}
-			),
-			f -> {
-				_log.error(l -> l.error("CCR Error in configuration listener close on {}", component, f.getFailure()));
-
-				error(f.getFailure());
-			}
-		);
 	}
 
 	private volatile ServiceRegistration<org.osgi.service.cm.ConfigurationListener> _listenerService;

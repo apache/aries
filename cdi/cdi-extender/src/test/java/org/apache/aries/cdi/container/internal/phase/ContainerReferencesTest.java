@@ -90,7 +90,7 @@ public class ContainerReferencesTest extends BaseCDIBundleTest {
 
 		Promise<Boolean> p0 = containerState.addCallback(
 			(CheckedCallback<Boolean, Boolean>) op -> {
-				return op.mode == Op.Mode.OPEN && op.type == Op.Type.CONTAINER_COMPONENT;
+				return op.mode == Op.Mode.OPEN && op.type == Op.Type.REFERENCES;
 			}
 		);
 
@@ -102,7 +102,7 @@ public class ContainerReferencesTest extends BaseCDIBundleTest {
 		assertTrue(containerDTO.errors + "", containerDTO.errors.isEmpty());
 		assertNotNull(containerDTO.template);
 
-		p0.getValue();
+		p0.timeout(500).getValue();
 
 		ComponentDTO componentDTO = containerDTO.components.stream().filter(
 			c -> c.template.type == ComponentType.CONTAINER

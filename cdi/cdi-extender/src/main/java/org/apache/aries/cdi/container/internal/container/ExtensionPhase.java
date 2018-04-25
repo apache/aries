@@ -93,12 +93,11 @@ public class ExtensionPhase extends Phase {
 		else {
 			return next.map(
 				next -> {
-					submit(next.openOp(), next::open).then(
-						null,
+					submit(next.openOp(), next::open).onFailure(
 						f -> {
-							_log.error(l -> l.error("CCR Error in extension OPEN on {}", bundle(), f.getFailure()));
+							_log.error(l -> l.error("CCR Error in extension OPEN on {}", bundle(), f));
 
-							error(f.getFailure());
+							error(f);
 						}
 					);
 
@@ -186,27 +185,28 @@ public class ExtensionPhase extends Phase {
 			snapshots().add(extensionDTO);
 			containerState.incrementChangeCount();
 
-			if (snapshots().size() == extensionTemplates().size()) {
-				next.ifPresent(
-					next -> submit(next.closeOp(), next::close).then(
-						s -> {
-							return submit(next.openOp(), next::open).then(
-								null,
+			next.ifPresent(
+				next -> submit(next.closeOp(), next::close).then(
+					s -> {
+						if (snapshots().size() == extensionTemplates().size()) {
+							return submit(next.openOp(), next::open).onFailure(
 								f -> {
-									_log.error(l -> l.error("CCR Error in extension open TRACKING {} on {}", reference, bundle(), f.getFailure()));
+									_log.error(l -> l.error("CCR Error in extension open TRACKING {} on {}", reference, bundle(), f));
 
-									error(f.getFailure());
+									error(f);
 								}
 							);
-						},
-						f -> {
-							_log.error(l -> l.error("CCR Error extension close TRACKING {} on {}", reference, bundle(), f.getFailure()));
-
-							error(f.getFailure());
 						}
-					)
-				);
-			}
+
+						return s;
+					},
+					f -> {
+						_log.error(l -> l.error("CCR Error extension close TRACKING {} on {}", reference, bundle(), f.getFailure()));
+
+						error(f.getFailure());
+					}
+				)
+			);
 
 			return extensionDTO;
 		}
@@ -244,12 +244,11 @@ public class ExtensionPhase extends Phase {
 					Promise<Boolean> result = submit(next.closeOp(), next::close).then(
 						s -> {
 							if (snapshots().size() == extensionTemplates().size()) {
-								return submit(next.openOp(), next::open).then(
-									null,
+								return submit(next.openOp(), next::open).onFailure(
 									f -> {
-										_log.error(l -> l.error("CCR Error in extension open {} on {}", reference, bundle()));
+										_log.error(l -> l.error("CCR Error in extension open {} on {}", reference, bundle(), f));
 
-										error(f.getFailure());
+										error(f);
 									}
 								);
 							}
@@ -257,7 +256,7 @@ public class ExtensionPhase extends Phase {
 							return s;
 						},
 						f -> {
-							_log.error(l -> l.error("CCR Error in extension close {} on {}", reference, bundle()));
+							_log.error(l -> l.error("CCR Error in extension close {} on {}", reference, bundle(), f.getFailure()));
 
 							error(f.getFailure());
 						}
