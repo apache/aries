@@ -20,10 +20,10 @@ import java.math.BigDecimal;
 
 import javax.enterprise.inject.Produces;
 
-import org.apache.aries.cdi.extra.propertytypes.ServiceRanking;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.ServiceInstance;
+import org.osgi.service.cdi.propertytypes.ServiceRanking;
 
 public class BarProducer {
 	@Produces

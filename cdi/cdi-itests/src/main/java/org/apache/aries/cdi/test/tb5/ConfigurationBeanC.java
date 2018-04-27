@@ -24,7 +24,7 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.PID;
 import org.osgi.service.cdi.annotations.Service;
@@ -37,7 +37,7 @@ import org.osgi.service.cdi.annotations.SingleComponent;
 public class ConfigurationBeanC implements BeanService<Callable<int[]>> {
 
 	@Retention(RUNTIME) @Target(TYPE )
-	@ComponentPropertyType
+	@BeanPropertyType
 	public @interface Props {
 		String bean() default "C";
 	}

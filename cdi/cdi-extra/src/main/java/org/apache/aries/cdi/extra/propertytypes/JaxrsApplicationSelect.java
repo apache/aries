@@ -22,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 
 /**
  * Component Property Type for the {@code osgi.jaxrs.application.select} service
@@ -33,7 +33,7 @@ import org.osgi.service.cdi.annotations.ComponentPropertyType;
  * {@link org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants#JAX_RS_APPLICATION_SELECT}
  * service property.
  */
-@ComponentPropertyType
+@BeanPropertyType
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface JaxrsApplicationSelect {

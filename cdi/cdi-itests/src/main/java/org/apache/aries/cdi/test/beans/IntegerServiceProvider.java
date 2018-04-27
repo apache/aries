@@ -17,8 +17,8 @@ package org.apache.aries.cdi.test.beans;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
-import org.apache.aries.cdi.extra.propertytypes.ServiceRanking;
 import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.propertytypes.ServiceRanking;
 
 @ApplicationScoped
 public class IntegerServiceProvider {

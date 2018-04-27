@@ -26,7 +26,7 @@ import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
 
@@ -37,7 +37,7 @@ import org.osgi.service.cdi.annotations.SingleComponent;
 public class ServiceWithProperties implements BeanService<Pojo> {
 
 	@Retention(RUNTIME) @Target(TYPE)
-	@ComponentPropertyType
+	@BeanPropertyType
 	public @interface Props {
 		String test_key_b1() default "test.value.b1";
 		String test_key_b2() default "test.value.b2";
@@ -62,7 +62,7 @@ public class ServiceWithProperties implements BeanService<Pojo> {
 	}
 
 	@Retention(RUNTIME) @Target(TYPE )
-	@ComponentPropertyType
+	@BeanPropertyType
 	public @interface MoreProperties {
 		String goo_string();
 		int glub_integer();

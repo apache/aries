@@ -82,35 +82,35 @@ public class ContainerBootstrap extends Phase {
 
 			// Add the internal extensions
 			extensions.add(
-					new ExtensionMetadata(
-							new BundleContextExtension(containerState.bundleContext()),
-							containerState.id()));
+				new ExtensionMetadata(
+					new BundleContextExtension(containerState.bundleContext()),
+					containerState.id()));
 			extensions.add(
-					new ExtensionMetadata(
-							new RuntimeExtension(containerState, _configurationBuilder, _singleBuilder, _factoryBuilder),
-							containerState.id()));
+				new ExtensionMetadata(
+					new RuntimeExtension(containerState, _configurationBuilder, _singleBuilder, _factoryBuilder),
+					containerState.id()));
 			extensions.add(
-					new ExtensionMetadata(
-							new LoggerExtension(containerState),
-							containerState.id()));
+				new ExtensionMetadata(
+					new LoggerExtension(containerState),
+					containerState.id()));
 
 			// Add extensions found from the bundle's class loader, such as those in the Bundle-ClassPath
 			ServiceLoader.load(Extension.class, containerState.classLoader()).forEach(extensions::add);
 
 			// Add external extensions
 			containerState.containerDTO().extensions.stream().map(
-					ExtendedExtensionDTO.class::cast
-					).map(
-							e -> new ExtensionMetadata(e.extension.getService(), e.template.serviceFilter)
-							).forEach(extensions::add);
+				ExtendedExtensionDTO.class::cast
+			).map(
+				e -> new ExtensionMetadata(e.extension.getService(), e.template.serviceFilter)
+			).forEach(extensions::add);
 
 			_bootstrap = new WeldBootstrap();
 
 			BeanDeploymentArchive beanDeploymentArchive = new ContainerDeploymentArchive(
-					containerState.loader(),
-					containerState.id(),
-					containerState.beansModel().getBeanClassNames(),
-					containerState.beansModel().getBeansXml());
+				containerState.loader(),
+				containerState.id(),
+				containerState.beansModel().getBeanClassNames(),
+				containerState.beansModel().getBeansXml());
 
 			Deployment deployment = new ContainerDeployment(extensions, beanDeploymentArchive);
 

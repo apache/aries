@@ -17,9 +17,9 @@ package org.apache.aries.cdi.container.test.beans;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.aries.cdi.extra.propertytypes.ServiceRanking;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
+import org.osgi.service.cdi.propertytypes.ServiceRanking;
 import org.osgi.service.cdi.reference.BindObject;
 
 @SingleComponent
