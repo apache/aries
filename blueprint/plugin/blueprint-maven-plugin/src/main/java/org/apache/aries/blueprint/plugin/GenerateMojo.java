@@ -33,15 +33,16 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.xbean.finder.ClassFinder;
+import org.codehaus.plexus.classworlds.ClassWorld;
+import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,6 +119,18 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter
     protected Map<String, String> customParameters;
 
+    /**
+     * Which artifacts should be included in finding beans process
+     */
+    @Parameter
+    private Set<String> includeArtifacts = new HashSet<>();
+
+    /**
+     * Which artifacts should be excluded from finding beans process
+     */
+    @Parameter
+    private Set<String> excludeArtifacts = new HashSet<>();
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         List<String> toScan = getPackagesToScan();
@@ -138,10 +151,18 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private void generateBlueprint(List<String> toScan, BlueprintConfigurationImpl blueprintConfiguration) throws Exception {
+        long startTime = System.currentTimeMillis();
         ClassFinder classFinder = createProjectScopeFinder();
+        getLog().debug("Creating package scope class finder: " + (System.currentTimeMillis() - startTime) + "ms");
+        startTime = System.currentTimeMillis();
         Set<Class<?>> classes = FilteredClassFinder.findClasses(classFinder, toScan);
+        getLog().debug("Finding bean classes: " + (System.currentTimeMillis() - startTime) + "ms");
+        startTime = System.currentTimeMillis();
         Blueprint blueprint = new Blueprint(blueprintConfiguration, classes);
+        getLog().debug("Creating blueprint model: " + (System.currentTimeMillis() - startTime) + "ms");
+        startTime = System.currentTimeMillis();
         writeBlueprintIfNeeded(blueprint);
+        getLog().debug("Writing blueprint: " + (System.currentTimeMillis() - startTime) + "ms");
     }
 
     private void writeBlueprintIfNeeded(Blueprint blueprint) throws Exception {
@@ -169,19 +190,36 @@ public class GenerateMojo extends AbstractMojo {
         fos.close();
     }
 
-    private ClassFinder createProjectScopeFinder() throws MalformedURLException {
+    private ClassFinder createProjectScopeFinder() throws Exception {
         List<URL> urls = new ArrayList<>();
 
+        long startTime = System.currentTimeMillis();
+        ClassRealm classRealm = new ClassRealm(new ClassWorld(), "maven-blueprint-plugin-classloader", getClass().getClassLoader());
+        classRealm.addURL(new File(project.getBuild().getOutputDirectory()).toURI().toURL());
         urls.add(new File(project.getBuild().getOutputDirectory()).toURI().toURL());
+
+        ArtifactFilter artifactFilter = new ArtifactFilter(includeArtifacts, excludeArtifacts);
+
         for (Object artifactO : project.getArtifacts()) {
             Artifact artifact = (Artifact) artifactO;
             File file = artifact.getFile();
-            if (file != null) {
-                urls.add(file.toURI().toURL());
+            if (file == null) {
+                continue;
             }
+            URL artifactUrl = file.toURI().toURL();
+            classRealm.addURL(artifactUrl);
+            if (artifactFilter.shouldExclude(artifact)) {
+                getLog().debug("Excluded artifact: " + artifact);
+                continue;
+            }
+            getLog().debug("Taken artifact: " + artifact);
+            urls.add(artifactUrl);
         }
-        ClassLoader loader = new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
-        return new ClassFinder(loader, urls);
+        getLog().debug(" Create class loader: " + (System.currentTimeMillis() - startTime) + "ms");
+        startTime = System.currentTimeMillis();
+        ClassFinder classFinder = new ClassFinder(classRealm, urls);
+        getLog().debug(" Building class finder: " + (System.currentTimeMillis() - startTime) + "ms");
+        return classFinder;
     }
 
     private List<String> getPackagesToScan() throws MojoExecutionException {
