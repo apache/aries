@@ -1,9 +1,9 @@
 Bundle-Description: Integration Test bundle for component DSL
 
 Private-Package:\
-	org.apache.aries.functional,\
-	org.apache.aries.osgi.functional,\
-	org.apache.aries.osgi.functional.internal
+	org.apache.aries.component.dsl,\
+	org.apache.aries.component.dsl.function,\
+	org.apache.aries.component.dsl.internal,\
 
 Test-Cases: \
     ${classes;CONCRETE;EXTENDS;junit.framework.TestCase},\
