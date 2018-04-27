@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
 
@@ -39,7 +39,7 @@ import org.osgi.service.cdi.annotations.SingleComponent;
 public class FooServlet extends HttpServlet {
 
 	@Retention(RUNTIME) @Target(TYPE )
-	@ComponentPropertyType
+	@BeanPropertyType
 	public @interface Props {
 		String osgi_http_whiteboard_servlet_name() default "foo";
 		String osgi_http_whiteboard_servlet_pattern() default "/foo";

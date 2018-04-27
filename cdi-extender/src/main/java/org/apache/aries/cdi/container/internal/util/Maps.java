@@ -36,7 +36,7 @@ import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.util.converter.TypeReference;
 
 public class Maps {
@@ -128,7 +128,7 @@ public class Maps {
 
 	public static Map<String, Object> merge(List<Annotation> annotations) {
 		return annotations.stream().filter(
-			ann -> Objects.nonNull(ann.annotationType().getAnnotation(ComponentPropertyType.class))
+			ann -> Objects.nonNull(ann.annotationType().getAnnotation(BeanPropertyType.class))
 		).map(
 			ann -> Conversions.convert(ann).sourceAs(ann.annotationType()).to(new TypeReference<Map<String, Object>>() {})
 		).map(Map::entrySet).flatMap(Collection::stream).collect(

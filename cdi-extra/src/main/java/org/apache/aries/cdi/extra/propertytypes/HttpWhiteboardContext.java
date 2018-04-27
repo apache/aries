@@ -22,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.http.whiteboard.annotations.RequireHttpWhiteboard;
 
 /**
@@ -37,7 +37,7 @@ import org.osgi.service.http.whiteboard.annotations.RequireHttpWhiteboard;
  * {@link org.osgi.service.http.whiteboard.HttpWhiteboardConstants#HTTP_WHITEBOARD_CONTEXT_PATH
  * HTTP_WHITEBOARD_CONTEXT_PATH} service properties.
  */
-@ComponentPropertyType
+@BeanPropertyType
 @RequireHttpWhiteboard
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})

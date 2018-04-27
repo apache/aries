@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 
 import javax.servlet.DispatcherType;
 
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 
 /**
  * Component Property Type for the
@@ -35,7 +35,7 @@ import org.osgi.service.cdi.annotations.ComponentPropertyType;
  * {@link org.osgi.service.http.whiteboard.HttpWhiteboardConstants#HTTP_WHITEBOARD_FILTER_DISPATCHER
  * HTTP_WHITEBOARD_FILTER_DISPATCHER} service property.
  */
-@ComponentPropertyType
+@BeanPropertyType
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface HttpWhiteboardFilterDispatcher {

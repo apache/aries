@@ -27,7 +27,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.osgi.annotation.bundle.Requirement;
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
 import org.osgi.service.jaxrs.whiteboard.annotations.RequireJaxrsWhiteboard;
 
@@ -40,7 +40,7 @@ import org.osgi.service.jaxrs.whiteboard.annotations.RequireJaxrsWhiteboard;
  * optional {@link Requirement} for a service providing this media type to aid
  * with provisioning.
  */
-@ComponentPropertyType
+@BeanPropertyType
 @RequireJaxrsWhiteboard
 @Requirement(
 	namespace = SERVICE_NAMESPACE, //
