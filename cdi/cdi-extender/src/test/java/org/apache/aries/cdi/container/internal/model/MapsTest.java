@@ -24,13 +24,13 @@ import java.util.stream.Stream;
 import org.apache.aries.cdi.container.internal.util.Maps;
 import org.junit.Assert;
 import org.junit.Test;
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.Service;
 
 public class MapsTest {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@ComponentPropertyType
+	@BeanPropertyType
 	public @interface CPT1 {
 		String[] a();
 		int[] b();
@@ -38,19 +38,19 @@ public class MapsTest {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@ComponentPropertyType
+	@BeanPropertyType
 	public @interface CPT2 {
 		String a();
 		int[] b();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@ComponentPropertyType
+	@BeanPropertyType
 	public @interface CPT3 {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@ComponentPropertyType
+	@BeanPropertyType
 	public @interface CPT4 {
 		String b();
 	}

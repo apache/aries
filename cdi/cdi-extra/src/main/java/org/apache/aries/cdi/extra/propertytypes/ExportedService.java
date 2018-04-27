@@ -23,7 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.osgi.framework.Constants;
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.FactoryComponent;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
@@ -36,7 +36,7 @@ import org.osgi.service.cdi.annotations.SingleComponent;
  * {@link FactoryComponent} or {@link Service} to declare the value of
  * the remote service properties for an exported service.
  */
-@ComponentPropertyType
+@BeanPropertyType
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface ExportedService {

@@ -22,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.jaxrs.whiteboard.annotations.RequireJaxrsWhiteboard;
 
 /**
@@ -33,7 +33,7 @@ import org.osgi.service.jaxrs.whiteboard.annotations.RequireJaxrsWhiteboard;
  * {@link org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants#JAX_RS_EXTENSION}
  * service property.
  */
-@ComponentPropertyType
+@BeanPropertyType
 @RequireJaxrsWhiteboard
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})

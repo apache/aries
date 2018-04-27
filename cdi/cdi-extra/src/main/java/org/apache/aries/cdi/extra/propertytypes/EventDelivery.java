@@ -22,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.osgi.service.cdi.annotations.ComponentPropertyType;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.event.annotations.RequireEventAdmin;
@@ -34,7 +34,7 @@ import org.osgi.service.event.annotations.RequireEventAdmin;
  * This annotation can be used on an {@link EventHandler} component to declare
  * the value of the {@link EventConstants#EVENT_DELIVERY} service property.
  */
-@ComponentPropertyType
+@BeanPropertyType
 @RequireEventAdmin
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
