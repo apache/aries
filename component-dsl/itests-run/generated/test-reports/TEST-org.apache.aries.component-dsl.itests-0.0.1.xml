@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name='test.biz.aQute.tester' tests='1' time='0.30' failures='1' target='reference:file:/Users/sac/.bnd/default-ws/cnf/cache/3.5.0/bnd-cache/biz.aQute.tester/biz.aQute.tester-3.5.0.jar' timestamp='2017-11-02T10:12:44' hostname='MacBook-Pro-de-Carlos-2.local' framework='org.eclipse.osgi_3.10.100.v20150529-1857 [0]' errors='0' framework-version='3.10.100.v20150529-1857'>
+  <properties>
+    <property name='java.vendor' value='Oracle Corporation'/>
+    <property name='sun.java.launcher' value='SUN_STANDARD'/>
+    <property name='sun.management.compiler' value='HotSpot 64-Bit Tiered Compilers'/>
+    <property name='os.name' value='Mac OS X'/>
+    <property name='sun.boot.class.path' value='/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/JObjC.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/classes'/>
+    <property name='tester.continuous' value='false'/>
+    <property name='java.vm.specification.vendor' value='Oracle Corporation'/>
+    <property name='java.runtime.version' value='1.7.0_45-b18'/>
+    <property name='launch.services' value='true'/>
+    <property name='launch.notificationPort' value='-1'/>
+    <property name='launcher.properties' value='/Users/sac/svn/aries/component-dsl/itests-run/generated/launch8029447584168110210.properties'/>
+    <property name='user.name' value='sac'/>
+    <property name='launch.bundles' value='/Users/sac/svn/aries/component-dsl/itests/target/org.apache.aries.component-dsl.itests-0.0.1-SNAPSHOT.jar,/Users/sac/.m2/repository/org/apache/felix/org.apache.felix.configadmin/1.8.8/org.apache.felix.configadmin-1.8.8.jar,/Users/sac/.m2/repository/org/osgi/osgi.enroute.hamcrest.wrapper/1.3.0/osgi.enroute.hamcrest.wrapper-1.3.0.jar,/Users/sac/.m2/repository/org/osgi/osgi.enroute.junit.wrapper/4.12.0/osgi.enroute.junit.wrapper-4.12.0.jar,/Users/sac/.bnd/default-ws/cnf/cache/3.5.0/bnd-cache/biz.aQute.tester/biz.aQute.tester-3.5.0.jar'/>
+    <property name='user.language' value='es'/>
+    <property name='sun.boot.library.path' value='/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib'/>
+    <property name='java.version' value='1.7.0_45'/>
+    <property name='user.timezone' value='Europe/Madrid'/>
+    <property name='tester.dir' value='/Users/sac/svn/aries/component-dsl/itests-run/generated/test-reports'/>
+    <property name='sun.arch.data.model' value='64'/>
+    <property name='tester.unresolved' value='true'/>
+    <property name='http.nonProxyHosts' value='local|*.local|169.254/16|*.169.254/16'/>
+    <property name='java.endorsed.dirs' value='/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/endorsed'/>
+    <property name='sun.cpu.isalist' value=''/>
+    <property name='sun.jnu.encoding' value='UTF-8'/>
+    <property name='file.encoding.pkg' value='sun.io'/>
+    <property name='launch.noreferences' value='false'/>
+    <property name='file.separator' value='/'/>
+    <property name='java.specification.name' value='Java Platform API Specification'/>
+    <property name='java.class.version' value='51.0'/>
+    <property name='user.country' value='ES'/>
+    <property name='java.home' value='/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre'/>
+    <property name='java.vm.info' value='mixed mode'/>
+    <property name='os.version' value='10.10.5'/>
+    <property name='path.separator' value=':'/>
+    <property name='java.vm.version' value='24.45-b08'/>
+    <property name='java.awt.printerjob' value='sun.lwawt.macosx.CPrinterJob'/>
+    <property name='sun.io.unicode.encoding' value='UnicodeBig'/>
+    <property name='awt.toolkit' value='sun.lwawt.macosx.LWCToolkit'/>
+    <property name='socksNonProxyHosts' value='local|*.local|169.254/16|*.169.254/16'/>
+    <property name='ftp.nonProxyHosts' value='local|*.local|169.254/16|*.169.254/16'/>
+    <property name='user.home' value='/Users/sac'/>
+    <property name='java.specification.vendor' value='Oracle Corporation'/>
+    <property name='java.library.path' value='/Users/sac/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.'/>
+    <property name='java.vendor.url' value='http://java.oracle.com/'/>
+    <property name='java.vm.vendor' value='Oracle Corporation'/>
+    <property name='gopherProxySet' value='false'/>
+    <property name='java.runtime.name' value='Java(TM) SE Runtime Environment'/>
+    <property name='tester.port' value='53865'/>
+    <property name='sun.java.command' value='aQute.launcher.Launcher'/>
+    <property name='java.class.path' value='/Users/sac/.m2/repository/org/osgi/org.eclipse.osgi/3.10.100.v20150529-1857/org.eclipse.osgi-3.10.100.v20150529-1857.jar:/Users/sac/.bnd/default-ws/cnf/cache/3.5.0/bnd-cache/biz.aQute.launcher/biz.aQute.launcher-3.5.0.jar'/>
+    <property name='launch.system.capabilities' value='osgi.native;osgi.native.osname:List&lt;String&gt;="MacOSX,Mac OS X";osgi.native.osversion:Version="10.10.5";osgi.native.processor:List&lt;String&gt;="x86-64,amd64,em64t,x86_64";osgi.native.language=es_ES'/>
+    <property name='launch.name' value='itest.bndrun'/>
+    <property name='launch.timeout' value='0'/>
+    <property name='launch.keep' value='false'/>
+    <property name='java.vm.specification.name' value='Java Virtual Machine Specification'/>
+    <property name='java.vm.specification.version' value='1.7'/>
+    <property name='sun.cpu.endian' value='little'/>
+    <property name='sun.os.patch.level' value='unknown'/>
+    <property name='java.io.tmpdir' value='/var/folders/9w/c3lc7mdx0x9gllrdt46j0df40000gn/T/'/>
+    <property name='java.vendor.url.bug' value='http://bugreport.sun.com/bugreport/'/>
+    <property name='os.arch' value='x86_64'/>
+    <property name='java.awt.graphicsenv' value='sun.awt.CGraphicsEnvironment'/>
+    <property name='java.ext.dirs' value='/Users/sac/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java'/>
+    <property name='user.dir' value='/Users/sac/svn/aries/component-dsl/itests-run'/>
+    <property name='launch.trace' value='false'/>
+    <property name='line.separator' value='
+'/>
+    <property name='java.vm.name' value='Java HotSpot(TM) 64-Bit Server VM'/>
+    <property name='launch.embedded' value='false'/>
+    <property name='launch.activators' value=''/>
+    <property name='file.encoding' value='UTF-8'/>
+    <property name='launch.system.packages' value='javax.script,org.eclipse.core.runtime.adaptor;x-friends:="org.eclipse.core.runtime",org.eclipse.core.runtime.internal.adaptor;x-internal:=true,org.eclipse.equinox.log;version="1.0",org.eclipse.osgi.container;version="1.0",org.eclipse.osgi.container.builders;version="1.0",org.eclipse.osgi.container.namespaces;version="1.0",org.eclipse.osgi.framework.console;version="1.1",org.eclipse.osgi.framework.eventmgr;version="1.2",org.eclipse.osgi.framework.internal.reliablefile;x-internal:=true,org.eclipse.osgi.framework.log;version="1.1",org.eclipse.osgi.framework.util;x-internal:=true,org.eclipse.osgi.internal.debug;x-internal:=true,org.eclipse.osgi.internal.framework;x-internal:=true,org.eclipse.osgi.internal.hookregistry;x-friends:="org.eclipse.osgi.tests",org.eclipse.osgi.internal.loader;x-internal:=true,org.eclipse.osgi.internal.loader.buddy;x-internal:=true,org.eclipse.osgi.internal.loader.classpath;x-internal:=true,org.eclipse.osgi.internal.loader.sources;x-internal:=true,org.eclipse.osgi.internal.location;x-internal:=true,org.eclipse.osgi.internal.messages;x-internal:=true,org.eclipse.osgi.internal.provisional.service.security;version="1.0.0";x-friends:="org.eclipse.equinox.security.ui",org.eclipse.osgi.internal.provisional.verifier;x-friends:="org.eclipse.update.core,org.eclipse.ui.workbench,org.eclipse.equinox.p2.artifact.repository",org.eclipse.osgi.internal.service.security;x-friends:="org.eclipse.equinox.security.ui",org.eclipse.osgi.internal.serviceregistry;x-internal:=true,org.eclipse.osgi.internal.signedcontent;x-internal:=true,org.eclipse.osgi.internal.url;x-internal:=true,org.eclipse.osgi.launch;version="1.0",org.eclipse.osgi.report.resolution;version="1.0",org.eclipse.osgi.service.datalocation;version="1.3",org.eclipse.osgi.service.debug;version="1.2",org.eclipse.osgi.service.environment;version="1.3",org.eclipse.osgi.service.localization;version="1.1",org.eclipse.osgi.service.pluginconversion;version="1.0",org.eclipse.osgi.service.resolver;version="1.6",org.eclipse.osgi.service.runnable;version="1.1",org.eclipse.osgi.service.security;version="1.0",org.eclipse.osgi.service.urlconversion;version="1.0",org.eclipse.osgi.signedcontent;version="1.0",org.eclipse.osgi.storage;x-friends:="org.eclipse.osgi.tests",org.eclipse.osgi.storage.bundlefile;x-internal:=true,org.eclipse.osgi.storage.url.reference;x-internal:=true,org.eclipse.osgi.storagemanager;version="1.0",org.eclipse.osgi.util;version="1.1",org.osgi.dto;version="1.0",org.osgi.framework;version="1.8",org.osgi.framework.dto;version="1.8",org.osgi.framework.hooks.bundle;version="1.1",org.osgi.framework.hooks.resolver;version="1.0",org.osgi.framework.hooks.service;version="1.1",org.osgi.framework.hooks.weaving;version="1.1",org.osgi.framework.launch;version="1.2",org.osgi.framework.namespace;version="1.1",org.osgi.framework.startlevel;version="1.0",org.osgi.framework.startlevel.dto;version="1.0",org.osgi.framework.wiring;version="1.2",org.osgi.framework.wiring.dto;version="1.2",org.osgi.resource;version="1.0",org.osgi.resource.dto;version="1.0",org.osgi.service.condpermadmin;version="1.1.1",org.osgi.service.log;version="1.3",org.osgi.service.packageadmin;version="1.2",org.osgi.service.permissionadmin;version="1.2",org.osgi.service.resolver;version="1.0.1",org.osgi.service.startlevel;version="1.1",org.osgi.service.url;version="1.0",org.osgi.util.tracker;version="1.5.1"'/>
+    <property name='java.specification.version' value='1.7'/>
+  </properties>
+  <testcase name='testAllResolved' time='0.4' classname='aQute.junit.UnresolvedTester'>
+    <failure type='junit.framework.AssertionFailedError' message='Unresolved bundles
+org.apache.aries.component-dsl.itests [1];0.0.1.201711020910
+    Could not resolve module: org.apache.aries.component-dsl.itests [1]
+  Unresolved requirement: Require-Capability: osgi.ee; filter:="(&amp;(osgi.ee=JavaSE)(version=1.8))"
+
+
+'><![CDATA[junit.framework.AssertionFailedError: Unresolved bundles
+org.apache.aries.component-dsl.itests [1];0.0.1.201711020910
+    Could not resolve module: org.apache.aries.component-dsl.itests [1]
+  Unresolved requirement: Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+
+
+
+ at junit.framework.Assert.fail(Assert.java:57)
+ at junit.framework.Assert.assertTrue(Assert.java:22)
+ at junit.framework.TestCase.assertTrue(TestCase.java:192)
+ at aQute.junit.UnresolvedTester.testAllResolved(UnresolvedTester.java:49)
+ at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+ at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+ at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+ at java.lang.reflect.Method.invoke(Method.java:606)
+ at junit.framework.TestCase.runTest(TestCase.java:176)
+ at junit.framework.TestCase.runBare(TestCase.java:141)
+ at junit.framework.TestResult$1.protect(TestResult.java:122)
+ at junit.framework.TestResult.runProtected(TestResult.java:142)
+ at junit.framework.TestResult.run(TestResult.java:125)
+ at junit.framework.TestCase.run(TestCase.java:129)
+ at junit.framework.TestSuite.runTest(TestSuite.java:252)
+ at junit.framework.TestSuite.run(TestSuite.java:247)
+ at junit.framework.TestSuite.runTest(TestSuite.java:252)
+ at junit.framework.TestSuite.run(TestSuite.java:247)
+ at aQute.junit.Activator.test(Activator.java:343)
+ at aQute.junit.Activator.run(Activator.java:155)
+ at aQute.launcher.Launcher$5.call(Launcher.java:1299)
+ at aQute.launcher.Launcher$5.call(Launcher.java:1297)
+ at aQute.launcher.Launcher.run(Launcher.java:334)
+ at aQute.launcher.Launcher.main(Launcher.java:142)
+]]>
+    </failure>
+    <system-err><![CDATA[Could not resolve module: org.apache.aries.component-dsl.itests [1]
+  Unresolved requirement: Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+
+]]>
+    </system-err>
+  </testcase>
+</testsuite>
