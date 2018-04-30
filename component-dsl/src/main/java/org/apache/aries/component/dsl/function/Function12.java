@@ -20,7 +20,7 @@ package org.apache.aries.component.dsl.function;
 import java.util.function.Function;
 
 /**
-* @generated
+* generated
 */
 @FunctionalInterface
 public interface Function12<A,B,C,D,E,F,G,H,I,J,K,L,RESULT> {
