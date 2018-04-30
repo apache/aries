@@ -46,4 +46,11 @@
             <version>4.12</version>
         </dependency>
     </dependencies>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/component-dsl/itests</connection>
+        <developerConnection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/component-dsl/itests</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/component-dsl/itests</url>
+    </scm>
+
 </project>
