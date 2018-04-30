@@ -23,7 +23,7 @@
 
     <parent>
         <groupId>org.apache.aries.component-dsl</groupId>
-		<artifactId>parent</artifactId>
+		<artifactId>org.apache.aries.component-dsl.parent</artifactId>
 		<version>0.0.1</version>
     </parent>
 
