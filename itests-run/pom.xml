@@ -96,4 +96,11 @@
             <version>1.3.0</version>
         </dependency>
     </dependencies>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/component-dsl/itests-run</connection>
+        <developerConnection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/component-dsl/itests-run</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/component-dsl/itests-run</url>
+    </scm>
+
 </project>
