@@ -88,7 +88,7 @@
     </dependencies>
 	<scm>
 		<connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.0.1/component-dsl</connection>
-		<developerConnection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.0.1/component-dsl</developerConnection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/parent-0.0.1/component-dsl</developerConnection>
 		<url>http://svn.apache.org/viewvc/aries/tags/parent-0.0.1/component-dsl</url>
 	</scm>
 

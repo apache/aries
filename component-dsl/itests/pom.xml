@@ -49,7 +49,7 @@
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.0.1/itests</connection>
-        <developerConnection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.0.1/itests</developerConnection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/parent-0.0.1/itests</developerConnection>
         <url>http://svn.apache.org/viewvc/aries/tags/parent-0.0.1/itests</url>
     </scm>
 
