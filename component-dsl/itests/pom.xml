@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.aries.component-dsl</groupId>
         <artifactId>parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <artifactId>org.apache.aries.component-dsl.itests</artifactId>
@@ -48,9 +48,9 @@
     </dependencies>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/component-dsl/itests</connection>
-        <developerConnection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/component-dsl/itests</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/component-dsl/itests</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.0.1/itests</connection>
+        <developerConnection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/parent-0.0.1/itests</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/parent-0.0.1/itests</url>
     </scm>
 
 </project>
