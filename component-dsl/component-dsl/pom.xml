@@ -86,4 +86,10 @@
 			<scope>test</scope>
 		</dependency>
     </dependencies>
+	<scm>
+		<connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/component-dsl/component-dsl</connection>
+		<developerConnection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/component-dsl/component-dsl</developerConnection>
+		<url>http://svn.apache.org/viewvc/aries/trunk/component-dsl/component-dsl</url>
+	</scm>
+
 </project>
