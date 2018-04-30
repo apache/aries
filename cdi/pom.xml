@@ -59,7 +59,52 @@
 		<module>cdi-itests</module>
 	</modules>
 
+	<profiles>
+		<profile>
+			<id>apache-release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.rat</groupId>
+						<artifactId>apache-rat-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<excludes>
+								<exclude>**/target/**/*</exclude>
+								<exclude>**/appended-resources/**/*</exclude>
+								<exclude>**/dependency-reduced-pom.xml</exclude>
+								<exclude>**/DEPENDENCIES</exclude>
+								<exclude>**/generated/**/*</exclude>
+								<exclude>**/*.iml</exclude>
+								<exclude>**/*.ipr</exclude>
+								<exclude>**/*.iws</exclude>
+								<exclude>**/.idea/**/*</exclude>
+								<exclude>**/.project</exclude>
+								<exclude>**/.classpath</exclude>
+								<exclude>**/.settings/**</exclude>
+								<exclude>**/eclipse-classes/**/*</exclude>
+								<exclude>.gitignore</exclude>
+								<exclude>README.md</exclude>
+								<exclude>*.cfg</exclude>
+								<exclude>**/README.md</exclude>
+								<exclude>**/Readme.md</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
+		<defaultGoal>install</defaultGoal>
 		<pluginManagement>
 			<plugins>
 				<plugin>
