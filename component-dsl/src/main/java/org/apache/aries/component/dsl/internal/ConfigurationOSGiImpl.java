@@ -40,7 +40,6 @@ public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 
 			AtomicBoolean closed = new AtomicBoolean();
 
-
 			ServiceRegistration<ManagedService> serviceRegistration =
 				bundleContext.registerService(
 					ManagedService.class,
