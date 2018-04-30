@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.osgi.service.cdi.runtime.dto.ActivationDTO;
@@ -42,9 +43,11 @@ public class DTOs {
 
 	public static ContainerDTO copy(ContainerDTO original, boolean clear) {
 		try {
-			return (ContainerDTO)cache.get().computeIfAbsent(original, o -> {
-				return copy0(original);
-			});
+			if (cache.get().containsKey(original)) {
+				return (ContainerDTO)cache.get().get(original);
+			}
+			ContainerDTO copy = copy0(original);
+			return (ContainerDTO)cache.get().computeIfAbsent(original, p -> copy);
 		}
 		finally {
 			if (clear)
@@ -64,9 +67,11 @@ public class DTOs {
 	}
 
 	static ExtensionDTO copy(ExtensionDTO original) {
-		return (ExtensionDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ExtensionDTO)cache.get().get(original);
+		}
+		ExtensionDTO copy = copy0(original);
+		return (ExtensionDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ExtensionDTO copy0(ExtensionDTO original) {
@@ -77,9 +82,11 @@ public class DTOs {
 	}
 
 	static ComponentDTO copy(ComponentDTO original) {
-		return (ComponentDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ComponentDTO)cache.get().get(original);
+		}
+		ComponentDTO copy = copy0(original);
+		return (ComponentDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ComponentDTO copy0(ComponentDTO original) {
@@ -91,9 +98,11 @@ public class DTOs {
 	}
 
 	static ComponentInstanceDTO copy(ComponentInstanceDTO original) {
-		return (ComponentInstanceDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ComponentInstanceDTO)cache.get().get(original);
+		}
+		ComponentInstanceDTO copy = copy0(original);
+		return (ComponentInstanceDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ComponentInstanceDTO copy0(ComponentInstanceDTO original) {
@@ -106,9 +115,11 @@ public class DTOs {
 	}
 
 	static ActivationDTO copy(ActivationDTO original) {
-		return (ActivationDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ActivationDTO)cache.get().get(original);
+		}
+		ActivationDTO copy = copy0(original);
+		return (ActivationDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ActivationDTO copy0(ActivationDTO original) {
@@ -120,9 +131,11 @@ public class DTOs {
 	}
 
 	static ConfigurationDTO copy(ConfigurationDTO original) {
-		return (ConfigurationDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ConfigurationDTO)cache.get().get(original);
+		}
+		ConfigurationDTO copy = copy0(original);
+		return (ConfigurationDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ConfigurationDTO copy0(ConfigurationDTO original) {
@@ -133,9 +146,11 @@ public class DTOs {
 	}
 
 	static ReferenceDTO copy(ReferenceDTO original) {
-		return (ReferenceDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ReferenceDTO)cache.get().get(original);
+		}
+		ReferenceDTO copy = copy0(original);
+		return (ReferenceDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ReferenceDTO copy0(ReferenceDTO original) {
@@ -149,9 +164,11 @@ public class DTOs {
 
 	public static ContainerTemplateDTO copy(ContainerTemplateDTO original, boolean clear) {
 		try {
-			return (ContainerTemplateDTO)cache.get().computeIfAbsent(original, o -> {
-				return copy0(original);
-			});
+			if (cache.get().containsKey(original)) {
+				return (ContainerTemplateDTO)cache.get().get(original);
+			}
+			ContainerTemplateDTO copy = copy0(original);
+			return (ContainerTemplateDTO)cache.get().computeIfAbsent(original, p -> copy);
 		}
 		finally {
 			if (clear)
@@ -168,9 +185,11 @@ public class DTOs {
 	}
 
 	static ComponentTemplateDTO copy(ComponentTemplateDTO original) {
-		return (ComponentTemplateDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ComponentTemplateDTO)cache.get().get(original);
+		}
+		ComponentTemplateDTO copy = copy0(original);
+		return (ComponentTemplateDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ComponentTemplateDTO copy0(ComponentTemplateDTO original) {
@@ -186,9 +205,11 @@ public class DTOs {
 	}
 
 	static ExtensionTemplateDTO copy(ExtensionTemplateDTO original) {
-		return (ExtensionTemplateDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ExtensionTemplateDTO)cache.get().get(original);
+		}
+		ExtensionTemplateDTO copy = copy0(original);
+		return (ExtensionTemplateDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ExtensionTemplateDTO copy0(ExtensionTemplateDTO original) {
@@ -198,9 +219,11 @@ public class DTOs {
 	}
 
 	static ActivationTemplateDTO copy(ActivationTemplateDTO original) {
-		return (ActivationTemplateDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ActivationTemplateDTO)cache.get().get(original);
+		}
+		ActivationTemplateDTO copy = copy0(original);
+		return (ActivationTemplateDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ActivationTemplateDTO copy0(ActivationTemplateDTO original) {
@@ -212,9 +235,11 @@ public class DTOs {
 	}
 
 	static ConfigurationTemplateDTO copy(ConfigurationTemplateDTO original) {
-		return (ConfigurationTemplateDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ConfigurationTemplateDTO)cache.get().get(original);
+		}
+		ConfigurationTemplateDTO copy = copy0(original);
+		return (ConfigurationTemplateDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ConfigurationTemplateDTO copy0(ConfigurationTemplateDTO original) {
@@ -227,9 +252,11 @@ public class DTOs {
 	}
 
 	static ReferenceTemplateDTO copy(ReferenceTemplateDTO original) {
-		return (ReferenceTemplateDTO)cache.get().computeIfAbsent(original, o -> {
-			return copy0(original);
-		});
+		if (cache.get().containsKey(original)) {
+			return (ReferenceTemplateDTO)cache.get().get(original);
+		}
+		ReferenceTemplateDTO copy = copy0(original);
+		return (ReferenceTemplateDTO)cache.get().computeIfAbsent(original, p -> copy);
 	}
 
 	static ReferenceTemplateDTO copy0(ReferenceTemplateDTO original) {
@@ -294,6 +321,6 @@ public class DTOs {
 	}
 
 	private static final ThreadLocal<Map<Object, Object>> cache =
-		ThreadLocal.withInitial(() -> new HashMap<>());
+		ThreadLocal.withInitial(() -> new ConcurrentHashMap<>());
 
 }
