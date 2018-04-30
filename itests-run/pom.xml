@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.aries.component-dsl</groupId>
         <artifactId>org.apache.aries.component-dsl.parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -58,12 +58,12 @@
         <dependency>
             <groupId>org.apache.aries.component-dsl</groupId>
             <artifactId>org.apache.aries.component-dsl.itests</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.component-dsl</groupId>
             <artifactId>org.apache.aries.component-dsl.component-dsl</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
             <groupId>org.apache.felix</groupId>
@@ -98,9 +98,9 @@
     </dependencies>
 
     <scm>
-        <connection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.component-dsl.parent-1.0.0/itests-run</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.component-dsl.parent-1.0.0/itests-run</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.component-dsl.parent-1.0.0/itests-run</url>
+        <connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/component-dsl/itests-run</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/component-dsl/itests-run</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/component-dsl/itests-run</url>
     </scm>
 
 </project>
