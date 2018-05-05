@@ -65,7 +65,7 @@ public class ServiceRegistrationOSGiImpl<T>
 		super((bundleContext, op) -> {
 			ServiceRegistration<?> serviceRegistration =
 				bundleContext.registerService(
-					clazz, service, new Hashtable<>(properties.get()));
+					clazz, service.get(), new Hashtable<>(properties.get()));
 
 			return getServiceRegistrationOSGiResult(serviceRegistration, op);
 		});
