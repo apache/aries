@@ -65,21 +65,24 @@ public class ComponentTxData {
 
     private boolean parseTxData(Class<?> c) {
         boolean shouldAssignInterceptor = false;
-        TxType defaultType = getType(c.getAnnotation(Transactional.class));
+        Transactional classAnnotation = c.getAnnotation(Transactional.class);
+        TxType defaultType = getType(classAnnotation);
         if (defaultType != null) {
             shouldAssignInterceptor = true;
         }
         for (Method m : c.getDeclaredMethods()) {
             try {
-                Transactional annotation = m.getAnnotation(Transactional.class);
-                TxType t = getType(annotation);
+                Transactional methodAnnotation = m.getAnnotation(Transactional.class);
+                TxType t = getType(methodAnnotation);
                 if (t != null) {
-                    TransactionalAnnotationAttributes txData = new TransactionalAnnotationAttributes(t, annotation.dontRollbackOn(), annotation.rollbackOn());
+                    TransactionalAnnotationAttributes txData = new TransactionalAnnotationAttributes(t,
+                            methodAnnotation.dontRollbackOn(), methodAnnotation.rollbackOn());
                     assertAllowedModifier(m);
                    txMap.put(m, txData);
                    shouldAssignInterceptor = true;
                 } else if (defaultType != null){
-                    txMap.put(m, new TransactionalAnnotationAttributes(defaultType));
+                    txMap.put(m, new TransactionalAnnotationAttributes(defaultType, classAnnotation.dontRollbackOn(),
+                            classAnnotation.rollbackOn()));
                 }
             } catch(IllegalStateException e) {
                 LOG.warn("Invalid transaction annoation found", e);
