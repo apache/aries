@@ -18,9 +18,12 @@
  */
 package org.apache.aries.transaction;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.sql.BatchUpdateException;
+import java.sql.SQLDataException;
+import java.util.List;
 
 import javax.transaction.Transactional.TxType;
 
@@ -29,6 +32,7 @@ import org.apache.aries.transaction.pojo.AnnotatedPojo;
 import org.apache.aries.transaction.pojo.ExtendedPojo;
 import org.apache.aries.transaction.pojo.ExtendedPojo2;
 import org.apache.aries.transaction.pojo.ExtendedPojo3;
+import org.apache.aries.transaction.pojo.OnRollbackPojo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -38,31 +42,31 @@ public class ComponentTxDataTest {
     public void testFindAnnotation() throws NoSuchMethodException, SecurityException {
         ComponentTxData txData = new ComponentTxData(AnnotatedPojo.class);
         Assert.assertTrue(txData.isTransactional());
-        assertEquals(TxType.REQUIRED, getType(txData, "increment"));
-        assertEquals(TxType.SUPPORTS, getType(txData, "checkValue"));
-        assertEquals(TxType.MANDATORY, getType(txData, "getRealObject"));
+        assertEquals(TxType.REQUIRED, getEffectiveType(txData, "increment").getTxType());
+        assertEquals(TxType.SUPPORTS, getEffectiveType(txData, "checkValue").getTxType());
+        assertEquals(TxType.MANDATORY, getEffectiveType(txData, "getRealObject").getTxType());
     }
     
     @Test
     public void testFindAnnotationExtended() throws Exception {
         ComponentTxData txData = new ComponentTxData(ExtendedPojo.class);
-        assertEquals(TxType.REQUIRED, getType(txData, "defaultType"));
-        assertEquals(TxType.SUPPORTS, getType(txData, "supports"));
+        assertEquals(TxType.REQUIRED, getEffectiveType(txData, "defaultType").getTxType());
+        assertEquals(TxType.SUPPORTS, getEffectiveType(txData, "supports").getTxType());
     }
 
     
     @Test
     public void testFindAnnotationExtended2() throws Exception {
         ComponentTxData txData = new ComponentTxData(ExtendedPojo2.class);
-        assertEquals(TxType.MANDATORY, getType(txData, "defaultType"));
-        assertEquals(TxType.SUPPORTS, getType(txData, "supports"));
+        assertEquals(TxType.MANDATORY, getEffectiveType(txData, "defaultType").getTxType());
+        assertEquals(TxType.SUPPORTS, getEffectiveType(txData, "supports").getTxType());
     }
     
     @Test
     public void testFindAnnotationExtended3() throws Exception {
         ComponentTxData txData = new ComponentTxData(ExtendedPojo3.class);
-        assertEquals(TxType.MANDATORY, getType(txData, "defaultType"));
-        assertEquals(TxType.REQUIRED, getType(txData, "supports"));
+        assertEquals(TxType.MANDATORY, getEffectiveType(txData, "defaultType").getTxType());
+        assertEquals(TxType.REQUIRED, getEffectiveType(txData, "supports").getTxType());
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -75,7 +79,18 @@ public class ComponentTxDataTest {
         new ComponentTxData(BadlyAnnotatedPojo1.class);
     }
     
-    private TxType getType(ComponentTxData txData, String methodName) {
+    @Test
+    public void testOnRollback() {
+        ComponentTxData txData = new ComponentTxData(OnRollbackPojo.class);
+        List<Class> rollbackOnBatchUpdateException = getEffectiveType(txData, "throwBatchUpdateException").getRollbackOn();
+        assertFalse(rollbackOnBatchUpdateException.contains(SQLDataException.class));
+        assertTrue(rollbackOnBatchUpdateException.contains(BatchUpdateException.class));
+        List<Class> rollbackOnSQLDataException = getEffectiveType(txData, "throwSQLDataException").getRollbackOn();
+        assertTrue(rollbackOnSQLDataException.contains(SQLDataException.class));
+        assertFalse(rollbackOnSQLDataException.contains(BatchUpdateException.class));
+    }
+
+    private TransactionalAnnotationAttributes getEffectiveType(ComponentTxData txData, String methodName) {
         Class<?> c = txData.getBeanClass();
         Method m;
         try {
@@ -87,7 +102,7 @@ public class ComponentTxDataTest {
                 throw new IllegalArgumentException(e1);
             }
         }
-        return txData.getEffectiveType(m).getTxType();
+        return txData.getEffectiveType(m);
     }
 
 }
