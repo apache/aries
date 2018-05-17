@@ -52,6 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.apache.aries.component.dsl.OSGi.NOOP;
+import static org.apache.aries.component.dsl.OSGi.coalesce;
 import static org.apache.aries.component.dsl.OSGi.configuration;
 import static org.apache.aries.component.dsl.OSGi.configurations;
 import static org.apache.aries.component.dsl.OSGi.just;
@@ -73,6 +74,116 @@ public class DSLTest {
 
     static BundleContext bundleContext = FrameworkUtil.getBundle(
         DSLTest.class).getBundleContext();
+
+    @Test
+    public void testCoalesce() {
+        ProbeImpl<String> program1 = new ProbeImpl<>();
+        ProbeImpl<String> program2 = new ProbeImpl<>();
+
+        ArrayList<String> effects = new ArrayList<>();
+
+        OSGiResult result = coalesce(
+            program1, program2, just(Arrays.asList("fixed1", "fixed2")),
+            just("never")).
+            effects(effects::add, effects::add).
+            run(bundleContext);
+
+        Publisher<? super String> publisher1 = program1.getPublisher();
+        Publisher<? super String> publisher2 = program2.getPublisher();
+
+        assertEquals(Arrays.asList("fixed1", "fixed2"), effects);
+
+        OSGiResult event1Result = publisher2.publish("event1");
+
+        program2.onClose(event1Result);
+
+        assertEquals(
+            Arrays.asList(
+                "fixed1", "fixed2", "fixed2", "fixed1", "event1"), effects);
+
+        OSGiResult event2Result = publisher1.publish("event2");
+
+        assertEquals(
+            Arrays.asList(
+                "fixed1", "fixed2", "fixed2", "fixed1", "event1", "event1", "event2"), effects);
+
+        event2Result.close();
+
+        assertEquals(
+            Arrays.asList(
+                "fixed1", "fixed2", "fixed2", "fixed1", "event1", "event1", "event2", "event2", "fixed1", "fixed2"), effects);
+
+        event2Result = publisher1.publish("event3");
+
+        program1.onClose(event2Result);
+
+        assertEquals(
+            Arrays.asList(
+                "fixed1", "fixed2", "fixed2", "fixed1", "event1", "event1",
+                "event2", "event2", "fixed1", "fixed2", "fixed2", "fixed1",
+                "event3"),
+            effects);
+
+        result.close();
+
+        assertEquals(
+            Arrays.asList(
+                "fixed1", "fixed2", "fixed2", "fixed1", "event1", "event1",
+                "event2", "event2", "fixed1", "fixed2", "fixed2", "fixed1",
+                "event3", "event3"),
+            effects);
+    }
+
+    @Test
+    public void testCoalesceWhenEmpty() {
+        ProbeImpl<String> program1 = new ProbeImpl<>();
+        ProbeImpl<String> program2 = new ProbeImpl<>();
+
+        ArrayList<String> effects = new ArrayList<>();
+
+        OSGiResult result = coalesce(program1, program2).
+            effects(effects::add, effects::add).
+            run(bundleContext);
+
+        Publisher<? super String> publisher1 = program1.getPublisher();
+        Publisher<? super String> publisher2 = program2.getPublisher();
+
+        assertEquals(Collections.emptyList(), effects);
+
+        OSGiResult event1Result = publisher2.publish("event1");
+
+        program2.onClose(event1Result);
+
+        assertEquals(
+            Arrays.asList("event1"), effects);
+
+        OSGiResult event2Result = publisher1.publish("event2");
+
+        assertEquals(
+            Arrays.asList("event1", "event1", "event2"), effects);
+
+        event2Result.close();
+
+        assertEquals(
+            Arrays.asList("event1", "event1", "event2", "event2"), effects);
+
+        event2Result = publisher1.publish("event3");
+
+        program1.onClose(event2Result);
+
+        assertEquals(
+            Arrays.asList(
+                "event1", "event1", "event2", "event2", "event3"),
+            effects);
+
+        result.close();
+
+        assertEquals(
+            Arrays.asList(
+                "event1", "event1", "event2", "event2", "event3", "event3"),
+            effects);
+    }
+
 
     @Test
     public void testJust() {
