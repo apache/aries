@@ -17,6 +17,7 @@
 
 package org.apache.aries.component.dsl.internal;
 
+import org.apache.aries.component.dsl.OSGiResult;
 import org.apache.aries.component.dsl.OSGiRunnable;
 import org.apache.aries.component.dsl.Publisher;
 import org.osgi.framework.BundleContext;
@@ -36,16 +37,24 @@ public class ProbeImpl<T> extends OSGiImpl<T> {
 
     private static class ProbeOperationImpl<T> implements OSGiRunnable<T> {
 
+        private OSGiResult _onClose = NOOP;
+
         @Override
         public OSGiResultImpl run(
             BundleContext bundleContext, Publisher<? super T> op) {
             _bundleContext = bundleContext;
             _op = op;
 
-            return new OSGiResultImpl(NOOP);
+            return new OSGiResultImpl(
+                () -> {_onClose.close(); _onClose = NOOP;});
         }
+
         BundleContext _bundleContext;
+
         Publisher<? super T> _op;
     }
 
+    public void onClose(OSGiResult onClose) {
+        ((ProbeOperationImpl<T>) _operation)._onClose = onClose;
+    }
 }
