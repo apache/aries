@@ -220,14 +220,22 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new ConfigurationsOSGiImpl(factoryPid);
 	}
 
-	static OSGi<Void> effects(Runnable onAdding, Runnable onRemoving) {
-		return new EffectsOSGi(onAdding, onRemoving);
-	}
-
 	static OSGi<Void> effect(Effect<Void> effect) {
 		return new EffectsOSGi(
 			() -> effect.getOnIncoming().accept(null),
 			() -> effect.getOnLeaving().accept(null));
+	}
+
+	static OSGi<Void> effects(Runnable onAdding, Runnable onRemoving) {
+		return new EffectsOSGi(onAdding, onRemoving);
+	}
+
+	static <T> OSGi<T> fromOsgiRunnable(OSGiRunnable<T> runnable) {
+		return getOsgiFactory().create(runnable);
+	}
+
+	static OSGiFactory getOsgiFactory() {
+		return OSGiImpl::create;
 	}
 
 	static OSGi<Void> ignore(OSGi<?> program) {
@@ -651,14 +659,6 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	default <S> OSGi<S> transform(Transformer<T, S> fun) {
 		return fromOsgiRunnable(
 			(bundleContext, op) -> run(bundleContext, fun.transform(op)));
-	}
-
-	static <T> OSGi<T> fromOsgiRunnable(OSGiRunnable<T> runnable) {
-		return getOsgiFactory().create(runnable);
-	}
-
-	static OSGiFactory getOsgiFactory() {
-		return OSGiImpl::create;
 	}
 
 }
