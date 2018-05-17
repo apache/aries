@@ -72,8 +72,167 @@ import static org.junit.Assert.assertTrue;
 
 public class DSLTest {
 
-    static BundleContext bundleContext = FrameworkUtil.getBundle(
-        DSLTest.class).getBundleContext();
+    @Test
+    public void testAccumulate() {
+        ArrayList<List<String>> lists = new ArrayList<>();
+
+        ArrayList<List<String>> expected = new ArrayList<>();
+
+        ArrayList<List<String>> gone = new ArrayList<>();
+
+        expected.add(Collections.emptyList());
+
+        OSGi<List<String>> osgi = accumulate(
+            serviceReferences(Service.class).map(
+                this::getId
+            )
+        ).effects(lists::add, gone::add);
+
+        OSGiResult run = osgi.run(bundleContext);
+
+        ServiceRegistration<Service> serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Collections.singletonList(getId(serviceRegistrationOne)));
+
+        serviceRegistrationOne.unregister();
+
+        expected.add(Collections.emptyList());
+
+        serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Collections.singletonList(getId(serviceRegistrationOne)));
+
+        ServiceRegistration<Service> serviceRegistrationTwo =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Arrays.asList(
+                getId(serviceRegistrationOne),
+                getId(serviceRegistrationTwo)));
+
+        serviceRegistrationOne.unregister();
+
+        expected.add(
+            Collections.singletonList(
+                getId(serviceRegistrationTwo)));
+
+        serviceRegistrationTwo.unregister();
+
+        expected.add(Collections.emptyList());
+
+        assertEquals(expected, lists);
+
+        run.close();
+
+        assertEquals(lists, gone);
+    }
+
+    @Test
+    public void testAccumulateAtLeastOne() {
+        ArrayList<List<String>> lists = new ArrayList<>();
+
+        ArrayList<List<String>> expected = new ArrayList<>();
+
+        ArrayList<List<String>> gone = new ArrayList<>();
+
+        OSGi<List<String>> osgi =
+            accumulate(
+            serviceReferences(Service.class).map(this::getId)
+        ).filter(l -> !l.isEmpty()).effects(
+            lists::add, gone::add
+        );
+
+        OSGiResult run = osgi.run(bundleContext);
+
+        ServiceRegistration<Service> serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Collections.singletonList(getId(serviceRegistrationOne)));
+
+        serviceRegistrationOne.unregister();
+
+        serviceRegistrationOne =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Collections.singletonList(getId(serviceRegistrationOne)));
+
+        ServiceRegistration<Service> serviceRegistrationTwo =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                }});
+
+        expected.add(
+            Arrays.asList(
+                getId(serviceRegistrationOne),
+                getId(serviceRegistrationTwo)));
+
+        serviceRegistrationOne.unregister();
+
+        expected.add(
+            Collections.singletonList(
+                getId(serviceRegistrationTwo)));
+
+        serviceRegistrationTwo.unregister();
+
+        assertEquals(expected, lists);
+
+        run.close();
+
+        assertEquals(lists, gone);
+    }
+
+    @Test
+    public void testApplicativeApplyTo() {
+        AtomicInteger integer = new AtomicInteger(0);
+
+        OSGi<Integer> program = just(5).applyTo(just((i) -> i + 5));
+
+        program.run(bundleContext, newValue -> {
+            integer.set(newValue);
+
+            return NOOP;
+        });
+
+        assertEquals(10, integer.get());
+    }
+
+    @Test
+    public void testApply() {
+        AtomicInteger integer = new AtomicInteger(0);
+
+        OSGi<Integer> program = OSGi.combine(
+            (a, b, c) -> a + b + c, just(5), just(5), just(5));
+
+        program.run(bundleContext, newValue -> {
+            integer.set(newValue);
+
+            return NOOP;
+        });
+
+        assertEquals(15, integer.get());
+    }
 
     @Test
     public void testCoalesce() {
@@ -184,154 +343,6 @@ public class DSLTest {
             effects);
     }
 
-
-    @Test
-    public void testJust() {
-        AtomicInteger atomicInteger = new AtomicInteger(0);
-
-        OSGi<Integer> just = just(25);
-
-        assertEquals(0, atomicInteger.get());
-
-        try (OSGiResult result = just.run(
-            bundleContext, newValue -> {
-                atomicInteger.set(newValue);
-
-                return NOOP;
-            }))
-        {
-            assertEquals(25, atomicInteger.get());
-        }
-
-        atomicInteger.set(0);
-
-        OSGi<Integer> map = just(25).map(s -> s + 5);
-
-        try (OSGiResult result = map.run(
-            bundleContext, newValue -> {
-                atomicInteger.set(newValue);
-
-                return NOOP;
-            }))
-        {
-            assertEquals(30, atomicInteger.get());
-        }
-
-        atomicInteger.set(0);
-
-        OSGi<Integer> flatMap = just(25).flatMap(s -> just(s + 10));
-
-        try (OSGiResult result = flatMap.run(
-            bundleContext, newValue -> {
-                atomicInteger.set(newValue);
-
-                return NOOP;
-            }))
-        {
-            assertEquals(35, atomicInteger.get());
-        }
-
-        atomicInteger.set(0);
-
-        OSGi<Integer> filter = just(25).filter(s -> s % 2 == 0);
-
-        try (OSGiResult result = filter.run(
-            bundleContext, newValue -> {
-                atomicInteger.set(newValue);
-
-                return NOOP;
-            }))
-        {
-            assertEquals(0, atomicInteger.get());
-        }
-
-        atomicInteger.set(0);
-
-        filter = just(25).filter(s -> s % 2 != 0);
-
-        try (OSGiResult result = filter.run(
-            bundleContext, newValue -> {
-                atomicInteger.set(newValue);
-
-                return NOOP;
-            }))
-        {
-            assertEquals(25, atomicInteger.get());
-        }
-
-    }
-
-    @Test
-    public void testServiceReferences() {
-        AtomicReference<CachingServiceReference<Service>> atomicReference =
-            new AtomicReference<>();
-
-        ServiceRegistration<Service> serviceRegistration = null;
-
-        try(
-            OSGiResult osGiResult =
-                serviceReferences(Service.class).
-                run(bundleContext, newValue -> {
-                    atomicReference.set(newValue);
-
-                    return NOOP;
-                })
-        ) {
-            assertNull(atomicReference.get());
-
-            serviceRegistration = bundleContext.registerService(
-                Service.class, new Service(), new Hashtable<>());
-
-            assertEquals(
-                serviceRegistration.getReference(),
-                atomicReference.get().getServiceReference());
-        }
-        finally {
-            if (serviceRegistration != null) {
-                serviceRegistration.unregister();
-            }
-        }
-    }
-
-    @Test
-    public void testServiceReferencesAndClose() {
-        AtomicReference<CachingServiceReference<Service>> atomicReference =
-            new AtomicReference<>();
-
-        OSGi<CachingServiceReference<Service>> program =
-            serviceReferences(Service.class).flatMap(ref ->
-            onClose(() -> atomicReference.set(null)).
-            then(just(ref))
-        );
-
-        ServiceRegistration<Service> serviceRegistration = null;
-
-        try(
-            OSGiResult osGiResult = program.run(
-            bundleContext, newValue -> {
-                    atomicReference.set(newValue);
-
-                    return NOOP;
-                })
-        ) {
-            assertNull(atomicReference.get());
-
-            serviceRegistration = bundleContext.registerService(
-                Service.class, new Service(), new Hashtable<>());
-
-            assertEquals(
-                serviceRegistration.getReference(),
-                atomicReference.get().getServiceReference());
-        }
-        finally {
-            if (serviceRegistration != null) {
-                serviceRegistration.unregister();
-            }
-        }
-
-        assertNull(atomicReference.get());
-    }
-
     @Test
     public void testConfiguration() throws IOException, InterruptedException {
         ServiceReference<ConfigurationAdmin> serviceReference =
@@ -378,7 +389,6 @@ public class DSLTest {
         }
     }
 
-
     @Test
     public void testConfigurations() throws IOException, InterruptedException {
         ServiceReference<ConfigurationAdmin> serviceReference =
@@ -424,26 +434,6 @@ public class DSLTest {
                 configuration.delete();
             }
         }
-    }
-
-    @Test
-    public void testRegister() {
-        assertNull(bundleContext.getServiceReference(Service.class));
-
-        Service service = new Service();
-
-        OSGiResult result = register(
-            Service.class, service, new HashMap<>()).
-            run(bundleContext);
-
-        ServiceReference<Service> serviceReference =
-            bundleContext.getServiceReference(Service.class);
-
-        assertEquals(service, bundleContext.getService(serviceReference));
-
-        result.close();
-
-        assertNull(bundleContext.getServiceReference(Service.class));
     }
 
     @Test
@@ -592,67 +582,77 @@ public class DSLTest {
     }
 
     @Test
-    public void testProgrammaticDependencies() {
-        AtomicBoolean executed = new AtomicBoolean(false);
-        AtomicBoolean closed = new AtomicBoolean(false);
+    public void testHighestRankingDiscards() {
+        ArrayList<ServiceReference<?>> discards = new ArrayList<>();
 
-        String[] filters = {
-            "(key=service one)",
-            "(key=service two)",
-            "(key=service three)"
-        };
+        OSGi<CachingServiceReference<Service>> program = highest(
+            serviceReferences(Service.class),
+            Comparator.naturalOrder(),
+            dp ->
+                dp.map(CachingServiceReference::getServiceReference).effects(
+                    discards::add, discards::remove).then(nothing()));
 
-        OSGi<?> program =
-            onClose(() -> closed.set(true)).foreach(
-            ign -> executed.set(true)
-        );
-
-        for (String filter : filters) {
-            program = services(filter).then(program);
-        }
+        assertTrue(discards.isEmpty());
 
         try (OSGiResult result = program.run(bundleContext)) {
-            assertFalse(closed.get());
-            assertFalse(executed.get());
-
             ServiceRegistration<Service> serviceRegistrationOne =
                 bundleContext.registerService(
                     Service.class, new Service(),
                     new Hashtable<String, Object>() {{
-                        put("key", "service one");
+                        put("service.ranking", 0);
                     }});
 
-            assertFalse(closed.get());
-            assertFalse(executed.get());
+            assertEquals(Collections.emptyList(), discards);
 
             ServiceRegistration<Service> serviceRegistrationTwo =
                 bundleContext.registerService(
                     Service.class, new Service(),
                     new Hashtable<String, Object>() {{
-                        put("key", "service two");
+                        put("service.ranking", 1);
                     }});
 
-            assertFalse(closed.get());
-            assertFalse(executed.get());
+            assertEquals(
+                Collections.singletonList(
+                    serviceRegistrationOne.getReference()),
+                discards);
 
-            ServiceRegistration<Service> serviceRegistrationThree =
+            ServiceRegistration<Service> serviceRegistrationMinusOne =
                 bundleContext.registerService(
                     Service.class, new Service(),
                     new Hashtable<String, Object>() {{
-                        put("key", "service three");
+                        put("service.ranking", -1);
                     }});
 
-            assertFalse(closed.get());
-            assertTrue(executed.get());
+            assertEquals(
+                Arrays.asList(
+                    serviceRegistrationOne.getReference(),
+                    serviceRegistrationMinusOne.getReference()),
+                discards);
+
+            serviceRegistrationTwo.unregister();
+
+            assertEquals(
+                Arrays.asList(serviceRegistrationMinusOne.getReference()),
+                discards);
 
             serviceRegistrationOne.unregister();
 
-            assertTrue(closed.get());
+            assertTrue(discards.isEmpty());
 
-            serviceRegistrationTwo.unregister();
-            serviceRegistrationThree.unregister();
+            serviceRegistrationOne =
+                bundleContext.registerService(
+                    Service.class, new Service(),
+                    new Hashtable<String, Object>() {{
+                        put("service.ranking", 0);
+                    }});
+
+            assertEquals(
+                Arrays.asList(serviceRegistrationMinusOne.getReference()),
+                discards);
+
+            serviceRegistrationMinusOne.unregister();
+            serviceRegistrationOne.unregister();
         }
-
     }
 
     @Test
@@ -730,216 +730,457 @@ public class DSLTest {
     }
 
     @Test
-    public void testHighestRankingDiscards() {
-        ArrayList<ServiceReference<?>> discards = new ArrayList<>();
+    public void testJust() {
+        AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        OSGi<CachingServiceReference<Service>> program = highest(
-            serviceReferences(Service.class),
-            Comparator.naturalOrder(),
-            dp ->
-                dp.map(CachingServiceReference::getServiceReference).effects(
-                    discards::add, discards::remove).then(nothing()));
+        OSGi<Integer> just = just(25);
 
-        assertTrue(discards.isEmpty());
+        assertEquals(0, atomicInteger.get());
+
+        try (OSGiResult result = just.run(
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
+        {
+            assertEquals(25, atomicInteger.get());
+        }
+
+        atomicInteger.set(0);
+
+        OSGi<Integer> map = just(25).map(s -> s + 5);
+
+        try (OSGiResult result = map.run(
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
+        {
+            assertEquals(30, atomicInteger.get());
+        }
+
+        atomicInteger.set(0);
+
+        OSGi<Integer> flatMap = just(25).flatMap(s -> just(s + 10));
+
+        try (OSGiResult result = flatMap.run(
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
+        {
+            assertEquals(35, atomicInteger.get());
+        }
+
+        atomicInteger.set(0);
+
+        OSGi<Integer> filter = just(25).filter(s -> s % 2 == 0);
+
+        try (OSGiResult result = filter.run(
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
+        {
+            assertEquals(0, atomicInteger.get());
+        }
+
+        atomicInteger.set(0);
+
+        filter = just(25).filter(s -> s % 2 != 0);
+
+        try (OSGiResult result = filter.run(
+            bundleContext, newValue -> {
+                atomicInteger.set(newValue);
+
+                return NOOP;
+            }))
+        {
+            assertEquals(25, atomicInteger.get());
+        }
+
+    }
+
+    @Test
+    public void testMultipleApplies() {
+        ArrayList<Integer> results = new ArrayList<>();
+        AtomicInteger results2 = new AtomicInteger();
+
+        OSGi<Integer> program = OSGi.combine(
+            (a, b, c) -> a + b + c, just(Arrays.asList(5, 20)),
+            just(Arrays.asList(5, 40)), just(Arrays.asList(5, 60)));
+
+        OSGiResult or = program.run(bundleContext, newValue -> {
+            results.add(newValue);
+
+            return NOOP;
+        });
+
+        or.close();
+
+        OSGiResult or2 = program.run(
+            bundleContext, i -> {
+                results2.accumulateAndGet(i, (a, b) -> a + b);
+
+                return NOOP;
+            });
+
+        or2.close();
+
+        assertEquals(8, results.size());
+        assertEquals(540, results2.get());
+    }
+
+    @Test
+    public void testOnCloseWithError() {
+        ArrayList<Object> result = new ArrayList<>();
+        ArrayList<Object> left = new ArrayList<>();
+
+        OSGi<Integer> program = just(
+            Arrays.asList(1, 2, 3, 4, 5, 6)
+        ).recoverWith(
+            (__, e) -> just(0)
+        ).flatMap(t ->
+            onClose(() -> left.add(t)).then(just(t))
+        ).
+        flatMap(t -> {
+            if (t % 2 != 0) {
+                throw new RuntimeException();
+            }
+
+            return just(t);
+        });
+
+        try (OSGiResult run = program.run(bundleContext, e -> {
+            result.add(e);
+
+            return NOOP;
+        })) {
+            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
+            assertEquals(Arrays.asList(1, 3, 5), left);
+        }
+    }
+
+    @Test
+    public void testOnce() {
+        ProbeImpl<Integer> probe = new ProbeImpl<>();
+
+
+        AtomicInteger count = new AtomicInteger();
+
+        OSGi<Integer> once =
+            once(probe).effects(
+                t -> count.incrementAndGet(),
+                t -> count.set(0));
+
+        once.run(bundleContext);
+
+        Publisher<? super Integer> op = probe.getPublisher();
+
+        assertEquals(0, count.get());
+
+        Runnable se = op.apply(1);
+
+        assertEquals(1, count.get());
+
+        se.run();
+
+        assertEquals(0, count.get());
+
+        se = op.apply(1);
+        Runnable se2 = op.apply(2);
+        Runnable se3 = op.apply(3);
+
+        assertEquals(1, count.get());
+
+        se.run();
+
+        assertEquals(1, count.get());
+
+        se3.run();
+
+        assertEquals(1, count.get());
+
+        se2.run();
+
+        assertEquals(0, count.get());
+    }
+
+    @Test
+    public void testProgrammaticDependencies() {
+        AtomicBoolean executed = new AtomicBoolean(false);
+        AtomicBoolean closed = new AtomicBoolean(false);
+
+        String[] filters = {
+            "(key=service one)",
+            "(key=service two)",
+            "(key=service three)"
+        };
+
+        OSGi<?> program =
+            onClose(() -> closed.set(true)).foreach(
+            ign -> executed.set(true)
+        );
+
+        for (String filter : filters) {
+            program = services(filter).then(program);
+        }
 
         try (OSGiResult result = program.run(bundleContext)) {
+            assertFalse(closed.get());
+            assertFalse(executed.get());
+
             ServiceRegistration<Service> serviceRegistrationOne =
                 bundleContext.registerService(
                     Service.class, new Service(),
                     new Hashtable<String, Object>() {{
-                        put("service.ranking", 0);
+                        put("key", "service one");
                     }});
 
-            assertEquals(Collections.emptyList(), discards);
+            assertFalse(closed.get());
+            assertFalse(executed.get());
 
             ServiceRegistration<Service> serviceRegistrationTwo =
                 bundleContext.registerService(
                     Service.class, new Service(),
                     new Hashtable<String, Object>() {{
-                        put("service.ranking", 1);
+                        put("key", "service two");
                     }});
 
-            assertEquals(
-                Collections.singletonList(
-                    serviceRegistrationOne.getReference()),
-                discards);
+            assertFalse(closed.get());
+            assertFalse(executed.get());
 
-            ServiceRegistration<Service> serviceRegistrationMinusOne =
+            ServiceRegistration<Service> serviceRegistrationThree =
                 bundleContext.registerService(
                     Service.class, new Service(),
                     new Hashtable<String, Object>() {{
-                        put("service.ranking", -1);
+                        put("key", "service three");
                     }});
 
-            assertEquals(
-                Arrays.asList(
-                    serviceRegistrationOne.getReference(),
-                    serviceRegistrationMinusOne.getReference()),
-                discards);
+            assertFalse(closed.get());
+            assertTrue(executed.get());
+
+            serviceRegistrationOne.unregister();
+
+            assertTrue(closed.get());
 
             serviceRegistrationTwo.unregister();
+            serviceRegistrationThree.unregister();
+        }
 
-            assertEquals(
-                Arrays.asList(serviceRegistrationMinusOne.getReference()),
-                discards);
+    }
 
-            serviceRegistrationOne.unregister();
+    @Test
+    public void testRecover() {
+        ArrayList<Object> result = new ArrayList<>();
+        ArrayList<Object> arrived = new ArrayList<>();
+        ArrayList<Object> left = new ArrayList<>();
 
-            assertTrue(discards.isEmpty());
+        OSGi<Integer> program = just(
+            Arrays.asList(1, 2, 3, 4, 5, 6)
+        ).recover(
+            (__, e) -> 0
+        ).effects(
+            arrived::add, left::add
+        ).
+        effects(
+            t -> {
+                if (t % 2 != 0) {
+                    throw new RuntimeException();
+                }
+            }
+            , __ -> {}
+        );
 
-            serviceRegistrationOne =
-                bundleContext.registerService(
-                    Service.class, new Service(),
-                    new Hashtable<String, Object>() {{
-                        put("service.ranking", 0);
-                    }});
+        try (OSGiResult run = program.run(bundleContext, e -> {
+            result.add(e);
 
-            assertEquals(
-                Arrays.asList(serviceRegistrationMinusOne.getReference()),
-                discards);
+            return NOOP;
+        })) {
+            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
+            assertEquals(Arrays.asList(1, 0, 2, 3, 0, 4, 5, 0, 6), arrived);
+            assertEquals(Arrays.asList(1, 3, 5), left);
 
-            serviceRegistrationMinusOne.unregister();
-            serviceRegistrationOne.unregister();
+            arrived.removeAll(left);
+            assertEquals(arrived, result);
         }
     }
 
     @Test
-    public void testAccumulate() {
-        ArrayList<List<String>> lists = new ArrayList<>();
+    public void testRecoverWith() {
+        ArrayList<Object> result = new ArrayList<>();
+        ArrayList<Object> arrived = new ArrayList<>();
+        ArrayList<Object> left = new ArrayList<>();
 
-        ArrayList<List<String>> expected = new ArrayList<>();
+        OSGi<Integer> program = just(
+            Arrays.asList(1, 2, 3, 4, 5, 6)
+        ).recoverWith(
+            (__, e) -> just(0)
+        ).effects(
+            arrived::add, left::add
+        ).effects(
+            t -> {
+                if (t % 2 != 0) {
+                    throw new RuntimeException();
+                }
+            }
+            , __ -> {}
+        );
 
-        ArrayList<List<String>> gone = new ArrayList<>();
+        try (OSGiResult run = program.run(bundleContext, e -> {
+            result.add(e);
 
-        expected.add(Collections.emptyList());
+            return NOOP;
+        })) {
+            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
+            assertEquals(Arrays.asList(1, 0, 2, 3, 0, 4, 5, 0, 6), arrived);
+            assertEquals(Arrays.asList(1, 3, 5), left);
 
-        OSGi<List<String>> osgi = accumulate(
-            serviceReferences(Service.class).map(
-                this::getId
-            )
-        ).effects(lists::add, gone::add);
-
-        OSGiResult run = osgi.run(bundleContext);
-
-        ServiceRegistration<Service> serviceRegistrationOne =
-            bundleContext.registerService(
-                Service.class, new Service(),
-                new Hashtable<String, Object>() {{
-                }});
-
-        expected.add(
-            Collections.singletonList(getId(serviceRegistrationOne)));
-
-        serviceRegistrationOne.unregister();
-
-        expected.add(Collections.emptyList());
-
-        serviceRegistrationOne =
-            bundleContext.registerService(
-                Service.class, new Service(),
-                new Hashtable<String, Object>() {{
-                }});
-
-        expected.add(
-            Collections.singletonList(getId(serviceRegistrationOne)));
-
-        ServiceRegistration<Service> serviceRegistrationTwo =
-            bundleContext.registerService(
-                Service.class, new Service(),
-                new Hashtable<String, Object>() {{
-                }});
-
-        expected.add(
-            Arrays.asList(
-                getId(serviceRegistrationOne),
-                getId(serviceRegistrationTwo)));
-
-        serviceRegistrationOne.unregister();
-
-        expected.add(
-            Collections.singletonList(
-                getId(serviceRegistrationTwo)));
-
-        serviceRegistrationTwo.unregister();
-
-        expected.add(Collections.emptyList());
-
-        assertEquals(expected, lists);
-
-        run.close();
-
-        assertEquals(lists, gone);
-    }
-
-    public String getId(CachingServiceReference<?> csr) {
-        return csr.getProperty("service.id").toString();
-    }
-
-    public String getId(ServiceRegistration<?> sr) {
-        return sr.getReference().getProperty("service.id").toString();
+            arrived.removeAll(left);
+            assertEquals(arrived, result);
+        }
     }
 
     @Test
-    public void testAccumulateAtLeastOne() {
-        ArrayList<List<String>> lists = new ArrayList<>();
+    public void testRegister() {
+        assertNull(bundleContext.getServiceReference(Service.class));
 
-        ArrayList<List<String>> expected = new ArrayList<>();
+        Service service = new Service();
 
-        ArrayList<List<String>> gone = new ArrayList<>();
+        OSGiResult result = register(
+            Service.class, service, new HashMap<>()).
+            run(bundleContext);
 
-        OSGi<List<String>> osgi =
-            accumulate(
-            serviceReferences(Service.class).map(this::getId)
-        ).filter(l -> !l.isEmpty()).effects(
-            lists::add, gone::add
+        ServiceReference<Service> serviceReference =
+            bundleContext.getServiceReference(Service.class);
+
+        assertEquals(service, bundleContext.getService(serviceReference));
+
+        result.close();
+
+        assertNull(bundleContext.getServiceReference(Service.class));
+    }
+
+    @Test
+    public void testServiceReferenceRefresher() {
+        ServiceRegistration<Service> serviceRegistration =
+            bundleContext.registerService(
+                Service.class, new Service(),
+                new Hashtable<String, Object>() {{
+                    put("good", 0);
+                    put("bad", 0);
+                }});
+
+        AtomicInteger atomicInteger = new AtomicInteger();
+
+        try {
+            /* reload only when property "good" has changed */
+            OSGi<?> program = serviceReferences(
+                Service.class, csr -> csr.isDirty("good")).map(
+                    csr -> csr.getProperty("good"));
+
+            program.run(bundleContext, (__) -> {
+                atomicInteger.incrementAndGet();
+
+                return NOOP;
+            });
+
+            assertEquals(1, atomicInteger.get());
+
+            serviceRegistration.setProperties(
+                new Hashtable<String, Object>() {{
+                    put("good", 0);
+                    put("bad", 1);
+                }});
+
+            assertEquals(1, atomicInteger.get());
+
+            serviceRegistration.setProperties(
+                new Hashtable<String, Object>() {{
+                    put("good", 1);
+                    put("bad", 1);
+                }});
+
+            assertEquals(2, atomicInteger.get());
+        }
+        finally {
+            serviceRegistration.unregister();
+        }
+    }
+
+    @Test
+    public void testServiceReferences() {
+        AtomicReference<CachingServiceReference<Service>> atomicReference =
+            new AtomicReference<>();
+
+        ServiceRegistration<Service> serviceRegistration = null;
+
+        try(
+            OSGiResult osGiResult =
+                serviceReferences(Service.class).
+                run(bundleContext, newValue -> {
+                    atomicReference.set(newValue);
+
+                    return NOOP;
+                })
+        ) {
+            assertNull(atomicReference.get());
+
+            serviceRegistration = bundleContext.registerService(
+                Service.class, new Service(), new Hashtable<>());
+
+            assertEquals(
+                serviceRegistration.getReference(),
+                atomicReference.get().getServiceReference());
+        }
+        finally {
+            if (serviceRegistration != null) {
+                serviceRegistration.unregister();
+            }
+        }
+    }
+
+    @Test
+    public void testServiceReferencesAndClose() {
+        AtomicReference<CachingServiceReference<Service>> atomicReference =
+            new AtomicReference<>();
+
+        OSGi<CachingServiceReference<Service>> program =
+            serviceReferences(Service.class).flatMap(ref ->
+            onClose(() -> atomicReference.set(null)).
+            then(just(ref))
         );
 
-        OSGiResult run = osgi.run(bundleContext);
+        ServiceRegistration<Service> serviceRegistration = null;
 
-        ServiceRegistration<Service> serviceRegistrationOne =
-            bundleContext.registerService(
-                Service.class, new Service(),
-                new Hashtable<String, Object>() {{
-                }});
+        try(
+            OSGiResult osGiResult = program.run(
+            bundleContext, newValue -> {
+                    atomicReference.set(newValue);
 
-        expected.add(
-            Collections.singletonList(getId(serviceRegistrationOne)));
+                    return NOOP;
+                })
+        ) {
+            assertNull(atomicReference.get());
 
-        serviceRegistrationOne.unregister();
+            serviceRegistration = bundleContext.registerService(
+                Service.class, new Service(), new Hashtable<>());
 
-        serviceRegistrationOne =
-            bundleContext.registerService(
-                Service.class, new Service(),
-                new Hashtable<String, Object>() {{
-                }});
+            assertEquals(
+                serviceRegistration.getReference(),
+                atomicReference.get().getServiceReference());
+        }
+        finally {
+            if (serviceRegistration != null) {
+                serviceRegistration.unregister();
+            }
+        }
 
-        expected.add(
-            Collections.singletonList(getId(serviceRegistrationOne)));
-
-        ServiceRegistration<Service> serviceRegistrationTwo =
-            bundleContext.registerService(
-                Service.class, new Service(),
-                new Hashtable<String, Object>() {{
-                }});
-
-        expected.add(
-            Arrays.asList(
-                getId(serviceRegistrationOne),
-                getId(serviceRegistrationTwo)));
-
-        serviceRegistrationOne.unregister();
-
-        expected.add(
-            Collections.singletonList(
-                getId(serviceRegistrationTwo)));
-
-        serviceRegistrationTwo.unregister();
-
-        assertEquals(expected, lists);
-
-        run.close();
-
-        assertEquals(lists, gone);
+        assertNull(atomicReference.get());
     }
 
     @Test
@@ -1031,262 +1272,8 @@ public class DSLTest {
 
         assertEquals(maps, gone);
     }
-
-    @Test
-    public void testApplicativeApplyTo() {
-        AtomicInteger integer = new AtomicInteger(0);
-
-        OSGi<Integer> program = just(5).applyTo(just((i) -> i + 5));
-
-        program.run(bundleContext, newValue -> {
-            integer.set(newValue);
-
-            return NOOP;
-        });
-
-        assertEquals(10, integer.get());
-    }
-
-    @Test
-    public void testApply() {
-        AtomicInteger integer = new AtomicInteger(0);
-
-        OSGi<Integer> program = OSGi.combine(
-            (a, b, c) -> a + b + c, just(5), just(5), just(5));
-
-        program.run(bundleContext, newValue -> {
-            integer.set(newValue);
-
-            return NOOP;
-        });
-
-        assertEquals(15, integer.get());
-    }
-
-    @Test
-    public void testMultipleApplies() {
-        ArrayList<Integer> results = new ArrayList<>();
-        AtomicInteger results2 = new AtomicInteger();
-
-        OSGi<Integer> program = OSGi.combine(
-            (a, b, c) -> a + b + c, just(Arrays.asList(5, 20)),
-            just(Arrays.asList(5, 40)), just(Arrays.asList(5, 60)));
-
-        OSGiResult or = program.run(bundleContext, newValue -> {
-            results.add(newValue);
-
-            return NOOP;
-        });
-
-        or.close();
-
-        OSGiResult or2 = program.run(
-            bundleContext, i -> {
-                results2.accumulateAndGet(i, (a, b) -> a + b);
-
-                return NOOP;
-            });
-
-        or2.close();
-
-        assertEquals(8, results.size());
-        assertEquals(540, results2.get());
-    }
-
-    @Test
-    public void testOnce() {
-        ProbeImpl<Integer> probe = new ProbeImpl<>();
-
-
-        AtomicInteger count = new AtomicInteger();
-
-        OSGi<Integer> once =
-            once(probe).effects(
-                t -> count.incrementAndGet(),
-                t -> count.set(0));
-
-        once.run(bundleContext);
-
-        Publisher<? super Integer> op = probe.getPublisher();
-
-        assertEquals(0, count.get());
-
-        Runnable se = op.apply(1);
-
-        assertEquals(1, count.get());
-
-        se.run();
-
-        assertEquals(0, count.get());
-
-        se = op.apply(1);
-        Runnable se2 = op.apply(2);
-        Runnable se3 = op.apply(3);
-
-        assertEquals(1, count.get());
-
-        se.run();
-
-        assertEquals(1, count.get());
-
-        se3.run();
-
-        assertEquals(1, count.get());
-
-        se2.run();
-
-        assertEquals(0, count.get());
-    }
-
-    @Test
-    public void testServiceReferenceRefresher() {
-        ServiceRegistration<Service> serviceRegistration =
-            bundleContext.registerService(
-                Service.class, new Service(),
-                new Hashtable<String, Object>() {{
-                    put("good", 0);
-                    put("bad", 0);
-                }});
-
-        AtomicInteger atomicInteger = new AtomicInteger();
-
-        try {
-            /* reload only when property "good" has changed */
-            OSGi<?> program = serviceReferences(
-                Service.class, csr -> csr.isDirty("good")).map(
-                    csr -> csr.getProperty("good"));
-
-            program.run(bundleContext, (__) -> {
-                atomicInteger.incrementAndGet();
-
-                return NOOP;
-            });
-
-            assertEquals(1, atomicInteger.get());
-
-            serviceRegistration.setProperties(
-                new Hashtable<String, Object>() {{
-                    put("good", 0);
-                    put("bad", 1);
-                }});
-
-            assertEquals(1, atomicInteger.get());
-
-            serviceRegistration.setProperties(
-                new Hashtable<String, Object>() {{
-                    put("good", 1);
-                    put("bad", 1);
-                }});
-
-            assertEquals(2, atomicInteger.get());
-        }
-        finally {
-            serviceRegistration.unregister();
-        }
-    }
-
-    @Test
-    public void testRecover() {
-        ArrayList<Object> result = new ArrayList<>();
-        ArrayList<Object> arrived = new ArrayList<>();
-        ArrayList<Object> left = new ArrayList<>();
-
-        OSGi<Integer> program = just(
-            Arrays.asList(1, 2, 3, 4, 5, 6)
-        ).recover(
-            (__, e) -> 0
-        ).effects(
-            arrived::add, left::add
-        ).
-        effects(
-            t -> {
-                if (t % 2 != 0) {
-                    throw new RuntimeException();
-                }
-            }
-            , __ -> {}
-        );
-
-        try (OSGiResult run = program.run(bundleContext, e -> {
-            result.add(e);
-
-            return NOOP;
-        })) {
-            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
-            assertEquals(Arrays.asList(1, 0, 2, 3, 0, 4, 5, 0, 6), arrived);
-            assertEquals(Arrays.asList(1, 3, 5), left);
-
-            arrived.removeAll(left);
-            assertEquals(arrived, result);
-        }
-    }
-
-    @Test
-    public void testRecoverWith() {
-        ArrayList<Object> result = new ArrayList<>();
-        ArrayList<Object> arrived = new ArrayList<>();
-        ArrayList<Object> left = new ArrayList<>();
-
-        OSGi<Integer> program = just(
-            Arrays.asList(1, 2, 3, 4, 5, 6)
-        ).recoverWith(
-            (__, e) -> just(0)
-        ).effects(
-            arrived::add, left::add
-        ).effects(
-            t -> {
-                if (t % 2 != 0) {
-                    throw new RuntimeException();
-                }
-            }
-            , __ -> {}
-        );
-
-        try (OSGiResult run = program.run(bundleContext, e -> {
-            result.add(e);
-
-            return NOOP;
-        })) {
-            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
-            assertEquals(Arrays.asList(1, 0, 2, 3, 0, 4, 5, 0, 6), arrived);
-            assertEquals(Arrays.asList(1, 3, 5), left);
-
-            arrived.removeAll(left);
-            assertEquals(arrived, result);
-        }
-    }
-
-    @Test
-    public void testOnCloseWithError() {
-        ArrayList<Object> result = new ArrayList<>();
-        ArrayList<Object> left = new ArrayList<>();
-
-        OSGi<Integer> program = just(
-            Arrays.asList(1, 2, 3, 4, 5, 6)
-        ).recoverWith(
-            (__, e) -> just(0)
-        ).flatMap(t ->
-            onClose(() -> left.add(t)).then(just(t))
-        ).
-        flatMap(t -> {
-            if (t % 2 != 0) {
-                throw new RuntimeException();
-            }
-
-            return just(t);
-        });
-
-        try (OSGiResult run = program.run(bundleContext, e -> {
-            result.add(e);
-
-            return NOOP;
-        })) {
-            assertEquals(Arrays.asList(0, 2, 0, 4, 0, 6), result);
-            assertEquals(Arrays.asList(1, 3, 5), left);
-        }
-    }
-
-    private class Service {}
+    static BundleContext bundleContext = FrameworkUtil.getBundle(
+        DSLTest.class).getBundleContext();
 
     private static String[] canonicalize(Object propertyValue) {
         if (propertyValue == null) {
@@ -1307,5 +1294,15 @@ public class DSLTest {
 
         return new String[]{propertyValue.toString()};
     }
+
+    private String getId(CachingServiceReference<?> csr) {
+        return csr.getProperty("service.id").toString();
+    }
+
+    private String getId(ServiceRegistration<?> sr) {
+        return sr.getReference().getProperty("service.id").toString();
+    }
+
+    private class Service {}
 
 }
