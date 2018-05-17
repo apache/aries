@@ -43,4 +43,5 @@
   org.apache.felix.configadmin; version='[1.8.8,1.8.9)',\
   osgi.enroute.hamcrest.wrapper; version='[1.3.0,1.3.1)',\
   osgi.enroute.junit.wrapper; version='[4.12.0,4.12.1)'
-#-runvm: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+
+-include: -personal.bnd
