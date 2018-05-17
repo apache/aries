@@ -29,6 +29,7 @@ import org.apache.aries.component.dsl.function.Function4;
 import org.apache.aries.component.dsl.function.Function6;
 import org.apache.aries.component.dsl.function.Function8;
 import org.apache.aries.component.dsl.function.Function9;
+import org.apache.aries.component.dsl.internal.CoalesceOSGiImpl;
 import org.apache.aries.component.dsl.internal.ConfigurationOSGiImpl;
 import org.apache.aries.component.dsl.internal.EffectsOSGi;
 import org.apache.aries.component.dsl.internal.NothingOSGiImpl;
@@ -104,6 +105,11 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		BundleContext bundleContext, OSGi<T> program) {
 
 		return new ChangeContextOSGiImpl<>(program, bundleContext);
+	}
+
+	@SafeVarargs
+	static <T> OSGi<T> coalesce(OSGi<T> ... programs) {
+		return new CoalesceOSGiImpl<>(programs);
 	}
 
 	static <A, B, RES> OSGi<RES> combine(Function2<A, B, RES> fun, OSGi<A> a, OSGi<B> b) {
