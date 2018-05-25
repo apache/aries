@@ -18,6 +18,25 @@
  */
 package org.apache.aries.spifly.dynamic;
 
+import org.apache.aries.mytest.MySPI;
+import org.apache.aries.spifly.BaseActivator;
+import org.apache.aries.spifly.SpiFlyConstants;
+import org.apache.aries.spifly.Streams;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleReference;
+import org.osgi.framework.Version;
+import org.osgi.framework.hooks.weaving.WeavingHook;
+import org.osgi.framework.hooks.weaving.WovenClass;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -42,25 +61,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.aries.mytest.MySPI;
-import org.apache.aries.spifly.BaseActivator;
-import org.apache.aries.spifly.SpiFlyConstants;
-import org.apache.aries.spifly.Streams;
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.Version;
-import org.osgi.framework.hooks.weaving.WeavingHook;
-import org.osgi.framework.hooks.weaving.WovenClass;
-import org.osgi.framework.wiring.BundleRevision;
-import org.osgi.framework.wiring.BundleWiring;
 
 public class ClientWeavingHookTest {
     DynamicWeavingActivator activator;
@@ -112,6 +112,43 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals(Collections.singleton("olleh"), result);
+    }
+
+    @Test
+    public void testBasicServiceLoaderUsage2() throws Exception {
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+
+        // Register the bundle that provides the SPI implementation.
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
+
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        Assert.assertNotNull("Precondition", clsUrl);
+
+        String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
+        WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+        Assert.assertEquals(1, wc.getDynamicImports().size());
+        String di1 = "org.apache.aries.spifly;bundle-symbolic-name=spifly;bundle-version=1.9.4";
+        String di2 = "org.apache.aries.spifly;bundle-version=1.9.4;bundle-symbolic-name=spifly";
+        String di = wc.getDynamicImports().get(0);
+        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di) || di2.equals(di));
+
+        // Invoke the woven class and check that it properly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("testService2", new Class [] {String.class});
         Object result = method.invoke(cls.newInstance(), "hello");
         Assert.assertEquals(Collections.singleton("olleh"), result);
     }

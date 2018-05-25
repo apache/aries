@@ -18,11 +18,11 @@
  */
 package org.apache.aries.spifly.dynamic;
 
+import org.apache.aries.mytest.MySPI;
+
 import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
-
-import org.apache.aries.mytest.MySPI;
 
 public class TestClient {
 	/**
@@ -37,7 +37,7 @@ public class TestClient {
         }
         return results;
     }
-    
+
 	/**
 	 * Load using a variable as parameter.
 	 */
@@ -47,10 +47,24 @@ public class TestClient {
         // Try to irritate TCCLSetterVisitor by forcing an (irrelevant) LDC.
         @SuppressWarnings("unused")
 		Class<?> causeLDC = String.class;
-        
+
         ServiceLoader<MySPI> loader = ServiceLoader.load(service);
         for (MySPI mySPI : loader) {
             results.add(mySPI.someMethod(input));
+        }
+        return results;
+    }
+
+    /**
+     * Slightly different example where the class is loaded using Class.forName()
+     */
+    public Set<String> testService2(String input) throws Exception {
+        Set<String> results = new HashSet<String>();
+
+        Class<?> cls = Class.forName("org.apache.aries.mytest.MySPI");
+        ServiceLoader<?> loader = ServiceLoader.load(cls);
+        for (Object obj : loader) {
+            results.add(((MySPI) obj).someMethod(input));
         }
         return results;
     }
