@@ -103,9 +103,11 @@ public class ConfigurationsOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 								}
 							);
 
-							signalLeave(pid, terminators);
+							UpdateSupport.runUpdate(() -> {
+								signalLeave(pid, terminators);
 
-							terminators.put(pid, op.apply(properties));
+								terminators.put(pid, op.apply(properties));
+							});
 
 							if (closed.get()) {
 							/*

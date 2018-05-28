@@ -346,6 +346,99 @@ public class DSLTest {
     }
 
     @Test
+    public void testCoalesceWithConfigurationUpdate()
+        throws IOException, InterruptedException {
+
+        ServiceReference<ConfigurationAdmin> serviceReference =
+            bundleContext.getServiceReference(ConfigurationAdmin.class);
+
+        ConfigurationAdmin configurationAdmin = bundleContext.getService(
+            serviceReference);
+
+        Configuration configuration = configurationAdmin.getConfiguration(
+            "test.configuration");
+
+        configuration.update(new Hashtable<>());
+
+        AtomicReference<Dictionary<?,?>> atomicReference =
+            new AtomicReference<>(null);
+
+        AtomicInteger counter = new AtomicInteger();
+
+        CountDownLatch countDownLatch = new CountDownLatch(4);
+
+        ServiceRegistration<ManagedService> serviceRegistration =
+            bundleContext.registerService(
+                ManagedService.class, __ -> countDownLatch.countDown(),
+                new Hashtable<String, Object>() {{
+                    put("service.pid", "test.configuration");
+                }});
+
+        AtomicReference<Runnable> effect = new AtomicReference<>();
+
+        effect.set(countDownLatch::countDown);
+
+        try(OSGiResult result =
+            coalesce(
+                configuration("test.configuration"),
+                just(Hashtable::new)
+            ).run(
+                bundleContext,
+                x -> {
+                    atomicReference.set(x);
+
+                    counter.incrementAndGet();
+
+                    effect.get().run();
+
+                    return NOOP;
+                }))
+        {
+            configuration.update(
+                new Hashtable<String, Object>() {{
+                    put("property", "value");
+                }}
+            );
+
+            countDownLatch.await(10, TimeUnit.SECONDS);
+
+            assertEquals(2, counter.get());
+
+            assertEquals("value", atomicReference.get().get("property"));
+
+            if (serviceRegistration != null) {
+                serviceRegistration.unregister();
+            }
+
+            CountDownLatch deleteLatch = new CountDownLatch(2);
+
+            effect.set(deleteLatch::countDown);
+
+            serviceRegistration =
+                bundleContext.registerService(
+                    ManagedService.class, __ -> deleteLatch.countDown(),
+                    new Hashtable<String, Object>() {{
+                        put("service.pid", "test.configuration");
+                    }});
+
+            configuration.delete();
+
+            deleteLatch.await(10, TimeUnit.SECONDS);
+
+            assertEquals(3, counter.get());
+
+            assertTrue(atomicReference.get().isEmpty());
+        }
+        finally {
+            bundleContext.ungetService(serviceReference);
+
+            if (serviceRegistration != null) {
+                serviceRegistration.unregister();
+            }
+        }
+    }
+
+    @Test
     public void testConfiguration() throws IOException, InterruptedException {
         ServiceReference<ConfigurationAdmin> serviceReference =
             bundleContext.getServiceReference(ConfigurationAdmin.class);
