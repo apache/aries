@@ -79,11 +79,13 @@ public class ServiceReferenceOSGi<T>
 			ServiceReference<T> reference, Tracked<T> tracked) {
 
 			if (_refresher.test(tracked.cachingServiceReference)) {
-				tracked.runnable.run();
-				tracked.cachingServiceReference = new CachingServiceReference<>(
-					reference);
-				tracked.runnable =
-                    _addedSource.apply(tracked.cachingServiceReference);
+				UpdateSupport.runUpdate(() -> {
+					tracked.runnable.run();
+					tracked.cachingServiceReference = new CachingServiceReference<>(
+						reference);
+					tracked.runnable =
+						_addedSource.apply(tracked.cachingServiceReference);
+				});
 			}
 		}
 
