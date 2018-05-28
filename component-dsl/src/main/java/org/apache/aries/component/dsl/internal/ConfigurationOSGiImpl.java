@@ -92,10 +92,13 @@ public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 								atomicReference.set(configuration);
 							}
 
-							signalLeave(terminatorAtomicReference);
-							
-							terminatorAtomicReference.set(
-								op.apply(configuration.getProperties()));
+							UpdateSupport.runUpdate(() -> {
+								signalLeave(terminatorAtomicReference);
+
+								terminatorAtomicReference.set(
+									op.apply(configuration.getProperties()));
+
+							});
 
 							if (closed.get()) {
 								/*

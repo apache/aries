@@ -71,24 +71,26 @@ public class CoalesceOSGiImpl<T> extends OSGiImpl<T> {
                         synchronized (initialized) {
                             result.close();
 
-                            int current = atomicInteger.decrementAndGet();
+                            UpdateSupport.defer(() -> {
+                                int current = atomicInteger.decrementAndGet();
 
-                            if (!initialized.get()) {
-                                return;
-                            }
+                                if (!initialized.get()) {
+                                    return;
+                                }
 
-                            if (pos <= index.get() && current == 0) {
-                                for (int j = pos + 1; j < results.length; j++) {
-                                    results[j] = programs[j].run(
-                                        bundleContext, publishers[j]);
+                                if (pos <= index.get() && current == 0) {
+                                    for (int j = pos + 1; j < results.length; j++) {
+                                        results[j] = programs[j].run(
+                                            bundleContext, publishers[j]);
 
-                                    index.set(j);
+                                        index.set(j);
 
-                                    if (atomicIntegers[j].get() > 0) {
-                                        break;
+                                        if (atomicIntegers[j].get() > 0) {
+                                            break;
+                                        }
                                     }
                                 }
-                            }
+                            });
                         }
                     };
                 };
