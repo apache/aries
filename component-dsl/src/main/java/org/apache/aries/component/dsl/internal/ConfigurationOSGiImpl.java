@@ -17,11 +17,18 @@
 
 package org.apache.aries.component.dsl.internal;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ManagedService;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.ConfigurationEvent;
+import org.osgi.service.cm.ConfigurationListener;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -32,7 +39,7 @@ public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 
 	public ConfigurationOSGiImpl(String pid) {
 		super((bundleContext, op) -> {
-			AtomicReference<Dictionary<String, ?>> atomicReference =
+			AtomicReference<Configuration> atomicReference =
 				new AtomicReference<>(null);
 
 			AtomicReference<Runnable>
@@ -40,17 +47,55 @@ public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 
 			AtomicBoolean closed = new AtomicBoolean();
 
-			ServiceRegistration<ManagedService> serviceRegistration =
+			CountDownLatch countDownLatch = new CountDownLatch(1);
+
+			ServiceRegistration<?> serviceRegistration =
 				bundleContext.registerService(
-					ManagedService.class,
-					properties -> {
-						atomicReference.set(properties);
+					ConfigurationListener.class,
+					(ConfigurationEvent configurationEvent) -> {
+						if (configurationEvent.getFactoryPid() != null ||
+							!configurationEvent.getPid().equals(pid)) {
 
-						signalLeave(terminatorAtomicReference);
+							return;
+						}
 
-						if (properties != null) {
+						try {
+							countDownLatch.await(1, TimeUnit.MINUTES);
+						}
+						catch (InterruptedException e) {
+							return;
+						}
+
+						Configuration configuration;
+
+						if (configurationEvent.getType() ==
+							ConfigurationEvent.CM_DELETED) {
+
+							atomicReference.set(null);
+
+							signalLeave(terminatorAtomicReference);
+						}
+						else {
+							 configuration = getConfiguration(
+							 	bundleContext, configurationEvent);
+
+							if (configuration == null) {
+								return;
+							}
+
+							Configuration old = atomicReference.get();
+
+							if (old == null ||
+								configuration.getChangeCount() !=
+									old.getChangeCount()) {
+
+								atomicReference.set(configuration);
+							}
+
+							signalLeave(terminatorAtomicReference);
+							
 							terminatorAtomicReference.set(
-								op.apply(properties));
+								op.apply(configuration.getProperties()));
 
 							if (closed.get()) {
 								/*
@@ -59,14 +104,27 @@ public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 								directly instead of storing it
 								*/
 								signalLeave(terminatorAtomicReference);
-
-								return;
 							}
 						}
 					},
-					new Hashtable<String, Object>() {{
-						put("service.pid", pid);
-					}});
+					new Hashtable<>());
+
+			ServiceReference<ConfigurationAdmin> serviceReference =
+				bundleContext.getServiceReference(ConfigurationAdmin.class);
+
+			if (serviceReference != null) {
+				Configuration configuration = getConfiguration(
+                    bundleContext, pid, serviceReference);
+
+				if (configuration != null) {
+                    atomicReference.set(configuration);
+
+                    terminatorAtomicReference.set(
+                        op.apply(configuration.getProperties()));
+                }
+			}
+
+			countDownLatch.countDown();
 
 			return new OSGiResultImpl(
 				() -> {
@@ -77,6 +135,43 @@ public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
 					signalLeave(terminatorAtomicReference);
 				});
 		});
+	}
+
+	private static Configuration getConfiguration(
+		BundleContext bundleContext, ConfigurationEvent configurationEvent) {
+
+		String pid = configurationEvent.getPid();
+
+		ServiceReference<ConfigurationAdmin> reference =
+			configurationEvent.getReference();
+
+		return getConfiguration(bundleContext, pid, reference);
+	}
+
+	private static Configuration getConfiguration(
+		BundleContext bundleContext, String pid,
+		ServiceReference<ConfigurationAdmin> reference) {
+
+		ConfigurationAdmin configurationAdmin = bundleContext.getService(
+			reference);
+
+		try {
+			Configuration[] configurations =
+                configurationAdmin.listConfigurations(
+                    "(&(service.pid=" + pid + ")(!(service.factoryPid=*)))");
+
+			if (configurations.length == 0) {
+                return null;
+            }
+
+			return configurations[0];
+		}
+		catch (Exception e) {
+			return null;
+		}
+		finally {
+			bundleContext.ungetService(reference);
+		}
 	}
 
 	private static void signalLeave(
