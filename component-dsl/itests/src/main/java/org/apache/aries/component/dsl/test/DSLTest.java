@@ -32,7 +32,9 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.util.tracker.ServiceTracker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -390,6 +392,65 @@ public class DSLTest {
     }
 
     @Test
+    public void testConfigurationWithExistingValues()
+        throws IOException, InterruptedException {
+
+        ServiceReference<ConfigurationAdmin> serviceReference =
+            bundleContext.getServiceReference(ConfigurationAdmin.class);
+
+        ConfigurationAdmin configurationAdmin = bundleContext.getService(
+            serviceReference);
+
+        Configuration configuration = configurationAdmin.getConfiguration(
+            "test.configuration");
+
+        configuration.update(new Hashtable<>());
+
+        AtomicReference<Dictionary<?,?>> atomicReference =
+            new AtomicReference<>(null);
+
+        AtomicInteger counter = new AtomicInteger();
+
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+
+        ServiceRegistration<ManagedService> serviceRegistration =
+            bundleContext.registerService(
+                ManagedService.class, __ -> countDownLatch.countDown(),
+                new Hashtable<String, Object>() {{
+                    put("service.pid", "test.configuration");
+                }});
+
+        try(OSGiResult result =
+                configuration("test.configuration").run(
+                    bundleContext,
+                    x -> {
+                        atomicReference.set(x);
+
+                        counter.incrementAndGet();
+
+                        countDownLatch.countDown();
+
+                        return NOOP;
+                    }))
+        {
+            assertNotNull(atomicReference.get());
+
+            countDownLatch.await(10, TimeUnit.SECONDS);
+
+            assertEquals(1, counter.get());
+        }
+        finally {
+            bundleContext.ungetService(serviceReference);
+
+            configuration.delete();
+
+            if (serviceRegistration != null) {
+                serviceRegistration.unregister();
+            }
+        }
+    }
+
+    @Test
     public void testConfigurations() throws IOException, InterruptedException {
         ServiceReference<ConfigurationAdmin> serviceReference =
             bundleContext.getServiceReference(ConfigurationAdmin.class);
@@ -470,58 +531,34 @@ public class DSLTest {
 
         CountDownLatch addedLatch = new CountDownLatch(3);
 
-        ServiceRegistration<?> addedServiceRegistration =
-            bundleContext.registerService(
-                ManagedServiceFactory.class,
-                new ManagedServiceFactory() {
-                    @Override
-                    public String getName() {
-                        return "";
-                    }
+        ServiceTracker serviceTracker = new ServiceTracker<Service, Service>(
+            bundleContext, Service.class, null) {
 
-                    @Override
-                    public void updated(
-                        String s, Dictionary<String, ?> dictionary)
-                        throws ConfigurationException {
+            @Override
+            public Service addingService(ServiceReference<Service> reference) {
+                addedLatch.countDown();
 
-                        addedLatch.countDown();
-                    }
+                return null;
+            }
+        };
 
-                    @Override
-                    public void deleted(String s) {
-
-                    }
-                },
-                new Hashtable<String, Object>() {{
-                    put("service.pid", "test.configuration");
-                }});
+        serviceTracker.open();
 
         CountDownLatch deletedLatch = new CountDownLatch(3);
 
-        ServiceRegistration<?> deletedServiceRegistration =
-            bundleContext.registerService(
-                ManagedServiceFactory.class,
-                new ManagedServiceFactory() {
-                    @Override
-                    public String getName() {
-                        return "";
-                    }
+        ServiceTracker serviceTracker2 = new ServiceTracker<Service, Service>(
+            bundleContext, Service.class, null) {
 
-                    @Override
-                    public void updated(
-                        String s, Dictionary<String, ?> dictionary)
-                        throws ConfigurationException {
+            @Override
+            public void removedService(
+                ServiceReference<Service> reference,
+                Service service) {
 
-                    }
+                deletedLatch.countDown();
+            }
+        };
 
-                    @Override
-                    public void deleted(String s) {
-                        deletedLatch.countDown();
-                    }
-                },
-                new Hashtable<String, Object>() {{
-                    put("service.pid", "test.configuration");
-                }});
+        serviceTracker2.open();
 
         Configuration configuration =
             configurationAdmin.createFactoryConfiguration("test.configuration");
@@ -572,9 +609,9 @@ public class DSLTest {
             bundleContext.getServiceReferences(
                 Service.class, "(test.configuration=*)").size());
 
-        addedServiceRegistration.unregister();
+        serviceTracker.close();
 
-        deletedServiceRegistration.unregister();
+        serviceTracker2.close();
 
         result.close();
 
