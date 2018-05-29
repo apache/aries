@@ -64,6 +64,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceObjects;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 import java.util.Arrays;
@@ -310,6 +311,28 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		);
 	}
 
+	static <T> OSGi<ServiceObjects<T>> prototypes(
+		CachingServiceReference<T> serviceReference) {
+
+		return
+			bundleContext().flatMap(bundleContext ->
+			just(bundleContext.getServiceObjects(serviceReference.getServiceReference())));
+	}
+
+	static <T> OSGi<ServiceObjects<T>> prototypes(
+		ServiceReference<T> serviceReference) {
+
+		return
+			bundleContext().flatMap(bundleContext ->
+			just(bundleContext.getServiceObjects(serviceReference)));
+	}
+
+	static <T> OSGi<ServiceObjects<T>> prototypes(
+		OSGi<ServiceReference<T>> serviceReference) {
+
+		return serviceReference.flatMap(OSGi::prototypes);
+	}
+
 	static <T> OSGi<ServiceRegistration<T>> register(
 		Class<T> clazz, T service, Map<String, Object> properties) {
 
@@ -348,6 +371,38 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		Supplier<Map<String, ?>> properties) {
 
 		return new ServiceRegistrationOSGiImpl(classes, service, properties);
+	}
+
+	static <T> OSGi<T> service(ServiceReference<T> serviceReference) {
+		return
+			bundleContext().flatMap(bundleContext -> {
+				T service = bundleContext.getService(serviceReference);
+
+				return
+					onClose(() -> bundleContext.ungetService(serviceReference)).
+						then(
+					just(service));
+			});
+	}
+
+	static <T> OSGi<T> service(CachingServiceReference<T> serviceReference) {
+		return
+			bundleContext().flatMap(bundleContext -> {
+				T service = bundleContext.getService(
+					serviceReference.getServiceReference());
+
+				return
+					onClose(() -> bundleContext.ungetService(
+						serviceReference.getServiceReference())).
+						then(
+							just(service));
+			});
+	}
+
+	static <T> OSGi<T> service(
+		OSGi<CachingServiceReference<T>> serviceReference) {
+
+		return serviceReference.flatMap(OSGi::service);
 	}
 
 	static <T> OSGi<CachingServiceReference<T>> serviceReferences(
