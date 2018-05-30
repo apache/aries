@@ -50,15 +50,13 @@ public class UpdateSupport {
             runnable.run();
         }
         finally {
+            isUpdate.set(false);
+
             Deque<Runnable> terminators =
                 deferredTerminatorsStack.get().removeLast();
 
             for (Runnable terminator : terminators) {
                 terminator.run();
-            }
-
-            if (deferredTerminatorsStack.get().isEmpty()) {
-                isUpdate.set(false);
             }
         }
     }
