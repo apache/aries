@@ -46,6 +46,70 @@ public class UpdateSupportTest {
     }
 
     @Test
+    public void testDeferNestedStack() {
+        List<Integer> list = new ArrayList<>();
+
+        UpdateSupport.runUpdate(() -> {
+            list.add(1);
+
+            UpdateSupport.defer(() -> list.add(6));
+
+            UpdateSupport.runUpdate(() -> {
+                list.add(2);
+
+                UpdateSupport.defer(() -> {
+                    list.add(3);
+
+                    UpdateSupport.defer(() ->
+                        UpdateSupport.defer(() -> list.add(4)));
+
+                    list.add(5);
+                });
+            });
+        });
+
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6), list);
+    }
+
+    @Test
+    public void testDeferNestedStackWithUpdate() {
+        List<Integer> list = new ArrayList<>();
+
+        UpdateSupport.runUpdate(() -> {
+            list.add(1);
+
+            UpdateSupport.defer(() -> list.add(9));
+
+            UpdateSupport.runUpdate(() -> {
+                list.add(2);
+
+                UpdateSupport.defer(() -> {
+                    UpdateSupport.runUpdate(
+                        () -> {
+                            list.add(4);
+
+                            UpdateSupport.defer(
+                                () -> UpdateSupport.runUpdate(
+                                    () -> {
+                                        list.add(6);
+
+                                        UpdateSupport.defer(() -> list.add(8));
+
+                                        list.add(7);
+                                    }));
+
+                            list.add(5);
+                    });
+                });
+
+                list.add(3);
+            });
+        });
+
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9), list);
+    }
+
+    @Test
     public void testDeferStack() {
         List<Integer> list = new ArrayList<>();
 
