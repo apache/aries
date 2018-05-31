@@ -163,15 +163,20 @@ public class ReflectionUtilsTest {
         public boolean isField() { return true; }
         public boolean getField() { return false; }
     }
-    
+
     @Test
-    public void testDuplicateGetter() {
+    public void testDuplicateGetter() throws Exception {
         loadProps(DuplicateGetter.class, false, false);
         
-        assertEquals(1, sut.length);
-        assertEquals("class", sut[0].getName());
+        assertEquals(2, sut.length);
+        assertEquals("field", sut[1].getName());
+
+        assertTrue(sut[1].allowsGet());
+        assertFalse(sut[1].allowsSet());
+
+        assertTrue( (Boolean)sut[1].get(new DuplicateGetter(), mockBlueprint) ) ;
     }
-    
+
     static class FieldsAndProps {
         private String hidden = "ordeal";
         private String nonHidden;
