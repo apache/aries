@@ -190,6 +190,12 @@
 			<artifactId>org.apache.felix.http.jetty</artifactId>
 			<version>3.4.2</version>
 			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>

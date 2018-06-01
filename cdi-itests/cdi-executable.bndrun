@@ -62,9 +62,8 @@
 -runfw: org.eclipse.osgi;version='[3.13.0,4.0.0)'
 -runproperties: \
 	eclipse.log.enabled=false,\
+	logback.configurationFile=file:${.}/logback.xml,\
 	org.jboss.logging.provider=slf4j,\
 	org.osgi.service.http.port=8080,\
 	osgi.console.enable.builtin=false, \
 	osgi.console=
-
-#	logback.configurationFile=file:${.}/logback.xml,\
