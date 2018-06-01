@@ -109,6 +109,10 @@ public class FactoryActivator extends InstanceActivator {
 
 			final BeanManager beanManager = containerState.beanManager();
 
+			if (beanManager == null) {
+				return false;
+			}
+
 			ExtendedActivationTemplateDTO activationTemplate =
 				(ExtendedActivationTemplateDTO)instance.template.activations.get(0);
 
