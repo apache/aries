@@ -38,8 +38,8 @@ public class WeavingData {
      * @param argClasses The overload (class names of the signature) of the call
      * that needs to be woven. If <code>null</code> then all overloads of the method
      * need to be woven.
-     * @param argRestrictions
-     * @param allowedBundles
+     * @param argRestrictions A set of Consumer Restrictions.
+     * @param allowedBundles The list of allowed bundles.
      */
     public WeavingData(String className, String methodName, String[] argClasses, Set<ConsumerRestriction> argRestrictions, List<BundleDescriptor> allowedBundles) {
         // TODO can we infer argClasses from restrictions?
