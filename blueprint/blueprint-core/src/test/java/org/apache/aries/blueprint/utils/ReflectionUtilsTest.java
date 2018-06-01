@@ -158,18 +158,38 @@ public class ReflectionUtilsTest {
         sut[1].set(sag, "tribulation", mockBlueprint);
         assertEquals("tribulation", sut[1].get(sag, mockBlueprint));
     }
-    
-    static class DuplicateGetter {
+
+    public static class DuplicateGetter {
         public boolean isField() { return true; }
         public boolean getField() { return false; }
     }
-    
+
+    public static class DuplicateGetter2 {
+        public boolean getField() { return false; }
+        public boolean isField() { return true; }
+    }
+
     @Test
-    public void testDuplicateGetter() {
+    public void testDuplicateGetter() throws Exception {
         loadProps(DuplicateGetter.class, false, false);
         
-        assertEquals(1, sut.length);
+        assertEquals(2, sut.length);
         assertEquals("class", sut[0].getName());
+        assertEquals("field", sut[1].getName());
+        assertTrue(sut[1].allowsGet());
+        assertFalse(sut[1].allowsSet());
+
+        assertTrue((Boolean) sut[1].get(new DuplicateGetter(), mockBlueprint));
+
+        loadProps(DuplicateGetter2.class, false, false);
+
+        assertEquals(2, sut.length);
+        assertEquals("class", sut[0].getName());
+        assertEquals("field", sut[1].getName());
+        assertTrue(sut[1].allowsGet());
+        assertFalse(sut[1].allowsSet());
+
+        assertTrue((Boolean) sut[1].get(new DuplicateGetter2(), mockBlueprint));
     }
     
     static class FieldsAndProps {
