@@ -237,20 +237,26 @@ public class ReflectionUtils {
                     propertyNames.add(name);
                 } else if (name.length() > 3 && name.startsWith("get") && resultType != Void.TYPE && argTypes.length == 0) {
                     name = decapitalize(name.substring(3));
-                    if (getters.containsKey(name)) {
-                        illegalProperties.add(name);
-                    } else {
+                    Method getter = getters.get(name);
+                    if (getter == null) {
                         propertyNames.add(name);
+                        getters.put(name, method);
+                    } else if (!getter.getName().startsWith("is")
+                            || getter.getReturnType() != boolean.class
+                            || resultType != boolean.class) {
+                        illegalProperties.add(name);
                     }
-                    getters.put(name, method);
                 } else if (name.length() > 2 && name.startsWith("is") && argTypes.length == 0 && resultType == boolean.class) {
                     name = decapitalize(name.substring(2));
-                    if (getters.containsKey(name)) {
+                    Method getter = getters.get(name);
+                    if (getter == null) {
+                        propertyNames.add(name);
+                        getters.put(name, method);
+                    } else if (!getter.getName().startsWith("get") || getter.getReturnType() != boolean.class) {
                         illegalProperties.add(name);
                     } else {
-                        propertyNames.add(name);
+                        getters.put(name, method);
                     }
-                    getters.put(name, method);
                 }
             }
 
