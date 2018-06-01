@@ -104,13 +104,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.spec</groupId>
-			<artifactId>org.apache.aries.javax.inject-api</artifactId>
+			<artifactId>org.apache.aries.javax.interceptor-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.aries.spec</groupId>
-			<artifactId>org.apache.aries.javax.interceptor-api</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.servicemix.bundles</groupId>
+			<artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
+			<version>1_3</version>
 		</dependency>
 	</dependencies>
 

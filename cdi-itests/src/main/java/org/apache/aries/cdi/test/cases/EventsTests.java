@@ -70,7 +70,7 @@ public class EventsTests extends AbstractTestCase {
 
 				changeCount = containerDTO.changeCount;
 
-				Dictionary<String, Object> properties = int1.getReference().getProperties();
+				Dictionary<String, Object> properties = getProperties(int1.getReference());
 				properties.put("foo", "bar");
 				int1.setProperties(properties);
 
@@ -126,7 +126,7 @@ public class EventsTests extends AbstractTestCase {
 
 				changeCount = containerDTO.changeCount;
 
-				Dictionary<String, Object> properties = int1.getReference().getProperties();
+				Dictionary<String, Object> properties = getProperties(int1.getReference());
 				properties.put("foo", "bar");
 				int1.setProperties(properties);
 
