@@ -784,7 +784,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     try {
                         InputStream is = url.openStream();
                         try {
-                            XMLStreamReader reader = XMLInputFactory.newFactory().createXMLStreamReader(is);
+                            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
                             try {
                                 reader.nextTag();
                                 String nsuri = reader.getNamespaceURI();
