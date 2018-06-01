@@ -18,6 +18,14 @@
  */
 package org.apache.aries.spifly;
 
+import org.apache.aries.spifly.HeaderParser.PathElement;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.Version;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -26,14 +34,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
-
-import org.apache.aries.spifly.HeaderParser.PathElement;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
-import org.osgi.framework.Filter;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.Version;
 
 public class ConsumerHeaderProcessor {
     private static final Dictionary<String, String> PROCESSOR_FILTER_MATCH;
@@ -55,7 +55,7 @@ public class ConsumerHeaderProcessor {
      * <li><b>true</b> - equivalent to <tt>java.util.ServiceLoader#load(java.lang.Class)</tt>
      * </ul>
      * Additionally, it registers the consumer's constraints with the consumer registry in the activator, if the
-     * consumer is only constrained to a certain set of bundles.<p/>
+     * consumer is only constrained to a certain set of bundles.<p>
      *
      * The following attributes are supported:
      * <ul>
@@ -70,6 +70,7 @@ public class ConsumerHeaderProcessor {
      * @param consumerHeaderName the name of the header (either Require-Capability or SPI-Consumer)
      * @param consumerHeader the <tt>SPI-Consumer</tt> header.
      * @return an instance of the {@link WeavingData} class.
+     * @throws Exception when a header cannot be parsed.
      */
     public static Set<WeavingData> processHeader(String consumerHeaderName, String consumerHeader) throws Exception {
         if (SpiFlyConstants.REQUIRE_CAPABILITY.equals(consumerHeaderName)) {
