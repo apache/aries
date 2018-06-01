@@ -798,17 +798,28 @@ public class ReflectionUtils {
 
         private Method findMethodWithConversion(Collection<Method> setterMethods, Object value) throws Exception {
             ExecutionContext ctx = ExecutionContext.Holder.getContext();
-            List<Method> matchingMethods = new ArrayList<Method>();
+            Method matchingMethod = null;
             for (Method m : setterMethods) {
                 Type paramType = m.getGenericParameterTypes()[0];
-                if (ctx.canConvert(value, new GenericType(paramType))) matchingMethods.add(m);
+                if (ctx.canConvert(value, new GenericType(paramType))) {
+                    if (matchingMethod != null) {
+                        Class<?> p1Class = matchingMethod.getParameterTypes()[0];
+                        Class<?> p2Class = m.getParameterTypes()[0];
+                        if(!p2Class.equals(p1Class) && p1Class.isAssignableFrom(p2Class)) {
+                            // Keep method whose parameter type is the closest to value type
+                            matchingMethod = m;
+                        } else if(p2Class.equals(p1Class) || !p2Class.isAssignableFrom(p1Class)) {
+                            throw new ComponentDefinitionException(
+                                "Ambiguous setter method for property "
+                                + getName() + ". More than one method matches the parameter "
+                                + value + " after applying conversion.");
+                        }
+                    } else {
+                        matchingMethod = m;
+                    }
+                }
             }
-            
-            if (matchingMethods.isEmpty()) return null;
-            else if (matchingMethods.size() == 1) return matchingMethods.get(0);
-            else throw new ComponentDefinitionException(
-                    "Ambiguous setter method for property "+ getName() + 
-                    ". More than one method matches the parameter "+value+" after applying conversion.");
+            return matchingMethod;
         }
         
         public String toString() {

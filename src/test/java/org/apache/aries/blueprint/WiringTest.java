@@ -43,6 +43,9 @@ import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
+import org.apache.aries.blueprint.intercept.BeanA;
+import org.apache.aries.blueprint.intercept.BeanB;
+import org.apache.aries.blueprint.intercept.TheInterceptor;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.pojos.*;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
@@ -597,6 +600,15 @@ public class WiringTest extends AbstractBlueprintTest {
         
         repository = createBlueprintContainer().getRepository();        
         assertNotNull(repository.create("c3"));
+    }
+
+    public void testInterceptors() throws Exception {
+        ComponentDefinitionRegistryImpl registry = parse("/test-interceptors.xml");
+        Repository repository = new TestBlueprintContainer(registry).getRepository();
+        BeanB b = (BeanB) repository.create("b");
+        assertNotNull(b.getA());
+        assertEquals("Hello Guillaume !", b.getA().hello("Guillaume"));
+        assertEquals(1, TheInterceptor.calls.get());
     }
     
     private TestBlueprintContainer createBlueprintContainer() throws Exception {
