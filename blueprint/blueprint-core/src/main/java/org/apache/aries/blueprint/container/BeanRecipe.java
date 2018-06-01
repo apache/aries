@@ -813,10 +813,7 @@ public class BeanRecipe extends AbstractRecipe {
         final PropertyDescriptor pd = getPropertyDescriptor(clazz, names[names.length - 1]);
         if (pd.allowsSet()) {
             try {
-                Object val = propertyValue instanceof UnwrapperedBeanHolder
-                        ? ((UnwrapperedBeanHolder) propertyValue).unwrapperedBean
-                        : propertyValue;
-                pd.set(instance, val, blueprintContainer);
+                pd.set(instance, propertyValue, blueprintContainer);
             } catch (Exception e) {
                 throw new ComponentDefinitionException("Error setting property: " + pd, getRealCause(e));
             }
