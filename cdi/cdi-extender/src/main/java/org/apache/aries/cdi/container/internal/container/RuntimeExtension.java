@@ -141,6 +141,8 @@ public class RuntimeExtension implements Extension {
 	void beforeShutdown(@Observes BeforeShutdown bs) {
 		_log.debug(l -> l.debug("CCR BeforeShutdown on {}", _containerState.bundle()));
 
+		_containerState.beanManager(null);
+
 		_configurationListeners.removeIf(
 			cl -> {
 				_containerState.submit(cl.closeOp(), cl::close).onFailure(
