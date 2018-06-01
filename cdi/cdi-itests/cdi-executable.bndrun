@@ -23,6 +23,7 @@
 -runpath: \
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
 	ch.qos.logback.core;version='[1.2.3,1.2.4)',\
+	org.apache.felix.logback;version='[1.0.0,1.0.1)',\
 	slf4j.api;version='[1.7.25,1.7.26)'
 
 -runsystempackages: \
