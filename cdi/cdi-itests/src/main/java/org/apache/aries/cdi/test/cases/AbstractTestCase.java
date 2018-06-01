@@ -17,6 +17,8 @@ package org.apache.aries.cdi.test.cases;
 import static org.junit.Assert.*;
 
 import java.io.InputStream;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,6 @@ import org.junit.rules.TestName;
 import org.osgi.annotation.bundle.Requirement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
@@ -164,6 +165,14 @@ public class AbstractTestCase {
 		return track(filter(pattern, objects));
 	}
 
+	public Dictionary<String, Object> getProperties(ServiceReference<Integer> reference) {
+		Dictionary<String, Object> properties = new Hashtable<>();
+		for (String key : reference.getPropertyKeys()) {
+			properties.put(key, reference.getProperty(key));
+		}
+		return properties;
+	}
+
 	BeanManager getBeanManager(Bundle bundle) throws Exception {
 		return getServiceTracker(bundle).waitForService(timeout);
 	}
@@ -182,7 +191,7 @@ public class AbstractTestCase {
 
 	long getChangeCount(ServiceReference<?> reference) {
 		return Optional.ofNullable(
-			reference.getProperty(Constants.SERVICE_CHANGECOUNT)
+			reference.getProperty("service.changecount")
 		).map(
 			v -> (Long)v
 		).orElse(
