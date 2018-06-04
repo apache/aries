@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.0.1</version>
+        <relativePath>../../parent/pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.apache.aries.blueprint</groupId>
+    <artifactId>blueprint-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>Apache Aries Blueprint Parent</name>
+    <description>
+        This bundle contains the blueprint parent pom.
+    </description>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-parent</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-parent</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-parent</url>
+    </scm>
+
+    <properties>
+        <blueprint.api.dev.version>1.0.2-SNAPSHOT</blueprint.api.dev.version>
+        <blueprint.core.dev.version>1.10.0-SNAPSHOT</blueprint.core.dev.version>
+        <blueprint.cm.dev.version>1.3.0-SNAPSHOT</blueprint.cm.dev.version>
+        <blueprint.parser.dev.version>1.6.0-SNAPSHOT</blueprint.parser.dev.version>
+        <blueprint.authz.dev.version>1.0.1-SNAPSHOT</blueprint.authz.dev.version>
+        <blueprint.spring.dev.version>1.0.0-SNAPSHOT</blueprint.spring.dev.version>
+        <blueprint.spring.extender.dev.version>1.0.0-SNAPSHOT</blueprint.spring.extender.dev.version>
+        <blueprint.jexl.evaluator.dev.version>1.1.0-SNAPSHOT</blueprint.jexl.evaluator.dev.version>
+        <blueprint.sample.dev.version>1.0.1-SNAPSHOT</blueprint.sample.dev.version>
+        <blueprint.sample.fragment.dev.version>1.0.1-SNAPSHOT</blueprint.sample.fragment.dev.version>
+        <blueprint.noosgi.dev.version>1.2.0-SNAPSHOT</blueprint.noosgi.dev.version>
+        <blueprint.bundle.dev.version>1.3.0-SNAPSHOT</blueprint.bundle.dev.version>
+        <blueprint.web.dev.version>1.1.2-SNAPSHOT</blueprint.web.dev.version>
+        <blueprint-maven-plugin-spi.dev-version>1.1.1-SNAPSHOT</blueprint-maven-plugin-spi.dev-version>
+        <blueprint-maven-plugin-spring-handlers.dev-version>1.0.1-SNAPSHOT</blueprint-maven-plugin-spring-handlers.dev-version>
+        <blueprint-maven-plugin-annotation.dev-version>1.3.1-SNAPSHOT</blueprint-maven-plugin-annotation.dev-version>
+        <blueprint-maven-plugin-pax-cdi-handlers.dev-version>1.0.1-SNAPSHOT</blueprint-maven-plugin-pax-cdi-handlers.dev-version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>0.12</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <reportFile>${project.build.directory}/${project.build.finalName}.rat</reportFile>
+                    <excludeSubProjects>true</excludeSubProjects>
+                    <excludes>
+                        <exclude>**/NOTICE.vm</exclude>
+                        <exclude>**/dependency-reduced-pom.xml</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
