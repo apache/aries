@@ -38,7 +38,7 @@
     </description>
 
     <modules>
-        <module>parent</module>
+        <module>blueprint-parent</module>
         <module>blueprint-api</module>
         <module>blueprint-parser</module>
         <module>blueprint-core</module>
