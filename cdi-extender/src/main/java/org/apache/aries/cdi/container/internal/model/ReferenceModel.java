@@ -46,13 +46,13 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.MaximumCardinality;
 import org.osgi.service.cdi.ReferencePolicy;
 import org.osgi.service.cdi.ReferencePolicyOption;
-import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.PrototypeRequired;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.reference.BindObject;
-import org.osgi.service.cdi.reference.BindServiceObjects;
-import org.osgi.service.cdi.reference.BindServiceReference;
+import org.osgi.service.cdi.annotations.Reluctant;
 import org.osgi.service.cdi.reference.BeanServiceObjects;
+import org.osgi.service.cdi.reference.BindBeanServiceObjects;
+import org.osgi.service.cdi.reference.BindService;
+import org.osgi.service.cdi.reference.BindServiceReference;
 
 public class ReferenceModel {
 
@@ -157,8 +157,8 @@ public class ReferenceModel {
 
 		_name = calculateName(_serviceType, _annotated);
 
-		if (_annotated.isAnnotationPresent(Greedy.class)) {
-			_greedy = true;
+		if (_annotated.isAnnotationPresent(Reluctant.class)) {
+			_greedy = false;
 		}
 
 		_targetFilter = buildFilter();
@@ -278,22 +278,6 @@ public class ReferenceModel {
 			sb.append(targetFilter);
 		}
 
-//		for (Annotation qualifier : getQualifiers()) {
-//			Class<? extends Annotation> annotationType = qualifier.annotationType();
-//
-//			if (annotationType.equals(Reference.class) ||
-//				annotationType.equals(Prototype.class)) {
-//
-//				// TODO filter out blacklisted qualifiers
-//
-//				continue;
-//			}
-//
-//			Map<String, String> map = Conversions.convert(qualifier).sourceAs(qualifier.annotationType()).to(_mapType);
-//
-//			Maps.appendFilter(sb, map);
-//		}
-
 		if (_prototype && filterValid) {
 			sb.append(")");
 		}
@@ -366,7 +350,7 @@ public class ReferenceModel {
 				throw new IllegalArgumentException(
 					"ServiceReference must specify a generic type argument: " + type);
 			}
-			else if ((Collection.class == clazz || Iterable.class == clazz || List.class == clazz) &&
+			else if ((Collection.class == clazz || List.class == clazz) &&
 					!_referenceType.isPresent()) {
 
 				throw new IllegalArgumentException(
@@ -380,7 +364,7 @@ public class ReferenceModel {
 				_collectionType = CollectionType.REFERENCE;
 				return;
 			}
-			else if (Collection.class == clazz || Iterable.class == clazz || List.class == clazz) {
+			else if (Collection.class == clazz || List.class == clazz) {
 				_collectionType = CollectionType.SERVICE;
 				_multiplicity = MaximumCardinality.MANY;
 				_optional = true;
@@ -405,12 +389,11 @@ public class ReferenceModel {
 				"Instance<T> is not supported with @Reference: " + type);
 		}
 
-		if (BindObject.class.isAssignableFrom(cast(rawType))) {
-			_collectionType = CollectionType.BINDER_OBJECT;
+		if (BindService.class.isAssignableFrom(cast(rawType))) {
+			_collectionType = CollectionType.BINDER_SERVICE;
 			_dynamic = true;
 			_multiplicity = MaximumCardinality.MANY;
 			_optional = true;
-			_greedy = true;
 
 			if (argument instanceof WildcardType ||
 				argument instanceof ParameterizedType) {
@@ -429,7 +412,6 @@ public class ReferenceModel {
 			_dynamic = true;
 			_multiplicity = MaximumCardinality.MANY;
 			_optional = true;
-			_greedy = true;
 
 			if (argument instanceof WildcardType ||
 				argument instanceof ParameterizedType) {
@@ -443,12 +425,11 @@ public class ReferenceModel {
 			return;
 		}
 
-		if (BindServiceObjects.class.isAssignableFrom(cast(rawType))) {
-			_collectionType = CollectionType.BINDER_SERVICE_OBJECTS;
+		if (BindBeanServiceObjects.class.isAssignableFrom(cast(rawType))) {
+			_collectionType = CollectionType.BINDER_BEAN_SERVICE_OBJECTS;
 			_dynamic = true;
 			_multiplicity = MaximumCardinality.MANY;
 			_optional = true;
-			_greedy = true;
 
 			if (argument instanceof WildcardType ||
 				argument instanceof ParameterizedType) {
@@ -484,7 +465,6 @@ public class ReferenceModel {
 
 		if ((_multiplicity == MaximumCardinality.ONE) &&
 			((Collection.class == cast(rawType)) ||
-			(Iterable.class == cast(rawType)) ||
 			(List.class == cast(rawType)))) {
 
 			_optional = true;
@@ -615,7 +595,7 @@ public class ReferenceModel {
 	private CollectionType _collectionType = CollectionType.SERVICE;
 	private final Class<?> _declaringClass;
 	private boolean _dynamic = false;
-	private boolean _greedy = false;
+	private boolean _greedy = true;
 	private final Type _injectionPointType;
 	private MaximumCardinality _multiplicity = MaximumCardinality.ONE;
 	private final String _name;

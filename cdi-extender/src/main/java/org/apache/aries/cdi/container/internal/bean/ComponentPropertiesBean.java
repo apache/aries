@@ -32,21 +32,21 @@ import org.apache.aries.cdi.container.internal.model.ExtendedConfigurationTempla
 import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.apache.aries.cdi.container.internal.util.Sets;
 import org.osgi.service.cdi.ComponentType;
+import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.ComponentScoped;
-import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.PID;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 
-public class ConfigurationBean implements Bean<Object> {
+public class ComponentPropertiesBean implements Bean<Object> {
 
-	public ConfigurationBean(
+	public ComponentPropertiesBean(
 		ComponentTemplateDTO component,
 		ExtendedConfigurationTemplateDTO template) {
 
 		_component = component;
 		_template = template;
 
-		_qualifiers = Sets.hashSet(Configuration.Literal.INSTANCE, Default.Literal.INSTANCE);
+		_qualifiers = Sets.hashSet(ComponentProperties.Literal.INSTANCE, Default.Literal.INSTANCE);
 		_types = Sets.hashSet(_template.injectionPointType, Object.class);
 
 		if (_template.pid != null) {

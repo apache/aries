@@ -24,45 +24,46 @@ import javax.inject.Provider;
 
 import org.apache.aries.cdi.extra.propertytypes.JaxrsResource;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.ConfigurationPolicy;
-import org.osgi.service.cdi.annotations.Configuration;
-import org.osgi.service.cdi.annotations.Greedy;
-import org.osgi.service.cdi.annotations.PID;
+import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.PrototypeRequired;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 import org.osgi.service.cdi.annotations.Service;
 
 public class BarAnnotated {
 
 	@Inject
-	@Greedy
 	@Reference
 	Foo foo;
 
 	@Inject
+	@Reluctant
 	@Reference
 	Optional<Foo> fooOptional;
 
 	@Inject
+	@Reluctant
 	@Reference
 	Provider<Collection<Foo>> dynamicFoos;
 
 	@Inject
+	@Reluctant
 	@Reference
 	Collection<Map.Entry<Map<String, Object>, Integer>> tupleIntegers;
 
 	@Inject
+	@Reluctant
 	@PrototypeRequired
 	@Reference
 	Collection<ServiceReference<Foo>> serviceReferencesFoos;
 
 	@Inject
+	@Reluctant
 	@Reference(Foo.class)
 	Collection<Map<String, Object>> propertiesFoos;
 
 	@Inject
-	@PID(value = "foo.config", policy = ConfigurationPolicy.REQUIRED)
-	@Configuration
+	@ComponentProperties
 	Config config;
 
 	@Produces

@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import org.apache.aries.cdi.test.interfaces.BeanId;
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 import org.osgi.service.cdi.annotations.Service;
 
 @BeanId("as")
@@ -30,6 +31,7 @@ import org.osgi.service.cdi.annotations.Service;
 public class OptionalReference_AS implements Pojo {
 
 	@Inject
+	@Reluctant
 	@Reference
 	@BeanId("as")
 	Optional<Integer> service;

@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.aries.cdi.container.internal.bean.ConfigurationBean;
+import org.apache.aries.cdi.container.internal.bean.ComponentPropertiesBean;
 import org.apache.aries.cdi.container.internal.bean.ReferenceBean;
 import org.apache.aries.cdi.container.internal.util.Logs;
 import org.apache.aries.cdi.container.internal.util.Syncro;
@@ -57,7 +57,7 @@ public class OSGiBean implements Comparable<OSGiBean> {
 				_configurationsQueue.add(dto);
 			}
 			else {
-				((ExtendedConfigurationTemplateDTO)dto).bean = new ConfigurationBean(
+				((ExtendedConfigurationTemplateDTO)dto).bean = new ComponentPropertiesBean(
 					_componentTemplate, (ExtendedConfigurationTemplateDTO)dto);
 
 				_componentTemplate.configurations.add(dto);
@@ -114,7 +114,7 @@ public class OSGiBean implements Comparable<OSGiBean> {
 			_componentTemplate = componentTemplate;
 			_configurationsQueue.removeIf(
 				dto -> {
-					((ExtendedConfigurationTemplateDTO)dto).bean = new ConfigurationBean(
+					((ExtendedConfigurationTemplateDTO)dto).bean = new ComponentPropertiesBean(
 						_componentTemplate, (ExtendedConfigurationTemplateDTO)dto);
 
 					_componentTemplate.configurations.add(dto);

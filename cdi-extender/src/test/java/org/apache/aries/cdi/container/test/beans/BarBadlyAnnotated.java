@@ -16,14 +16,14 @@ package org.apache.aries.cdi.container.test.beans;
 
 import javax.inject.Inject;
 
-import org.osgi.service.cdi.annotations.Configuration;
+import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.Reference;
 
 public class BarBadlyAnnotated {
 
 	@Inject
 	@Reference
-	@Configuration
+	@ComponentProperties
 	Foo foo;
 
 }

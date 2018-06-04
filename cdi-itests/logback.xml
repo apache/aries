@@ -27,10 +27,10 @@
 		</encoder>
 	</appender>
 
-	<logger name="Events.Service.cdi-itests" level="INFO"/>
-	<logger name="Events.Service.org.apache.aries" level="INFO"/>
+	<!-- <logger name="Events.Service.cdi-itests" level="INFO"/> -->
+	<!-- <logger name="Events.Service.org.apache.aries" level="INFO"/> -->
 
-	<logger name="org.apache.aries.cdi" level="DEBUG"/>
+	<!-- <logger name="org.apache.aries.cdi" level="DEBUG"/> -->
 	<logger name="org.eclipse" level="ERROR"/>
 	<logger name="org.jboss" level="ERROR"/>
 

@@ -16,7 +16,7 @@ package org.apache.aries.cdi.container.internal.model;
 
 import java.lang.reflect.Type;
 
-import org.apache.aries.cdi.container.internal.bean.ConfigurationBean;
+import org.apache.aries.cdi.container.internal.bean.ComponentPropertiesBean;
 import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
 
 public class ExtendedConfigurationTemplateDTO extends ConfigurationTemplateDTO {
@@ -37,14 +37,13 @@ public class ExtendedConfigurationTemplateDTO extends ConfigurationTemplateDTO {
 	 */
 	public Type injectionPointType;
 
-	public ConfigurationBean bean;
+	public ComponentPropertiesBean bean;
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((beanClass == null) ? 0 : beanClass.hashCode());
-		result = prime * result + (componentConfiguration ? 1231 : 1237);
 		result = prime * result + ((declaringClass == null) ? 0 : declaringClass.hashCode());
 		result = prime * result + ((injectionPointType == null) ? 0 : injectionPointType.hashCode());
 		result = prime * result + ((maximumCardinality == null) ? 0 : maximumCardinality.hashCode());
@@ -70,9 +69,6 @@ public class ExtendedConfigurationTemplateDTO extends ConfigurationTemplateDTO {
 				return false;
 			}
 		} else if (!beanClass.equals(other.beanClass)) {
-			return false;
-		}
-		if (componentConfiguration != other.componentConfiguration) {
 			return false;
 		}
 		if (declaringClass == null) {

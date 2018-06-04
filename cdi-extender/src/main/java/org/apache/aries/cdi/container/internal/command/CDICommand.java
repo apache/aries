@@ -216,8 +216,7 @@ public class CDICommand {
 
 				if (instanceDTO != null) {
 					configurationDTO = instanceDTO.configurations.stream().filter(
-						c -> c.template.componentConfiguration == conf.componentConfiguration &&
-							c.template.maximumCardinality == conf.maximumCardinality &&
+						c -> c.template.maximumCardinality == conf.maximumCardinality &&
 							c.template.pid == conf.pid &&
 							c.template.policy == conf.policy
 					).findFirst().orElse(null);
@@ -244,13 +243,6 @@ public class CDICommand {
 						(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
 						conf.pid);
 				}
-
-				f.format(
-					"%s%s%sCOMPONENT CONFIGURATION: %s%n",
-					prefix,
-					(hasNext ? PSSSPSSS : SSSSPSSS),
-					(itr.hasNext() ? PSSSCLLS : SSSSCLLS),
-					conf.componentConfiguration);
 			}
 
 			if (instanceDTO != null) {

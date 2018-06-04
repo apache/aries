@@ -20,7 +20,7 @@ import javax.inject.Named;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
 import org.osgi.service.cdi.propertytypes.ServiceRanking;
-import org.osgi.service.cdi.reference.BindObject;
+import org.osgi.service.cdi.reference.BindService;
 
 @SingleComponent
 @Named("foo.annotated")
@@ -29,7 +29,7 @@ import org.osgi.service.cdi.reference.BindObject;
 public class FooAnnotated implements Foo, Cloneable {
 
 	@Inject
-	void watchFoos(BindObject<Integer> numbers) {
+	void watchFoos(BindService<Integer> numbers) {
 		numbers.adding(number -> System.out.println("Added: " + number)
 		).modified(number -> System.out.println("Updated: " + number)
 		).removed(number -> System.out.println("Removed: " + number)

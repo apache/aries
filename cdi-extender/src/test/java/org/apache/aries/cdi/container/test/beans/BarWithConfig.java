@@ -16,7 +16,7 @@ package org.apache.aries.cdi.container.test.beans;
 
 import javax.inject.Inject;
 
-import org.osgi.service.cdi.annotations.Configuration;
+import org.osgi.service.cdi.annotations.ComponentProperties;
 
 public class BarWithConfig {
 
@@ -24,7 +24,7 @@ public class BarWithConfig {
 	public Bar bar;
 
 	@Inject
-	@Configuration
+	@ComponentProperties
 	public Config config;
 
 }

@@ -19,9 +19,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 
 public class FieldListFoo {
 	@Inject
+	@Reluctant
 	@Reference
 	List<Foo> foo;
 }

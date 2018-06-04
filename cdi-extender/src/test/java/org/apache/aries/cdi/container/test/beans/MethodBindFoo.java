@@ -17,8 +17,9 @@ package org.apache.aries.cdi.container.test.beans;
 import javax.inject.Inject;
 
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 
 public class MethodBindFoo {
 	@Inject
-	public void bindFoo(@Reference Foo foo) {}
+	public void bindFoo(@Reluctant @Reference Foo foo) {}
 }

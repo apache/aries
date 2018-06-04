@@ -69,7 +69,7 @@ public class TemplatesTests extends BaseCDIBundleTest {
 
 			{
 				ActivationTemplateDTO at = template.activations.get(0);
-				assertEquals(Maps.of("jaxrs.resource", true), at.properties);
+				assertEquals(Maps.of("osgi.jaxrs.resource", true), at.properties);
 				assertEquals(ServiceScope.SINGLETON, at.scope);
 				assertEquals(Arrays.asList(Baz.class.getName()), at.serviceClasses);
 			}
@@ -243,7 +243,6 @@ public class TemplatesTests extends BaseCDIBundleTest {
 
 			{ // configuration "barService"
 				ConfigurationTemplateDTO configurationTemplateDTO = ct.configurations.get(0);
-				assertEquals(true, configurationTemplateDTO.componentConfiguration);
 				assertEquals(MaximumCardinality.MANY, configurationTemplateDTO.maximumCardinality);
 				assertEquals("barService", configurationTemplateDTO.pid);
 				assertEquals(ConfigurationPolicy.REQUIRED, configurationTemplateDTO.policy);
@@ -257,7 +256,7 @@ public class TemplatesTests extends BaseCDIBundleTest {
 
 			{
 				ActivationTemplateDTO at = ct.activations.get(0);
-				assertEquals(Maps.of("jaxrs.resource", true), at.properties);
+				assertEquals(Maps.of("osgi.jaxrs.resource", true), at.properties);
 				assertEquals(ServiceScope.SINGLETON, at.scope);
 				assertEquals(Arrays.asList(Baz.class.getName()), at.serviceClasses);
 			}
@@ -291,18 +290,9 @@ public class TemplatesTests extends BaseCDIBundleTest {
 
 			{ // configuration "osgi.cdi.foo"
 				ConfigurationTemplateDTO configurationTemplateDTO = ct.configurations.get(0);
-				assertEquals(true, configurationTemplateDTO.componentConfiguration);
 				assertEquals(MaximumCardinality.ONE, configurationTemplateDTO.maximumCardinality);
 				assertEquals("osgi.cdi.foo", configurationTemplateDTO.pid);
 				assertEquals(ConfigurationPolicy.OPTIONAL, configurationTemplateDTO.policy);
-			}
-
-			{ // "foo.config
-				ConfigurationTemplateDTO configurationTemplateDTO = ct.configurations.get(1);
-				assertEquals(false, configurationTemplateDTO.componentConfiguration);
-				assertEquals(MaximumCardinality.ONE, configurationTemplateDTO.maximumCardinality);
-				assertEquals("foo.config", configurationTemplateDTO.pid);
-				assertEquals(ConfigurationPolicy.REQUIRED, configurationTemplateDTO.policy);
 			}
 
 			List<ReferenceTemplateDTO> references = TestUtil.sort(ct.references, (a, b) -> a.name.compareTo(b.name));
@@ -409,7 +399,6 @@ public class TemplatesTests extends BaseCDIBundleTest {
 
 			{ // configuration "foo.annotated"
 				ConfigurationTemplateDTO configurationTemplateDTO = ct.configurations.get(0);
-				assertEquals(true, configurationTemplateDTO.componentConfiguration);
 				assertEquals(MaximumCardinality.ONE, configurationTemplateDTO.maximumCardinality);
 				assertEquals("foo.annotated", configurationTemplateDTO.pid);
 				assertEquals(ConfigurationPolicy.OPTIONAL, configurationTemplateDTO.policy);
