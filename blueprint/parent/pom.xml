@@ -31,16 +31,16 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Apache Aries Blueprint Parent</name>
     <description>
         This bundle contains the blueprint parent pom.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/blueprint-parent-1.0.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/blueprint-parent-1.0.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/blueprint-parent-1.0.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-parent</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-parent</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-parent</url>
     </scm>
 
     <properties>
