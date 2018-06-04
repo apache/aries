@@ -78,6 +78,10 @@ public class ContainerBootstrap extends Phase {
 				return true;
 			}
 
+			if (containerState.containerDTO().components.isEmpty()) {
+				return false;
+			}
+
 			List<Metadata<Extension>> extensions = new CopyOnWriteArrayList<>();
 
 			// Add the internal extensions
