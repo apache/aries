@@ -32,15 +32,15 @@
     <artifactId>org.apache.aries.blueprint.jexl.evaluator</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint JEXL evaluator</name>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <description>
         This bundle contains a plugin to the "ext" namespace handler for evaluating expressions using JEXL
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.jexl.evaluator-1.1.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.jexl.evaluator-1.1.0</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.jexl.evaluator-1.1.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-jexl-evaluator</url>
     </scm>
 
     <properties>
