@@ -244,7 +244,6 @@ public class DTOs {
 
 	static ConfigurationTemplateDTO copy0(ConfigurationTemplateDTO original) {
 		ConfigurationTemplateDTO copy = new ConfigurationTemplateDTO();
-		copy.componentConfiguration = original.componentConfiguration;
 		copy.maximumCardinality = original.maximumCardinality;
 		copy.pid = original.pid;
 		copy.policy = original.policy;

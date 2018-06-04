@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 
 @RequestScoped
 public class RequestData implements Serializable {
@@ -41,6 +42,7 @@ public class RequestData implements Serializable {
 	private String data;
 
 	@Inject
+	@Reluctant
 	@Reference
 	Pojo pojo;
 

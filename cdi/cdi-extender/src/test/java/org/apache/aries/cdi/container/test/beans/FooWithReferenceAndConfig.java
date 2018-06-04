@@ -16,16 +16,17 @@ package org.apache.aries.cdi.container.test.beans;
 
 import javax.inject.Inject;
 
+import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.ComponentScoped;
-import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.reference.BindObject;
+import org.osgi.service.cdi.annotations.Reluctant;
+import org.osgi.service.cdi.reference.BindService;
 
 @ComponentScoped
 public class FooWithReferenceAndConfig {
 
 	@Inject
-	void watchNumbers(BindObject<Integer> numbers) {
+	void watchNumbers(BindService<Integer> numbers) {
 		numbers.adding(number -> System.out.println("Added: " + number)
 		).modified(number -> System.out.println("Updated: " + number)
 		).removed(number -> System.out.println("Removed: " + number)
@@ -33,11 +34,12 @@ public class FooWithReferenceAndConfig {
 	}
 
 	@Inject
+	@Reluctant
 	@Reference
 	public Foo fooReference;
 
 	@Inject
-	@Configuration
+	@ComponentProperties
 	public Config config;
 
 }

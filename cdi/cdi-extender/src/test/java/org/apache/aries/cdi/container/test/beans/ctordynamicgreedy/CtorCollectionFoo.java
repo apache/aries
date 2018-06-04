@@ -20,10 +20,9 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.apache.aries.cdi.container.test.beans.Foo;
-import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.Reference;
 
 public class CtorCollectionFoo {
 	@Inject
-	public CtorCollectionFoo(@Greedy @Reference Provider<Collection<Foo>> foos) {}
+	public CtorCollectionFoo(@Reference Provider<Collection<Foo>> foos) {}
 }

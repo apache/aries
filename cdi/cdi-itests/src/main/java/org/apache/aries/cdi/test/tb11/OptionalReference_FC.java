@@ -22,6 +22,7 @@ import org.apache.aries.cdi.test.interfaces.BeanId;
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.service.cdi.annotations.FactoryComponent;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 import org.osgi.service.cdi.annotations.Service;
 
 @BeanId("fc")
@@ -31,6 +32,7 @@ public class OptionalReference_FC implements Pojo {
 
 	@BeanId("fc")
 	@Inject
+	@Reluctant
 	@Reference
 	Optional<Integer> service;
 

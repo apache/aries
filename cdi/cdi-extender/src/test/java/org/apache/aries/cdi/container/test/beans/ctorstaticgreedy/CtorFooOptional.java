@@ -19,10 +19,9 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import org.apache.aries.cdi.container.test.beans.Foo;
-import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.Reference;
 
 public class CtorFooOptional {
 	@Inject
-	public CtorFooOptional(@Greedy @Reference Optional<Foo> foo) {}
+	public CtorFooOptional(@Reference Optional<Foo> foo) {}
 }

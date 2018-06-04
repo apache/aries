@@ -20,8 +20,9 @@ import javax.inject.Inject;
 
 import org.apache.aries.cdi.container.test.beans.Foo;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 
 public class CtorListFoo {
 	@Inject
-	public CtorListFoo(@Reference List<Foo> foos) {}
+	public CtorListFoo(@Reluctant @Reference List<Foo> foos) {}
 }

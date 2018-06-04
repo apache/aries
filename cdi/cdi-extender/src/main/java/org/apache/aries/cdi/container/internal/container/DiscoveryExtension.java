@@ -50,7 +50,7 @@ import javax.enterprise.inject.spi.ProcessSessionBean;
 import javax.enterprise.inject.spi.ProcessSyntheticBean;
 
 import org.apache.aries.cdi.container.internal.model.BeansModel;
-import org.apache.aries.cdi.container.internal.model.ConfigurationModel;
+import org.apache.aries.cdi.container.internal.model.ComponentPropertiesModel;
 import org.apache.aries.cdi.container.internal.model.ExtendedActivationTemplateDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedComponentTemplateDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedConfigurationTemplateDTO;
@@ -63,15 +63,15 @@ import org.osgi.service.cdi.ComponentType;
 import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.MaximumCardinality;
 import org.osgi.service.cdi.ServiceScope;
+import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.ComponentScoped;
-import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.FactoryComponent;
 import org.osgi.service.cdi.annotations.PID;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.ServiceInstance;
 import org.osgi.service.cdi.annotations.SingleComponent;
-import org.osgi.service.cdi.reference.BindObject;
-import org.osgi.service.cdi.reference.BindServiceObjects;
+import org.osgi.service.cdi.reference.BindBeanServiceObjects;
+import org.osgi.service.cdi.reference.BindService;
 import org.osgi.service.cdi.reference.BindServiceReference;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 
@@ -239,7 +239,6 @@ public class DiscoveryExtension implements Extension {
 					PID -> {
 						ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
 
-						configurationTemplate.componentConfiguration = true;
 						configurationTemplate.declaringClass = annotatedClass;
 						configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
 						configurationTemplate.pid = Optional.of(PID.value()).map(
@@ -267,7 +266,6 @@ public class DiscoveryExtension implements Extension {
 				if (componentTemplate.configurations.isEmpty()) {
 					ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
 
-					configurationTemplate.componentConfiguration = true;
 					configurationTemplate.declaringClass = annotatedClass;
 					configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
 					configurationTemplate.pid = componentTemplate.name;
@@ -311,7 +309,6 @@ public class DiscoveryExtension implements Extension {
 					PID -> {
 						ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
 
-						configurationTemplate.componentConfiguration = true;
 						configurationTemplate.declaringClass = annotatedClass;
 						configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
 						configurationTemplate.pid = Optional.of(PID.value()).map(
@@ -331,7 +328,6 @@ public class DiscoveryExtension implements Extension {
 
 				ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
 
-				configurationTemplate.componentConfiguration = true;
 				configurationTemplate.declaringClass = annotatedClass;
 				configurationTemplate.maximumCardinality = MaximumCardinality.MANY;
 				configurationTemplate.pid = Optional.ofNullable(
@@ -401,7 +397,7 @@ public class DiscoveryExtension implements Extension {
 		}
 	}
 
-	void processBindObject(@Observes ProcessInjectionPoint<?, BindObject<?>> pip) {
+	void processBindObject(@Observes ProcessInjectionPoint<?, BindService<?>> pip) {
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 
 		Class<?> declaringClass = getDeclaringClass(injectionPoint);
@@ -435,7 +431,7 @@ public class DiscoveryExtension implements Extension {
 		}
 	}
 
-	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindServiceObjects<?>> pip) {
+	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindBeanServiceObjects<?>> pip) {
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 
 		Class<?> declaringClass = getDeclaringClass(injectionPoint);
@@ -518,10 +514,10 @@ public class DiscoveryExtension implements Extension {
 
 		Annotated annotated = injectionPoint.getAnnotated();
 		Reference reference = annotated.getAnnotation(Reference.class);
-		Configuration configuration = annotated.getAnnotation(Configuration.class);
+		ComponentProperties componentProperties = annotated.getAnnotation(ComponentProperties.class);
 
 		if (reference != null) {
-			if (configuration != null) {
+			if (componentProperties != null) {
 				_containerState.error(
 					new IllegalArgumentException(
 						String.format(
@@ -550,9 +546,9 @@ public class DiscoveryExtension implements Extension {
 				_containerState.error(e);
 			}
 		}
-		else if (configuration != null) {
+		else if (componentProperties != null) {
 			try {
-				ConfigurationModel configurationModel = new ConfigurationModel.Builder(
+				ComponentPropertiesModel configurationModel = new ComponentPropertiesModel.Builder(
 					injectionPoint.getType()
 				).declaringClass(
 					declaringClass
@@ -617,7 +613,7 @@ public class DiscoveryExtension implements Extension {
 		}
 
 		for (InjectionPoint injectionPoint : bean.getInjectionPoints()) {
-			if ((injectionPoint.getAnnotated().getAnnotation(Configuration.class) != null) ||
+			if ((injectionPoint.getAnnotated().getAnnotation(ComponentProperties.class) != null) ||
 				(injectionPoint.getAnnotated().getAnnotation(Reference.class) != null)) {
 
 				continue;

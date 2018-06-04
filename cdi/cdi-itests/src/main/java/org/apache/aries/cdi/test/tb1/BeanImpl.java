@@ -20,6 +20,7 @@ import javax.inject.Named;
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 
 @Named("beanimpl")
 public class BeanImpl implements BeanService<BeanImpl> {
@@ -35,6 +36,7 @@ public class BeanImpl implements BeanService<BeanImpl> {
 	}
 
 	@Inject
+	@Reluctant
 	@Reference
 	Pojo pojo;
 

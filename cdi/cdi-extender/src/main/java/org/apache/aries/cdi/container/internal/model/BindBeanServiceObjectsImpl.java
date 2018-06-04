@@ -25,10 +25,10 @@ import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.reference.BeanServiceObjects;
-import org.osgi.service.cdi.reference.BindServiceObjects;
+import org.osgi.service.cdi.reference.BindBeanServiceObjects;
 import org.osgi.service.log.Logger;
 
-public class BindServiceObjectsImpl<T> implements Binder<T>, BindServiceObjects<T> {
+public class BindBeanServiceObjectsImpl<T> implements Binder<T>, BindBeanServiceObjects<T> {
 
 	private final ContainerState _containerState;
 	private final Logger _log;
@@ -41,13 +41,13 @@ public class BindServiceObjectsImpl<T> implements Binder<T>, BindServiceObjects<
 
 	private volatile BeanServiceObjects<T> serviceObjects;
 
-	public BindServiceObjectsImpl(ContainerState containerState) {
+	public BindBeanServiceObjectsImpl(ContainerState containerState) {
 		_containerState = containerState;
 		_log = _containerState.containerLogs().getLogger(getClass());
 	}
 
 	@Override
-	public BindServiceObjectsImpl<T> addingService(ServiceReference<T> reference) {
+	public BindBeanServiceObjectsImpl<T> addingService(ServiceReference<T> reference) {
 		if (_enqueue.get()) {
 			_queue.add(reference);
 			return this;
@@ -71,7 +71,7 @@ public class BindServiceObjectsImpl<T> implements Binder<T>, BindServiceObjects<
 	}
 
 	@Override
-	public BindServiceObjectsImpl<T> modifiedService(ServiceReference<T> reference) {
+	public BindBeanServiceObjectsImpl<T> modifiedService(ServiceReference<T> reference) {
 		if (_enqueue.get()) {
 			return this; // i.e. do nothing
 		}
@@ -91,7 +91,7 @@ public class BindServiceObjectsImpl<T> implements Binder<T>, BindServiceObjects<
 	}
 
 	@Override
-	public BindServiceObjectsImpl<T> removedService(ServiceReference<T> reference) {
+	public BindBeanServiceObjectsImpl<T> removedService(ServiceReference<T> reference) {
 		if (_enqueue.get()) {
 			_queue.remove(reference);
 			return this;
@@ -123,19 +123,19 @@ public class BindServiceObjectsImpl<T> implements Binder<T>, BindServiceObjects<
 	}
 
 	@Override
-	public BindServiceObjectsImpl<T> adding(Consumer<BeanServiceObjects<T>> action) {
+	public BindBeanServiceObjectsImpl<T> adding(Consumer<BeanServiceObjects<T>> action) {
 		onAdding = Optional.ofNullable(action);
 		return this;
 	}
 
 	@Override
-	public BindServiceObjectsImpl<T> modified(Consumer<BeanServiceObjects<T>> consumer) {
+	public BindBeanServiceObjectsImpl<T> modified(Consumer<BeanServiceObjects<T>> consumer) {
 		onUpdate = Optional.ofNullable(consumer);
 		return this;
 	}
 
 	@Override
-	public BindServiceObjectsImpl<T> removed(Consumer<BeanServiceObjects<T>> consumer) {
+	public BindBeanServiceObjectsImpl<T> removed(Consumer<BeanServiceObjects<T>> consumer) {
 		onRemove = Optional.ofNullable(consumer);
 		return this;
 	}

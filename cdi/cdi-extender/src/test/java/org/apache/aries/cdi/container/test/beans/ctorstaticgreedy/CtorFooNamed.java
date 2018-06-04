@@ -18,10 +18,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.aries.cdi.container.test.beans.Foo;
-import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.Reference;
 
 public class CtorFooNamed {
 	@Inject
-	public CtorFooNamed(@Greedy @Reference @Named("_foo_") Foo foo) {}
+	public CtorFooNamed(@Reference @Named("_foo_") Foo foo) {}
 }

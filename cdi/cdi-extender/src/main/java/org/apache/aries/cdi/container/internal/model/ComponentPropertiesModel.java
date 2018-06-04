@@ -30,7 +30,7 @@ import org.osgi.service.cdi.MaximumCardinality;
 import org.osgi.service.cdi.annotations.PID;
 import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
 
-public class ConfigurationModel {
+public class ComponentPropertiesModel {
 
 	public static class Builder {
 
@@ -38,10 +38,10 @@ public class ConfigurationModel {
 			_injectionPointType = injectionPointType;
 		}
 
-		public ConfigurationModel build() {
+		public ComponentPropertiesModel build() {
 			Objects.requireNonNull(_delcaringClass);
 			Objects.requireNonNull(_injectionPointType);
-			return new ConfigurationModel(_injectionPointType, _delcaringClass, _pid, _qualifiers);
+			return new ComponentPropertiesModel(_injectionPointType, _delcaringClass, _pid, _qualifiers);
 		}
 
 		public Builder declaringClass(Class<?> delcaringClass) {
@@ -62,7 +62,7 @@ public class ConfigurationModel {
 
 	}
 
-	private ConfigurationModel(
+	private ComponentPropertiesModel(
 		Type injectionPointType,
 		Class<?> delcaringClass,
 		PID pid,
@@ -109,11 +109,7 @@ public class ConfigurationModel {
 		dto.maximumCardinality = MaximumCardinality.ONE;
 
 		if (_pid != null) {
-			dto.componentConfiguration = false;
 			dto.pid = _pid.value();
-		}
-		else {
-			dto.componentConfiguration = true;
 		}
 
 		dto.policy = (_pid != null) ? _pid.policy() : ConfigurationPolicy.OPTIONAL;

@@ -19,11 +19,13 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 import org.osgi.service.log.Logger;
 
 // dynamic, reluctant, mandatory, unary
 public class Reference_D_R_M_U_Service {
 	@Inject
+	@Reluctant
 	@Reference
 	Provider<Foo> foo;
 

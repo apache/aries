@@ -21,8 +21,9 @@ import javax.inject.Provider;
 
 import org.apache.aries.cdi.container.test.beans.Foo;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 
 public class CtorFooOptional {
 	@Inject
-	public CtorFooOptional(@Reference Provider<Optional<Foo>> foo) {}
+	public CtorFooOptional(@Reluctant @Reference Provider<Optional<Foo>> foo) {}
 }
