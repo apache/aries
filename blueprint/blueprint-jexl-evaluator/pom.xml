@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries.blueprint</groupId>
         <artifactId>blueprint-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
@@ -32,15 +32,15 @@
     <artifactId>org.apache.aries.blueprint.jexl.evaluator</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint JEXL evaluator</name>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
     <description>
         This bundle contains a plugin to the "ext" namespace handler for evaluating expressions using JEXL
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-jexl-evaluator</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-jexl-evaluator</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.jexl.evaluator-1.1.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.jexl.evaluator-1.1.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.jexl.evaluator-1.1.0</url>
     </scm>
 
     <properties>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>${blueprint.core.version}</version>
+            <version>1.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
