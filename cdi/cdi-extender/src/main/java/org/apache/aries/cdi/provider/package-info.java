@@ -18,7 +18,7 @@
 	uses = {
 		org.osgi.service.cdi.ServiceScope.class,
 		org.osgi.service.cdi.annotations.Reference.class,
-		org.osgi.service.cdi.reference.BindObject.class,
+		org.osgi.service.cdi.reference.BindService.class,
 		org.osgi.service.cdi.runtime.CDIComponentRuntime.class,
 		org.osgi.service.cdi.runtime.dto.ActivationDTO.class,
 		org.osgi.service.cdi.runtime.dto.template.ActivationTemplateDTO.class
@@ -31,7 +31,7 @@
 	uses = {
 		org.osgi.service.cdi.ServiceScope.class,
 		org.osgi.service.cdi.annotations.Reference.class,
-		org.osgi.service.cdi.reference.BindObject.class,
+		org.osgi.service.cdi.reference.BindService.class,
 		org.osgi.service.cdi.runtime.CDIComponentRuntime.class,
 		org.osgi.service.cdi.runtime.dto.ActivationDTO.class,
 		org.osgi.service.cdi.runtime.dto.template.ActivationTemplateDTO.class

@@ -19,10 +19,9 @@ import javax.inject.Provider;
 
 import org.apache.aries.cdi.container.test.beans.Bar;
 import org.apache.aries.cdi.container.test.beans.Foo;
-import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.Reference;
 
 public class CtorFooBar {
 	@Inject
-	public CtorFooBar(@Greedy @Reference Provider<Foo> foo, @Greedy @Reference Provider<Bar> bar) {}
+	public CtorFooBar(@Reference Provider<Foo> foo, @Reference Provider<Bar> bar) {}
 }

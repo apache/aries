@@ -44,8 +44,10 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.ComponentType;
 import org.osgi.service.cdi.MaximumCardinality;
 import org.osgi.service.cdi.ReferencePolicy;
+import org.osgi.service.cdi.ReferencePolicyOption;
 import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 import org.osgi.service.log.Logger;
 
@@ -61,6 +63,11 @@ public class ReferenceBean implements Bean<Object> {
 
 		_log = logs.getLogger(getClass());
 		_qualifiers = Sets.hashSet(Reference.Literal.of(Object.class, ""), Default.Literal.INSTANCE);
+
+		if (_template.policyOption == ReferencePolicyOption.RELUCTANT) {
+			_qualifiers.add(Reluctant.Literal.INSTANCE);
+		}
+
 		_types = Sets.hashSet(_template.injectionPointType, Object.class);
 	}
 
@@ -73,9 +80,9 @@ public class ReferenceBean implements Bean<Object> {
 
 		final SortedMap<ServiceReference<Object>, Object> tracked = _snapshot.serviceTracker.getTracked();
 
-		if (_template.collectionType == CollectionType.BINDER_OBJECT ||
+		if (_template.collectionType == CollectionType.BINDER_SERVICE ||
 			_template.collectionType == CollectionType.BINDER_REFERENCE ||
-			_template.collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+			_template.collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
 
 			return _snapshot.binder;
 		}

@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import javax.enterprise.inject.Produces;
 
 import org.osgi.service.cdi.annotations.Reference;
+import org.osgi.service.cdi.annotations.Reluctant;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.ServiceInstance;
 import org.osgi.service.cdi.propertytypes.ServiceRanking;
@@ -28,7 +29,7 @@ import org.osgi.service.cdi.propertytypes.ServiceRanking;
 public class BarProducer {
 	@Produces
 	@Service
-	public Bar getBar(@Reference Bar bar) {
+	public Bar getBar(@Reluctant @Reference Bar bar) {
 		return bar;
 	}
 

@@ -19,12 +19,11 @@ import javax.inject.Named;
 import javax.inject.Provider;
 
 import org.apache.aries.cdi.container.test.beans.Foo;
-import org.osgi.service.cdi.annotations.Greedy;
 import org.osgi.service.cdi.annotations.Reference;
 
 public class CtorFooFooNamed {
 	@Inject
 	public CtorFooFooNamed(
-			@Greedy @Reference @Named("foo_a") Provider<Foo> foo_a,
-			@Greedy @Reference @Named("foo_b") Provider<Foo> foo_b) {}
+			@Reference @Named("foo_a") Provider<Foo> foo_a,
+			@Reference @Named("foo_b") Provider<Foo> foo_b) {}
 }

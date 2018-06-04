@@ -182,14 +182,14 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 			t -> {
 				ExtendedReferenceDTO referenceDTO = new ExtendedReferenceDTO();
 
-				if (t.collectionType == CollectionType.BINDER_OBJECT) {
-					referenceDTO.binder = new BindObjectImpl<>(_containerState);
+				if (t.collectionType == CollectionType.BINDER_SERVICE) {
+					referenceDTO.binder = new BindServiceImpl<>(_containerState);
 				}
 				else if (t.collectionType == CollectionType.BINDER_REFERENCE) {
 					referenceDTO.binder = new BindServiceReferenceImpl<>(_containerState);
 				}
-				else if (t.collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
-					referenceDTO.binder = new BindServiceObjectsImpl<>(_containerState);
+				else if (t.collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
+					referenceDTO.binder = new BindBeanServiceObjectsImpl<>(_containerState);
 				}
 
 				referenceDTO.matches = new CopyOnWriteArrayList<>();
@@ -275,7 +275,7 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 
 		for (ConfigurationTemplateDTO t : template.configurations) {
 			configurations.stream().filter(
-				c -> c.template.equals(t) && t.componentConfiguration
+				c -> c.template.equals(t)
 			).findFirst().ifPresent(
 				c -> {
 					Map<String, Object> copy = new HashMap<>(c.properties);

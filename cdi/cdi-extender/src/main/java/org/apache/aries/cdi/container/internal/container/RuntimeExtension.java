@@ -41,11 +41,11 @@ import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.inject.spi.ProducerFactory;
 
-import org.apache.aries.cdi.container.internal.bean.ConfigurationBean;
+import org.apache.aries.cdi.container.internal.bean.ComponentPropertiesBean;
 import org.apache.aries.cdi.container.internal.bean.ReferenceBean;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
-import org.apache.aries.cdi.container.internal.model.ConfigurationModel;
+import org.apache.aries.cdi.container.internal.model.ComponentPropertiesModel;
 import org.apache.aries.cdi.container.internal.model.ExtendedActivationDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedActivationTemplateDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedComponentInstanceDTO;
@@ -65,11 +65,11 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cdi.CDIConstants;
 import org.osgi.service.cdi.ComponentType;
 import org.osgi.service.cdi.ServiceScope;
+import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.ComponentScoped;
-import org.osgi.service.cdi.annotations.Configuration;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.reference.BindObject;
-import org.osgi.service.cdi.reference.BindServiceObjects;
+import org.osgi.service.cdi.reference.BindBeanServiceObjects;
+import org.osgi.service.cdi.reference.BindService;
 import org.osgi.service.cdi.reference.BindServiceReference;
 import org.osgi.service.cdi.runtime.dto.ComponentDTO;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
@@ -96,11 +96,12 @@ public class RuntimeExtension implements Extension {
 	}
 
 	void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
-		bbd.addQualifier(org.osgi.service.cdi.annotations.Configuration.class);
-		bbd.addQualifier(org.osgi.service.cdi.annotations.Greedy.class);
+		bbd.addQualifier(org.osgi.service.cdi.annotations.ComponentProperties.class);
+		bbd.addQualifier(org.osgi.service.cdi.annotations.MinimumCardinality.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.PID.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.PrototypeRequired.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.Reference.class);
+		bbd.addQualifier(org.osgi.service.cdi.annotations.Reluctant.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.Service.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.ServiceInstance.class);
 		bbd.addScope(ComponentScoped.class, false, false);
@@ -168,11 +169,11 @@ public class RuntimeExtension implements Extension {
 		);
 	}
 
-	void processBindObject(@Observes ProcessInjectionPoint<?, BindObject<?>> pip) {
+	void processBindObject(@Observes ProcessInjectionPoint<?, BindService<?>> pip) {
 		processInjectionPoint(pip, true);
 	}
 
-	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindServiceObjects<?>> pip) {
+	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindBeanServiceObjects<?>> pip) {
 		processInjectionPoint(pip, true);
 	}
 
@@ -198,15 +199,15 @@ public class RuntimeExtension implements Extension {
 		}
 
 		Annotated annotated = injectionPoint.getAnnotated();
-		Configuration configuration = annotated.getAnnotation(Configuration.class);
+		ComponentProperties componentProperties = annotated.getAnnotation(ComponentProperties.class);
 		Reference reference = annotated.getAnnotation(Reference.class);
 
 		if (((reference != null) || special) && matchReference(osgiBean, pip)) {
 			return;
 		}
 
-		if (configuration != null) {
-			matchConfiguration(osgiBean, configuration, pip);
+		if (componentProperties != null) {
+			matchConfiguration(osgiBean, pip);
 		}
 	}
 
@@ -237,7 +238,7 @@ public class RuntimeExtension implements Extension {
 			t -> Objects.nonNull(t.injectionPointType)
 		).forEach(
 			t -> {
-				ConfigurationBean bean = t.bean;
+				ComponentPropertiesBean bean = t.bean;
 				if (componentTemplate.type == ComponentType.CONTAINER) {
 					if (t.pid == null) {
 						bean.setProperties(componentTemplate.properties);
@@ -307,12 +308,12 @@ public class RuntimeExtension implements Extension {
 		return _containerState.submit(cl.openOp(), cl::open);
 	}
 
-	private boolean matchConfiguration(OSGiBean osgiBean, Configuration configuration, ProcessInjectionPoint<?, ?> pip) {
+	private boolean matchConfiguration(OSGiBean osgiBean, ProcessInjectionPoint<?, ?> pip) {
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 
 		Class<?> declaringClass = DiscoveryExtension.getDeclaringClass(injectionPoint);
 
-		ConfigurationTemplateDTO current = new ConfigurationModel.Builder(injectionPoint.getType()).declaringClass(
+		ConfigurationTemplateDTO current = new ComponentPropertiesModel.Builder(injectionPoint.getType()).declaringClass(
 			declaringClass
 		).injectionPoint(
 			injectionPoint

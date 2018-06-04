@@ -21,7 +21,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.EventMetadata;
 import javax.inject.Inject;
 
-import org.osgi.service.cdi.reference.BindObject;
+import org.osgi.service.cdi.reference.BindService;
 
 @ApplicationScoped
 public class ObserverFoo {
@@ -31,8 +31,7 @@ public class ObserverFoo {
 	}
 
 	@Inject
-	void foos(BindObject<Foo> event, EventMetadata eventMetadata) {
-
+	void foos(BindService<Foo> event, EventMetadata eventMetadata) {
 		event.adding(
 			foo -> {
 				System.out.printf("Adding %s, %s%n", foo, eventMetadata);

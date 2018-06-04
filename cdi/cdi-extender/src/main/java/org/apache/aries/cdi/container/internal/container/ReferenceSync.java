@@ -63,9 +63,9 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 		_referenceDTO.matches = SRs.from(_referenceDTO.serviceTracker.getServiceReferences(), reference);
 
 		try {
-			if (collectionType == CollectionType.BINDER_OBJECT ||
+			if (collectionType == CollectionType.BINDER_SERVICE ||
 				collectionType == CollectionType.BINDER_REFERENCE ||
-				collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+				collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
 
 				requiresUpdate = false;
 
@@ -104,9 +104,9 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 	public void modifiedService(ServiceReference<Object> reference, Object service) {
 		CollectionType collectionType = _templateDTO.collectionType;
 
-		if (collectionType == CollectionType.BINDER_OBJECT ||
+		if (collectionType == CollectionType.BINDER_SERVICE ||
 			collectionType == CollectionType.BINDER_REFERENCE ||
-			collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+			collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
 
 			_referenceDTO.binder.modifiedService(reference);
 		}
@@ -137,9 +137,9 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 		_referenceDTO.matches.removeIf(d -> d.id == SRs.id(reference));
 
 		try {
-			if (collectionType == CollectionType.BINDER_OBJECT ||
+			if (collectionType == CollectionType.BINDER_SERVICE ||
 				collectionType == CollectionType.BINDER_REFERENCE ||
-				collectionType == CollectionType.BINDER_SERVICE_OBJECTS) {
+				collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
 
 				requiresUpdate = false;
 

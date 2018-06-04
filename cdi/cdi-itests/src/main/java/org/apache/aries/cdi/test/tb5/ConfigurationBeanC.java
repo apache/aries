@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
-import org.osgi.service.cdi.annotations.Configuration;
+import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.PID;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
@@ -57,7 +57,7 @@ public class ConfigurationBeanC implements BeanService<Callable<int[]>> {
 		};
 	}
 
-	@Configuration
+	@ComponentProperties
 	@Inject
 	Config config;
 

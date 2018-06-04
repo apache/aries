@@ -26,10 +26,10 @@ import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.util.Maps;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cdi.reference.BindObject;
+import org.osgi.service.cdi.reference.BindService;
 import org.osgi.service.log.Logger;
 
-public class BindObjectImpl<T> implements Binder<T>, BindObject<T> {
+public class BindServiceImpl<T> implements Binder<T>, BindService<T> {
 
 	private final ContainerState _containerState;
 	private final Logger _log;
@@ -45,13 +45,13 @@ public class BindObjectImpl<T> implements Binder<T>, BindObject<T> {
 
 	private volatile T service;
 
-	public BindObjectImpl(ContainerState containerState) {
+	public BindServiceImpl(ContainerState containerState) {
 		_containerState = containerState;
 		_log = _containerState.containerLogs().getLogger(getClass());
 	}
 
 	@Override
-	public BindObjectImpl<T> addingService(ServiceReference<T> reference) {
+	public BindServiceImpl<T> addingService(ServiceReference<T> reference) {
 		if (_enqueue.get()) {
 			_queue.add(reference);
 			return this;
@@ -86,7 +86,7 @@ public class BindObjectImpl<T> implements Binder<T>, BindObject<T> {
 	}
 
 	@Override
-	public BindObjectImpl<T> modifiedService(ServiceReference<T> reference) {
+	public BindServiceImpl<T> modifiedService(ServiceReference<T> reference) {
 		if (_enqueue.get()) {
 			return this; // i.e. do nothing
 		}
@@ -118,7 +118,7 @@ public class BindObjectImpl<T> implements Binder<T>, BindObject<T> {
 	}
 
 	@Override
-	public BindObjectImpl<T> removedService(ServiceReference<T> reference) {
+	public BindServiceImpl<T> removedService(ServiceReference<T> reference) {
 		if (_enqueue.get()) {
 			_queue.remove(reference);
 			return this;
@@ -162,37 +162,37 @@ public class BindObjectImpl<T> implements Binder<T>, BindObject<T> {
 	}
 
 	@Override
-	public BindObjectImpl<T> adding(Consumer<T> action) {
+	public BindServiceImpl<T> adding(Consumer<T> action) {
 		onAdding = Optional.ofNullable(action);
 		return this;
 	}
 
 	@Override
-	public BindObjectImpl<T> adding(BiConsumer<T, Map<String, Object>> action) {
+	public BindServiceImpl<T> adding(BiConsumer<T, Map<String, Object>> action) {
 		onAddingBi = Optional.ofNullable(action);
 		return this;
 	}
 
 	@Override
-	public BindObjectImpl<T> modified(Consumer<T> consumer) {
+	public BindServiceImpl<T> modified(Consumer<T> consumer) {
 		onUpdate = Optional.ofNullable(consumer);
 		return this;
 	}
 
 	@Override
-	public BindObjectImpl<T> modified(BiConsumer<T, Map<String, Object>> consumer) {
+	public BindServiceImpl<T> modified(BiConsumer<T, Map<String, Object>> consumer) {
 		onUpdateBi = Optional.ofNullable(consumer);
 		return this;
 	}
 
 	@Override
-	public BindObjectImpl<T> removed(Consumer<T> consumer) {
+	public BindServiceImpl<T> removed(Consumer<T> consumer) {
 		onRemove = Optional.ofNullable(consumer);
 		return this;
 	}
 
 	@Override
-	public BindObjectImpl<T> removed(BiConsumer<T, Map<String, Object>> consumer) {
+	public BindServiceImpl<T> removed(BiConsumer<T, Map<String, Object>> consumer) {
 		onRemoveBi = Optional.ofNullable(consumer);
 		return this;
 	}

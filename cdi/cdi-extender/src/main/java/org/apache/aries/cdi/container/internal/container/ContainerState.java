@@ -157,7 +157,6 @@ public class ContainerState {
 		_containerComponentTemplateDTO.type = ComponentType.CONTAINER;
 
 		ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
-		configurationTemplate.componentConfiguration = true;
 		configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
 		configurationTemplate.pid = Optional.ofNullable(
 			(String)cdiAttributes.get(CDI_CONTAINER_ID)

@@ -64,7 +64,7 @@ public enum CollectionType {
 	 * Used to indicate the reference is a binder for registering handler
 	 * methods for tracking service instances.
 	 */
-	BINDER_OBJECT("binder_object"),
+	BINDER_SERVICE("binder_service"),
 
 	/**
 	 * Used to indicate the reference is a binder for registering handler
@@ -74,9 +74,9 @@ public enum CollectionType {
 
 	/**
 	 * Used to indicate the reference is a binder for registering handler
-	 * methods for tracking service objects.
+	 * methods for tracking bean service objects.
 	 */
-	BINDER_SERVICE_OBJECTS("binder_service_objects");
+	BINDER_BEAN_SERVICE_OBJECTS("binder_bean_service_objects");
 
 	private final String value;
 
