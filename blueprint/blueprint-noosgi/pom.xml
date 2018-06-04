@@ -24,23 +24,23 @@
     <parent>
         <groupId>org.apache.aries.blueprint</groupId>
         <artifactId>blueprint-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.noosgi</artifactId>
     <packaging>jar</packaging>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.2.0</version>
     <name>Apache Aries Blueprint no-OSGI</name>
     <description>
         This jar contains everything needed to run Blueprint outside OSGi.
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-noosgi</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-noosgi</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-noosgi</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.noosgi-1.2.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.blueprint.noosgi-1.2.0</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.blueprint.noosgi-1.2.0</url>
     </scm>
 
     <properties>
@@ -83,13 +83,13 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>blueprint-parser</artifactId>
-            <version>${blueprint.parser.version}</version>
+            <version>1.6.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
-            <version>${blueprint.core.version}</version>
+            <version>1.10.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.aries.quiesce</groupId>
