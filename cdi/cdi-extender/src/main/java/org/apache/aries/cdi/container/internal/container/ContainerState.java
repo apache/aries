@@ -279,9 +279,9 @@ public class ContainerState {
 			);
 		}
 		catch (Exception e) {
-			_log.error(l -> l.error("CCR unexpected failure fetching configuration for {}", pid, e));
+			_log.warn(l -> l.warn("CCR unexpected error fetching configuration for {}", pid, e));
 
-			return Throw.exception(e);
+			return Optional.empty();
 		}
 	}
 
