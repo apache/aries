@@ -565,39 +565,75 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
     switch (returnType.getSort())
     {
       case Type.BOOLEAN:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Boolean.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Boolean.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.BOOLEAN_TYPE);
         break;
       case Type.BYTE:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Byte.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Byte.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.BYTE_TYPE);
         break;
       case Type.CHAR:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Character.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Character.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.CHAR_TYPE);
         break;
       case Type.DOUBLE:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Double.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Double.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.DOUBLE_TYPE);
         break;
       case Type.FLOAT:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Float.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Float.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.FLOAT_TYPE);
         break;
       case Type.INT:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Integer.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Integer.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.INT_TYPE);
         break;
       case Type.LONG:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Long.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Long.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.LONG_TYPE);
         break;
       case Type.SHORT:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Short.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Short.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.SHORT_TYPE);
         break;
       case Type.VOID:
-        methodAdapter.cast(OBJECT_TYPE, Type.getType(Void.class));
+        try {
+          methodAdapter.cast(OBJECT_TYPE, Type.getType(Void.class));
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         methodAdapter.unbox(Type.VOID_TYPE);
         break;
       default:
@@ -605,7 +641,11 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
         // in this case check the cast and cast the object to the return
         // type
         methodAdapter.checkCast(returnType);
-        methodAdapter.cast(OBJECT_TYPE, returnType);
+        try {
+          methodAdapter.cast(OBJECT_TYPE, returnType);
+        } catch (IllegalArgumentException ex) {
+          LOGGER.debug("Ignore cast exception caused by ASM 6.1 and try further", ex);
+        }
         break;
     }
     // return the (appropriately cast) result of the invocation from the

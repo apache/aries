@@ -74,9 +74,15 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
+            <artifactId>asm</artifactId>
             <optional>true</optional>
-            <version>6.0_ALPHA</version>
+            <version>6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <optional>true</optional>
+            <version>6.2</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
