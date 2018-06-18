@@ -59,6 +59,7 @@ import org.apache.aries.component.dsl.internal.AllOSGi;
 import org.apache.aries.component.dsl.internal.IgnoreImpl;
 import org.apache.aries.component.dsl.internal.JustOSGiImpl;
 import org.apache.aries.component.dsl.internal.OSGiImpl;
+import org.apache.aries.component.dsl.internal.UpdateSupport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
@@ -281,13 +282,13 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 					terminator.set(op.apply(t));
 				}
 
-				return () -> {
+				return () -> UpdateSupport.defer(() -> {
 					if (count.decrementAndGet() == 0) {
 						Runnable runnable = terminator.getAndSet(NOOP);
 
 						runnable.run();
 					}
-				};
+				});
 			};
 		});
 	}
