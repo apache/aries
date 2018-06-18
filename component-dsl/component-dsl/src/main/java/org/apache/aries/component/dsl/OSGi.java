@@ -59,7 +59,6 @@ import org.apache.aries.component.dsl.internal.AllOSGi;
 import org.apache.aries.component.dsl.internal.IgnoreImpl;
 import org.apache.aries.component.dsl.internal.JustOSGiImpl;
 import org.apache.aries.component.dsl.internal.OSGiImpl;
-import org.apache.aries.component.dsl.internal.OnCloseOSGiImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
@@ -263,8 +262,12 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 		return new NothingOSGiImpl<>();
 	}
 
+	@Deprecated()
+	/**
+	 * @deprecated see {@link #effects(Runnable, Runnable)}
+	 */
 	static OSGi<Void> onClose(Runnable action) {
-		return new OnCloseOSGiImpl(action);
+		return effects(NOOP, action);
 	}
 
 	static <T> OSGi<T> once(OSGi<T> program) {
