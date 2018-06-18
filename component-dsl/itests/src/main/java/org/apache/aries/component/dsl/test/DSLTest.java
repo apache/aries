@@ -237,6 +237,37 @@ public class DSLTest {
     }
 
     @Test
+    public void testEffectsOrder() {
+        ArrayList<Object> effects = new ArrayList<>();
+
+        OSGi<Void> program = just(Arrays.asList(1, 2, 3, 4)).effects(
+            effects::add,
+            effects::remove
+        ).
+        flatMap(t -> OSGi.effects(
+            () -> assertEquals(1, effects.stream().filter(t::equals).count()),
+            () -> assertEquals(1, effects.stream().filter(t::equals).count())
+        ).then(just(t))).
+        effects(
+            effects::add,
+            effects::remove
+        ).flatMap(t ->
+        OSGi.effects(
+            () ->
+                assertEquals(2, effects.stream().filter(t::equals).count()),
+            () ->
+                assertEquals(2, effects.stream().filter(t::equals).count()))
+        );
+
+        program = OSGi.effects(
+            () -> assertTrue(effects.isEmpty()),
+            () -> assertTrue(effects.isEmpty())).
+            then(program);
+
+        try (OSGiResult result = program.run(bundleContext)) {}
+    }
+
+    @Test
     public void testCoalesce() {
         ProbeImpl<String> program1 = new ProbeImpl<>();
         ProbeImpl<String> program2 = new ProbeImpl<>();

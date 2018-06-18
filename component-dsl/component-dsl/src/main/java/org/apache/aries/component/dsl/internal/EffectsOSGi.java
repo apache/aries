@@ -22,31 +22,61 @@ package org.apache.aries.component.dsl.internal;
  */
 public class EffectsOSGi extends OSGiImpl<Void> {
 
-    public EffectsOSGi(Runnable onAdding, Runnable onRemoving) {
+    public EffectsOSGi(
+        Runnable onAddingBefore, Runnable onAddingAfter,
+        Runnable onRemovingBefore, Runnable onRemovingAfter) {
+
         super((bundleContext, op) -> {
-            onAdding.run();
+            onAddingBefore.run();
 
             try {
                 Runnable terminator = op.publish(null);
 
+                try {
+                    onAddingAfter.run();
+                }
+                catch (Exception e) {
+                    //TODO: logging
+                }
+
                 return new OSGiResultImpl(
                     () -> {
                         try {
-                            terminator.run();
+                            onRemovingBefore.run();
                         }
-                        finally {
-                            try {
-                                onRemoving.run();
-                            }
-                            catch (Exception e) {
-                                //TODO: logging
-                            }
+                        catch (Exception e) {
+                            //TODO: logging
                         }
 
+                        try {
+                            terminator.run();
+                        }
+                        catch (Exception e) {
+                            //TODO: logging
+                        }
+
+                        try {
+                            onRemovingAfter.run();
+                        }
+                        catch (Exception e) {
+                            //TODO: logging
+                        }
                  });
             }
             catch (Exception e) {
-                onRemoving.run();
+                try {
+                    onRemovingBefore.run();
+                }
+                catch (Exception e1) {
+                    //TODO: logging
+                }
+
+                try {
+                    onRemovingAfter.run();
+                }
+                catch (Exception e1) {
+                    //TODO: logging
+                }
 
                 throw e;
             }
