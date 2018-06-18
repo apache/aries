@@ -224,11 +224,21 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	static OSGi<Void> effect(Effect<Void> effect) {
 		return new EffectsOSGi(
 			() -> effect.getOnIncoming().accept(null),
+			NOOP,
+			NOOP,
 			() -> effect.getOnLeaving().accept(null));
 	}
 
 	static OSGi<Void> effects(Runnable onAdding, Runnable onRemoving) {
-		return new EffectsOSGi(onAdding, onRemoving);
+		return new EffectsOSGi(onAdding, NOOP, NOOP, onRemoving);
+	}
+
+	static OSGi<Void> effects(
+		Runnable onAddingBefore, Runnable onAddingAfter,
+		Runnable onRemovingBefore, Runnable onRemovingAfter) {
+
+		return new EffectsOSGi(
+			onAddingBefore, onAddingAfter, onRemovingBefore, onRemovingAfter);
 	}
 
 	static <T> OSGi<T> fromOsgiRunnable(OSGiRunnable<T> runnable) {
@@ -589,28 +599,74 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 	default OSGi<T> effects(
 		Consumer<? super T> onAdded, Consumer<? super T> onRemoved) {
 
+		return effects(onAdded, __ -> {}, __ -> {}, onRemoved);
+	}
+
+	default OSGi<T> effects(
+		Consumer<? super T> onAddedBefore, Consumer<? super T> onAddedAfter,
+		Consumer<? super T> onRemovedBefore,
+		Consumer<? super T> onRemovedAfter) {
+
 		return fromOsgiRunnable((bundleContext, op) ->
 			run(
 				bundleContext,
 				t -> {
-					onAdded.accept(t);
+					onAddedBefore.accept(t);
 
-					Runnable terminator;
 					try {
-						terminator = op.apply(t);
+						Runnable terminator = op.publish(t);
+
+						try {
+							onAddedAfter.accept(t);
+						}
+						catch (Exception e) {
+							//TODO: logging
+						}
+
+						return
+							() -> {
+								try {
+									onRemovedBefore.accept(t);
+								}
+								catch (Exception e) {
+									//TODO: logging
+								}
+
+								try {
+									terminator.run();
+								}
+								catch (Exception e) {
+									//TODO: logging
+								}
+
+								try {
+									onRemovedAfter.accept(t);
+								}
+								catch (Exception e) {
+									//TODO: logging
+								}
+							};
 					}
 					catch (Exception e) {
-						onRemoved.accept(t);
+						try {
+							onRemovedBefore.accept(t);
+						}
+						catch (Exception e1) {
+							//TODO: logging
+						}
+
+						try {
+							onRemovedAfter.accept(t);
+						}
+						catch (Exception e1) {
+							//TODO: logging
+						}
 
 						throw e;
 					}
-
-					return () -> {
-						onRemoved.accept(t);
-
-						terminator.run();
-					};
-				}));
+				}
+			)
+		);
 	}
 
 	default OSGi<T> effects(Effect<? super T> effect) {

@@ -25,8 +25,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import static org.apache.aries.component.dsl.OSGi.NOOP;
 import static org.apache.aries.component.dsl.OSGi.just;
 
 /**
@@ -39,7 +41,7 @@ public interface Utils {
             OSGi.just(ArrayList<T>::new).flatMap(list ->
             OSGi.all(
                 OSGi.just(ArrayList<T>::new),
-                program.effects(list::add, list::remove).
+                program.effects(list::add, __ -> {}, list::remove, __ -> {}).
                 then(OSGi.just(() -> new ArrayList<>(list)
                 ))
             ).transform(
@@ -61,7 +63,9 @@ public interface Utils {
                             flatMap(t ->
                                 valueFun.apply(t).effects(
                                     v -> map.put(k, v),
-                                    __ -> map.remove(k)
+                                    __ -> {},
+                                    __ -> map.remove(k),
+                                    __ -> {}
                                 )
                             )
                 ).then(OSGi.just(() -> new HashMap<>(map)))
