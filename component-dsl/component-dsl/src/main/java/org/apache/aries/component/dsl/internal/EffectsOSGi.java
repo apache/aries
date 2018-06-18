@@ -26,14 +26,30 @@ public class EffectsOSGi extends OSGiImpl<Void> {
         super((bundleContext, op) -> {
             onAdding.run();
 
-            Runnable terminator = op.publish(null);
+            try {
+                Runnable terminator = op.publish(null);
 
-            return new OSGiResultImpl(
-                () -> {
-                    terminator.run();
+                return new OSGiResultImpl(
+                    () -> {
+                        try {
+                            terminator.run();
+                        }
+                        finally {
+                            try {
+                                onRemoving.run();
+                            }
+                            catch (Exception e) {
+                                //TODO: logging
+                            }
+                        }
 
-                    onRemoving.run();
-                });
+                 });
+            }
+            catch (Exception e) {
+                onRemoving.run();
+
+                throw e;
+            }
         });
     }
 }
