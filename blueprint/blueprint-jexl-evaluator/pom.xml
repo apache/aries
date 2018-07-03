@@ -55,7 +55,7 @@
         <aries.osgi.private.pkg>
             org.apache.aries.blueprint.jexl.evaluator
         </aries.osgi.private.pkg>
-        <blueprint.core.version>1.10.0-SNAPSHOT</blueprint.core.version>
+        <blueprint.core.version>1.10.0</blueprint.core.version>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
     </properties>
 

@@ -45,8 +45,8 @@
 
     <properties>
         <blueprint.api.version>1.0.1</blueprint.api.version>
-        <blueprint.core.version>1.10.0-SNAPSHOT</blueprint.core.version>
-        <blueprint.parser.version>1.6.0-SNAPSHOT</blueprint.parser.version>
+        <blueprint.core.version>1.10.0</blueprint.core.version>
+        <blueprint.parser.version>1.6.0</blueprint.parser.version>
         <proxy.impl.version>1.0.3</proxy.impl.version>
     </properties>
 
