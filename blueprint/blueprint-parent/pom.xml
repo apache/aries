@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>blueprint-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Apache Aries Blueprint Parent</name>
     <description>
         This bundle contains the blueprint parent pom.
