@@ -281,7 +281,7 @@ public class TypeInference {
             TypedObject arg = args.get(i);
             Type needed = parameterTypes[i];
             long sc;
-            if (needed == arg.type) {
+            if (arg.type == null || needed == arg.type) {
                 sc = COST_ASSIGN;
             } else if (allowCast && ClassUtil.getClass(needed).isAssignableFrom(ClassUtil.getClass(arg.type))) {
                 sc = COST_CAST;

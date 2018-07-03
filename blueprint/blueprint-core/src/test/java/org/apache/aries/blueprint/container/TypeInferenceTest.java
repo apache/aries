@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.container;
 
 import org.apache.aries.blueprint.TestBlueprintContainer;
+import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.pojos.DummyServiceTrackerCustomizer;
 import org.apache.aries.blueprint.pojos.PojoA;
 import org.apache.aries.blueprint.utils.generics.OwbParametrizedTypeImpl;
@@ -31,6 +32,8 @@ import org.osgi.util.tracker.ServiceTracker;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -70,6 +73,17 @@ public class TypeInferenceTest {
         assertNotNull(match);
     }
 
+    @Test
+    public void testParameterWithNullCollections() {
+        BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+        BeanRecipe recipe = new BeanRecipe("sessionDef", container, FactoryWithList.class, false, false, false);
+        recipe.setArguments(Collections.singletonList(null));
+        recipe.setArgTypes(Collections.<String>singletonList(null));
+        recipe.setFactoryMethod("init");
+        ExecutionContext.Holder.setContext(new BlueprintRepository(container));
+        recipe.create();
+    }
+
     class TIConverter implements TypeInference.Converter {
         public TypeInference.TypedObject convert(TypeInference.TypedObject from, Type to) throws Exception {
             Object arg = from.getValue();
@@ -77,4 +91,13 @@ public class TypeInferenceTest {
             return new TypeInference.TypedObject(to, arg);
         }
     }
+
+    public static class FactoryWithList {
+
+        public static String init(List<Integer> ints) {
+            return "Hello!";
+        }
+
+    }
+
 }
