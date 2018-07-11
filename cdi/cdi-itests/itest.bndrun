@@ -13,7 +13,7 @@
 #-runtrace: true
 #-runvm: -Xdebug, "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
 
--standalone: target/index.xml
+-standalone: true
 
 -runrequires: \
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.extender)',\
