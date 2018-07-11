@@ -65,24 +65,6 @@ public class CCR implements CDIComponentRuntime {
 	}
 
 	@Override
-	public ContainerDTO getContainerDTO(Bundle bundle) {
-		return call(
-			() -> Optional.ofNullable(_states.get(bundle)).map(
-				cs -> DTOs.copy(cs.containerDTO(), true)
-			).orElse(null)
-		);
-	}
-
-	@Override
-	public long getContainerChangeCount(Bundle bundle) {
-		return call(
-			() -> Optional.ofNullable(_states.get(bundle)).map(
-				cs -> cs.containerDTO().changeCount
-			).orElse(-1l)
-		);
-	}
-
-	@Override
 	public ContainerTemplateDTO getContainerTemplateDTO(Bundle bundle) {
 		return call(
 			() -> Optional.ofNullable(_states.get(bundle)).map(

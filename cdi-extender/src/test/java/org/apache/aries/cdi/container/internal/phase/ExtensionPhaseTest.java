@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,7 +67,9 @@ public class ExtensionPhaseTest extends BaseCDIBundleTest {
 
 		cdiBundle.start();
 
-		ContainerDTO containerDTO = ccr.getContainerDTO(bundle);
+		Collection<ContainerDTO> containerDTOs = ccr.getContainerDTOs(bundle);
+		assertFalse(containerDTOs.isEmpty());
+		ContainerDTO containerDTO = containerDTOs.iterator().next();
 		assertNotNull(containerDTO);
 
 		assertNotNull(containerDTO.bundle);

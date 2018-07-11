@@ -47,14 +47,14 @@ public class CDICommand {
 
 	public String info(Bundle bundle) {
 		try (Formatter f = new Formatter()) {
-			ContainerDTO containerDTO = _ccr.getContainerDTO(bundle);
+			Collection<ContainerDTO> containerDTOs = _ccr.getContainerDTOs(bundle);
 
-			if (containerDTO == null) {
+			if (containerDTOs.isEmpty()) {
 				f.format(NO_BUNDLES);
 				return f.toString();
 			}
 
-			list0(f, containerDTO, false, true);
+			list0(f, containerDTOs.iterator().next(), false, true);
 
 			return f.toString();
 		}
