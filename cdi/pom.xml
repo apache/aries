@@ -32,7 +32,7 @@
 	<version>0.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<bnd.version>4.0.0</bnd.version>
+		<bnd.version>4.1.0-SNAPSHOT</bnd.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<surefire.version>2.12</surefire.version>
 		<weld.release>3.0.2.Final</weld.release>
@@ -131,19 +131,6 @@
 							<id>export</id>
 							<goals>
 								<goal>export</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>biz.aQute.bnd</groupId>
-					<artifactId>bnd-indexer-maven-plugin</artifactId>
-					<version>${bnd.version}</version>
-					<executions>
-						<execution>
-							<id>index</id>
-							<goals>
-								<goal>index</goal>
 							</goals>
 						</execution>
 					</executions>
