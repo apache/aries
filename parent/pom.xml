@@ -606,12 +606,15 @@
         </profile>
         <profile>
             <id>rat</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
-                        <version>0.6</version>
+                        <version>0.12</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
@@ -637,15 +640,21 @@
                                 <!-- exclude Eclipse IDE generated files -->
                                 <exclude>**/.project</exclude>
                                 <exclude>**/.classpath</exclude>
+                                <exclude>**/.settings/**</exclude>
                                 <exclude>**/eclipse-classes/**/*</exclude>
                                 <!-- manifest files don't support comments so don't contain the ASL2.0 header -->
-                                <exclude>**/APPLICATION.MF</exclude>
-                                <exclude>**/MANIFEST.MF</exclude>
                                 <exclude>**/*.MF</exclude>
                                 <!--RAT doesn't seem to recognize MIT style licenses-->
                                 <exclude>manual/src/styles/print.css</exclude>
                                 <!-- RAT doesn't recognize BSD license in transaction-manager logger -->
                                 <exclude>**/objectweb/howl/log/Logger.java</exclude>
+                                <exclude>.gitignore</exclude>
+                                <exclude>README.md</exclude>
+                                <exclude>*.cfg</exclude>
+                                <exclude>**/README.md</exclude>
+                                <exclude>**/Readme.md</exclude>
+                                <exclude>**/NOTICE.vm</exclude>
+                                <exclude>**/dependency-reduced-pom.xml</exclude>
                             </excludes>
                         </configuration>
                     </plugin>
