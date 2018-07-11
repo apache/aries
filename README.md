@@ -18,6 +18,7 @@ Some of the subproject are already migrated to git:
 | Aries JAX-RS whiteboard | [apache](https://git-wip-us.apache.org/repos/asf/aries-jax-rs-whiteboard.git) | [github](https://github.com/apache/aries-jax-rs-whiteboard) |
 | Aries JPA | [apache](https://git-wip-us.apache.org/repos/asf/aries-jpa.git) | [github](https://github.com/apache/aries-jpa) |
 | Aries RSA | [apache](https://git-wip-us.apache.org/repos/asf/aries-rsa.git) | [github](https://github.com/apache/aries-rsa) |
+| Aries Transaction Control | [apache](https://gitbox.apache.org/repos/asf?p=aries-tx-control.git) | [github](https://github.com/apache/aries-tx-control) |
 
 ## Build
 
