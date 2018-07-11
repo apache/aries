@@ -59,11 +59,11 @@ public class CdiContainerTests extends AbstractTestCase {
 
 	@Test
 	public void testContainerComponentSingleton() throws Exception {
-		while (cdiRuntime.getContainerDTO(cdiBundle).components.isEmpty()) {
+		while (getContainerDTO(cdiRuntime, cdiBundle).components.isEmpty()) {
 			Thread.sleep(10);
 		}
 
-		ContainerDTO containerDTO = cdiRuntime.getContainerDTO(cdiBundle);
+		ContainerDTO containerDTO = getContainerDTO(cdiRuntime, cdiBundle);
 		assertNotNull(containerDTO);
 
 		ComponentDTO containerComponentDTO = containerDTO.components.stream()
