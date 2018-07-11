@@ -126,17 +126,17 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.8.1</version>
+                <version>${junit.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
-                <version>1.7.2</version>
+                <version>${pax-logging.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-service</artifactId>
-                <version>1.7.2</version>
+                <version>${pax-logging.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.jdmk</groupId>
@@ -159,22 +159,22 @@
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
-                <version>4.3.1</version>
+                <version>${org.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
-                <version>4.3.1</version>
+                <version>${org.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.5</version>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>1.7.5</version>
+                <version>${slf4j.version}</version>
             </dependency>
 
         </dependencies>
@@ -211,6 +211,32 @@
         <aries.osgi.include.resource>{maven-resources}</aries.osgi.include.resource>
         <aries.javadoc.exclude.packages>${aries.osgi.private.pkg}</aries.javadoc.exclude.packages>
         <lastReleaseVersion>RELEASE</lastReleaseVersion>
+
+        <!--Dependencies-->
+        <junit.version>4.8.1</junit.version>
+        <pax-logging.version>1.7.2</pax-logging.version>
+        <org.version>4.3.1</org.version>
+        <slf4j.version>1.7.5</slf4j.version>
+
+        <!--Plugin versions-->
+        <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
+        <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
+        <maven-shade-plugin.version>1.2.2</maven-shade-plugin.version>
+        <versions-maven-plugin.version>1.1</versions-maven-plugin.version>
+        <findbugs-maven-plugin.version>2.3.1</findbugs-maven-plugin.version>
+        <maven-bundle-plugin.version>2.5.0</maven-bundle-plugin.version>
+        <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
+        <maven-license-plugin.version>1.4.0</maven-license-plugin.version>
+        <maven-javadoc-plugin.version>2.7</maven-javadoc-plugin.version>
+        <maven-pmd-plugin.version>2.4</maven-pmd-plugin.version>
+        <maven-paxexam-plugin.version>1.2.3</maven-paxexam-plugin.version>
+        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+        <org.apache.aries.versioning.plugin.version>0.3.0</org.apache.aries.versioning.plugin.version>
+        <ianal-maven-plugin.version>1.0-alpha-1</ianal-maven-plugin.version>
+        <animal-sniffer-enforcer-rule.version>1.6</animal-sniffer-enforcer-rule.version>
+
+        <!--Other-->
+        <java.source.version>1.7</java.source.version>
     </properties>
 
     <build>
@@ -261,7 +287,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.2</version>
+                    <version>${maven-release-plugin.version}</version>
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                     </configuration>
@@ -270,7 +296,7 @@
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
+                    <version>${lifecycle-mapping.version}</version>
                     <configuration>
                         <lifecycleMappingMetadata>
                             <pluginExecutions>
@@ -344,7 +370,7 @@
                                             maven-paxexam-plugin
                                         </artifactId>
                                         <versionRange>
-                                            [1.2.3,)
+                                            [${maven-paxexam-plugin.version},)
                                         </versionRange>
                                         <goals>
                                             <goal>
@@ -370,7 +396,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>1.2.2</version>
+                    <version>${maven-shade-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -393,7 +419,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>1.1</version>
+                    <version>${versions-maven-plugin.version}</version>
                     <configuration>
                         <excludes>
                             <!--  3.5.0.v20090520 < 3.3.0-v20070530 -->
@@ -411,35 +437,35 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>2.3.1</version>
+                    <version>${findbugs-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.ops4j.pax.exam</groupId>
                     <artifactId>maven-paxexam-plugin</artifactId>
-                    <version>1.2.3</version>
+                    <version>${maven-paxexam-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>${maven-javadoc-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
+                    <version>${maven-compiler-plugin.version}</version>
                     <configuration>
                         <optimize>true</optimize>
                         <debug>true</debug>
                         <showDeprecation>true</showDeprecation>
                         <showWarnings>true</showWarnings>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>${java.source.version}</source>
+                        <target>${java.source.version}</target>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.aries.versioning</groupId>
                     <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                    <version>0.3.0</version>
+                    <version>${org.apache.aries.versioning.plugin.version}</version>
                     <configuration>
                         <oldArtifact>${project.groupId}:${project.artifactId}:${lastReleaseVersion}</oldArtifact>
                     </configuration>
@@ -484,7 +510,7 @@
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>animal-sniffer-enforcer-rule</artifactId>
-                        <version>1.6</version>
+                        <version>${animal-sniffer-enforcer-rule.version}</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -499,7 +525,7 @@
                                     <version>[3.0,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
-                                    <version>[1.6,)</version>
+                                    <version>[${java.source.version},)</version>
                                 </requireJavaVersion>
                             </rules>
                         </configuration>
@@ -509,7 +535,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>ianal-maven-plugin</artifactId>
-                <version>1.0-alpha-1</version>
+                <version>${ianal-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -524,12 +550,12 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>${findbugs-maven-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.5.0</version>
+                <version>${maven-bundle-plugin.version}</version>
                 <extensions>true</extensions>
                 <inherited>true</inherited>
                 <configuration>
@@ -559,7 +585,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
+                    <source>${java.source.version}</source>
                 </configuration>
             </plugin>
         </plugins>
@@ -614,7 +640,7 @@
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
-                        <version>0.12</version>
+                        <version>${apache-rat-plugin.version}</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
@@ -681,7 +707,7 @@
                     <plugin>
                         <groupId>com.google.code.maven-license-plugin</groupId>
                         <artifactId>maven-license-plugin</artifactId>
-                        <version>1.4.0</version>
+                        <version>${maven-license-plugin.version}</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -700,7 +726,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.7</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -713,7 +739,7 @@
                 <configuration>
                     <excludePackageNames>${aries.javadoc.exclude.packages}</excludePackageNames>
                     <quiet>true</quiet>
-                    <source>1.7</source>
+                    <source>${java.source.version}</source>
                     <links>
                         <link>http://java.sun.com/j2se/1.7.0/docs/api</link>
                         <link>http://www.osgi.org/javadoc/r4v43/</link>
@@ -773,14 +799,14 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>${findbugs-maven-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.4</version>
+                <version>${maven-pmd-plugin.version}</version>
                 <configuration>
-                    <targetJdk>1.7</targetJdk>
+                    <targetJdk>${java.source.version}</targetJdk>
                 </configuration>
             </plugin>
         </plugins>
