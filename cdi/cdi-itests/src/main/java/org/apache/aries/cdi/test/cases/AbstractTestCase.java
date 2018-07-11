@@ -49,6 +49,7 @@ import org.osgi.namespace.extender.ExtenderNamespace;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.service.cdi.CDIConstants;
 import org.osgi.service.cdi.runtime.CDIComponentRuntime;
+import org.osgi.service.cdi.runtime.dto.ContainerDTO;
 import org.osgi.util.promise.PromiseFactory;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -130,6 +131,28 @@ public class AbstractTestCase {
 		}
 
 		return null;
+	}
+
+	public ContainerDTO getContainerDTO(CDIComponentRuntime runtime, Bundle bundle) {
+		Iterator<ContainerDTO> iterator;
+		ContainerDTO containerDTO = null;
+		int attempts = 50;
+		while (--attempts > 0) {
+			iterator = cdiRuntime.getContainerDTOs(bundle).iterator();
+			if (iterator.hasNext()) {
+				containerDTO = iterator.next();
+				if (containerDTO != null) {
+					break;
+				}
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		assertNotNull(containerDTO);
+		return containerDTO;
 	}
 
 	public static Bundle installBundle(String url) throws Exception {
