@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>14</version>
+        <version>20</version>
         <relativePath />
     </parent>
 
@@ -236,7 +236,7 @@
         <animal-sniffer-enforcer-rule.version>1.6</animal-sniffer-enforcer-rule.version>
 
         <!--Other-->
-        <java.source.version>1.7</java.source.version>
+        <java.source.version>1.8</java.source.version>
     </properties>
 
     <build>
@@ -674,6 +674,8 @@
                                 <exclude>manual/src/styles/print.css</exclude>
                                 <!-- RAT doesn't recognize BSD license in transaction-manager logger -->
                                 <exclude>**/objectweb/howl/log/Logger.java</exclude>
+                                <!--RAT doesn't seem to recognize W3C license -->
+                                <exclude>**/xml.xsd</exclude>
                                 <exclude>.gitignore</exclude>
                                 <exclude>README.md</exclude>
                                 <exclude>*.cfg</exclude>
