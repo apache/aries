@@ -34,7 +34,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -42,7 +41,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTracker;
 
 public abstract class BaseActivator implements BundleActivator {
@@ -54,7 +52,6 @@ public abstract class BaseActivator implements BundleActivator {
     public static BaseActivator activator;
 
     private BundleContext bundleContext;
-    private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
     private BundleTracker consumerBundleTracker;
     private BundleTracker providerBundleTracker;
 
@@ -152,19 +149,9 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public void log(int level, String message) {
-        synchronized (logServices) {
-            for (LogService log : logServices) {
-                log.log(level, message);
-            }
-        }
     }
 
     public void log(int level, String message, Throwable th) {
-        synchronized (logServices) {
-            for (LogService log : logServices) {
-                log.log(level, message, th);
-            }
-        }
     }
 
     public Set<WeavingData> getWeavingData(Bundle b) {
