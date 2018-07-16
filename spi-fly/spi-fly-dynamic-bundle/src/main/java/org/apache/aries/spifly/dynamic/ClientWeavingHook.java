@@ -38,13 +38,7 @@ public class ClientWeavingHook implements WeavingHook {
     ClientWeavingHook(BundleContext context, DynamicWeavingActivator dwActivator) {
         activator = dwActivator;
 
-        Bundle b = context.getBundle();
-        String bver = b.getVersion().toString();
-        String bsn = b.getSymbolicName();
-
-        addedImport = Util.class.getPackage().getName() +
-            ";bundle-symbolic-name=" + bsn +
-            ";bundle-version=" + bver;
+        addedImport = Util.class.getPackage().getName();
     }
 
 	@Override
