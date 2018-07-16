@@ -96,10 +96,9 @@ public class ClientWeavingHookOSGi43Test  {
         Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
         Assert.assertEquals(1, wc.getDynamicImports().size());
-        String di1 = "org.apache.aries.spifly;bundle-symbolic-name=spifly;bundle-version=1.9.4";
-        String di2 = "org.apache.aries.spifly;bundle-version=1.9.4;bundle-symbolic-name=spifly";
+        String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
-        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di) || di2.equals(di));
+        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
 
         // Invoke the woven class and check that it properly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
