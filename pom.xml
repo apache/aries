@@ -47,6 +47,7 @@
         <module>spi-fly-core</module>
         <module>spi-fly-weaver</module>
         <module>spi-fly-dynamic-bundle</module>
+        <module>spi-fly-dynamic-framework-extension</module>
         <module>spi-fly-static-tool</module>
         <module>spi-fly-static-bundle</module>
         <!--

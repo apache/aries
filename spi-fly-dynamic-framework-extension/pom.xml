@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.0.0</version>
+        <relativePath>../../parent/pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.apache.aries.spifly</groupId>
+    <artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
+    <version>1.0.13-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>Apache Aries SPI Fly Dynamic Weaving Framework Extension</name>
+    <description>
+        This framework extension fragment contains an extender that facilitates
+        the use of JRE SPI providers (components typically plugged in to the
+        JRE through META-INF/services resources).
+    </description>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-framework-extension</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-framework-extension</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-dynamic-framework-extension</url>
+    </scm>
+    <properties>
+        <aries.skip.version.check>true</aries.skip.version.check>
+        <lastReleaseVersion>1.0.0</lastReleaseVersion>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-debug-all</artifactId>
+            <version>5.0.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.spifly</groupId>
+            <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
+            <version>1.0.13-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <instructions>
+                        <Fragment-Host>system.bundle;extension:=framework</Fragment-Host>
+                        <ExtensionBundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</ExtensionBundle-Activator>
+                        <Export-Package>
+                            org.apache.aries.spifly;version=${project.version}
+                        </Export-Package>
+                        <Import-Package>
+                            !javax.xml.*,
+                            !org.osgi.framework.hooks.bundle,
+                            !org.osgi.framework.launch,
+                            !org.osgi.service.framework,
+                            !org.osgi.service.log,
+                            !org.xml.*,
+                            *
+                        </Import-Package>
+                        <Private-Package>
+                            org.apache.aries.spifly.*,
+                            org.apache.aries.util.*,
+                            org.objectweb.asm.*
+                        </Private-Package>
+                        <Provide-Capability>
+                            osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0,
+                            osgi.extender;osgi.extender=osgi.serviceloader.processor;version:Version=1.0;uses:="org.apache.aries.spifly"
+                        </Provide-Capability>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>version-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
