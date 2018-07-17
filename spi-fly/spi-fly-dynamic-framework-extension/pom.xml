@@ -104,18 +104,21 @@
                             org.apache.aries.spifly;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            !javax.xml.*,
-                            !org.osgi.framework.hooks.bundle,
-                            !org.osgi.framework.launch,
-                            !org.osgi.service.framework,
-                            !org.osgi.service.log,
-                            !org.xml.*,
+                            !org.apache.aries.util.filesystem,
+                            !org.apache.aries.util.io,
+                            !org.objectweb.asm.signature,
+                            !org.objectweb.asm.tree,
                             *
                         </Import-Package>
+                        <_conditionalpackage>
+                            org.apache.aries.util,
+                            org.apache.aries.util.internal,
+                            org.apache.aries.util.manifest,
+                            org.objectweb.asm,
+                            org.objectweb.asm.commons
+                        </_conditionalpackage>
                         <Private-Package>
-                            org.apache.aries.spifly.*,
-                            org.apache.aries.util.*,
-                            org.objectweb.asm.*
+                            org.apache.aries.spifly.*;-split-package:=first
                         </Private-Package>
                         <Provide-Capability>
                             osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0,
