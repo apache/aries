@@ -34,7 +34,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -47,6 +48,7 @@ import org.osgi.util.tracker.BundleTracker;
 
 public abstract class BaseActivator implements BundleActivator {
     private static final Set<WeavingData> NON_WOVEN_BUNDLE = Collections.emptySet();
+    private static final Logger logger = Logger.getLogger(BaseActivator.class.getName());
 
     // Static access to the activator used by the woven code, therefore
     // this bundle must be a singleton.
@@ -54,7 +56,6 @@ public abstract class BaseActivator implements BundleActivator {
     public static BaseActivator activator;
 
     private BundleContext bundleContext;
-    private List<LogService> logServices = new CopyOnWriteArrayList<LogService>();
     private BundleTracker consumerBundleTracker;
     private BundleTracker providerBundleTracker;
 
@@ -152,18 +153,25 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public void log(int level, String message) {
-        synchronized (logServices) {
-            for (LogService log : logServices) {
-                log.log(level, message);
-            }
-        }
+        log(level, message, null);
     }
 
     public void log(int level, String message, Throwable th) {
-        synchronized (logServices) {
-            for (LogService log : logServices) {
-                log.log(level, message, th);
-            }
+        switch (level) {
+            case LogService.LOG_ERROR:
+                logger.log(Level.SEVERE, message, th);
+                break;
+            case LogService.LOG_WARNING:
+                logger.log(Level.WARNING, message, th);
+                break;
+            case LogService.LOG_INFO:
+                logger.log(Level.INFO, message, th);
+                break;
+            case LogService.LOG_DEBUG:
+                logger.log(Level.FINE, message, th);
+                break;
+            default:
+                logger.log(Level.SEVERE, "[Unknown Level: " + level + "] " + message, th);
         }
     }
 
