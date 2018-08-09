@@ -59,10 +59,12 @@ public class OnlyLastPublisher<T> implements Publisher<T> {
             _counter.incrementAndGet();
 
             return () -> {
-                _terminator.run();
+                synchronized (this) {
+                    _terminator.run();
 
-                if (_counter.decrementAndGet() > 0) {
-                    _terminator = _op.publish(_injectOnLeave.get());
+                    if (_counter.decrementAndGet() > 0) {
+                        _terminator = _op.publish(_injectOnLeave.get());
+                    }
                 }
             };
         }
