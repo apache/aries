@@ -718,6 +718,9 @@ public class ClientWeavingHookTest {
         try {
             String line = null;
             while((line = br.readLine()) != null) {
+                if (line.trim().startsWith("#")) {
+                    continue;
+                }
                 names.add(line.trim());
             }
         } finally {
