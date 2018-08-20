@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
-    <version>1.0.14</version>
+    <version>1.0.15-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Aries SPI Fly Dynamic Weaving Framework Extension</name>
     <description>
@@ -40,9 +40,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/tags/org.apache.aries.spifly.dynamic.framework.extension-1.0.14</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.spifly.dynamic.framework.extension-1.0.14</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.spifly.dynamic.framework.extension-1.0.14</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-framework-extension</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-dynamic-framework-extension</developerConnection>
+        <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-dynamic-framework-extension</url>
     </scm>
     <properties>
         <aries.skip.version.check>true</aries.skip.version.check>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
-            <version>1.0.14</version>
+            <version>1.0.15-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
