@@ -10,8 +10,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-Conditional-Package: \
+-conditionalpackage: \
 	org.apache.felix.utils.extender,\
 	org.osgi.util.converter
 
--contract: JavaAnnotation, JavaCDI, JavaEL, JavaInject, JavaInterceptor
+-contract: *

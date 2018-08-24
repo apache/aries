@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Any;
@@ -57,6 +58,14 @@ import org.osgi.util.tracker.ServiceTracker;
 	effective = "active",
 	filter = "(objectClass=org.osgi.service.cm.ConfigurationAdmin)",
 	namespace = ServiceNamespace.SERVICE_NAMESPACE
+)
+@Requirement(
+	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
+	name = "aries.cdi.http"
+)
+@Requirement(
+	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
+	name = "aries.cdi.jndi"
 )
 public class AbstractTestCase {
 
@@ -220,6 +229,18 @@ public class AbstractTestCase {
 		).orElse(
 			new Long(-1l)
 		).longValue();
+	}
+
+	<T> T with(ClassLoader classLoader, Supplier<T> supplier) {
+		Thread currentThread = Thread.currentThread();
+		ClassLoader original = currentThread.getContextClassLoader();
+		try {
+			currentThread.setContextClassLoader(classLoader);
+			return supplier.get();
+		}
+		finally {
+			currentThread.setContextClassLoader(original);
+		}
 	}
 
 	static final Bundle bundle = FrameworkUtil.getBundle(CdiBeanTests.class);

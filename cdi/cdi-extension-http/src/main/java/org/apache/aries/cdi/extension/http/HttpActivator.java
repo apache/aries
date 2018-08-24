@@ -28,17 +28,47 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.namespace.implementation.ImplementationNamespace;
 import org.osgi.namespace.service.ServiceNamespace;
+import org.osgi.service.cdi.CDIConstants;
 import org.osgi.service.cdi.annotations.RequireCDIImplementation;
 
 @Capability(
-	attribute = {
-		"objectClass:List<String>=javax.enterprise.inject.spi.Extension",
-		"osgi.cdi.extension=aries.cdi.http"},
-	namespace = ServiceNamespace.SERVICE_NAMESPACE
+	attribute = "objectClass:List<String>=javax.enterprise.inject.spi.Extension",
+	namespace = ServiceNamespace.SERVICE_NAMESPACE,
+	uses= {
+		javax.annotation.Priority.class,
+		javax.enterprise.context.Initialized.class,
+		javax.enterprise.event.Observes.class,
+		javax.enterprise.inject.spi.Extension.class,
+		javax.naming.Context.class,
+		javax.naming.spi.ObjectFactory.class,
+		javax.servlet.ServletContextListener.class,
+		javax.servlet.http.HttpSessionListener.class,
+		org.jboss.weld.module.web.servlet.WeldInitialListener.class,
+		org.osgi.service.cdi.CDIConstants.class,
+		org.osgi.service.http.whiteboard.HttpWhiteboardConstants.class,
+	}
+)
+@Capability(
+	name = "aries.cdi.http",
+	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
+	uses= {
+		javax.annotation.Priority.class,
+		javax.enterprise.context.Initialized.class,
+		javax.enterprise.event.Observes.class,
+		javax.enterprise.inject.spi.Extension.class,
+		javax.naming.Context.class,
+		javax.naming.spi.ObjectFactory.class,
+		javax.servlet.ServletContextListener.class,
+		javax.servlet.http.HttpSessionListener.class,
+		org.jboss.weld.module.web.servlet.WeldInitialListener.class,
+		org.osgi.service.cdi.CDIConstants.class,
+		org.osgi.service.http.whiteboard.HttpWhiteboardConstants.class,
+	},
+	version = "0.0.2"
 )
 @Header(
 	name = Constants.BUNDLE_ACTIVATOR,
-	value = "org.apache.aries.cdi.extension.http.HttpActivator"
+	value = "${@class}"
 )
 @Requirement(
 	name = "osgi.http",
@@ -51,7 +81,7 @@ public class HttpActivator implements BundleActivator {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Dictionary<String, Object> properties = new Hashtable<>();
-		properties.put("osgi.cdi.extension", "aries.cdi.http");
+		properties.put(CDIConstants.CDI_EXTENSION_PROPERTY, "aries.cdi.http");
 		_serviceRegistration = context.registerService(
 			Extension.class, new HttpExtensionFactory(), properties);
 	}

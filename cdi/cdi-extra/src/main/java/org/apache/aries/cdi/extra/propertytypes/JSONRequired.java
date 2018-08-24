@@ -19,7 +19,6 @@ package org.apache.aries.cdi.extra.propertytypes;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.*;
 import static javax.ws.rs.core.MediaType.*;
-import static org.osgi.annotation.bundle.Requirement.Resolution.*;
 import static org.osgi.namespace.service.ServiceNamespace.*;
 import static org.osgi.resource.Namespace.*;
 
@@ -45,7 +44,7 @@ import org.osgi.service.jaxrs.whiteboard.annotations.RequireJaxrsWhiteboard;
 @Requirement(
 	namespace = SERVICE_NAMESPACE, //
 	filter = JSONRequired.FILTER, //
-	resolution = OPTIONAL, //
+	// resolution = OPTIONAL, // this changed diverges from the original
 	effective = EFFECTIVE_ACTIVE
 )
 @Retention(RUNTIME)

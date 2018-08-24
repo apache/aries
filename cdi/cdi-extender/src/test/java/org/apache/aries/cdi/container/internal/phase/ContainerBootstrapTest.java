@@ -52,7 +52,7 @@ public class ContainerBootstrapTest extends BaseCDIBundleTest {
 		Map<String, Object> attributes = new HashMap<>();
 
 		attributes.put(
-			CDIConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE,
+			CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE,
 			Arrays.asList(
 				FooService.class.getName()
 			)
