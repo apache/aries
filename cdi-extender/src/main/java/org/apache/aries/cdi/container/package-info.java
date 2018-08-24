@@ -38,13 +38,54 @@
 	},
 	version = CDIConstants.CDI_SPECIFICATION_VERSION
 )
-@Export
-@Version("1.0.0")
-package org.apache.aries.cdi.provider;
+@Capability(
+	namespace = ServiceNamespace.SERVICE_NAMESPACE,
+	attribute = "objectClass:List<String>=javax.enterprise.inject.spi.BeanManager",
+	uses = {
+		javax.el.Expression.class,
+		javax.enterprise.context.ApplicationScoped.class,
+		javax.enterprise.context.spi.Context.class,
+		javax.enterprise.event.Event.class,
+		javax.enterprise.inject.Any.class,
+		javax.enterprise.inject.spi.Annotated.class,
+		javax.enterprise.util.TypeLiteral.class
+	}
+)
+@Capability(
+	namespace = ServiceNamespace.SERVICE_NAMESPACE,
+	attribute = "objectClass:List<String>=org.osgi.service.cdi.runtime.CDIComponentRuntime",
+	uses = {
+		org.osgi.service.cdi.runtime.CDIComponentRuntime.class,
+		org.osgi.service.cdi.runtime.dto.ContainerDTO.class,
+		org.osgi.service.cdi.runtime.dto.template.ContainerTemplateDTO.class
+	}
+)
+@Capability(
+	namespace = "osgi.serviceloader",
+	name = "javax.enterprise.inject.se.SeContainerInitializer",
+	uses = {
+		javax.enterprise.inject.se.SeContainerInitializer.class,
+		javax.enterprise.inject.spi.CDI.class
+	}
+)
+@Capability(
+	namespace = "osgi.serviceloader",
+	name = "javax.enterprise.inject.spi.CDIProvider",
+	uses = {
+		javax.enterprise.inject.Any.class,
+		javax.enterprise.inject.spi.Annotated.class,
+		javax.enterprise.util.TypeLiteral.class
+	}
+)
+@Requirement(
+	namespace = ExtenderNamespace.EXTENDER_NAMESPACE,
+	name = "osgi.serviceloader.registrar"
+)
+package org.apache.aries.cdi.container;
 
 import org.osgi.annotation.bundle.Capability;
-import org.osgi.annotation.bundle.Export;
-import org.osgi.annotation.versioning.Version;
+import org.osgi.annotation.bundle.Requirement;
 import org.osgi.namespace.extender.ExtenderNamespace;
 import org.osgi.namespace.implementation.ImplementationNamespace;
+import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.service.cdi.CDIConstants;

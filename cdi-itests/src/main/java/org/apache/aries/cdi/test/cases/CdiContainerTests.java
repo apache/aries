@@ -20,6 +20,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 
 import org.apache.aries.cdi.test.interfaces.Pojo;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.cdi.ComponentType;
@@ -38,23 +39,16 @@ public class CdiContainerTests extends AbstractTestCase {
 	}
 
 	@Test
+	@Ignore("Due to a Service Loader Mediator incompatibility in the official CDI 2.0 API")
 	public void testGetBeanManagerFromCDI() throws Exception {
-		Thread currentThread = Thread.currentThread();
-		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+		BeanManager beanManager = with(
+			cdiBundle.adapt(BundleWiring.class).getClassLoader(),
+			() ->
+				CDI.current().getBeanManager()
+		);
 
-		try {
-			BundleWiring bundleWiring = cdiBundle.adapt(BundleWiring.class);
-
-			currentThread.setContextClassLoader(bundleWiring.getClassLoader());
-
-			BeanManager beanManager = CDI.current().getBeanManager();
-
-			assertNotNull(beanManager);
-			assertBeanExists(Pojo.class, beanManager);
-		}
-		finally {
-			currentThread.setContextClassLoader(contextClassLoader);
-		}
+		assertNotNull(beanManager);
+		assertBeanExists(Pojo.class, beanManager);
 	}
 
 	@Test

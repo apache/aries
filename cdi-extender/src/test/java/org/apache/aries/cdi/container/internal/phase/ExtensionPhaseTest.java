@@ -20,8 +20,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import javax.enterprise.inject.spi.Extension;
 
@@ -38,8 +37,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.namespace.extender.ExtenderNamespace;
+import org.osgi.resource.Namespace;
 import org.osgi.service.cdi.CDIConstants;
 import org.osgi.service.cdi.runtime.dto.ContainerDTO;
 import org.osgi.service.cdi.runtime.dto.ExtensionDTO;
@@ -49,15 +51,26 @@ public class ExtensionPhaseTest extends BaseCDIBundleTest {
 
 	@Test
 	public void extensions_tracking() throws Exception {
-		Map<String, Object> attributes = new HashMap<>();
-		attributes.put(CDIConstants.REQUIREMENT_EXTENSIONS_ATTRIBUTE, Arrays.asList("(foo=name)"));
+		BundleWire wire0 = mock(BundleWire.class);
+		BundleRequirement req0 = mock(BundleRequirement.class);
+		BundleRevision rev0 = mock(BundleRevision.class);
 
 		when(
 			bundle.adapt(
-				BundleWiring.class).getRequiredWires(
-					ExtenderNamespace.EXTENDER_NAMESPACE).get(
-						0).getRequirement().getAttributes()
-		).thenReturn(attributes);
+				BundleWiring.class).getRequiredWires(CDIConstants.CDI_EXTENSION_PROPERTY)
+		).thenReturn(Arrays.asList(wire0));
+		when(
+			wire0.getRequirement()
+		).thenReturn(req0);
+		when(
+			wire0.getProvider()
+		).thenReturn(rev0);
+		when(
+			rev0.getBundle()
+		).thenReturn(bundle);
+		when(
+			req0.getDirectives()
+		).thenReturn(Collections.singletonMap(Namespace.REQUIREMENT_FILTER_DIRECTIVE, "(foo=name)"));
 
 		ContainerState containerState = new ContainerState(bundle, ccrBundle, ccrChangeCount, promiseFactory, null, new Logs.Builder(bundle.getBundleContext()).build());
 
@@ -86,7 +99,7 @@ public class ExtensionPhaseTest extends BaseCDIBundleTest {
 
 		assertNotNull(containerDTO.template);
 		assertEquals(1, containerDTO.template.extensions.size());
-		assertEquals("(foo=name)", containerDTO.template.extensions.get(0).serviceFilter);
+		assertEquals("(&(foo=name)(service.bundleid=1))", containerDTO.template.extensions.get(0).serviceFilter);
 
 		final MockServiceRegistration<Extension> regA = cast(bundle.getBundleContext().registerService(
 			Extension.class, new Extension(){}, Maps.dict("foo", "name")));
@@ -97,7 +110,7 @@ public class ExtensionPhaseTest extends BaseCDIBundleTest {
 			TestUtil.serviceListeners.stream().filter(
 				en -> en.getValue().matches(
 					Maps.of(Constants.OBJECTCLASS, Extension.class.getName(),
-					"foo", "name"))
+					"foo", "name", Constants.SERVICE_BUNDLEID, bundle.getBundleId()))
 			).map(
 				en -> en.getKey()
 			).findFirst().ifPresent(
@@ -105,9 +118,9 @@ public class ExtensionPhaseTest extends BaseCDIBundleTest {
 			);
 
 			Thread.sleep(10);
-		} while(!slD.getPromise().isDone());
+		} while(!slD.getPromise().timeout(500).isDone());
 
-		slD.getPromise().thenAccept(
+		slD.getPromise().timeout(500).thenAccept(
 			sl -> {
 				assertEquals(2, containerState.containerDTO().changeCount);
 				assertEquals(1, containerState.containerDTO().extensions.size());

@@ -34,14 +34,39 @@ import org.osgi.service.log.LoggerFactory;
 import org.osgi.util.tracker.ServiceTracker;
 
 @Capability(
-	attribute = {
-		"objectClass:List<String>=javax.enterprise.inject.spi.Extension",
-		"osgi.cdi.extension=aries.cdi.jndi"},
-	namespace = ServiceNamespace.SERVICE_NAMESPACE
+	attribute = "objectClass:List<String>=javax.enterprise.inject.spi.Extension",
+	namespace = ServiceNamespace.SERVICE_NAMESPACE,
+	uses= {
+		javax.enterprise.context.Initialized.class,
+		javax.enterprise.event.Observes.class,
+		javax.enterprise.inject.spi.Extension.class,
+		javax.naming.Context.class,
+		javax.naming.spi.ObjectFactory.class,
+		org.osgi.service.cdi.CDIConstants.class,
+		org.osgi.service.jndi.JNDIConstants.class,
+		org.osgi.service.log.LoggerFactory.class,
+		org.osgi.util.promise.Promise.class
+	}
+)
+@Capability(
+	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
+	name = "aries.cdi.jndi",
+	uses= {
+		javax.enterprise.context.Initialized.class,
+		javax.enterprise.event.Observes.class,
+		javax.enterprise.inject.spi.Extension.class,
+		javax.naming.Context.class,
+		javax.naming.spi.ObjectFactory.class,
+		org.osgi.service.cdi.CDIConstants.class,
+		org.osgi.service.jndi.JNDIConstants.class,
+		org.osgi.service.log.LoggerFactory.class,
+		org.osgi.util.promise.Promise.class
+	},
+	version = "0.0.2"
 )
 @Header(
 	name = Constants.BUNDLE_ACTIVATOR,
-	value = "org.apache.aries.cdi.extension.jndi.JndiActivator"
+	value = "${@class}"
 )
 @RequireCDIImplementation
 public class JndiActivator implements BundleActivator {
@@ -63,6 +88,7 @@ public class JndiActivator implements BundleActivator {
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		_serviceRegistration.unregister();
+		_lft.close();
 	}
 
 	private volatile ServiceTracker<LoggerFactory, LoggerFactory> _lft;

@@ -107,7 +107,7 @@ public class TemplatesTests extends BaseCDIBundleTest {
 		Map<String, Object> attributes = new HashMap<>();
 
 		attributes.put(
-			CDIConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE,
+			CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE,
 			Arrays.asList(
 				"org.apache.aries.cdi.container.test.beans.BarAnnotated",
 				"org.apache.aries.cdi.container.test.beans.BarProducer",
@@ -192,7 +192,7 @@ public class TemplatesTests extends BaseCDIBundleTest {
 		Map<String, Object> attributes = new HashMap<>();
 
 		attributes.put(
-			CDIConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE,
+			CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE,
 			Arrays.asList(
 				"org.apache.aries.cdi.container.test.beans.BarAnnotated",
 				"org.apache.aries.cdi.container.test.beans.BarProducer",
@@ -411,7 +411,7 @@ public class TemplatesTests extends BaseCDIBundleTest {
 		Map<String, Object> attributes = new HashMap<>();
 
 		attributes.put(
-			CDIConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE,
+			CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE,
 			Arrays.asList(
 				"org.apache.aries.cdi.container.test.beans.BarAnnotated",
 				"org.apache.aries.cdi.container.test.beans.FooAnnotated",

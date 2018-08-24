@@ -73,6 +73,10 @@ public class CCR implements CDIComponentRuntime {
 		);
 	}
 
+	public ContainerState getContainerState(Bundle bundle) {
+		return _states.get(bundle);
+	}
+
 	public void remove(Bundle bundle) {
 		_states.remove(bundle);
 	}
