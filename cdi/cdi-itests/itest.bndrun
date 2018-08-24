@@ -16,12 +16,8 @@
 -standalone: true
 
 -runrequires: \
-	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.extender)',\
-	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.extension.http)',\
-	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.extension.jndi)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.itests)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.jndi.core)',\
-	osgi.identity;filter:='(osgi.identity=org.apache.felix.fileinstall)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)'
 
@@ -50,10 +46,10 @@
 	org.apache.aries.javax.interceptor-api;version='[0.0.2,0.0.3)',\
 	org.apache.aries.jndi.api;version='[1.1.0,1.1.1)',\
 	org.apache.aries.jndi.core;version='[1.0.2,1.0.3)',\
+	org.apache.aries.spifly.dynamic.framework.extension;version='[1.0.14,1.0.15)',\
 	org.apache.aries.util;version='[1.0.0,1.0.1)',\
 	org.apache.commons.logging;version='[1.2.0,1.2.1)',\
 	org.apache.felix.configadmin;version='[1.9.0,1.9.1)',\
-	org.apache.felix.fileinstall;version='[3.6.0,3.6.1)',\
 	org.apache.felix.gogo.command;version='[1.0.2,1.0.3)',\
 	org.apache.felix.gogo.runtime;version='[1.0.2,1.0.3)',\
 	org.apache.felix.gogo.shell;version='[1.0.0,1.0.1)',\
@@ -76,7 +72,7 @@
 -resolve.effective: resolve, active
 -runee: JavaSE-1.8
 -runsystemcapabilities: ${native_capability}
--runfw: org.eclipse.osgi;version='[3.13.0,4.0.0)'
+-runfw: org.eclipse.osgi;version=3.13.0
 -runproperties: \
 	eclipse.log.enabled=false,\
 	logback.configurationFile=file:${.}/logback.xml,\

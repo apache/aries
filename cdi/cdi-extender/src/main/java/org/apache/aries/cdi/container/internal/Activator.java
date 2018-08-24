@@ -26,8 +26,6 @@ import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 
-import javax.enterprise.inject.spi.CDI;
-
 import org.apache.aries.cdi.container.internal.command.CDICommand;
 import org.apache.aries.cdi.container.internal.container.CDIBundle;
 import org.apache.aries.cdi.container.internal.container.ConfigurationListener;
@@ -41,16 +39,15 @@ import org.apache.aries.cdi.container.internal.model.FactoryComponent;
 import org.apache.aries.cdi.container.internal.model.SingleActivator;
 import org.apache.aries.cdi.container.internal.model.SingleComponent;
 import org.apache.aries.cdi.container.internal.util.Logs;
-import org.apache.aries.cdi.provider.CDIProvider;
 import org.apache.felix.utils.extender.AbstractExtender;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.annotation.bundle.Header;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.cdi.runtime.CDIComponentRuntime;
@@ -68,9 +65,10 @@ import org.osgi.util.tracker.ServiceTracker;
 @RequireConfigurationAdmin
 public class Activator extends AbstractExtender {
 
-	static {
-		CDI.setCDIProvider(new CDIProvider());
-	}
+	private static final Logs _logs = new Logs.Builder(FrameworkUtil.getBundle(Activator.class).getBundleContext()).build();
+	private static final Logger _log = _logs.getLogger(Activator.class);
+	private static final PromiseFactory _promiseFactory = new PromiseFactory(Executors.newFixedThreadPool(1));
+	public static final CCR ccr = new CCR(_promiseFactory, _logs);
 
 	public Activator() {
 		setSynchronous(true);
@@ -78,15 +76,11 @@ public class Activator extends AbstractExtender {
 
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
-		_logs = new Logs.Builder(bundleContext).build();
-		_log = _logs.getLogger(getClass());
-
 		if (_log.isDebugEnabled()) {
 			_log.debug("CCR starting {}", bundleContext.getBundle());
 		}
 
-		_ccr = new CCR(_promiseFactory, _logs);
-		_command = new CDICommand(_ccr);
+		_command = new CDICommand(ccr);
 
 		_bundleContext = bundleContext;
 
@@ -158,7 +152,7 @@ public class Activator extends AbstractExtender {
 			bundle, _bundleContext.getBundle(), _ccrChangeCount, _promiseFactory, caTracker, _logs);
 
 		// the CDI bundle
-		return new CDIBundle(_ccr, containerState,
+		return new CDIBundle(ccr, containerState,
 			// handle extensions
 			new ExtensionPhase(containerState,
 				// listen for configurations of the container component
@@ -187,10 +181,16 @@ public class Activator extends AbstractExtender {
 
 	@Override
 	protected void debug(Bundle bundle, String msg) {
+		if (_log.isDebugEnabled()) {
+			_log.debug(msg, bundle);
+		}
 	}
 
 	@Override
 	protected void warn(Bundle bundle, String msg, Throwable t) {
+		if (_log.isWarnEnabled()) {
+			_log.warn(msg, bundle, t);
+		}
 	}
 
 	@Override
@@ -213,15 +213,7 @@ public class Activator extends AbstractExtender {
 				Bundle providerWiringBundle = bundleWire.getProviderWiring().getBundle();
 
 				if (providerWiringBundle.equals(_bundleContext.getBundle())) {
-					BundleRequirement requirement = bundleWire.getRequirement();
-					Map<String, Object> requirementAttributes = requirement.getAttributes();
-
-					@SuppressWarnings("unchecked")
-					List<String> beans = (List<String>)requirementAttributes.get(REQUIREMENT_OSGI_BEANS_ATTRIBUTE);
-
-					if (beans != null && !beans.isEmpty()) {
-						return true;
-					}
+					return true;
 				}
 			}
 		}
@@ -229,16 +221,11 @@ public class Activator extends AbstractExtender {
 		return false;
 	}
 
-
 	private BundleContext _bundleContext;
-	private volatile CCR _ccr;
 	private final ChangeCount _ccrChangeCount = new ChangeCount();
 	private ServiceRegistration<CDIComponentRuntime> _ccrRegistration;
 	private volatile CDICommand _command;
 	private ServiceRegistration<?> _commandRegistration;
-	private volatile Logs _logs;
-	private volatile Logger _log;
-	private final PromiseFactory _promiseFactory = new PromiseFactory(Executors.newFixedThreadPool(1));
 
 	private class ChangeObserverFactory implements Observer, ServiceFactory<CDIComponentRuntime> {
 
@@ -249,7 +236,7 @@ public class Activator extends AbstractExtender {
 
 			_registrations.add(registration);
 
-			return _ccr;
+			return ccr;
 		}
 
 		@Override

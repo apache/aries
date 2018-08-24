@@ -93,7 +93,7 @@ public class BaseCDIBundleTest {
 				when(extenderWire.getRequirement()).thenReturn(extenderRequirement);
 				when(extenderRequirement.getAttributes()).thenReturn(
 					Maps.of(
-						"osgi.beans",
+						CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE,
 						Arrays.asList(
 							"org.apache.aries.cdi.container.test.beans.BarAnnotated",
 							"org.apache.aries.cdi.container.test.beans.FooAnnotated",

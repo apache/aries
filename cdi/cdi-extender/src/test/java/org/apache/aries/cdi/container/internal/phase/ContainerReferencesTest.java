@@ -249,7 +249,7 @@ public class ContainerReferencesTest extends BaseCDIBundleTest {
 		Map<String, Object> attributes = new HashMap<>();
 
 		attributes.put(
-			CDIConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE,
+			CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE,
 			Arrays.asList(
 				"org.apache.aries.cdi.container.test.beans.Reference_S_R_M_U_Service"
 			)
@@ -391,7 +391,7 @@ public class ContainerReferencesTest extends BaseCDIBundleTest {
 		Map<String, Object> attributes = new HashMap<>();
 
 		attributes.put(
-			CDIConstants.REQUIREMENT_OSGI_BEANS_ATTRIBUTE,
+			CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE,
 			Arrays.asList(
 				"org.apache.aries.cdi.container.test.beans.Reference_D_R_M_U_Service"
 			)

@@ -47,12 +47,14 @@ import org.jboss.weld.resources.spi.ResourceLoader;
 import org.jboss.weld.serialization.spi.ProxyServices;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.dto.BundleDTO;
 import org.osgi.framework.namespace.PackageNamespace;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.resource.Namespace;
 import org.osgi.service.cdi.ComponentType;
 import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.MaximumCardinality;
@@ -73,7 +75,6 @@ public class ContainerState {
 		private static final long serialVersionUID = 1L;
 	};
 
-	@SuppressWarnings("unchecked")
 	public ContainerState(
 		Bundle bundle,
 		Bundle extenderBundle,
@@ -112,6 +113,28 @@ public class ContainerState {
 			}
 		}
 
+		wires = bundleWiring.getRequiredWires(CDI_EXTENSION_PROPERTY);
+
+		List<String> extensionRequirements = new ArrayList<>();
+
+		for (BundleWire wire : wires) {
+			String filter = wire.getRequirement().getDirectives().get(
+				Namespace.REQUIREMENT_FILTER_DIRECTIVE);
+			Bundle extensionProvider = wire.getProvider().getBundle();
+
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("(&");
+			sb.append(filter);
+			sb.append("(");
+			sb.append(Constants.SERVICE_BUNDLEID);
+			sb.append("=");
+			sb.append(extensionProvider.getBundleId());
+			sb.append("))");
+
+			extensionRequirements.add(sb.toString());
+		}
+
 		_containerDTO = new ContainerDTO();
 		_containerDTO.bundle = _bundle.adapt(BundleDTO.class);
 		_containerDTO.changeCount = _changeCount.get();
@@ -127,24 +150,20 @@ public class ContainerState {
 			_bundle.getSymbolicName()
 		);
 
-		Optional.ofNullable(
-			(List<String>)cdiAttributes.get(REQUIREMENT_EXTENSIONS_ATTRIBUTE)
-		).ifPresent(
-			list -> list.stream().forEach(
-				extensionFilter -> {
-					ExtendedExtensionTemplateDTO extensionTemplateDTO = new ExtendedExtensionTemplateDTO();
+		extensionRequirements.forEach(
+			extensionFilter -> {
+				ExtendedExtensionTemplateDTO extensionTemplateDTO = new ExtendedExtensionTemplateDTO();
 
-					try {
-						extensionTemplateDTO.filter = asFilter(extensionFilter);
-						extensionTemplateDTO.serviceFilter = extensionFilter;
+				try {
+					extensionTemplateDTO.filter = asFilter(extensionFilter);
+					extensionTemplateDTO.serviceFilter = extensionFilter;
 
-						_containerDTO.template.extensions.add(extensionTemplateDTO);
-					}
-					catch (Exception e) {
-						_containerDTO.errors.add(Throw.asString(e));
-					}
+					_containerDTO.template.extensions.add(extensionTemplateDTO);
 				}
-			)
+				catch (Exception e) {
+					_containerDTO.errors.add(Throw.asString(e));
+				}
+			}
 		);
 
 		_containerComponentTemplateDTO = new ComponentTemplateDTO();
@@ -185,6 +204,8 @@ public class ContainerState {
 
 			_containerDTO.errors.add(Throw.asString(e));
 		}
+
+		_beanManagerDeferred = _promiseFactory.deferred();
 	}
 
 	public <T, R> Promise<R> addCallback(CheckedCallback<T, R> checkedCallback) {
@@ -194,11 +215,18 @@ public class ContainerState {
 	}
 
 	public BeanManager beanManager() {
-		return _beanManager;
+		try {
+			return _beanManagerDeferred.getPromise().timeout(5000).getValue();
+		} catch (InvocationTargetException | InterruptedException e) {
+			return Throw.exception(e);
+		}
 	}
 
 	public void beanManager(BeanManager beanManager) {
-		_beanManager = beanManager;
+		if (_beanManagerDeferred.getPromise().isDone()) {
+			_beanManagerDeferred = _promiseFactory.deferred();
+		}
+		_beanManagerDeferred.resolve(beanManager);
 	}
 
 	public BeansModel beansModel() {
@@ -371,7 +399,7 @@ public class ContainerState {
 	}
 
 	private final ClassLoader _aggregateClassLoader;
-	private volatile BeanManager _beanManager;
+	private volatile Deferred<BeanManager> _beanManagerDeferred;
 	private final BeansModel _beansModel;
 	private final Bundle _bundle;
 	private final ClassLoader _bundleClassLoader;

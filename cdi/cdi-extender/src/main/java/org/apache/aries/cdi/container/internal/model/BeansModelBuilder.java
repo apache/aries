@@ -50,7 +50,7 @@ public class BeansModelBuilder {
 		List<URL> beanDescriptorURLs = new ArrayList<URL>();
 		Map<String, Object> attributes = getAttributes();
 
-		List<String> beanDescriptorPaths = cast(attributes.get(REQUIREMENT_BEANS_ATTRIBUTE));
+		List<String> beanDescriptorPaths = cast(attributes.get(REQUIREMENT_DESCRIPTOR_ATTRIBUTE));
 
 		if (beanDescriptorPaths != null) {
 			for (String descriptorPath : beanDescriptorPaths) {
@@ -64,7 +64,7 @@ public class BeansModelBuilder {
 
 		@SuppressWarnings("unchecked")
 		List<String> beanClassNames = Optional.ofNullable(
-			_attributes.get(REQUIREMENT_OSGI_BEANS_ATTRIBUTE)
+			_attributes.get(REQUIREMENT_BEANS_ATTRIBUTE)
 		).map(v -> (List<String>)v).orElse(Collections.emptyList());
 
 		Map<String, OSGiBean> beans = new HashMap<>();

@@ -38,74 +38,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>com.googlecode.maven-download-plugin</groupId>
-				<artifactId>download-maven-plugin</artifactId>
-				<version>1.4.0</version>
-				<executions>
-					<execution>
-						<id>get-equinox-3.13.0</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8RC2-201805240900/plugins/org.eclipse.osgi_3.13.0.v20180409-1500.jar</url>
-							<outputDirectory>${project.build.directory}/equinox</outputDirectory>
-						</configuration>
-					</execution>
-					<execution>
-						<id>get-equinox-3.13.0-sources</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8RC2-201805240900/plugins/org.eclipse.osgi.source_3.13.0.v20180409-1500.jar</url>
-							<outputDirectory>${project.build.directory}/equinox</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.5.2</version>
-				<executions>
-					<execution>
-						<id>install-equinox</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<repositoryLayout>default</repositoryLayout>
-							<groupId>org.eclipse.platform</groupId>
-							<artifactId>org.eclipse.osgi</artifactId>
-							<version>3.13.0.v20180409-1500</version>
-							<file>${project.build.directory}/equinox/org.eclipse.osgi_3.13.0.v20180409-1500.jar</file>
-							<packaging>jar</packaging>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-					<execution>
-						<id>install-equinox-sources</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<repositoryLayout>default</repositoryLayout>
-							<groupId>org.eclipse.platform</groupId>
-							<artifactId>org.eclipse.osgi</artifactId>
-							<version>3.13.0.v20180409-1500</version>
-							<file>${project.build.directory}/equinox/org.eclipse.osgi.source_3.13.0.v20180409-1500.jar</file>
-							<packaging>jar</packaging>
-							<classifier>sources</classifier>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
 			</plugin>
@@ -206,9 +138,9 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.fileinstall</artifactId>
-			<version>3.6.0</version>
+			<groupId>org.apache.aries.spifly</groupId>
+			<artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
+			<version>1.0.14</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -265,7 +197,7 @@
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.logback</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -293,7 +225,7 @@
 		<dependency>
 			<groupId>org.eclipse.platform</groupId>
 			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.13.0.v20180409-1500</version>
+			<version>3.13.0</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>

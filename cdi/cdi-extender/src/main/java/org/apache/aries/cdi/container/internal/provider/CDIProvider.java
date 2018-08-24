@@ -12,23 +12,21 @@
  * limitations under the License.
  */
 
-package org.apache.aries.cdi.provider;
+package org.apache.aries.cdi.container.internal.provider;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.util.TypeLiteral;
 
-import org.apache.aries.cdi.container.internal.util.Filters;
-import org.jboss.weld.exceptions.IllegalStateException;
+import org.apache.aries.cdi.container.internal.Activator;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
-import org.osgi.framework.Filter;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class CDIProvider implements javax.enterprise.inject.spi.CDIProvider {
 
@@ -36,12 +34,12 @@ public class CDIProvider implements javax.enterprise.inject.spi.CDIProvider {
 
 		@Override
 		public void destroy(Object instance) {
-			throw new UnsupportedOperationException();
+			// NOOP
 		}
 
 		@Override
 		public Object get() {
-			throw new UnsupportedOperationException();
+			return this;
 		}
 
 		@Override
@@ -52,57 +50,46 @@ public class CDIProvider implements javax.enterprise.inject.spi.CDIProvider {
 				BundleReference br = (BundleReference)contextClassLoader;
 
 				Bundle bundle = br.getBundle();
-				BundleContext bundleContext = bundle.getBundleContext();
 
-				Filter filter = Filters.asFilter(
-					"(&(objectClass=%s)(service.bundleid=%d))",
-					BeanManager.class.getName(), bundle.getBundleId());
-
-				ServiceTracker<BeanManager, BeanManager> bmt = new ServiceTracker<>(
-					bundleContext, filter, null);
-
-				bmt.open();
-
-				try {
-					return bmt.waitForService(1000);
-				}
-				catch (InterruptedException e) {
-					return null;
-				}
+				return Optional.ofNullable(
+					Activator.ccr.getContainerState(bundle)
+				).map(
+					cs -> cs.beanManager()
+				).orElse(null);
 			}
 
 			throw new IllegalStateException(
-				"This method can only be used when the Thread context classloader has been set to a bundle's classloader.");
+				"This method can only be used when the Thread context class loader has been set to a Bundle's classloader.");
 		}
 
 		@Override
 		public boolean isAmbiguous() {
-			throw new UnsupportedOperationException();
+			return false;
 		}
 
 		@Override
 		public boolean isUnsatisfied() {
-			throw new UnsupportedOperationException();
+			return false;
 		}
 
 		@Override
 		public Iterator<Object> iterator() {
-			throw new UnsupportedOperationException();
+			return Collections.singleton((Object)this).iterator();
 		}
 
 		@Override
 		public Instance<Object> select(Annotation... qualifiers) {
-			throw new UnsupportedOperationException();
+			return getBeanManager().createInstance().select(qualifiers);
 		}
 
 		@Override
 		public <U> Instance<U> select(Class<U> subtype, Annotation... qualifiers) {
-			throw new UnsupportedOperationException();
+			return getBeanManager().createInstance().select(subtype, qualifiers);
 		}
 
 		@Override
 		public <U> Instance<U> select(TypeLiteral<U> subtype, Annotation... qualifiers) {
-			throw new UnsupportedOperationException();
+			return getBeanManager().createInstance().select(subtype, qualifiers);
 		}
 
 	}
