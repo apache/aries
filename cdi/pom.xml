@@ -46,10 +46,6 @@
 	</licenses>
 
 	<modules>
-		<module>javax.annotation-api</module>
-		<module>javax.el-api</module>
-		<module>javax.interceptor-api</module>
-		<module>javax.cdi-api</module>
 		<module>cdi-extra</module>
 		<module>cdi-extender</module>
 		<module>cdi-extension-http</module>
