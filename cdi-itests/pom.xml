@@ -126,21 +126,33 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-el_2.2_spec</artifactId>
+			<version>1.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-interceptor_1.2_spec</artifactId>
+			<version>1.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.aries.jndi</groupId>
 			<artifactId>org.apache.aries.jndi.core</artifactId>
 			<version>1.0.2</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.configadmin</artifactId>
-			<version>1.9.0</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.aries.spifly</groupId>
 			<artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
 			<version>1.0.14</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.configadmin</artifactId>
+			<version>1.9.0</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -295,6 +307,12 @@
 			<artifactId>osgi.core</artifactId>
 			<version>7.0.0</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>1.7.25</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
