@@ -163,7 +163,7 @@ public class ConfigurationOSGiImpl extends OSGiImpl<Dictionary<String, ?>> {
                 configurationAdmin.listConfigurations(
                     "(&(service.pid=" + pid + ")(!(service.factoryPid=*)))");
 
-			if (configurations.length == 0) {
+			if (configurations == null || configurations.length == 0) {
                 return null;
             }
 
