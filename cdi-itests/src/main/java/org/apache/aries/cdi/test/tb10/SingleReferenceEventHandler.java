@@ -21,10 +21,12 @@ import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cdi.annotations.Bean;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
 import org.osgi.service.cdi.reference.BindServiceReference;
 
+@Bean
 @Service
 @SingleComponent
 public class SingleReferenceEventHandler implements Pojo {

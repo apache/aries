@@ -11,3 +11,4 @@
 #    limitations under the License.
 
 Export-Package: ${p}.components.*;-split-package:=first
+-dsannotations: *

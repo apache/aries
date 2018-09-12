@@ -47,7 +47,6 @@
 				<configuration>
 					<includes>
 						<include>META-INF/*</include>
-						<include>OSGI-OPT/*</include>
 						<include>org/apache/aries/cdi/test/cases/*</include>
 						<include>org/apache/aries/cdi/test/interfaces/*</include>
 						<include>*.jar</include>
@@ -277,7 +276,7 @@
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.component.annotations</artifactId>
-			<version>1.3.0</version>
+			<version>1.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

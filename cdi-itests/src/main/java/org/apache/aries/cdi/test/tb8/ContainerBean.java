@@ -17,8 +17,10 @@ package org.apache.aries.cdi.test.tb8;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.apache.aries.cdi.test.interfaces.Pojo;
+import org.osgi.service.cdi.annotations.Bean;
 import org.osgi.service.cdi.annotations.Service;
 
+@Bean
 @ApplicationScoped
 @Service({Pojo.class, ContainerBean.class})
 public class ContainerBean implements Pojo {
