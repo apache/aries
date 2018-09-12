@@ -24,12 +24,14 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import org.apache.aries.cdi.test.interfaces.BeanService;
+import org.osgi.service.cdi.annotations.Bean;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.PID;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
 
+@Bean
 @Service(BeanService.class)
 @SingleComponent
 @PID("foo.bar")

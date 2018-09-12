@@ -51,9 +51,11 @@ import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.service.cdi.CDIConstants;
 import org.osgi.service.cdi.runtime.CDIComponentRuntime;
 import org.osgi.service.cdi.runtime.dto.ContainerDTO;
+import org.osgi.service.component.annotations.RequireServiceComponentRuntime;
 import org.osgi.util.promise.PromiseFactory;
 import org.osgi.util.tracker.ServiceTracker;
 
+@RequireServiceComponentRuntime
 @Requirement(
 	effective = "active",
 	filter = "(objectClass=org.osgi.service.cm.ConfigurationAdmin)",

@@ -15,8 +15,10 @@
 package org.apache.aries.cdi.test.tb2;
 
 import org.apache.aries.cdi.test.interfaces.Pojo;
+import org.osgi.service.cdi.annotations.Bean;
 import org.osgi.service.cdi.annotations.Service;
 
+@Bean
 @Service
 public class PojoImpl implements Pojo {
 
