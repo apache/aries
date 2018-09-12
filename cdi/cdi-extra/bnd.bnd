@@ -11,5 +11,6 @@
 #    limitations under the License.
 
 Import-Package: javax.servlet;resolution:=optional, *
+-cdiannotations:
 -contract: JavaServlet;resolution:=optional
 -exportcontents: ${packages;VERSIONED}

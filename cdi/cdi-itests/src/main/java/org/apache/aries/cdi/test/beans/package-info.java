@@ -12,26 +12,13 @@
  * limitations under the License.
  */
 
-package org.apache.aries.cdi.test.tb8;
+@Beans
+@Requirement(
+	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
+	name = "aries.cdi.jndi"
+)
+package org.apache.aries.cdi.test.beans;
 
-import org.apache.aries.cdi.test.interfaces.Pojo;
-import org.osgi.service.cdi.annotations.Bean;
-import org.osgi.service.cdi.annotations.Service;
-import org.osgi.service.cdi.annotations.SingleComponent;
-
-@Bean
-@SingleComponent
-@Service({Pojo.class, SingleComponentBean.class})
-public class SingleComponentBean implements Pojo {
-
-	@Override
-	public String foo(String fooInput) {
-		return getCount() + fooInput + getCount();
-	}
-
-	@Override
-	public int getCount() {
-		return 25;
-	}
-
-}
+import org.osgi.annotation.bundle.Requirement;
+import org.osgi.service.cdi.CDIConstants;
+import org.osgi.service.cdi.annotations.Beans;

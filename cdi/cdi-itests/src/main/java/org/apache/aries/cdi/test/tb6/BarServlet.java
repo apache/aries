@@ -29,10 +29,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.osgi.annotation.bundle.Requirement;
+import org.osgi.service.cdi.CDIConstants;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
 
+@Requirement(
+	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
+	name = "aries.cdi.http"
+)
 @SingleComponent
 @Service(Servlet.class)
 @BarServlet.Props

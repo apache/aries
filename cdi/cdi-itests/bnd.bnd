@@ -14,6 +14,11 @@ Bundle-Description: Integration Test bundle for the CDI Extender
 Export-Package: ${p}.cases.*,${p}.interfaces.*
 Test-Cases: ${classes;CONCRETE;ANNOTATED;org.junit.Test}
 
+# Disable processing at the root because using `-classpath` breaks
+# plugins like DS and CDI. Renable each one per `-make` bundle.
+-cdiannotations:
+-dsannotations:
+
 ##
 ## All of remainder is to make bnd's `-make` function work in our maven project.
 ##
@@ -35,7 +40,6 @@ p = org.apache.aries.cdi.test
 	tb1.jar,\
 	tb2.jar,\
 	tb3.jar,\
-	tb4.jar,\
 	tb5.jar,\
 	tb6.jar,\
 	tb7.jar,\
