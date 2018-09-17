@@ -60,7 +60,7 @@
         <plexus-build-api.version>0.0.7</plexus-build-api.version>
         <plexus-utils.version>3.0</plexus-utils.version>
         <osgi.cmpn.version>6.0.0</osgi.cmpn.version>
-        <xbean-finder-shaded.version>4.5</xbean-finder-shaded.version>
+        <xbean-finder-shaded.version>4.9</xbean-finder-shaded.version>
 
         <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.core.version>1.7.1</org.apache.aries.blueprint.core.version>

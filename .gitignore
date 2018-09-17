@@ -1,5 +1,7 @@
+.apt_generated_tests/
 .checkstyle
 .classpath
+.factorypath
 .pmd
 .project
 .ruleset
