@@ -568,14 +568,7 @@ public class DiscoveryExtension implements Extension {
 		ServiceInstance serviceInstance = annotated.getAnnotation(ServiceInstance.class);
 
 		if (serviceInstance != null) {
-			switch (serviceInstance.value()) {
-				case BUNDLE:
-					return ServiceScope.BUNDLE;
-				case PROTOTYPE:
-					return ServiceScope.PROTOTYPE;
-				case SINGLETON:
-					return ServiceScope.SINGLETON;
-			}
+			return serviceInstance.value();
 		}
 
 		return ServiceScope.SINGLETON;
