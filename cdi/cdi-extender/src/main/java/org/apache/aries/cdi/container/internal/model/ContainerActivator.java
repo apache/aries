@@ -76,6 +76,8 @@ public class ContainerActivator extends InstanceActivator {
 				submit(next.openOp(), next::open).onFailure(
 					f -> {
 						_log.error(l -> l.error("CCR Failure in container activator open on {}", next, f));
+
+						containerState.error(f);
 					}
 				);
 
