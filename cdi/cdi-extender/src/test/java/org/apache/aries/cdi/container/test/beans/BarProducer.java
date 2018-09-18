@@ -14,7 +14,7 @@
 
 package org.apache.aries.cdi.container.test.beans;
 
-import static org.osgi.service.cdi.ServiceInstanceType.*;
+import static org.osgi.service.cdi.ServiceScope.*;
 
 import java.math.BigDecimal;
 
