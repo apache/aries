@@ -86,8 +86,9 @@ public class ContainerState {
 		_bundle = bundle;
 		_extenderBundle = extenderBundle;
 		_ccrLogs = ccrLogs;
+		_bundleContext = bundle.getBundleContext();
 		_log = _ccrLogs.getLogger(getClass());
-		_containerLogs = new Logs.Builder(_bundle.getBundleContext()).build();
+		_containerLogs = new Logs.Builder(_bundleContext).build();
 
 		_changeCount = new ChangeCount();
 		_changeCount.addObserver(ccrChangeCount);
@@ -242,7 +243,7 @@ public class ContainerState {
 	}
 
 	public BundleContext bundleContext() {
-		return _bundle.getBundleContext();
+		return _bundleContext;
 	}
 
 	public ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> caTracker() {
@@ -402,6 +403,7 @@ public class ContainerState {
 	private volatile Deferred<BeanManager> _beanManagerDeferred;
 	private final BeansModel _beansModel;
 	private final Bundle _bundle;
+	private final BundleContext _bundleContext;
 	private final ClassLoader _bundleClassLoader;
 	private final Map<CheckedCallback<?, ?>, Deferred<?>> _callbacks = new ConcurrentHashMap<>();
 	private final ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> _caTracker;
