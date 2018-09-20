@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -243,9 +242,7 @@ public class ContainerState {
 	}
 
 	public BundleContext bundleContext() {
-		BundleContext bundleContext = _bundle.getBundleContext();
-		Objects.requireNonNull(bundleContext);
-		return bundleContext;
+		return _bundle.getBundleContext();
 	}
 
 	public ServiceTracker<ConfigurationAdmin, ConfigurationAdmin> caTracker() {
