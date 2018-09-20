@@ -11,4 +11,3 @@
 #    limitations under the License.
 
 Export-Package: ${p}.tb10.*;-split-package:=first
--cdiannotations: *
