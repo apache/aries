@@ -35,8 +35,6 @@ public class OptionalReluctantReferenceTests extends AbstractTestCase {
 	@Override
 	@Before
 	public void setUp() throws Exception {
-		testHeader();
-
 		cdiRuntime = runtimeTracker.waitForService(timeout);
 	}
 

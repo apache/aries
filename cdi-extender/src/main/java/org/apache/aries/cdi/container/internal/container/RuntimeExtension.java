@@ -122,13 +122,6 @@ public class RuntimeExtension implements Extension {
 
 		_containerState.beanManager(bm);
 
-		Dictionary<String, Object> properties = new Hashtable<>();
-		properties.put(CDIConstants.CDI_CONTAINER_ID, _containerState.id());
-
-		registerService(
-			new String[] {BeanManager.class.getName()}, bm,
-			properties);
-
 		ComponentDTO componentDTO = _containerState.containerDTO().components.get(0);
 
 		_containerState.submit(
@@ -136,6 +129,16 @@ public class RuntimeExtension implements Extension {
 			() -> registerServices(componentDTO, bm)
 		).then(
 			s -> initComponents()
+		).then(s -> {
+				Dictionary<String, Object> properties = new Hashtable<>();
+				properties.put(CDIConstants.CDI_CONTAINER_ID, _containerState.id());
+
+				registerService(
+					new String[] {BeanManager.class.getName()}, bm,
+					properties);
+
+				return s;
+			}
 		);
 	}
 

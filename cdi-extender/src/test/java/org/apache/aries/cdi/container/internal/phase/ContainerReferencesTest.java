@@ -383,7 +383,11 @@ public class ContainerReferencesTest extends BaseCDIBundleTest {
 		assertEquals(SRs.id(sr3.getReference()), SRs.id(extendedReferenceDTO.serviceTracker.getServiceReference()));
 		assertEquals(foo, extendedReferenceDTO.serviceTracker.getService());
 
-		assertTrue(p1.timeout(200).getValue());
+		p1.timeout(200).then(s -> {
+				assertTrue(s.getValue());
+				return s;
+			},
+			f -> fail(f.getFailure().getMessage()));
 	}
 
 	@Test

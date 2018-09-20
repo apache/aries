@@ -1,0 +1,2 @@
+Export-Package: ${p}.tb152_2.*;-split-package:=first
+-cdiannotations: *

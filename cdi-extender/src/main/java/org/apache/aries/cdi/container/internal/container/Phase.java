@@ -17,10 +17,13 @@ package org.apache.aries.cdi.container.internal.container;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.osgi.framework.Bundle;
 import org.osgi.util.promise.Promise;
 
 public abstract class Phase {
+
+	protected final Syncro syncro = new Syncro(true);
 
 	public Phase(ContainerState containerState, Phase next) {
 		this.containerState = containerState;

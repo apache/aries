@@ -74,6 +74,11 @@ public class ContainerBootstrap extends Phase {
 	@Override
 	public boolean open() {
 		try (Syncro syncro = _lock.open()) {
+			if (containerState.bundleContext() == null) {
+				// this bundle was already removed
+				return false;
+			}
+
 			if (_bootstrap != null) {
 				return true;
 			}

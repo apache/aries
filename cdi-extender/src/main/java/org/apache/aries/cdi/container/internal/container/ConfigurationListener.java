@@ -27,6 +27,7 @@ import org.apache.aries.cdi.container.internal.model.ExtendedComponentInstanceDT
 import org.apache.aries.cdi.container.internal.model.ExtendedConfigurationDTO;
 import org.apache.aries.cdi.container.internal.util.Maps;
 import org.apache.aries.cdi.container.internal.util.Predicates;
+import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.apache.aries.cdi.container.internal.util.Throw;
 import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.osgi.framework.ServiceRegistration;
@@ -71,24 +72,26 @@ public class ConfigurationListener extends Phase implements org.osgi.service.cm.
 
 	@Override
 	public boolean close() {
-		if (_listenerService != null) {
-			_listenerService.unregister();
-			_listenerService = null;
-		}
-
-		return next.map(
-			next -> {
-				submit(next.closeOp(), next::close).onFailure(
-					f -> {
-						_log.error(l -> l.error("CCR Failure in configuration listener close on {}", next, f));
-
-						error(f);
-					}
-				);
-
-				return true;
+		try (Syncro open = syncro.open()) {
+			if (_listenerService != null) {
+				_listenerService.unregister();
+				_listenerService = null;
 			}
-		).orElse(true);
+
+			return next.map(
+				next -> {
+					submit(next.closeOp(), next::close).onFailure(
+						f -> {
+							_log.error(l -> l.error("CCR Failure in configuration listener close on {}", next, f));
+
+							error(f);
+						}
+					);
+
+					return true;
+				}
+			).orElse(true);
+		}
 	}
 
 	@Override
@@ -127,62 +130,67 @@ public class ConfigurationListener extends Phase implements org.osgi.service.cm.
 
 	@Override
 	public boolean open() {
-		Dictionary<String, Object> properties = new Hashtable<>();
-		properties.put("name", toString());
-		_listenerService = containerState.bundleContext().registerService(
-			org.osgi.service.cm.ConfigurationListener.class, this, properties);
+		try (Syncro open = syncro.open()) {
+			if (containerState.bundleContext() == null) {
+				// this bundle was already removed
+				return false;
+			}
 
-		return next.map(next -> (Component)next).map(
-			component -> {
-				submit(component.openOp(), component::open).then(
-					s -> {
-						component.configurationTemplates().stream().filter(
-							ct -> Objects.nonNull(ct.pid)
-						).forEach(
-							template -> {
-								if (template.maximumCardinality == MaximumCardinality.ONE) {
-									containerState.findConfig(template.pid).ifPresent(
-										c -> processEvent(
-											component,
-											template,
-											new ConfigurationEvent(
-												containerState.caTracker().getServiceReference(),
-												ConfigurationEvent.CM_UPDATED,
-												null,
-												c.getPid())
-										)
-									);
-								}
-								else {
-									containerState.findConfigs(template.pid, true).ifPresent(
-										arr -> Arrays.stream(arr).forEach(
+			Dictionary<String, Object> properties = new Hashtable<>();
+			properties.put("name", toString());
+			_listenerService = containerState.bundleContext().registerService(
+					org.osgi.service.cm.ConfigurationListener.class, this, properties);
+
+			return next.map(next -> (Component)next).map(
+				component -> {
+					submit(component.openOp(), component::open).then(
+						s -> {
+							component.configurationTemplates().stream().filter(
+								ct -> Objects.nonNull(ct.pid)
+							).forEach(
+								template -> {
+									if (template.maximumCardinality == MaximumCardinality.ONE) {
+										containerState.findConfig(template.pid).ifPresent(
 											c -> processEvent(
 												component,
 												template,
 												new ConfigurationEvent(
 													containerState.caTracker().getServiceReference(),
 													ConfigurationEvent.CM_UPDATED,
-													c.getFactoryPid(),
-													c.getPid())
+													null,
+													c.getPid()))
+										);
+									}
+									else {
+										containerState.findConfigs(template.pid, true).ifPresent(
+											arr -> Arrays.stream(arr).forEach(
+												c -> processEvent(
+													component,
+													template,
+													new ConfigurationEvent(
+														containerState.caTracker().getServiceReference(),
+														ConfigurationEvent.CM_UPDATED,
+														c.getFactoryPid(),
+														c.getPid()))
 											)
-										)
-									);
+										);
+									}
 								}
-							}
-						);
+							);
 
-						return s;
-					},
-					f -> {
-						_log.error(l -> l.error("CCR Failure during configuration start on {}", next, f.getFailure()));
+							return s;
+						},
+						f -> {
+							_log.error(l -> l.error("CCR Failure during configuration start on {}", next, f.getFailure()));
 
-						error(f.getFailure());
-					}
-				);
+							error(f.getFailure());
+						}
+					);
 
-				return true;
-			}
-		).orElse(true);
+					return true;
+				}
+			).orElse(true);
+		}
 	}
 
 	@Override

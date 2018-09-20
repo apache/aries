@@ -26,6 +26,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
+import org.osgi.service.log.Logger;
 
 @SingleComponent
 @Service({FieldInjectedPrototypeScopedImpl.class, FieldInjectedReference.class})
@@ -69,14 +70,17 @@ public class FieldInjectedPrototypeScopedImpl implements FieldInjectedReference<
 		return service;
 	}
 
+	@Inject
+	Logger logger;
+
 	@PostConstruct
 	private void postConstructed() {
-		System.out.println("PostConstructed " + this);
+		logger.info("PostConstructed {}", this);
 	}
 
 	@PreDestroy
 	private void preDestroyed() {
-		System.out.println("PreDestroyed " + this);
+		logger.info("PreDestroyed {}", this);
 	}
 
 }
