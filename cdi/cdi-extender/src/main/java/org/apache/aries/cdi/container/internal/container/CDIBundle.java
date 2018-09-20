@@ -16,6 +16,7 @@ package org.apache.aries.cdi.container.internal.container;
 
 import org.apache.aries.cdi.container.internal.CCR;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
+import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.service.log.Logger;
 
@@ -29,23 +30,25 @@ public class CDIBundle extends Phase implements Extension {
 
 	@Override
 	public boolean close() {
-		containerState.closing();
+		try (Syncro open = syncro.open()) {
+			containerState.closing();
 
-		return next.map(
-			next -> {
-				submit(next.closeOp(), next::close).onFailure(
-					f -> {
-						_log.error(l -> l.error("CCR Error in cdibundle CLOSE on {}", bundle(), f));
+			return next.map(
+					next -> {
+						submit(next.closeOp(), next::close).onFailure(
+								f -> {
+									_log.error(l -> l.error("CCR Error in cdibundle CLOSE on {}", bundle(), f));
 
-						error(f);
+									error(f);
+								}
+								);
+
+						_ccr.remove(bundle());
+
+						return true;
 					}
-				);
-
-				_ccr.remove(bundle());
-
-				return true;
-			}
-		).orElse(true);
+					).orElse(true);
+		}
 	}
 
 	@Override
@@ -60,21 +63,23 @@ public class CDIBundle extends Phase implements Extension {
 
 	@Override
 	public boolean open() {
-		return next.map(
-			next -> {
-				_ccr.add(containerState.bundle(), containerState);
+		try (Syncro open = syncro.open()) {
+			return next.map(
+				next -> {
+					_ccr.add(containerState.bundle(), containerState);
 
-				submit(next.openOp(), next::open).onFailure(
-					f -> {
-						_log.error(l -> l.error("CCR Error in cdibundle OPEN on {}", bundle(), f));
+					submit(next.openOp(), next::open).onFailure(
+						f -> {
+							_log.error(l -> l.error("CCR Error in cdibundle OPEN on {}", bundle(), f));
 
-						error(f);
-					}
-				);
+							error(f);
+						}
+					);
 
-				return true;
-			}
-		).orElse(true);
+					return true;
+				}
+			).orElse(true);
+		}
 	}
 
 	@Override

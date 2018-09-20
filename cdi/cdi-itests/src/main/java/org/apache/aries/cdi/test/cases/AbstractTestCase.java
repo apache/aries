@@ -36,7 +36,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.osgi.annotation.bundle.Requirement;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -71,7 +72,18 @@ import org.osgi.util.tracker.ServiceTracker;
 )
 public class AbstractTestCase {
 
-	@Rule public TestName testName = new TestName();
+	@Rule
+	public TestWatcher watchman= new TestWatcher() {
+		@Override
+		protected void failed(Throwable e, Description description) {
+			System.out.printf("--------- TEST: %s#%s [%s]%n", description.getTestClass(), description.getMethodName(), "FAILED");
+		}
+
+		@Override
+		protected void succeeded(Description description) {
+			System.out.printf("--------- TEST: %s#%s [%s]%n", description.getTestClass(), description.getMethodName(), "PASSED");
+		}
+	};
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
@@ -88,14 +100,8 @@ public class AbstractTestCase {
 		servicesBundle.uninstall();
 	}
 
-	void testHeader() {
-		System.out.println("--------- TEST: " + getClass().getSimpleName() + "#" +testName.getMethodName());
-	}
-
 	@Before
 	public void setUp() throws Exception {
-		testHeader();
-
 		cdiRuntime = runtimeTracker.waitForService(timeout);
 		cdiBundle = installBundle("basic-beans.jar");
 		cdiBundle.start();

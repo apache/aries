@@ -41,11 +41,14 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Qualifier;
 
+import org.apache.aries.cdi.container.internal.util.Conversions;
+import org.apache.aries.cdi.container.internal.util.Maps;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.MaximumCardinality;
 import org.osgi.service.cdi.ReferencePolicy;
 import org.osgi.service.cdi.ReferencePolicyOption;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.PrototypeRequired;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.annotations.Reluctant;
@@ -53,6 +56,7 @@ import org.osgi.service.cdi.reference.BeanServiceObjects;
 import org.osgi.service.cdi.reference.BindBeanServiceObjects;
 import org.osgi.service.cdi.reference.BindService;
 import org.osgi.service.cdi.reference.BindServiceReference;
+import org.osgi.util.converter.TypeReference;
 
 public class ReferenceModel {
 
@@ -114,6 +118,8 @@ public class ReferenceModel {
 	public static enum Scope {
 		BUNDLE, PROTOTYPE, SINGLETON
 	}
+
+	private static final TypeReference<Map<String, String>> _mapType = new TypeReference<Map<String, String>>(){};
 
 	private ReferenceModel(
 		Type injectionPointType,
@@ -260,11 +266,22 @@ public class ReferenceModel {
 			filterValid = true;
 		}
 
+		List<Annotation> beanPropertyTypes = _annotated.getAnnotations().stream().filter(
+			ann -> ann.annotationType().getAnnotation(BeanPropertyType.class) != null
+		).collect(Collectors.toList());
+
 		StringBuilder sb = new StringBuilder();
 
-		if (_prototype && filterValid) {
+		if (_prototype && filterValid || !beanPropertyTypes.isEmpty()) {
 			sb.append("(&");
 		}
+
+		beanPropertyTypes.forEach(
+			ann -> {
+				Map<String, String> map = Conversions.convert(ann).to(_mapType);
+				Maps.appendFilter(sb, map);
+			}
+		);
 
 		if (_prototype) {
 			sb.append("(");
@@ -278,7 +295,7 @@ public class ReferenceModel {
 			sb.append(targetFilter);
 		}
 
-		if (_prototype && filterValid) {
+		if (_prototype && filterValid || !beanPropertyTypes.isEmpty()) {
 			sb.append(")");
 		}
 

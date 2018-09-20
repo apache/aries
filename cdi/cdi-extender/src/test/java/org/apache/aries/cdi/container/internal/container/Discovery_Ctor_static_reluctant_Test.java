@@ -21,6 +21,7 @@ import java.util.Collection;
 
 import org.apache.aries.cdi.container.internal.model.BeansModel;
 import org.apache.aries.cdi.container.internal.model.OSGiBean;
+import org.apache.aries.cdi.container.test.AbstractTestBase;
 import org.apache.aries.cdi.container.test.MockCdiContainerAndComponents;
 import org.apache.aries.cdi.container.test.beans.Bar;
 import org.apache.aries.cdi.container.test.beans.Foo;
@@ -38,7 +39,7 @@ import org.osgi.service.cdi.ReferencePolicyOption;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 import org.osgi.service.cdi.runtime.dto.template.ReferenceTemplateDTO;
 
-public class Discovery_Ctor_static_reluctant_Test {
+public class Discovery_Ctor_static_reluctant_Test extends AbstractTestBase {
 
 	@Test
 	public void test_CtorListFoo() throws Exception {

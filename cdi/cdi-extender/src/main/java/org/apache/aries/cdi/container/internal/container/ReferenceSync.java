@@ -128,10 +128,10 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 		boolean dynamic = (_templateDTO.policy == ReferencePolicy.DYNAMIC);
 		boolean reluctant = (_templateDTO.policyOption == ReferencePolicyOption.RELUCTANT);
 		CollectionType collectionType = _templateDTO.collectionType;
-		boolean requiresUpdate = false;
+		boolean requiresUpdate = true;
 
-		if (resolved && reluctant && active && !dynamic) {
-			requiresUpdate = true;
+		if (resolved && active && dynamic) {
+			requiresUpdate = false;
 		}
 
 		_referenceDTO.matches.removeIf(d -> d.id == SRs.id(reference));

@@ -14,9 +14,7 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -27,15 +25,14 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
-import org.apache.aries.cdi.container.internal.model.CollectionType;
-import org.apache.aries.cdi.container.internal.model.ReferenceModel;
+import org.apache.aries.cdi.container.test.AbstractTestBase;
 import org.apache.aries.cdi.container.test.MockInjectionPoint;
 import org.apache.aries.cdi.container.test.beans.Foo;
 import org.junit.Test;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.util.converter.TypeReference;
 
-public class ReferenceModel_TupleTest {
+public class ReferenceModel_TupleTest extends AbstractTestBase {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void withoutServiceType_raw() throws Exception {

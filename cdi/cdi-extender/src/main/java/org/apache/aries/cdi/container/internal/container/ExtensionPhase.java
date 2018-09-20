@@ -29,6 +29,7 @@ import org.apache.aries.cdi.container.internal.model.ExtendedExtensionDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedExtensionTemplateDTO;
 import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.apache.aries.cdi.container.internal.util.SRs;
+import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.apache.aries.cdi.container.internal.util.Throw;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
@@ -49,29 +50,31 @@ public class ExtensionPhase extends Phase {
 
 	@Override
 	public boolean close() {
-		if (!extensionTemplates().isEmpty()) {
-			if (_extensionTracker != null) {
-				_extensionTracker.close();
+		try (Syncro open = syncro.open()) {
+			if (!extensionTemplates().isEmpty()) {
+				if (_extensionTracker != null) {
+					_extensionTracker.close();
 
-				_extensionTracker = null;
-			}
-
-			return true;
-		}
-		else {
-			return next.map(
-				next -> {
-					submit(next.closeOp(), next::close).onFailure(
-						f -> {
-							_log.error(l -> l.error("CCR Error in extension CLOSE on {}", bundle(), f));
-
-							error(f);
-						}
-					);
-
-					return true;
+					_extensionTracker = null;
 				}
-			).orElse(true);
+
+				return true;
+			}
+			else {
+				return next.map(
+					next -> {
+						submit(next.closeOp(), next::close).onFailure(
+							f -> {
+								_log.error(l -> l.error("CCR Error in extension CLOSE on {}", bundle(), f));
+
+								error(f);
+							}
+						);
+
+						return true;
+					}
+				).orElse(true);
+			}
 		}
 	}
 
@@ -82,28 +85,35 @@ public class ExtensionPhase extends Phase {
 
 	@Override
 	public boolean open() {
-		if (!extensionTemplates().isEmpty()) {
-			_extensionTracker = new ServiceTracker<>(
-				containerState.bundleContext(), createExtensionFilter(), new ExtensionPhaseCustomizer());
+		try (Syncro open = syncro.open()) {
+			if (containerState.bundleContext() == null) {
+				// this bundle was already removed
+				return false;
+			}
 
-			_extensionTracker.open();
+			if (!extensionTemplates().isEmpty()) {
+				_extensionTracker = new ServiceTracker<>(
+						containerState.bundleContext(), createExtensionFilter(), new ExtensionPhaseCustomizer());
 
-			return true;
-		}
-		else {
-			return next.map(
-				next -> {
-					submit(next.openOp(), next::open).onFailure(
-						f -> {
-							_log.error(l -> l.error("CCR Error in extension OPEN on {}", bundle(), f));
+				_extensionTracker.open();
 
-							error(f);
+				return true;
+			}
+			else {
+				return next.map(
+						next -> {
+							submit(next.openOp(), next::open).onFailure(
+									f -> {
+										_log.error(l -> l.error("CCR Error in extension OPEN on {}", bundle(), f));
+
+										error(f);
+									}
+									);
+
+							return true;
 						}
-					);
-
-					return true;
-				}
-			).orElse(true);
+						).orElse(true);
+			}
 		}
 	}
 

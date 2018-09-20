@@ -29,6 +29,7 @@ import org.apache.aries.cdi.test.interfaces.Pojo;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
+import org.osgi.service.log.Logger;
 
 @SingleComponent
 @Service({ServiceWithProperties.class, BeanService.class})
@@ -81,14 +82,17 @@ public class ServiceWithProperties implements BeanService<Pojo> {
 	@Inject
 	private PojoImpl _pojo;
 
+	@Inject
+	Logger logger;
+
 	@PostConstruct
 	private void postConstructed() {
-		System.out.println("PostConstructed " + this);
+		logger.info("PostConstructed {}", this);
 	}
 
 	@PreDestroy
 	private void preDestroyed() {
-		System.out.println("PreDestroyed " + this);
+		logger.info("PreDestroyed {}", this);
 	}
 
 }

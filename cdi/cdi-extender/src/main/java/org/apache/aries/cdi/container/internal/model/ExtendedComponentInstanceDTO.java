@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -31,6 +32,7 @@ import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
 import org.apache.aries.cdi.container.internal.container.ReferenceSync;
 import org.apache.aries.cdi.container.internal.util.Conversions;
+import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.osgi.framework.Constants;
 import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.runtime.dto.ComponentDTO;
@@ -54,6 +56,7 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 	private final ContainerState _containerState;
 	private final Logger _log;
 	private final AtomicReference<InstanceActivator> _noRequiredDependenciesActivator = new AtomicReference<>();
+	private final Syncro sync = new Syncro(true);
 
 	public ExtendedComponentInstanceDTO(
 		ContainerState containerState,
@@ -66,40 +69,42 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 	}
 
 	public boolean close() {
-		_containerState.submit(Op.of(Mode.CLOSE, Type.REFERENCES, ident()),
-			() -> {
-				references.removeIf(
-					r -> {
-						ExtendedReferenceDTO referenceDTO = (ExtendedReferenceDTO)r;
-						referenceDTO.serviceTracker.close();
-						return true;
-					}
-				);
-
-				if (_noRequiredDependenciesActivator.get() != null) {
-					_containerState.submit(
-						_noRequiredDependenciesActivator.get().closeOp(),
-						() -> _noRequiredDependenciesActivator.get().close()
-					).onFailure(
-						f -> {
-							_log.error(l -> l.error("CCR Error in CLOSE on {}", ident(), f));
-
-							_containerState.error(f);
+		try (Syncro open = sync.open()) {
+			_containerState.submit(Op.of(Mode.CLOSE, Type.REFERENCES, ident()),
+				() -> {
+					references.removeIf(
+						r -> {
+							ExtendedReferenceDTO referenceDTO = (ExtendedReferenceDTO)r;
+							referenceDTO.serviceTracker.close();
+							return true;
 						}
 					);
+
+					if (_noRequiredDependenciesActivator.get() != null) {
+						_containerState.submit(
+							_noRequiredDependenciesActivator.get().closeOp(),
+							() -> _noRequiredDependenciesActivator.get().close()
+						).onFailure(
+							f -> {
+								_log.error(l -> l.error("CCR Error in CLOSE on {}", ident(), f));
+
+								_containerState.error(f);
+							}
+						);
+					}
+
+					return true;
 				}
+			).onFailure(
+				f -> {
+					_log.error(l -> l.error("CCR Error in component instance stop on {}", this, f));
+				}
+			);
 
-				return true;
-			}
-		).onFailure(
-			f -> {
-				_log.error(l -> l.error("CCR Error in component instance stop on {}", this, f));
-			}
-		);
+			properties = null;
 
-		properties = null;
-
-		return true;
+			return true;
+		}
 	}
 
 	public Op closeOp() {
@@ -150,93 +155,95 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 	}
 
 	public boolean open() {
-		if (!configurationsResolved() || (properties != null)) {
-			return false;
-		}
-
-		ConfigurationDTO containerConfiguration = containerConfiguration();
-
-		if (containerConfiguration != null) {
-			Boolean enabled = Conversions.convert(
-				containerConfiguration.properties.get(
-					template.name.concat(".enabled"))
-			).defaultValue(Boolean.TRUE).to(Boolean.class);
-
-			if (!enabled) {
-				_containerState.containerDTO().components.stream().filter(
-					c -> c.template == template
-				).forEach(c -> c.enabled = false);
-
+		try (Syncro open = sync.open()) {
+			if (!configurationsResolved() || (properties != null)) {
 				return false;
 			}
-			else {
-				_containerState.containerDTO().components.stream().filter(
-					c -> c.template == template
-				).forEach(c -> c.enabled = true);
-			}
-		}
 
-		properties = componentProperties(null);
+			ConfigurationDTO containerConfiguration = containerConfiguration();
 
-		template.references.stream().map(ExtendedReferenceTemplateDTO.class::cast).forEach(
-			t -> {
-				ExtendedReferenceDTO referenceDTO = new ExtendedReferenceDTO();
+			if (containerConfiguration != null) {
+				Boolean enabled = Conversions.convert(
+					containerConfiguration.properties.get(
+						template.name.concat(".enabled"))
+				).defaultValue(Boolean.TRUE).to(Boolean.class);
 
-				if (t.collectionType == CollectionType.BINDER_SERVICE) {
-					referenceDTO.binder = new BindServiceImpl<>(_containerState);
+				if (!enabled) {
+					_containerState.containerDTO().components.stream().filter(
+						c -> c.template == template
+					).forEach(c -> c.enabled = false);
+
+					return false;
 				}
-				else if (t.collectionType == CollectionType.BINDER_REFERENCE) {
-					referenceDTO.binder = new BindServiceReferenceImpl<>(_containerState);
+				else {
+					_containerState.containerDTO().components.stream().filter(
+						c -> c.template == template
+					).forEach(c -> c.enabled = true);
 				}
-				else if (t.collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
-					referenceDTO.binder = new BindBeanServiceObjectsImpl<>(_containerState);
+			}
+
+			properties = componentProperties(null);
+
+			template.references.stream().map(ExtendedReferenceTemplateDTO.class::cast).forEach(
+				t -> {
+					ExtendedReferenceDTO referenceDTO = new ExtendedReferenceDTO();
+
+					if (t.collectionType == CollectionType.BINDER_SERVICE) {
+						referenceDTO.binder = new BindServiceImpl<>(_containerState);
+					}
+					else if (t.collectionType == CollectionType.BINDER_REFERENCE) {
+						referenceDTO.binder = new BindServiceReferenceImpl<>(_containerState);
+					}
+					else if (t.collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
+						referenceDTO.binder = new BindBeanServiceObjectsImpl<>(_containerState);
+					}
+
+					referenceDTO.matches = new CopyOnWriteArrayList<>();
+					referenceDTO.minimumCardinality = minimumCardinality(t.name, t.minimumCardinality);
+					referenceDTO.targetFilter = targetFilter(t.serviceType, t.name, t.targetFilter);
+					referenceDTO.template = t;
+					referenceDTO.serviceTracker = new ServiceTracker<>(
+						_containerState.bundleContext(),
+						asFilter(referenceDTO.targetFilter),
+						new ReferenceSync(_containerState, referenceDTO, this, _builder));
+
+					references.add(referenceDTO);
 				}
+			);
 
-				referenceDTO.matches = new CopyOnWriteArrayList<>();
-				referenceDTO.minimumCardinality = minimumCardinality(t.name, t.minimumCardinality);
-				referenceDTO.targetFilter = targetFilter(t.serviceType, t.name, t.targetFilter);
-				referenceDTO.template = t;
-				referenceDTO.serviceTracker = new ServiceTracker<>(
-					_containerState.bundleContext(),
-					asFilter(referenceDTO.targetFilter),
-					new ReferenceSync(_containerState, referenceDTO, this, _builder));
-
-				references.add(referenceDTO);
-			}
-		);
-
-		_containerState.submit(
-			Op.of(Mode.OPEN, Type.REFERENCES, ident()),
-			() -> {
-				references.stream().map(ExtendedReferenceDTO.class::cast).forEach(
-					r -> r.serviceTracker.open()
-				);
-
-				return referencesResolved();
-			}
-		).then(
-			s -> {
-				if (s.getValue()) {
-					// none of the reference dependencies are required
-					_noRequiredDependenciesActivator.set(_builder.setInstance(this).build());
-
-					return _containerState.submit(
-						_noRequiredDependenciesActivator.get().openOp(),
-						() -> _noRequiredDependenciesActivator.get().open()
-					).onFailure(
-						f -> {
-							_log.error(l -> l.error("CCR Error in OPEN on {}", ident(), f));
-
-							_containerState.error(f);
-						}
+			_containerState.submit(
+				Op.of(Mode.OPEN, Type.REFERENCES, ident()),
+				() -> {
+					references.stream().map(ExtendedReferenceDTO.class::cast).forEach(
+						r -> r.serviceTracker.open()
 					);
+
+					return referencesResolved();
 				}
+			).then(
+				s -> {
+					if (s.getValue()) {
+						// none of the reference dependencies are required
+						_noRequiredDependenciesActivator.set(_builder.setInstance(this).build());
 
-				return s;
-			}
-		);
+						return _containerState.submit(
+							_noRequiredDependenciesActivator.get().openOp(),
+							() -> _noRequiredDependenciesActivator.get().open()
+						).onFailure(
+							f -> {
+								_log.error(l -> l.error("CCR Error in OPEN on {}", ident(), f));
 
-		return true;
+								_containerState.error(f);
+							}
+						);
+					}
+
+					return s;
+				}
+			);
+
+			return true;
+		}
 	}
 
 	private ConfigurationDTO containerConfiguration() {
@@ -309,6 +316,8 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 	}
 
 	private int minimumCardinality(String componentName, int minimumCardinality) {
+		Objects.requireNonNull(properties);
+		Objects.requireNonNull(componentName);
 		return Optional.ofNullable(
 			properties.get(componentName.concat(".cardinality.minimum"))
 		).map(
@@ -319,6 +328,10 @@ public class ExtendedComponentInstanceDTO extends ComponentInstanceDTO {
 	}
 
 	private String targetFilter(String serviceType, String componentName, String targetFilter) {
+		Objects.requireNonNull(properties);
+		Objects.requireNonNull(serviceType);
+		Objects.requireNonNull(componentName);
+		Objects.requireNonNull(targetFilter);
 		String base = "(objectClass=".concat(serviceType).concat(")");
 		String extraFilter = Optional.ofNullable(
 			properties.get(componentName.concat(".target"))

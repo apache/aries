@@ -22,12 +22,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.aries.cdi.container.internal.util.Maps;
+import org.apache.aries.cdi.container.test.AbstractTestBase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.Service;
 
-public class MapsTest {
+public class MapsTest extends AbstractTestBase {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@BeanPropertyType
