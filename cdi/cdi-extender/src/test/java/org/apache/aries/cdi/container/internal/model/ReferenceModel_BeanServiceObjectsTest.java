@@ -24,6 +24,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
+import org.apache.aries.cdi.container.test.AbstractTestBase;
 import org.apache.aries.cdi.container.test.MockInjectionPoint;
 import org.apache.aries.cdi.container.test.beans.Foo;
 import org.junit.Test;
@@ -31,7 +32,7 @@ import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.reference.BeanServiceObjects;
 import org.osgi.util.converter.TypeReference;
 
-public class ReferenceModel_BeanServiceObjectsTest {
+public class ReferenceModel_BeanServiceObjectsTest extends AbstractTestBase {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void withoutServiceDefined_raw() throws Exception {

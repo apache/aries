@@ -19,6 +19,7 @@ import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.container.Op;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
+import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.osgi.service.log.Logger;
 
 public class ContainerActivator extends InstanceActivator {
@@ -36,6 +37,8 @@ public class ContainerActivator extends InstanceActivator {
 
 	}
 
+	private final Syncro syncro = new Syncro(true);
+
 	private ContainerActivator(Builder builder) {
 		super(builder);
 		_log = containerState.containerLogs().getLogger(getClass());
@@ -43,21 +46,23 @@ public class ContainerActivator extends InstanceActivator {
 
 	@Override
 	public boolean close() {
-		boolean result = next.map(
-			next -> {
-				submit(next.closeOp(), next::close).onFailure(
-					f -> {
-						_log.error(l -> l.error("CCR Failure in container activator close on {}", next, f));
+		try (Syncro open = syncro.open()) {
+			boolean result = next.map(
+					next -> {
+						submit(next.closeOp(), next::close).onFailure(
+								f -> {
+									_log.error(l -> l.error("CCR Failure in container activator close on {}", next, f));
+								}
+								);
+
+						return true;
 					}
-				);
+					).orElse(true);
 
-				return true;
-			}
-		).orElse(true);
+			instance.active = false;
 
-		instance.active = false;
-
-		return result;
+			return result;
+		}
 	}
 
 	@Override
@@ -67,29 +72,31 @@ public class ContainerActivator extends InstanceActivator {
 
 	@Override
 	public boolean open() {
-		if (!instance.referencesResolved()) {
-			return false;
-		}
-
-		boolean result = next.map(
-			next -> {
-				submit(next.openOp(), next::open).onFailure(
-					f -> {
-						_log.error(l -> l.error("CCR Failure in container activator open on {}", next, f));
-
-						containerState.error(f);
-					}
-				);
-
-				return true;
+		try (Syncro open = syncro.open()) {
+			if (!instance.referencesResolved()) {
+				return false;
 			}
-		).orElse(true);
 
-		if (result) {
-			instance.active = true;
+			boolean result = next.map(
+					next -> {
+						submit(next.openOp(), next::open).onFailure(
+								f -> {
+									_log.error(l -> l.error("CCR Failure in container activator open on {}", next, f));
+
+									containerState.error(f);
+								}
+								);
+
+						return true;
+					}
+					).orElse(true);
+
+			if (result) {
+				instance.active = true;
+			}
+
+			return result;
 		}
-
-		return result;
 	}
 
 	@Override

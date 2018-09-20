@@ -72,7 +72,7 @@ public class JndiExtensionTests extends AbstractTestCase {
 			Thread.sleep(20);
 		}
 
-		assertNull(bmTracker.getService());
+		assertTrue(bmTracker.isEmpty());
 
 		trackingCount = bmTracker.getTrackingCount();
 
@@ -82,7 +82,7 @@ public class JndiExtensionTests extends AbstractTestCase {
 			Thread.sleep(100);
 		}
 
-		assertNotNull(bmTracker.getService());
+		assertFalse(bmTracker.isEmpty());
 	}
 
 }

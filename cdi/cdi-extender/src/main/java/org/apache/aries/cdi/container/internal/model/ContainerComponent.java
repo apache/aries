@@ -22,6 +22,7 @@ import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.container.Op;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
+import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.apache.aries.cdi.container.internal.util.Throw;
 import org.osgi.service.cdi.runtime.dto.ComponentDTO;
 import org.osgi.service.cdi.runtime.dto.ComponentInstanceDTO;
@@ -57,33 +58,35 @@ public class ContainerComponent extends Component {
 
 	@Override
 	public boolean close() {
-		if (_snapshot == null) {
+		try (Syncro open = syncro.open()) {
+			if (_snapshot == null) {
+				return true;
+			}
+
+			_snapshot.instances.removeIf(
+				instance -> {
+					ExtendedComponentInstanceDTO einstance = (ExtendedComponentInstanceDTO)instance;
+
+					Promise<Boolean> result = submit(einstance.closeOp(), einstance::close).onFailure(
+						f -> {
+							_log.error(l -> l.error("CCR Error in container component close for {} on {}", einstance.ident(), bundle(), f));
+						}
+					);
+
+					try {
+						return result.getValue();
+					}
+					catch (InvocationTargetException | InterruptedException e) {
+						return Throw.exception(e);
+					}
+				}
+			);
+
+			containerState.containerDTO().components.remove(_snapshot);
+			_snapshot = null;
+
 			return true;
 		}
-
-		_snapshot.instances.removeIf(
-			instance -> {
-				ExtendedComponentInstanceDTO einstance = (ExtendedComponentInstanceDTO)instance;
-
-				Promise<Boolean> result = submit(einstance.closeOp(), einstance::close).onFailure(
-					f -> {
-						_log.error(l -> l.error("CCR Error in container component close for {} on {}", einstance.ident(), bundle(), f));
-					}
-				);
-
-				try {
-					return result.getValue();
-				}
-				catch (InvocationTargetException | InterruptedException e) {
-					return Throw.exception(e);
-				}
-			}
-		);
-
-		containerState.containerDTO().components.remove(_snapshot);
-		_snapshot = null;
-
-		return true;
 	}
 
 	@Override
@@ -103,29 +106,31 @@ public class ContainerComponent extends Component {
 
 	@Override
 	public boolean open() {
-		_snapshot = new ComponentDTO();
-		_snapshot.instances = new CopyOnWriteArrayList<>();
-		_snapshot.template = _template;
+		try (Syncro open = syncro.open()) {
+			_snapshot = new ComponentDTO();
+			_snapshot.instances = new CopyOnWriteArrayList<>();
+			_snapshot.template = _template;
 
-		containerState.containerDTO().components.add(_snapshot);
+			containerState.containerDTO().components.add(_snapshot);
 
-		ExtendedComponentInstanceDTO instanceDTO = new ExtendedComponentInstanceDTO(
-			containerState, _activatorBuilder);
+			ExtendedComponentInstanceDTO instanceDTO = new ExtendedComponentInstanceDTO(
+					containerState, _activatorBuilder);
 
-		instanceDTO.activations = new CopyOnWriteArrayList<>();
-		instanceDTO.configurations = new CopyOnWriteArrayList<>();
-		instanceDTO.references = new CopyOnWriteArrayList<>();
-		instanceDTO.template = _template;
+			instanceDTO.activations = new CopyOnWriteArrayList<>();
+			instanceDTO.configurations = new CopyOnWriteArrayList<>();
+			instanceDTO.references = new CopyOnWriteArrayList<>();
+			instanceDTO.template = _template;
 
-		_snapshot.instances.add(instanceDTO);
+			_snapshot.instances.add(instanceDTO);
 
-		submit(instanceDTO.openOp(), instanceDTO::open).onFailure(
-			f -> {
-				_log.error(l -> l.error("CCR Error in container component open for {} on {}", _template.name, containerState.bundle()));
-			}
-		);
+			submit(instanceDTO.openOp(), instanceDTO::open).onFailure(
+					f -> {
+						_log.error(l -> l.error("CCR Error in container component open for {} on {}", _template.name, containerState.bundle()));
+					}
+					);
 
-		return true;
+			return true;
+		}
 	}
 
 	@Override

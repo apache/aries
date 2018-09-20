@@ -37,7 +37,7 @@ import org.osgi.namespace.extender.ExtenderNamespace;
 import org.osgi.service.cdi.CDIConstants;
 import org.osgi.util.promise.PromiseFactory;
 
-public class BaseCDIBundleTest {
+public class BaseCDIBundleTest extends AbstractTestBase {
 
 	protected Bundle bundle;
 	protected CCR ccr;

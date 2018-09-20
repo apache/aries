@@ -103,6 +103,11 @@ public class FactoryActivator extends InstanceActivator {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public boolean open() {
 		try (Syncro synchro = _lock.open()) {
+			if (containerState.bundleContext() == null) {
+				// this bundle was already removed
+				return false;
+			}
+
 			if (!instance.referencesResolved() || instance.active) {
 				return false;
 			}
