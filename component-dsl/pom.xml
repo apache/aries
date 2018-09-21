@@ -21,7 +21,7 @@
 
 	<groupId>org.apache.aries.component-dsl</groupId>
 	<artifactId>org.apache.aries.component-dsl.parent</artifactId>
-	<version>1.2.1-SNAPSHOT</version>
+	<version>1.2.1</version>
 	<packaging>pom</packaging>
 
 	<parent>
@@ -98,9 +98,9 @@
     </pluginRepositories>
 
 	<scm>
-		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/component-dsl</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/component-dsl</developerConnection>
-		<url>http://svn.apache.org/viewvc/aries/trunk/component-dsl</url>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.component-dsl.parent-1.2.1</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.component-dsl.parent-1.2.1</developerConnection>
+		<url>http://svn.apache.org/viewvc/aries/tags/org.apache.aries.component-dsl.parent-1.2.1</url>
 	</scm>
 
 </project>
