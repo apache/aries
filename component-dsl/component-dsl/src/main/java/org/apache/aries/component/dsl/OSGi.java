@@ -330,7 +330,8 @@ public interface OSGi<T> extends OSGiRunnable<T> {
 
 		return
 			bundleContext().flatMap(bundleContext ->
-			just(bundleContext.getServiceObjects(serviceReference.getServiceReference())));
+			just(bundleContext.getServiceObjects(
+				serviceReference.getServiceReference())));
 	}
 
 	static <T> OSGi<ServiceObjects<T>> prototypes(
