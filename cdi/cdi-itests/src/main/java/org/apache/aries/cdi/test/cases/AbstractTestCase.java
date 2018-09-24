@@ -55,6 +55,7 @@ import org.osgi.service.cdi.runtime.dto.ContainerDTO;
 import org.osgi.service.component.annotations.RequireServiceComponentRuntime;
 import org.osgi.util.promise.PromiseFactory;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 @RequireServiceComponentRuntime
 @Requirement(
@@ -195,16 +196,6 @@ public class AbstractTestCase {
 		}
 	}
 
-	public <S,T> ServiceTracker<S, T> track(Filter filter) {
-		ServiceTracker<S, T> tracker = new ServiceTracker<>(bundleContext, filter, null);
-		tracker.open();
-		return tracker;
-	}
-
-	public <S,T> ServiceTracker<S, T> track(String pattern, Object... objects) {
-		return track(filter(pattern, objects));
-	}
-
 	public Dictionary<String, Object> getProperties(ServiceReference<Integer> reference) {
 		Dictionary<String, Object> properties = new Hashtable<>();
 		for (String key : reference.getPropertyKeys()) {
@@ -213,12 +204,47 @@ public class AbstractTestCase {
 		return properties;
 	}
 
-	BeanManager getBeanManager(Bundle bundle) throws Exception {
-		return getServiceTracker(bundle).waitForService(timeout);
+	public <S,T> CloseableTracker<S, T> track(Filter filter) {
+		CloseableTracker<S, T> tracker = new CloseableTracker<>(bundleContext, filter);
+		tracker.open();
+		return tracker;
 	}
 
-	ServiceTracker<BeanManager, BeanManager> getServiceTracker(Bundle bundle) throws Exception {
-		ServiceTracker<BeanManager, BeanManager> serviceTracker = new ServiceTracker<>(
+	public <S,T> CloseableTracker<S, T> track(String pattern, Object... objects) {
+		return track(filter(pattern, objects));
+	}
+
+	public <S> CloseableTracker<S, ServiceReference<S>> trackSR(String pattern, Object... objects) {
+		return trackSR(filter(pattern, objects));
+	}
+
+	public <S> CloseableTracker<S, ServiceReference<S>> trackSR(Filter filter) {
+		CloseableTracker<S, ServiceReference<S>> tracker = new CloseableTracker<>(bundleContext, filter, new ServiceTrackerCustomizer<S, ServiceReference<S>>() {
+
+			@Override
+			public ServiceReference<S> addingService(ServiceReference<S> reference) {
+				return reference;
+			}
+
+			@Override
+			public void modifiedService(ServiceReference<S> reference, ServiceReference<S> service) {
+			}
+
+			@Override
+			public void removedService(ServiceReference<S> reference, ServiceReference<S> service) {
+			}
+
+		});
+		tracker.open();
+		return tracker;
+	}
+
+	BeanManager getBeanManager(Bundle bundle) throws Exception {
+		return trackBM(bundle).waitForService(timeout);
+	}
+
+	CloseableTracker<BeanManager, BeanManager> trackBM(Bundle bundle) throws Exception {
+		CloseableTracker<BeanManager, BeanManager> serviceTracker = new CloseableTracker<>(
 			bundle.getBundleContext(),
 			filter(
 				"(&(objectClass=%s)(service.bundleid=%d))",
@@ -253,7 +279,7 @@ public class AbstractTestCase {
 
 	static final Bundle bundle = FrameworkUtil.getBundle(CdiBeanTests.class);
 	static final BundleContext bundleContext = bundle.getBundleContext();
-	static final long timeout = 5000;
+	static final long timeout = 500;
 	static Bundle servicesBundle;
 	static ServiceTracker<CDIComponentRuntime, CDIComponentRuntime> runtimeTracker;
 
