@@ -278,7 +278,7 @@ public class DiscoveryExtension implements Extension {
 
 				_containerState.containerDTO().template.components.add(componentTemplate);
 
-				osgiBean.setComponent(componentTemplate);
+				osgiBean.setComponent(_containerState, componentTemplate);
 			}
 			else if ((annotated instanceof AnnotatedType) &&
 					Optional.ofNullable(
@@ -345,7 +345,7 @@ public class DiscoveryExtension implements Extension {
 
 				_containerState.containerDTO().template.components.add(componentTemplate);
 
-				osgiBean.setComponent(componentTemplate);
+				osgiBean.setComponent(_containerState, componentTemplate);
 			}
 			else if ((annotated instanceof AnnotatedType) &&
 					Optional.ofNullable(
@@ -389,7 +389,7 @@ public class DiscoveryExtension implements Extension {
 					_containerTemplate.activations.add(activationTemplate);
 				}
 
-				osgiBean.setComponent(_containerTemplate);
+				osgiBean.setComponent(_containerState, _containerTemplate);
 			}
 		}
 		catch (Exception e) {
@@ -556,7 +556,7 @@ public class DiscoveryExtension implements Extension {
 					injectionPoint
 				).build();
 
-				osgiBean.addConfiguration(configurationModel.toDTO());
+				osgiBean.addConfiguration(_containerState, configurationModel.toDTO());
 			}
 			catch (Exception e) {
 				_containerState.error(e);
@@ -595,7 +595,7 @@ public class DiscoveryExtension implements Extension {
 		ComponentTemplateDTO currentTemplate = osgiBean.getComponent();
 
 		if (currentTemplate == null) {
-			osgiBean.setComponent(template);
+			osgiBean.setComponent(_containerState, template);
 		}
 		else if (!currentTemplate.equals(template)) {
 			throw new IllegalStateException("Something is wrong here");

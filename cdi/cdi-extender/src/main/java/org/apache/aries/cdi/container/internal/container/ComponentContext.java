@@ -23,6 +23,7 @@ import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 
+import org.apache.aries.cdi.container.internal.model.ExtendedActivationDTO;
 import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.runtime.dto.ActivationDTO;
 
@@ -97,17 +98,21 @@ public class ComponentContext implements Context {
 	}
 
 	private static final Map<ActivationDTO, Map<Class<?>, BeanInstance<?>>> _beans = new ConcurrentHashMap<>();
-	private static final ThreadLocal<ActivationDTO> _componentModel = new ThreadLocal<>();
+	private static final ThreadLocal<ExtendedActivationDTO> _componentModel = new ThreadLocal<>();
 
 	public static class With implements AutoCloseable {
 
-		public With(ActivationDTO activationDTO) {
+		public With(ExtendedActivationDTO activationDTO) {
 			_componentModel.set(activationDTO);
 		}
 
 		@Override
 		public void close() {
 			_componentModel.set(null);
+		}
+
+		public static ExtendedActivationDTO current() {
+			return _componentModel.get();
 		}
 
 	}

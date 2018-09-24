@@ -24,6 +24,7 @@ import org.apache.aries.cdi.container.internal.model.InstanceActivator;
 import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.apache.aries.cdi.container.internal.util.Maps;
 import org.apache.aries.cdi.container.internal.util.SRs;
+import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cdi.ReferencePolicy;
 import org.osgi.service.cdi.ReferencePolicyOption;
@@ -60,9 +61,9 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 			requiresUpdate = false;
 		}
 
-		_referenceDTO.matches = SRs.from(_referenceDTO.serviceTracker.getServiceReferences(), reference);
+		try (Syncro open = _syncro.open()) {
+			_referenceDTO.matches = SRs.from(_referenceDTO.serviceTracker.getServiceReferences(), reference);
 
-		try {
 			if (collectionType == CollectionType.BINDER_SERVICE ||
 				collectionType == CollectionType.BINDER_REFERENCE ||
 				collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
@@ -134,9 +135,9 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 			requiresUpdate = false;
 		}
 
-		_referenceDTO.matches.removeIf(d -> d.id == SRs.id(reference));
+		try (Syncro open = _syncro.open()) {
+			_referenceDTO.matches.removeIf(d -> d.id == SRs.id(reference));
 
-		try {
 			if (collectionType == CollectionType.BINDER_SERVICE ||
 				collectionType == CollectionType.BINDER_REFERENCE ||
 				collectionType == CollectionType.BINDER_BEAN_SERVICE_OBJECTS) {
@@ -207,6 +208,7 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 	private final Logger _log;
 	private final ExtendedReferenceDTO _referenceDTO;
 	private volatile String _string;
+	private final Syncro _syncro = new Syncro(true);
 	private final ExtendedReferenceTemplateDTO _templateDTO;
 
 }

@@ -59,7 +59,7 @@ public class ContainerActivator extends InstanceActivator {
 					}
 					).orElse(true);
 
-			instance.active = false;
+			_instance.active = false;
 
 			return result;
 		}
@@ -67,13 +67,13 @@ public class ContainerActivator extends InstanceActivator {
 
 	@Override
 	public Op closeOp() {
-		return Op.of(Mode.CLOSE, Type.CONTAINER_ACTIVATOR, instance.template.name);
+		return Op.of(Mode.CLOSE, Type.CONTAINER_ACTIVATOR, _instance.template.name);
 	}
 
 	@Override
 	public boolean open() {
 		try (Syncro open = syncro.open()) {
-			if (!instance.referencesResolved()) {
+			if (!_instance.referencesResolved()) {
 				return false;
 			}
 
@@ -92,7 +92,7 @@ public class ContainerActivator extends InstanceActivator {
 					).orElse(true);
 
 			if (result) {
-				instance.active = true;
+				_instance.active = true;
 			}
 
 			return result;
@@ -101,7 +101,7 @@ public class ContainerActivator extends InstanceActivator {
 
 	@Override
 	public Op openOp() {
-		return Op.of(Mode.OPEN, Type.CONTAINER_ACTIVATOR, instance.template.name);
+		return Op.of(Mode.OPEN, Type.CONTAINER_ACTIVATOR, _instance.template.name);
 	}
 
 	private final Logger _log;
