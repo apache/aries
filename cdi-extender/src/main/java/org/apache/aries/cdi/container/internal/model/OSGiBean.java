@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.aries.cdi.container.internal.bean.ComponentPropertiesBean;
 import org.apache.aries.cdi.container.internal.bean.ReferenceBean;
+import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.util.Logs;
 import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
@@ -51,14 +52,14 @@ public class OSGiBean implements Comparable<OSGiBean> {
 		_beanClass = beanClass;
 	}
 
-	public synchronized void addConfiguration(ConfigurationTemplateDTO dto) {
+	public synchronized void addConfiguration(ContainerState containerState, ConfigurationTemplateDTO dto) {
 		try (Syncro syncro = _lock.open()) {
 			if (_componentTemplate == null) {
 				_configurationsQueue.add(dto);
 			}
 			else {
 				((ExtendedConfigurationTemplateDTO)dto).bean = new ComponentPropertiesBean(
-					_componentTemplate, (ExtendedConfigurationTemplateDTO)dto);
+					containerState, _componentTemplate, (ExtendedConfigurationTemplateDTO)dto);
 
 				_componentTemplate.configurations.add(dto);
 			}
@@ -106,7 +107,7 @@ public class OSGiBean implements Comparable<OSGiBean> {
 		return _componentTemplate;
 	}
 
-	public void setComponent(ComponentTemplateDTO componentTemplate) {
+	public void setComponent(ContainerState containerState, ComponentTemplateDTO componentTemplate) {
 		try (Syncro syncro = _lock.open()) {
 			if (_componentTemplate != null) {
 				return;
@@ -115,7 +116,7 @@ public class OSGiBean implements Comparable<OSGiBean> {
 			_configurationsQueue.removeIf(
 				dto -> {
 					((ExtendedConfigurationTemplateDTO)dto).bean = new ComponentPropertiesBean(
-						_componentTemplate, (ExtendedConfigurationTemplateDTO)dto);
+						containerState, _componentTemplate, (ExtendedConfigurationTemplateDTO)dto);
 
 					_componentTemplate.configurations.add(dto);
 					return true;

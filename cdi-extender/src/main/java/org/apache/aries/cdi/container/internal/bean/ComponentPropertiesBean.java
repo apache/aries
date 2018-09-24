@@ -27,11 +27,13 @@ import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.apache.aries.cdi.container.internal.container.ComponentContext;
+import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.container.Mark;
+import org.apache.aries.cdi.container.internal.model.ExtendedActivationDTO;
 import org.apache.aries.cdi.container.internal.model.ExtendedConfigurationTemplateDTO;
 import org.apache.aries.cdi.container.internal.util.Conversions;
 import org.apache.aries.cdi.container.internal.util.Sets;
-import org.osgi.service.cdi.ComponentType;
 import org.osgi.service.cdi.annotations.ComponentProperties;
 import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.annotations.PID;
@@ -40,9 +42,11 @@ import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 public class ComponentPropertiesBean implements Bean<Object> {
 
 	public ComponentPropertiesBean(
+		ContainerState containerState,
 		ComponentTemplateDTO component,
 		ExtendedConfigurationTemplateDTO template) {
 
+		_containerState = containerState;
 		_component = component;
 		_template = template;
 
@@ -56,8 +60,23 @@ public class ComponentPropertiesBean implements Bean<Object> {
 
 	@Override
 	public Object create(CreationalContext<Object> creationalContext) {
-		Objects.requireNonNull(_properties);
-		return Conversions.convert(_properties).to(_template.injectionPointType);
+		Map<String, Object> properties;
+		ExtendedActivationDTO current = ComponentContext.With.current();
+
+		if (current == null) {
+			properties = _containerState.containerDTO().components.get(0).instances.get(0).properties;
+		}
+		else {
+			properties = current.instance.properties;
+		}
+
+		Objects.requireNonNull(properties);
+
+		if (_injectionPoint != null) {
+			return Conversions.convert(properties).to(_injectionPoint.getType());
+		}
+
+		return Conversions.convert(properties).to(_template.injectionPointType);
 	}
 
 	@Override
@@ -76,9 +95,12 @@ public class ComponentPropertiesBean implements Bean<Object> {
 
 	@Override
 	public Class<? extends Annotation> getScope() {
-		if (_component.type == ComponentType.CONTAINER) {
+		ExtendedActivationDTO current = ComponentContext.With.current();
+
+		if (current == null) {
 			return ApplicationScoped.class;
 		}
+
 		return ComponentScoped.class;
 	}
 
@@ -112,12 +134,12 @@ public class ComponentPropertiesBean implements Bean<Object> {
 		return false;
 	}
 
-	public void setMark(Mark mark) {
-		_qualifiers.add(mark);
+	public void setInjectionPoint(InjectionPoint injectionPoint) {
+		_injectionPoint = injectionPoint;
 	}
 
-	public void setProperties(Map<String, Object> properties) {
-		_properties = properties;
+	public void setMark(Mark mark) {
+		_qualifiers.add(mark);
 	}
 
 	@Override
@@ -129,10 +151,11 @@ public class ComponentPropertiesBean implements Bean<Object> {
 	}
 
 	private final ComponentTemplateDTO _component;
+	private final ContainerState _containerState;
 	private final Set<Annotation> _qualifiers;
 	private final ExtendedConfigurationTemplateDTO _template;
 	private final Set<Type> _types;
-	private volatile Map<String, Object> _properties;
 	private volatile String _string;
+	private volatile InjectionPoint _injectionPoint;
 
 }

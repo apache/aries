@@ -15,38 +15,28 @@
 package org.apache.aries.cdi.container.internal.model;
 
 import java.lang.annotation.Annotation;
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.enterprise.context.BeforeDestroyed;
-import javax.enterprise.context.Destroyed;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.apache.aries.cdi.container.internal.bean.ReferenceBean;
-import org.apache.aries.cdi.container.internal.container.ComponentContext.With;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.container.Op;
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.util.Maps;
 import org.apache.aries.cdi.container.internal.util.SRs;
-import org.apache.aries.cdi.container.internal.util.Sets;
 import org.apache.aries.cdi.container.internal.util.Syncro;
-import org.apache.aries.cdi.container.internal.util.Throw;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cdi.ServiceScope;
-import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.log.Logger;
 
 public class SingleActivator extends InstanceActivator {
@@ -58,7 +48,7 @@ public class SingleActivator extends InstanceActivator {
 		}
 
 		@Override
-		public SingleActivator build() {
+		public InstanceActivator build() {
 			return _cache.computeIfAbsent(_instance, i -> new SingleActivator(this));
 		}
 
@@ -79,15 +69,17 @@ public class SingleActivator extends InstanceActivator {
 				serviceRegistration = null;
 			}
 
-			instance.activations.removeIf(
+			_instance.activations.removeIf(
 				a -> {
 					ExtendedActivationDTO extended = (ExtendedActivationDTO)a;
+					Objects.requireNonNull(extended);
+					Objects.requireNonNull(extended.onClose);
 					extended.onClose.accept(extended);
 					return true;
 				}
 			);
 
-			instance.active = false;
+			_instance.active = false;
 
 			return true;
 		}
@@ -95,7 +87,7 @@ public class SingleActivator extends InstanceActivator {
 
 	@Override
 	public Op closeOp() {
-		return Op.of(Mode.CLOSE, Op.Type.SINGLE_ACTIVATOR, instance.ident());
+		return Op.of(Mode.CLOSE, Op.Type.SINGLE_ACTIVATOR, _instance.ident());
 	}
 
 	@Override
@@ -107,7 +99,7 @@ public class SingleActivator extends InstanceActivator {
 				return false;
 			}
 
-			if (!instance.referencesResolved() || instance.active) {
+			if (!_instance.referencesResolved() || _instance.active) {
 				return false;
 			}
 
@@ -118,11 +110,11 @@ public class SingleActivator extends InstanceActivator {
 			}
 
 			ExtendedActivationTemplateDTO activationTemplate =
-				(ExtendedActivationTemplateDTO)instance.template.activations.get(0);
+				(ExtendedActivationTemplateDTO)_instance.template.activations.get(0);
 
-			instance.template.references.stream().map(ExtendedReferenceTemplateDTO.class::cast).forEach(
+			_instance.template.references.stream().map(ExtendedReferenceTemplateDTO.class::cast).forEach(
 				t -> {
-					instance.references.stream().filter(
+					_instance.references.stream().filter(
 						r -> r.template == t
 					).findFirst().map(
 						ExtendedReferenceDTO.class::cast
@@ -136,15 +128,8 @@ public class SingleActivator extends InstanceActivator {
 				}
 			);
 
-			instance.template.configurations.stream().map(ExtendedConfigurationTemplateDTO.class::cast).filter(
-				t -> Objects.nonNull(t.injectionPointType)
-			).forEach(
-				t -> {
-					t.bean.setProperties(instance.properties);
-				}
-			);
 
-			ExtendedComponentTemplateDTO extended = (ExtendedComponentTemplateDTO)instance.template;
+			ExtendedComponentTemplateDTO extended = (ExtendedComponentTemplateDTO)_instance.template;
 
 			Set<Bean<?>> beans = beanManager.getBeans(
 				extended.bean.getBeanClass(), extended.bean.getQualifiers().toArray(new Annotation[0]));
@@ -153,7 +138,7 @@ public class SingleActivator extends InstanceActivator {
 			if (activationTemplate.serviceClasses.isEmpty() /* immediate */) {
 				activate(bean, activationTemplate, beanManager);
 
-				_log.debug(l -> l.debug("CCR `immediate component` {} activated on {}", instance.ident(), bundle()));
+				_log.debug(l -> l.debug("CCR `immediate component` {} activated on {}", _instance.ident(), bundle()));
 			}
 			else if (activationTemplate.scope == ServiceScope.SINGLETON) {
 				Entry<ExtendedActivationDTO, Object> entry = activate(
@@ -161,10 +146,10 @@ public class SingleActivator extends InstanceActivator {
 				serviceRegistration = containerState.bundleContext().registerService(
 					activationTemplate.serviceClasses.toArray(new String[0]),
 					entry.getValue(),
-					Maps.dict(instance.properties));
+					Maps.dict(_instance.properties));
 				entry.getKey().service = SRs.from(serviceRegistration.getReference());
 
-				_log.debug(l -> l.debug("CCR `singleton scope service` {} activated on {}", instance.ident(), bundle()));
+				_log.debug(l -> l.debug("CCR `singleton scope service` {} activated on {}", _instance.ident(), bundle()));
 			}
 			else if (activationTemplate.scope == ServiceScope.BUNDLE) {
 				serviceRegistration = containerState.bundleContext().registerService(
@@ -192,10 +177,10 @@ public class SingleActivator extends InstanceActivator {
 						final Map<Object, ExtendedActivationDTO> _locals = new ConcurrentHashMap<>();
 
 					},
-					Maps.dict(instance.properties)
+					Maps.dict(_instance.properties)
 				);
 
-				_log.debug(l -> l.debug("CCR `bundle scope service` {} activated on {}", instance.ident(), bundle()));
+				_log.debug(l -> l.debug("CCR `bundle scope service` {} activated on {}", _instance.ident(), bundle()));
 			}
 			else if (activationTemplate.scope == ServiceScope.PROTOTYPE) {
 				serviceRegistration = containerState.bundleContext().registerService(
@@ -223,13 +208,13 @@ public class SingleActivator extends InstanceActivator {
 						final Map<Object, ExtendedActivationDTO> _locals = new ConcurrentHashMap<>();
 
 					},
-					Maps.dict(instance.properties)
+					Maps.dict(_instance.properties)
 				);
 
-				_log.debug(l -> l.debug("CCR `prototype scope service` {} activated on {}", instance.ident(), bundle()));
+				_log.debug(l -> l.debug("CCR `prototype scope service` {} activated on {}", _instance.ident(), bundle()));
 			}
 
-			instance.active = true;
+			_instance.active = true;
 
 			return true;
 		}
@@ -237,48 +222,12 @@ public class SingleActivator extends InstanceActivator {
 
 	@Override
 	public Op openOp() {
-		return Op.of(Mode.OPEN, Op.Type.SINGLE_ACTIVATOR, instance.ident());
+		return Op.of(Mode.OPEN, Op.Type.SINGLE_ACTIVATOR, _instance.ident());
 	}
 
 	@Override
 	public String toString() {
-		return Arrays.asList(getClass().getSimpleName(), instance.ident()).toString();
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	Entry<ExtendedActivationDTO, Object> activate(
-		Bean<? extends Object> bean,
-		ExtendedActivationTemplateDTO activationTemplate,
-		BeanManager beanManager) {
-
-		ExtendedActivationDTO activationDTO = new ExtendedActivationDTO();
-		activationDTO.errors = new CopyOnWriteArrayList<>();
-		activationDTO.template = activationTemplate;
-		instance.activations.add(activationDTO);
-
-		try (With with = new With(activationDTO)) {
-			try {
-				final Object object = containerState.componentContext().get(
-					(Bean)bean,
-					(CreationalContext)beanManager.createCreationalContext(bean));
-				final Set<Annotation> qualifiers = bean.getQualifiers();
-				beanManager.fireEvent(object, Sets.hashSet(qualifiers, Initialized.Literal.of(ComponentScoped.class)).toArray(new Annotation[0]));
-				activationDTO.onClose = a -> {
-					try (With with2 = new With(a)) {
-						beanManager.fireEvent(object, Sets.hashSet(qualifiers, BeforeDestroyed.Literal.of(ComponentScoped.class)).toArray(new Annotation[0]));
-						containerState.componentContext().destroy();
-						beanManager.fireEvent(object, Sets.hashSet(qualifiers, Destroyed.Literal.of(ComponentScoped.class)).toArray(new Annotation[0]));
-						instance.activations.remove(a);
-					}
-				};
-				return new AbstractMap.SimpleImmutableEntry<>(activationDTO, object);
-			}
-			catch (Throwable t) {
-				_log.error(l -> l.error("CCR Error single activator create for {} on {}", instance, bundle(), t));
-				activationDTO.errors.add(Throw.asString(t));
-				return new AbstractMap.SimpleImmutableEntry<>(activationDTO, null);
-			}
-		}
+		return Arrays.asList(getClass().getSimpleName(), _instance.ident()).toString();
 	}
 
 	private final Syncro _lock = new Syncro(true);

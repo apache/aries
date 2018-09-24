@@ -14,12 +14,15 @@
 
 package org.apache.aries.cdi.container.internal.container;
 
+import static javax.interceptor.Interceptor.Priority.*;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.Context;
 import javax.enterprise.context.spi.CreationalContext;
@@ -117,7 +120,10 @@ public class RuntimeExtension implements Extension {
 		);
 	}
 
-	void afterDeploymentValidation(@Observes AfterDeploymentValidation adv, BeanManager bm) {
+	void afterDeploymentValidation(
+		@Observes @Priority(PLATFORM_AFTER + 100) AfterDeploymentValidation adv,
+		BeanManager bm) {
+
 		_log.debug(l -> l.debug("CCR AfterDeploymentValidation on {}", _containerState.bundle()));
 
 		_containerState.beanManager(bm);
@@ -242,14 +248,6 @@ public class RuntimeExtension implements Extension {
 		).forEach(
 			t -> {
 				ComponentPropertiesBean bean = t.bean;
-				if (componentTemplate.type == ComponentType.CONTAINER) {
-					if (t.pid == null) {
-						bean.setProperties(componentTemplate.properties);
-					}
-					else {
-						bean.setProperties(componentDTO.instances.get(0).properties);
-					}
-				}
 
 				_log.debug(l -> l.debug("CCR Adding synthetic bean {} on {}", bean, _containerState.bundle()));
 
@@ -332,6 +330,7 @@ public class RuntimeExtension implements Extension {
 
 				pip.setInjectionPoint(markedInjectionPoint);
 
+				t.bean.setInjectionPoint(injectionPoint);
 				t.bean.setMark(markedInjectionPoint.getMark());
 
 				return true;

@@ -14,9 +14,27 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
+import java.lang.annotation.Annotation;
+import java.util.AbstractMap;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.enterprise.context.BeforeDestroyed;
+import javax.enterprise.context.Destroyed;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+
+import org.apache.aries.cdi.container.internal.container.ComponentContext.With;
 import org.apache.aries.cdi.container.internal.container.ContainerState;
 import org.apache.aries.cdi.container.internal.container.Op;
 import org.apache.aries.cdi.container.internal.container.Phase;
+import org.apache.aries.cdi.container.internal.util.Sets;
+import org.apache.aries.cdi.container.internal.util.Throw;
+import org.osgi.service.cdi.annotations.ComponentScoped;
+import org.osgi.service.log.Logger;
 
 public abstract class InstanceActivator extends Phase {
 
@@ -43,7 +61,8 @@ public abstract class InstanceActivator extends Phase {
 	protected InstanceActivator(Builder<?> builder) {
 		super(builder._containerState, builder._next);
 
-		this.instance = builder._instance;
+		_instance = builder._instance;
+		_log = builder._containerState.ccrLogs().getLogger(InstanceActivator.class);
 	}
 
 	@Override
@@ -52,6 +71,71 @@ public abstract class InstanceActivator extends Phase {
 	@Override
 	public abstract Op openOp();
 
-	protected final ExtendedComponentInstanceDTO instance;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected Entry<ExtendedActivationDTO, Object> activate(
+		Bean<? extends Object> bean,
+		ExtendedActivationTemplateDTO activationTemplate,
+		BeanManager beanManager) {
+
+		ExtendedActivationDTO activationDTO = new ExtendedActivationDTO();
+		activationDTO.errors = new CopyOnWriteArrayList<>();
+		activationDTO.template = activationTemplate;
+		activationDTO.instance = _instance;
+
+		_instance.activations.add(activationDTO);
+
+		try (With with = new With(activationDTO)) {
+			try {
+				final Object object = containerState.componentContext().get(
+					(Bean)bean,
+					(CreationalContext)beanManager.createCreationalContext(bean));
+
+				final Set<Annotation> qualifiers = bean.getQualifiers();
+
+				try {
+					beanManager.fireEvent(object, Sets.hashSet(qualifiers, Initialized.Literal.of(ComponentScoped.class)).toArray(new Annotation[0]));
+				}
+				catch (Throwable t) {
+					_log.error(l -> l.error("CCR Error in activator event @Initialized for {} on {}", _instance, bundle(), t));
+					activationDTO.errors.add(Throw.asString(t));
+				}
+
+				activationDTO.onClose = a -> {
+					try (With with2 = new With(a)) {
+						try {
+							beanManager.fireEvent(object, Sets.hashSet(qualifiers, BeforeDestroyed.Literal.of(ComponentScoped.class)).toArray(new Annotation[0]));
+						}
+						catch (Throwable t) {
+							_log.error(l -> l.error("CCR Error in activator event @BeforeDestroyed for {} on {}", _instance, bundle(), t));
+							activationDTO.errors.add(Throw.asString(t));
+						}
+
+						containerState.componentContext().destroy();
+
+						try {
+							beanManager.fireEvent(object, Sets.hashSet(qualifiers, Destroyed.Literal.of(ComponentScoped.class)).toArray(new Annotation[0]));
+						}
+						catch (Throwable t) {
+							_log.error(l -> l.error("CCR Error in activator event @Destroyed for {} on {}", _instance, bundle(), t));
+							activationDTO.errors.add(Throw.asString(t));
+						}
+
+						_instance.activations.remove(a);
+					}
+				};
+
+				return new AbstractMap.SimpleImmutableEntry<>(activationDTO, object);
+			}
+			catch (Throwable t) {
+				_log.error(l -> l.error("CCR Error in activator create for {} on {}", _instance, bundle(), t));
+				activationDTO.errors.add(Throw.asString(t));
+
+				return new AbstractMap.SimpleImmutableEntry<>(activationDTO, null);
+			}
+		}
+	}
+
+	private final Logger _log;
+	protected final ExtendedComponentInstanceDTO _instance;
 
 }
