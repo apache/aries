@@ -20,6 +20,8 @@ import org.osgi.service.cdi.runtime.dto.ActivationDTO;
 
 public class ExtendedActivationDTO extends ActivationDTO {
 
+	public ExtendedComponentInstanceDTO instance;
+
 	public Consumer<ExtendedActivationDTO> onClose;
 
 }

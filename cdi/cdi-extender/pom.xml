@@ -57,6 +57,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-interceptor_1.2_spec</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jcdi_2.0_spec</artifactId>
 			<version>1.1</version>
 		</dependency>
@@ -205,12 +210,6 @@
 			<groupId>org.apache.aries.cdi</groupId>
 			<artifactId>org.apache.aries.cdi.extra</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-interceptor_1.2_spec</artifactId>
-			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
