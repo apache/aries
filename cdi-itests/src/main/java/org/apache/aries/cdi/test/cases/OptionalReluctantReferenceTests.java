@@ -47,9 +47,7 @@ public class OptionalReluctantReferenceTests extends AbstractTestCase {
 	public void applicationScoped() throws Exception {
 		Bundle tb = installBundle("tb11.jar");
 
-		try {
-			ServiceTracker<Pojo, Pojo> tracker = track("(&(objectClass=%s)(bean.id=as))", Pojo.class.getName());
-
+		try (CloseableTracker<Pojo, Pojo> tracker = track("(&(objectClass=%s)(bean.id=as))", Pojo.class.getName());) {
 			Pojo pojo = tracker.waitForService(timeout);
 
 			assertEquals(-1, pojo.getCount());
@@ -103,9 +101,7 @@ public class OptionalReluctantReferenceTests extends AbstractTestCase {
 	public void singleComponent() throws Exception {
 		Bundle tb = installBundle("tb11.jar");
 
-		try {
-			ServiceTracker<Pojo, Pojo> tracker = track("(&(objectClass=%s)(bean.id=sc))", Pojo.class.getName());
-
+		try (CloseableTracker<Pojo, Pojo> tracker = track("(&(objectClass=%s)(bean.id=sc))", Pojo.class.getName());) {
 			Pojo pojo = tracker.waitForService(timeout);
 
 			assertEquals(-1, pojo.getCount());
@@ -163,9 +159,7 @@ public class OptionalReluctantReferenceTests extends AbstractTestCase {
 
 		Bundle tb = installBundle("tb11.jar");
 
-		try {
-			ServiceTracker<Pojo, Pojo> tracker = track("(&(objectClass=%s)(bean.id=fc))", Pojo.class.getName());
-
+		try (CloseableTracker<Pojo, Pojo> tracker = track("(&(objectClass=%s)(bean.id=fc))", Pojo.class.getName());) {
 			Pojo pojo = tracker.waitForService(timeout);
 
 			assertNull(pojo);

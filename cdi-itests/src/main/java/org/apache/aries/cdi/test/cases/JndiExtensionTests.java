@@ -25,7 +25,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class JndiExtensionTests extends AbstractTestCase {
 
@@ -52,37 +51,37 @@ public class JndiExtensionTests extends AbstractTestCase {
 
 	@Test
 	public void testDisableExtensionAndCDIContainerWaits() throws Exception {
-		ServiceTracker<Extension, Extension> et = track(
-			"(&(objectClass=%s)(osgi.cdi.extension=aries.cdi.jndi))",
-			Extension.class.getName());
+		try (CloseableTracker<Extension, Extension> extensionTracker = track(
+				"(&(objectClass=%s)(osgi.cdi.extension=aries.cdi.jndi))",
+				Extension.class.getName());) {
+			assertFalse(extensionTracker.isEmpty());
 
-		assertFalse(et.isEmpty());
+			Bundle extensionBundle = extensionTracker.getServiceReference().getBundle();
 
-		Bundle extensionBundle = et.getServiceReference().getBundle();
+			try (CloseableTracker<BeanManager, BeanManager> bmTracker = trackBM(cdiBundle);) {
+				assertNotNull(bmTracker.waitForService(timeout));
 
-		ServiceTracker<BeanManager, BeanManager> bmTracker = getServiceTracker(cdiBundle);
+				int trackingCount = bmTracker.getTrackingCount();
 
-		assertNotNull(bmTracker.waitForService(timeout));
+				extensionBundle.stop();
 
-		int trackingCount = bmTracker.getTrackingCount();
+				for (int i = 100; (i > 0) && (bmTracker.getTrackingCount() == trackingCount); i--) {
+					Thread.sleep(100);
+				}
 
-		extensionBundle.stop();
+				assertTrue(bmTracker.isEmpty());
 
-		for (int i = 10; (i > 0) && (bmTracker.getTrackingCount() == trackingCount); i--) {
-			Thread.sleep(20);
+				trackingCount = bmTracker.getTrackingCount();
+
+				extensionBundle.start();
+
+				for (int i = 20; (i > 0) && (bmTracker.getTrackingCount() == trackingCount); i--) {
+					Thread.sleep(100);
+				}
+
+				assertFalse(bmTracker.isEmpty());
+			}
 		}
-
-		assertTrue(bmTracker.isEmpty());
-
-		trackingCount = bmTracker.getTrackingCount();
-
-		extensionBundle.start();
-
-		for (int i = 20; (i > 0) && (bmTracker.getTrackingCount() == trackingCount); i--) {
-			Thread.sleep(100);
-		}
-
-		assertFalse(bmTracker.isEmpty());
 	}
 
 }
