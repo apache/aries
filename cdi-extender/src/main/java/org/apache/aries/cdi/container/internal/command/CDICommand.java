@@ -111,7 +111,7 @@ public class CDICommand {
 			containerDTO,
 			componentTemplateDTO,
 			prefix,
-			true,
+			!singleAndFactory.isEmpty(),
 			!singleAndFactory.isEmpty(),
 			verbose);
 
@@ -229,10 +229,11 @@ public class CDICommand {
 					(itr.hasNext() ? TLLS : CLLS),
 					(configurationDTO != null ? configurationDTO.properties.get(Constants.SERVICE_PID) + STAR : conf.pid));
 				f.format(
-					"%s%s%sPOLICY: %s%n",
+					"%s%s%s%sPOLICY: %s%n",
 					prefix,
 					(hasNext ? PSSSPSSS : SSSSPSSS),
-					(itr.hasNext() ? PSSSTLLS : SSSSTLLS),
+					(itr.hasNext() ? PSSS : SSSS),
+					((conf.maximumCardinality == MaximumCardinality.MANY) ? TLLS : CLLS),
 					conf.policy);
 
 				if (conf.maximumCardinality == MaximumCardinality.MANY) {
