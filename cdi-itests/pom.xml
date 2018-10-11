@@ -41,7 +41,7 @@
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
 				<configuration>
-					<classesDir>doesntexist</classesDir>
+					<includeClassesDir>false</includeClassesDir>
 				</configuration>
 			</plugin>
 			<plugin>
