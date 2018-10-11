@@ -24,7 +24,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.aries.cdi.container.internal.command.CDICommand;
 import org.apache.aries.cdi.container.internal.container.CDIBundle;
@@ -68,7 +70,21 @@ public class Activator extends AbstractExtender {
 
 	private static final Logs _logs = new Logs.Builder(FrameworkUtil.getBundle(Activator.class).getBundleContext()).build();
 	private static final Logger _log = _logs.getLogger(Activator.class);
-	private static final PromiseFactory _promiseFactory = new PromiseFactory(Executors.newFixedThreadPool(1));
+	private static final ThreadGroup _threadGroup = new ThreadGroup("Apache Aries CCR - CDI");
+	private static final ExecutorService _executorService = Executors.newFixedThreadPool(
+		1,
+		new ThreadFactory() {
+
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread t = new Thread(_threadGroup, r, "Aries CCR Thread");
+				t.setDaemon(true);
+				return t;
+			}
+
+		}
+	);
+	private static final PromiseFactory _promiseFactory = new PromiseFactory(_executorService);
 	public static final CCR ccr = new CCR(_promiseFactory, _logs);
 
 	public Activator() {
