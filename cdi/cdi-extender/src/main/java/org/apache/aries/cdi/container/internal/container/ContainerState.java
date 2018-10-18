@@ -303,9 +303,15 @@ public class ContainerState {
 				query = "(service.factoryPid=".concat(pid).concat(")");
 			}
 
-			return Optional.ofNullable(
-				_caTracker.getService().listConfigurations(query)
-			);
+			ConfigurationAdmin cm = _caTracker.getService();
+
+			if (cm == null) {
+				_log.error(l -> l.error("CCR unexpected error fetching configuration admin for {}", pid));
+
+				return Optional.empty();
+			}
+
+			return Optional.ofNullable(cm.listConfigurations(query));
 		}
 		catch (Exception e) {
 			_log.warn(l -> l.warn("CCR unexpected error fetching configuration for {}", pid, e));
