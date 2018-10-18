@@ -32,7 +32,7 @@
 	<version>0.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<bnd.version>4.1.0-SNAPSHOT</bnd.version>
+		<bnd.version>4.1.0</bnd.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<surefire.version>2.12</surefire.version>
 		<weld.release>3.0.5.Final</weld.release>
@@ -209,33 +209,10 @@
 
 	<repositories>
 		<repository>
-			<id>apache-snapshots</id>
-			<url>https://repository.apache.org/content/groups/snapshots/</url>
-			<layout>default</layout>
-		</repository>
-		<repository>
 			<id>osgi-releases-and-snapshots</id>
 			<url>https://oss.sonatype.org/content/groups/osgi/</url>
 			<layout>default</layout>
 		</repository>
-		<repository>
-			<id>bnd-snapshots</id>
-			<url>https://bndtools.ci.cloudbees.com/job/bnd.master/lastSuccessfulBuild/artifact/dist/bundles/</url>
-			<layout>default</layout>
-		</repository>
 	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>bnd-snapshots</id>
-			<url>https://bndtools.ci.cloudbees.com/job/bnd.master/lastSuccessfulBuild/artifact/dist/bundles/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 
 </project>
