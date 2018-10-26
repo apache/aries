@@ -30,7 +30,7 @@ import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.THROW
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.WOVEN_PROXY_IFACE_TYPE;
 import static org.objectweb.asm.Opcodes.ACONST_NULL;
 import static org.objectweb.asm.Opcodes.IFNE;
-import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.ASM7;
 
 import java.util.Arrays;
 
@@ -181,7 +181,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
       String methodStaticFieldName, Method currentTransformMethod, Type typeBeingWoven,
       Type methodDeclaringType, boolean isMethodDeclaringTypeInterface, boolean isDefaultMethod)
   {
-    super(ASM5, mv, access, name, desc);
+    super(ASM7, mv, access, name, desc);
     this.methodStaticFieldName = methodStaticFieldName;
     this.currentTransformMethod = currentTransformMethod;
     returnType = currentTransformMethod.getReturnType();
