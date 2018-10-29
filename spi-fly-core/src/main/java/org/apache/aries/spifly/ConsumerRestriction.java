@@ -29,6 +29,14 @@ public class ConsumerRestriction {
         this.methodRestriction = methodRestriction;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public MethodRestriction getMethodRestriction() {
+        return methodRestriction;
+    }
+
     public MethodRestriction getMethodRestriction(String methodName) {
         if (methodName.equals(methodRestriction.getMethodName())) {
             return methodRestriction;

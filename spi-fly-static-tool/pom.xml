@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>org.apache.aries.spifly.static.tool</artifactId>
-    <version>1.0.15-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Apache Aries SPI Fly Static Weaving Tool</name>
     <description>
@@ -53,13 +53,13 @@
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core-internal</artifactId>
-            <version>1.0.15-SNAPSHOT</version>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.weaver-internal</artifactId>
-            <version>1.0.15-SNAPSHOT</version>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>

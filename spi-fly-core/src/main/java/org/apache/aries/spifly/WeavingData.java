@@ -19,6 +19,7 @@
 package org.apache.aries.spifly;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class WeavingData {
     private final String[] argClasses;
     private final Set<ConsumerRestriction> argRestrictions;
     private final List<BundleDescriptor> allowedBundles;
+    private final String _string;
 
     /**
      * Constructor.
@@ -48,6 +50,33 @@ public class WeavingData {
         this.argClasses = argClasses;
         this.argRestrictions = argRestrictions;
         this.allowedBundles = allowedBundles;
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("{WeavingData: {className: '");
+        sb.append(getClassName());
+        sb.append("', methodName: '");
+        sb.append(getMethodName());
+        sb.append("', arguments: [");
+        String prefix = "";
+        for (String arg : (argClasses != null) ? argClasses : new String[0]) {
+            sb.append(prefix);
+            sb.append(arg);
+            prefix = ",";
+        }
+        sb.append("], allowedBundles: [");
+        prefix = "{";
+        for (BundleDescriptor descriptor : (allowedBundles != null) ? allowedBundles : Collections.<BundleDescriptor>emptyList()) {
+            sb.append(prefix);
+            sb.append("symbolicName: '");
+            sb.append(descriptor.getSymbolicName());
+            sb.append("', id: '");
+            sb.append(descriptor.getBundleID());
+            sb.append("'}");
+            prefix = ", {";
+        }
+        sb.append("]}}");
+
+        this._string = sb.toString();
     }
 
     public String getClassName() {
@@ -68,6 +97,11 @@ public class WeavingData {
 
     public Set<ConsumerRestriction> getArgRestrictions() {
         return argRestrictions;
+    }
+
+    @Override
+    public String toString() {
+        return _string;
     }
 
     @Override

@@ -18,14 +18,6 @@
  */
 package org.apache.aries.spifly;
 
-import org.apache.aries.spifly.HeaderParser.PathElement;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
-import org.osgi.framework.Filter;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.Version;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -34,6 +26,14 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import org.apache.aries.spifly.HeaderParser.PathElement;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.Version;
 
 public class ConsumerHeaderProcessor {
     private static final Dictionary<String, String> PROCESSOR_FILTER_MATCH;
@@ -86,6 +86,7 @@ public class ConsumerHeaderProcessor {
             String className;
             String methodName;
             MethodRestriction methodRestriction;
+            boolean serviceLoader = false;
 
             int hashIdx = name.indexOf('#');
             if (hashIdx > 0) {
@@ -127,6 +128,7 @@ public class ConsumerHeaderProcessor {
                 }
             } else {
                 if ("*".equalsIgnoreCase(name)) {
+                    serviceLoader = true;
                     className = ServiceLoader.class.getName();
                     methodName = "load";
                     ArgRestrictions argRestrictions = new ArgRestrictions();
@@ -171,6 +173,16 @@ public class ConsumerHeaderProcessor {
             }
 
             weavingData.add(createWeavingData(className, methodName, methodRestriction, allowedBundles));
+
+            if (serviceLoader) {
+                className = ServiceLoader.class.getName();
+                methodName = "load";
+                ArgRestrictions argRestrictions = new ArgRestrictions();
+                argRestrictions.addRestriction(0, Class.class.getName());
+                argRestrictions.addRestriction(1, ClassLoader.class.getName());
+                methodRestriction = new MethodRestriction(methodName, argRestrictions);
+                weavingData.add(createWeavingData(className, methodName, methodRestriction, allowedBundles));
+            }
         }
         return weavingData;
     }
@@ -183,10 +195,6 @@ public class ConsumerHeaderProcessor {
         Collection<GenericMetadata> serviceLoaderRequirements = findAllMetadata(requirements, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
 
         if (extenderRequirement != null) {
-            ArgRestrictions ar = new ArgRestrictions();
-            ar.addRestriction(0, Class.class.getName());
-            MethodRestriction mr = new MethodRestriction("load", ar);
-
             List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
             for (GenericMetadata req : serviceLoaderRequirements) {
                 String slFilterString = req.getDirectives().get(SpiFlyConstants.FILTER_DIRECTIVE);
@@ -196,7 +204,22 @@ public class ConsumerHeaderProcessor {
                 }
             }
 
-            weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+            // ServiceLoader.load(Class)
+            {
+                ArgRestrictions ar = new ArgRestrictions();
+                ar.addRestriction(0, Class.class.getName());
+                MethodRestriction mr = new MethodRestriction("load", ar);
+                weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+            }
+
+            // ServiceLoader.load(Class, ClassLoader)
+            {
+                ArgRestrictions ar = new ArgRestrictions();
+                ar.addRestriction(0, Class.class.getName());
+                ar.addRestriction(1, ClassLoader.class.getName());
+                MethodRestriction mr = new MethodRestriction("load", ar);
+                weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+            }
         }
 
         return weavingData;

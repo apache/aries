@@ -152,12 +152,31 @@ public abstract class BaseActivator implements BundleActivator {
         providerBundleTracker.close();
     }
 
+    public boolean isLogEnabled(int level) {
+        switch (level) {
+            case Integer.MAX_VALUE:
+                return logger.isLoggable(Level.FINEST);
+            case LogService.LOG_ERROR:
+                return logger.isLoggable(Level.SEVERE);
+            case LogService.LOG_INFO:
+                return logger.isLoggable(Level.INFO);
+            case LogService.LOG_DEBUG:
+                return logger.isLoggable(Level.FINE);
+            case LogService.LOG_WARNING:
+            default:
+                return logger.isLoggable(Level.WARNING);
+        }
+    }
+
     public void log(int level, String message) {
         log(level, message, null);
     }
 
     public void log(int level, String message, Throwable th) {
         switch (level) {
+            case Integer.MAX_VALUE:
+                logger.log(Level.FINEST, message, th);
+                break;
             case LogService.LOG_ERROR:
                 logger.log(Level.SEVERE, message, th);
                 break;
