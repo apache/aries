@@ -18,13 +18,18 @@
  */
 package org.apache.aries.spifly.dynamic;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Set;
 
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
 import org.apache.aries.spifly.weaver.TCCLSetterVisitor;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.util.CheckClassAdapter;
+import org.objectweb.asm.util.TraceClassVisitor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
@@ -57,6 +62,14 @@ public class ClientWeavingHook implements WeavingHook {
                 wovenClass.setBytes(cw.toByteArray());
                 if (tsv.additionalImportRequired())
                     wovenClass.getDynamicImports().add(addedImport);
+                if (activator.isLogEnabled(Integer.MAX_VALUE)) {
+                    StringWriter stringWriter = new StringWriter();
+                    ClassReader reader = new ClassReader(wovenClass.getBytes());
+                    ClassVisitor tracer = new TraceClassVisitor(new PrintWriter(stringWriter));
+                    ClassVisitor checker = new CheckClassAdapter(tracer, true);
+                    reader.accept(checker, 0);
+                    activator.log(Integer.MAX_VALUE, "Woven class bytecode: \n" + stringWriter.toString());
+                }
             }
         }
     }

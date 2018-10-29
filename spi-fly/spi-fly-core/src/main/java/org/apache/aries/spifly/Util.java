@@ -71,18 +71,75 @@ public class Util {
         });
     }
 
-    public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
+    public static <C,S> ServiceLoader<S> serviceLoaderLoad(Class<S> service, Class<C> caller) {
         if (BaseActivator.activator == null) {
             // The system is not yet initialized. We can't do anything.
-            return;
+            return null;
         }
+
+        ClassLoader bundleLoader = caller.getClassLoader();
 
         if (!(bundleLoader instanceof BundleReference)) {
             BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
-            return;
+            return ServiceLoader.load(service);
         }
 
-        BundleReference br = ((BundleReference) bundleLoader);
+        BundleReference bundleReference = (BundleReference)bundleLoader;
+
+        final ClassLoader bundleClassloader = findContextClassloader(
+            bundleReference.getBundle(), ServiceLoader.class.getName(), "load", service);
+
+        if (bundleClassloader == null) {
+            return ServiceLoader.load(service);
+        }
+
+        Thread thread = Thread.currentThread();
+
+        ClassLoader contextClassLoader = thread.getContextClassLoader();
+
+        try {
+            thread.setContextClassLoader(bundleClassloader);
+
+            return ServiceLoader.load(service);
+        }
+        finally {
+            thread.setContextClassLoader(contextClassLoader);
+        }
+    }
+
+    public static <C,S> ServiceLoader<S> serviceLoaderLoad(
+        Class<S> service, ClassLoader specifiedClassLoader, Class<C> caller) {
+
+        if (BaseActivator.activator == null) {
+            // The system is not yet initialized. We can't do anything.
+            return null;
+        }
+
+        ClassLoader bundleLoader = caller.getClassLoader();
+
+        if (!(bundleLoader instanceof BundleReference)) {
+            BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            return ServiceLoader.load(service, specifiedClassLoader);
+        }
+
+        BundleReference bundleReference = (BundleReference)bundleLoader;
+
+        final ClassLoader bundleClassloader = findContextClassloader(
+            bundleReference.getBundle(), ServiceLoader.class.getName(), "load", service);
+
+        if (bundleClassloader == null) {
+            return ServiceLoader.load(service, specifiedClassLoader);
+        }
+
+        return ServiceLoader.load(service, new WrapperCL(specifiedClassLoader, bundleClassloader));
+    }
+
+    public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
+        BundleReference br = getBundleReference(bundleLoader);
+
+        if (br == null) {
+            return;
+        }
 
         final ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
@@ -161,7 +218,6 @@ public class Util {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private static ClassLoader getBundleClassLoaderPrivileged(Bundle b) {
         // In 4.3 this can be done much easier by using the BundleWiring, but we want this code to
         // be 4.2 compliant.
@@ -235,6 +291,20 @@ public class Util {
         }
     }
 
+    private static BundleReference getBundleReference(ClassLoader bundleLoader) {
+        if (BaseActivator.activator == null) {
+            // The system is not yet initialized. We can't do anything.
+            return null;
+        }
+
+        if (!(bundleLoader instanceof BundleReference)) {
+            BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            return null;
+        }
+
+        return (BundleReference) bundleLoader;
+    }
+
     private static ClassLoader getClassLoaderViaBundleClassPath(Bundle b, URL url) {
         try {
             JarInputStream jis = null;
@@ -274,5 +344,28 @@ public class Util {
             // try the next class
         }
         return null;
+    }
+
+    private static class WrapperCL extends ClassLoader {
+        private final ClassLoader bundleClassloader;
+        public WrapperCL(ClassLoader specifiedClassLoader, ClassLoader bundleClassloader) {
+            super(specifiedClassLoader);
+            this.bundleClassloader = bundleClassloader;
+        }
+
+        @Override
+        protected Class<?> findClass(String name) throws ClassNotFoundException {
+            return bundleClassloader.loadClass(name);
+        }
+
+        @Override
+        protected URL findResource(String name) {
+            return bundleClassloader.getResource(name);
+        }
+
+        @Override
+        protected Enumeration<URL> findResources(String name) throws IOException {
+            return bundleClassloader.getResources(name);
+        }
     }
 }

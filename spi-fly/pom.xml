@@ -31,7 +31,7 @@
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>spifly</artifactId>
     <name>Apache Aries SPI Fly</name>
-    <version>1.0.15-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>
         SPI support for OSGi
@@ -55,4 +55,68 @@
         -->
     </modules>
 
+    <profiles>
+        <profile>
+            <id>rat</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <version>${apache-rat-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <reportFile>${project.build.directory}/${project.build.finalName}.rat</reportFile>
+                            <excludeSubProjects>false</excludeSubProjects>
+                            <excludes>
+                                <exclude>**/target/**/*</exclude>
+                                <exclude>**/appended-resources/**/*</exclude>
+                                <exclude>**/dependency-reduced-pom.xml</exclude>
+                                <exclude>**/velocity.log</exclude>
+                                <exclude>**/DEPENDENCIES</exclude>
+                                <!-- exclude IntelliJ IDEA generated files -->
+                                <exclude>**/*.iml</exclude>
+                                <exclude>**/*.ipr</exclude>
+                                <exclude>**/*.iws</exclude>
+                                <exclude>**/.idea/**/*</exclude>
+                                <!-- exclude Eclipse IDE generated files -->
+                                <exclude>**/.project</exclude>
+                                <exclude>**/.classpath</exclude>
+                                <exclude>**/.settings/**</exclude>
+                                <exclude>**/eclipse-classes/**/*</exclude>
+                                <!-- manifest files don't support comments so don't contain the ASL2.0 header -->
+                                <exclude>**/*.MF</exclude>
+                                <!--RAT doesn't seem to recognize MIT style licenses-->
+                                <exclude>manual/src/styles/print.css</exclude>
+                                <!-- RAT doesn't recognize BSD license in transaction-manager logger -->
+                                <exclude>**/objectweb/howl/log/Logger.java</exclude>
+                                <!--RAT doesn't seem to recognize W3C license -->
+                                <exclude>**/xml.xsd</exclude>
+                                <exclude>.gitignore</exclude>
+                                <exclude>README.md</exclude>
+                                <exclude>*.cfg</exclude>
+                                <exclude>**/README.md</exclude>
+                                <exclude>**/Readme.md</exclude>
+                                <exclude>**/NOTICE.vm</exclude>
+                                <exclude>**/dependency-reduced-pom.xml</exclude>
+                                <exclude>spi-fly-examples/**/src/main/resources/META-INF/services/*</exclude>
+                                <exclude>spi-fly-examples/spi-fly-example-resource-provider-bundle/src/main/resources/org/apache/aries/spifly/test/blah.txt</exclude>
+                                <exclude>tck/apply-to-tck.sh</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
