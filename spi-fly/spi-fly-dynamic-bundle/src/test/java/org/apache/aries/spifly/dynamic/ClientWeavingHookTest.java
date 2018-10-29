@@ -152,6 +152,42 @@ public class ClientWeavingHookTest {
     }
 
     @Test
+    public void testBasicServiceLoaderUsage3() throws Exception {
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+
+        // Register the bundle that provides the SPI implementation.
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
+
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient2.class");
+        Assert.assertNotNull("Precondition", clsUrl);
+
+        String clientClassName = "org.apache.aries.spifly.dynamic.TestClient2";
+        WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+        Assert.assertEquals(1, wc.getDynamicImports().size());
+        String di1 = "org.apache.aries.spifly";
+        String di = wc.getDynamicImports().get(0);
+        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
+
+        // Invoke the woven class and check that it properly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals(Collections.singleton("olleh"), result);
+    }
+
+    @Test
     public void testTCCLResetting() throws Exception {
         ClassLoader cl = new URLClassLoader(new URL [] {});
         Thread.currentThread().setContextClassLoader(cl);

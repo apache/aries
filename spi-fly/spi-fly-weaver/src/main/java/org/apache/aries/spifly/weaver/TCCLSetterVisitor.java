@@ -48,6 +48,8 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
 
     private static final Type String_TYPE = Type.getType(String.class);
 
+    private static final Type SERVICELOADER_TYPE = Type.getType(ServiceLoader.class);
+
     private final Type targetClass;
     private final Set<WeavingData> weavingData;
 
@@ -87,16 +89,22 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
         Set<String> methodNames = new HashSet<String>();
 
         for (WeavingData wd : weavingData) {
-            /* Equivalent to:
-             * private static void $$FCCL$$<className>$<methodName>(Class<?> cls) {
-             *   Util.fixContextClassLoader("java.util.ServiceLoader", "load", cls, WovenClass.class.getClassLoader());
-             * }
-             */
              String methodName = getGeneratedMethodName(wd);
              if (methodNames.contains(methodName))
                  continue;
 
              methodNames.add(methodName);
+
+             if (ServiceLoader.class.getName().equals(wd.getClassName())) {
+                 continue;
+             }
+
+             /* Equivalent to:
+              * private static void $$FCCL$$<className>$<methodName>(Class<?> cls) {
+              *   Util.fixContextClassLoader("java.util.ServiceLoader", "load", cls, WovenClass.class.getClassLoader());
+              * }
+              */
+
              Method method = new Method(methodName, Type.VOID_TYPE, new Type[] {CLASS_TYPE});
 
              GeneratorAdapter mv = new GeneratorAdapter(cv.visitMethod(ACC_PRIVATE + ACC_STATIC, methodName,
@@ -142,16 +150,16 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
         Type lastLDCType;
         private int lastOpcode;
         private int lastVar;
-        
+
         public TCCLSetterMethodVisitor(MethodVisitor mv, int access, String name, String descriptor) {
             super(Opcodes.ASM5, mv, access, name, descriptor);
         }
 
         /**
          * Store the last LDC call. When ServiceLoader.load(Class cls) is called
-         * with a class constant (XXX.class) as parameter, the last LDC call 
+         * with a class constant (XXX.class) as parameter, the last LDC call
          * before the ServiceLoader.load() visitMethodInsn call
-         * contains the class being passed in. We need to pass this class to 
+         * contains the class being passed in. We need to pass this class to
          * $$FCCL$$ as well so we can copy the value found in here.
          */
         @Override
@@ -164,7 +172,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
 
         /**
          * Store the last ALOAD call. When ServiceLoader.load(Class cls) is called
-         * with using a variable as parameter, the last ALOAD call 
+         * with using a variable as parameter, the last ALOAD call
          * before the ServiceLoader.load() visitMethodInsn call
          * contains the class being passed in. Annihilate any previously
          * found LDC, because it had nothing to do with the call to
@@ -173,10 +181,10 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
          */
         @Override
         public void visitVarInsn(int opcode, int var) {
-        	lastLDCType = null;
-        	this.lastOpcode = opcode;
-        	this.lastVar = var;
-        	super.visitVarInsn(opcode, var);
+            lastLDCType = null;
+            this.lastOpcode = opcode;
+            this.lastVar = var;
+            super.visitVarInsn(opcode, var);
         }
 
         /**
@@ -187,67 +195,81 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
          */
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+            if (opcode != INVOKESTATIC) {
+                super.visitMethodInsn(opcode, owner, name, desc, itf);
+                return;
+            }
+
             WeavingData wd = findWeavingData(owner, name, desc);
-            if (opcode == INVOKESTATIC && wd != null) {
-                additionalImportRequired = true;
-                woven = true;
+            if (wd == null) {
+                super.visitMethodInsn(opcode, owner, name, desc, itf);
+                return;
+            }
 
-                Label startTry = newLabel();
-                Label endTry = newLabel();
+            additionalImportRequired = true;
+            woven = true;
 
-                //start try block
-                visitTryCatchBlock(startTry, endTry, endTry, null);
-                mark(startTry);
-
-                // Add: Util.storeContextClassloader();
-                invokeStatic(UTIL_CLASS, new Method("storeContextClassloader", Type.VOID_TYPE, new Type[0]));
-
-
-                // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);
-                if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
+            // ServiceLoader.load(Class, ClassLoader)
+            if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
                     "load".equals(wd.getMethodName()) &&
-                    (wd.getArgClasses() == null || Arrays.equals(new String [] {Class.class.getName()}, wd.getArgClasses()))) {
-                    // ServiceLoader.load() is a special case because it's a general-purpose service loader,
-                    // therefore, the target class it the class being passed in to the ServiceLoader.load()
-                    // call itself. Use LDC if found (immediately) before the call
-                	if (lastLDCType != null) {
-                		mv.visitLdcInsn(lastLDCType);
-                	} else {
-                		// If there was no LDC (or an LDC was followed by an
-                		// ALOAD), the parameter is loaded from a variable.
-                		mv.visitVarInsn(lastOpcode, lastVar);	
-                	}
-                } else {
-                    // In any other case, we're not dealing with a general-purpose service loader, but rather
-                    // with a specific one, such as DocumentBuilderFactory.newInstance(). In that case the
-                    // target class is the class that is being invoked on (i.e. DocumentBuilderFactory).
-                    Type type = Type.getObjectType(owner);
-                    mv.visitLdcInsn(type);
-                }
-                invokeStatic(targetClass, new Method(getGeneratedMethodName(wd),
+                    Arrays.equals(new String [] {Class.class.getName(), ClassLoader.class.getName()}, wd.getArgClasses())) {
+
+                visitLdcInsn(targetClass);
+                invokeStatic(UTIL_CLASS, new Method("serviceLoaderLoad",
+                        SERVICELOADER_TYPE, new Type[] {CLASS_TYPE, CLASSLOADER_TYPE, CLASS_TYPE}));
+
+                return;
+            }
+            // ServiceLoader.load(Class)
+            if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
+                    "load".equals(wd.getMethodName())) {
+
+                visitLdcInsn(targetClass);
+                invokeStatic(UTIL_CLASS, new Method("serviceLoaderLoad",
+                        SERVICELOADER_TYPE, new Type[] {CLASS_TYPE, CLASS_TYPE}));
+
+                return;
+            }
+
+            // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);
+            Label startTry = newLabel();
+            Label endTry = newLabel();
+
+            //start try block
+            visitTryCatchBlock(startTry, endTry, endTry, null);
+            mark(startTry);
+
+            // Add: Util.storeContextClassloader();
+            invokeStatic(UTIL_CLASS, new Method("storeContextClassloader", Type.VOID_TYPE, new Type[0]));
+
+            // Add: MyClass.$$FCCL$$<classname>$<methodname>(<class>);
+            // In any other case, we're not dealing with a general-purpose service loader, but rather
+            // with a specific one, such as DocumentBuilderFactory.newInstance(). In that case the
+            // target class is the class that is being invoked on (i.e. DocumentBuilderFactory).
+            Type type = Type.getObjectType(owner);
+            mv.visitLdcInsn(type);
+
+            invokeStatic(targetClass, new Method(getGeneratedMethodName(wd),
                     Type.VOID_TYPE, new Type[] {CLASS_TYPE}));
 
-                //Call the original instruction
-                super.visitMethodInsn(opcode, owner, name, desc, itf);
+            //Call the original instruction
+            super.visitMethodInsn(opcode, owner, name, desc, itf);
 
-                //If no exception then go to the finally (finally blocks are a catch block with a jump)
-                Label afterCatch = newLabel();
-                goTo(afterCatch);
+            //If no exception then go to the finally (finally blocks are a catch block with a jump)
+            Label afterCatch = newLabel();
+            goTo(afterCatch);
 
 
-                //start the catch
-                mark(endTry);
-                //Run the restore method then throw on the exception
-                invokeStatic(UTIL_CLASS, new Method("restoreContextClassloader", Type.VOID_TYPE, new Type[0]));
-                throwException();
+            //start the catch
+            mark(endTry);
+            //Run the restore method then throw on the exception
+            invokeStatic(UTIL_CLASS, new Method("restoreContextClassloader", Type.VOID_TYPE, new Type[0]));
+            throwException();
 
-                //start the finally
-                mark(afterCatch);
-                //Run the restore and continue
-                invokeStatic(UTIL_CLASS, new Method("restoreContextClassloader", Type.VOID_TYPE, new Type[0]));
-            } else {
-                super.visitMethodInsn(opcode, owner, name, desc, itf);
-            }
+            //start the finally
+            mark(afterCatch);
+            //Run the restore and continue
+            invokeStatic(UTIL_CLASS, new Method("restoreContextClassloader", Type.VOID_TYPE, new Type[0]));
         }
 
         private WeavingData findWeavingData(String owner, String methodName, String methodDesc) {
