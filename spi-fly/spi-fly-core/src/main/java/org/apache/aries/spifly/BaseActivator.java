@@ -43,7 +43,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTracker;
 
 public abstract class BaseActivator implements BundleActivator {
@@ -152,46 +151,54 @@ public abstract class BaseActivator implements BundleActivator {
         providerBundleTracker.close();
     }
 
-    public boolean isLogEnabled(int level) {
-        switch (level) {
-            case Integer.MAX_VALUE:
-                return logger.isLoggable(Level.FINEST);
-            case LogService.LOG_ERROR:
-                return logger.isLoggable(Level.SEVERE);
-            case LogService.LOG_INFO:
-                return logger.isLoggable(Level.INFO);
-            case LogService.LOG_DEBUG:
-                return logger.isLoggable(Level.FINE);
-            case LogService.LOG_WARNING:
-            default:
-                return logger.isLoggable(Level.WARNING);
-        }
+    public boolean isLogEnabled(Level level) {
+        return logger.isLoggable(level);
     }
 
     public void log(int level, String message) {
         log(level, message, null);
     }
 
+    public void log(Level level, String message) {
+        log(level, message, null);
+    }
+
     public void log(int level, String message, Throwable th) {
-        switch (level) {
-            case Integer.MAX_VALUE:
-                logger.log(Level.FINEST, message, th);
-                break;
-            case LogService.LOG_ERROR:
-                logger.log(Level.SEVERE, message, th);
-                break;
-            case LogService.LOG_WARNING:
-                logger.log(Level.WARNING, message, th);
-                break;
-            case LogService.LOG_INFO:
-                logger.log(Level.INFO, message, th);
-                break;
-            case LogService.LOG_DEBUG:
-                logger.log(Level.FINE, message, th);
-                break;
-            default:
-                logger.log(Level.SEVERE, "[Unknown Level: " + level + "] " + message, th);
+        Level levelObject;
+
+        if (Level.ALL.intValue() == level) {
+            levelObject = Level.ALL;
         }
+        else if (Level.CONFIG.intValue() == level) {
+            levelObject = Level.CONFIG;
+        }
+        else if (Level.FINE.intValue() == level) {
+            levelObject = Level.FINE;
+        }
+        else if (Level.FINER.intValue() == level) {
+            levelObject = Level.FINER;
+        }
+        else if (Level.FINEST.intValue() == level) {
+            levelObject = Level.FINEST;
+        }
+        else if (Level.INFO.intValue() == level) {
+            levelObject = Level.INFO;
+        }
+        else if (Level.SEVERE.intValue() == level) {
+            levelObject = Level.SEVERE;
+        }
+        else if (Level.WARNING.intValue() == level) {
+            levelObject = Level.WARNING;
+        }
+        else {
+            levelObject = Level.OFF;
+        }
+
+        log(levelObject, message, th);
+    }
+
+    public void log(Level level, String message, Throwable th) {
+        logger.log(level, message, th);
     }
 
     public Set<WeavingData> getWeavingData(Bundle b) {
