@@ -44,8 +44,9 @@
         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/spi-fly/spi-fly-static-bundle</developerConnection>
         <url>http://svn.apache.org/viewvc/aries/trunk/spi-fly/spi-fly-static-bundle</url>
     </scm>
+
     <properties>
-        <lastReleaseVersion>1.0.0</lastReleaseVersion>
+        <bnd.version>4.1.0</bnd.version>
     </properties>
 
     <dependencies>
@@ -53,12 +54,20 @@
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core-internal</artifactId>
             <version>1.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>6.0.1</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
@@ -67,9 +76,12 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>${bnd.version}</version>
                 <configuration>
                     <instructions>
                         <Import-Package>
+                            !org.apache.aries.util.filesystem,
+                            !org.apache.aries.util.io,
                             *
                         </Import-Package>
                         <Export-Package>
@@ -78,22 +90,52 @@
                         <Private-Package>
                             org.apache.aries.spifly.staticbundle
                         </Private-Package>
+                        <_conditionalpackage>
+                            org.apache.aries.util,
+                            org.apache.aries.util.internal,
+                            org.apache.aries.util.manifest
+                        </_conditionalpackage>
                         <Bundle-Activator>org.apache.aries.spifly.staticbundle.StaticWeavingActivator</Bundle-Activator>
-                        <Provide-Capability>osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0
+                        <Provide-Capability>
+                            osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0
                         </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-baseline-maven-plugin</artifactId>
+                <version>${bnd.version}</version>
+                <configuration>
+                    <includeDistributionManagement>false</includeDistributionManagement>
+                    <fullReport>true</fullReport>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
+                        <id>baseline</id>
                         <goals>
-                            <goal>version-check</goal>
+                            <goal>baseline</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-resolver-maven-plugin</artifactId>
+                <version>${bnd.version}</version>
+                <configuration>
+                    <failOnChanges>false</failOnChanges>
+                    <bndruns>
+                        <bndrun>resolve.bndrun</bndrun>
+                    </bndruns>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>resolve</id>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
