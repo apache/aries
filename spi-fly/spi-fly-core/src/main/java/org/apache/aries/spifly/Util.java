@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.logging.Level;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServicePermission;
-import org.osgi.service.log.LogService;
 
 /**
  * Methods used from ASM-generated code. They store, change and reset the thread context classloader.
@@ -80,7 +80,7 @@ public class Util {
         ClassLoader bundleLoader = caller.getClassLoader();
 
         if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return ServiceLoader.load(service);
         }
 
@@ -118,7 +118,7 @@ public class Util {
         ClassLoader bundleLoader = caller.getClassLoader();
 
         if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return ServiceLoader.load(service, specifiedClassLoader);
         }
 
@@ -143,7 +143,7 @@ public class Util {
 
         final ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
-            BaseActivator.activator.log(LogService.LOG_INFO, "Temporarily setting Thread Context Classloader to: " + cl);
+            BaseActivator.activator.log(Level.INFO, "Temporarily setting Thread Context Classloader to: " + cl);
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
                 @Override
                 public Void run() {
@@ -152,7 +152,7 @@ public class Util {
                 }
             });
         } else {
-            BaseActivator.activator.log(LogService.LOG_WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
+            BaseActivator.activator.log(Level.WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
         }
     }
 
@@ -172,7 +172,7 @@ public class Util {
                     sm.checkPermission(new ServicePermission(requestedClass, ServicePermission.GET));
                 } catch (AccessControlException ace) {
                     // access denied
-                    activator.log(LogService.LOG_INFO, "No permission to obtain service of type: " + requestedClass);
+                    activator.log(Level.INFO, "No permission to obtain service of type: " + requestedClass);
                     return null;
                 }
             }
@@ -182,7 +182,7 @@ public class Util {
         }
 
         Collection<Bundle> bundles = new ArrayList<Bundle>(activator.findProviderBundles(requestedClass));
-        activator.log(LogService.LOG_DEBUG, "Found bundles providing " + requestedClass + ": " + bundles);
+        activator.log(Level.FINE, "Found bundles providing " + requestedClass + ": " + bundles);
 
         Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle, className, methodName, args);
 
@@ -298,7 +298,7 @@ public class Util {
         }
 
         if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(LogService.LOG_WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return null;
         }
 
@@ -325,7 +325,7 @@ public class Util {
                     jis.close();
             }
         } catch (IOException e) {
-            BaseActivator.activator.log(LogService.LOG_ERROR, "Problem loading class from embedded jar file: " + url +
+            BaseActivator.activator.log(Level.SEVERE, "Problem loading class from embedded jar file: " + url +
                 " in bundle " + b.getSymbolicName(), e);
         }
         return null;

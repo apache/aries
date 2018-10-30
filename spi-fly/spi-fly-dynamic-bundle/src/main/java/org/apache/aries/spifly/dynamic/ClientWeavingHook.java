@@ -21,6 +21,7 @@ package org.apache.aries.spifly.dynamic;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
@@ -34,7 +35,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
-import org.osgi.service.log.LogService;
 
 public class ClientWeavingHook implements WeavingHook {
     private final String addedImport;
@@ -51,7 +51,7 @@ public class ClientWeavingHook implements WeavingHook {
         Bundle consumerBundle = wovenClass.getBundleWiring().getBundle();
         Set<WeavingData> wd = activator.getWeavingData(consumerBundle);
         if (wd != null) {
-            activator.log(LogService.LOG_DEBUG, "Weaving class " + wovenClass.getClassName());
+            activator.log(Level.FINE, "Weaving class " + wovenClass.getClassName());
 
             ClassReader cr = new ClassReader(wovenClass.getBytes());
             ClassWriter cw = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES,
@@ -62,13 +62,13 @@ public class ClientWeavingHook implements WeavingHook {
                 wovenClass.setBytes(cw.toByteArray());
                 if (tsv.additionalImportRequired())
                     wovenClass.getDynamicImports().add(addedImport);
-                if (activator.isLogEnabled(Integer.MAX_VALUE)) {
+                if (activator.isLogEnabled(Level.FINEST)) {
                     StringWriter stringWriter = new StringWriter();
                     ClassReader reader = new ClassReader(wovenClass.getBytes());
                     ClassVisitor tracer = new TraceClassVisitor(new PrintWriter(stringWriter));
                     ClassVisitor checker = new CheckClassAdapter(tracer, true);
                     reader.accept(checker, 0);
-                    activator.log(Integer.MAX_VALUE, "Woven class bytecode: \n" + stringWriter.toString());
+                    activator.log(Level.FINEST, "Woven class bytecode: \n" + stringWriter.toString());
                 }
             }
         }
