@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.logging.Level;
 
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
@@ -48,7 +49,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 /**
@@ -65,8 +65,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         this.spiBundle = spiBundle;
     }
 
+    @Override
     public List<ServiceRegistration> addingBundle(final Bundle bundle, BundleEvent event) {
-        log(LogService.LOG_DEBUG, "Bundle Considered for SPI providers: "
+        log(Level.FINE, "Bundle Considered for SPI providers: "
                 + bundle.getSymbolicName());
 
         if (bundle.equals(spiBundle))
@@ -78,7 +79,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             try {
                 providedServices = readServiceLoaderMediatorCapabilityMetadata(bundle, customAttributes);
             } catch (InvalidSyntaxException e) {
-                log(LogService.LOG_ERROR, "Unable to read capabilities from bundle " + bundle, e);
+                log(Level.SEVERE, "Unable to read capabilities from bundle " + bundle, e);
             }
         }
 
@@ -95,13 +96,13 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         if (providedServices == null) {
-            log(LogService.LOG_DEBUG, "No '"
+            log(Level.FINE, "No '"
                     + SpiFlyConstants.SPI_PROVIDER_HEADER
                     + "' Manifest header. Skipping bundle: "
                     + bundle.getSymbolicName());
             return null;
         } else {
-            log(LogService.LOG_INFO, "Examining bundle for SPI provider: "
+            log(Level.INFO, "Examining bundle for SPI provider: "
                     + bundle.getSymbolicName());
         }
 
@@ -134,7 +135,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         final List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
         for (URL serviceFileURL : serviceFileURLs) {
-            log(LogService.LOG_INFO, "Found SPI resource: " + serviceFileURL);
+            log(Level.INFO, "Found SPI resource: " + serviceFileURL);
 
             try {
                 BufferedReader reader = new BufferedReader(
@@ -161,7 +162,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                             continue;
 
                         final Class<?> cls = bundle.loadClass(className);
-                        log(LogService.LOG_INFO, "Loaded SPI provider: " + cls);
+                        log(Level.INFO, "Loaded SPI provider: " + cls);
 
                         final Hashtable<String, Object> properties;
                         if (fromSPIProviderHeader)
@@ -180,7 +181,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                                     reg = bundle.getBundleContext().registerService(
                                             registrationClassName, new ProviderServiceFactory(cls), properties);
                                 } else {
-                                    log(LogService.LOG_INFO, "Bundle " + bundle + " does not have the permission to register services of type: " + registrationClassName);
+                                    log(Level.INFO, "Bundle " + bundle + " does not have the permission to register services of type: " + registrationClassName);
                                 }
                             } else {
                                 reg = bundle.getBundleContext().registerService(
@@ -189,19 +190,19 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                             if (reg != null) {
                                 registrations.add(reg);
-                                log(LogService.LOG_INFO, "Registered service: " + reg);
+                                log(Level.INFO, "Registered service: " + reg);
                             }
                         }
 
                         activator.registerProviderBundle(registrationClassName, bundle, customAttributes);
-                        log(LogService.LOG_INFO, "Registered provider: " + registrationClassName + " in bundle " + bundle.getSymbolicName());
+                        log(Level.INFO, "Registered provider: " + registrationClassName + " in bundle " + bundle.getSymbolicName());
                     } catch (Exception e) {
-                        log(LogService.LOG_WARNING,
+                        log(Level.WARNING,
                                 "Could not load SPI implementation referred from " + serviceFileURL, e);
                     }
                 }
             } catch (IOException e) {
-                log(LogService.LOG_WARNING, "Could not read SPI metadata from " + serviceFileURL, e);
+                log(Level.WARNING, "Could not read SPI metadata from " + serviceFileURL, e);
             }
         }
 
@@ -334,7 +335,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 }
             }
         } catch (IOException e) {
-            log(LogService.LOG_ERROR, "Problem opening embedded jar file: " + url, e);
+            log(Level.SEVERE, "Problem opening embedded jar file: " + url, e);
         }
         return urls;
     }
@@ -360,10 +361,12 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return reqsCaps;
     }
 
+    @Override
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
         // should really be doing something here...
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void removedBundle(Bundle bundle, BundleEvent event, Object registrations) {
         activator.unregisterProviderBundle(bundle);
@@ -373,15 +376,15 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         for (ServiceRegistration reg : (List<ServiceRegistration>) registrations) {
             reg.unregister();
-            log(LogService.LOG_INFO, "Unregistered: " + reg);
+            log(Level.INFO, "Unregistered: " + reg);
         }
     }
 
-    private void log(int level, String message) {
+    private void log(Level level, String message) {
         activator.log(level, message);
     }
 
-    private void log(int level, String message, Throwable th) {
+    private void log(Level level, String message, Throwable th) {
         activator.log(level, message, th);
     }
 
