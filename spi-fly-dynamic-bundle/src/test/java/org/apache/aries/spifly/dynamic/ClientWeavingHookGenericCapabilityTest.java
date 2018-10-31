@@ -597,6 +597,44 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("Only the services from bundle impl2 should be selected", expected, result);
     }
 
+    @Test
+    public void testVersionedRequirement() throws Exception {
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(
+            SpiFlyConstants.REQUIRE_CAPABILITY,
+            String.format(
+                "%s;filter:='(&(%s=%s)(version>=1.0)(!(version>=2.0)))',%s;filter:='(%s=%s)'",
+                SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                SpiFlyConstants.PROCESSOR_EXTENDER_NAME,
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE,
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE,
+                "org.apache.aries.mytest.MySPI"));
+
+        Bundle providerBundle1 = mockProviderBundle("impl1", 1);
+        Map<String, Object> attrs1 = new HashMap<String, Object>();
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle1, attrs1);
+
+        Bundle consumerBundle = mockConsumerBundle(headers, providerBundle1);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle(consumerBundle, providerBundle1);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        // Invoke the woven class and check that it propertly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Set<String> expected = new HashSet<String>(Arrays.asList("olleh"));
+        Assert.assertEquals(expected, result);
+    }
+
     private Bundle mockSpiFlyBundle(Bundle ... bundles) throws Exception {
         return mockSpiFlyBundle("spifly", new Version(1, 0, 0), bundles);
     }

@@ -113,8 +113,7 @@
                     <instructions>
                         <Bundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</Bundle-Activator>
                         <Import-Package>
-                            !org.apache.aries.util.filesystem,
-                            !org.apache.aries.util.io,
+                            !org.slf4j,
                             *
                         </Import-Package>
                         <Export-Package>
@@ -124,10 +123,15 @@
                             org.apache.aries.spifly.dynamic
                         </Private-Package>
                         <_conditionalpackage>
+                            aQute.bnd.header,
+                            aQute.bnd.version,
+                            aQute.lib.collections,
+                            aQute.lib.io,
+                            aQute.libg.generics,
+                            aQute.libg.glob,
+                            aQute.libg.qtokens,
+                            aQute.service.reporter,
                             org.apache.aries.spifly.*,
-                            org.apache.aries.util,
-                            org.apache.aries.util.internal,
-                            org.apache.aries.util.manifest,
                             org.objectweb.asm,
                             org.objectweb.asm.commons,
                             org.objectweb.asm.signature,
