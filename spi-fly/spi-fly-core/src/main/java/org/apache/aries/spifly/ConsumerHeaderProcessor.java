@@ -24,16 +24,19 @@ import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.apache.aries.spifly.HeaderParser.PathElement;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
+
+import aQute.bnd.header.Attrs;
+import aQute.bnd.header.OSGiHeader;
+import aQute.bnd.header.Parameters;
 
 public class ConsumerHeaderProcessor {
     private static final Dictionary<String, String> PROCESSOR_FILTER_MATCH;
@@ -190,14 +193,14 @@ public class ConsumerHeaderProcessor {
     private static Set<WeavingData> processRequireCapabilityHeader(String consumerHeader) throws InvalidSyntaxException {
         Set<WeavingData> weavingData = new HashSet<WeavingData>();
 
-        List<GenericMetadata> requirements = ManifestHeaderProcessor.parseRequirementString(consumerHeader);
-        GenericMetadata extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROCESSOR_EXTENDER_NAME);
-        Collection<GenericMetadata> serviceLoaderRequirements = findAllMetadata(requirements, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+        Parameters requirements = OSGiHeader.parseHeader(consumerHeader);
+        Entry<String, Attrs> extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROCESSOR_EXTENDER_NAME);
+        Collection<Entry<String, Attrs>> serviceLoaderRequirements = findAllMetadata(requirements, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
 
         if (extenderRequirement != null) {
             List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
-            for (GenericMetadata req : serviceLoaderRequirements) {
-                String slFilterString = req.getDirectives().get(SpiFlyConstants.FILTER_DIRECTIVE);
+            for (Entry<String, Attrs> req : serviceLoaderRequirements) {
+                String slFilterString = req.getValue().get(SpiFlyConstants.FILTER_DIRECTIVE);
                 if (slFilterString != null) {
                     Filter slFilter = FrameworkUtil.createFilter(slFilterString);
                     allowedBundles.add(new BundleDescriptor(slFilter));
@@ -240,13 +243,27 @@ public class ConsumerHeaderProcessor {
                 allowedBundles.size() == 0 ? null : allowedBundles);
     }
 
-    private static GenericMetadata findRequirement(List<GenericMetadata> requirements, String namespace, String type) throws InvalidSyntaxException {
-        Dictionary<String, String> nsAttr = new Hashtable<String, String>();
-        nsAttr.put(namespace, type);
+    static Entry<String, Attrs> findCapability(Parameters capabilities, String namespace, String spiName) {
+        for (Entry<String, Attrs> cap : capabilities.entrySet()) {
+            String key = removeDuplicateMarker(cap.getKey());
+            if (namespace.equals(key)) {
+                if (spiName.equals(cap.getValue().get(namespace))) {
+                    return cap;
+                }
+            }
+        }
+        return null;
+    }
 
-        for (GenericMetadata req : requirements) {
-            if (namespace.equals(req.getNamespace())) {
-                String filterString = req.getDirectives().get(SpiFlyConstants.FILTER_DIRECTIVE);
+    static Entry<String, Attrs> findRequirement(Parameters requirements, String namespace, String type) throws InvalidSyntaxException {
+        Dictionary<String, Object> nsAttr = new Hashtable<>();
+        nsAttr.put(namespace, type);
+        nsAttr.put("version", SpiFlyConstants.SPECIFICATION_VERSION);
+
+        for (Entry<String, Attrs> req : requirements.entrySet()) {
+            String key = removeDuplicateMarker(req.getKey());
+            if (namespace.equals(key)) {
+                String filterString = req.getValue().get(SpiFlyConstants.FILTER_DIRECTIVE);
                 if (filterString != null) {
                     Filter filter = FrameworkUtil.createFilter(filterString);
                     if (filter.match(nsAttr)) {
@@ -258,13 +275,23 @@ public class ConsumerHeaderProcessor {
         return null;
     }
 
-    private static Collection<GenericMetadata> findAllMetadata(List<GenericMetadata> metadata, String namespace) {
-        List<GenericMetadata> matching = new ArrayList<ManifestHeaderProcessor.GenericMetadata>();
-        for (GenericMetadata md : metadata) {
-            if (namespace.equals(md.getNamespace())) {
-                matching.add(md);
+    static Collection<Entry<String, Attrs>> findAllMetadata(Parameters requirementsOrCapabilities, String namespace) {
+        List<Entry<String, Attrs>> reqsCaps = new ArrayList<>();
+        for (Entry<String, Attrs> reqCap : requirementsOrCapabilities.entrySet()) {
+            String key = removeDuplicateMarker(reqCap.getKey());
+            if (namespace.equals(key)) {
+                reqsCaps.add(reqCap);
             }
         }
-        return matching;
+        return reqsCaps;
     }
+
+    static String removeDuplicateMarker(String key) {
+        int i = key.length() - 1;
+        while (i >= 0 && key.charAt(i) == '~')
+            --i;
+
+        return key.substring(0, i + 1);
+    }
+
 }
