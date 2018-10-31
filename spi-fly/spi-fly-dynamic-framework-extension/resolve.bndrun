@@ -15,4 +15,4 @@
 -runee: JavaSE-1.8
 -runfw: org.apache.felix.framework
 -runrequires: osgi.identity;filter:='(osgi.identity=${project.artifactId})'
--runbundles: org.apache.aries.spifly.dynamic.framework.extension;version='[1.1.0,1.1.1)'
+-runbundles: org.apache.aries.spifly.dynamic.framework.extension;version='[1.2.0,1.2.1)'

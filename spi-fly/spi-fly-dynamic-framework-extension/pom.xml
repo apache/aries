@@ -104,18 +104,23 @@
                     <instructions>
                         <Fragment-Host>system.bundle;extension:=framework</Fragment-Host>
                         <ExtensionBundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</ExtensionBundle-Activator>
+                        <Import-Package>
+                            !org.slf4j,
+                            *
+                        </Import-Package>
                         <Export-Package>
                             org.apache.aries.spifly;version=${project.version}
                         </Export-Package>
-                        <Import-Package>
-                            !org.apache.aries.util.filesystem,
-                            !org.apache.aries.util.io,
-                            *
-                        </Import-Package>
                         <_conditionalpackage>
-                            org.apache.aries.util,
-                            org.apache.aries.util.internal,
-                            org.apache.aries.util.manifest,
+                            aQute.bnd.header,
+                            aQute.bnd.version,
+                            aQute.lib.collections,
+                            aQute.lib.io,
+                            aQute.libg.generics,
+                            aQute.libg.glob,
+                            aQute.libg.qtokens,
+                            aQute.service.reporter,
+                            org.apache.aries.spifly.*,
                             org.objectweb.asm,
                             org.objectweb.asm.commons,
                             org.objectweb.asm.signature,
@@ -123,9 +128,6 @@
                             org.objectweb.asm.tree.analysis,
                             org.objectweb.asm.util
                         </_conditionalpackage>
-                        <Private-Package>
-                            org.apache.aries.spifly.*;-split-package:=first
-                        </Private-Package>
                         <Provide-Capability>
                             osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0,
                             osgi.extender;osgi.extender=osgi.serviceloader.processor;version:Version=1.0;uses:="org.apache.aries.spifly"

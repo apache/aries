@@ -18,6 +18,12 @@
  */
 package org.apache.aries.spifly;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -49,12 +55,6 @@ import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     @Test
@@ -210,7 +210,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
         headers.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI; approval=yeah;" +
-                SpiFlyConstants.REGISTER_DIRECTIVE + ":=\"\"");
+                SpiFlyConstants.REGISTER_DIRECTIVE + "=\"\"");
         Bundle implBundle = mockSPIBundle(implBC, headers);
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
@@ -220,7 +220,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         assertSame(implBundle, bundles.iterator().next());
 
         Map<String, Object> attrs = activator.getCustomBundleAttributes("org.apache.aries.mytest.MySPI", implBundle);
-        assertEquals(1, attrs.size());
+        assertEquals(attrs.toString(), 1, attrs.size());
         assertEquals("yeah", attrs.get("approval"));
     }
 
@@ -247,7 +247,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
         headers.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI2; approval=yeah; " +
-        		SpiFlyConstants.REGISTER_DIRECTIVE + ":=\"org.apache.aries.spifly.impl4.MySPIImpl4b\"");
+                SpiFlyConstants.REGISTER_DIRECTIVE + "=\"org.apache.aries.spifly.impl4.MySPIImpl4b\"");
         Bundle implBundle = mockSPIBundle4(implBC, headers);
 
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);

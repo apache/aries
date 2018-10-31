@@ -18,12 +18,16 @@
  */
 package org.apache.aries.spifly;
 
+import org.osgi.framework.Version;
+
 public interface SpiFlyConstants {
+    String SPECIFICATION_VERSION_STRING = "1.0.0";
+    Version SPECIFICATION_VERSION = new Version(SPECIFICATION_VERSION_STRING);
     // Not taken from OSGi Constants because this code needs to compile with the 4.2 OSGi classes.
     String PROVIDE_CAPABILITY = "Provide-Capability";
     String REQUIRE_CAPABILITY = "Require-Capability";
     String EXTENDER_CAPABILITY_NAMESPACE = "osgi.extender";
-    String FILTER_DIRECTIVE = "filter";
+    String FILTER_DIRECTIVE = "filter:";
 
     // These are two proprietary headers which predated the ServiceLoader Mediator
     // specification and are more powerful than what is specified there
@@ -32,7 +36,7 @@ public interface SpiFlyConstants {
 
     // ServiceLoader capability and related directive
     String SERVICELOADER_CAPABILITY_NAMESPACE = "osgi.serviceloader";
-    String REGISTER_DIRECTIVE = "register";
+    String REGISTER_DIRECTIVE = "register:";
 
     // Service registration property
     String SERVICELOADER_MEDIATOR_PROPERTY = "serviceloader.mediator";
@@ -44,9 +48,9 @@ public interface SpiFlyConstants {
 
     // Pre-baked requirements for consumer and provider
     String CLIENT_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + FILTER_DIRECTIVE +
-    		":=\"(" + EXTENDER_CAPABILITY_NAMESPACE + "=" + PROCESSOR_EXTENDER_NAME + ")\"";
+            "=\"(" + EXTENDER_CAPABILITY_NAMESPACE + "=" + PROCESSOR_EXTENDER_NAME + ")\"";
     String PROVIDER_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + FILTER_DIRECTIVE +
-            ":=\"(" + EXTENDER_CAPABILITY_NAMESPACE + "=" + REGISTRAR_EXTENDER_NAME + ")\"";
+            "=\"(" + EXTENDER_CAPABILITY_NAMESPACE + "=" + REGISTRAR_EXTENDER_NAME + ")\"";
 
     String PROCESSED_SPI_CONSUMER_HEADER = "X-SpiFly-Processed-SPI-Consumer";
 }
