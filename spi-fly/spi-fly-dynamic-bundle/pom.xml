@@ -57,11 +57,6 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-commons</artifactId>
-            <version>7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
             <version>7.0</version>
         </dependency>
@@ -122,7 +117,6 @@
                         <Bundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</Bundle-Activator>
                         <Import-Package>
                             !org.slf4j,
-                            org.objectweb.asm*;version="[5,8)",
                             *
                         </Import-Package>
                         <Export-Package>
