@@ -16,11 +16,13 @@
 
 package org.apache.aries.cdi.extra.propertytypes;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
-import static javax.ws.rs.core.MediaType.*;
-import static org.osgi.namespace.service.ServiceNamespace.*;
-import static org.osgi.resource.Namespace.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.osgi.namespace.service.ServiceNamespace.SERVICE_NAMESPACE;
+import static org.osgi.resource.Namespace.EFFECTIVE_ACTIVE;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
