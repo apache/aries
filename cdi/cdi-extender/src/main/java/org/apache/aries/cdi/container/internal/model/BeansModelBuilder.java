@@ -14,8 +14,9 @@
 
 package org.apache.aries.cdi.container.internal.model;
 
-import static org.apache.aries.cdi.container.internal.util.Reflection.*;
-import static org.osgi.service.cdi.CDIConstants.*;
+import static org.apache.aries.cdi.container.internal.util.Reflection.cast;
+import static org.osgi.service.cdi.CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE;
+import static org.osgi.service.cdi.CDIConstants.REQUIREMENT_DESCRIPTOR_ATTRIBUTE;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -77,10 +78,10 @@ public class BeansModelBuilder {
 
 				_log.debug(l -> l.debug("CCR found bean {} on {}", beanClassName, _containerState.bundle()));
 			}
-			catch (Exception e) {
-				_log.error(l -> l.error("CCR Error loading class {} on {}", beanClassName, _containerState.bundle(), e));
+			catch (Throwable t) {
+				_log.error(l -> l.error("CCR Error loading class {} on {}", beanClassName, _containerState.bundle(), t));
 
-				_containerState.error(e);
+				_containerState.error(t);
 			}
 		}
 
