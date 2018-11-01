@@ -27,7 +27,7 @@ import org.objectweb.asm.commons.SerialVersionUIDAdder;
 public class SerialVersionClassVisitor extends SerialVersionUIDAdder {
 
     public SerialVersionClassVisitor(ClassVisitor cv) {
-        super(Opcodes.ASM5, cv);
+        super(Opcodes.ASM7, cv);
 
     }
 

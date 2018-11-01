@@ -101,6 +101,14 @@
             <version>3.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>7.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -113,7 +121,11 @@
                     <instructions>
                         <Bundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</Bundle-Activator>
                         <Import-Package>
+<<<<<<< HEAD
                             !org.slf4j,
+=======
+                            org.objectweb.asm*;version="[5,8)",
+>>>>>>> add jdk11 support for versioning
                             *
                         </Import-Package>
                         <Export-Package>
@@ -147,6 +159,7 @@
                 </configuration>
             </plugin>
             <plugin>
+<<<<<<< HEAD
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-baseline-maven-plugin</artifactId>
                 <version>${bnd.version}</version>
@@ -173,6 +186,11 @@
                         <bndrun>resolve.bndrun</bndrun>
                     </bndruns>
                 </configuration>
+=======
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <version>0.3.2-SNAPSHOT</version>
+>>>>>>> add jdk11 support for versioning
                 <executions>
                     <execution>
                         <id>resolve</id>

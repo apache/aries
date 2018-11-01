@@ -47,6 +47,8 @@ public class SemanticVersioningUtils {
     public static final String ENUM_CLASS = "java/lang/Enum";
     public static final int ASM4 = Opcodes.ASM4;
 
+    public static final int ASM_CURRENT = Opcodes.ASM7;
+
     public static boolean isLessAccessible(GenericDeclaration before, GenericDeclaration after) {
 
         if (before.getAccess() == after.getAccess()) {
