@@ -166,7 +166,7 @@ public class DiscoveryExtension implements Extension {
 					abd.addDefinitionError(
 						new DefinitionException(
 							String.format(
-								"Did not find bean for <cdi:bean class=\"%s\">",
+								"Did not find bean for %s",
 								osgiBean.getBeanClass())));
 				}
 			}
