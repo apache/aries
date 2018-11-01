@@ -14,8 +14,8 @@
 
 package org.apache.aries.cdi.extension.http;
 
-import static org.osgi.namespace.extender.ExtenderNamespace.*;
-import static org.osgi.service.cdi.CDIConstants.*;
+import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
+import static org.osgi.service.cdi.CDIConstants.CDI_CAPABILITY_NAME;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -74,7 +74,9 @@ public class HttpExtension implements Extension {
 	}
 
 	void beforeShutdown(@Observes BeforeShutdown bs) {
-		_listenerRegistration.unregister();
+		if (_listenerRegistration != null) {
+			_listenerRegistration.unregister();
+		}
 	}
 
 	private Map<String, Object> getAttributes() {
