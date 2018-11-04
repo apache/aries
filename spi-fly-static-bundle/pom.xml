@@ -86,6 +86,9 @@
                         <Export-Package>
                             org.apache.aries.spifly.*;version=${project.version}
                         </Export-Package>
+                        <Private-Package>
+                            org.apache.aries.spifly.staticbundle
+                        </Private-Package>
                         <_conditionalpackage>
                             aQute.bnd.header,
                             aQute.bnd.version,
@@ -94,8 +97,7 @@
                             aQute.libg.generics,
                             aQute.libg.glob,
                             aQute.libg.qtokens,
-                            aQute.service.reporter,
-                            org.apache.aries.spifly.*,
+                            aQute.service.reporter
                         </_conditionalpackage>
                         <Bundle-Activator>org.apache.aries.spifly.staticbundle.StaticWeavingActivator</Bundle-Activator>
                         <Provide-Capability>
