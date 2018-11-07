@@ -18,9 +18,7 @@
 
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0" 
-            default-activation="lazy">
+           default-activation="lazy">
             
   <service interface="org.apache.aries.blueprint.NamespaceHandler" ref="nsHandler">
     <service-properties>
