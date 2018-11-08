@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  *
  * @version $Rev$, $Date$
  */
-public abstract class AbstractPropertyPlaceholderExt implements ComponentDefinitionRegistryProcessor {
+public abstract class AbstractPropertyPlaceholderExt extends PropertyPlaceholder implements ComponentDefinitionRegistryProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertyPlaceholderExt.class);
 
