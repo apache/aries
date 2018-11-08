@@ -249,6 +249,7 @@
                 <configuration>
                     <excludes>
                       <exclude>method org.apache.aries.blueprint.di.Repository getRepository() has been deleted</exclude>
+                      <exclude>class org/apache/aries/blueprint/ext/PropertyPlaceholder was not abstract but is changed to be abstract</exclude>
                     </excludes>
                 </configuration>
                 <executions>

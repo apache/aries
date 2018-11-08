@@ -19,7 +19,9 @@
 package org.apache.aries.blueprint.ext;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,7 +95,32 @@ public class PropertyPlaceholderTest extends PropertyPlaceholderExt {
         sut = makeProperty("plain text");
         assertEquals("plain text", sut.getStringValue());
     }
-    
+
+    @Test
+    public void testAries1858() throws Exception {
+        Method method = AbstractPropertyPlaceholder.class.getDeclaredMethod("retrieveValue", String.class);
+        method.setAccessible(true);
+        assertNotNull(method);
+
+        PropertyPlaceholderExt pp = new PropertyPlaceholderExt();
+        Map<String, Object> defaults = new HashMap<String, Object>();
+        defaults.put("property.1", "value.1");
+        defaults.put("property.2", 42L);
+        pp.setDefaultProperties(defaults);
+
+        String v = (String) method.invoke(pp, "property.1");
+        assertEquals("value.1", v);
+        try {
+            // Camel without CAMEL-12570 casts to string. If old Camel is used with new blueprint-core
+            v = (String) method.invoke(pp, "property.2");
+        } catch (ClassCastException expected) {
+        }
+
+        // Camel without CAMEL-12570 calls getDefaultProperties() via PropertyPlaceholder
+        Map<String, Object> map = ((PropertyPlaceholder) pp).getDefaultProperties();
+        assertEquals(42L, map.get("property.2"));
+    }
+
 //    @Test
 //    public void evaluateStringProps() {
 //        sut = makeProperty("${prop1+prop2}");
