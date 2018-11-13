@@ -61,7 +61,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
     private boolean woven = false;
 
     public TCCLSetterVisitor(ClassVisitor cv, String className, Set<WeavingData> weavingData) {
-        super(Opcodes.ASM5, cv);
+        super(Opcodes.ASM7, cv);
         this.targetClass = Type.getType("L" + className.replace('.', '/') + ";");
         this.weavingData = weavingData;
     }
@@ -152,7 +152,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
         private int lastVar;
 
         public TCCLSetterMethodVisitor(MethodVisitor mv, int access, String name, String descriptor) {
-            super(Opcodes.ASM5, mv, access, name, descriptor);
+            super(Opcodes.ASM7, mv, access, name, descriptor);
         }
 
         /**
