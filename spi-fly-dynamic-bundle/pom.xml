@@ -54,16 +54,19 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <version>7.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
             <version>7.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
             <version>7.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
