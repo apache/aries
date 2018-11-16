@@ -24,6 +24,7 @@ import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -34,7 +35,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
 
-import aQute.bnd.header.Attrs;
 import aQute.bnd.header.OSGiHeader;
 import aQute.bnd.header.Parameters;
 
@@ -194,12 +194,12 @@ public class ConsumerHeaderProcessor {
         Set<WeavingData> weavingData = new HashSet<WeavingData>();
 
         Parameters requirements = OSGiHeader.parseHeader(consumerHeader);
-        Entry<String, Attrs> extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROCESSOR_EXTENDER_NAME);
-        Collection<Entry<String, Attrs>> serviceLoaderRequirements = findAllMetadata(requirements, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+        Entry<String, ? extends Map<String, String>> extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROCESSOR_EXTENDER_NAME);
+        Collection<Entry<String, ? extends Map<String, String>>> serviceLoaderRequirements = findAllMetadata(requirements, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
 
         if (extenderRequirement != null) {
             List<BundleDescriptor> allowedBundles = new ArrayList<BundleDescriptor>();
-            for (Entry<String, Attrs> req : serviceLoaderRequirements) {
+            for (Entry<String, ? extends Map<String, String>> req : serviceLoaderRequirements) {
                 String slFilterString = req.getValue().get(SpiFlyConstants.FILTER_DIRECTIVE);
                 if (slFilterString != null) {
                     Filter slFilter = FrameworkUtil.createFilter(slFilterString);
@@ -243,8 +243,8 @@ public class ConsumerHeaderProcessor {
                 allowedBundles.size() == 0 ? null : allowedBundles);
     }
 
-    static Entry<String, Attrs> findCapability(Parameters capabilities, String namespace, String spiName) {
-        for (Entry<String, Attrs> cap : capabilities.entrySet()) {
+    static Entry<String, ? extends Map<String, String>> findCapability(Parameters capabilities, String namespace, String spiName) {
+        for (Entry<String, ? extends Map<String, String>> cap : capabilities.entrySet()) {
             String key = removeDuplicateMarker(cap.getKey());
             if (namespace.equals(key)) {
                 if (spiName.equals(cap.getValue().get(namespace))) {
@@ -255,12 +255,12 @@ public class ConsumerHeaderProcessor {
         return null;
     }
 
-    static Entry<String, Attrs> findRequirement(Parameters requirements, String namespace, String type) throws InvalidSyntaxException {
+    static Entry<String, ? extends Map<String, String>> findRequirement(Parameters requirements, String namespace, String type) throws InvalidSyntaxException {
         Dictionary<String, Object> nsAttr = new Hashtable<>();
         nsAttr.put(namespace, type);
         nsAttr.put("version", SpiFlyConstants.SPECIFICATION_VERSION);
 
-        for (Entry<String, Attrs> req : requirements.entrySet()) {
+        for (Entry<String, ? extends Map<String, String>> req : requirements.entrySet()) {
             String key = removeDuplicateMarker(req.getKey());
             if (namespace.equals(key)) {
                 String filterString = req.getValue().get(SpiFlyConstants.FILTER_DIRECTIVE);
@@ -275,9 +275,9 @@ public class ConsumerHeaderProcessor {
         return null;
     }
 
-    static Collection<Entry<String, Attrs>> findAllMetadata(Parameters requirementsOrCapabilities, String namespace) {
-        List<Entry<String, Attrs>> reqsCaps = new ArrayList<>();
-        for (Entry<String, Attrs> reqCap : requirementsOrCapabilities.entrySet()) {
+    static Collection<Entry<String, ? extends Map<String, String>>> findAllMetadata(Parameters requirementsOrCapabilities, String namespace) {
+        List<Entry<String, ? extends Map<String, String>>> reqsCaps = new ArrayList<>();
+        for (Entry<String, ? extends Map<String, String>> reqCap : requirementsOrCapabilities.entrySet()) {
             String key = removeDuplicateMarker(reqCap.getKey());
             if (namespace.equals(key)) {
                 reqsCaps.add(reqCap);
