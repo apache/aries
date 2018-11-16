@@ -47,7 +47,6 @@ import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
-import aQute.bnd.header.Attrs;
 import aQute.bnd.header.OSGiHeader;
 import aQute.bnd.header.Parameters;
 
@@ -254,7 +253,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             return null;
 
         Parameters requirements = OSGiHeader.parseHeader(requirementHeader);
-        Entry<String, Attrs> extenderRequirement = ConsumerHeaderProcessor.findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
+        Entry<String, ? extends Map<String, String>> extenderRequirement = ConsumerHeaderProcessor.findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
         if (extenderRequirement == null)
             return null;
 
@@ -267,7 +266,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         List<String> serviceNames = new ArrayList<String>();
-        for (Entry<String, Attrs> serviceLoaderCapability : ConsumerHeaderProcessor.findAllMetadata(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
+        for (Entry<String, ? extends Map<String, String>> serviceLoaderCapability : ConsumerHeaderProcessor.findAllMetadata(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
             for (Entry<String, String> entry : serviceLoaderCapability.getValue().entrySet()) {
                 if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(entry.getKey())) {
                     serviceNames.add(entry.getValue().toString());
@@ -291,7 +290,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             return null;
 
         Parameters capabilities = OSGiHeader.parseHeader(capabilityHeader.toString());
-        Entry<String, Attrs> cap = ConsumerHeaderProcessor.findCapability(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, spiName);
+        Entry<String, ? extends Map<String, String>> cap = ConsumerHeaderProcessor.findCapability(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, spiName);
 
         Hashtable<String, Object> properties = new Hashtable<String, Object>();
         if (cap != null) {
