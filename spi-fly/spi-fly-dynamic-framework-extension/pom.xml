@@ -46,6 +46,7 @@
     </scm>
 
     <properties>
+        <asm.version>7.0</asm.version>
         <bnd.version>4.1.0</bnd.version>
     </properties>
 
@@ -53,25 +54,31 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>7.0</version>
+            <version>${asm.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>7.0</version>
+            <version>${asm.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-util</artifactId>
-            <version>7.0</version>
+            <version>${asm.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
             <version>1.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>biz.aQute.bndlib</artifactId>
+            <version>4.1.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -174,7 +181,121 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>apache-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>package</phase>
+                                <goals>
+                                  <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.ow2.asm</groupId>
+                                            <artifactId>asm</artifactId>
+                                            <version>${asm.version}</version>
+                                            <type>jar</type>
+                                            <classifier>sources</classifier>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/upacksources/asm</outputDirectory>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.ow2.asm</groupId>
+                                            <artifactId>asm-commons</artifactId>
+                                            <version>${asm.version}</version>
+                                            <type>jar</type>
+                                            <classifier>sources</classifier>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/upacksources/asm-commons</outputDirectory>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.ow2.asm</groupId>
+                                            <artifactId>asm-util</artifactId>
+                                            <version>${asm.version}</version>
+                                            <type>jar</type>
+                                            <classifier>sources</classifier>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/upacksources/asm-util</outputDirectory>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>biz.aQute.bnd</groupId>
+                                            <artifactId>biz.aQute.bndlib</artifactId>
+                                            <version>4.1.0</version>
+                                            <type>jar</type>
+                                            <classifier>sources</classifier>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/upacksources/bndlib</outputDirectory>
+                                            <includes>
+                                                aQute/bnd/header/*.java,
+                                                aQute/bnd/version/*.java,
+                                                aQute/lib/collections/*.java,
+                                                aQute/lib/io/*.java,
+                                                aQute/libg/generics/*.java,
+                                                aQute/libg/glob/*.java,
+                                                aQute/libg/qtokens/*.java,
+                                                aQute/service/reporter/*.java
+                                            </includes>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <excludes>META-INF/**/*,META-INF</excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>add-source</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>${project.basedir}/../spi-fly-core/src/main/java/</source>
+                                        <source>${project.basedir}/../spi-fly-weaver/src/main/java/</source>
+                                        <source>${project.build.directory}/upacksources/asm</source>
+                                        <source>${project.build.directory}/upacksources/asm-commons</source>
+                                        <source>${project.build.directory}/upacksources/asm-util</source>
+                                        <source>${project.build.directory}/upacksources/bndlib</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <excludePackageNames>aQute.*,org.objectweb.*</excludePackageNames>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

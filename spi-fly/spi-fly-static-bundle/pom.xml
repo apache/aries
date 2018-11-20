@@ -62,6 +62,12 @@
             <version>5.0.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>biz.aQute.bndlib</artifactId>
+            <version>4.1.0</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -143,7 +149,90 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.aries.versioning</groupId>
+                <artifactId>org.apache.aries.versioning.plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>apache-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>unpack</id>
+                                <phase>package</phase>
+                                <goals>
+                                  <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>biz.aQute.bnd</groupId>
+                                            <artifactId>biz.aQute.bndlib</artifactId>
+                                            <version>4.1.0</version>
+                                            <type>jar</type>
+                                            <classifier>sources</classifier>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}/upacksources/bndlib</outputDirectory>
+                                            <includes>
+                                                aQute/bnd/header/*.java,
+                                                aQute/bnd/version/*.java,
+                                                aQute/lib/collections/*.java,
+                                                aQute/lib/io/*.java,
+                                                aQute/libg/generics/*.java,
+                                                aQute/libg/glob/*.java,
+                                                aQute/libg/qtokens/*.java,
+                                                aQute/service/reporter/*.java
+                                            </includes>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <excludes>META-INF/**/*,META-INF</excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>add-source</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>${project.basedir}/../spi-fly-core/src/main/java/</source>
+                                        <source>${project.build.directory}/upacksources/bndlib</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <excludePackageNames>aQute.*,org.objectweb.*</excludePackageNames>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
