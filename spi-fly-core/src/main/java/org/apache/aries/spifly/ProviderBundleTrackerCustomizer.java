@@ -173,17 +173,21 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                             properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, cls.getName());
 
                             ServiceRegistration reg = null;
+                            Object instance = (properties.containsKey("service.scope") && "prototype".equals(properties.get("service.scope"))) ?
+                                new ProviderPrototypeServiceFactory(cls) :
+                                new ProviderServiceFactory(cls);
+
                             SecurityManager sm = System.getSecurityManager();
                             if (sm != null) {
                                 if (bundle.hasPermission(new ServicePermission(registrationClassName, ServicePermission.REGISTER))) {
                                     reg = bundle.getBundleContext().registerService(
-                                            registrationClassName, new ProviderServiceFactory(cls), properties);
+                                            registrationClassName, instance, properties);
                                 } else {
                                     log(Level.INFO, "Bundle " + bundle + " does not have the permission to register services of type: " + registrationClassName);
                                 }
                             } else {
                                 reg = bundle.getBundleContext().registerService(
-                                        registrationClassName, new ProviderServiceFactory(cls), properties);
+                                        registrationClassName, instance, properties);
                             }
 
                             if (reg != null) {
