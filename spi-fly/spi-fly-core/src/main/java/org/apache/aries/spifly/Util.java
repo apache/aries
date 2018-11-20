@@ -77,7 +77,14 @@ public class Util {
             return null;
         }
 
-        ClassLoader bundleLoader = caller.getClassLoader();
+        ClassLoader bundleLoader = AccessController.doPrivileged(
+            new PrivilegedAction<ClassLoader>() {
+                @Override
+                public ClassLoader run() {
+                    return caller.getClassLoader();
+                }
+            }
+        );
 
         if (!(bundleLoader instanceof BundleReference)) {
             BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
@@ -95,16 +102,24 @@ public class Util {
 
         Thread thread = Thread.currentThread();
 
-        ClassLoader contextClassLoader = thread.getContextClassLoader();
+        return AccessController.doPrivileged(
+            new PrivilegedAction<ServiceLoader<S>>() {
+                @Override
+                public ServiceLoader<S> run() {
+                    ClassLoader contextClassLoader = thread.getContextClassLoader();
 
-        try {
-            thread.setContextClassLoader(bundleClassloader);
+                    try {
+                        thread.setContextClassLoader(bundleClassloader);
 
-            return ServiceLoader.load(service);
-        }
-        finally {
-            thread.setContextClassLoader(contextClassLoader);
-        }
+                        return ServiceLoader.load(service);
+                    }
+                    finally {
+                        thread.setContextClassLoader(contextClassLoader);
+                    }
+                }
+            }
+        );
+
     }
 
     public static <C,S> ServiceLoader<S> serviceLoaderLoad(
@@ -115,7 +130,14 @@ public class Util {
             return null;
         }
 
-        ClassLoader bundleLoader = caller.getClassLoader();
+        ClassLoader bundleLoader = AccessController.doPrivileged(
+            new PrivilegedAction<ClassLoader>() {
+                @Override
+                public ClassLoader run() {
+                    return caller.getClassLoader();
+                }
+            }
+        );
 
         if (!(bundleLoader instanceof BundleReference)) {
             BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
