@@ -26,7 +26,7 @@
         <xsd:annotation>
             <xsd:documentation>
         <![CDATA[
-          The <enable-annotations> element is used to enable annotation scanning for @Transactional annotations
+          The <enable> element is used to enable annotation scanning for @Transactional annotations
         ]]>
             </xsd:documentation>
         </xsd:annotation>
