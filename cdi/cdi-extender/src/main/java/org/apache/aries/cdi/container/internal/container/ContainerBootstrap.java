@@ -103,32 +103,42 @@ public class ContainerBootstrap extends Phase {
 					new LoggerExtension(containerState),
 					containerState.id()));
 
-			// Add extensions found from the bundle's class loader, such as those in the Bundle-ClassPath
-			ServiceLoader.load(Extension.class, containerState.classLoader()).forEach(extensions::add);
+			Thread currentThread = Thread.currentThread();
+			ClassLoader current = currentThread.getContextClassLoader();
 
-			// Add external extensions
-			containerState.containerDTO().extensions.stream().map(
-				ExtendedExtensionDTO.class::cast
-			).map(
-				e -> new ExtensionMetadata(e.extension.getService(), e.template.serviceFilter)
-			).forEach(extensions::add);
+			try {
+				currentThread.setContextClassLoader(containerState.classLoader());
 
-			_bootstrap = new WeldBootstrap();
+				// Add extensions found from the bundle's class loader, such as those in the Bundle-ClassPath
+				ServiceLoader.load(Extension.class, containerState.classLoader()).forEach(extensions::add);
 
-			BeanDeploymentArchive beanDeploymentArchive = new ContainerDeploymentArchive(
-				containerState.loader(),
-				containerState.id(),
-				containerState.beansModel().getBeanClassNames(),
-				containerState.beansModel().getBeansXml());
+				// Add external extensions
+				containerState.containerDTO().extensions.stream().map(
+					ExtendedExtensionDTO.class::cast
+				).map(
+					e -> new ExtensionMetadata(e.extension.getService(), e.template.serviceFilter)
+				).forEach(extensions::add);
 
-			Deployment deployment = new ContainerDeployment(extensions, beanDeploymentArchive);
+				_bootstrap = new WeldBootstrap();
 
-			_bootstrap.startExtensions(extensions);
-			_bootstrap.startContainer(containerState.id(), new ContainerEnvironment(), deployment);
-			_bootstrap.startInitialization();
-			_bootstrap.deployBeans();
-			_bootstrap.validateBeans();
-			_bootstrap.endInitialization();
+				BeanDeploymentArchive beanDeploymentArchive = new ContainerDeploymentArchive(
+					containerState.loader(),
+					containerState.id(),
+					containerState.beansModel().getBeanClassNames(),
+					containerState.beansModel().getBeansXml());
+
+				Deployment deployment = new ContainerDeployment(extensions, beanDeploymentArchive);
+
+				_bootstrap.startExtensions(extensions);
+				_bootstrap.startContainer(containerState.id(), new ContainerEnvironment(), deployment);
+				_bootstrap.startInitialization();
+				_bootstrap.deployBeans();
+				_bootstrap.validateBeans();
+				_bootstrap.endInitialization();
+			}
+			finally {
+				currentThread.setContextClassLoader(current);
+			}
 
 			return true;
 		}
