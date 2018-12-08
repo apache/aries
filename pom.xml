@@ -55,7 +55,7 @@
         <aries.osgi.import.pkg>
             org.apache.aries.proxy.weavinghook;resolution:=optional;provide:=true,
             org.apache.aries.proxy*;provide:=true,
-            org.objectweb.asm*;resolution:=optional;version="[5,7)",
+            org.objectweb.asm*;resolution:=optional;version="[5,8)",
             sun.reflect*;resolution:=optional,
             *
         </aries.osgi.import.pkg>
