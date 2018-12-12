@@ -134,14 +134,7 @@ public class Maps {
 		return annotations.stream().filter(
 			ann -> Objects.nonNull(ann.annotationType().getAnnotation(BeanPropertyType.class))
 		).map(
-			ann -> {
-				Map<String, Object> map = Conversions.convert(ann).sourceAs(ann.annotationType()).to(new TypeReference<Map<String, Object>>() {});
-				String prefix = getPrefix(ann);
-				if (prefix != null) {
-					return addPrefix(map, prefix);
-				}
-				return map;
-			}
+			ann -> Conversions.convert(ann).sourceAs(ann.annotationType()).to(new TypeReference<Map<String, Object>>() {})
 		).map(Map::entrySet).flatMap(Collection::stream).collect(
 			Collectors.toMap(
 				Map.Entry::getKey,
