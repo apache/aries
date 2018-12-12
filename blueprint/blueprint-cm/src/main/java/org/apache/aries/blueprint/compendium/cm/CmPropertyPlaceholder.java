@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.compendium.cm;
 
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -40,7 +41,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholderExt implements Man
     private static final Logger LOGGER = LoggerFactory.getLogger(CmPropertyPlaceholder.class);
 
     private ExtendedBlueprintContainer blueprintContainer;
-    private ConfigurationAdmin configAdmin; 
+    private ConfigurationAdmin configAdmin;
     private String persistentId;
     private String updateStrategy;
     private ManagedObjectManager managedObjectManager;
@@ -154,10 +155,12 @@ public class CmPropertyPlaceholder extends PropertyPlaceholderExt implements Man
                     if (v2 != null) {
                         return false;
                     }
-                } else {
-                    if (!v1.equals(v2)) {
+                } else if (v1 instanceof Object[] && v2 instanceof Object[]) {
+                    if (!Arrays.deepEquals((Object[]) v1, (Object[]) v2)) {
                         return false;
                     }
+                } else if (!v1.equals(v2)) {
+                    return false;
                 }
             }
             return true;
