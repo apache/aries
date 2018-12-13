@@ -20,12 +20,10 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.osgi.service.cdi.CDIConstants.CDI_EXTENSION_PROPERTY;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.osgi.annotation.bundle.Requirement;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.http.whiteboard.annotations.RequireHttpWhiteboard;
 
@@ -41,7 +39,6 @@ import org.osgi.service.http.whiteboard.annotations.RequireHttpWhiteboard;
  */
 @BeanPropertyType
 @RequireHttpWhiteboard
-@Requirement(namespace = CDI_EXTENSION_PROPERTY, name = "JavaServlet")
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface HttpWhiteboardResource {
