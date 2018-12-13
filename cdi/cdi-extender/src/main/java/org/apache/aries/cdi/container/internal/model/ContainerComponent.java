@@ -114,7 +114,7 @@ public class ContainerComponent extends Component {
 			containerState.containerDTO().components.add(_snapshot);
 
 			ExtendedComponentInstanceDTO instanceDTO = new ExtendedComponentInstanceDTO(
-					containerState, _activatorBuilder);
+				containerState, _activatorBuilder);
 
 			instanceDTO.activations = new CopyOnWriteArrayList<>();
 			instanceDTO.configurations = new CopyOnWriteArrayList<>();
@@ -124,10 +124,10 @@ public class ContainerComponent extends Component {
 			_snapshot.instances.add(instanceDTO);
 
 			submit(instanceDTO.openOp(), instanceDTO::open).onFailure(
-					f -> {
-						_log.error(l -> l.error("CCR Error in container component open for {} on {}", _template.name, containerState.bundle()));
-					}
-					);
+				f -> {
+					_log.error(l -> l.error("CCR Error in container component open for {} on {}", _template.name, containerState.bundle()));
+				}
+			);
 
 			return true;
 		}

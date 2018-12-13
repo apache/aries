@@ -114,8 +114,8 @@ public class Activator extends AbstractExtender {
 	private void registerCCR() {
 		Dictionary<String, Object> properties = new Hashtable<>();
 		properties.put(Constants.SERVICE_CHANGECOUNT, _ccrChangeCount.get());
-		properties.put(Constants.SERVICE_DESCRIPTION, "CDI Component Runtime");
-		properties.put(Constants.SERVICE_VENDOR, "Apache Aries");
+		properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - CDI Component Runtime");
+		properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
 
 		ChangeObserverFactory changeObserverFactory = new ChangeObserverFactory();
 
@@ -129,6 +129,8 @@ public class Activator extends AbstractExtender {
 		Dictionary<String, Object> properties = new Hashtable<>();
 		properties.put("osgi.command.scope", "cdi");
 		properties.put("osgi.command.function", new String[] {"list", "info"});
+		properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - Gogo Commands");
+		properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
 
 		_commandRegistration = _bundleContext.registerService(Object.class, _command, properties);
 	}
