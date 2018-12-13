@@ -16,9 +16,9 @@ package org.apache.aries.cdi.extension.jndi;
 
 import java.util.Hashtable;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Initialized;
+import javax.annotation.Priority;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.naming.Name;
@@ -46,8 +46,11 @@ public class JndiExtension implements Extension, ObjectFactory {
 		return null;
 	}
 
-	void applicationScopedInitialized(@Observes @Initialized(ApplicationScoped.class) Object o, BeanManager bm) {
-		_beanManager.resolve(bm);
+	void applicationScopedInitialized(
+		@Observes @Priority(javax.interceptor.Interceptor.Priority.LIBRARY_AFTER+800)
+		AfterDeploymentValidation adv, BeanManager beanManager) {
+
+		_beanManager.resolve(beanManager);
 	}
 
 	private final Deferred<BeanManager> _beanManager;

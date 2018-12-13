@@ -14,7 +14,7 @@
 
 package org.apache.aries.cdi.test.cases;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import javax.enterprise.context.spi.Context;
 
@@ -62,6 +62,7 @@ public class Test152_3 extends AbstractTestCase {
 			twoTracker.waitForService(timeout);
 
 			assertThat(service).isNotNull();
+			@SuppressWarnings("unchecked")
 			BeanService<Context> bs = (BeanService<Context>)service;
 			Context context = bs.get();
 			assertThat(context).isNotNull();

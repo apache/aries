@@ -62,6 +62,7 @@ import org.apache.aries.cdi.container.internal.model.ReferenceModel;
 import org.apache.aries.cdi.container.internal.model.SingleComponent;
 import org.apache.aries.cdi.container.internal.util.SRs;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.osgi.framework.PrototypeServiceFactory;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
@@ -138,6 +139,8 @@ public class RuntimeExtension implements Extension {
 		).then(s -> {
 				Dictionary<String, Object> properties = new Hashtable<>();
 				properties.put(CDIConstants.CDI_CONTAINER_ID, _containerState.id());
+				properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - BeanManager for " + _containerState.bundle());
+				properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
 
 				registerService(
 					new String[] {BeanManager.class.getName()}, bm,
