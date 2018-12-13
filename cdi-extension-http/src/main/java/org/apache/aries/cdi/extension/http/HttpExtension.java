@@ -32,13 +32,17 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionTargetFactory;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionListener;
 
+import org.jboss.weld.module.web.el.WeldELContextListener;
 import org.jboss.weld.module.web.servlet.WeldInitialListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
@@ -71,11 +75,51 @@ public class HttpExtension implements Extension {
 
 		_listenerRegistration = _bundle.getBundleContext().registerService(
 			LISTENER_CLASSES, initialListener, properties);
+
+		_elAdaptorRegistration = _bundle.getBundleContext().registerService(
+			ServletContextListener.class,
+			new ServletContextListener() {
+				@Override
+				public void contextInitialized(ServletContextEvent event) {
+					ServletContext servletContext = event.getServletContext();
+
+					try {
+						FrameworkUtil.getBundle(getClass()).loadClass("javax.servlet.jsp.JspFactory");
+					}
+					catch (ClassNotFoundException e) {
+						servletContext.log("No JSP API found. Skiping ELResolver wiring for: " + _bundle);
+
+						return;
+					}
+
+					javax.servlet.jsp.JspApplicationContext jspApplicationContext = javax.servlet.jsp.JspFactory.getDefaultFactory().getJspApplicationContext(servletContext);
+
+					// Register the ELResolver with JSP
+					jspApplicationContext.addELResolver(beanManager.getELResolver());
+
+					// Register ELContextListener with JSP
+					try {
+						jspApplicationContext.addELContextListener(new WeldELContextListener());
+					}
+					catch (Exception e) {
+						servletContext.log("Failure registering ELContextListener", e);
+					}
+				}
+
+				@Override
+				public void contextDestroyed(ServletContextEvent event) {
+					// Nothing to do here
+				}
+			},
+			properties);
 	}
 
 	void beforeShutdown(@Observes BeforeShutdown bs) {
 		if (_listenerRegistration != null) {
 			_listenerRegistration.unregister();
+		}
+		if (_elAdaptorRegistration != null) {
+			_elAdaptorRegistration.unregister();
 		}
 	}
 
@@ -137,5 +181,6 @@ public class HttpExtension implements Extension {
 	private final Bundle _bundle;
 	private String _contextSelect;
 	private ServiceRegistration<?> _listenerRegistration;
+	private ServiceRegistration<?> _elAdaptorRegistration;
 
 }
