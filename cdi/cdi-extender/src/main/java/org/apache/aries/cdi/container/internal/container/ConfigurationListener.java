@@ -30,6 +30,7 @@ import org.apache.aries.cdi.container.internal.util.Predicates;
 import org.apache.aries.cdi.container.internal.util.Syncro;
 import org.apache.aries.cdi.container.internal.util.Throw;
 import org.jboss.weld.exceptions.IllegalArgumentException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.MaximumCardinality;
@@ -138,8 +139,11 @@ public class ConfigurationListener extends Phase implements org.osgi.service.cm.
 
 			Dictionary<String, Object> properties = new Hashtable<>();
 			properties.put("name", toString());
+			properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - Configuration Listener for " + containerState.bundle());
+			properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
+
 			_listenerService = containerState.bundleContext().registerService(
-					org.osgi.service.cm.ConfigurationListener.class, this, properties);
+				org.osgi.service.cm.ConfigurationListener.class, this, properties);
 
 			return next.map(next -> (Component)next).map(
 				component -> {

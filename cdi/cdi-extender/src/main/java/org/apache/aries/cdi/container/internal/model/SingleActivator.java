@@ -128,7 +128,6 @@ public class SingleActivator extends InstanceActivator {
 				}
 			);
 
-
 			ExtendedComponentTemplateDTO extended = (ExtendedComponentTemplateDTO)_instance.template;
 
 			Set<Bean<?>> beans = beanManager.getBeans(

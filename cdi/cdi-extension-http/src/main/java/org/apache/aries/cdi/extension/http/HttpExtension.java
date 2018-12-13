@@ -62,8 +62,9 @@ public class HttpExtension implements Extension {
 
 		Dictionary<String, Object> properties = new Hashtable<>();
 
-		properties.put(
-			HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT, getSelectedContext());
+		properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - HTTP Portable Extension");
+		properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
+		properties.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT, getSelectedContext());
 		properties.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_LISTENER, Boolean.TRUE.toString());
 		properties.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE - 100);
 
@@ -75,6 +76,9 @@ public class HttpExtension implements Extension {
 
 		_listenerRegistration = _bundle.getBundleContext().registerService(
 			LISTENER_CLASSES, initialListener, properties);
+
+		properties.put(
+			Constants.SERVICE_DESCRIPTION, "Aries CDI - ELResolver Servlet Context Listener");
 
 		_elAdaptorRegistration = _bundle.getBundleContext().registerService(
 			ServletContextListener.class,

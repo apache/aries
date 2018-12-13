@@ -79,6 +79,8 @@ public class JndiActivator implements BundleActivator {
 		Dictionary<String, Object> properties = new Hashtable<>();
 		properties.put(CDIConstants.CDI_EXTENSION_PROPERTY, "aries.cdi.jndi");
 		properties.put(JNDIConstants.JNDI_URLSCHEME, "java");
+		properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - JNDI Portable Extension Factory");
+		properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
 
 		_serviceRegistration = context.registerService(
 			new String[] {Extension.class.getName(), ObjectFactory.class.getName()},

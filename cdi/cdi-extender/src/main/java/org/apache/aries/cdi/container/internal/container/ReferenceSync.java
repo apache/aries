@@ -127,7 +127,6 @@ public class ReferenceSync implements ServiceTrackerCustomizer<Object, Object> {
 		boolean active = _componentInstanceDTO.active;
 		boolean resolved = (_referenceDTO.matches.size() >= _templateDTO.minimumCardinality);
 		boolean dynamic = (_templateDTO.policy == ReferencePolicy.DYNAMIC);
-		boolean reluctant = (_templateDTO.policyOption == ReferencePolicyOption.RELUCTANT);
 		CollectionType collectionType = _templateDTO.collectionType;
 		boolean requiresUpdate = true;
 

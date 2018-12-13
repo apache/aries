@@ -21,6 +21,9 @@ import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.BeansXml;
+import org.jboss.weld.bootstrap.spi.EEModuleDescriptor;
+import org.jboss.weld.bootstrap.spi.EEModuleDescriptor.ModuleType;
+import org.jboss.weld.bootstrap.spi.helpers.EEModuleDescriptorImpl;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
 import org.jboss.weld.resources.spi.ResourceLoader;
 import org.jboss.weld.serialization.spi.ProxyServices;
@@ -39,6 +42,7 @@ public class ContainerDeploymentArchive
 		if (loader != null) {
 			_services.add(ResourceLoader.class, loader);
 			_services.add(ProxyServices.class, loader);
+			_services.add(EEModuleDescriptor.class, new EEModuleDescriptorImpl(id, ModuleType.WEB));
 		}
 	}
 
