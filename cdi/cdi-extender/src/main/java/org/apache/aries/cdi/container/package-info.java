@@ -42,7 +42,6 @@
 	namespace = ServiceNamespace.SERVICE_NAMESPACE,
 	attribute = "objectClass:List<String>=javax.enterprise.inject.spi.BeanManager",
 	uses = {
-		javax.el.Expression.class,
 		javax.enterprise.context.ApplicationScoped.class,
 		javax.enterprise.context.spi.Context.class,
 		javax.enterprise.event.Event.class,

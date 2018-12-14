@@ -30,7 +30,7 @@
 	<name>Aries CDI Http Extension</name>
 	<description>
 		Provides support to CDI bundles for http servlet scopes; @RequestScoped,
-		@ApplicationScoped, @SessionScoped and @ConversationScoped.
+		@SessionScoped and @ConversationScoped.
 	</description>
 
 	<build>
@@ -52,19 +52,20 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-annotation_1.3_spec</artifactId>
-			<version>1.1</version>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.http.servlet-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-atinject_1.0_spec</artifactId>
-			<version>1.1</version>
+			<artifactId>geronimo-annotation_1.3_spec</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-el_2.2_spec</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-interceptor_1.2_spec</artifactId>
-			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
@@ -74,12 +75,6 @@
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jcdi_2.0_spec</artifactId>
-			<version>1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.http.servlet-api</artifactId>
-			<version>1.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
@@ -87,56 +82,36 @@
 			<version>2.3.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.weld.module</groupId>
-			<artifactId>weld-web</artifactId>
-			<version>${weld.release}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.enterprise</groupId>
-					<artifactId>cdi-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.annotation.bundle</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
+			<groupId>org.jboss.weld</groupId>
+			<artifactId>weld-osgi-bundle</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.namespace.extender</artifactId>
-			<version>1.0.1</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.namespace.implementation</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.namespace.service</artifactId>
-			<version>1.0.0</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.cdi</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.http.whiteboard</artifactId>
-			<version>1.1.0</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
+			<artifactId>osgi.annotation</artifactId>
+		</dependency>
+			<dependency>
+			<groupId>org.osgi</groupId>
 			<artifactId>osgi.core</artifactId>
-			<version>6.0.0</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
