@@ -14,6 +14,8 @@
 
 package org.apache.aries.cdi.extension.jndi;
 
+import static javax.interceptor.Interceptor.Priority.LIBRARY_AFTER;
+
 import java.util.Hashtable;
 
 import javax.annotation.Priority;
@@ -47,7 +49,7 @@ public class JndiExtension implements Extension, ObjectFactory {
 	}
 
 	void applicationScopedInitialized(
-		@Observes @Priority(javax.interceptor.Interceptor.Priority.LIBRARY_AFTER+800)
+		@Observes @Priority(LIBRARY_AFTER + 800)
 		AfterDeploymentValidation adv, BeanManager beanManager) {
 
 		_beanManager.resolve(beanManager);
