@@ -14,8 +14,14 @@
 
 package org.apache.aries.cdi.extension.http;
 
+import static javax.interceptor.Interceptor.Priority.LIBRARY_AFTER;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_RANKING;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
 import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
 import static org.osgi.service.cdi.CDIConstants.CDI_CAPABILITY_NAME;
+import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT;
+import static org.osgi.service.http.whiteboard.HttpWhiteboardConstants.HTTP_WHITEBOARD_LISTENER;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -41,14 +47,12 @@ import javax.servlet.http.HttpSessionListener;
 import org.jboss.weld.module.web.el.WeldELContextListener;
 import org.jboss.weld.module.web.servlet.WeldInitialListener;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
-import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 
 public class HttpExtension implements Extension {
 
@@ -56,17 +60,19 @@ public class HttpExtension implements Extension {
 		_bundle = bundle;
 	}
 
+	// TODO process javax.servlet.annotations annotations
+
 	void afterDeploymentValidation(
-		@Observes @Priority(javax.interceptor.Interceptor.Priority.LIBRARY_AFTER+800)
+		@Observes @Priority(LIBRARY_AFTER + 800)
 		AfterDeploymentValidation adv, BeanManager beanManager) {
 
 		Dictionary<String, Object> properties = new Hashtable<>();
 
-		properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - HTTP Portable Extension");
-		properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
-		properties.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT, getSelectedContext());
-		properties.put(HttpWhiteboardConstants.HTTP_WHITEBOARD_LISTENER, Boolean.TRUE.toString());
-		properties.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE - 100);
+		properties.put(SERVICE_DESCRIPTION, "Aries CDI - HTTP Portable Extension");
+		properties.put(SERVICE_VENDOR, "Apache Software Foundation");
+		properties.put(HTTP_WHITEBOARD_CONTEXT_SELECT, getSelectedContext());
+		properties.put(HTTP_WHITEBOARD_LISTENER, Boolean.TRUE.toString());
+		properties.put(SERVICE_RANKING, Integer.MAX_VALUE - 100);
 
 		AnnotatedType<WeldInitialListener> annotatedType = beanManager.createAnnotatedType(WeldInitialListener.class);
 		InjectionTargetFactory<WeldInitialListener> injectionTargetFactory = beanManager.getInjectionTargetFactory(annotatedType);
@@ -78,7 +84,7 @@ public class HttpExtension implements Extension {
 			LISTENER_CLASSES, initialListener, properties);
 
 		properties.put(
-			Constants.SERVICE_DESCRIPTION, "Aries CDI - ELResolver Servlet Context Listener");
+			SERVICE_DESCRIPTION, "Aries CDI - ELResolver Servlet Context Listener");
 
 		_elAdaptorRegistration = _bundle.getBundleContext().registerService(
 			ServletContextListener.class,
@@ -160,8 +166,8 @@ public class HttpExtension implements Extension {
 	private String getSelectedContext0() {
 		Map<String, Object> attributes = getAttributes();
 
-		if (attributes.containsKey(HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT)) {
-			return (String)attributes.get(HttpWhiteboardConstants.HTTP_WHITEBOARD_CONTEXT_SELECT);
+		if (attributes.containsKey(HTTP_WHITEBOARD_CONTEXT_SELECT)) {
+			return (String)attributes.get(HTTP_WHITEBOARD_CONTEXT_SELECT);
 		}
 
 		Dictionary<String,String> headers = _bundle.getHeaders();

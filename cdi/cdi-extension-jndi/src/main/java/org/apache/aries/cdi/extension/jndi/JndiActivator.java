@@ -14,61 +14,29 @@
 
 package org.apache.aries.cdi.extension.jndi;
 
+import static org.osgi.framework.Constants.BUNDLE_ACTIVATOR;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+import static org.osgi.service.cdi.CDIConstants.CDI_EXTENSION_PROPERTY;
+import static org.osgi.service.jndi.JNDIConstants.JNDI_URLSCHEME;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.enterprise.inject.spi.Extension;
 import javax.naming.spi.ObjectFactory;
 
-import org.osgi.annotation.bundle.Capability;
 import org.osgi.annotation.bundle.Header;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.namespace.service.ServiceNamespace;
-import org.osgi.service.cdi.CDIConstants;
-import org.osgi.service.cdi.annotations.RequireCDIImplementation;
-import org.osgi.service.jndi.JNDIConstants;
 import org.osgi.service.log.LoggerFactory;
 import org.osgi.util.tracker.ServiceTracker;
 
-@Capability(
-	attribute = "objectClass:List<String>=javax.enterprise.inject.spi.Extension",
-	namespace = ServiceNamespace.SERVICE_NAMESPACE,
-	uses= {
-		javax.enterprise.context.Initialized.class,
-		javax.enterprise.event.Observes.class,
-		javax.enterprise.inject.spi.Extension.class,
-		javax.naming.Context.class,
-		javax.naming.spi.ObjectFactory.class,
-		org.osgi.service.cdi.CDIConstants.class,
-		org.osgi.service.jndi.JNDIConstants.class,
-		org.osgi.service.log.LoggerFactory.class,
-		org.osgi.util.promise.Promise.class
-	}
-)
-@Capability(
-	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
-	name = "aries.cdi.jndi",
-	uses= {
-		javax.enterprise.context.Initialized.class,
-		javax.enterprise.event.Observes.class,
-		javax.enterprise.inject.spi.Extension.class,
-		javax.naming.Context.class,
-		javax.naming.spi.ObjectFactory.class,
-		org.osgi.service.cdi.CDIConstants.class,
-		org.osgi.service.jndi.JNDIConstants.class,
-		org.osgi.service.log.LoggerFactory.class,
-		org.osgi.util.promise.Promise.class
-	},
-	version = "0.0.2"
-)
 @Header(
-	name = Constants.BUNDLE_ACTIVATOR,
+	name = BUNDLE_ACTIVATOR,
 	value = "${@class}"
 )
-@RequireCDIImplementation
 public class JndiActivator implements BundleActivator {
 
 	@Override
@@ -77,10 +45,10 @@ public class JndiActivator implements BundleActivator {
 		_lft.open();
 
 		Dictionary<String, Object> properties = new Hashtable<>();
-		properties.put(CDIConstants.CDI_EXTENSION_PROPERTY, "aries.cdi.jndi");
-		properties.put(JNDIConstants.JNDI_URLSCHEME, "java");
-		properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - JNDI Portable Extension Factory");
-		properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
+		properties.put(CDI_EXTENSION_PROPERTY, "aries.cdi.jndi");
+		properties.put(JNDI_URLSCHEME, "java");
+		properties.put(SERVICE_DESCRIPTION, "Aries CDI - JNDI Portable Extension Factory");
+		properties.put(SERVICE_VENDOR, "Apache Software Foundation");
 
 		_serviceRegistration = context.registerService(
 			new String[] {Extension.class.getName(), ObjectFactory.class.getName()},
@@ -94,7 +62,6 @@ public class JndiActivator implements BundleActivator {
 	}
 
 	private volatile ServiceTracker<LoggerFactory, LoggerFactory> _lft;
-	@SuppressWarnings("rawtypes")
-	private ServiceRegistration _serviceRegistration;
+	private ServiceRegistration<?> _serviceRegistration;
 
 }

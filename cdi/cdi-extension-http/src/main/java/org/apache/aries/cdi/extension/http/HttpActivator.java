@@ -14,76 +14,33 @@
 
 package org.apache.aries.cdi.extension.http;
 
+import static org.osgi.framework.Constants.BUNDLE_ACTIVATOR;
+import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
+import static org.osgi.framework.Constants.SERVICE_VENDOR;
+import static org.osgi.service.cdi.CDIConstants.CDI_EXTENSION_PROPERTY;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 import javax.enterprise.inject.spi.Extension;
 
-import org.osgi.annotation.bundle.Capability;
 import org.osgi.annotation.bundle.Header;
-import org.osgi.annotation.bundle.Requirement;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.namespace.implementation.ImplementationNamespace;
-import org.osgi.namespace.service.ServiceNamespace;
-import org.osgi.service.cdi.CDIConstants;
-import org.osgi.service.cdi.annotations.RequireCDIImplementation;
 
-@Capability(
-	attribute = "objectClass:List<String>=javax.enterprise.inject.spi.Extension",
-	namespace = ServiceNamespace.SERVICE_NAMESPACE,
-	uses= {
-		javax.annotation.Priority.class,
-		javax.enterprise.context.Initialized.class,
-		javax.enterprise.event.Observes.class,
-		javax.enterprise.inject.spi.Extension.class,
-		javax.naming.Context.class,
-		javax.naming.spi.ObjectFactory.class,
-		javax.servlet.ServletContextListener.class,
-		javax.servlet.http.HttpSessionListener.class,
-		org.jboss.weld.module.web.servlet.WeldInitialListener.class,
-		org.osgi.service.cdi.CDIConstants.class,
-		org.osgi.service.http.whiteboard.HttpWhiteboardConstants.class,
-	}
-)
-@Capability(
-	name = "aries.cdi.http",
-	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
-	uses= {
-		javax.annotation.Priority.class,
-		javax.enterprise.context.Initialized.class,
-		javax.enterprise.event.Observes.class,
-		javax.enterprise.inject.spi.Extension.class,
-		javax.naming.Context.class,
-		javax.naming.spi.ObjectFactory.class,
-		javax.servlet.ServletContextListener.class,
-		javax.servlet.http.HttpSessionListener.class,
-		org.jboss.weld.module.web.servlet.WeldInitialListener.class,
-		org.osgi.service.cdi.CDIConstants.class,
-		org.osgi.service.http.whiteboard.HttpWhiteboardConstants.class,
-	},
-	version = "0.0.2"
-)
 @Header(
-	name = Constants.BUNDLE_ACTIVATOR,
+	name = BUNDLE_ACTIVATOR,
 	value = "${@class}"
 )
-@Requirement(
-	name = "osgi.http",
-	namespace = ImplementationNamespace.IMPLEMENTATION_NAMESPACE,
-	version = "1.0.0"
-)
-@RequireCDIImplementation
 public class HttpActivator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext context) throws Exception {
 		Dictionary<String, Object> properties = new Hashtable<>();
-		properties.put(CDIConstants.CDI_EXTENSION_PROPERTY, "aries.cdi.http");
-		properties.put(Constants.SERVICE_DESCRIPTION, "Aries CDI - HTTP Portable Extension Factory");
-		properties.put(Constants.SERVICE_VENDOR, "Apache Software Foundation");
+		properties.put(CDI_EXTENSION_PROPERTY, "aries.cdi.http");
+		properties.put(SERVICE_DESCRIPTION, "Aries CDI - HTTP Portable Extension Factory");
+		properties.put(SERVICE_VENDOR, "Apache Software Foundation");
 
 		_serviceRegistration = context.registerService(
 			Extension.class, new HttpExtensionFactory(), properties);
