@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.apache.aries.cdi.extension.http;
+package org.apache.aries.cdi.extension.el.jsp;
 
 import static javax.interceptor.Interceptor.Priority.LIBRARY_AFTER;
 import static org.osgi.framework.Constants.SERVICE_DESCRIPTION;
@@ -32,17 +32,16 @@ import java.util.Map;
 import javax.annotation.Priority;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
-import javax.enterprise.inject.spi.InjectionTargetFactory;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.http.HttpSessionListener;
+import javax.servlet.jsp.JspApplicationContext;
+import javax.servlet.jsp.JspFactory;
 
-import org.jboss.weld.module.web.servlet.WeldInitialListener;
+import org.jboss.weld.module.web.el.WeldELContextListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleCapability;
@@ -50,13 +49,11 @@ import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 
-public class HttpExtension implements Extension {
+public class ELJSPExtension implements Extension {
 
-	public HttpExtension(Bundle bundle) {
+	public ELJSPExtension(Bundle bundle) {
 		_bundle = bundle;
 	}
-
-	// TODO process javax.servlet.annotations annotations
 
 	void afterDeploymentValidation(
 		@Observes @Priority(LIBRARY_AFTER + 800)
@@ -64,25 +61,44 @@ public class HttpExtension implements Extension {
 
 		Dictionary<String, Object> properties = new Hashtable<>();
 
-		properties.put(SERVICE_DESCRIPTION, "Aries CDI - HTTP Portable Extension");
+		properties.put(SERVICE_DESCRIPTION, "Aries CDI - ELResolver Servlet Context Listener");
 		properties.put(SERVICE_VENDOR, "Apache Software Foundation");
 		properties.put(HTTP_WHITEBOARD_CONTEXT_SELECT, getSelectedContext());
 		properties.put(HTTP_WHITEBOARD_LISTENER, Boolean.TRUE.toString());
 		properties.put(SERVICE_RANKING, Integer.MAX_VALUE - 100);
 
-		AnnotatedType<WeldInitialListener> annotatedType = beanManager.createAnnotatedType(WeldInitialListener.class);
-		InjectionTargetFactory<WeldInitialListener> injectionTargetFactory = beanManager.getInjectionTargetFactory(annotatedType);
-		Bean<WeldInitialListener> bean = beanManager.createBean(beanManager.createBeanAttributes(annotatedType), WeldInitialListener.class, injectionTargetFactory);
+		_registration = _bundle.getBundleContext().registerService(
+			ServletContextListener.class,
+			new ServletContextListener() {
+				@Override
+				public void contextInitialized(ServletContextEvent event) {
+					ServletContext servletContext = event.getServletContext();
 
-		WeldInitialListener initialListener = bean.create(beanManager.createCreationalContext(bean));
+					JspApplicationContext jspApplicationContext = JspFactory.getDefaultFactory().getJspApplicationContext(servletContext);
 
-		_listenerRegistration = _bundle.getBundleContext().registerService(
-			LISTENER_CLASSES, initialListener, properties);
+					// Register the ELResolver with JSP
+					jspApplicationContext.addELResolver(beanManager.getELResolver());
+
+					// Register ELContextListener with JSP
+					try {
+						jspApplicationContext.addELContextListener(new WeldELContextListener());
+					}
+					catch (Exception e) {
+						servletContext.log("Failure registering ELContextListener", e);
+					}
+				}
+
+				@Override
+				public void contextDestroyed(ServletContextEvent event) {
+					// Nothing to do here
+				}
+			},
+			properties);
 	}
 
 	void beforeShutdown(@Observes BeforeShutdown bs) {
-		if (_listenerRegistration != null) {
-			_listenerRegistration.unregister();
+		if (_registration != null) {
+			_registration.unregister();
 		}
 	}
 
@@ -134,15 +150,10 @@ public class HttpExtension implements Extension {
 
 	private static final String CONTEXT_PATH_PREFIX = "(osgi.http.whiteboard.context.path=";
 	private static final String DEFAULT_CONTEXT_FILTER = "(osgi.http.whiteboard.context.name=default)";
-	private static final String[] LISTENER_CLASSES = new String[] {
-		ServletContextListener.class.getName(),
-		ServletRequestListener.class.getName(),
-		HttpSessionListener.class.getName()
-	};
 	private static final String WEB_CONTEXT_PATH = "Web-ContextPath";
 
 	private final Bundle _bundle;
 	private String _contextSelect;
-	private ServiceRegistration<?> _listenerRegistration;
+	private ServiceRegistration<?> _registration;
 
 }
