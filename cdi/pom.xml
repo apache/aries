@@ -34,6 +34,7 @@
 
 	<properties>
 		<bnd.version>4.1.0</bnd.version>
+		<jsp.version>2.0</jsp.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<surefire.version>2.12</surefire.version>
 		<weld.release>3.0.5.Final</weld.release>
@@ -49,6 +50,7 @@
 	<modules>
 		<module>cdi-extra</module>
 		<module>cdi-extender</module>
+		<module>cdi-extension-el-jsp</module>
 		<module>cdi-extension-http</module>
 		<module>cdi-extension-jndi</module>
 		<module>cdi-itests</module>

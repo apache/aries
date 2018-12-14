@@ -15,7 +15,7 @@
  */
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -23,14 +23,12 @@
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
-		<relativePath>..</relativePath>
 	</parent>
 
-	<artifactId>org.apache.aries.cdi.extension.http</artifactId>
-	<name>Aries CDI Http Extension</name>
+	<artifactId>org.apache.aries.cdi.extension.el.jsp</artifactId>
+	<name>Aries CDI EL-JSP Extension</name>
 	<description>
-		Provides support to CDI bundles for http servlet scopes; @RequestScoped,
-		@SessionScoped and @ConversationScoped.
+		Connects the CDI ELResolver into the JSP context.
 	</description>
 
 	<build>
@@ -38,11 +36,24 @@
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
+				<configuration>
+					<bnd><![CDATA[
+						Import-Package:\
+							javax.servlet.jsp;-remove-attribute:=version,\
+							*
+					]]></bnd>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<version>2.3.3</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.http.servlet-api</artifactId>
@@ -50,6 +61,10 @@
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-annotation_1.3_spec</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-el_2.2_spec</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -87,7 +102,7 @@
 			<groupId>org.osgi</groupId>
 			<artifactId>osgi.annotation</artifactId>
 		</dependency>
-			<dependency>
+		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>osgi.core</artifactId>
 		</dependency>
