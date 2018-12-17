@@ -1,20 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-/**
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
--->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -23,78 +6,27 @@
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
-		<relativePath>..</relativePath>
 	</parent>
 
-	<artifactId>org.apache.aries.cdi.itests</artifactId>
-	<name>CDI Integration Tests</name>
-	<packaging>jar</packaging>
+	<artifactId>org.apache.aries.cdi.executable</artifactId>
+	<name>Apache Aries CDI Executable JAR</name>
+	<description>
+		A full fledged executable JAR containing Aries CDI and several other
+		useful features. Deploy your CDI bundles directly into this runtime.
+	</description>
 
 	<properties>
 		<maven.deploy.skip>true</maven.deploy.skip>
 		<maven.install.skip>true</maven.install.skip>
+		<executable.name>executable</executable.name>
+		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
 	<dependencies>
-		<!-- COMPILE -->
 		<dependency>
-			<groupId>biz.aQute.bnd</groupId>
-			<artifactId>biz.aQute.junit</artifactId>
-			<version>${bnd.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-atinject_1.0_spec</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jcdi_2.0_spec</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.cdi.extra</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.http.servlet-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient-osgi</artifactId>
-			<version>4.5.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.util.promise</artifactId>
-		</dependency>
-
-		<!-- PROVIDED -->
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.namespace.extender</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.namespace.service</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.cm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.component.annotations</artifactId>
-			<version>1.4.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.http.whiteboard</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.log</artifactId>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
@@ -105,7 +37,6 @@
 			<artifactId>osgi.core</artifactId>
 		</dependency>
 
-		<!-- RUNTIME -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -132,8 +63,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.cdi.extension.jndi</artifactId>
+			<artifactId>org.apache.aries.cdi.extra</artifactId>
 			<version>${project.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-atinject_1.0_spec</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -147,15 +83,14 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.aries.jndi</groupId>
-			<artifactId>org.apache.aries.jndi.core</artifactId>
-			<version>1.0.2</version>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jcdi_2.0_spec</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.aries.spifly</groupId>
 			<artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
-			<version>1.0.14</version>
+			<version>1.2</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -179,12 +114,6 @@
 					<artifactId>org.osgi.compendium</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.gogo.jline</artifactId>
-			<version>1.0.2</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
@@ -223,9 +152,14 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore-osgi</artifactId>
-			<version>4.4.6</version>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.http.servlet-api</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.platform</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<version>3.13.100</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -235,27 +169,19 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
-			<version>3.13.0</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.util.function</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jul-to-slf4j</artifactId>
-			<version>1.7.25</version>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.util.promise</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
-			<version>1.7.25</version>
-			<scope>runtime</scope>
+			<version>${slf4j.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -264,40 +190,30 @@
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
-				<configuration>
-					<includeClassesDir>false</includeClassesDir>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>META-INF/*</include>
-						<include>org/apache/aries/cdi/test/cases/*</include>
-						<include>org/apache/aries/cdi/test/interfaces/*</include>
-						<include>*.jar</include>
-					</includes>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-resolver-maven-plugin</artifactId>
 				<configuration>
 					<bndruns>
-						<bndrun>itest.bndrun</bndrun>
+						<bndrun>${executable.name}.bndrun</bndrun>
 					</bndruns>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-testing-maven-plugin</artifactId>
+				<artifactId>bnd-export-maven-plugin</artifactId>
 				<configuration>
 					<bndruns>
-						<bndrun>itest.bndrun</bndrun>
+						<bndrun>${executable.name}.bndrun</bndrun>
 					</bndruns>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
 </project>
