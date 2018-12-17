@@ -54,6 +54,7 @@
 		<module>cdi-extension-http</module>
 		<module>cdi-extension-jndi</module>
 		<module>cdi-itests</module>
+		<module>cdi-executable</module>
 	</modules>
 
 	<dependencyManagement>
