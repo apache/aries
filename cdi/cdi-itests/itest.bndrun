@@ -18,6 +18,7 @@
 -runrequires: \
 	osgi.identity;filter:='(osgi.identity=javax.ejb-api)',\
 	osgi.identity;filter:='(osgi.identity=javax.transaction-api)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.extra)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.cdi.itests)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.aries.jndi.core)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
@@ -68,7 +69,8 @@
 	org.jboss.weld.osgi-bundle;version='[3.0.5,3.0.6)',\
 	org.osgi.service.cdi;version='[1.0.0,1.0.1)',\
 	org.osgi.util.function;version='[1.1.0,1.1.1)',\
-	org.osgi.util.promise;version='[1.1.0,1.1.1)'
+	org.osgi.util.promise;version='[1.1.0,1.1.1)',\
+	org.apache.aries.cdi.extra;version='[0.0.2,0.0.3)'
 
 -resolve.effective: resolve, active
 -runee: JavaSE-1.8

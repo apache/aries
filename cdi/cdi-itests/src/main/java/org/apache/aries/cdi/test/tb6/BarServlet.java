@@ -14,13 +14,8 @@
 
 package org.apache.aries.cdi.test.tb6;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 
 import javax.inject.Inject;
 import javax.servlet.Servlet;
@@ -29,30 +24,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.aries.cdi.extra.propertytypes.HttpWhiteboardServletName;
+import org.apache.aries.cdi.extra.propertytypes.HttpWhiteboardServletPattern;
 import org.osgi.annotation.bundle.Requirement;
 import org.osgi.service.cdi.CDIConstants;
-import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.cdi.annotations.Service;
 import org.osgi.service.cdi.annotations.SingleComponent;
 
+@HttpWhiteboardServletName("bar")
+@HttpWhiteboardServletPattern("/bar")
 @Requirement(
 	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
 	name = "aries.cdi.http"
 )
-@SingleComponent
 @Service(Servlet.class)
-@BarServlet.Props
+@SingleComponent
+@SuppressWarnings("serial")
 public class BarServlet extends HttpServlet {
-
-	@Retention(RUNTIME) @Target(TYPE )
-	@BeanPropertyType
-	public @interface Props {
-		String osgi_http_whiteboard_servlet_name() default "bar";
-		String osgi_http_whiteboard_servlet_pattern() default "/bar";
-
-	}
-
-	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void service(
