@@ -42,6 +42,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.converter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.utils</artifactId>
 		</dependency>
 		<dependency>
@@ -91,10 +95,6 @@
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.log</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.util.converter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>

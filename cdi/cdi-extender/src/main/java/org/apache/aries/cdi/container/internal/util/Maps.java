@@ -15,8 +15,6 @@
 package org.apache.aries.cdi.container.internal.util;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,8 +40,6 @@ import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.util.converter.TypeReference;
 
 public class Maps {
-
-	private static final String PREFIX_CONSTANT = "PREFIX_";
 
 	private Maps() {
 		// no instances
@@ -151,28 +147,6 @@ public class Maps {
 				Map.Entry::getValue
 			)
 		);
-	}
-
-	static String getPrefix(Annotation ann) {
-		try {
-			Class<?> clazz = ann.annotationType();
-			final Field f = clazz.getField(PREFIX_CONSTANT);
-			if (Modifier.isStatic(f.getModifiers()) &&
-				Modifier.isPublic(f.getModifiers()) &&
-				Modifier.isFinal(f.getModifiers()) &&
-				String.class.isAssignableFrom(f.getType())) {
-
-				final Object value = f.get(null);
-
-				if ( value != null ) {
-					return value.toString();
-				}
-			}
-		}
-		catch ( final Exception ignore) {
-			// ignore
-		}
-		return null;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
