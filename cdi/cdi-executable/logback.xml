@@ -33,7 +33,7 @@
 	<logger name="org.eclipse" level="ERROR"/>
 	<logger name="org.jboss" level="ERROR"/>
 
-	<root level="DEBUG">
+	<root level="WARN">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>
