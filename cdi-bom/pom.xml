@@ -75,6 +75,36 @@
 				<scope>runtime</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.configadmin</artifactId>
+				<version>1.9.10</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.http.jetty</artifactId>
+				<version>4.0.6</version>
+				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.servlet</groupId>
+						<artifactId>javax.servlet-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.logback</artifactId>
+				<version>1.0.1-SNAPSHOT</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.platform</groupId>
+				<artifactId>org.eclipse.osgi</artifactId>
+				<version>3.13.200</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
 				<version>3.3.2.Final</version>
