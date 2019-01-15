@@ -54,8 +54,8 @@
 		<module>cdi-extension-el-jsp</module>
 		<module>cdi-extension-http</module>
 		<module>cdi-extension-jndi</module>
-		<module>cdi-itests</module>
 		<module>cdi-bom</module>
+		<module>cdi-itests</module>
 		<module>cdi-executable</module>
 	</modules>
 
@@ -408,9 +408,20 @@
 
 	<repositories>
 		<repository>
+			<id>apache.snapshots</id>
+			<name>Apache Snapshot Repository</name>
+			<url>https://repository.apache.org/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		<repository>
 			<id>osgi-releases-and-snapshots</id>
 			<url>https://oss.sonatype.org/content/groups/osgi/</url>
 			<layout>default</layout>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
 		</repository>
 	</repositories>
 
