@@ -15,17 +15,14 @@
 package org.apache.aries.cdi.container.internal.container;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Parameter;
-import java.util.AbstractMap.SimpleEntry;
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
@@ -34,7 +31,6 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
 import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.DefinitionException;
@@ -43,11 +39,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
-import javax.enterprise.inject.spi.ProcessManagedBean;
 import javax.enterprise.inject.spi.ProcessProducerField;
 import javax.enterprise.inject.spi.ProcessProducerMethod;
-import javax.enterprise.inject.spi.ProcessSessionBean;
-import javax.enterprise.inject.spi.ProcessSyntheticBean;
 
 import org.apache.aries.cdi.container.internal.model.BeansModel;
 import org.apache.aries.cdi.container.internal.model.ComponentPropertiesModel;
@@ -57,8 +50,7 @@ import org.apache.aries.cdi.container.internal.model.ExtendedConfigurationTempla
 import org.apache.aries.cdi.container.internal.model.OSGiBean;
 import org.apache.aries.cdi.container.internal.model.ReferenceModel;
 import org.apache.aries.cdi.container.internal.model.ReferenceModel.Builder;
-import org.apache.aries.cdi.container.internal.util.Maps;
-import org.apache.aries.cdi.container.internal.util.Types;
+import org.apache.aries.cdi.container.internal.util.Annotates;
 import org.osgi.service.cdi.ComponentType;
 import org.osgi.service.cdi.ConfigurationPolicy;
 import org.osgi.service.cdi.MaximumCardinality;
@@ -68,7 +60,6 @@ import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.annotations.FactoryComponent;
 import org.osgi.service.cdi.annotations.PID;
 import org.osgi.service.cdi.annotations.Reference;
-import org.osgi.service.cdi.annotations.ServiceInstance;
 import org.osgi.service.cdi.annotations.SingleComponent;
 import org.osgi.service.cdi.reference.BindBeanServiceObjects;
 import org.osgi.service.cdi.reference.BindService;
@@ -83,69 +74,95 @@ public class DiscoveryExtension implements Extension {
 		_containerTemplate = _containerState.containerDTO().template.components.get(0);
 	}
 
-	static Entry<Class<?>, Annotated> getBeanClassAndAnnotated(ProcessBean<?> pb) {
-		Annotated annotated = null;
-		Class<?> annotatedClass = null;
+	<X> void processAnnotatedType(@Observes ProcessAnnotatedType<X> pat) {
+		Class<X> declaringClass = Annotates.declaringClass(pat.getAnnotatedType());
 
-		if (pb instanceof ProcessManagedBean) {
-			ProcessManagedBean<?> bean = (ProcessManagedBean<?>)pb;
+		final String className = declaringClass.getName();
 
-			annotated = bean.getAnnotated();
-			annotatedClass = bean.getAnnotatedBeanClass().getJavaClass();
-		}
-		else if (pb instanceof ProcessSessionBean) {
-			ProcessSessionBean<?> bean = (ProcessSessionBean<?>)pb;
+		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
 
-			annotated = bean.getAnnotated();
-			annotatedClass = bean.getAnnotatedBeanClass().getJavaClass();
-		}
-		else if (pb instanceof ProcessProducerMethod) {
-			ProcessProducerMethod<?, ?> producer = (ProcessProducerMethod<?, ?>)pb;
-
-			annotated = producer.getAnnotated();
-			annotatedClass = producer.getAnnotatedProducerMethod().getDeclaringType().getJavaClass();
-		}
-		else if (pb instanceof ProcessProducerField) {
-			ProcessProducerField<?, ?> producer = (ProcessProducerField<?, ?>)pb;
-
-			annotated = producer.getAnnotated();
-			annotatedClass = producer.getAnnotatedProducerField().getDeclaringType().getJavaClass();
-		}
-		else if (pb instanceof ProcessSyntheticBean) {
-			ProcessSyntheticBean<?> synthetic = (ProcessSyntheticBean<?>)pb;
-
-			annotated = synthetic.getAnnotated();
-			annotatedClass = synthetic.getBean().getBeanClass();
-		}
-		else {
-			annotated = pb.getAnnotated();
-			annotatedClass = pb.getBean().getBeanClass();
+		if (osgiBean == null) {
+			return;
 		}
 
-		return new SimpleEntry<>(annotatedClass, annotated);
+		osgiBean.found(true);
 	}
 
-	static Class<?> getDeclaringClass(InjectionPoint injectionPoint) {
+	<X> void processBindObject(@Observes ProcessInjectionPoint<X, BindService<?>> pip) {
+		processInjectionPoint0(pip, true);
+	}
+
+	<X> void processBindServiceObjects(@Observes ProcessInjectionPoint<X, BindBeanServiceObjects<?>> pip) {
+		processInjectionPoint0(pip, true);
+	}
+
+	<X> void processBindServiceReference(@Observes ProcessInjectionPoint<X, BindServiceReference<?>> pip) {
+		processInjectionPoint0(pip, true);
+	}
+
+	<X, T> void processInjectionPoint(@Observes ProcessInjectionPoint<X, T> pip) {
+		processInjectionPoint0(pip, false);
+	}
+
+	<X, T> void processInjectionPoint0(ProcessInjectionPoint<X, T> pip, boolean special) {
+		InjectionPoint injectionPoint = pip.getInjectionPoint();
+
 		Annotated annotated = injectionPoint.getAnnotated();
 
-		Class<?> declaringClass = null;
+		Class<X> declaringClass = Annotates.declaringClass(annotated);
 
-		if (annotated instanceof AnnotatedParameter) {
-			AnnotatedParameter<?> ap = (AnnotatedParameter<?>)annotated;
+		String className = declaringClass.getName();
 
-			Parameter javaParameter = ap.getJavaParameter();
+		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
 
-			Executable executable = javaParameter.getDeclaringExecutable();
+		if (osgiBean == null) {
+			return;
+		}
 
-			declaringClass = executable.getDeclaringClass();
+		if (special) {
+			doSpecial(osgiBean, annotated, injectionPoint.getType());
 		}
 		else {
-			AnnotatedField<?> af = (AnnotatedField<?>)annotated;
+			doOther(osgiBean, declaringClass, annotated, injectionPoint);
+		}
+	}
 
-			declaringClass = af.getDeclaringType().getJavaClass();
+	<X> void processBean(@Observes ProcessBean<X> pb) {
+		final Class<X> declaringClass = Annotates.declaringClass(pb);
+
+		String className = declaringClass.getName();
+
+		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
+
+		if (osgiBean == null) {
+			return;
 		}
 
-		return declaringClass;
+		osgiBean.found(true);
+
+		final Annotated annotated = pb.getAnnotated();
+
+		try {
+			List<String> serviceTypes = Annotates.serviceClassNames(annotated);
+			Map<String, Object> componentProperties = Annotates.componentProperties(annotated);
+			ServiceScope serviceScope = Annotates.serviceScope(annotated);
+
+			if (annotated.isAnnotationPresent(SingleComponent.class)) {
+				doSingleComponent(osgiBean, declaringClass, annotated, pb.getBean(), serviceTypes, serviceScope, componentProperties);
+			}
+			else if (annotated.isAnnotationPresent(FactoryComponent.class)) {
+				doFactoryComponent(osgiBean, declaringClass, annotated, pb.getBean(), serviceTypes, serviceScope, componentProperties);
+			}
+			else if (annotated.isAnnotationPresent(ComponentScoped.class)) {
+				// Explicitly ignore this case
+			}
+			else {
+				doContainerBean(osgiBean, declaringClass, annotated, pb, pb.getBean().getScope(), serviceTypes, serviceScope, componentProperties);
+			}
+		}
+		catch (Exception e) {
+			pb.addDefinitionError(e);
+		}
 	}
 
 	void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager beanManager) {
@@ -173,405 +190,251 @@ public class DiscoveryExtension implements Extension {
 		);
 	}
 
-	<X> void processAnnotatedType(@Observes ProcessAnnotatedType<X> pat, BeanManager beanManager) {
-		final AnnotatedType<X> at = pat.getAnnotatedType();
+	void doComponentProperties(OSGiBean osgiBean, Class<?> declaringClass, InjectionPoint injectionPoint) {
+		try {
+			ComponentPropertiesModel configurationModel = new ComponentPropertiesModel.Builder(
+				injectionPoint.getType()
+			).declaringClass(
+				declaringClass
+			).injectionPoint(
+				injectionPoint
+			).build();
 
-		Class<X> annotatedClass = at.getJavaClass();
-
-		final String className = annotatedClass.getName();
-
-		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
-
-		if (osgiBean == null) {
-			return;
+			osgiBean.addConfiguration(_containerState, configurationModel.toDTO());
 		}
-
-		osgiBean.found(true);
+		catch (Exception e) {
+			_containerState.error(e);
+		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	void processBean(@Observes ProcessBean<?> pb) {
-		Entry<Class<?>, Annotated> beanClassAndAnnotated = getBeanClassAndAnnotated(pb);
+	void doContainerBean(OSGiBean osgiBean, Class<?> declaringClass, Annotated annotated, ProcessBean<?> pb, Class<? extends Annotation> scope, List<String> serviceTypeNames, ServiceScope serviceScope, Map<String, Object> componentProperties) {
+		String className = declaringClass.getName();
 
-		final Class<?> annotatedClass = beanClassAndAnnotated.getKey();
-
-		String className = annotatedClass.getName();
-
-		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
-
-		if (osgiBean == null) {
-			return;
+		if (!_containerTemplate.beans.contains(className)) {
+			_containerTemplate.beans.add(className);
 		}
 
-		osgiBean.found(true);
+		if (!serviceTypeNames.isEmpty()) {
+			if (!scope.equals(ApplicationScoped.class) &&
+				!scope.equals(Dependent.class)) {
 
-		final Annotated annotated = beanClassAndAnnotated.getValue();
-
-		try {
-			List<Class<?>> serviceTypes = Types.collectServiceTypes(annotated);
-
-			if ((annotated instanceof AnnotatedType) &&
-				Optional.ofNullable(
-					annotated.getAnnotation(SingleComponent.class)).isPresent()) {
-
-				ExtendedComponentTemplateDTO componentTemplate = new ExtendedComponentTemplateDTO();
-				componentTemplate.activations = new CopyOnWriteArrayList<>();
-
-				ExtendedActivationTemplateDTO activationTemplate = new ExtendedActivationTemplateDTO();
-				activationTemplate.declaringClass = annotatedClass;
-				activationTemplate.properties = Collections.emptyMap();
-				activationTemplate.scope = getScope(annotated);
-				activationTemplate.serviceClasses = serviceTypes.stream().map(
-					st -> st.getName()
-				).collect(Collectors.toList());
-
-				componentTemplate.activations.add(activationTemplate);
-
-				componentTemplate.bean = pb.getBean();
-				componentTemplate.beans = new CopyOnWriteArrayList<>();
-				componentTemplate.configurations = new CopyOnWriteArrayList<>();
-				componentTemplate.name = pb.getBean().getName();
-				componentTemplate.properties = Maps.componentProperties(annotated);
-				componentTemplate.references = new CopyOnWriteArrayList<>();
-				componentTemplate.type = ComponentType.SINGLE;
-
-				annotated.getAnnotations(PID.class).stream().forEach(
-					PID -> {
-						ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
-
-						configurationTemplate.declaringClass = annotatedClass;
-						configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
-						configurationTemplate.pid = Optional.of(PID.value()).map(
-							s -> {
-								if (s.equals("$") || s.equals("")) {
-									return componentTemplate.name;
-								}
-								return s;
-							}
-						).orElse(componentTemplate.name);
-
-						if (PID.value().equals("$") || PID.value().equals("")) {
-							configurationTemplate.pid = componentTemplate.name;
-						}
-						else {
-							configurationTemplate.pid = PID.value();
-						}
-
-						configurationTemplate.policy = PID.policy();
-
-						componentTemplate.configurations.add(configurationTemplate);
-					}
-				);
-
-				if (componentTemplate.configurations.isEmpty()) {
-					ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
-
-					configurationTemplate.declaringClass = annotatedClass;
-					configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
-					configurationTemplate.pid = componentTemplate.name;
-					configurationTemplate.policy = ConfigurationPolicy.OPTIONAL;
-
-					componentTemplate.configurations.add(configurationTemplate);
-				}
-
-				componentTemplate.beans.add(className);
-
-				_containerState.containerDTO().template.components.add(componentTemplate);
-
-				osgiBean.setComponent(_containerState, componentTemplate);
+				pb.addDefinitionError(
+					new IllegalStateException(
+						String.format(
+							"@Service can only be used on @ApplicationScoped, @Dependent, @SingleComponent, and @FactoryComponent: %s",
+							pb.getBean())));
+				return;
 			}
-			else if ((annotated instanceof AnnotatedType) &&
-					Optional.ofNullable(
-					annotated.getAnnotation(FactoryComponent.class)).isPresent()) {
 
-				ExtendedComponentTemplateDTO componentTemplate = new ExtendedComponentTemplateDTO();
-				componentTemplate.activations = new CopyOnWriteArrayList<>();
+			ExtendedActivationTemplateDTO activationTemplate = new ExtendedActivationTemplateDTO();
+			activationTemplate.cdiScope = scope;
+			activationTemplate.declaringClass = declaringClass;
+			if (pb instanceof ProcessProducerField) {
+				activationTemplate.producer = ((ProcessProducerField<?, ?>) pb).getAnnotatedProducerField();
+			}
+			else if (pb instanceof ProcessProducerMethod) {
+				activationTemplate.producer = ((ProcessProducerMethod<?, ?>) pb).getAnnotatedProducerMethod();
+			}
+			activationTemplate.properties = componentProperties;
+			activationTemplate.scope = serviceScope;
+			activationTemplate.serviceClasses = serviceTypeNames;
 
-				ExtendedActivationTemplateDTO activationTemplate = new ExtendedActivationTemplateDTO();
-				activationTemplate.declaringClass = annotatedClass;
-				activationTemplate.properties = Collections.emptyMap();
-				activationTemplate.scope = getScope(annotated);
-				activationTemplate.serviceClasses = serviceTypes.stream().map(
-					st -> st.getName()
-				).collect(Collectors.toList());
+			_containerTemplate.activations.add(activationTemplate);
+		}
 
-				componentTemplate.activations.add(activationTemplate);
+		osgiBean.setComponent(_containerState, _containerTemplate);
+	}
 
-				componentTemplate.bean = pb.getBean();
-				componentTemplate.beans = new CopyOnWriteArrayList<>();
-				componentTemplate.configurations = new CopyOnWriteArrayList<>();
-				componentTemplate.name = pb.getBean().getName();
-				componentTemplate.properties = Maps.componentProperties(annotated);
-				componentTemplate.references = new CopyOnWriteArrayList<>();
-				componentTemplate.type = ComponentType.FACTORY;
+	void doFactoryComponent(OSGiBean osgiBean, Class<?> declaringClass, Annotated annotated, Bean<?> bean, List<String> serviceTypeNames, ServiceScope serviceScope, Map<String, Object> componentProperties) {
+		ExtendedComponentTemplateDTO componentTemplate = new ExtendedComponentTemplateDTO();
+		componentTemplate.activations = new CopyOnWriteArrayList<>();
 
-				annotated.getAnnotations(PID.class).stream().forEach(
-					PID -> {
-						ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
+		ExtendedActivationTemplateDTO activationTemplate = new ExtendedActivationTemplateDTO();
+		activationTemplate.declaringClass = declaringClass;
+		activationTemplate.properties = Collections.emptyMap();
+		activationTemplate.scope = serviceScope;
+		activationTemplate.serviceClasses = serviceTypeNames;
 
-						configurationTemplate.declaringClass = annotatedClass;
-						configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
-						configurationTemplate.pid = Optional.of(PID.value()).map(
-							s -> {
-								if (s.equals("$") || s.equals("")) {
-									return componentTemplate.name;
-								}
-								return s;
-							}
-						).orElse(componentTemplate.name);
+		componentTemplate.activations.add(activationTemplate);
 
-						configurationTemplate.policy = PID.policy();
+		componentTemplate.bean = bean;
+		componentTemplate.beans = new CopyOnWriteArrayList<>();
+		componentTemplate.configurations = new CopyOnWriteArrayList<>();
+		componentTemplate.name = bean.getName();
+		componentTemplate.properties = componentProperties;
+		componentTemplate.references = new CopyOnWriteArrayList<>();
+		componentTemplate.type = ComponentType.FACTORY;
 
-						componentTemplate.configurations.add(configurationTemplate);
-					}
-				);
-
+		annotated.getAnnotations(PID.class).stream().forEach(
+			PID -> {
 				ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
 
-				configurationTemplate.declaringClass = annotatedClass;
-				configurationTemplate.maximumCardinality = MaximumCardinality.MANY;
-				configurationTemplate.pid = Optional.ofNullable(
-					annotated.getAnnotation(FactoryComponent.class)
-				).map(fc -> {
-					if (fc.value().equals("$") || fc.value().equals("")) {
-						return componentTemplate.name;
+				configurationTemplate.declaringClass = declaringClass;
+				configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
+				configurationTemplate.pid = Optional.of(PID.value()).map(
+					s -> {
+						if (s.equals("$") || s.equals("")) {
+							return componentTemplate.name;
+						}
+						return s;
 					}
-					return fc.value();
-				}).orElse(componentTemplate.name);
-				configurationTemplate.policy = ConfigurationPolicy.REQUIRED;
+				).orElse(componentTemplate.name);
+
+				configurationTemplate.policy = PID.policy();
 
 				componentTemplate.configurations.add(configurationTemplate);
-				componentTemplate.beans.add(className);
-
-				_containerState.containerDTO().template.components.add(componentTemplate);
-
-				osgiBean.setComponent(_containerState, componentTemplate);
 			}
-			else if ((annotated instanceof AnnotatedType) &&
-					Optional.ofNullable(
-					annotated.getAnnotation(ComponentScoped.class)).isPresent()) {
+		);
 
-				// Explicitly ignore this case
+		ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
+
+		configurationTemplate.declaringClass = declaringClass;
+		configurationTemplate.maximumCardinality = MaximumCardinality.MANY;
+		configurationTemplate.pid = Optional.ofNullable(
+			annotated.getAnnotation(FactoryComponent.class)
+		).map(fc -> {
+			if (fc.value().equals("$") || fc.value().equals("")) {
+				return componentTemplate.name;
 			}
-			else {
-				if (!_containerTemplate.beans.contains(className)) {
-					_containerTemplate.beans.add(className);
-				}
+			return fc.value();
+		}).orElse(componentTemplate.name);
+		configurationTemplate.policy = ConfigurationPolicy.REQUIRED;
 
-				if (!serviceTypes.isEmpty()) {
-					Class<? extends Annotation> scope = pb.getBean().getScope();
-					if (!scope.equals(ApplicationScoped.class) &&
-						!scope.equals(Dependent.class)) {
+		componentTemplate.configurations.add(configurationTemplate);
+		componentTemplate.beans.add(declaringClass.getName());
 
-						pb.addDefinitionError(
-							new IllegalStateException(
-								String.format(
-									"@Service can only be used on @ApplicationScoped, @Dependent, @SingleComponent, and @FactoryComponent: %s",
-									pb.getBean())));
-						return;
-					}
+		_containerState.containerDTO().template.components.add(componentTemplate);
 
-					ExtendedActivationTemplateDTO activationTemplate = new ExtendedActivationTemplateDTO();
-					activationTemplate.cdiScope = scope;
-					activationTemplate.declaringClass = annotatedClass;
-					if (pb instanceof ProcessProducerField) {
-						activationTemplate.producer = ((ProcessProducerField) pb).getAnnotatedProducerField();
-					}
-					else if (pb instanceof ProcessProducerMethod) {
-						activationTemplate.producer = ((ProcessProducerMethod) pb).getAnnotatedProducerMethod();
-					}
-					activationTemplate.properties = Maps.componentProperties(annotated);
-					activationTemplate.scope = getScope(annotated);
-					activationTemplate.serviceClasses = serviceTypes.stream().map(
-						st -> st.getName()
-					).collect(Collectors.toList());
-
-					_containerTemplate.activations.add(activationTemplate);
-				}
-
-				osgiBean.setComponent(_containerState, _containerTemplate);
-			}
-		}
-		catch (Exception e) {
-			pb.addDefinitionError(e);
-		}
+		osgiBean.setComponent(_containerState, componentTemplate);
 	}
 
-	void processBindObject(@Observes ProcessInjectionPoint<?, BindService<?>> pip) {
-		InjectionPoint injectionPoint = pip.getInjectionPoint();
-
-		Class<?> declaringClass = getDeclaringClass(injectionPoint);
-
-		String className = declaringClass.getName();
-
-		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
-
-		if (osgiBean == null) {
-			return;
-		}
-
-		Annotated annotated = injectionPoint.getAnnotated();
-
-		Builder builder = null;
-
-		if (annotated instanceof AnnotatedParameter) {
-			builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
-		}
-		else {
-			builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
-		}
-
-		try {
-			ReferenceModel referenceModel = builder.type(injectionPoint.getType()).build();
-
-			osgiBean.addReference(referenceModel.toDTO());
-		}
-		catch (Exception e) {
-			_containerState.error(e);
-		}
-	}
-
-	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindBeanServiceObjects<?>> pip) {
-		InjectionPoint injectionPoint = pip.getInjectionPoint();
-
-		Class<?> declaringClass = getDeclaringClass(injectionPoint);
-
-		String className = declaringClass.getName();
-
-		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
-
-		if (osgiBean == null) {
-			return;
-		}
-
-		Annotated annotated = injectionPoint.getAnnotated();
-
-		Builder builder = null;
-
-		if (annotated instanceof AnnotatedParameter) {
-			builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
-		}
-		else {
-			builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
-		}
-
-		try {
-			ReferenceModel referenceModel = builder.type(injectionPoint.getType()).build();
-
-			osgiBean.addReference(referenceModel.toDTO());
-		}
-		catch (Exception e) {
-			_containerState.error(e);
-		}
-	}
-
-	void processBindServiceReference(@Observes ProcessInjectionPoint<?, BindServiceReference<?>> pip) {
-		InjectionPoint injectionPoint = pip.getInjectionPoint();
-
-		Class<?> declaringClass = getDeclaringClass(injectionPoint);
-
-		String className = declaringClass.getName();
-
-		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
-
-		if (osgiBean == null) {
-			return;
-		}
-
-		Annotated annotated = injectionPoint.getAnnotated();
-
-		Builder builder = null;
-
-		if (annotated instanceof AnnotatedParameter) {
-			builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
-		}
-		else {
-			builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
-		}
-
-		try {
-			ReferenceModel referenceModel = builder.type(injectionPoint.getType()).build();
-
-			osgiBean.addReference(referenceModel.toDTO());
-		}
-		catch (Exception e) {
-			_containerState.error(e);
-		}
-	}
-
-	void processInjectionPoint(@Observes ProcessInjectionPoint<?, ?> pip) {
-		InjectionPoint injectionPoint = pip.getInjectionPoint();
-
-		Class<?> declaringClass = getDeclaringClass(injectionPoint);
-
-		String className = declaringClass.getName();
-
-		OSGiBean osgiBean = _beansModel.getOSGiBean(className);
-
-		if (osgiBean == null) {
-			return;
-		}
-
-		Annotated annotated = injectionPoint.getAnnotated();
+	void doOther(OSGiBean osgiBean, Class<?> declaringClass, Annotated annotated, InjectionPoint injectionPoint) {
 		Reference reference = annotated.getAnnotation(Reference.class);
 		ComponentProperties componentProperties = annotated.getAnnotation(ComponentProperties.class);
 
 		if (reference != null) {
-			if (componentProperties != null) {
-				_containerState.error(
-					new IllegalArgumentException(
-						String.format(
-							"Cannot use @Reference and @Configuration on the same injection point {}",
-							injectionPoint))
-				);
-
-				return;
-			}
-
-			Builder builder = null;
-
-			if (annotated instanceof AnnotatedParameter) {
-				builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
-			}
-			else {
-				builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
-			}
-
-			try {
-				ReferenceModel referenceModel = builder.type(injectionPoint.getType()).build();
-
-				osgiBean.addReference(referenceModel.toDTO());
-			}
-			catch (Exception e) {
-				_containerState.error(e);
-			}
+			doReference(osgiBean, annotated, injectionPoint, reference, componentProperties);
 		}
 		else if (componentProperties != null) {
-			try {
-				ComponentPropertiesModel configurationModel = new ComponentPropertiesModel.Builder(
-					injectionPoint.getType()
-				).declaringClass(
-					declaringClass
-				).injectionPoint(
-					injectionPoint
-				).build();
-
-				osgiBean.addConfiguration(_containerState, configurationModel.toDTO());
-			}
-			catch (Exception e) {
-				_containerState.error(e);
-			}
+			doComponentProperties(osgiBean, declaringClass, injectionPoint);
 		}
 	}
 
-	ServiceScope getScope(Annotated annotated) {
-		ServiceInstance serviceInstance = annotated.getAnnotation(ServiceInstance.class);
+	void doReference(OSGiBean osgiBean, Annotated annotated, InjectionPoint injectionPoint, Reference reference, ComponentProperties componentProperties) {
+		if (componentProperties != null) {
+			_containerState.error(
+				new IllegalArgumentException(
+					String.format(
+						"Cannot use @Reference and @Configuration on the same injection point {}",
+						injectionPoint))
+			);
 
-		if (serviceInstance != null) {
-			return serviceInstance.value();
+			return;
 		}
 
-		return ServiceScope.SINGLETON;
+		Builder builder = null;
+
+		if (annotated instanceof AnnotatedParameter) {
+			builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
+		}
+		else {
+			builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
+		}
+
+		try {
+			ReferenceModel referenceModel = builder.type(injectionPoint.getType()).build();
+
+			osgiBean.addReference(referenceModel.toDTO());
+		}
+		catch (Exception e) {
+			_containerState.error(e);
+		}
+	}
+
+	void doSingleComponent(OSGiBean osgiBean, Class<?> declaringClass, Annotated annotated, Bean<?> bean, List<String> serviceTypes, ServiceScope serviceScope, Map<String, Object> componentProperties) {
+		ExtendedComponentTemplateDTO componentTemplate = new ExtendedComponentTemplateDTO();
+		componentTemplate.activations = new CopyOnWriteArrayList<>();
+
+		ExtendedActivationTemplateDTO activationTemplate = new ExtendedActivationTemplateDTO();
+		activationTemplate.declaringClass = declaringClass;
+		activationTemplate.properties = Collections.emptyMap();
+		activationTemplate.scope = serviceScope;
+		activationTemplate.serviceClasses = serviceTypes;
+
+		componentTemplate.activations.add(activationTemplate);
+
+		componentTemplate.bean = bean;
+		componentTemplate.beans = new CopyOnWriteArrayList<>();
+		componentTemplate.configurations = new CopyOnWriteArrayList<>();
+		componentTemplate.name = bean.getName();
+		componentTemplate.properties = componentProperties;
+		componentTemplate.references = new CopyOnWriteArrayList<>();
+		componentTemplate.type = ComponentType.SINGLE;
+
+		annotated.getAnnotations(PID.class).stream().forEach(
+			PID -> {
+				ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
+
+				configurationTemplate.declaringClass = declaringClass;
+				configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
+				configurationTemplate.pid = Optional.of(PID.value()).map(
+					s -> {
+						if (s.equals("$") || s.equals("")) {
+							return componentTemplate.name;
+						}
+						return s;
+					}
+				).orElse(componentTemplate.name);
+
+				if (PID.value().equals("$") || PID.value().equals("")) {
+					configurationTemplate.pid = componentTemplate.name;
+				}
+				else {
+					configurationTemplate.pid = PID.value();
+				}
+
+				configurationTemplate.policy = PID.policy();
+
+				componentTemplate.configurations.add(configurationTemplate);
+			}
+		);
+
+		if (componentTemplate.configurations.isEmpty()) {
+			ExtendedConfigurationTemplateDTO configurationTemplate = new ExtendedConfigurationTemplateDTO();
+
+			configurationTemplate.declaringClass = declaringClass;
+			configurationTemplate.maximumCardinality = MaximumCardinality.ONE;
+			configurationTemplate.pid = componentTemplate.name;
+			configurationTemplate.policy = ConfigurationPolicy.OPTIONAL;
+
+			componentTemplate.configurations.add(configurationTemplate);
+		}
+
+		componentTemplate.beans.add(declaringClass.getName());
+
+		_containerState.containerDTO().template.components.add(componentTemplate);
+
+		osgiBean.setComponent(_containerState, componentTemplate);
+	}
+
+	void doSpecial(OSGiBean osgiBean, Annotated annotated, Type injectionPointType) {
+		Builder builder = null;
+
+		if (annotated instanceof AnnotatedParameter) {
+			builder = new ReferenceModel.Builder((AnnotatedParameter<?>)annotated);
+		}
+		else {
+			builder = new ReferenceModel.Builder((AnnotatedField<?>)annotated);
+		}
+
+		try {
+			ReferenceModel referenceModel = builder.type(injectionPointType).build();
+
+			osgiBean.addReference(referenceModel.toDTO());
+		}
+		catch (Exception e) {
+			_containerState.error(e);
+		}
 	}
 
 	void scanComponentBean(
@@ -606,8 +469,8 @@ public class DiscoveryExtension implements Extension {
 		}
 
 		for (InjectionPoint injectionPoint : bean.getInjectionPoints()) {
-			if ((injectionPoint.getAnnotated().getAnnotation(ComponentProperties.class) != null) ||
-				(injectionPoint.getAnnotated().getAnnotation(Reference.class) != null)) {
+			if (injectionPoint.getAnnotated().isAnnotationPresent(ComponentProperties.class) ||
+				injectionPoint.getAnnotated().isAnnotationPresent(Reference.class)) {
 
 				continue;
 			}

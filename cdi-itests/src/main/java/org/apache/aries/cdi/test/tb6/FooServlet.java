@@ -18,21 +18,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.inject.Inject;
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.aries.cdi.extra.propertytypes.HttpWhiteboardServletName;
-import org.apache.aries.cdi.extra.propertytypes.HttpWhiteboardServletPattern;
-import org.osgi.service.cdi.annotations.Service;
-import org.osgi.service.cdi.annotations.SingleComponent;
-
-@HttpWhiteboardServletName("foo")
-@HttpWhiteboardServletPattern("/foo")
-@SingleComponent
-@Service(Servlet.class)
+@WebServlet(name = "foo", urlPatterns = "/foo")
 @SuppressWarnings("serial")
 public class FooServlet extends HttpServlet {
 

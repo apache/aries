@@ -14,11 +14,12 @@
 
 package org.apache.aries.cdi.container.internal.container;
 
-import static javax.interceptor.Interceptor.Priority.*;
+import static javax.interceptor.Interceptor.Priority.PLATFORM_AFTER;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -40,7 +41,10 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.BeforeShutdown;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.inject.spi.InjectionPoint;
+import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
+import javax.enterprise.inject.spi.ProcessProducerField;
+import javax.enterprise.inject.spi.ProcessProducerMethod;
 import javax.enterprise.inject.spi.Producer;
 import javax.enterprise.inject.spi.ProducerFactory;
 
@@ -60,6 +64,7 @@ import org.apache.aries.cdi.container.internal.model.FactoryComponent;
 import org.apache.aries.cdi.container.internal.model.OSGiBean;
 import org.apache.aries.cdi.container.internal.model.ReferenceModel;
 import org.apache.aries.cdi.container.internal.model.SingleComponent;
+import org.apache.aries.cdi.container.internal.util.Annotates;
 import org.apache.aries.cdi.container.internal.util.SRs;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -70,12 +75,12 @@ import org.osgi.service.cdi.CDIConstants;
 import org.osgi.service.cdi.ComponentType;
 import org.osgi.service.cdi.ServiceScope;
 import org.osgi.service.cdi.annotations.ComponentProperties;
-import org.osgi.service.cdi.annotations.ComponentScoped;
 import org.osgi.service.cdi.annotations.Reference;
 import org.osgi.service.cdi.reference.BindBeanServiceObjects;
 import org.osgi.service.cdi.reference.BindService;
 import org.osgi.service.cdi.reference.BindServiceReference;
 import org.osgi.service.cdi.runtime.dto.ComponentDTO;
+import org.osgi.service.cdi.runtime.dto.template.ActivationTemplateDTO;
 import org.osgi.service.cdi.runtime.dto.template.ComponentTemplateDTO;
 import org.osgi.service.cdi.runtime.dto.template.ConfigurationTemplateDTO;
 import org.osgi.service.log.Logger;
@@ -97,6 +102,7 @@ public class RuntimeExtension implements Extension {
 		_configurationBuilder = configurationBuilder;
 		_singleBuilder = singleBuilder;
 		_factoryBuilder = factoryBuilder;
+		_containerTemplate = _containerState.containerDTO().template.components.get(0);
 	}
 
 	void beforeBeanDiscovery(@Observes BeforeBeanDiscovery bbd) {
@@ -108,9 +114,85 @@ public class RuntimeExtension implements Extension {
 		bbd.addQualifier(org.osgi.service.cdi.annotations.Reluctant.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.Service.class);
 		bbd.addQualifier(org.osgi.service.cdi.annotations.ServiceInstance.class);
-		bbd.addScope(ComponentScoped.class, false, false);
+		bbd.addScope(org.osgi.service.cdi.annotations.ComponentScoped.class, false, false);
 		bbd.addStereotype(org.osgi.service.cdi.annotations.FactoryComponent.class);
 		bbd.addStereotype(org.osgi.service.cdi.annotations.SingleComponent.class);
+	}
+
+	void processBindObject(@Observes ProcessInjectionPoint<?, BindService<?>> pip) {
+		processInjectionPoint0(pip, true);
+	}
+
+	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindBeanServiceObjects<?>> pip) {
+		processInjectionPoint0(pip, true);
+	}
+
+	void processBindServiceReference(@Observes ProcessInjectionPoint<?, BindServiceReference<?>> pip) {
+		processInjectionPoint0(pip, true);
+	}
+
+	void processInjectionPoint(@Observes ProcessInjectionPoint<?, ?> pip) {
+		processInjectionPoint0(pip, false);
+	}
+
+	<X> void processBean(@Observes ProcessBean<X> pb) {
+		final Class<X> declaringClass = Annotates.declaringClass(pb);
+
+		String className = declaringClass.getName();
+
+		OSGiBean osgiBean = _containerState.beansModel().getOSGiBean(className);
+
+		if (osgiBean == null) {
+			return;
+		}
+
+		final Annotated annotated = pb.getAnnotated();
+
+		try {
+			List<String> serviceTypes = Annotates.serviceClassNames(annotated);
+			Map<String, Object> componentProperties = Annotates.componentProperties(annotated);
+			ServiceScope serviceScope = Annotates.serviceScope(annotated);
+
+			if (annotated.isAnnotationPresent(org.osgi.service.cdi.annotations.SingleComponent.class) ||
+				annotated.isAnnotationPresent(org.osgi.service.cdi.annotations.FactoryComponent.class)) {
+
+				ActivationTemplateDTO activationTemplate = osgiBean.getComponent().activations.get(0);
+				activationTemplate.scope = serviceScope;
+				activationTemplate.serviceClasses = serviceTypes;
+				osgiBean.getComponent().properties = componentProperties;
+			}
+			else if (annotated.isAnnotationPresent(org.osgi.service.cdi.annotations.ComponentScoped.class)) {
+				// Explicitly ignore this case
+			}
+			else if (!serviceTypes.isEmpty()) {
+				ExtendedActivationTemplateDTO activationTemplate = _containerTemplate.activations.stream().map(
+					ExtendedActivationTemplateDTO.class::cast
+				).filter(
+					at -> at.declaringClass.equals(declaringClass)
+				).findFirst().orElseGet(
+					() -> {
+						ExtendedActivationTemplateDTO at = new ExtendedActivationTemplateDTO();
+						at.cdiScope = pb.getBean().getScope();
+						at.declaringClass = declaringClass;
+						if (pb instanceof ProcessProducerField) {
+							at.producer = ((ProcessProducerField<?, ?>) pb).getAnnotatedProducerField();
+						}
+						else if (pb instanceof ProcessProducerMethod) {
+							at.producer = ((ProcessProducerMethod<?, ?>) pb).getAnnotatedProducerMethod();
+						}
+						_containerTemplate.activations.add(at);
+						return at;
+					}
+				);
+
+				activationTemplate.properties = componentProperties;
+				activationTemplate.scope = serviceScope;
+				activationTemplate.serviceClasses = serviceTypes;
+			}
+		}
+		catch (Exception e) {
+			pb.addDefinitionError(e);
+		}
 	}
 
 	void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager bm) {
@@ -179,48 +261,6 @@ public class RuntimeExtension implements Extension {
 				return true;
 			}
 		);
-	}
-
-	void processBindObject(@Observes ProcessInjectionPoint<?, BindService<?>> pip) {
-		processInjectionPoint(pip, true);
-	}
-
-	void processBindServiceObjects(@Observes ProcessInjectionPoint<?, BindBeanServiceObjects<?>> pip) {
-		processInjectionPoint(pip, true);
-	}
-
-	void processBindServiceReference(@Observes ProcessInjectionPoint<?, BindServiceReference<?>> pip) {
-		processInjectionPoint(pip, true);
-	}
-
-	void processInjectionPoint(@Observes ProcessInjectionPoint<?, ?> pip) {
-		processInjectionPoint(pip, false);
-	}
-
-	void processInjectionPoint(ProcessInjectionPoint<?, ?> pip, boolean special) {
-		InjectionPoint injectionPoint = pip.getInjectionPoint();
-
-		Class<?> declaringClass = DiscoveryExtension.getDeclaringClass(injectionPoint);
-
-		String className = declaringClass.getName();
-
-		OSGiBean osgiBean = _containerState.beansModel().getOSGiBean(className);
-
-		if (osgiBean == null) {
-			return;
-		}
-
-		Annotated annotated = injectionPoint.getAnnotated();
-		ComponentProperties componentProperties = annotated.getAnnotation(ComponentProperties.class);
-		Reference reference = annotated.getAnnotation(Reference.class);
-
-		if (((reference != null) || special) && matchReference(osgiBean, pip)) {
-			return;
-		}
-
-		if (componentProperties != null) {
-			matchConfiguration(osgiBean, pip);
-		}
 	}
 
 	private void addBeans(ComponentTemplateDTO componentTemplate, AfterBeanDiscovery abd, BeanManager bm) {
@@ -315,7 +355,7 @@ public class RuntimeExtension implements Extension {
 	private boolean matchConfiguration(OSGiBean osgiBean, ProcessInjectionPoint<?, ?> pip) {
 		InjectionPoint injectionPoint = pip.getInjectionPoint();
 
-		Class<?> declaringClass = DiscoveryExtension.getDeclaringClass(injectionPoint);
+		Class<?> declaringClass = Annotates.declaringClass(injectionPoint.getAnnotated());
 
 		ConfigurationTemplateDTO current = new ComponentPropertiesModel.Builder(injectionPoint.getType()).declaringClass(
 			declaringClass
@@ -379,6 +419,32 @@ public class RuntimeExtension implements Extension {
 				return true;
 			}
 		).orElse(false);
+	}
+
+	private void processInjectionPoint0(ProcessInjectionPoint<?, ?> pip, boolean special) {
+		InjectionPoint injectionPoint = pip.getInjectionPoint();
+
+		Class<?> declaringClass = Annotates.declaringClass(injectionPoint.getAnnotated());
+
+		String className = declaringClass.getName();
+
+		OSGiBean osgiBean = _containerState.beansModel().getOSGiBean(className);
+
+		if (osgiBean == null) {
+			return;
+		}
+
+		Annotated annotated = injectionPoint.getAnnotated();
+		ComponentProperties componentProperties = annotated.getAnnotation(ComponentProperties.class);
+		Reference reference = annotated.getAnnotation(Reference.class);
+
+		if (((reference != null) || special) && matchReference(osgiBean, pip)) {
+			return;
+		}
+
+		if (componentProperties != null) {
+			matchConfiguration(osgiBean, pip);
+		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -480,6 +546,7 @@ public class RuntimeExtension implements Extension {
 	private final ConfigurationListener.Builder _configurationBuilder;
 	private final List<ConfigurationListener> _configurationListeners = new CopyOnWriteArrayList<>();
 	private final ContainerState _containerState;
+	private final ComponentTemplateDTO _containerTemplate;
 	private final FactoryComponent.Builder _factoryBuilder;
 	private final Logger _log;
 	private final List<ServiceRegistration<?>> _registrations = new CopyOnWriteArrayList<>();
