@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2017, 2018). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2017, 2019). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.enterprise.util.AnnotationLiteral;
+
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 
 /**
@@ -39,6 +41,27 @@ import org.osgi.service.cdi.annotations.BeanPropertyType;
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface HttpWhiteboardContextSelect {
+
+	public static final class Literal extends AnnotationLiteral<HttpWhiteboardContextSelect> implements HttpWhiteboardContextSelect {
+
+		private static final long serialVersionUID = 1L;
+
+		public static final Literal of(String value) {
+			return new Literal(value);
+		}
+
+		private Literal(String value) {
+			_value = value;
+		}
+
+		@Override
+		public String value() {
+			return _value;
+		}
+
+		private final String _value;
+	}
+
 	/**
 	 * Prefix for the property name. This value is prepended to each property
 	 * name.

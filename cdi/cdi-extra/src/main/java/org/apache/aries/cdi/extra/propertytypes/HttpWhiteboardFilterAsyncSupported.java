@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2017). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2017, 2019). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.apache.aries.cdi.extra.propertytypes;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import javax.enterprise.util.AnnotationLiteral;
 
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 
@@ -37,6 +41,27 @@ import org.osgi.service.cdi.annotations.BeanPropertyType;
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface HttpWhiteboardFilterAsyncSupported {
+
+	public static final class Literal extends AnnotationLiteral<HttpWhiteboardFilterAsyncSupported> implements HttpWhiteboardFilterAsyncSupported {
+
+		private static final long serialVersionUID = 1L;
+
+		public static final Literal of(boolean value) {
+			return new Literal(value);
+		}
+
+		private Literal(boolean value) {
+			_value = value;
+		}
+
+		@Override
+		public boolean asyncSupported() {
+			return _value;
+		}
+
+		private final boolean _value;
+	}
+
 	/**
 	 * Prefix for the property name. This value is prepended to each property
 	 * name.

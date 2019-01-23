@@ -18,6 +18,7 @@ package org.apache.aries.cdi.extra.propertytypes;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -26,23 +27,21 @@ import java.lang.annotation.Target;
 
 import javax.enterprise.util.AnnotationLiteral;
 
+import org.osgi.framework.Constants;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 
 /**
- * Component Property Type for the {@code osgi.jaxrs.whiteboard.target} service
- * property.
+ * Bean Property Type for the {@code service.description} service property.
  * <p>
- * This annotation can be used on a JAX-RS resource or extension to declare the
- * value of the
- * {@link org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants#JAX_RS_WHITEBOARD_TARGET}
- * service property.
+ * This annotation can be used as defined by {@link BeanPropertyType} to declare
+ * the value the {@link Constants#SERVICE_DESCRIPTION} service property.
  */
 @BeanPropertyType
 @Retention(RUNTIME)
-@Target({FIELD, METHOD, TYPE})
-public @interface JaxrsWhiteboardTarget {
+@Target({ TYPE, FIELD, METHOD, PARAMETER })
+public @interface ServiceDescription {
 
-	public static final class Literal extends AnnotationLiteral<JaxrsWhiteboardTarget> implements JaxrsWhiteboardTarget {
+	public static final class Literal extends AnnotationLiteral<ServiceDescription> implements ServiceDescription {
 
 		private static final long serialVersionUID = 1L;
 
@@ -63,17 +62,10 @@ public @interface JaxrsWhiteboardTarget {
 	}
 
 	/**
-	 * Prefix for the property name. This value is prepended to each property
-	 * name.
-	 */
-	String PREFIX_ = "osgi.";
-
-	/**
-	 * Service property providing an OSGi filter identifying the whiteboard(s)
-	 * to which this service should be bound.
+	 * Service property identifying a service's description.
 	 *
-	 * @return The filter for selecting the whiteboards to bind to.
-	 * @see org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants#JAX_RS_WHITEBOARD_TARGET
+	 * @return The service description.
+	 * @see Constants#SERVICE_DESCRIPTION
 	 */
 	String value();
 }
