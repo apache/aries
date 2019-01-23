@@ -44,6 +44,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.apache.aries.cdi</groupId>
+			<artifactId>org.apache.aries.cdi.extra</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.http.servlet-api</artifactId>
 		</dependency>

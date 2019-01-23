@@ -16,7 +16,6 @@ package org.apache.aries.cdi.container.internal.util;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -28,13 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedConstructor;
-import javax.enterprise.inject.spi.AnnotatedField;
-import javax.enterprise.inject.spi.AnnotatedMethod;
-import javax.enterprise.inject.spi.AnnotatedParameter;
-import javax.enterprise.inject.spi.AnnotatedType;
 
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.util.converter.TypeReference;
@@ -107,26 +99,7 @@ public class Maps {
 		return map;
 	}
 
-	public static Map<String, Object> componentProperties(Annotated annotated) {
-		if (annotated instanceof AnnotatedType) {
-			return merge(Arrays.asList(((AnnotatedType<?>)annotated).getJavaClass().getAnnotations()));
-		}
-		else if (annotated instanceof AnnotatedParameter) {
-			return merge(Arrays.asList(((AnnotatedParameter<?>)annotated).getJavaParameter().getAnnotations()));
-		}
-		else if (annotated instanceof AnnotatedField) {
-			return merge(Arrays.asList(((AnnotatedField<?>)annotated).getJavaMember().getAnnotations()));
-		}
-		else if (annotated instanceof AnnotatedConstructor) {
-			return merge(Arrays.asList(((AnnotatedConstructor<?>)annotated).getJavaMember().getAnnotations()));
-		}
-		else if (annotated instanceof AnnotatedMethod) {
-			return merge(Arrays.asList(((AnnotatedMethod<?>)annotated).getJavaMember().getAnnotations()));
-		}
-		return merge(new ArrayList<>(annotated.getAnnotations()));
-	}
-
-	public static Map<String, Object> merge(List<Annotation> annotations) {
+	public static Map<String, Object> merge(Collection<Annotation> annotations) {
 		return annotations.stream().filter(
 			ann -> Objects.nonNull(ann.annotationType().getAnnotation(BeanPropertyType.class))
 		).map(

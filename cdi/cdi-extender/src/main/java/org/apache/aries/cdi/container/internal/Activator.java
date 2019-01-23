@@ -14,8 +14,9 @@
 
 package org.apache.aries.cdi.container.internal;
 
-import static org.osgi.namespace.extender.ExtenderNamespace.*;
-import static org.osgi.service.cdi.CDIConstants.*;
+import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
+import static org.osgi.service.cdi.CDIConstants.CDI_CAPABILITY_NAME;
+import static org.osgi.service.cdi.CDIConstants.REQUIREMENT_BEANS_ATTRIBUTE;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -200,8 +201,8 @@ public class Activator extends AbstractExtender {
 
 	@Override
 	protected void debug(Bundle bundle, String msg) {
-		if (_log.isDebugEnabled()) {
-			_log.debug(msg, bundle);
+		if (_log.isTraceEnabled()) {
+			_log.trace(msg, bundle);
 		}
 	}
 
