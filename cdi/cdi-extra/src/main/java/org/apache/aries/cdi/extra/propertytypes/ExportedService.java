@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2016, 2017). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2016, 2019). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.apache.aries.cdi.extra.propertytypes;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import javax.enterprise.util.AnnotationLiteral;
 
 import org.osgi.framework.Constants;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
@@ -40,6 +44,72 @@ import org.osgi.service.cdi.annotations.SingleComponent;
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface ExportedService {
+
+	public static final class Literal extends AnnotationLiteral<ExportedService> implements ExportedService {
+
+		private static final long serialVersionUID = 1L;
+
+		public static final Literal of(
+				Class<?>[] service_exported_interfaces,
+				String[] service_exported_configs,
+				String[] service_exported_intents,
+				String[] service_exported_intents_extra,
+				String[] service_intents) {
+
+			return new Literal(
+				service_exported_interfaces,
+				service_exported_configs,
+				service_exported_intents,
+				service_exported_intents_extra,
+				service_intents);
+		}
+
+		public Literal(
+			Class<?>[] service_exported_interfaces,
+			String[] service_exported_configs,
+			String[] service_exported_intents,
+			String[] service_exported_intents_extra,
+			String[] service_intents) {
+
+			this.service_exported_interfaces = service_exported_interfaces;
+			this.service_exported_configs = service_exported_configs;
+			this.service_exported_intents = service_exported_intents;
+			this.service_exported_intents_extra = service_exported_intents_extra;
+			this.service_intents = service_intents;
+		}
+
+		@Override
+		public String[] service_exported_configs() {
+			return service_exported_configs;
+		}
+
+		@Override
+		public String[] service_exported_intents() {
+			return service_exported_intents;
+		}
+
+		@Override
+		public String[] service_exported_intents_extra() {
+			return service_exported_intents_extra;
+		}
+
+		@Override
+		public Class<?>[] service_exported_interfaces() {
+			return service_exported_interfaces;
+		}
+
+		@Override
+		public String[] service_intents() {
+			return service_intents;
+		}
+
+		private final Class< ? >[] service_exported_interfaces;
+		private final String[] service_exported_configs;
+		private final String[] service_exported_intents;
+		private final String[] service_exported_intents_extra;
+		private final String[] service_intents;
+	}
+
 	/**
 	 * Service property marking the service for export. It defines the
 	 * interfaces under which the service can be exported.
