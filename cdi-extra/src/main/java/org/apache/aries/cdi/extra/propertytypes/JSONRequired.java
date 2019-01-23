@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2017, 2018). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2017, 2019). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import static org.osgi.resource.Namespace.EFFECTIVE_ACTIVE;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.enterprise.util.AnnotationLiteral;
+
 import org.osgi.annotation.bundle.Requirement;
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 import org.osgi.service.jaxrs.whiteboard.JaxrsWhiteboardConstants;
@@ -52,6 +54,27 @@ import org.osgi.service.jaxrs.whiteboard.annotations.RequireJaxrsWhiteboard;
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface JSONRequired {
+
+	public static final class Literal extends AnnotationLiteral<JSONRequired> implements JSONRequired {
+
+		private static final long serialVersionUID = 1L;
+
+		public static final Literal of(String osgi_jaxrs_extension_select) {
+			return new Literal(osgi_jaxrs_extension_select);
+		}
+
+		private Literal(String osgi_jaxrs_extension_select) {
+			_osgi_jaxrs_extension_select = osgi_jaxrs_extension_select;
+		}
+
+		@Override
+		public String osgi_jaxrs_extension_select() {
+			return _osgi_jaxrs_extension_select;
+		}
+
+		private final String _osgi_jaxrs_extension_select;
+	}
+
 	/**
 	 * A filter requiring an <code>osgi.jaxrs.media.type</code> of
 	 * <code>application/json</code>

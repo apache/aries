@@ -1,5 +1,5 @@
 /*
- * Copyright (c) OSGi Alliance (2017). All Rights Reserved.
+ * Copyright (c) OSGi Alliance (2017, 2019). All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,15 @@
 
 package org.apache.aries.cdi.extra.propertytypes;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import javax.enterprise.util.AnnotationLiteral;
 
 import org.osgi.service.cdi.annotations.BeanPropertyType;
 
@@ -50,6 +54,67 @@ import org.osgi.service.cdi.annotations.BeanPropertyType;
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, TYPE})
 public @interface HttpWhiteboardServletMultipart {
+
+	public static final class Literal extends AnnotationLiteral<HttpWhiteboardServletMultipart> implements HttpWhiteboardServletMultipart {
+
+		private static final long serialVersionUID = 1L;
+
+		public static final Literal of(
+				boolean enabled,
+				int fileSizeThreshold,
+				String location,
+				long maxFileSize,
+				long maxRequestSize) {
+
+			return new Literal(enabled, fileSizeThreshold, location, maxFileSize, maxRequestSize);
+		}
+
+		public Literal(
+			boolean enabled,
+			int fileSizeThreshold,
+			String location,
+			long maxFileSize,
+			long maxRequestSize) {
+
+			_enabled = enabled;
+			_fileSizeThreshold = fileSizeThreshold;
+			_location = location;
+			_maxFileSize = maxFileSize;
+			_maxRequestSize = maxRequestSize;
+		}
+
+		@Override
+		public boolean enabled() {
+			return _enabled;
+		}
+
+		@Override
+		public int fileSizeThreshold() {
+			return _fileSizeThreshold;
+		}
+
+		@Override
+		public String location() {
+			return _location;
+		}
+
+		@Override
+		public long maxFileSize() {
+			return _maxFileSize;
+		}
+
+		@Override
+		public long maxRequestSize() {
+			return _maxRequestSize;
+		}
+
+		private final boolean _enabled;
+		private final int _fileSizeThreshold;
+		private final String _location;
+		private final long _maxFileSize;
+		private final long _maxRequestSize;
+	}
+
 	/**
 	 * Prefix for the property name. This value is prepended to each property
 	 * name.
