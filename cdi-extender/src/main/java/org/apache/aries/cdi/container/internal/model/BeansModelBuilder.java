@@ -53,6 +53,14 @@ public class BeansModelBuilder {
 
 		List<String> beanDescriptorPaths = cast(attributes.get(REQUIREMENT_DESCRIPTOR_ATTRIBUTE));
 
+		if (beanDescriptorPaths == null) {
+			beanDescriptorPaths = new ArrayList<>();
+		}
+
+		if (beanDescriptorPaths.isEmpty()) {
+			beanDescriptorPaths.add("META-INF/beans.xml");
+		}
+
 		if (beanDescriptorPaths != null) {
 			for (String descriptorPath : beanDescriptorPaths) {
 				URL url = getResource(descriptorPath);
