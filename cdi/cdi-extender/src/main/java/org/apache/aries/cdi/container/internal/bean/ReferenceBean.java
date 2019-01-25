@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.Default;
@@ -199,12 +198,7 @@ public class ReferenceBean implements Bean<Object> {
 	@Override
 	public Class<? extends Annotation> getScope() {
 		if (_component.type == ComponentType.CONTAINER) {
-			// is it optional?
-			if ((_template.maximumCardinality == MaximumCardinality.ONE) &&
-				(_template.minimumCardinality == 0)) {
-				return Dependent.class;
-			}
-			return ApplicationScoped.class;
+			return Dependent.class;
 		}
 		return ComponentScoped.class;
 	}
