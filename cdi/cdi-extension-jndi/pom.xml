@@ -27,7 +27,7 @@
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.extension.jndi</artifactId>
-	<name>CDI JNDI Extension</name>
+	<name>Apache Aries CDI - JNDI Extension</name>
 	<description>CDI Extension providing JNDI support</description>
 
 	<licenses>
