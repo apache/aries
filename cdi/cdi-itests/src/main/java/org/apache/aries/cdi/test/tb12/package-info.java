@@ -12,19 +12,6 @@
  * limitations under the License.
  */
 
-package org.apache.aries.cdi.test.interfaces;
+@org.osgi.service.cdi.annotations.Beans
+package org.apache.aries.cdi.test.tb12;
 
-import java.util.Collections;
-import java.util.Map;
-
-public interface Pojo {
-
-	public String foo(String fooInput);
-
-	public int getCount();
-
-	default Map<String, Object> getMap() {
-		return Collections.emptyMap();
-	}
-
-}
