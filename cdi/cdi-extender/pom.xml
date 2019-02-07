@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
@@ -38,9 +38,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.0/cdi-extender</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.0/cdi-extender</developerConnection>
-		<url>https://svn.apache.org/viewvc/aries/tags/org.apache.aries.cdi-1.0.0/cdi-extender</url>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extender</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extender</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/trunk/cdi/cdi-extender</url>
 	</scm>
 
 	<build>
