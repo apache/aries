@@ -33,6 +33,7 @@ import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.Annotated;
 import javax.enterprise.inject.spi.AnnotatedField;
+import javax.enterprise.inject.spi.AnnotatedMember;
 import javax.enterprise.inject.spi.AnnotatedMethod;
 import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.Bean;
@@ -165,25 +166,32 @@ public class RuntimeExtension implements Extension {
 				// Explicitly ignore this case
 			}
 			else if (!serviceTypes.isEmpty()) {
-				ExtendedActivationTemplateDTO activationTemplate = _containerTemplate.activations.stream().map(
-					ExtendedActivationTemplateDTO.class::cast
-				).filter(
-					at -> at.declaringClass.equals(declaringClass)
-				).findFirst().orElseGet(
-					() -> {
-						ExtendedActivationTemplateDTO at = new ExtendedActivationTemplateDTO();
-						at.cdiScope = pb.getBean().getScope();
-						at.declaringClass = declaringClass;
-						if (pb instanceof ProcessProducerField) {
-							at.producer = ((ProcessProducerField<?, ?>) pb).getAnnotatedProducerField();
-						}
-						else if (pb instanceof ProcessProducerMethod) {
-							at.producer = ((ProcessProducerMethod<?, ?>) pb).getAnnotatedProducerMethod();
-						}
-						_containerTemplate.activations.add(at);
-						return at;
+				AnnotatedMember<?> producer = null;
+
+				if (pb instanceof ProcessProducerField) {
+					producer = ((ProcessProducerField<?, ?>) pb).getAnnotatedProducerField();
+				}
+				else if (pb instanceof ProcessProducerMethod) {
+					producer = ((ProcessProducerMethod<?, ?>) pb).getAnnotatedProducerMethod();
+				}
+
+				ExtendedActivationTemplateDTO activationTemplate = null;
+
+				for (ActivationTemplateDTO at : _containerTemplate.activations) {
+					ExtendedActivationTemplateDTO extended = (ExtendedActivationTemplateDTO)at;
+					if (extended.declaringClass.equals(declaringClass) && Objects.equals(extended.producer, producer)) {
+						activationTemplate = extended;
+						break;
 					}
-				);
+				}
+
+				if (activationTemplate == null) {
+					activationTemplate = new ExtendedActivationTemplateDTO();
+					activationTemplate.cdiScope = pb.getBean().getScope();
+					activationTemplate.declaringClass = declaringClass;
+					activationTemplate.producer = producer;
+					_containerTemplate.activations.add(activationTemplate);
+				}
 
 				activationTemplate.properties = componentProperties;
 				activationTemplate.scope = serviceScope;
