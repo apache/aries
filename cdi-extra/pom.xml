@@ -27,9 +27,9 @@
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.extra</artifactId>
-	<name>Aries CDI Extra</name>
+	<name>Apache Aries CDI - Extra Annotations</name>
 	<description>
-		Aries CDI Extra includes common CDI Component Property Types
+		Aries CDI Extra Annotations includes a common set of Bean Property Types
 	</description>
 
 	<licenses>

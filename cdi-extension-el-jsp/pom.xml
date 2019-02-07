@@ -26,7 +26,7 @@
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.extension.el.jsp</artifactId>
-	<name>Aries CDI EL-JSP Extension</name>
+	<name>Apache Aries CDI - EL-JSP Extension</name>
 	<description>
 		Connects the CDI ELResolver into the JSP context.
 	</description>
