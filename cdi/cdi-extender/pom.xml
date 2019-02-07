@@ -30,6 +30,19 @@
 	<name>Aries CCR</name>
 	<description>Aries CDI Component Runtime which implements OSGi CDI Integration Specification 1.0</description>
 
+	<licenses>
+		<license>
+			<name>ASL 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extender</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extender</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/trunk/cdi/cdi-extender</url>
+	</scm>
+
 	<build>
 		<plugins>
 			<plugin>
