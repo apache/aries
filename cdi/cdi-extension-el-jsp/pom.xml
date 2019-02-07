@@ -31,6 +31,19 @@
 		Connects the CDI ELResolver into the JSP context.
 	</description>
 
+	<licenses>
+		<license>
+			<name>ASL 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extension-el-jsp</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extension-el-jsp</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/trunk/cdi/cdi-extension-el-jsp</url>
+	</scm>
+
 	<build>
 		<plugins>
 			<plugin>

@@ -48,6 +48,12 @@
 		</license>
 	</licenses>
 
+	<scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/trunk/cdi</url>
+	</scm>
+
 	<modules>
 		<module>cdi-extra</module>
 		<module>cdi-extender</module>

@@ -32,6 +32,19 @@
 		Aries CDI Extra includes common CDI Component Property Types
 	</description>
 
+	<licenses>
+		<license>
+			<name>ASL 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extra</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extra</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/trunk/cdi/cdi-extra</url>
+	</scm>
+
 	<build>
 		<plugins>
 			<plugin>
