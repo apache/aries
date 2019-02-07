@@ -14,7 +14,9 @@
 
 package org.apache.aries.cdi.test.cases;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.util.Dictionary;
@@ -71,7 +73,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 	namespace = CDIConstants.CDI_EXTENSION_PROPERTY,
 	name = "aries.cdi.jndi"
 )
-public class AbstractTestCase {
+public abstract class AbstractTestCase {
 
 	@Rule
 	public TestWatcher watchman= new TestWatcher() {
