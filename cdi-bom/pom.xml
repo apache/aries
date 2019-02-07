@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.bom</artifactId>
@@ -31,9 +31,9 @@
 	<description>Bill Of Materials for Apache Aries CDI.</description>
 
 	<scm>
-		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-bom</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-bom</developerConnection>
-		<url>https://svn.apache.org/viewvc/aries/trunk/cdi/cdi-bom</url>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.0/cdi-bom</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.0/cdi-bom</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/tags/org.apache.aries.cdi-1.0.0/cdi-bom</url>
 	</scm>
 
 	<dependencyManagement>
