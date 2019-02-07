@@ -27,7 +27,7 @@
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.extension.http</artifactId>
-	<name>Aries CDI Http Extension</name>
+	<name>Apache Aries CDI - Http Extension</name>
 	<description>
 		Provides support to CDI bundles for http servlet scopes; @RequestScoped,
 		@SessionScoped and @ConversationScoped.

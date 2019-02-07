@@ -27,8 +27,8 @@
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.extender</artifactId>
-	<name>Aries CCR</name>
-	<description>Aries CDI Component Runtime which implements OSGi CDI Integration Specification 1.0</description>
+	<name>Apache Aries CDI - CDI Component Runtime (CCR)</name>
+	<description>Aries CDI Component Runtime (CCR) implements OSGi CDI Integration Specification 1.0</description>
 
 	<licenses>
 		<license>

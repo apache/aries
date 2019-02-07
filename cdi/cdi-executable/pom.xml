@@ -26,7 +26,7 @@
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.executable</artifactId>
-	<name>Apache Aries CDI Executable JAR</name>
+	<name>Apache Aries CDI - Executable JAR</name>
 	<description>
 		A full fledged executable JAR containing Aries CDI and several other
 		useful features. Deploy your CDI bundles directly into this runtime.

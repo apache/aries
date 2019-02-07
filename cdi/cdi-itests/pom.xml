@@ -27,7 +27,7 @@
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.itests</artifactId>
-	<name>CDI Integration Tests</name>
+	<name>Apache Aries CDI - Integration Tests</name>
 	<packaging>jar</packaging>
 
 	<licenses>
