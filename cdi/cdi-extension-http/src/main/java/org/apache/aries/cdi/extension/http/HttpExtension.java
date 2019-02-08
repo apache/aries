@@ -36,6 +36,7 @@ import java.util.Set;
 
 import javax.annotation.Priority;
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.ObservesAsync;
 import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.AnnotatedConstructor;
 import javax.enterprise.inject.spi.AnnotatedField;
@@ -230,6 +231,10 @@ public class HttpExtension implements Extension {
 		@Observes @Priority(LIBRARY_AFTER + 800)
 		AfterDeploymentValidation adv, BeanManager beanManager) {
 
+		beanManager.getEvent().fireAsync(new Ready());
+	}
+
+	void ready(@ObservesAsync Ready ready, BeanManager beanManager) {
 		Dictionary<String, Object> properties = new Hashtable<>();
 
 		properties.put(SERVICE_DESCRIPTION, "Aries CDI - HTTP Portable Extension");
@@ -311,7 +316,9 @@ public class HttpExtension implements Extension {
 
 	private final Bundle _bundle;
 	private String _contextSelect;
-	private ServiceRegistration<?> _listenerRegistration;
+	private volatile ServiceRegistration<?> _listenerRegistration;
+
+	public static class Ready {}
 
 	private class WebAnnotated<X> implements AnnotatedType<X> {
 
