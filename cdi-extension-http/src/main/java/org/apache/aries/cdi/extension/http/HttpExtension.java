@@ -33,6 +33,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Priority;
 import javax.enterprise.event.Observes;
@@ -51,12 +52,15 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.WithAnnotations;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.apache.aries.cdi.extra.propertytypes.HttpWhiteboardContextSelect;
@@ -250,11 +254,11 @@ public class HttpExtension implements Extension {
 		WeldInitialListener initialListener = bean.create(beanManager.createCreationalContext(bean));
 
 		_listenerRegistration = _bundle.getBundleContext().registerService(
-			LISTENER_CLASSES, initialListener, properties);
+			LISTENER_CLASSES, new ListenerWrapper<>(initialListener), properties);
 	}
 
 	void beforeShutdown(@Observes BeforeShutdown bs) {
-		if (_listenerRegistration != null) {
+		if (_listenerRegistration != null && !destroyed.get()) {
 			_listenerRegistration.unregister();
 		}
 	}
@@ -317,8 +321,55 @@ public class HttpExtension implements Extension {
 	private final Bundle _bundle;
 	private String _contextSelect;
 	private volatile ServiceRegistration<?> _listenerRegistration;
+	private final AtomicBoolean destroyed = new AtomicBoolean(false);
 
 	public static class Ready {}
+
+	private class ListenerWrapper<T extends HttpSessionListener & ServletContextListener & ServletRequestListener>
+		implements HttpSessionListener, ServletContextListener, ServletRequestListener {
+
+		private final T delegate;
+
+		public ListenerWrapper(T delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public void contextDestroyed(ServletContextEvent sce) {
+			try {
+				delegate.contextDestroyed(sce);
+			}
+			finally {
+				destroyed.set(true);
+			}
+		}
+
+		@Override
+		public void contextInitialized(ServletContextEvent sce) {
+			delegate.contextInitialized(sce);
+		}
+
+		@Override
+		public void requestDestroyed(ServletRequestEvent sre) {
+			delegate.requestDestroyed(sre);
+		}
+
+		@Override
+		public void requestInitialized(ServletRequestEvent sre) {
+			delegate.requestInitialized(sre);
+		}
+
+		@Override
+		public void sessionCreated(HttpSessionEvent se) {
+			delegate.sessionCreated(se);
+		}
+
+		@Override
+		public void sessionDestroyed(HttpSessionEvent se) {
+			delegate.sessionDestroyed(se);
+		}
+
+	}
 
 	private class WebAnnotated<X> implements AnnotatedType<X> {
 
@@ -381,4 +432,5 @@ public class HttpExtension implements Extension {
 			return annotatedType.getFields();
 		}
 	}
+
 }
