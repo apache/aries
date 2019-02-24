@@ -111,6 +111,8 @@ public class BlueprintContainerImpl
     Runnable, SatisfiableRecipe.SatisfactionListener,
     org.apache.aries.blueprint.ExtendedBlueprintContainer {
 
+    private static final String DEFAULT_TIMEOUT_PROPERTY = "org.apache.aries.blueprint.default.timeout";
+    private static final long DEFAULT_TIMEOUT = 5 * 60 * 1000;
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
     private static final Class[] SECURITY_BUGFIX = {
@@ -151,7 +153,7 @@ public class BlueprintContainerImpl
     private final List<Processor> processors;
     private final Object satisfiablesLock = new Object();
     private Map<String, List<SatisfiableRecipe>> satisfiables;
-    private long timeout = 5 * 60 * 1000;
+    private long timeout;
     private boolean waitForDependencies = true;
     private String xmlValidation;
     private ScheduledFuture timeoutFuture;
@@ -174,6 +176,7 @@ public class BlueprintContainerImpl
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executor != null ? new ExecutorServiceWrapper(executor) : null;
         this.timer = timer;
+        this.timeout = getDefaultTimeout();
         this.processors = new ArrayList<Processor>();
         if (System.getSecurityManager() != null) {
             this.accessControlContext = BlueprintDomainCombiner.createAccessControlContext(bundle);
@@ -210,6 +213,20 @@ public class BlueprintContainerImpl
         return eventDispatcher;
     }
 
+    private long getDefaultTimeout() {
+        long timeout = DEFAULT_TIMEOUT;
+        try {
+            timeout = Long.getLong(DEFAULT_TIMEOUT_PROPERTY, DEFAULT_TIMEOUT);
+            if (timeout != DEFAULT_TIMEOUT) {
+                LOGGER.debug(DEFAULT_TIMEOUT_PROPERTY + " is set to " + timeout + ".");
+            }
+        }
+        catch (Exception e) {
+            LOGGER.error(DEFAULT_TIMEOUT_PROPERTY + " is not a number. Using default value " + timeout + ".");
+        }
+        return timeout;
+    }
+
     private void readDirectives() {
         Dictionary headers = bundle.getHeaders();
         String symbolicName = (String) headers.get(Constants.BUNDLE_SYMBOLICNAME);
@@ -219,6 +236,9 @@ public class BlueprintContainerImpl
         if (timeoutDirective != null) {
             LOGGER.debug("Timeout directive: {}", timeoutDirective);
             timeout = Integer.parseInt(timeoutDirective);
+        }
+        else {
+        	timeout = getDefaultTimeout();
         }
 
         String graceperiod = paths.get(0).getDirective(BlueprintConstants.GRACE_PERIOD);
