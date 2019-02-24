@@ -1,15 +1,5 @@
-.apt_generated_tests/
-.checkstyle
+target
+.settings
 .classpath
-.factorypath
-.pmd
 .project
-.ruleset
-.settings/
-target/
-*.iml
-*.iws
-*.ipr
-.idea
 velocity.log
-derby.log
