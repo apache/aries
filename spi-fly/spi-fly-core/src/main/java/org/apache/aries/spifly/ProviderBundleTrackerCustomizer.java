@@ -47,6 +47,7 @@ import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
+import aQute.bnd.header.Attrs;
 import aQute.bnd.header.OSGiHeader;
 import aQute.bnd.header.Parameters;
 
@@ -294,30 +295,34 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             return null;
 
         Parameters capabilities = OSGiHeader.parseHeader(capabilityHeader.toString());
-        Entry<String, ? extends Map<String, String>> cap = ConsumerHeaderProcessor.findCapability(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, spiName);
 
-        Hashtable<String, Object> properties = new Hashtable<String, Object>();
-        if (cap != null) {
-            for (Map.Entry<String, String> entry : cap.getValue().entrySet()) {
-                String key = ConsumerHeaderProcessor.removeDuplicateMarker(entry.getKey());
-                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(key))
+        for (Map.Entry<String, Attrs> entry : capabilities.entrySet()) {
+            String key = ConsumerHeaderProcessor.removeDuplicateMarker(entry.getKey());
+            Attrs attrs = entry.getValue();
+
+            if (!SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(key))
+                continue;
+
+            if (!attrs.containsKey(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE) ||
+                    !attrs.get(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE).equals(spiName))
+                continue;
+
+            if (attrs.containsKey(SpiFlyConstants.REGISTER_DIRECTIVE) &&
+                    !attrs.get(SpiFlyConstants.REGISTER_DIRECTIVE).equals(implName))
+                continue;
+
+            Hashtable<String, Object> properties = new Hashtable<String, Object>();
+            for (Map.Entry<String, String> prop : attrs.entrySet()) {
+                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(prop.getKey()) ||
+                        SpiFlyConstants.REGISTER_DIRECTIVE.equals(prop.getKey()) ||
+                        key.startsWith("."))
                     continue;
 
-                if (!key.startsWith("."))
-                    properties.put(entry.getKey(), entry.getValue());
+                properties.put(prop.getKey(), prop.getValue());
             }
-        }
-
-        String registerDirective = cap.getValue().get(SpiFlyConstants.REGISTER_DIRECTIVE);
-        if (registerDirective == null) {
             return properties;
-        } else {
-            if ("".equals(registerDirective.trim()))
-                return null;
-
-            if (implName.equals(registerDirective.trim()))
-                return properties;
         }
+
         return null;
     }
 
