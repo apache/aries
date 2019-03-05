@@ -25,6 +25,7 @@ import static org.junit.Assert.assertSame;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -156,13 +157,25 @@ public class ProviderBundleTrackerCustomizerTest {
         EasyMock.verify(implBC);
     }
 
+    @Test
+    public void testMultipleProviderServices() throws Exception {
+        BundleContext implBC = mockSPIBundleContext(EasyMock.createNiceMock(ServiceRegistration.class));
+        Bundle implBundle = mockMultiSPIBundle(implBC);
+        Bundle spiBundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(spiBundle.getBundleId()).andReturn(25l).anyTimes();
+        EasyMock.replay(spiBundle);
+
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(EasyMock.createNiceMock(BaseActivator.class), spiBundle);
+        assertEquals(2, customizer.addingBundle(implBundle, null).size());
+    }
+
     @SuppressWarnings("unchecked")
     private BundleContext mockSPIBundleContext(ServiceRegistration sreg) {
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
-                EasyMock.eq("org.apache.aries.mytest.MySPI"),
+                EasyMock.anyString(),
                 EasyMock.isA(ServiceFactory.class),
-                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(sreg);
+                (Dictionary<String,?>) EasyMock.anyObject())).andReturn(sreg).anyTimes();
         EasyMock.replay(implBC);
         return implBC;
     }
@@ -190,6 +203,40 @@ public class ProviderBundleTrackerCustomizerTest {
                 Collections.enumeration(Collections.singleton(res))).anyTimes();
         Class<?> cls = getClass().getClassLoader().loadClass("org.apache.aries.spifly.impl1.MySPIImpl1");
         EasyMock.<Object>expect(implBundle.loadClass("org.apache.aries.spifly.impl1.MySPIImpl1")).andReturn(cls).anyTimes();
+        EasyMock.replay(implBundle);
+        return implBundle;
+    }
+
+    private Bundle mockMultiSPIBundle(BundleContext implBC) throws ClassNotFoundException {
+        Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(
+                Constants.REQUIRE_CAPABILITY,
+                "osgi.extender;filter:='(osgi.extender=osgi.serviceloader.registrar)'"
+        );
+        headers.put(
+            Constants.PROVIDE_CAPABILITY,
+            "osgi.serviceloader;osgi.serviceloader='org.apache.aries.mytest.MySPI2';register:='org.apache.aries.spifly.impl4.MySPIImpl4b';foo='bbb'," +
+            "osgi.serviceloader;osgi.serviceloader='org.apache.aries.mytest.MySPI2';register:='org.apache.aries.spifly.impl4.MySPIImpl4c';foo='ccc'"
+        );
+        EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+
+        // List the resources found at META-INF/services in the test bundle
+        URL dir = getClass().getResource("impl4/META-INF/services");
+        assertNotNull("precondition", dir);
+        EasyMock.expect(implBundle.getResource("/META-INF/services")).andReturn(dir).anyTimes();
+        URL resA = getClass().getResource("impl4/META-INF/services/org.apache.aries.mytest.MySPI");
+        assertNotNull("precondition", resA);
+        URL resB = getClass().getResource("impl4/META-INF/services/org.apache.aries.mytest.MySPI2");
+        assertNotNull("precondition", resB);
+        EasyMock.expect(implBundle.findEntries("META-INF/services", "*", false)).andReturn(
+                Collections.enumeration(Arrays.asList(resA, resB))).anyTimes();
+        Class<?> cls = getClass().getClassLoader().loadClass("org.apache.aries.spifly.impl4.MySPIImpl4b");
+        EasyMock.<Object>expect(implBundle.loadClass("org.apache.aries.spifly.impl4.MySPIImpl4b")).andReturn(cls).anyTimes();
+        cls = getClass().getClassLoader().loadClass("org.apache.aries.spifly.impl4.MySPIImpl4c");
+        EasyMock.<Object>expect(implBundle.loadClass("org.apache.aries.spifly.impl4.MySPIImpl4c")).andReturn(cls).anyTimes();
         EasyMock.replay(implBundle);
         return implBundle;
     }
