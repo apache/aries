@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.executable</artifactId>
@@ -40,9 +40,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-executable</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-executable</developerConnection>
-		<url>https://svn.apache.org/viewvc/aries/trunk/cdi/cdi-executable</url>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.1/cdi-executable</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.1/cdi-executable</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/tags/org.apache.aries.cdi-1.0.1/cdi-executable</url>
 	</scm>
 
 	<properties>
