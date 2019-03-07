@@ -29,7 +29,7 @@
 	<groupId>org.apache.aries.cdi</groupId>
 	<artifactId>org.apache.aries.cdi</artifactId>
 	<name>Apache Aries CDI - OSGi CDI Integration Project</name>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -49,9 +49,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.1</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.1</developerConnection>
-		<url>https://svn.apache.org/viewvc/aries/tags/org.apache.aries.cdi-1.0.1</url>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/trunk/cdi</url>
 	</scm>
 
 	<modules>
