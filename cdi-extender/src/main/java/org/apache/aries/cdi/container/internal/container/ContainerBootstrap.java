@@ -21,6 +21,7 @@ import javax.enterprise.inject.spi.Extension;
 
 import org.apache.aries.cdi.container.internal.container.Op.Mode;
 import org.apache.aries.cdi.container.internal.container.Op.Type;
+import org.apache.aries.cdi.container.internal.loader.BundleResourcesLoader;
 import org.apache.aries.cdi.container.internal.model.ExtendedExtensionDTO;
 import org.apache.aries.cdi.container.internal.model.FactoryComponent;
 import org.apache.aries.cdi.container.internal.model.SingleComponent;
@@ -105,6 +106,7 @@ public class ContainerBootstrap extends Phase {
 
 			Thread currentThread = Thread.currentThread();
 			ClassLoader current = currentThread.getContextClassLoader();
+			BundleResourcesLoader.Builder builder = new BundleResourcesLoader.Builder(containerState.bundle(), containerState.extenderBundle());
 
 			try {
 				currentThread.setContextClassLoader(containerState.classLoader());
@@ -116,13 +118,16 @@ public class ContainerBootstrap extends Phase {
 				containerState.containerDTO().extensions.stream().map(
 					ExtendedExtensionDTO.class::cast
 				).map(
-					e -> new ExtensionMetadata(e.extension.getService(), e.template.serviceFilter)
+					e -> {
+						builder.add(e.serviceReference.getBundle());
+						return new ExtensionMetadata(e.extension.getService(), e.template.serviceFilter);
+					}
 				).forEach(extensions::add);
 
 				_bootstrap = new WeldBootstrap();
 
 				BeanDeploymentArchive beanDeploymentArchive = new ContainerDeploymentArchive(
-					containerState.loader(),
+					builder.build(),
 					containerState.id(),
 					containerState.beansModel().getBeanClassNames(),
 					containerState.beansModel().getBeansXml());
