@@ -33,7 +33,28 @@ import org.osgi.framework.wiring.BundleWiring;
 
 public class BundleResourcesLoader implements ProxyServices, ResourceLoader {
 
-	public BundleResourcesLoader(Bundle bundle, Bundle extenderBundle) {
+	public static class Builder {
+
+		public Builder(Bundle bundle, Bundle extenderBundle) {
+			this.bundle = bundle;
+			this.extenderBundle = extenderBundle;
+		}
+
+		public Builder add(Bundle bundle) {
+			additionalBundles.add(bundle);
+			return this;
+		}
+
+		public BundleResourcesLoader build() {
+			return new BundleResourcesLoader(bundle, extenderBundle, additionalBundles);
+		}
+
+		private final Bundle bundle;
+		private final Bundle extenderBundle;
+		private final List<Bundle> additionalBundles = new ArrayList<>();
+	}
+
+	BundleResourcesLoader(Bundle bundle, Bundle extenderBundle, List<Bundle> additionalBundles) {
 		BundleWiring extenderWiring = extenderBundle.adapt(BundleWiring.class);
 
 		List<Bundle> bundles = new ArrayList<>();
@@ -56,6 +77,8 @@ public class BundleResourcesLoader implements ProxyServices, ResourceLoader {
 				bundles.add(wireBundle);
 			}
 		}
+
+		bundles.addAll(additionalBundles);
 
 		_classLoader = new BundleClassLoader(bundles.toArray(new Bundle[0]));
 	}

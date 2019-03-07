@@ -14,9 +14,11 @@
 
 package org.apache.aries.cdi.container.internal.container;
 
-import static org.apache.aries.cdi.container.internal.util.Filters.*;
-import static org.osgi.namespace.extender.ExtenderNamespace.*;
-import static org.osgi.service.cdi.CDIConstants.*;
+import static org.apache.aries.cdi.container.internal.util.Filters.asFilter;
+import static org.osgi.namespace.extender.ExtenderNamespace.EXTENDER_NAMESPACE;
+import static org.osgi.service.cdi.CDIConstants.CDI_CAPABILITY_NAME;
+import static org.osgi.service.cdi.CDIConstants.CDI_CONTAINER_ID;
+import static org.osgi.service.cdi.CDIConstants.CDI_EXTENSION_PROPERTY;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -330,7 +332,7 @@ public class ContainerState {
 
 	@SuppressWarnings("unchecked")
 	public <T extends ResourceLoader & ProxyServices> T loader() {
-		return (T)new BundleResourcesLoader(_bundle, _extenderBundle);
+		return (T)new BundleResourcesLoader.Builder(_bundle, _extenderBundle).build();
 	}
 
 	public PromiseFactory promiseFactory() {
