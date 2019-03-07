@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.aries.cdi</groupId>
 		<artifactId>org.apache.aries.cdi</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</parent>
 
 	<artifactId>org.apache.aries.cdi.extension.el.jsp</artifactId>
@@ -39,9 +39,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extension-el-jsp</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/cdi/cdi-extension-el-jsp</developerConnection>
-		<url>https://svn.apache.org/viewvc/aries/trunk/cdi/cdi-extension-el-jsp</url>
+		<connection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.1/cdi-extension-el-jsp</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/tags/org.apache.aries.cdi-1.0.1/cdi-extension-el-jsp</developerConnection>
+		<url>https://svn.apache.org/viewvc/aries/tags/org.apache.aries.cdi-1.0.1/cdi-extension-el-jsp</url>
 	</scm>
 
 	<build>
