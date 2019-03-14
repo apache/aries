@@ -227,7 +227,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     loadLocal(dispatchTarget);
     checkCast(methodDeclaringType);
     loadArgs();
-    if(isMethodDeclaringTypeInterface && !isDefaultMethod) {
+    if(isMethodDeclaringTypeInterface) {
       invokeInterface(methodDeclaringType, currentTransformMethod);
     } else {
       invokeVirtual(methodDeclaringType, currentTransformMethod);
