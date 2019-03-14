@@ -7,10 +7,9 @@ See [Apache Aries Website](http://aries.apache.org/).
 
 ## Source Code
 
-Most of the code is still at the [Aries svn repo](https://svn.apache.org/repos/asf/aries/).
-There is also a [github mirror](https://github.com/apache/aries).
+The sources are now directly availble in [aries github](https://github.com/apache/aries).
 
-Some of the subproject are already migrated to git:
+Some of the subprojects have their own git repos:
 
 | Subproject | Apache Git | Github Mirror |
 | ---------- | ---------- | ------------- |
