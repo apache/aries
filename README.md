@@ -26,4 +26,4 @@ Most projects can be built using
     mvn clean install
 
 As the Aries svn hosts a lot of different subprojects it makes sense to only
-build the specific subproject.
+build the specific subproject. 
