@@ -39,9 +39,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-core</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/blueprint-core</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/blueprint-core</url>
+        <connection>scm:git:http://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git</url>
     </scm>
 
     <properties>
