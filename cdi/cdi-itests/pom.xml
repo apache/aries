@@ -59,6 +59,14 @@
 			<version>${bnd.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.aries.cdi</groupId>
+			<artifactId>org.apache.aries.cdi.extra</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.http.servlet-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-annotation_1.3_spec</artifactId>
 		</dependency>
@@ -71,24 +79,10 @@
 			<artifactId>geronimo-jcdi_2.0_spec</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.cdi.extra</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.http.servlet-api</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient-osgi</artifactId>
 			<version>4.5.3</version>
 		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.util.promise</artifactId>
-		</dependency>
-
-		<!-- PROVIDED -->
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.namespace.extender</artifactId>
@@ -103,17 +97,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.component.annotations</artifactId>
-			<version>1.4.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.http.whiteboard</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.service.log</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.util.promise</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
@@ -124,33 +116,7 @@
 			<artifactId>osgi.core</artifactId>
 		</dependency>
 
-		<!-- RUNTIME -->
-		<dependency>
-			<groupId>javax.ejb</groupId>
-			<artifactId>javax.ejb-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.cdi.extender</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.cdi.extension.http</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.aries.cdi</groupId>
-			<artifactId>org.apache.aries.cdi.extension.jndi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-el_2.2_spec</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-interceptor_1.2_spec</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+		<!-- RUNTIME dependencies not found in BOMs -->
 		<dependency>
 			<groupId>org.apache.aries.jndi</groupId>
 			<artifactId>org.apache.aries.jndi.core</artifactId>
@@ -158,61 +124,10 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.aries.spifly</groupId>
-			<artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.configadmin</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.gogo.command</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.gogo.runtime</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.gogo.shell</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.http.jetty</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.logback</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.scr</artifactId>
-			<version>2.1.0</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore-osgi</artifactId>
 			<version>4.4.6</version>
 			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.platform</groupId>
-			<artifactId>org.eclipse.osgi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.util.function</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>log4j-over-slf4j</artifactId>
 		</dependency>
 	</dependencies>
 
@@ -263,6 +178,7 @@
 					<bndruns>
 						<bndrun>itest.bndrun</bndrun>
 					</bndruns>
+					<includeDependencyManagement>true</includeDependencyManagement>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -272,6 +188,7 @@
 					<bndruns>
 						<bndrun>itest.bndrun</bndrun>
 					</bndruns>
+					<includeDependencyManagement>true</includeDependencyManagement>
 				</configuration>
 			</plugin>
 		</plugins>

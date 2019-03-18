@@ -14,7 +14,16 @@
 #-runvm: -Xdebug, "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
 
 -standalone: true
+-runee: JavaSE-1.8
+-runfw: org.eclipse.osgi
+-runkeep: true
+-runproperties: \
+	eclipse.log.enabled=false,\
+	logback.configurationFile=file:${.}/logback.xml,\
+	org.osgi.service.http.port=8080,\
+	osgi.console=
 
+-resolve.effective: resolve, active
 -runrequires: \
 	osgi.identity;filter:='(osgi.identity=javax.ejb-api)',\
 	osgi.identity;filter:='(osgi.identity=javax.transaction-api)',\
@@ -38,9 +47,9 @@
 	javax.ejb-api;version='[3.2.0,3.2.1)',\
 	javax.transaction-api;version='[1.2.0,1.2.1)',\
 	jboss-classfilewriter;version='[1.2.3,1.2.4)',\
-	org.apache.aries.cdi.extender;version='[1.0.1,1.0.2)',\
-	org.apache.aries.cdi.extension.http;version='[1.0.1,1.0.2)',\
-	org.apache.aries.cdi.extra;version='[1.0.1,1.0.2)',\
+	org.apache.aries.cdi.extender;version='[1.0.2,1.0.3)',\
+	org.apache.aries.cdi.extension.http;version='[1.0.2,1.0.3)',\
+	org.apache.aries.cdi.extra;version='[1.0.2,1.0.3)',\
 	org.apache.aries.spifly.dynamic.framework.extension;version='[1.2.0,1.2.1)',\
 	org.apache.felix.configadmin;version='[1.9.10,1.9.11)',\
 	org.apache.felix.gogo.command;version='[1.1.0,1.1.1)',\
@@ -58,13 +67,3 @@
 	org.osgi.service.cdi;version='[1.0.0,1.0.1)',\
 	org.osgi.util.function;version='[1.1.0,1.1.1)',\
 	org.osgi.util.promise;version='[1.1.0,1.1.1)'
-
--resolve.effective: resolve, active
--runee: JavaSE-1.8
--runfw: org.eclipse.osgi
--runkeep: true
--runproperties: \
-	eclipse.log.enabled=false,\
-	logback.configurationFile=file:${.}/logback.xml,\
-	org.osgi.service.http.port=8080,\
-	osgi.console=

@@ -33,7 +33,7 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<bnd.version>4.1.0</bnd.version>
+		<bnd.version>4.2.0</bnd.version>
 		<jsp.version>2.0</jsp.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<surefire.version>2.12</surefire.version>
