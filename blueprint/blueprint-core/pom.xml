@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.blueprint.core</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Blueprint Core</name>
-    <version>1.10.2-SNAPSHOT</version>
+    <version>1.10.2</version>
     <description>
         This bundle contains the core implementation of Blueprint
         along with the "ext" namespace handler.
@@ -42,7 +42,8 @@
         <connection>scm:git:http://gitbox.apache.org/repos/asf/aries.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=aries.git</url>
-    </scm>
+      <tag>org.apache.aries.blueprint.core-1.10.2</tag>
+  </scm>
 
     <properties>
         <rat.excludesFile>${project.basedir}/rat-excludes.txt</rat.excludesFile>
