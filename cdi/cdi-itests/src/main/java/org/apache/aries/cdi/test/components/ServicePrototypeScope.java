@@ -14,15 +14,25 @@
 
 package org.apache.aries.cdi.test.components;
 
-import org.apache.aries.cdi.test.interfaces.PrototypeScoped;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ServiceScope;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-@Component(
-	property = {"key=value"},
-	scope = ServiceScope.PROTOTYPE
-)
+import org.apache.aries.cdi.test.interfaces.PrototypeScoped;
+import org.osgi.service.cdi.ServiceScope;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
+import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ServiceInstance;
+
+@Service
+@ServiceInstance(ServiceScope.PROTOTYPE)
+@ServicePrototypeScope.Config
 public class ServicePrototypeScope implements PrototypeScoped {
+
+	@BeanPropertyType
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface Config {
+		String key() default "value";
+	}
 
 	@Override
 	public Object get() {

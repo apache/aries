@@ -14,13 +14,12 @@
 
 package org.apache.aries.cdi.test.components;
 
+import org.apache.aries.cdi.extra.propertytypes.ServiceRanking;
 import org.apache.aries.cdi.test.interfaces.SingletonScoped;
-import org.osgi.framework.Constants;
-import org.osgi.service.component.annotations.Component;
+import org.osgi.service.cdi.annotations.Service;
 
-@Component(
-	property = {Constants.SERVICE_RANKING + ":Integer=2"}
-)
+@Service
+@ServiceRanking(2)
 public class ServiceSingletonTwo implements SingletonScoped<ServiceSingletonTwo> {
 
 	@Override

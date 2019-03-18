@@ -14,21 +14,28 @@
 
 package org.apache.aries.cdi.test.components;
 
-import org.apache.aries.cdi.test.interfaces.BundleScoped;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ServiceScope;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-@Component(
-	property = {
-		"fee.fi=fee",
-		"fo.fum:Integer=23",
-		"complex.enough.key=fum",
-		"key=value",
-		"simple.annotation=blah"
-	},
-	scope = ServiceScope.BUNDLE
-)
+import org.apache.aries.cdi.test.interfaces.BundleScoped;
+import org.osgi.service.cdi.ServiceScope;
+import org.osgi.service.cdi.annotations.BeanPropertyType;
+import org.osgi.service.cdi.annotations.Service;
+import org.osgi.service.cdi.annotations.ServiceInstance;
+
+@Service
+@ServiceInstance(ServiceScope.BUNDLE)
+@ServiceBundleScope.Config
 public class ServiceBundleScope implements BundleScoped {
+
+	@BeanPropertyType
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface Config {
+		String fee_fi() default "fee";
+		int fo_fum() default 23;
+		String key() default "value";
+		String simple_annotation() default "blah";
+	}
 
 	@Override
 	public Object get() {
