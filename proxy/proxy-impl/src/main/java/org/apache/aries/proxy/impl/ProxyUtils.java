@@ -39,6 +39,10 @@ public class ProxyUtils
     	//In order to avoid an inconsistent stack error the version of the woven byte code needs to match
     	//the level of byte codes in the original class
     	switch(JAVA_CLASS_VERSION) {
+                        case Opcodes.V13:
+                                LOGGER.debug("Weaving to Java 13");
+                                weavingJavaVersion = Opcodes.V13;
+                                break;
                         case Opcodes.V12:
                                 LOGGER.debug("Weaving to Java 12");
                                 weavingJavaVersion = Opcodes.V12;
