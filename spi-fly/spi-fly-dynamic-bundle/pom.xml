@@ -46,7 +46,7 @@
     </scm>
 
     <properties>
-        <asm.version>7.1</asm.version>
+        <asm.version>7.0</asm.version>
         <bnd.version>4.1.0</bnd.version>
     </properties>
 
