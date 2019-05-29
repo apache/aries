@@ -11,13 +11,15 @@ The sources are now directly availble in [aries github](https://github.com/apach
 
 Some of the subprojects have their own git repos:
 
-| Subproject | Apache Git | Github Mirror |
-| ---------- | ---------- | ------------- |
-| Aries Containers | [apache](https://git-wip-us.apache.org/repos/asf/aries-containers.git) | [github](https://github.com/apache/aries-containers) |
-| Aries JAX-RS whiteboard | [apache](https://git-wip-us.apache.org/repos/asf/aries-jax-rs-whiteboard.git) | [github](https://github.com/apache/aries-jax-rs-whiteboard) |
-| Aries JPA | [apache](https://git-wip-us.apache.org/repos/asf/aries-jpa.git) | [github](https://github.com/apache/aries-jpa) |
-| Aries RSA | [apache](https://git-wip-us.apache.org/repos/asf/aries-rsa.git) | [github](https://github.com/apache/aries-rsa) |
-| Aries Transaction Control | [apache](https://gitbox.apache.org/repos/asf?p=aries-tx-control.git) | [github](https://github.com/apache/aries-tx-control) |
+| Subproject |
+| ---------- |
+| [Aries CDI](https://github.com/apache/aries-cdi) |
+| [Aries Component DSL](https://github.com/apache/aries-component-dsl) |
+| [Aries Containers](https://github.com/apache/aries-containers) |
+| [Aries JAX-RS whiteboard](https://github.com/apache/aries-jax-rs-whiteboard) |
+| [Aries JPA](https://github.com/apache/aries-jpa) |
+| [Aries RSA](https://github.com/apache/aries-rsa) |
+| [Aries Transaction Control](https://github.com/apache/aries-tx-control) |
 
 ## Build
 
