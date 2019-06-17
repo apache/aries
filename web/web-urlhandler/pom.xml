@@ -35,9 +35,9 @@
     <name>Apache Aries Web Url handler</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/web/web-urlhandler</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/web/web-urlhandler</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/web/web-urlhandler</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
     </scm>
 
     <properties>

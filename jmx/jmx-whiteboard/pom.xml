@@ -41,9 +41,9 @@
     </description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-whiteboard</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-whiteboard</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-whiteboard</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
     </scm>
 
     <!-- A Note on Testing ================= This project contains two kinds 

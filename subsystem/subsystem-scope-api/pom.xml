@@ -32,11 +32,11 @@
     <version>0.1-SNAPSHOT</version>
     <description>Subsystems Scope API.</description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-scope-api</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-scope-api</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-scope-api</url>
-     </scm>
+    <scm>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
+    </scm>
 
     <properties>
         <aries.osgi.export.pkg>

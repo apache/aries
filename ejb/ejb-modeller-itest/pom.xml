@@ -33,11 +33,11 @@
     <version>1.0.1-SNAPSHOT</version>
     <name>Aries EJB Modelling iTests</name>
 
-    <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/ejb/ejb-modeller-itest</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/ejb/ejb-modeller-itest</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/ejb/ejb-modeller-itest</url>
-    </scm>
+	<scm>
+		<connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+		<developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+		<url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
+	</scm>
 
     <properties>
       <openWebBeansVersion>1.1.1</openWebBeansVersion>

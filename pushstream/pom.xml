@@ -31,16 +31,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Apache Aries Push Stream Parent</description>
+
 	<scm>
-		<connection>
-			scm:svn:http://svn.apache.org/repos/asf/aries/trunk/pushstream
-		</connection>
-		<developerConnection>
-			scm:svn:https://svn.apache.org/repos/asf/aries/trunk/pushstream
-		</developerConnection>
-		<url>
-			http://svn.apache.org/viewvc/aries/trunk/pushstream
-		</url>
+		<connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+		<developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+		<url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
 	</scm>
 
 	<profiles>

@@ -39,12 +39,9 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin-itest
-        </connection>
-        <developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/aries/trunk/blueprint/plugin/blueprint-maven-plugin-itest
-        </developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/blueprint/plugin/blueprint-maven-plugin-itest</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
     </scm>
 
     <build>

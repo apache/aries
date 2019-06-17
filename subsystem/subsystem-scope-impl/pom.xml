@@ -32,11 +32,11 @@
     <version>0.1-SNAPSHOT</version>
     <description>Subsystems Scope Implementation</description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-scope-impl</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-scope-impl</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-scope-impl</url>
-     </scm>
+    <scm>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
+    </scm>
 
     <properties>
         <aries.osgi.activator>

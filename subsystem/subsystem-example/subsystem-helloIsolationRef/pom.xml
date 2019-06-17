@@ -33,11 +33,11 @@
     <name>Apache Aries Subsystem hello IsolationRef Example</name>
     <description>Subsystems Hello IsolationRef example</description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-example-helloIsolationRef</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-example-helloIsolationRef</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-example-helloIsolationRef</url>
-     </scm>
+    <scm>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
+    </scm>
 
     <properties>
         <aries.osgi.activator>

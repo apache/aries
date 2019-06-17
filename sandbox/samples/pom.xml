@@ -31,11 +31,11 @@
     <artifactId>samples</artifactId>
     <name>Apache Aries Samples</name>
     <packaging>pom</packaging>
-  
+
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/samples-sandbox</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/samples-sandbox</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/samples-sandbox</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
     </scm>
 
     <properties>

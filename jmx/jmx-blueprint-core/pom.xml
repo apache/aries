@@ -121,10 +121,10 @@
             </plugin>
         </plugins>
     </build>
-  
+
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-core</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/jmx/jmx-blueprint-core</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/jmx/jmx-blueprint-core</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
     </scm>
 </project>

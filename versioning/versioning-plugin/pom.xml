@@ -35,9 +35,9 @@
     <name>org.apache.aries.versioning.plugin Maven Mojo</name>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-plugin</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/versioning/versioning-plugin</developerConnection>
-        <url>http://svn.apache.org/viewvc/aries/trunk/versioning/versioning-plugin</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
     </scm>
     
     <dependencies>

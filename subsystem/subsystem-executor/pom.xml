@@ -35,11 +35,11 @@
       Subsystem Executor used for async SubsystemAdmin operations.  Can be replaced by runtimes integrating the Subsystem support.
     </description>
 
-     <scm>
-         <connection>scm:svn:http://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-executor</connection>
-         <developerConnection>scm:svn:https://svn.apache.org/repos/asf/aries/trunk/subsystem/subsystem-executor</developerConnection>
-         <url>http://svn.apache.org/viewvc/aries/trunk/subsystem/subsystem-executor</url>
-     </scm>
+    <scm>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
+    </scm>
 
     <properties>
         <aries.osgi.activator>
