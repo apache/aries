@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.spifly</groupId>
     <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
     <packaging>bundle</packaging>
     <name>Apache Aries SPI Fly Dynamic Weaving Bundle</name>
     <description>
@@ -43,7 +43,8 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
-    </scm>
+      <tag>org.apache.aries.spifly.dynamic.bundle-1.2.2</tag>
+  </scm>
 
     <properties>
         <asm.version>7.1</asm.version>
