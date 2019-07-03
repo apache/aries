@@ -48,7 +48,7 @@
 
     <properties>
         <asm.version>7.1</asm.version>
-        <bnd.version>4.1.0</bnd.version>
+        <bnd.version>4.2.0</bnd.version>
     </properties>
 
     <dependencies>
@@ -87,7 +87,7 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
             <version>6.0.1</version>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -168,6 +168,11 @@
                 <version>${bnd.version}</version>
                 <configuration>
                     <failOnChanges>false</failOnChanges>
+                    <scopes>
+                        <scope>compile</scope>
+                        <scope>runtime</scope>
+                        <scope>test</scope>
+                    </scopes>
                     <bndruns>
                         <bndrun>resolve.bndrun</bndrun>
                     </bndruns>
