@@ -276,6 +276,7 @@
                                 <configuration>
                                     <sources>
                                         <source>${project.basedir}/../spi-fly-core/src/main/java/</source>
+                                        <source>${project.basedir}/../spi-fly-dynamic-bundle/src/main/java/</source>
                                         <source>${project.basedir}/../spi-fly-weaver/src/main/java/</source>
                                         <source>${project.build.directory}/upacksources/asm</source>
                                         <source>${project.build.directory}/upacksources/asm-commons</source>
