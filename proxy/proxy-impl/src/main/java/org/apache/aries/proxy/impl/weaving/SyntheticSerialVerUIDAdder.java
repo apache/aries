@@ -20,11 +20,12 @@ package org.apache.aries.proxy.impl.weaving;
 
 import java.lang.reflect.Modifier;
 
-import static org.objectweb.asm.Opcodes.ASM5;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
+
+import static org.objectweb.asm.Opcodes.ASM7;
 
 class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
 
@@ -42,7 +43,7 @@ class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
   private boolean hasSVUID;
 
   public SyntheticSerialVerUIDAdder(WovenProxyAdapter cv) {
-    super(ASM5, cv);
+    super(ASM7, cv);
     wpa = cv;
   }
 

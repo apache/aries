@@ -37,7 +37,7 @@ public class ConstructorFinder extends ClassVisitor
 
   public ConstructorFinder()
   {
-    super(Opcodes.ASM5);
+    super(Opcodes.ASM7);
   }
 
   @Override
