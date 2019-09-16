@@ -172,10 +172,13 @@
                 <executions>
                     <execution>
                         <id>default-verify</id>
+                        <!-- Disable version-check execution as plugin requires to be updated to ASM7
                         <phase>verify</phase>
                         <goals>
                             <goal>version-check</goal>
                         </goals>
+                        -->
+                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>

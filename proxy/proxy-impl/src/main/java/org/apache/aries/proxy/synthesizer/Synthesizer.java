@@ -82,7 +82,7 @@ public class Synthesizer
 
     public CustomClassVisitor( ClassVisitor cv)
     {
-      super(Opcodes.ASM5, cv);
+      super(Opcodes.ASM7, cv);
       
     }
     @Override
