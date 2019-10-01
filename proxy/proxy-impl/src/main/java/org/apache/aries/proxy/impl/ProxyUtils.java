@@ -36,49 +36,53 @@ public class ProxyUtils
    */
   public static int getWeavingJavaVersion() {
     if (weavingJavaVersion == -1 ) {
-    	//In order to avoid an inconsistent stack error the version of the woven byte code needs to match
-    	//the level of byte codes in the original class
-    	switch(JAVA_CLASS_VERSION) {
-                        case Opcodes.V13:
-                                LOGGER.debug("Weaving to Java 13");
-                                weavingJavaVersion = Opcodes.V13;
-                                break;
-                        case Opcodes.V12:
-                                LOGGER.debug("Weaving to Java 12");
-                                weavingJavaVersion = Opcodes.V12;
-                                break;
-			case Opcodes.V11:
-				LOGGER.debug("Weaving to Java 11");
-				weavingJavaVersion = Opcodes.V11;
-				break;
-			case Opcodes.V10:
-				LOGGER.debug("Weaving to Java 10");
-				weavingJavaVersion = Opcodes.V10;
-				break;
-			case Opcodes.V9:
-				LOGGER.debug("Weaving to Java 9");
-				weavingJavaVersion = Opcodes.V9;
-				break;
-    		case Opcodes.V1_8:
-    			LOGGER.debug("Weaving to Java 8");
-    			weavingJavaVersion = Opcodes.V1_8;
-    			break;
-    		case Opcodes.V1_7:
-    			LOGGER.debug("Weaving to Java 7");
-    			weavingJavaVersion = Opcodes.V1_7;
-    			break;
-    		case Opcodes.V1_6:
-    			LOGGER.debug("Weaving to Java 6");
-    			weavingJavaVersion = Opcodes.V1_6;
-    			break;
-    		case Opcodes.V1_5:
-    			LOGGER.debug("Weaving to Java 5");
-    			weavingJavaVersion = Opcodes.V1_5;
-    			break;
-    		default:
-    			//aries should work with Java 5 or above - also will highlight when a higher level (and unsupported) level of Java is released
-    			throw new IllegalArgumentException("Invalid Java version " + JAVA_CLASS_VERSION);
-    	}
+      //In order to avoid an inconsistent stack error the version of the woven byte code needs to match
+      //the level of byte codes in the original class
+      switch(JAVA_CLASS_VERSION) {
+        case Opcodes.V14:
+          LOGGER.debug("Weaving to Java 14");
+          weavingJavaVersion = Opcodes.V14;
+          break;
+        case Opcodes.V13:
+          LOGGER.debug("Weaving to Java 13");
+          weavingJavaVersion = Opcodes.V13;
+          break;
+        case Opcodes.V12:
+          LOGGER.debug("Weaving to Java 12");
+          weavingJavaVersion = Opcodes.V12;
+          break;
+        case Opcodes.V11:
+          LOGGER.debug("Weaving to Java 11");
+          weavingJavaVersion = Opcodes.V11;
+          break;
+        case Opcodes.V10:
+          LOGGER.debug("Weaving to Java 10");
+          weavingJavaVersion = Opcodes.V10;
+          break;
+        case Opcodes.V9:
+          LOGGER.debug("Weaving to Java 9");
+          weavingJavaVersion = Opcodes.V9;
+          break;
+        case Opcodes.V1_8:
+          LOGGER.debug("Weaving to Java 8");
+          weavingJavaVersion = Opcodes.V1_8;
+          break;
+        case Opcodes.V1_7:
+          LOGGER.debug("Weaving to Java 7");
+          weavingJavaVersion = Opcodes.V1_7;
+          break;
+        case Opcodes.V1_6:
+          LOGGER.debug("Weaving to Java 6");
+          weavingJavaVersion = Opcodes.V1_6;
+          break;
+        case Opcodes.V1_5:
+          LOGGER.debug("Weaving to Java 5");
+          weavingJavaVersion = Opcodes.V1_5;
+          break;
+        default:
+          //aries should work with Java 5 or above - also will highlight when a higher level (and unsupported) level of Java is released
+          throw new IllegalArgumentException("Invalid Java version " + JAVA_CLASS_VERSION);
+      }
     } 
     return weavingJavaVersion;
   } 
