@@ -274,7 +274,12 @@ public class IOUtils
         isZip = false;                             // It's not a zip - that's ok, we'll return that below. 
       }
       if(isZip){
-        do { 
+        do {
+          File outFile = new File(outputDir, zipEntry.getName());
+          if (!outFile.getCanonicalPath().startsWith(outputDir.getCanonicalPath())) {
+            throw new IOException("The output file is not contained in the destination directory");
+          }
+
           if (!zipEntry.isDirectory()) { 
             writeOutAndDontCloseInputStream(outputDir, zipEntry.getName(), zis);
           }
