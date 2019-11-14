@@ -181,23 +181,24 @@ public final class ContextHelper {
     }
 
     private static Optional<ContextProvider> getInitialContextUsingBuilder(BundleContext context,
-                                                                           Hashtable<?, ?> environment) {
-        for (ServiceReference<InitialContextFactoryBuilder> ref : Activator.getInitialContextFactoryBuilderServices()) {
-            InitialContextFactoryBuilder builder = Activator.getService(context, ref);
-            try {
-                InitialContextFactory factory = builder.createInitialContextFactory(environment);
-                if (factory != null) {
-                    return Optional.of(new SingleContextProvider(context, ref, factory.getInitialContext(environment)));
-                }
-            } catch (NamingException ne) {
-                // ignore this, if the builder fails we want to move onto the next one
-                logger.log(Level.FINE, "Exception caught", ne);
-            } catch (NullPointerException npe) {
-                logger.log(Level.SEVERE, "NPE caught in ContextHelper.getInitialContextUsingBuilder. context=" + context + " ref=" + ref);
-                throw npe;
-            }
-        }
-        return Optional.empty();
+    		Hashtable<?, ?> environment) throws NamingException {
+    	
+    	for (ServiceReference<InitialContextFactoryBuilder> ref : Activator.getInitialContextFactoryBuilderServices()) {
+    		InitialContextFactoryBuilder builder = Activator.getService(context, ref);
+    		InitialContextFactory factory=null;
+    		try {
+    			factory = builder.createInitialContextFactory(environment);
+    		} catch (NamingException ne) {
+    			// ignore this, if the builder fails we want to move onto the next one
+    			logger.log(Level.FINE, "Exception caught", ne);
+    		} catch (NullPointerException npe) {
+    			logger.log(Level.SEVERE, "NPE caught in ContextHelper.getInitialContextUsingBuilder. context=" + context + " ref=" + ref);
+    			throw npe;
+    		}
+    		if (factory != null) {
+    			return Optional.of(new SingleContextProvider(context, ref, factory.getInitialContext(environment)));
+    		}
+    	}
+    	return Optional.empty();
     }
-
 }
