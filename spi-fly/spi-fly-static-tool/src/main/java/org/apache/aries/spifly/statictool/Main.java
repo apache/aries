@@ -243,14 +243,17 @@ public class Main {
         JarInputStream jis = new JarInputStream(new FileInputStream(jarFile));
         JarEntry je = null;
         while((je = jis.getNextJarEntry()) != null) {
+            File outFile = new File(tempDir, je.getName());
+            if (!outFile.getCanonicalPath().startsWith(tempDir.getCanonicalPath())) {
+                throw new IOException("The output file is not contained in the destination directory");
+            }
+
             if (je.isDirectory()) {
-                File outDir = new File(tempDir, je.getName());
-                ensureDirectory(outDir);
+                ensureDirectory(outFile);
 
                 continue;
             }
 
-            File outFile = new File(tempDir, je.getName());
             File outDir = outFile.getParentFile();
             ensureDirectory(outDir);
 
