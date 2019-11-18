@@ -22,6 +22,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
@@ -1461,6 +1462,12 @@ public class Parser {
         if (documentBuilderFactory == null) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);
+            try {
+                dbf.setFeature(javax.xml.XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            } catch (ParserConfigurationException ex) {
+                throw new ComponentDefinitionException("Unable to create the document builder", ex);
+            }
             documentBuilderFactory = dbf;
         }
         return documentBuilderFactory;
