@@ -102,7 +102,7 @@ public class ComponentTxDataTest {
                 throw new IllegalArgumentException(e1);
             }
         }
-        return txData.getEffectiveType(m);
+        return txData.getEffectiveType(m).get();
     }
 
 }

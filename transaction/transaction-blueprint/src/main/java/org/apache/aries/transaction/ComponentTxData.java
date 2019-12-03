@@ -34,22 +34,15 @@ public class ComponentTxData {
         }
     }
 
-    TransactionalAnnotationAttributes getEffectiveType(Method m) {
+    Optional<TransactionalAnnotationAttributes> getEffectiveType(Method m) {
         if (txMap.containsKey(m)) {
-            Optional<TransactionalAnnotationAttributes> optional = txMap.get(m);
-            if(optional == null || !optional.isPresent()) {
-                return null;
-            }
-            return optional.get();
+            return getTxAttr(m);
         }
         try {
             Method effectiveMethod = beanClass.getDeclaredMethod(m.getName(), m.getParameterTypes());
-            Optional<TransactionalAnnotationAttributes> optional = txMap.get(effectiveMethod);
-            if(optional == null) {
-                optional = Optional.empty();
-            }
-            txMap.put(m, optional);
-            return optional.isPresent() ? optional.get() : null;
+            Optional<TransactionalAnnotationAttributes> txAttr = getTxAttr(effectiveMethod);
+            txMap.put(m, txAttr);
+            return txAttr;
         } catch (NoSuchMethodException e) { // NOSONAR
             return getFromMethod(m);
         } catch (SecurityException e) {
@@ -57,20 +50,26 @@ public class ComponentTxData {
         }
     }
 
-    private TransactionalAnnotationAttributes getFromMethod(Method m) {
+    private Optional<TransactionalAnnotationAttributes> getFromMethod(Method m) {
         try {
             Method effectiveMethod = beanClass.getMethod(m.getName(), m.getParameterTypes());
-            Optional<TransactionalAnnotationAttributes> optional = txMap.get(effectiveMethod);
-            if(optional == null) {
-                optional = Optional.empty();
-            }
-            txMap.put(m, optional);
-            return optional.isPresent() ? optional.get() : null;
+            Optional<TransactionalAnnotationAttributes> txAttr = getTxAttr(effectiveMethod);
+            txMap.put(m, txAttr);
+            return txAttr;
         } catch (NoSuchMethodException e1) {
             LOG.debug("No method found when scanning for transactions", e1);
-            return null;
+            return Optional.empty();
         } catch (SecurityException e1) {
             throw new RuntimeException("Security exception when determining effective method", e1); // NOSONAR
+        }
+    }
+    
+    private Optional<TransactionalAnnotationAttributes> getTxAttr(Method method) {
+        Optional<TransactionalAnnotationAttributes> txAttr = txMap.get(method);
+        if (txAttr == null) {
+            return Optional.empty();
+        } else {
+            return txAttr;
         }
     }
 
@@ -86,9 +85,9 @@ public class ComponentTxData {
                 Transactional methodAnnotation = m.getAnnotation(Transactional.class);
                 TxType t = getType(methodAnnotation);
                 if (t != null) {
-                    TransactionalAnnotationAttributes txData = new TransactionalAnnotationAttributes(t,
+                   TransactionalAnnotationAttributes txData = new TransactionalAnnotationAttributes(t,
                             methodAnnotation.dontRollbackOn(), methodAnnotation.rollbackOn());
-                    assertAllowedModifier(m);
+                   assertAllowedModifier(m);
                    txMap.put(m, Optional.of(txData));
                    shouldAssignInterceptor = true;
                 } else if (defaultType != null){
