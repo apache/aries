@@ -2,8 +2,9 @@ package org.apache.aries.transaction;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
@@ -15,7 +16,7 @@ public class ComponentTxData {
     private static final Logger LOG = LoggerFactory.getLogger(ComponentTxData.class);
     private static final int BANNED_MODIFIERS = Modifier.PRIVATE | Modifier.STATIC;
     
-    private Map<Method, TransactionalAnnotationAttributes> txMap = new HashMap<Method, TransactionalAnnotationAttributes>();
+    private Map<Method, Optional<TransactionalAnnotationAttributes>> txMap = new ConcurrentHashMap<Method, Optional<TransactionalAnnotationAttributes>>();
     private boolean isTransactional;
     private Class<?> beanClass;
     
@@ -35,13 +36,20 @@ public class ComponentTxData {
 
     TransactionalAnnotationAttributes getEffectiveType(Method m) {
         if (txMap.containsKey(m)) {
-                return txMap.get(m);
+            Optional<TransactionalAnnotationAttributes> optional = txMap.get(m);
+            if(optional == null || !optional.isPresent()) {
+                return null;
+            }
+            return optional.get();
         }
         try {
             Method effectiveMethod = beanClass.getDeclaredMethod(m.getName(), m.getParameterTypes());
-            TransactionalAnnotationAttributes txData = txMap.get(effectiveMethod);
-            txMap.put(m, txData);
-            return txData;
+            Optional<TransactionalAnnotationAttributes> optional = txMap.get(effectiveMethod);
+            if(optional == null) {
+                optional = Optional.empty();
+            }
+            txMap.put(m, optional);
+            return optional.isPresent() ? optional.get() : null;
         } catch (NoSuchMethodException e) { // NOSONAR
             return getFromMethod(m);
         } catch (SecurityException e) {
@@ -52,9 +60,12 @@ public class ComponentTxData {
     private TransactionalAnnotationAttributes getFromMethod(Method m) {
         try {
             Method effectiveMethod = beanClass.getMethod(m.getName(), m.getParameterTypes());
-            TransactionalAnnotationAttributes txData = txMap.get(effectiveMethod);
-            txMap.put(m, txData);
-            return txData;
+            Optional<TransactionalAnnotationAttributes> optional = txMap.get(effectiveMethod);
+            if(optional == null) {
+                optional = Optional.empty();
+            }
+            txMap.put(m, optional);
+            return optional.isPresent() ? optional.get() : null;
         } catch (NoSuchMethodException e1) {
             LOG.debug("No method found when scanning for transactions", e1);
             return null;
@@ -78,11 +89,11 @@ public class ComponentTxData {
                     TransactionalAnnotationAttributes txData = new TransactionalAnnotationAttributes(t,
                             methodAnnotation.dontRollbackOn(), methodAnnotation.rollbackOn());
                     assertAllowedModifier(m);
-                   txMap.put(m, txData);
+                   txMap.put(m, Optional.of(txData));
                    shouldAssignInterceptor = true;
                 } else if (defaultType != null){
-                    txMap.put(m, new TransactionalAnnotationAttributes(defaultType, classAnnotation.dontRollbackOn(),
-                            classAnnotation.rollbackOn()));
+                    txMap.put(m, Optional.of(new TransactionalAnnotationAttributes(defaultType, classAnnotation.dontRollbackOn(),
+                            classAnnotation.rollbackOn())));
                 }
             } catch(IllegalStateException e) {
                 LOG.warn("Invalid transaction annoation found", e);
