@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+
+import aQute.bnd.annotation.baseline.BaselineIgnore;
 /**
  * We need to override ASM's default behaviour in {@link #getCommonSuperClass(String, String)}
  * so that it doesn't load classes (which it was doing on the wrong {@link ClassLoader}
@@ -32,6 +34,7 @@ import org.objectweb.asm.ClassWriter;
  *
  * Taken from the org.apache.aries.proxy.impl module.
  */
+@BaselineIgnore("1.2.4")
 public final class OSGiFriendlyClassWriter extends ClassWriter {
 
   private static final String OBJECT_INTERNAL_NAME = "java/lang/Object";

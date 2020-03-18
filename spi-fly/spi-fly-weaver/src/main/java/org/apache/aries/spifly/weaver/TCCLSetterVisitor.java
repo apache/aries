@@ -33,10 +33,13 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import aQute.bnd.annotation.baseline.BaselineIgnore;
+
 /**
  * This class implements an ASM ClassVisitor which puts the appropriate ThreadContextClassloader
  * calls around applicable method invocations. It does the actual bytecode weaving.
  */
+@BaselineIgnore("1.3.0")
 public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
     private static final Type CLASSLOADER_TYPE = Type.getType(ClassLoader.class);
 

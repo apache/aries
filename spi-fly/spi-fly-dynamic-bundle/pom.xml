@@ -43,12 +43,13 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
-        <asm.version>7.1</asm.version>
-        <bnd.version>4.2.0</bnd.version>
+        <asm.version>7.3.1</asm.version>
+        <maven.bundle.plugin.version>4.2.0</maven.bundle.plugin.version>
+        <bnd.version>5.0.0</bnd.version>
     </properties>
 
     <dependencies>
@@ -73,19 +74,19 @@
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core-internal</artifactId>
-            <version>1.2.2</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.weaver-internal</artifactId>
-            <version>1.2.2</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>biz.aQute.bnd</groupId>
             <artifactId>biz.aQute.bndlib</artifactId>
-            <version>4.1.0</version>
+            <version>${bnd.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -119,7 +120,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${bnd.version}</version>
+                <version>${maven.bundle.plugin.version}</version>
                 <configuration>
                     <instructions>
                         <Bundle-Activator>org.apache.aries.spifly.dynamic.DynamicWeavingActivator</Bundle-Activator>
@@ -135,9 +136,15 @@
                         </Private-Package>
                         <_conditionalpackage>
                             aQute.bnd.header,
+                            aQute.bnd.stream,
                             aQute.bnd.version,
+                            aQute.bnd.version.maven,
                             aQute.lib.collections,
+                            aQute.lib.date,
+                            aQute.lib.exceptions,
                             aQute.lib.io,
+                            aQute.lib.stringrover,
+                            aQute.lib.strings,
                             aQute.libg.generics,
                             aQute.libg.glob,
                             aQute.libg.qtokens,
@@ -156,6 +163,13 @@
                         </Provide-Capability>
                     </instructions>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>biz.aQute.bnd</groupId>
+                        <artifactId>biz.aQute.bndlib</artifactId>
+                        <version>${bnd.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
@@ -257,16 +271,22 @@
                                         <artifactItem>
                                             <groupId>biz.aQute.bnd</groupId>
                                             <artifactId>biz.aQute.bndlib</artifactId>
-                                            <version>4.1.0</version>
+                                            <version>${bnd.version}</version>
                                             <type>jar</type>
                                             <classifier>sources</classifier>
                                             <overWrite>false</overWrite>
                                             <outputDirectory>${project.build.directory}/upacksources/bndlib</outputDirectory>
                                             <includes>
                                                 aQute/bnd/header/*.java,
+                                                aQute/bnd/stream/*.java,
                                                 aQute/bnd/version/*.java,
+                                                aQute/bnd/version/maven*.java,
                                                 aQute/lib/collections/*.java,
+                                                aQute/lib/date/*.java,
+                                                aQute/lib/exceptions/*.java,
                                                 aQute/lib/io/*.java,
+                                                aQute/lib/stringrover/*.java,
+                                                aQute/lib/strings/*.java,
                                                 aQute/libg/generics/*.java,
                                                 aQute/libg/glob/*.java,
                                                 aQute/libg/qtokens/*.java,
