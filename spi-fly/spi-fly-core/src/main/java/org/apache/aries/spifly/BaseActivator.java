@@ -55,7 +55,9 @@ public abstract class BaseActivator implements BundleActivator {
     public static BaseActivator activator;
 
     private BundleContext bundleContext;
+    @SuppressWarnings("rawtypes")
     private BundleTracker consumerBundleTracker;
+    @SuppressWarnings("rawtypes")
     private BundleTracker providerBundleTracker;
 
     private final ConcurrentMap<Bundle, Set<WeavingData>> bundleWeavingData =
@@ -67,6 +69,7 @@ public abstract class BaseActivator implements BundleActivator {
     private final ConcurrentMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>> consumerRestrictions =
             new ConcurrentHashMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>>();
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
         bundleContext = context;
 

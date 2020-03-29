@@ -67,6 +67,12 @@
         </dependency>
         <dependency>
             <groupId>biz.aQute.bnd</groupId>
+            <artifactId>aQute.libg</artifactId>
+            <version>${bnd.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>biz.aQute.bnd</groupId>
             <artifactId>biz.aQute.bndlib</artifactId>
             <version>${bnd.version}</version>
             <scope>provided</scope>
@@ -114,10 +120,15 @@
                             aQute.libg.qtokens,
                             aQute.service.reporter
                         </_conditionalpackage>
+                        <_includeresource>
+                            META-INF/LICENSE=LICENSE,
+                            META-INF/NOTICE=NOTICE,
+                        </_includeresource>
                         <Bundle-Activator>org.apache.aries.spifly.staticbundle.StaticWeavingActivator</Bundle-Activator>
                         <Provide-Capability>
                             osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0
                         </Provide-Capability>
+                        <_fixupmessages>Export org.apache.aries.spifly,  has 1,  private references</_fixupmessages>
                     </instructions>
                 </configuration>
                 <dependencies>

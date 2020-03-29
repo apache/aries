@@ -61,6 +61,12 @@
         </dependency>
         <dependency>
             <groupId>biz.aQute.bnd</groupId>
+            <artifactId>aQute.libg</artifactId>
+            <version>${bnd.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>biz.aQute.bnd</groupId>
             <artifactId>biz.aQute.bndlib</artifactId>
             <version>${bnd.version}</version>
         </dependency>
@@ -75,6 +81,10 @@
             <version>3.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
 </project>

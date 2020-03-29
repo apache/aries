@@ -147,6 +147,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("load", new Class [] {Class.class});
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         Object result = method.invoke(Enum.valueOf((Class<? extends Enum>)cls, "INSTANCE"), MySPI.class);
         Assert.assertTrue("Either null or not a MySPI", result instanceof MySPI);
         MySPI instance = (MySPI)result;
@@ -746,6 +747,7 @@ public class ClientWeavingHookTest {
 
         // Set up the classloader that will be used by the ASM-generated code as the TCCL.
         // It can load a META-INF/services file
+        @SuppressWarnings("resource")
         final ClassLoader cl = new TestProviderBundleClassLoader(subdir, resources.toArray(new String [] {}));
 
         final List<String> classResources = new ArrayList<String>();

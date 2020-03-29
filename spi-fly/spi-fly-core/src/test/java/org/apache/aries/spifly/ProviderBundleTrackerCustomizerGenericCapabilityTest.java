@@ -69,6 +69,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
+        @SuppressWarnings("rawtypes")
         ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
         sreg.unregister();
         EasyMock.expectLastCall();
@@ -83,6 +84,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         assertEquals("Precondition", 0, activator.findProviderBundles("org.apache.aries.mytest.MySPI").size());
         // Call addingBundle();
+        @SuppressWarnings("rawtypes")
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
         assertEquals(1, bundles.size());
@@ -169,6 +171,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
+        @SuppressWarnings("rawtypes")
         ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
         EasyMock.replay(sreg);
 
@@ -179,6 +182,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI; approval=yeah; ");
         Bundle implBundle = mockSPIBundle(implBC, headers);
 
+        @SuppressWarnings("rawtypes")
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(1, registrations.size());
         Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
@@ -202,6 +206,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
+        @SuppressWarnings("rawtypes")
         ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
         EasyMock.replay(sreg);
 
@@ -213,6 +218,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 SpiFlyConstants.REGISTER_DIRECTIVE + "=\"\"");
         Bundle implBundle = mockSPIBundle(implBC, headers);
 
+        @SuppressWarnings("rawtypes")
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(0, registrations.size());
         Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
@@ -250,6 +256,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 SpiFlyConstants.REGISTER_DIRECTIVE + "=\"org.apache.aries.spifly.impl4.MySPIImpl4b\"");
         Bundle implBundle = mockSPIBundle4(implBC, headers);
 
+        @SuppressWarnings("rawtypes")
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(1, registrations.size());
 
@@ -283,6 +290,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI2");
         Bundle implBundle = mockSPIBundle4(implBC, headers);
 
+        @SuppressWarnings("rawtypes")
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals("Expected 3 registrations, one for MySPI and 2 for MySPI2", 3, registrations.size());
         Set<String> expectedObjectClasses = new HashSet<String>(Arrays.asList("org.apache.aries.mytest.MySPI", "org.apache.aries.mytest.MySPI2"));
@@ -290,7 +298,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         boolean foundMySPI = false;
         boolean foundMySPI2 = false;
-        for (ServiceRegistration sr : registrations) {
+        for (@SuppressWarnings("rawtypes") ServiceRegistration sr : registrations) {
             List<String> objectClasses = Arrays.asList((String[]) sr.getReference().getProperty(Constants.OBJECTCLASS));
             actualObjectClasses.addAll(objectClasses);
             assertNotNull(sr.getReference().getProperty(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY));
@@ -331,17 +339,20 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI2");
         Bundle implBundle = mockSPIBundle4(implBC, headers);
 
+        @SuppressWarnings("rawtypes")
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(3, registrations.size());
 
         boolean foundA = false, foundB = false, foundC = false;
-        for (ServiceRegistration sreg : registrations) {
+        for (@SuppressWarnings("rawtypes") ServiceRegistration sreg : registrations) {
+            @SuppressWarnings("rawtypes")
             ServiceReference sref = sreg.getReference();
             String objectClassName = ((String [])sref.getProperty(Constants.OBJECTCLASS))[0];
             String serviceImplClassName = (String) sref.getProperty(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY);
             if (MySPIImpl4a.class.getName().equals(serviceImplClassName)) {
                 assertEquals("org.apache.aries.mytest.MySPI", objectClassName);
 
+                @SuppressWarnings("unchecked")
                 MySPI svc = (MySPI) implBC.getService(sreg.getReference());
                 assertEquals("impl4a", svc.someMethod(""));
 
@@ -349,6 +360,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
             } else if (MySPIImpl4b.class.getName().equals(serviceImplClassName)) {
                 assertEquals("org.apache.aries.mytest.MySPI2", objectClassName);
 
+                @SuppressWarnings("unchecked")
                 MySPI2 svc = (MySPI2) implBC.getService(sreg.getReference());
                 assertEquals("impl4b", svc.someMethod(""));
 
@@ -356,6 +368,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
             } else if (MySPIImpl4c.class.getName().equals(serviceImplClassName)) {
                 assertEquals("org.apache.aries.mytest.MySPI2", objectClassName);
 
+                @SuppressWarnings("unchecked")
                 MySPI2 svc = (MySPI2) implBC.getService(sreg.getReference());
                 assertEquals("impl4c", svc.someMethod(""));
 
@@ -380,12 +393,14 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
+        @SuppressWarnings("rawtypes")
         ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
         EasyMock.replay(sreg);
 
         BundleContext implBC = mockSPIBundleContext(sreg);
         Bundle implBundle = mockSPIBundle(implBC, SpiFlyConstants.PROVIDER_REQUIREMENT);
 
+        @SuppressWarnings("rawtypes")
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
         assertEquals(0, registrations.size());
         Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
@@ -393,8 +408,8 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         assertSame(implBundle, bundles.iterator().next());
     }
 
+    @SuppressWarnings({ "resource", "unchecked" })
     @Test
-    @SuppressWarnings("unchecked")
     public void testAddingBundleWithBundleClassPath() throws Exception {
         Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
@@ -459,7 +474,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     @SuppressWarnings("unchecked")
-    private BundleContext mockSPIBundleContext(ServiceRegistration sreg) {
+    private BundleContext mockSPIBundleContext(@SuppressWarnings("rawtypes") ServiceRegistration sreg) {
         BundleContext implBC = EasyMock.createMock(BundleContext.class);
         EasyMock.<Object>expect(implBC.registerService(
                 EasyMock.eq("org.apache.aries.mytest.MySPI"),
@@ -525,6 +540,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         implBC.getService(EasyMock.anyObject(ServiceReference.class));
         EasyMock.expectLastCall().
             andAnswer(new IAnswer<Object>() {
+                @SuppressWarnings("rawtypes")
                 @Override
                 public Object answer() throws Throwable {
                     ServiceRegistrationImpl reg = (ServiceRegistrationImpl) EasyMock.getCurrentArguments()[0];
@@ -570,6 +586,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         return implBundle;
     }
 
+    @SuppressWarnings("rawtypes")
     private static class ServiceRegistrationImpl implements ServiceRegistration<Object>, ServiceReference {
         private final Object serviceObject;
         private final Dictionary<String, Object> properties;
@@ -584,6 +601,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
             return serviceObject;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public ServiceReference<Object> getReference() {
             return this;

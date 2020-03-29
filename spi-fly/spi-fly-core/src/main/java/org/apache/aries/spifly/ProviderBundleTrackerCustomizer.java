@@ -54,6 +54,7 @@ import aQute.bnd.header.Parameters;
 /**
  * Listens for new bundles being installed and registers them as service providers if applicable.
  */
+@SuppressWarnings("rawtypes")
 public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer {
     private static final String METAINF_SERVICES = "META-INF/services";
 
