@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.aries.mytest.MySPI;
@@ -55,6 +56,8 @@ import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+
+import aQute.bnd.header.Parameters;
 
 public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     @Test
@@ -190,8 +193,106 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         assertSame(implBundle, bundles.iterator().next());
 
         Map<String, Object> attrs = activator.getCustomBundleAttributes("org.apache.aries.mytest.MySPI", implBundle);
-        assertEquals(1, attrs.size());
+        assertEquals(4, attrs.size());
         assertEquals("yeah", attrs.get("approval"));
+    }
+
+    @Test
+    public void testAutoProviderSystemProperty() throws Exception {
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
+        EasyMock.replay(mediatorBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        activator.setAutoProviderInstructions(Optional.of(new Parameters("*")));
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
+
+        @SuppressWarnings("rawtypes")
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
+        EasyMock.replay(sreg);
+
+        BundleContext implBC = mockSPIBundleContext(sreg);
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        Bundle implBundle = mockSPIBundle(implBC, headers);
+
+        @SuppressWarnings("rawtypes")
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        assertEquals(1, registrations.size());
+        Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
+        assertEquals(1, bundles.size());
+        assertSame(implBundle, bundles.iterator().next());
+
+        Map<String, Object> attrs = activator.getCustomBundleAttributes("org.apache.aries.mytest.MySPI", implBundle);
+        assertEquals(3, attrs.size());
+        assertNull(attrs.get("approval"));
+    }
+
+    @Test
+    public void testAutoProviderSystemPropertyPlusProperty() throws Exception {
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
+        EasyMock.replay(mediatorBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        activator.setAutoProviderInstructions(Optional.of(new Parameters("*;approval=yeah")));
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
+
+        @SuppressWarnings("rawtypes")
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
+        EasyMock.replay(sreg);
+
+        BundleContext implBC = mockSPIBundleContext(sreg);
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        Bundle implBundle = mockSPIBundle(implBC, headers);
+
+        @SuppressWarnings("rawtypes")
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        assertEquals(1, registrations.size());
+        Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
+        assertEquals(1, bundles.size());
+        assertSame(implBundle, bundles.iterator().next());
+
+        Map<String, Object> attrs = activator.getCustomBundleAttributes("org.apache.aries.mytest.MySPI", implBundle);
+        assertEquals(4, attrs.size());
+        assertEquals("yeah", attrs.get("approval"));
+    }
+
+    @Test
+    public void testAutoProviderSystemPropertyTargetBundle() throws Exception {
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
+        EasyMock.replay(mediatorBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        activator.setAutoProviderInstructions(Optional.of(new Parameters("bsn")));
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
+
+        @SuppressWarnings("rawtypes")
+        ServiceRegistration sreg = EasyMock.createMock(ServiceRegistration.class);
+        EasyMock.replay(sreg);
+
+        BundleContext implBC = mockSPIBundleContext(sreg);
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        Bundle implBundle = mockSPIBundle(implBC, headers);
+
+        @SuppressWarnings("rawtypes")
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        assertEquals(1, registrations.size());
+        Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
+        assertEquals(1, bundles.size());
+        assertSame(implBundle, bundles.iterator().next());
+
+        Map<String, Object> attrs = activator.getCustomBundleAttributes("org.apache.aries.mytest.MySPI", implBundle);
+        assertEquals(3, attrs.size());
     }
 
     @Test
@@ -501,6 +602,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(implBundle.getSymbolicName()).andReturn("bsn").anyTimes();
 
         // List the resources found at META-INF/services in the test bundle
         URL dir = getClass().getResource("impl1/META-INF/services");

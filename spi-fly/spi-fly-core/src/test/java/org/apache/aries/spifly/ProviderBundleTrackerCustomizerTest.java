@@ -41,15 +41,17 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
 public class ProviderBundleTrackerCustomizerTest {
+
+    private BaseActivator activator = new BaseActivator() {
+        @Override
+        public void start(BundleContext context) throws Exception {}
+    };
+
     @Test
     public void testAddingRemovedBundle() throws Exception {
         Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
         EasyMock.replay(mediatorBundle);
-        BaseActivator activator = new BaseActivator() {
-            @Override
-            public void start(BundleContext context) throws Exception {}
-        };
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
@@ -82,7 +84,7 @@ public class ProviderBundleTrackerCustomizerTest {
         BundleContext implBC = mockSPIBundleContext(EasyMock.createNiceMock(ServiceRegistration.class));
         Bundle spiBundle = mockSPIBundle(implBC);
 
-        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(EasyMock.createNiceMock(BaseActivator.class), spiBundle);
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
         assertNull("The SpiFly bundle itself should be ignored", customizer.addingBundle(spiBundle, null));
     }
 
@@ -91,7 +93,7 @@ public class ProviderBundleTrackerCustomizerTest {
         BundleContext implBC = mockSPIBundleContext(EasyMock.createNiceMock(ServiceRegistration.class));
         Bundle implBundle = mockSPIBundle(implBC, null);
 
-        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(EasyMock.createNiceMock(BaseActivator.class), null);
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, null);
         assertNull("Bundle doesn't opt-in so should be ignored", customizer.addingBundle(implBundle, null));
     }
 
@@ -101,10 +103,6 @@ public class ProviderBundleTrackerCustomizerTest {
         Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
         EasyMock.replay(mediatorBundle);
-        BaseActivator activator = new BaseActivator() {
-            @Override
-            public void start(BundleContext context) throws Exception {}
-        };
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
@@ -165,7 +163,7 @@ public class ProviderBundleTrackerCustomizerTest {
         EasyMock.expect(spiBundle.getBundleId()).andReturn(25l).anyTimes();
         EasyMock.replay(spiBundle);
 
-        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(EasyMock.createNiceMock(BaseActivator.class), spiBundle);
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
         assertEquals(2, customizer.addingBundle(implBundle, null).size());
     }
 

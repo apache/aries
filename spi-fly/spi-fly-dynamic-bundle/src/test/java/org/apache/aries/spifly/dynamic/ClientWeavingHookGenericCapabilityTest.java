@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,6 +63,8 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 
+import aQute.bnd.header.Parameters;
+
 public class ClientWeavingHookGenericCapabilityTest {
     DynamicWeavingActivator activator;
 
@@ -75,6 +78,74 @@ public class ClientWeavingHookGenericCapabilityTest {
     public void tearDown() {
         BaseActivator.activator = null;
         activator = null;
+    }
+
+    @Test
+    public void testAutoConsumerSystemProperty() throws Exception {
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+
+        // Register the bundle that provides the SPI implementation.
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
+
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        activator.setAutoConsumerInstructions(Optional.of(new Parameters(consumerBundle.getSymbolicName())));
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        Assert.assertNotNull("Precondition", clsUrl);
+
+        String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
+        WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+        Assert.assertEquals(1, wc.getDynamicImports().size());
+        String di1 = "org.apache.aries.spifly";
+        String di = wc.getDynamicImports().get(0);
+        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
+
+        // Invoke the woven class and check that it properly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals(Collections.singleton("olleh"), result);
+    }
+
+    @Test
+    public void testAutoConsumerSystemProperty_negative() throws Exception {
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+
+        // Register the bundle that provides the SPI implementation.
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
+
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        activator.addConsumerWeavingData(consumerBundle, SpiFlyConstants.REQUIRE_CAPABILITY);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle("spifly", Version.parseVersion("1.9.4"), consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(spiFlyBundle.getBundleContext(), activator);
+
+        // Weave the TestClient class.
+        URL clsUrl = getClass().getResource("TestClient.class");
+        Assert.assertNotNull("Precondition", clsUrl);
+
+        String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
+        WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
+        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        wh.weave(wc);
+        Assert.assertEquals(0, wc.getDynamicImports().size());
+
+        // Invoke the woven class and check that it properly sets the TCCL so that the
+        // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
+        Class<?> cls = wc.getDefinedClass();
+        Method method = cls.getMethod("test", new Class [] {String.class});
+        Object result = method.invoke(cls.newInstance(), "hello");
+        Assert.assertEquals(Collections.emptySet(), result);
     }
 
     @Test
