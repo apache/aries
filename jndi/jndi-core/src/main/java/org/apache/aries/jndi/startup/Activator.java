@@ -119,8 +119,20 @@ public class Activator implements BundleActivator {
 
     public void start(BundleContext context) {
         instance = this;
-
-        bundleServiceCaches = new BundleTracker<ServiceCache>(context, Bundle.ACTIVE, null) {
+        BundleContext trackerBundleContext;
+        /* Use system context to allow trackers full bundle/service visibility. */
+        if ( !Boolean.getBoolean("org.apache.aries.jndi.trackersUseLocalContext") ){
+        	trackerBundleContext = context.getBundle(Constants.SYSTEM_BUNDLE_LOCATION).getBundleContext();
+        	if (trackerBundleContext==null) {
+                throw new IllegalStateException("Bundle could not aquire system bundle context.");
+        	}
+        }
+        else {
+        	trackerBundleContext = context;
+        }
+        
+        bundleServiceCaches = 
+        		new BundleTracker<ServiceCache>(trackerBundleContext, Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING , null) {
             @Override
             public ServiceCache addingBundle(Bundle bundle, BundleEvent event) {
                 return new ServiceCache(bundle.getBundleContext());
@@ -128,17 +140,13 @@ public class Activator implements BundleActivator {
             @Override
             public void modifiedBundle(Bundle bundle, BundleEvent event, ServiceCache object) {
             }
-            @Override
-            public void removedBundle(Bundle bundle, BundleEvent event, ServiceCache object) {
-                object.close();
-            }
         };
         bundleServiceCaches.open();
 
-        initialContextFactories = new CachingServiceTracker<>(context, InitialContextFactory.class, Activator::getInitialContextFactoryInterfaces);
-        objectFactories = new CachingServiceTracker<>(context, ObjectFactory.class, Activator::getObjectFactorySchemes);
-        icfBuilders = new CachingServiceTracker<>(context, InitialContextFactoryBuilder.class);
-        urlObjectFactoryFinders = new CachingServiceTracker<>(context, URLObjectFactoryFinder.class);
+        initialContextFactories = new CachingServiceTracker<>(trackerBundleContext, InitialContextFactory.class, Activator::getInitialContextFactoryInterfaces);
+        objectFactories = new CachingServiceTracker<>(trackerBundleContext, ObjectFactory.class, Activator::getObjectFactorySchemes);
+        icfBuilders = new CachingServiceTracker<>(trackerBundleContext, InitialContextFactoryBuilder.class);
+        urlObjectFactoryFinders = new CachingServiceTracker<>(trackerBundleContext, URLObjectFactoryFinder.class);
 
         if (!disableBuilder(context)) {
             try {
@@ -330,16 +338,8 @@ public class Activator implements BundleActivator {
             return (List) trackers.computeIfAbsent(clazz, c -> new CachingServiceTracker<>(context, c)).getReferences();
         }
 
-        void close() {
-            cache.forEach(this::doUngetService);
-        }
-
         Object doGetService(ServiceReference<?> ref) {
             return Utils.doPrivileged(() -> context.getService(ref));
-        }
-
-        void doUngetService(ServiceReference<?> ref, Object svc) {
-            Utils.doPrivileged(() -> context.ungetService(ref));
         }
     }
 
