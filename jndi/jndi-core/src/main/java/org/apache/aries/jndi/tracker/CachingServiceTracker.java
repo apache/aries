@@ -43,22 +43,21 @@ public class CachingServiceTracker<S> extends ServiceTracker<S, ServiceReference
         open();
     }
 
-    public ServiceReference<S> find(String identifier) {
-        Map<String, ServiceReference<S>> c = cache;
-        if (c == null) {
+    public ServiceReference<S> find(String identifier) {        
+        if (cache == null) {
             synchronized (this) {
-                if (cache == null) {
-                    cache = new HashMap<>();
+            	Map<String, ServiceReference<S>> c = new HashMap<>();
+                if (cache == null) {                	
                     for (ServiceReference<S> ref : getReferences()) {
                         for (String key : properties.apply(ref)) {
-                            cache.putIfAbsent(key, ref);
+                            c.putIfAbsent(key, ref);
                         }
                     }
+                    cache = c;
                 }
-                c = cache;
             }
         }
-        return c.get(identifier);
+        return cache.get(identifier);
     }
 
     public List<ServiceReference<S>> getReferences() {
