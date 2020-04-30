@@ -44,7 +44,7 @@
      
      <properties>
         <pax-exam.version>4.11.0</pax-exam.version>
-        <pax-url.version>1.6.0</pax-url.version>
+        <pax-url.version>2.6.0</pax-url.version>
 
          <jndi-api.version>${jndi-api.dev-version}</jndi-api.version>
          <jndi-bundle.version>${jndi-bundle.dev-version}</jndi-bundle.version>
