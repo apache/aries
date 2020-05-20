@@ -25,7 +25,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
-import static org.objectweb.asm.Opcodes.ASM7;
+import static org.objectweb.asm.Opcodes.ASM8;
 
 class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
 
@@ -43,7 +43,7 @@ class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
   private boolean hasSVUID;
 
   public SyntheticSerialVerUIDAdder(WovenProxyAdapter cv) {
-    super(ASM7, cv);
+    super(ASM8, cv);
     wpa = cv;
   }
 

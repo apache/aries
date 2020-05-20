@@ -47,7 +47,7 @@ public class ProxySubclassHierarchyAdapter extends ClassVisitor implements Opcod
 
   ProxySubclassHierarchyAdapter(ProxySubclassAdapter adapter, Collection<String> methodsToImplement)
   {
-    super(Opcodes.ASM7);
+    super(Opcodes.ASM8);
     LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassHeirarchyAdapter", new Object[] {
         this, adapter, methodsToImplement });
 
