@@ -297,7 +297,8 @@ public abstract class AbstractProxyTest {
               CoreOptions.junitBundles(),
               systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
               when(localRepo != null).useOptions(CoreOptions.vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
-              mavenBundle("org.ow2.asm", "asm-debug-all").versionAsInProject(),
+              mavenBundle("org.ow2.asm", "asm-commons").versionAsInProject(),
+              mavenBundle("org.ow2.asm", "asm").versionAsInProject(),
               mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
               mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
               mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()

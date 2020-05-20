@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.0</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -43,7 +43,7 @@
     </scm>
 
     <properties>
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.13.3</exam.version>
         <url.version>1.6.0</url.version>
     </properties>
 
@@ -63,7 +63,7 @@
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.api</artifactId>
             <scope>test</scope>
-            <version>1.1.0</version>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
@@ -133,8 +133,14 @@
 
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
-            <version>5.0.3</version>
+            <artifactId>asm</artifactId>
+            <version>8.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>8.0.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
