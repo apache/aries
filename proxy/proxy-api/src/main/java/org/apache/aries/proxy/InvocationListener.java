@@ -19,6 +19,7 @@
 package org.apache.aries.proxy;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 
 /**
  * An {@link InvocationListener} is used in conjunction with the {@link ProxyManager}
@@ -31,4 +32,9 @@ public interface InvocationListener
   public void postInvoke(Object token, Object proxy, Method m, Object returnValue) throws Throwable;
   
   public void postInvokeExceptionalReturn(Object token, Object proxy, Method m, Throwable exception) throws Throwable;
+
+  default Object aroundInvoke(Object token, Object proxy, Callable<Object> dispatcher, Method method, Object[] args) throws Throwable {
+    return method.invoke(dispatcher.call(), args);
+  }
+
 }

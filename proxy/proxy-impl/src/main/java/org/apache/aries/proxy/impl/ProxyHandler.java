@@ -51,7 +51,7 @@ public final class ProxyHandler implements InvocationHandler {
         try {
           token = nonNullListener.preInvoke(proxy, method, args);
           inInvoke = true;
-          result = method.invoke(target.call(), args);
+          result = nonNullListener.aroundInvoke(token, proxy, target, method, args);
           inInvoke = false;
           nonNullListener.postInvoke(token, proxy, method, result);
 
