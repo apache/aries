@@ -24,8 +24,6 @@ import org.osgi.framework.hooks.weaving.WovenClass;
  * This provides helper methods to allow a ProxyWeavingController to make
  * sensible decisions without needing to know how the ProxyManager has implemented
  * the weaving support.
- * 
- * @noimplement
  */
 public interface WeavingHelper
 {
