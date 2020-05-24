@@ -19,6 +19,7 @@
 package org.apache.aries.spifly;
 
 import static java.util.stream.Collectors.toList;
+import static org.osgi.framework.wiring.BundleRevision.TYPE_FRAGMENT;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -77,7 +78,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public List<ServiceRegistration> addingBundle(final Bundle bundle, BundleEvent event) {
-        if (bundle.equals(spiBundle))
+        BundleRevision bundleRevision = bundle.adapt(BundleRevision.class);
+        if (bundle.equals(spiBundle) || ((bundleRevision != null) && ((bundleRevision.getTypes() & TYPE_FRAGMENT) == TYPE_FRAGMENT)))
             return null; // don't process the SPI bundle itself
 
         log(Level.FINE, "Bundle Considered for SPI providers: "
@@ -246,7 +248,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return activator.getAutoProviderInstructions().map(
             Parameters::stream
         ).orElseGet(MapStream::empty).filterKey(
-            i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
+            i ->
+                Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
         ).values().findFirst().map(
             un -> {
                 List<URL> serviceFileURLs = getServiceFileUrls(bundle);
