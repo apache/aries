@@ -145,6 +145,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         BundleRevision rev = EasyMock.createMock(BundleRevision.class);
         EasyMock.expect(rev.getWiring()).andReturn(bw).anyTimes();
+        EasyMock.expect(rev.getTypes()).andReturn(0).anyTimes();
         EasyMock.replay(rev);
         Bundle implBundle = mockSPIBundle(implBC, headers, rev);
 
