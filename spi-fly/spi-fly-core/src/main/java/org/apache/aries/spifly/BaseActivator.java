@@ -82,20 +82,20 @@ public abstract class BaseActivator implements BundleActivator {
         bundleContext = context;
 
         try {
-        autoConsumerInstructions = Optional.ofNullable(
-            bundleContext.getProperty("org.apache.aries.spifly.auto.consumers")
-        ).map(Parameters::new);
+            autoConsumerInstructions = Optional.ofNullable(
+                bundleContext.getProperty("org.apache.aries.spifly.auto.consumers")
+            ).map(Parameters::new);
 
-        autoProviderInstructions = Optional.ofNullable(
-            bundleContext.getProperty("org.apache.aries.spifly.auto.providers")
-        ).map(Parameters::new);
+            autoProviderInstructions = Optional.ofNullable(
+                bundleContext.getProperty("org.apache.aries.spifly.auto.providers")
+            ).map(Parameters::new);
         }
         catch (Throwable t) {
             logger.log(Level.SEVERE, t.getMessage(), t);
         }
 
         providerBundleTracker = new BundleTracker(context,
-                Bundle.ACTIVE, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
+                Bundle.ACTIVE | Bundle.STARTING, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
         providerBundleTracker.open();
 
         consumerBundleTracker = new BundleTracker(context,

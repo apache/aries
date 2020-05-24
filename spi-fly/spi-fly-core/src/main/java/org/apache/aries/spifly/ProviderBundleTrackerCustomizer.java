@@ -246,7 +246,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return activator.getAutoProviderInstructions().map(
             Parameters::stream
         ).orElseGet(MapStream::empty).filterKey(
-            i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
+            i ->
+                Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
         ).values().findFirst().map(
             un -> {
                 List<URL> serviceFileURLs = getServiceFileUrls(bundle);
