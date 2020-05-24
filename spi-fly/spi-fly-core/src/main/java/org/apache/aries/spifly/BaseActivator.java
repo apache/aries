@@ -19,6 +19,7 @@
 package org.apache.aries.spifly;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
@@ -45,6 +47,10 @@ import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.util.tracker.BundleTracker;
 
+import aQute.bnd.header.Parameters;
+import aQute.bnd.stream.MapStream;
+import aQute.libg.glob.Glob;
+
 public abstract class BaseActivator implements BundleActivator {
     private static final Set<WeavingData> NON_WOVEN_BUNDLE = Collections.emptySet();
     private static final Logger logger = Logger.getLogger(BaseActivator.class.getName());
@@ -59,6 +65,8 @@ public abstract class BaseActivator implements BundleActivator {
     private BundleTracker consumerBundleTracker;
     @SuppressWarnings("rawtypes")
     private BundleTracker providerBundleTracker;
+    private Optional<Parameters> autoConsumerInstructions;
+    private Optional<Parameters> autoProviderInstructions;
 
     private final ConcurrentMap<Bundle, Set<WeavingData>> bundleWeavingData =
         new ConcurrentHashMap<Bundle, Set<WeavingData>>();
@@ -72,6 +80,19 @@ public abstract class BaseActivator implements BundleActivator {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
         bundleContext = context;
+
+        try {
+        autoConsumerInstructions = Optional.ofNullable(
+            bundleContext.getProperty("org.apache.aries.spifly.auto.consumers")
+        ).map(Parameters::new);
+
+        autoProviderInstructions = Optional.ofNullable(
+            bundleContext.getProperty("org.apache.aries.spifly.auto.providers")
+        ).map(Parameters::new);
+        }
+        catch (Throwable t) {
+            logger.log(Level.SEVERE, t.getMessage(), t);
+        }
 
         providerBundleTracker = new BundleTracker(context,
                 Bundle.ACTIVE, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
@@ -95,8 +116,25 @@ public abstract class BaseActivator implements BundleActivator {
         }
 
         Map<String, List<String>> allHeaders = new HashMap<String, List<String>>();
-        allHeaders.put(consumerHeaderName, getAllHeaders(consumerHeaderName, bundle));
-        allHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, getAllHeaders(SpiFlyConstants.REQUIRE_CAPABILITY, bundle));
+        Set<String> addedHeaders = new HashSet<String>();
+        List<String> added = allHeaders.put(consumerHeaderName, getAllHeaders(consumerHeaderName, bundle));
+        if (added != null) {
+            added.stream().forEach(addedHeaders::add);
+        }
+        added = allHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, getAllHeaders(SpiFlyConstants.REQUIRE_CAPABILITY, bundle));
+        if (added != null) {
+            added.stream().forEach(addedHeaders::add);
+        }
+        if (addedHeaders.isEmpty()) {
+            getAutoConsumerInstructions().map(Parameters::stream).orElseGet(MapStream::empty).filterKey(
+                i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
+            ).findFirst().ifPresent(
+                un -> allHeaders.put(
+                    SpiFlyConstants.REQUIRE_CAPABILITY,
+                    Arrays.asList(
+                        SpiFlyConstants.CLIENT_REQUIREMENT.concat(",osgi.serviceloader;filter:='(osgi.serviceloader=*)'")))
+            );
+        }
 
         Set<WeavingData> wd = new HashSet<WeavingData>();
         for (Map.Entry<String, List<String>> entry : allHeaders.entrySet()) {
@@ -217,12 +255,20 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public void registerProviderBundle(String registrationClassName, Bundle bundle, Map<String, Object> customAttributes) {
-        registrationClassName = registrationClassName.trim();
-        registeredProviders.putIfAbsent(registrationClassName,
-                Collections.synchronizedSortedMap(new TreeMap<Long, Pair<Bundle, Map<String, Object>>>()));
+        SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.computeIfAbsent(registrationClassName,
+            k -> Collections.synchronizedSortedMap(new TreeMap<Long, Pair<Bundle, Map<String, Object>>>()));
 
-        SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.get(registrationClassName);
-        map.put(bundle.getBundleId(), new Pair<Bundle, Map<String, Object>>(bundle, customAttributes));
+        map.compute(
+            bundle.getBundleId(),
+            (k,v) -> {
+                if (v == null) {
+                    return new Pair<Bundle, Map<String, Object>>(bundle, customAttributes);
+                }
+                else {
+                    v.getRight().putAll(customAttributes);
+                    return v;
+                }
+            });
     }
 
     public void unregisterProviderBundle(Bundle bundle) {
@@ -286,6 +332,24 @@ public abstract class BaseActivator implements BundleActivator {
 
         // Empty collection: nothing matches
         return Collections.emptySet();
+    }
+
+    public Optional<Parameters> getAutoConsumerInstructions() {
+        if (autoConsumerInstructions == null) return Optional.empty();
+        return autoConsumerInstructions;
+    }
+
+    public void setAutoConsumerInstructions(Optional<Parameters> autoConsumerInstructions) {
+        this.autoConsumerInstructions = autoConsumerInstructions;
+    }
+
+    public Optional<Parameters> getAutoProviderInstructions() {
+        if (autoProviderInstructions == null) return Optional.empty();
+        return autoProviderInstructions;
+    }
+
+    public void setAutoProviderInstructions(Optional<Parameters> autoProviderInstructions) {
+        this.autoProviderInstructions = autoProviderInstructions;
     }
 
     private Collection<Bundle> getBundles(List<BundleDescriptor> descriptors, String className, String methodName,
