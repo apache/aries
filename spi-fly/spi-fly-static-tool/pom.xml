@@ -45,22 +45,11 @@
     </scm>
 
     <properties>
-        <asm.version>8.0.1</asm.version>
         <maven.bundle.plugin.version>4.2.0</maven.bundle.plugin.version>
         <bnd.version>5.0.1</bnd.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>${asm.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-commons</artifactId>
-            <version>${asm.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.aries.spifly</groupId>
             <artifactId>org.apache.aries.spifly.core-internal</artifactId>

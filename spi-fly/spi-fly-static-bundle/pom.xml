@@ -47,7 +47,6 @@
     </scm>
 
     <properties>
-        <asm.version>8.0.1</asm.version>
         <maven.bundle.plugin.version>4.2.0</maven.bundle.plugin.version>
         <bnd.version>5.0.1</bnd.version>
     </properties>
@@ -267,7 +266,7 @@
                     <plugin>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <configuration>
-                            <excludePackageNames>aQute.*,org.objectweb.*</excludePackageNames>
+                            <excludePackageNames>aQute.*</excludePackageNames>
                         </configuration>
                     </plugin>
                 </plugins>
