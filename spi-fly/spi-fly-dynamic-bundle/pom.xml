@@ -47,7 +47,7 @@
     </scm>
 
     <properties>
-        <asm.version>7.3.1</asm.version>
+        <asm.version>8.0.1</asm.version>
         <maven.bundle.plugin.version>4.2.0</maven.bundle.plugin.version>
         <bnd.version>5.0.1</bnd.version>
     </properties>

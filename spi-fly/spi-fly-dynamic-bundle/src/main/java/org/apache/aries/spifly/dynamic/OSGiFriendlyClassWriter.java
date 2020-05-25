@@ -34,7 +34,7 @@ import aQute.bnd.annotation.baseline.BaselineIgnore;
  *
  * Taken from the org.apache.aries.proxy.impl module.
  */
-@BaselineIgnore("1.2.4")
+@BaselineIgnore("1.3.0")
 public final class OSGiFriendlyClassWriter extends ClassWriter {
 
   private static final String OBJECT_INTERNAL_NAME = "java/lang/Object";
