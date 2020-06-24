@@ -323,6 +323,7 @@ public class BlueprintMetadataTest {
             metadata.getComponentIds(serviceId);
         }catch(Exception ex)
         {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1707
             assertTrue(ex instanceof IOException);
         }
         

@@ -64,10 +64,12 @@ public class ContentInfo {
         if (type != null) {
             line += ";type=\"" + type + "\"";
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
         if (mavenVersionRange != null && mavenVersionRange.hasRestrictions()) {
             line += ";version=\"" + mavenVersionRange + '"';
         } else {
             if (version != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
                 line += ";version=\"[" + version + "," + version + "]\"";
             }
         }
@@ -94,6 +96,7 @@ public class ContentInfo {
                 }
             }
         } catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1490
             log.warn("Error creating content information for artifact '" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":v" + artifact.getVersion() + "'", e);
             return null;
         } finally {
@@ -106,6 +109,7 @@ public class ContentInfo {
     private static ContentInfo handleUnknown(Artifact artifact) {
         ContentInfo info = new ContentInfo();
         info.symbolicName = maven2OsgiConverter.getBundleSymbolicName(artifact);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
         info.version = Analyzer.cleanupVersion(artifact.getVersion());
         info.mavenVersionRange = artifact.getVersionRange();
         return info;
@@ -161,6 +165,9 @@ public class ContentInfo {
                 info.type = Constants.FRAGMENT_TYPE;
             }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
             info.mavenVersionRange = artifact.getVersionRange();
             return info;
         }

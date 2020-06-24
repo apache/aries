@@ -47,6 +47,7 @@ public class BundleManifestTest
   @BeforeClass
   public static void setup() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-958
     BUNDLE_WITHOUT_NAME_HEADER = new File ("./bundleManifestTest/nonExploded.jar");
     BUNDLE_WITHOUT_NAME_HEADER.getParentFile().mkdirs();
     BUNDLE_WITH_NAME_HEADER = new File ("./bundleManifestTest/nonExplodedWithName.jar");
@@ -80,6 +81,7 @@ public class BundleManifestTest
   @AfterClass
   public static void cleanup()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     IOUtils.deleteRecursive(new File("bundleManifestTest/"));
   }
 

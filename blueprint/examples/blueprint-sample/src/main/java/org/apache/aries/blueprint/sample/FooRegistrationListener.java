@@ -27,6 +27,7 @@ public class FooRegistrationListener {
     
     public void serviceRegistered(Serializable foo, Map props) {
         System.out.println("Service registration notification: " + foo + " " + props);
+//IC see: https://issues.apache.org/jira/browse/ARIES-9
         synchronized (lock) {
             this.props = props;
         }

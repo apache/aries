@@ -33,6 +33,7 @@ public class TestRepositoryContent extends TestResource implements RepositoryCon
 		private byte[] content;
 		
 		public TestRepositoryContent build() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new TestRepositoryContent(capabilities, requirements, content);
 		}
 		
@@ -64,6 +65,7 @@ public class TestRepositoryContent extends TestResource implements RepositoryCon
 
 	@Override
 	public InputStream getContent() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		try {
 			return new ByteArrayInputStream(content);
 		}

@@ -66,6 +66,7 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
   public ApplicationMetadataImpl(Manifest appManifest) {
 
     this.appContents = new ArrayList<Content>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     this.useBundle = new ArrayList<Content>();    
     this.importServices = new ArrayList<ServiceDeclaration>();
     this.exportServices = new ArrayList<ServiceDeclaration>();    
@@ -74,6 +75,7 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     // As of 7 Jan 2010 we have no setter methods. Hence it's currently 
     // fine to keep a copy of appManifest, and to use it in the store()
     // method.
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     manifest = appManifest;
   }
   
@@ -86,6 +88,7 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     Map<String, String> appMap = readManifestIntoMap(appManifest);
     
     // configure the appSymbolicName and appVersion
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
     this.appSymbolicName = appMap.get(AppConstants.APPLICATION_SYMBOLIC_NAME);
     this.appVersion = new Version(appMap.get(AppConstants.APPLICATION_VERSION));
     this.appName = appMap.get(AppConstants.APPLICATION_NAME);
@@ -98,8 +101,10 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
     // configure appContents
  // use parseImportString as we don't allow appContents to be duplicate
     String applicationContents = appMap.get(AppConstants.APPLICATION_CONTENT);
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map<String, Map<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(applicationContents);
     for (Map.Entry<String, Map<String, String>> e : appContentsMap.entrySet()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
       this.appContents.add(new ContentImpl(e.getKey(), e.getValue()));
     }
    
@@ -194,6 +199,7 @@ public final class ApplicationMetadataImpl implements ApplicationMetadata
   
   public String getApplicationScope() 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
     return appScope;
   }
   
@@ -215,6 +221,7 @@ public int hashCode()
   }
 
   public void store(File f) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     FileOutputStream fos = new FileOutputStream (f);
     store(fos);
     fos.close();
@@ -232,6 +239,7 @@ public int hashCode()
 
   public Collection<Content> getUseBundles()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     return this.useBundle;
   }
 }

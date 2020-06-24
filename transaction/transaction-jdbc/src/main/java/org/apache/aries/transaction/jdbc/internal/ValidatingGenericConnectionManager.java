@@ -89,6 +89,7 @@ public final class ValidatingGenericConnectionManager extends GenericConnectionM
 
         Object foundPool = null;
         if (current instanceof AbstractSinglePoolConnectionInterceptor) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1542
             foundPool = Reflections.get(current, "pool");
         } else if (current instanceof MultiPoolConnectionInterceptor) {
             log.warn("validation on stack {} not supported", stack);

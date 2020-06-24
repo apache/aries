@@ -40,6 +40,7 @@ public class Activator implements BundleActivator {
      * @see org.osgi.framework.BundleActivator#start(BundleContext)
      */
     public void start(BundleContext context) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         StateConfig stateConfig = StateConfig.register(context);
         logger = new Logger(context);
         //starting logger

@@ -51,6 +51,7 @@ public class ManifestProcessorTest
   {
     //the values of the manifest
     //intentionally include a couple of long lines
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
     Map<String, String> pairs = new HashMap<String, String>();
     pairs.put("Manifest-Version", "1.0");
     pairs.put("Application-ManifestVersion", "1.0");
@@ -84,7 +85,9 @@ public class ManifestProcessorTest
   @Test
   public void testManifestMetadata() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-121
     ApplicationMetadataFactoryImpl manager = new ApplicationMetadataFactoryImpl();
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION.MF");    
     ApplicationMetadata am = manager.parseApplicationMetadata(in);
     assertNotNull(am);
@@ -100,6 +103,7 @@ public class ManifestProcessorTest
         assertEquals(vr.getMaximumVersion(),new Version("1.2.0"));
       } else if("com.travel.reservation.business".equals(content.getContentName())){
         VersionRange vr = content.getVersion();
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
         assertEquals(new Version(0,0,0), vr.getMinimumVersion());
       } else 
         fail("Unexepcted content name " + content.getContentName());
@@ -113,12 +117,16 @@ public class ManifestProcessorTest
   @Test
   public void testManifestMetadataWithMultiLineEntries() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-121
     ApplicationMetadataFactoryImpl manager = new ApplicationMetadataFactoryImpl();
     
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION2.MF");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     ApplicationMetadata am = manager.parseApplicationMetadata(in);
     assertNotNull(am);
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
 
     assertEquals(am.getApplicationName(),appName);
 
@@ -140,10 +148,12 @@ public class ManifestProcessorTest
   @Test
   public void testManifestWithoutEndingInNewLine() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-121
     ApplicationMetadataFactoryImpl manager = new ApplicationMetadataFactoryImpl();
     
     InputStream in = getClass().getClassLoader().getResourceAsStream("META-INF/APPLICATION3.MF");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     ApplicationMetadata am = manager.parseApplicationMetadata(in);
     assertNotNull(am);
 

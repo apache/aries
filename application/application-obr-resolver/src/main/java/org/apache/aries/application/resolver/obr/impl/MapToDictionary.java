@@ -93,6 +93,7 @@ public class MapToDictionary extends Dictionary
   @Override
   public String toString()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-183
     return m_map != null ? m_map.toString() : "null";
   }
 

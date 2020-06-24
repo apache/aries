@@ -15,11 +15,13 @@ package org.apache.aries.subsystem.core.archive;
 
 public abstract class AbstractDirective extends AbstractParameter implements Directive {
 	public AbstractDirective(String name, String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 		super(name, value);
 	}
 	
 	@Override
     public String getValue() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (String)super.getValue();
 	}
 

@@ -513,11 +513,13 @@ public class DeploymentGeneratorTest
       builder.deleteCharAt(builder.length() - 1);
       att.put(new Attributes.Name(Constants.EXPORT_PACKAGE), builder.toString());
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     return new ModellingManagerImpl().getModelledResource(null, att, null, null);
   }
   
   private Content mockContent(String symbolicName, String version) {
     Content bundle = Skeleton.newMock(Content.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     VersionRange vr = new VersionRange(version);
     Skeleton.getSkeleton(bundle).setReturnValue(new MethodCall(Content.class, "getContentName"), symbolicName);
     Skeleton.getSkeleton(bundle).setReturnValue(new MethodCall(Content.class, "getVersion"), vr);

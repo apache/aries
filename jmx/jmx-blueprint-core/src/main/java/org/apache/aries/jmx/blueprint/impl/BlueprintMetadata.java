@@ -135,6 +135,7 @@ public class BlueprintMetadata implements BlueprintMetadataMBean {
         try {
             serviceReferences = bundleContext.getServiceReferences(BlueprintContainer.class.getName(), filter);
         } catch (InvalidSyntaxException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1707
             throw new IOException(e);
         }
 

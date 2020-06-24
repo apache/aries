@@ -29,6 +29,7 @@ public class DeployedContentRequirement extends AbstractRequirement {
 	private final Resource resource;
 	
 	public DeployedContentRequirement(
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			DeployedContentHeader.Clause clause, Resource resource) {
 		StringBuilder builder = new StringBuilder("(&(")
 				.append(NAMESPACE).append('=')

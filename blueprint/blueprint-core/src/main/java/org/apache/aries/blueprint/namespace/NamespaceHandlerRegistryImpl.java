@@ -103,6 +103,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     // Access to this variable is must be synchronized on itself
     private final ArrayList<NamespaceHandlerSetImpl> sets =
                         new ArrayList<NamespaceHandlerSetImpl>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1350
 
     public NamespaceHandlerRegistryImpl(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
@@ -124,10 +125,12 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 LOGGER.warn("Error registering NamespaceHandler", e);
             }
         } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1477
             Bundle bundle = reference.getBundle();
             // If bundle is null, the service has already been unregistered,
             // so do nothing in that case
             if (bundle != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
                 LOGGER.warn("Error resolving NamespaceHandler, null Service obtained from tracked ServiceReference {} for bundle {}/{}",
                         reference.toString(), reference.getBundle().getSymbolicName(), reference.getBundle().getVersion());
             }
@@ -142,6 +145,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
 
     public void removedService(ServiceReference reference, Object service) {
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
             LOGGER.debug("Removing NamespaceHandler " + reference.toString());
             NamespaceHandler handler = (NamespaceHandler) service;
             Map<String, Object> props = new HashMap<String, Object>();
@@ -157,11 +161,14 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     public void registerHandler(NamespaceHandler handler, Map properties) {
         List<URI> namespaces = getNamespaces(properties);
         for (URI uri : namespaces) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-858
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
             CopyOnWriteArraySet<NamespaceHandler> h = handlers.putIfAbsent(uri, new CopyOnWriteArraySet<NamespaceHandler>());
             if (h == null) {
                 h = handlers.get(uri);
             }
             if (h.add(handler)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1350
                 List<NamespaceHandlerSetImpl> sets;
                 synchronized (this.sets) {
                     sets = new ArrayList<NamespaceHandlerSetImpl>(this.sets);
@@ -176,10 +183,13 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     public void unregisterHandler(NamespaceHandler handler, Map properties) {
         List<URI> namespaces = getNamespaces(properties);
         for (URI uri : namespaces) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-858
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
             CopyOnWriteArraySet<NamespaceHandler> h = handlers.get(uri);
             if (!h.remove(handler)) {
                 continue;
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1350
             List<NamespaceHandlerSetImpl> sets;
             synchronized (this.sets) {
                 sets = new ArrayList<NamespaceHandlerSetImpl>(this.sets);
@@ -194,6 +204,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     private static List<URI> getNamespaces(Map properties) {
         Object ns = properties != null ? properties.get(NAMESPACE) : null;
         if (ns == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
             throw new IllegalArgumentException("NamespaceHandler service does not have an associated "
                             + NAMESPACE + " property defined");
         } else if (ns instanceof URI[]) {
@@ -235,12 +246,15 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         } else if (o instanceof String) {
             return URI.create((String) o);
         } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
             throw new IllegalArgumentException("NamespaceHandler service has an associated "
                             + NAMESPACE + " property defined which can not be converted to an array of URI");
         }
     }
     
     public NamespaceHandlerSet getNamespaceHandlers(Set<URI> uris, Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1350
         NamespaceHandlerSetImpl s;
         synchronized (sets) {
             s = new NamespaceHandlerSetImpl(uris, bundle);
@@ -254,9 +268,12 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     }
 
     private Schema getExistingSchema(Map<URI, NamespaceHandler> handlers) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-858
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
         synchronized (schemas) {
             for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
                 boolean found = true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-563
                 for (URI uri : handlers.keySet()) {
                     if (!handlers.get(uri).equals(key.get(uri))) {
                         found = false;
@@ -274,6 +291,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     private void removeSchemasFor(NamespaceHandler handler) {
         synchronized (schemas) {
             List<Map<URI, NamespaceHandler>> keys = new ArrayList<Map<URI, NamespaceHandler>>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
             for (Map<URI, NamespaceHandler> key : schemas.keySet()) {
                 if (key.values().contains(handler)) {
                     keys.add(key);
@@ -286,8 +304,11 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
     }
 
     private void cacheSchema(Map<URI, NamespaceHandler> handlers, Schema schema) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-858
         synchronized (schemas) {
             // Remove schemas that are fully included
+//IC see: https://issues.apache.org/jira/browse/ARIES-563
+//IC see: https://issues.apache.org/jira/browse/ARIES-859
             for (Iterator<Map<URI, NamespaceHandler>> iterator = schemas.keySet().iterator(); iterator.hasNext();) {
                 Map<URI, NamespaceHandler> key = iterator.next();
                 boolean found = true;
@@ -325,6 +346,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
 
         public Reader getCharacterStream() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-626
             return null;
         }
 
@@ -391,9 +413,11 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         private Schema schema;
 
         public NamespaceHandlerSetImpl(Set<URI> namespaces, Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
             this.listeners = new CopyOnWriteArrayList<Listener>();
             this.namespaces = new HashSet<URI>(namespaces);
             this.bundle = bundle;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1089
             handlers = new ConcurrentHashMap<URI, NamespaceHandler>();
             for (URI ns : namespaces) {
                 findCompatibleNamespaceHandler(ns);
@@ -408,6 +432,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                     ex.printStackTrace();
                     //ignore
                 } finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
                     closeQuietly(ins);
                 }
             }
@@ -433,6 +458,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
 
         public Schema getSchema() throws SAXException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
             return getSchema(null);
         }
 
@@ -459,6 +485,8 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 schema = createSchema(locations);
                 cacheSchema(handlers, schema);
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-858
+//IC see: https://issues.apache.org/jira/browse/ARIES-859
             return schema;
         }
 
@@ -542,6 +570,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                         }
                     }
                     // Find a compatible namespace handler
+//IC see: https://issues.apache.org/jira/browse/ARIES-1540
                     h = findCompatibleNamespaceHandler(nsUri);
                     if (h != null) {
                         URL url = h.getSchemaLocation(namespaceURI);
@@ -626,6 +655,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                 // Create a schema for the namespaces
                 for (URI ns : handlers.keySet()) {
                     URL url = handlers.get(ns).getSchemaLocation(ns.toString());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
                     if (url == null && locations != null) {
                         String loc = locations.get(ns.toString());
                         if (loc != null) {
@@ -656,6 +686,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
 
         public void addListener(Listener listener) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
             listeners.add(listener);
         }
 
@@ -664,6 +695,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         }
 
         public void destroy() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1350
             synchronized (NamespaceHandlerRegistryImpl.this.sets) {
                 NamespaceHandlerRegistryImpl.this.sets.remove(this);
             }
@@ -672,6 +704,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         public void registerHandler(URI uri, NamespaceHandler handler) {
             if (namespaces.contains(uri) && handlers.get(uri) == null) {
                 if (findCompatibleNamespaceHandler(uri) != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
                     for (Listener listener : listeners) {
                         try {
                             listener.namespaceHandlerRegistered(uri);
@@ -686,6 +719,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
         public void unregisterHandler(URI uri, NamespaceHandler handler) {
             if (handlers.get(uri) == handler) {
                 handlers.remove(uri);
+//IC see: https://issues.apache.org/jira/browse/ARIES-899
                 for (Listener listener : listeners) {
                     try {
                         listener.namespaceHandlerUnregistered(uri);
@@ -722,6 +756,7 @@ public class NamespaceHandlerRegistryImpl implements NamespaceHandlerRegistry, S
                                 }
                             } catch (ClassNotFoundException e) {
                                 // Ignore
+//IC see: https://issues.apache.org/jira/browse/ARIES-362
                             } catch (NoClassDefFoundError e) {
                                 // Ignore
                             }

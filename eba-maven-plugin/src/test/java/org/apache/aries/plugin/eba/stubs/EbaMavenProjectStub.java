@@ -111,6 +111,7 @@ public class EbaMavenProjectStub
     public Set getArtifacts()
     {   
         Set artifacts = getDependencyArtifacts();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1094
 
 	// this one's a transitive dependency 
         artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact03", "1.0-SNAPSHOT", false ) );

@@ -87,6 +87,7 @@ public class ASMMultiBundleTest extends AbstractBlueprintIntegrationTest {
     public void multiBundleTest() throws Exception {
         
         //bundlea provides the ns handlers, bean processors, interceptors etc for this test.
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         Bundle bundlea = context().getBundleByName("org.apache.aries.blueprint.testbundlea");
         assertNotNull(bundlea);
         bundlea.start();
@@ -127,6 +128,7 @@ public class ASMMultiBundleTest extends AbstractBlueprintIntegrationTest {
        
         //handlers are in bundlea, with its own container.
         BlueprintContainer handlerContainer = 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
             Helper.getBlueprintContainerForBundle( context(), "org.apache.aries.blueprint.testbundlea");
         assertNotNull(handlerContainer);
         
@@ -199,6 +201,7 @@ public class ASMMultiBundleTest extends AbstractBlueprintIntegrationTest {
 
     @Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),

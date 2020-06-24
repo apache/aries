@@ -88,8 +88,10 @@ public class CmPropertyPlaceholderTest extends AbstractBlueprintIntegrationTest 
         assertNotNull(foo);
         assertThat(foo.getB(), equalTo("42"));
         assertThat(foo.getC(), nullValue());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
 
         Configuration cf = ca.getConfiguration("blueprint-sample-properties.pid", null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         Hashtable<String,Object> props = new Hashtable<String,Object>();
         props.put("pb", "43");
         cf.update(props);
@@ -98,6 +100,7 @@ public class CmPropertyPlaceholderTest extends AbstractBlueprintIntegrationTest 
         foo = (FooInterface)context().getService(sr);
         assertEquals("43", foo.getB());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         props.clear();
         props.put("pc", 7);
         props.put("pd", new int[] { 3, 4 });

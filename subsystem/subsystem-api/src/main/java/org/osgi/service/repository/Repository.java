@@ -63,5 +63,6 @@ public interface Repository {
 	 *         an empty collection. The returned map is the property of the
 	 *         caller and can be modified by the caller.
 	 */
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	Map<Requirement, Collection<Capability>> findProviders(Collection<? extends Requirement> requirements);
 }

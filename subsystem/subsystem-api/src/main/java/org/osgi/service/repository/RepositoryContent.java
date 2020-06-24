@@ -38,5 +38,6 @@ public interface RepositoryContent {
 	 * 
 	 * @return A new input stream for associated resource.
 	 */
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	InputStream getContent();
 }

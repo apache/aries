@@ -54,6 +54,7 @@ public class ConnectionPool {
     public ConnectionPool(Connection connection) {
 
         this.connection = wrap(connection);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
 
         // Create our internal Pool of session instances.
         this.sessionPool = new GenericKeyedObjectPool<SessionKey, PooledSession>(
@@ -122,6 +123,7 @@ public class ConnectionPool {
 
     public Session createSession(boolean transacted, int ackMode) throws JMSException {
         SessionKey key = new SessionKey(transacted, ackMode);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         PooledSession session;
         try {
             session = sessionPool.borrowObject(key);
@@ -171,6 +173,7 @@ public class ConnectionPool {
             this.loanedSessions.clear();
 
             unWrap(getConnection());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
 
             expiredCheck();
         }
@@ -228,6 +231,7 @@ public class ConnectionPool {
     }
 
     public void setExpiryTimeout(long expiryTimeout) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         this.expiryTimeout = expiryTimeout;
     }
 

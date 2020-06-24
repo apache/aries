@@ -75,6 +75,7 @@ public class VersionChange {
 
     @Override
     public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         return " oldVersion=\"" + getOldVersion()
                 + "\" currentVersion=\"" + getNewVersion() +
                 "\" recommendedVersion=\"" + getRecommendedNewVersion() + "\" correct=\"" + isCorrect();

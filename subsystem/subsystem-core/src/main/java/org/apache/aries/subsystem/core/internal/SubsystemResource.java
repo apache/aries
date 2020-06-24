@@ -95,6 +95,7 @@ public class SubsystemResource implements Resource {
 		this.parent = parent;
 		this.resource = resource;
 		computeContentResources(resource.getDeploymentManifest());
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		capabilities = computeCapabilities();
 		if (this.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isInstall()) {
 		    /* compute dependencies now only if we intend to provision them during install */
@@ -116,9 +117,11 @@ public class SubsystemResource implements Resource {
 		else {
 			parent = Utils.findScopedSubsystemInRegion(subsystem);
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		resource = new RawSubsystemResource(directory, parent);
 		deploymentManifest = resource.getDeploymentManifest();
 		computeContentResources(deploymentManifest);
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		capabilities = computeCapabilities();
         if (getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isInstall()) {
             /* compute dependencies if we intend to provision them during install */
@@ -128,7 +131,9 @@ public class SubsystemResource implements Resource {
 
 	@Override
 	public boolean equals(Object o) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (o == this)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return true;
 		if (!(o instanceof SubsystemResource))
 			return false;
@@ -138,6 +143,7 @@ public class SubsystemResource implements Resource {
 
 	@Override
 	public List<Capability> getCapabilities(String namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		return Collections.unmodifiableList(capabilities);
 	}
 
@@ -174,6 +180,7 @@ public class SubsystemResource implements Resource {
 	}
 
 	public long getId() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		return resource.getId();
 	}
 
@@ -198,6 +205,7 @@ public class SubsystemResource implements Resource {
 	}
 	
 	public Collection<DeployedContentHeader.Clause> getMissingResources() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-922
 		return missingResources;
 	}
 
@@ -233,6 +241,7 @@ public class SubsystemResource implements Resource {
 
 				@Override
 				public void failed(Coordination arg0) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					if (isScoped())
 						region.getRegionDigraph().removeRegion(region);
 				}
@@ -246,6 +255,7 @@ public class SubsystemResource implements Resource {
 
 	@Override
 	public List<Requirement> getRequirements(String namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (isScoped())
 			return resource.getRequirements(namespace);
 		else {
@@ -277,6 +287,7 @@ public class SubsystemResource implements Resource {
 	@Override
 	public int hashCode() {
 		int result = 17;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		result = 31 * result + getLocation().hashCode();
 		return result;
 	}
@@ -295,6 +306,7 @@ public class SubsystemResource implements Resource {
 	}
 
 	private void addMissingResource(DeployedContentHeader.Clause resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-922
 		missingResources.add(resource);
 	}
 
@@ -335,6 +347,7 @@ public class SubsystemResource implements Resource {
 			for (DeployedContentHeader.Clause clause : header.getClauses()) {
 				Resource resource = findContent(clause);
 				if (resource == null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-922
 					addMissingResource(clause);
 				else
 					addContentResource(resource);
@@ -347,6 +360,7 @@ public class SubsystemResource implements Resource {
 		if (contentHeader == null)
 			return;
 		for (SubsystemContentHeader.Clause clause : contentHeader.getClauses()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			Requirement requirement = clause.toRequirement(this);
 			Resource resource = findContent(requirement);
 			if (resource == null) {
@@ -376,6 +390,7 @@ public class SubsystemResource implements Resource {
 	}
 	
 	private void addDependency(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1445
 		if (resource == null)
 			return;
 		if (isInstallable(resource))
@@ -392,6 +407,7 @@ public class SubsystemResource implements Resource {
 			StartAction.setExportPolicyOfAllInstallingSubsystemsWithProvisionDependenciesResolve(coordination);
 			Map<Resource, List<Wire>> resolution = Activator.getInstance().getResolver().resolve(createResolveContext());
 			setImportIsolationPolicy(resolution);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1445
 			addDependencies(resolution);
 		}
 		catch (Exception e) {
@@ -436,6 +452,7 @@ public class SubsystemResource implements Resource {
 	}
 
 	private DeploymentManifest computeExistingDeploymentManifest() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return resource.getDeploymentManifest();
 	}
 
@@ -454,6 +471,8 @@ public class SubsystemResource implements Resource {
 		if (getParents().isEmpty())
 			// This is the root subsystem. Associate it with the region in which
 			// the subsystems implementation bundle was installed.
+//IC see: https://issues.apache.org/jira/browse/ARIES-941
+//IC see: https://issues.apache.org/jira/browse/ARIES-943
 			return digraph.getRegion(activator.getBundleContext().getBundle());
 		String name = getSubsystemManifest()
 				.getSubsystemSymbolicNameHeader().getSymbolicName()
@@ -484,12 +503,14 @@ public class SubsystemResource implements Resource {
 			if (map.containsKey(requirement)) {
 				Collection<Capability> capabilities = map.get(requirement);
 				for (Capability capability : capabilities) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					Resource provider = capability.getResource();
 					if (provider instanceof BundleRevision) {
 						if (getRegion().contains(((BundleRevision)provider).getBundle())) {
 							return provider;
 						}
 					}
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 					else if (provider instanceof BasicSubsystem) {
 						if (getRegion().equals(((BasicSubsystem)provider).getRegion())) {
 							return provider;
@@ -527,6 +548,7 @@ public class SubsystemResource implements Resource {
 		if (resourceId != -1) {
 			String type = clause.getType();
 			if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-922
 				Bundle resource = Activator.getInstance().getBundleContext().getBundle(0).getBundleContext().getBundle(resourceId);
 				if (resource == null)
 					return null;
@@ -535,10 +557,12 @@ public class SubsystemResource implements Resource {
 			else
 				return Activator.getInstance().getSubsystems().getSubsystemById(resourceId);
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return findContent(clause.toRequirement(this));
 	}
 
 	private Resource findDependency(ProvisionResourceHeader.Clause clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Attribute attribute = clause.getAttribute(DeployedContentHeader.Clause.ATTRIBUTE_RESOURCEID);
 		long resourceId = attribute == null ? -1 : Long.parseLong(String.valueOf(attribute.getValue()));
 		if (resourceId != -1) {
@@ -558,6 +582,7 @@ public class SubsystemResource implements Resource {
 	}
 
 	private Collection<Resource> getContentResources() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Collection<Resource> result = new ArrayList<Resource>(installableContent.size() + sharedContent.size());
 		result.addAll(installableContent);
 		result.addAll(sharedContent);
@@ -612,6 +637,7 @@ public class SubsystemResource implements Resource {
 	}
 
 	boolean isRoot() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		return BasicSubsystem.ROOT_LOCATION.equals(getLocation());
 	}
 
@@ -639,6 +665,7 @@ public class SubsystemResource implements Resource {
 		// Always provide visibility to this subsystem's service registration.
 		addSubsystemServiceImportToSharingPolicy(builder, to);
 		for (Resource resource : resolution.keySet()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1666
 			if (!contentHeader.contains(resource)) {
 				continue;
 			}
@@ -668,6 +695,7 @@ public class SubsystemResource implements Resource {
 				}
 				// The requirement must be added to the sharing policy.
 				Requirement requirement = wire.getRequirement();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1328
 				List<String> namespaces = new ArrayList<String>(2);
 				namespaces.add(requirement.getNamespace());
 				if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespaces.get(0))) {
@@ -698,6 +726,7 @@ public class SubsystemResource implements Resource {
 		Region region = getRegion();
 		Region from = region;
 		RegionFilterBuilder builder = from.getRegionDigraph().createRegionFilterBuilder();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		Region to = getParents().iterator().next().getRegion();
 		addSubsystemServiceImportToSharingPolicy(builder, to);
 		// TODO Is this check really necessary? Looks like it was done at the beginning of this method.
@@ -752,6 +781,7 @@ public class SubsystemResource implements Resource {
 			RequireCapabilityRequirement requirement = new RequireCapabilityRequirement(clause, this);
 			String policy = requirement.getNamespace();
 			String filter = requirement.getDirectives().get(RequireCapabilityRequirement.DIRECTIVE_FILTER);
+//IC see: https://issues.apache.org/jira/browse/ARIES-895
 			if (filter == null)
 				// A null filter directive means the requirement matches any
 				// capability from the same namespace.
@@ -763,6 +793,7 @@ public class SubsystemResource implements Resource {
 	}
 
 	private void setImplicitAccessToNativeAndEECapabilities(RegionFilterBuilder builder) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1222
 		builder.allowAll(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE);
 		builder.allowAll(NativeNamespace.NATIVE_NAMESPACE);
 	}

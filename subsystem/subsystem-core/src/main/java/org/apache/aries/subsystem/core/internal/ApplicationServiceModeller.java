@@ -51,6 +51,7 @@ public class ApplicationServiceModeller implements ServiceModeller {
                         .build());
             }
             for (ImportedService service : elements.getReferences()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1196
                 StringBuilder builder = new StringBuilder();
                 String serviceInterface = service.getInterface();
                 String filter = service.getFilter();

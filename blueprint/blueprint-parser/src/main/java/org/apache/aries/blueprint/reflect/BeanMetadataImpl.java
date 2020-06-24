@@ -55,6 +55,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     private boolean nonStandardSetters;
     
     public BeanMetadataImpl() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-88
         this.fieldInjection = false;
     }
 
@@ -72,12 +73,16 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
         this.initialization = source.getActivation();
         this.factoryMethod = source.getFactoryMethod();
         this.factoryComponent = MetadataUtil.cloneTarget(source.getFactoryComponent());
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
         this.scope = source.getScope() != null ? QName.valueOf(source.getScope()) : null;
         this.dependsOn = new ArrayList<String>(source.getDependsOn());
         if (source instanceof ExtendedBeanMetadata) {
             this.runtimeClass = ((ExtendedBeanMetadata) source).getRuntimeClass();
+//IC see: https://issues.apache.org/jira/browse/ARIES-88
             this.fieldInjection = ((ExtendedBeanMetadata) source).getFieldInjection();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
             this.rawConversion = ((ExtendedBeanMetadata) source).getRawConversion();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
             this.nonStandardSetters = ((ExtendedBeanMetadata) source).getNonStandardSetters();
         } else {
             this.fieldInjection = false;
@@ -189,6 +194,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     }
 
     public String getScope() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
         return this.scope != null ? this.scope.toString() : null;
     }
 
@@ -213,6 +219,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     }
 
     public boolean getFieldInjection() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-88
         return fieldInjection;
     }
     
@@ -221,6 +228,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     }
     
     public boolean getRawConversion() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
         return rawConversion;
     }
 
@@ -229,6 +237,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
     }
 
     public boolean getNonStandardSetters() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         return nonStandardSetters;
     }
 
@@ -252,6 +261,7 @@ public class BeanMetadataImpl extends ComponentMetadataImpl implements MutableBe
                 ", factoryComponent=" + factoryComponent +
                 ", scope='" + scope + '\'' +
                 ", runtimeClass=" + runtimeClass +
+//IC see: https://issues.apache.org/jira/browse/ARIES-88
                 ", fieldInjection=" + fieldInjection + 
                 ']';
     }

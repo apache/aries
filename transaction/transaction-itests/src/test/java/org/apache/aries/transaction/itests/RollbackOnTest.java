@@ -18,6 +18,7 @@ public class RollbackOnTest extends AbstractIntegrationTest {
 	@Inject
 	@Filter(timeout = 120000, value = "(tranAttribute=Required)")
 	TestBean rBean;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1690
 
 	@Inject
 	RollbackOnBean rollbackOnBean;

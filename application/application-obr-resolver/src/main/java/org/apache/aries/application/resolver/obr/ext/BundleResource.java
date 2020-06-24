@@ -63,6 +63,7 @@ public class BundleResource implements Resource
    * @param extraRequirements can be null
    */
   public BundleResource (BundleResource br, Collection<Capability> extraCapabilities, Collection<Requirement> extraRequirements) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     _modelledBundle = br._modelledBundle;
     _capabilities = new ArrayList<Capability> (br._capabilities);
     _requirements = new ArrayList<Requirement> (br._requirements);
@@ -117,6 +118,7 @@ public class BundleResource implements Resource
   }
 
   public ModelledResource getModelledResource() { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     return _modelledBundle;
   }
   

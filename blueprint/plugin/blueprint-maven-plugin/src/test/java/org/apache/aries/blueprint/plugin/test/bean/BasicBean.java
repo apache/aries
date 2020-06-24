@@ -27,6 +27,7 @@ public class BasicBean {
 
     @Bean(id = "simpleProducedBean1")
     public SimpleProducedBean getBean1() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1676
         return null;
     }
 

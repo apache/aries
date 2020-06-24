@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  */
 public class XaPooledConnectionFactory extends PooledConnectionFactory implements ObjectFactory,
         Serializable, QueueConnectionFactory, TopicConnectionFactory {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
 
     private static final long serialVersionUID = -6538152448204064932L;
     private static final transient Logger LOG = LoggerFactory.getLogger(XaPooledConnectionFactory.class);
@@ -89,6 +90,7 @@ public class XaPooledConnectionFactory extends PooledConnectionFactory implement
             try {
                 InitialContext ctx = new InitialContext();
                 NamingEnumeration<Binding> bindings = ctx.listBindings(name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1379
 
                 while (bindings.hasMore()) {
                     Binding bd = bindings.next();

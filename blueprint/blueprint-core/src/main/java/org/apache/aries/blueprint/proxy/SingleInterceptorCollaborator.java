@@ -59,6 +59,7 @@ public class SingleInterceptorCollaborator implements InvocationListener, Serial
             callToken = interceptor.preCall(cm, m, parameters);
         } catch (Throwable t) {
             // using null token here to be consistent with what Collaborator does
+//IC see: https://issues.apache.org/jira/browse/ARIES-1662
             postInvokeExceptionalReturn(null, o, m, t);
             throw t;
         }

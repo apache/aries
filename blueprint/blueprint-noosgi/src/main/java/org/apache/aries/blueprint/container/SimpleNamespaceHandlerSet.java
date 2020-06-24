@@ -50,6 +50,7 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
     private Schema schema;
 
     public SimpleNamespaceHandlerSet() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1055
         this.namespaces = new LinkedHashMap<URI, URL>();
         this.handlers = new LinkedHashMap<URI, NamespaceHandler>();
         ExtNamespaceHandler ext = new ExtNamespaceHandler();
@@ -72,6 +73,7 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
     }
 
     public NamespaceHandler getNamespaceHandler(URI uri) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1055
         return handlers.get(uri);
     }
 
@@ -99,6 +101,8 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
                     public LSInput resolveResource(String type, String namespace, String publicId,
                                                    String systemId, String baseURI) {
                         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1334
+//IC see: https://issues.apache.org/jira/browse/ARIES-1460
                             URL namespaceURL = namespaces.get(URI.create(namespace));
                             if (systemId != null && namespaceURL != null) {
                                 URI systemIdUri = namespaceURL.toURI();
@@ -165,6 +169,7 @@ public class SimpleNamespaceHandlerSet implements NamespaceHandlerSet {
 
         protected boolean fCertifiedText;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1334
         LSInputImpl(String publicId, String systemId, InputStream byteStream) {
             fPublicId = publicId;
             fSystemId = systemId;

@@ -32,6 +32,7 @@ public class NeverTest extends AbstractIntegrationTest {
      */
     @Test
     public void testInsertFails() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         clientTransaction = true;
         assertInsertFails();
     }

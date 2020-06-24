@@ -47,14 +47,17 @@ public class SubsystemResolverHook implements ResolverHook {
 		// there is at least one preferred provider.
 		// (1) Find the subsystem(s) containing requirement.getResource() as a
 		// constituent.
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		Collection<BasicSubsystem> requirers = subsystems.getSubsystemsReferencing(requirement.getResource());
 		// (2) For each candidate, ask each subsystem if the candidate or any of
 		// the candidate's containing subsystems is a preferred provider. If at
 		// least one preferred provider exists, filter out all other candidates
 		// that are not also preferred providers.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Collection<BundleCapability> preferredProviders = new ArrayList<BundleCapability>(candidates.size());
 		for (BundleCapability candidate : candidates)
 			for (BasicSubsystem subsystem : requirers) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				PreferredProviderHeader header = subsystem.getSubsystemManifest().getPreferredProviderHeader();
 				if (header != null && (header.contains(candidate.getResource()) || isResourceConstituentOfPreferredSubsystem(candidate.getResource(), subsystem)))
 					preferredProviders.add(candidate);
@@ -66,6 +69,7 @@ public class SubsystemResolverHook implements ResolverHook {
 	public void filterResolvable(Collection<BundleRevision> candidates) {
 		try {
 			for (Iterator<BundleRevision> iterator = candidates.iterator(); iterator.hasNext();) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				BundleRevision revision = iterator.next();
 				if (revision.equals(ThreadLocalBundleRevision.get())) {
 					// The candidate is a bundle whose INSTALLED event is
@@ -76,10 +80,13 @@ public class SubsystemResolverHook implements ResolverHook {
 				if (revision.getSymbolicName().startsWith(Constants.RegionContextBundleSymbolicNamePrefix))
 					// Don't want to filter out the region context bundle.
 					continue;
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 				Collection<BasicSubsystem> subsystems = this.subsystems.getSubsystemsReferencing(revision);
 				if (subsystems.isEmpty() && ThreadLocalSubsystem.get() != null) {
 				    // This is the revision of a bundle being installed as part of a subsystem installation
 				    // before it has been added as a reference or constituent.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 				    iterator.remove();
 				    continue;
 				}
@@ -90,7 +97,9 @@ public class SubsystemResolverHook implements ResolverHook {
 					}
 					// Otherwise, the candidate is part of an application or composite subsystem requiring isolation.
 					// But only when in the INSTALLING state.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					if (Subsystem.State.INSTALLING.equals(subsystem.getState())) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-738
 						iterator.remove();
 					}
 				}
@@ -107,8 +116,10 @@ public class SubsystemResolverHook implements ResolverHook {
 	}
 	
 	private boolean isResourceConstituentOfPreferredSubsystem(Resource resource, BasicSubsystem preferer) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		Collection<BasicSubsystem> subsystems = this.subsystems.getSubsystemsReferencing(resource);
 		for (BasicSubsystem subsystem : subsystems)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			if (preferer.getSubsystemManifest().getPreferredProviderHeader().contains(subsystem))
 				return true;
 		return false;

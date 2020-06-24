@@ -56,10 +56,13 @@ public class ObjectFactoryTest {
      */
     @Before
     public void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-981
         System.setProperty("org.apache.aries.jndi.disable.builder", "false");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         BundleContextMock mock = new BundleContextMock();
         mock.addBundle(mock.getBundle());
         bc = Skeleton.newMock(mock, BundleContext.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
         activator = new Activator();
         activator.start(bc);
 
@@ -72,6 +75,7 @@ public class ObjectFactoryTest {
      */
     @After
     public void teardown() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
         activator.stop(bc);
         BundleContextMock.clear();
     }
@@ -95,6 +99,7 @@ public class ObjectFactoryTest {
         props.setProperty("osgi.jndi.urlScheme", "wibble");
 
         bc.registerService(ObjectFactory.class.getName(), factory, (Dictionary) props);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
 
         Reference ref = new Reference(null);
         ref.add(new StringRefAddr("URL", "wibble"));
@@ -105,11 +110,13 @@ public class ObjectFactoryTest {
 
     @Test
     public void testURLReferenceUsingURLObjectFactoryFinder() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
         String testObject = "Test object";
         URLObjectFactoryFinder factory = Skeleton.newMock(URLObjectFactoryFinder.class);
         Skeleton.getSkeleton(factory).setReturnValue(new MethodCall(ObjectFactory.class, "getObjectInstance", Object.class, Name.class, Context.class, Hashtable.class), testObject);
 
         bc.registerService(URLObjectFactoryFinder.class.getName(), factory, (Dictionary) new Properties());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
 
         Reference ref = new Reference(null);
         ref.add(new StringRefAddr("URL", "wibble"));
@@ -144,6 +151,9 @@ public class ObjectFactoryTest {
                 factory, null);
 
         Object obj = NamingManager.getObjectInstance(ref, null, null, env);
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
 
         assertEquals("The naming manager should have returned the test object", testObject, obj);
     }
@@ -169,6 +179,9 @@ public class ObjectFactoryTest {
         Reference ref = new Reference("dummy.class.name");
 
         Object obj = NamingManager.getObjectInstance(ref, null, null, env);
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
 
         assertSame("The naming manager should have returned the reference object", ref, obj);
     }

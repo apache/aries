@@ -49,6 +49,7 @@ public class CreateBlogEntry extends HttpServlet
     String text = req.getParameter("text");
     String tags = req.getParameter("tags");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
     BloggingService service = JNDIHelper.getBloggingService();
     
     if (service.getBlogAuthor(email) != null) {
@@ -65,6 +66,7 @@ public class CreateBlogEntry extends HttpServlet
       else
         FormServlet.addError(req, "The author's email is not valid.");
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
       resp.sendRedirect("CreateBlogEntryForm");
     }
   }

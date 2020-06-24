@@ -46,7 +46,9 @@ public final class ContentImpl implements Content
    * @param content  Application-Content, Import-Package content
    */
   public ContentImpl(String content) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map<String, Map<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(content);
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     if (appContentsMap.size() != 1) {
       throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0004E",content));
     }
@@ -60,12 +62,14 @@ public final class ContentImpl implements Content
   
   public ContentImpl (String bundleSymbolicName, Version version) { 
     this.contentName = bundleSymbolicName;
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     this.nameValueMap = new HashMap<String, String>();
     nameValueMap.put("version", version.toString());
     setup();
   }
   
   public ContentImpl (String bundleSymbolicName, VersionRange version) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     this.contentName = bundleSymbolicName;
     this.nameValueMap = new HashMap<String, String>();
     nameValueMap.put("version", version.toString());
@@ -114,6 +118,7 @@ public final class ContentImpl implements Content
   }
   
   public Map<String, String> getNameValueMap() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map<String, String> nvm = new HashMap<String, String>();
     for (String key : this.nameValueMap.keySet()) {
       nvm.put(key, this.nameValueMap.get(key));
@@ -132,6 +137,7 @@ public final class ContentImpl implements Content
   
   public VersionRange getVersion() {
     VersionRange vi = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     if (this.attributes.get(Constants.VERSION_ATTRIBUTE) != null 
         && this.attributes.get(Constants.VERSION_ATTRIBUTE).length() > 0) {
       vi = ManifestHeaderProcessor.parseVersionRange(this.attributes.get(Constants.VERSION_ATTRIBUTE));
@@ -145,6 +151,7 @@ public final class ContentImpl implements Content
   @Override
   public String toString()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-661
     StringBuilder builder = new StringBuilder();
     
     builder.append(this.contentName);
@@ -166,12 +173,14 @@ public final class ContentImpl implements Content
   @Override
   public boolean equals(Object other)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
     if (other == this) return true;
     if (other == null) return false;
     
     if (other instanceof ContentImpl) {
       ContentImpl otherContent = (ContentImpl)other;
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
       Map<String,String> attributesWithoutVersion = attributes;
       
       if (attributes.containsKey("version")) {
@@ -205,6 +214,7 @@ public final class ContentImpl implements Content
    * set up directives and attributes
    */
   protected void setup() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     this.attributes = new HashMap<String, String>();
     this.directives = new HashMap<String, String>();
     

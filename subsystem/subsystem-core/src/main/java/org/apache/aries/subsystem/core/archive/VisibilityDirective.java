@@ -24,6 +24,7 @@ public class VisibilityDirective extends AbstractDirective {
 	public static final VisibilityDirective REEXPORT = new VisibilityDirective(VALUE_REEXPORT);
 	
 	public static VisibilityDirective getInstance(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (VALUE_PRIVATE.equals(value))
 			return PRIVATE;
 		if (VALUE_REEXPORT.equals(value))

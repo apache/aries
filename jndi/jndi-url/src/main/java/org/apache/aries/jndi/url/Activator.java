@@ -43,6 +43,7 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws InvalidSyntaxException {
         ctx = context;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
         proxyManager = new SingleServiceTracker<>(context, ProxyManager.class, this::serviceChanged);
         proxyManager.open();
         // Blueprint URL scheme requires access to the BlueprintContainer service.
@@ -57,6 +58,7 @@ public class Activator implements BundleActivator {
                     new BlueprintURLContextServiceFactory(), blueprintURlSchemeProps);
         } catch (ClassNotFoundException cnfe) {
             // The blueprint packages aren't available, so do nothing. That's fine.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1170
             Logger logger = Logger.getLogger("org.apache.aries.jndi");
             logger.log(Level.INFO, "Blueprint support disabled: " + cnfe);
             logger.log(Level.FINE, "Blueprint support disabled", cnfe);
@@ -66,6 +68,7 @@ public class Activator implements BundleActivator {
     @Override
     public void stop(BundleContext context) {
         proxyManager.close();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
         safeUnregisterService(osgiUrlReg);
         safeUnregisterService(blueprintUrlReg);
     }

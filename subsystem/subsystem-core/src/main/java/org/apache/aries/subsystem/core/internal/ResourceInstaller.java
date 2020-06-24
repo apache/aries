@@ -28,11 +28,13 @@ public abstract class ResourceInstaller {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type)) {
 			return new SubsystemResourceInstaller(coordination, resource, subsystem);
 		} else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
 			return new BundleResourceInstaller(coordination, resource, subsystem);
 		} else if (Constants.ResourceTypeSynthesized.equals(type)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-997
 			return new ResourceInstaller(coordination, resource, subsystem) {
 				@Override
 				public Resource install() throws Exception {
@@ -65,6 +67,7 @@ public abstract class ResourceInstaller {
 		this.resource = resource;
 		this.subsystem = subsystem;
 		if (isDependency()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			if (Utils.isInstallableResource(resource))
 				provisionTo = Utils.findFirstSubsystemAcceptingDependenciesStartingFrom(subsystem);
 			else
@@ -78,6 +81,7 @@ public abstract class ResourceInstaller {
 
 	protected void addConstituent(final Resource resource) {
 		// Don't let a resource become a constituent of itself.
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		if (provisionTo == null || resource.equals(provisionTo))
 			return;
 		Activator.getInstance().getSubsystems().addConstituent(provisionTo, resource, isReferencedProvisionTo());
@@ -85,6 +89,7 @@ public abstract class ResourceInstaller {
 
 	protected void addReference(final Resource resource) {
 		// Don't let a resource reference itself.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (resource.equals(subsystem))
 			return;
 		// The following check protects against resources posing as content
@@ -93,6 +98,7 @@ public abstract class ResourceInstaller {
 		// resources that were provisioned to the subsystem as dependencies of
 		// other resources.
 		if (isReferencedSubsystem()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 			Activator.getInstance().getSubsystems().addReference(subsystem, resource);
 		}
 	}
@@ -102,6 +108,7 @@ public abstract class ResourceInstaller {
 	}
 
 	protected boolean isContent() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		return Utils.isContent(subsystem, resource);
 	}
 

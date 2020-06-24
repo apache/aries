@@ -86,10 +86,13 @@ public class ServiceRegistryContextTest
   public void registerService() throws Exception
   {
     bc =  Skeleton.newMock(new BundleContextMock(), BundleContext.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     registerProxyManager();
     new org.apache.aries.jndi.startup.Activator().start(bc);
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
     new Activator().start(bc);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     service = Skeleton.newMock(Runnable.class);
     
     registerService(service);
@@ -97,10 +100,12 @@ public class ServiceRegistryContextTest
   
   private void registerProxyManager() 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     ProxyManager mgr = Skeleton.newMock(ProxyManager.class);
     
     //   public Object createDelegatingProxy(Bundle clientBundle, Collection<Class<?>> classes, Callable<Object> dispatcher, Object template) throws UnableToProxyException;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     Skeleton.getSkeleton(mgr).registerMethodCallHandler(new MethodCall(ProxyManager.class, "createDelegatingProxy", Bundle.class, Collection.class, Callable.class, Object.class),
         new MethodCallHandler() 
         {
@@ -164,6 +169,7 @@ public class ServiceRegistryContextTest
   @Test
   public void testBaseLookup() throws NamingException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
      BundleMock mock = new BundleMock("scooby.doo", new Properties());
         
      Thread.currentThread().setContextClassLoader(mock.getClassLoader());
@@ -172,6 +178,7 @@ public class ServiceRegistryContextTest
      
      Context ctx2 = (Context) ctx.lookup("osgi:service");
      
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
      Runnable r1 = (Runnable) ctx2.lookup("java.lang.Runnable");   
      assertNotNull(r1);
      assertTrue("expected proxied service class", r1 != service);
@@ -184,6 +191,7 @@ public class ServiceRegistryContextTest
   @Test
   public void testLookupWithPause() throws NamingException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-508
      BundleMock mock = new BundleMock("scooby.doo", new Properties());
         
      Thread.currentThread().setContextClassLoader(mock.getClassLoader());
@@ -231,6 +239,7 @@ public class ServiceRegistryContextTest
   @Test
   public void jndiLookupServiceNameTest() throws NamingException, SQLException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-250
     InitialContext ctx = new InitialContext(new Hashtable<Object, Object>());
     
     BundleMock mock = new BundleMock("scooby.doo", new Properties());
@@ -274,10 +283,12 @@ public class ServiceRegistryContextTest
         
     InitialContext ctx = new InitialContext(new Hashtable<Object, Object>());
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
     BundleMock mock = new BundleMock("scooby.doo.1", new Properties());
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     Runnable s = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
     
     assertNotNull("We didn't get a service back from our lookup :(", s);
@@ -290,12 +301,14 @@ public class ServiceRegistryContextTest
     
     skel.assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", null));
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
     ctx = new InitialContext(new Hashtable<Object, Object>());
     
     mock = new BundleMock("scooby.doo.2", new Properties());
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     s = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
     
     // Check we have the packages set correctly
@@ -306,11 +319,14 @@ public class ServiceRegistryContextTest
 
     assertNotNull("We didn't get a service back from our lookup :(", s);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     s.run();
     
     Skeleton.getSkeleton(service).assertCalledExactNumberOfTimes(new MethodCall(Runnable.class, "run"), 2);
        
     skel = Skeleton.getSkeleton(mock.getBundleContext());
+//IC see: https://issues.apache.org/jira/browse/ARIES-17
+//IC see: https://issues.apache.org/jira/browse/ARIES-17
     skel.assertCalled(new MethodCall(BundleContext.class, "getServiceReferences", "java.lang.Runnable", null));
   }
 
@@ -325,12 +341,14 @@ public class ServiceRegistryContextTest
   @Test
   public void jndiLookupWithFilter() throws NamingException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     BundleMock mock = new BundleMock("scooby.doo", new Properties());
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
 
     InitialContext ctx = new InitialContext();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     Object s = ctx.lookup("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     assertNotNull("We didn't get a service back from our lookup :(", s);
@@ -359,6 +377,7 @@ public class ServiceRegistryContextTest
 
     InitialContext ctx = new InitialContext();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     ctx.lookup("osgi:service/java.lang.Runnable");
   }
   
@@ -377,6 +396,7 @@ public class ServiceRegistryContextTest
 
     InitialContext ctx = new InitialContext();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     ctx.lookup("osgi:service/java.lang.Integer");
   }
   
@@ -390,6 +410,7 @@ public class ServiceRegistryContextTest
   {
     InitialContext ctx = new InitialContext();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     NamingEnumeration<NameClassPair> serviceList = ctx.list("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     checkThreadRetrievedViaListMethod(serviceList);
@@ -400,6 +421,7 @@ public class ServiceRegistryContextTest
     
     registerService(new Thread());
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     serviceList = ctx.list("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     checkThreadRetrievedViaListMethod(serviceList);
@@ -412,6 +434,7 @@ public class ServiceRegistryContextTest
   @Test
   public void checkProxyDynamism() throws NamingException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     BundleMock mock = new BundleMock("scooby.doo", new Properties());
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
@@ -447,6 +470,7 @@ public class ServiceRegistryContextTest
   @Test
   public void checkServiceListLookup() throws NamingException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     BundleMock mock = new BundleMock("scooby.doo", new Properties());
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
@@ -554,6 +578,7 @@ public class ServiceRegistryContextTest
     Binding bnd = ne.nextElement();
     
     assertEquals(String.valueOf(reg.getReference().getProperty(Constants.SERVICE_ID)), bnd.getName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     assertTrue("Class name not correct. Was: " + bnd.getClassName(), bnd.getClassName().contains("Proxy") || bnd.getClassName().contains("EnhancerByCGLIB"));
     
     Runnable r = (Runnable) bnd.getObject();
@@ -570,6 +595,7 @@ public class ServiceRegistryContextTest
     bnd = ne.nextElement();
     
     assertEquals(String.valueOf(reg2.getReference().getProperty(Constants.SERVICE_ID)), bnd.getName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     assertTrue("Class name not correct. Was: " + bnd.getClassName(), bnd.getClassName().contains("Proxy") || bnd.getClassName().contains("EnhancerByCGLIB"));
     
     r = (Runnable) bnd.getObject();
@@ -607,6 +633,8 @@ public class ServiceRegistryContextTest
   @Test
   public void checkServiceOrderObserved() throws NamingException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     BundleMock mock = new BundleMock("scooby.doo", new Properties());
     
     Thread.currentThread().setContextClassLoader(mock.getClassLoader());
@@ -624,6 +652,7 @@ public class ServiceRegistryContextTest
     ServiceRegistration reg = bc.registerService(className, t, null);
     ServiceRegistration reg2 = bc.registerService(className, t2, null);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     Runnable r = (Runnable) ctx.lookup("osgi:service/java.lang.Runnable");
     
     r.run();
@@ -637,9 +666,11 @@ public class ServiceRegistryContextTest
     Hashtable<String, Object> props = new Hashtable<String, Object>();
     props.put(Constants.SERVICE_RANKING, 55);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     t = Skeleton.newMock(Runnable.class);
     t2 = Skeleton.newMock(Runnable.class);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     bc.registerService(className, t, null);
     bc.registerService(className, t2, props);
     
@@ -669,6 +700,7 @@ public class ServiceRegistryContextTest
     
     assertEquals("The service retrieved was not of the correct type", "java.lang.Thread", ncp.getClassName());
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     assertEquals("osgi:service/java.lang.Runnable/(rubbish=smelly)", ncp.getName().toString());
   }
   
@@ -682,6 +714,7 @@ public class ServiceRegistryContextTest
   {
     InitialContext ctx = new InitialContext();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     NamingEnumeration<Binding> serviceList = ctx.listBindings("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     Object returnedService = checkThreadRetrievedViaListBindingsMethod(serviceList);
@@ -694,6 +727,7 @@ public class ServiceRegistryContextTest
     Thread secondService = new Thread();
     registerService(secondService);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     serviceList = ctx.listBindings("osgi:service/java.lang.Runnable/(rubbish=smelly)");
     
     Object returnedService1 = checkThreadRetrievedViaListBindingsMethod(serviceList);
@@ -725,6 +759,7 @@ public class ServiceRegistryContextTest
     
     assertTrue("The service retrieved was not of the correct type", binding.getObject() instanceof Thread);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
     assertEquals("osgi:service/java.lang.Runnable/(rubbish=smelly)", binding.getName().toString());
     
     return binding.getObject();

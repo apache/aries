@@ -33,6 +33,7 @@ public interface InvocationListener
   
   public void postInvokeExceptionalReturn(Object token, Object proxy, Method m, Throwable exception) throws Throwable;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1787
   default Object aroundInvoke(Object token, Object proxy, Callable<Object> dispatcher, Method method, Object[] args) throws Throwable {
     return method.invoke(dispatcher.call(), args);
   }

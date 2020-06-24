@@ -61,6 +61,7 @@ public class ParserProxyTest {
 
   @Parameters
   public static List<Object[]> parserProxies() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
     return Arrays.asList(new Object[][] {
             {getMockParserServiceProxy()}, 
             {OfflineModellingFactory.getOfflineParserProxy()}});
@@ -122,6 +123,7 @@ public class ParserProxyTest {
   
   @Test
   public void testParseAllServiceElements() throws Exception { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
     File bpXml = new File (resourceDir, "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp.xml");
     File bp2Xml = new File (resourceDir, "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bp2.xml");
     
@@ -143,6 +145,7 @@ public class ParserProxyTest {
     // bp2.xml: 3 services and a reference list
     //
     assertTrue ("Six services expected, not " + services.size(), services.size() == 6);
+//IC see: https://issues.apache.org/jira/browse/ARIES-425
     assertTrue ("Three references expected, not " + references.size(), references.size() == 3);
     
     Set<WrappedServiceMetadata> expectedServices = getTest2ExpectedServices();
@@ -172,6 +175,7 @@ public class ParserProxyTest {
   
   @Test
   public void checkMultiValues() throws Exception { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
     File bpXml = new File (resourceDir, "appModeller/test1.eba/bundle1.jar/OSGI-INF/blueprint/bpMultiValues.xml");
     List<WrappedServiceMetadata> services = new ArrayList<WrappedServiceMetadata>();
     FileInputStream fis = new FileInputStream (bpXml);
@@ -196,8 +200,10 @@ public class ParserProxyTest {
   private Set<WrappedReferenceMetadata> getTest2ExpectedReferences() throws Exception { 
     Set<WrappedReferenceMetadata> expectedResults = new HashSet<WrappedReferenceMetadata>();
          
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     expectedResults.add(_modellingManager.getImportedService(false, "foo.bar.MyInjectedService", null, 
         null, "fromOutside", false));
+//IC see: https://issues.apache.org/jira/browse/ARIES-425
     expectedResults.add(_modellingManager.getImportedService(true, "foo.bar.MyInjectedService", null, 
         null, "anotherOptionalReference", false));
     expectedResults.add(_modellingManager.getImportedService(false, "my.logging.service", null, "(&(trace=on)(debug=true))", "refList1", true));
@@ -209,6 +215,7 @@ public class ParserProxyTest {
   private Set<WrappedServiceMetadata> getTest2ExpectedServices() { 
     Set<WrappedServiceMetadata> expectedResults = getTest1ExpectedResults();
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     expectedResults.add(_modellingManager.getExportedService("", 0, Arrays.asList("foo.bar.AnonService"), null));
     expectedResults.add(_modellingManager.getExportedService("", 0, Arrays.asList("foo.bar.NamedInnerBeanService"), null));
     return expectedResults;
@@ -221,10 +228,12 @@ public class ParserProxyTest {
     props.put("volume", "11");
     props.put("property.list", Arrays.asList("1", "2", "3", "2", "1"));
     //Deliberately miss off duplicate entries and reorder, the parser should still match this
+//IC see: https://issues.apache.org/jira/browse/ARIES-799
     props.put("property.set", new LinkedHashSet<String>(Arrays.asList("1", "2", "3")));
     props.put("property.array", new String[]{"1", "2", "3", "2", "1"});
     props.put("osgi.service.blueprint.compname", "myBean");
     expectedResults.add(_modellingManager.getExportedService("myService", 0, Arrays.asList("foo.bar.MyService"), props));
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
 
     props = new HashMap<String, Object>();
     props.put ("priority", "7");

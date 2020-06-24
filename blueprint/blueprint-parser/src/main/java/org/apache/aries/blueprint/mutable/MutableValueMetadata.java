@@ -33,5 +33,6 @@ public interface MutableValueMetadata extends ExtendedValueMetadata {
     void setType(String type);
 
     void setValue(Object value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
 
 }

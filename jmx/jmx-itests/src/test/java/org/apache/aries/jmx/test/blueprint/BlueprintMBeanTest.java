@@ -59,6 +59,7 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 public class BlueprintMBeanTest extends AbstractIntegrationTest {
 	@Inject
 	@Filter("(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint)")
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 	BlueprintContainer blueprintExtender;
 	
 	@Inject
@@ -132,6 +133,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
 
         // test getBlueprintContainerServiceId
         assertEquals(sampleBlueprintContainerServiceId, metadataProxy.getBlueprintContainerServiceId(sample.getBundleId()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 
         // test getComponentMetadata
         // bean: foo
@@ -223,6 +225,7 @@ public class BlueprintMBeanTest extends AbstractIntegrationTest {
     }
 
 	private BeanPropertyValidator property(String name, String expectedValue) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 		BeanPropertyValidator val = new BeanPropertyValidator(name);
         val.setObjectValueValidator(new ValueValidator(expectedValue));
 		return val;

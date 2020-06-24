@@ -68,6 +68,7 @@ public class ApplicationResourceImpl implements Resource
     }
 
     public boolean matches(Map<java.lang.String,?> map) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         return delgate.matches(map);
     }
     
@@ -83,6 +84,7 @@ public class ApplicationResourceImpl implements Resource
     _version = appVersion;
     
  
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     for (int i = 0; i < appContent.size(); i++) {
       Content c = appContent.get(i);
       
@@ -96,6 +98,7 @@ public class ApplicationResourceImpl implements Resource
       Filter filter;
       try {
         filter = FrameworkUtil.createFilter(f);
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         _requirements.add(new RequirementImpl("bundle", new FilterWrapper(filter), false, optional, false, comment));
       } catch (InvalidSyntaxException e) {
         // TODO work out what to do if this happens. If it does our filter generation code is bust.
@@ -139,6 +142,7 @@ public class ApplicationResourceImpl implements Resource
 
   public Requirement[] getRequirements()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     if (_requirements!= null) {
     Requirement[] reqs = new Requirement[_requirements.size()];
     int index =0;
@@ -169,6 +173,7 @@ public class ApplicationResourceImpl implements Resource
 
   public Long getSize()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-335
     return 0l;
   }
 

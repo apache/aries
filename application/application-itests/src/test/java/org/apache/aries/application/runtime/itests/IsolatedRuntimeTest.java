@@ -76,6 +76,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
                 .jar("sample.jar")
                 .manifest().symbolicName("org.apache.aries.isolated.sample")
                 .attribute("Bundle-Version", "1.0.0")
+//IC see: https://issues.apache.org/jira/browse/ARIES-726
                 .attribute("Import-Package", "org.osgi.service.blueprint, org.apache.aries.isolated.shared")
                         // needed for testFrameworkResolvedBeforeInnerBundlesStart()
                 .attribute("Bundle-ActivationPolicy", "lazy")
@@ -109,6 +110,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         testEba2.writeOut(fout);
         fout.close();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
         ZipFixture sampleJar2 = ArchiveFixture.newJar()
                 .manifest().symbolicName("org.apache.aries.isolated.sample")
                 .attribute("Bundle-Version", "2.0.0")
@@ -125,6 +127,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         sampleJar2.writeOut(fout);
         fout.close();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
         ZipFixture ebaWithFragment = ArchiveFixture.newZip()
                 .jar("sample.jar")
                 .manifest().symbolicName("org.apache.aries.isolated.sample")
@@ -155,10 +158,12 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     @Ignore
     public void testAppWithoutApplicationManifest() throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
         AriesApplicationContext ctx = manager.install(app);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
         ctx.start();
         assertHelloWorldService("test.eba");
 
@@ -190,6 +195,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         app = ctx.getApplication();
 
         ctx.start();
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
 
         assertHelloWorldService("org.apache.aries.sample2");
 
@@ -197,9 +203,11 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
         manager.uninstall(ctx);
 
         assertNull(IsolationTestUtils.findIsolatedAppBundleContext(bundleContext, "org.apache.aries.sample2"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-399
 
         ctx = manager.install(app);
         ctx.start();
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
 
         assertHelloWorldService("org.apache.aries.sample2");
 
@@ -209,6 +217,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     @Test
     @Ignore
     public void testAppWithFragment() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("withFragment.eba")));
         AriesApplicationContext ctx = manager.install(app);
@@ -223,6 +232,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
     @Test
     @Ignore
     public void testAppWithGlobalRepositoryBundle() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
 
@@ -248,6 +258,10 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
 
         assertHelloWorldService("org.apache.aries.sample2", "hello brave new world");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-629
+//IC see: https://issues.apache.org/jira/browse/ARIES-629
+//IC see: https://issues.apache.org/jira/browse/ARIES-629
+//IC see: https://issues.apache.org/jira/browse/ARIES-629
         manager.uninstall(ctx);
     }
 
@@ -262,6 +276,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
        */
 
         final AtomicBoolean loadedClass = new AtomicBoolean(false);
+//IC see: https://issues.apache.org/jira/browse/ARIES-726
 
         context().addBundleListener(new SynchronousBundleListener() {
             public void bundleChanged(BundleEvent event) {
@@ -283,6 +298,8 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
             }
         });
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
         AriesApplicationContext ctx = manager.install(app);
@@ -295,6 +312,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
             assertEquals(1, app.getDeploymentMetadata().getApplicationProvisionBundles().size());
             assertTrue(loadedClass.get());
         } finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-629
             manager.uninstall(ctx);
         }
     }

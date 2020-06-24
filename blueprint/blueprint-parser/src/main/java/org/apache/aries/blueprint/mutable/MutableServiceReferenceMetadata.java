@@ -48,7 +48,9 @@ public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenc
     void setProxyMethod(int proxyMethod);
 
     void setFilter(String filter);
+//IC see: https://issues.apache.org/jira/browse/ARIES-118
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-330
     void setRuntimeInterface(Class clazz);
     
     /**
@@ -58,6 +60,8 @@ public interface MutableServiceReferenceMetadata extends ExtendedServiceReferenc
      * @param bc
      */
     void setBundleContext(BundleContext bc);
+//IC see: https://issues.apache.org/jira/browse/ARIES-727
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
     void setExtendedFilter(ValueMetadata filter);
 }

@@ -102,6 +102,7 @@ final class MBeanHolder {
         return null;
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1766
     MBeanHolder(final Object mbean, final ObjectName requestedObjectName) {
         this.mbean = mbean;
         this.requestedObjectName = requestedObjectName;

@@ -12,6 +12,7 @@ public class BarManagedService implements ManagedService {
     private final BundleContext bundleContext;
 
     public BarManagedService(BundleContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
         bundleContext = context;
     }
 

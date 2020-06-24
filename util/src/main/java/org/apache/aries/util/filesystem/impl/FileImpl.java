@@ -55,6 +55,7 @@ public class FileImpl implements IFile
     rootDir = rootFile.getAbsolutePath();
 
     if (f.equals(rootFile)) name = "";
+//IC see: https://issues.apache.org/jira/browse/ARIES-682
     else name = file.getAbsolutePath().substring(rootDir.length() + 1).replace('\\', '/');
   }
 
@@ -112,6 +113,7 @@ public class FileImpl implements IFile
 
   public URL toURL() throws MalformedURLException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-121
     URL result = file.toURI().toURL();
     return result;
   }

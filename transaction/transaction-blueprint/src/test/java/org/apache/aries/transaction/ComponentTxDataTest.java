@@ -42,6 +42,7 @@ public class ComponentTxDataTest {
     public void testFindAnnotation() throws NoSuchMethodException, SecurityException {
         ComponentTxData txData = new ComponentTxData(AnnotatedPojo.class);
         Assert.assertTrue(txData.isTransactional());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1800
         assertEquals(TxType.REQUIRED, getEffectiveType(txData, "increment").getTxType());
         assertEquals(TxType.SUPPORTS, getEffectiveType(txData, "checkValue").getTxType());
         assertEquals(TxType.MANDATORY, getEffectiveType(txData, "getRealObject").getTxType());
@@ -81,6 +82,7 @@ public class ComponentTxDataTest {
     
     @Test
     public void testOnRollback() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1800
         ComponentTxData txData = new ComponentTxData(OnRollbackPojo.class);
         List<Class> rollbackOnBatchUpdateException = getEffectiveType(txData, "throwBatchUpdateException").getRollbackOn();
         assertFalse(rollbackOnBatchUpdateException.contains(SQLDataException.class));
@@ -102,6 +104,7 @@ public class ComponentTxDataTest {
                 throw new IllegalArgumentException(e1);
             }
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1887
         return txData.getEffectiveType(m).get();
     }
 

@@ -401,8 +401,13 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
     public void testRepoAgain() throws Exception {
         // do not provision against the local runtime
         System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
+//IC see: https://issues.apache.org/jira/browse/ARIES-496
+//IC see: https://issues.apache.org/jira/browse/ARIES-496
+//IC see: https://issues.apache.org/jira/browse/ARIES-496
+//IC see: https://issues.apache.org/jira/browse/ARIES-618
 
         RepositoryGenerator repositoryGenerator = context().getService(RepositoryGenerator.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
 
         String fileURI = new File(REPO_BUNDLE + ".jar").toURI().toString();
         File repoXml = new File("repository.xml");
@@ -413,6 +418,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
 
         //print out the repository.xml
         BufferedReader reader = new BufferedReader(new FileReader(new File("repository.xml")));
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         String line;
         while ((line = reader.readLine()) != null) {
             System.out.println(line);
@@ -451,10 +457,15 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
     @Test
     public void testMutlipleServices() throws Exception {
         // provision against the local runtime
+//IC see: https://issues.apache.org/jira/browse/ARIES-496
+//IC see: https://issues.apache.org/jira/browse/ARIES-496
         System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "false");
         generateOBRRepoXML(false, HELLO_WORLD_SERVICE_BUNDLE1 + ".jar", HELLO_WORLD_SERVICE_BUNDLE2 + ".jar");
 
         RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
 
         Repository[] repos = repositoryAdmin.listRepositories();
         for (Repository repo : repos) {
@@ -463,17 +474,20 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
 
         repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("hello.eba")));
         AriesApplicationContext ctx = manager.install(app);
         ctx.start();
 
         // Wait 5 seconds just to give the blueprint-managed beans a chance to come up
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ix) {
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         HelloWorld hw = context().getService(HelloWorld.class);
         String result = hw.getMessage();
         assertEquals(result, "hello world");
@@ -497,6 +511,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
     private void generateOBRRepoXML(boolean nullURI, String... bundleFiles) throws Exception {
         Set<ModelledResource> mrs = new HashSet<ModelledResource>();
         FileOutputStream fout = new FileOutputStream("repository.xml");
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         RepositoryGenerator repositoryGenerator = context().getService(RepositoryGenerator.class);
         ModelledResourceManager modelledResourceManager = context().getService(ModelledResourceManager.class);
         for (String fileName : bundleFiles) {
@@ -506,6 +521,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
             if (!!!nullURI) {
                 uri = bundleFile.toURI().toString();
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-820
             if ("delete.jar".equals(fileName)) {
                 jarDir = null;
             }
@@ -517,6 +533,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
 
     @After
     public void clearRepository() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
         Repository[] repos = repositoryAdmin.listRepositories();
         if ((repos != null) && (repos.length > 0)) {

@@ -94,6 +94,7 @@ public class OfflineModellingFactory {
 	
 	private static class OfflineParserProxy extends AbstractParserProxy {
 		protected ComponentDefinitionRegistry parseCDR(List<URL> blueprintsToParse) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
 			Parser parser = new Parser();
 			parser.parse(blueprintsToParse);
 			return getCDR(parser);
@@ -131,6 +132,7 @@ public class OfflineModellingFactory {
 		result.setModellingManager(modellingManager);
 		result.setParserProxy(parserProxy);
 		
+//IC see: https://issues.apache.org/jira/browse/ARIES-716
 		List<ServiceModeller> plugins = new ArrayList<ServiceModeller>();
 		
     ClassLoader cl = OfflineModellingFactory.class.getClassLoader();

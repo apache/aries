@@ -75,6 +75,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
     //Internal setup
     OSGiTransactionManager.init(context);
     AriesProxyService.init(context);
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     try {
       AriesPersistenceContextIntegration.init(context);
     } catch (NoClassDefFoundError ncdfe) {
@@ -113,6 +114,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
       Thread.currentThread().setContextClassLoader(cl);
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     try {
       //Overwrite existing, default JPA integration with an Aries JPA integrated one
       Assembler.getContext().put(JtaEntityManagerRegistry.class.getName(), 
@@ -153,6 +155,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
     tracker.close();
     AriesProxyService.get().destroy();
     OSGiTransactionManager.get().destroy();
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     try {
       AriesPersistenceContextIntegration.get().destroy();
     } catch (NoClassDefFoundError ncdfe) {
@@ -198,6 +201,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
         return;
       
       //Broken validation for persistence :(
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
       EjbModule ejbModule = new EjbModule(AriesFrameworkUtil.getClassLoaderForced(bundle), null, null, null);
       try {
         Field f = EjbModule.class.getDeclaredField("validation");
@@ -234,6 +238,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
         Thread.currentThread().setContextClassLoader(cl);
       }
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
       processJPAMappings(ejbInfo);
       
       
@@ -245,6 +250,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
         try {
           Thread.currentThread().setContextClassLoader(OpenEjbVersion.class.getClassLoader());
           app = new RunningApplication(assembler.createApplication(ejbInfo, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
               new AppClassLoader(ejbModule.getClassLoader())), bundle, ejbInfo.enterpriseBeans);
         } finally {
           Thread.currentThread().setContextClassLoader(cl);
@@ -254,6 +260,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
       }
       runningApps.put(bundle, app);
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
       app.init();
       
       
@@ -273,6 +280,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
   }
 
   private void processJPAMappings(EjbJarInfo ejbInfo) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
     for(EnterpriseBeanInfo ebi : ejbInfo.enterpriseBeans){
       
       for(PersistenceUnitReferenceInfo pui : ebi.jndiEnc.persistenceUnitRefs) {
@@ -318,6 +326,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
       try {
         RunningApplication app = runningApps.remove(bundle);
         if(app != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
           app.destroy();
           Assembler assembler = (Assembler) SystemInstance.get().getComponent(Assembler.class);
           assembler.destroyApplication(app.getCtx());
@@ -340,6 +349,7 @@ public class EJBExtender implements BundleActivator, BundleTrackerCustomizer {
   
   private static final class ValidationProofValidationContext extends ValidationContext {
     private ValidationProofValidationContext(EjbModule mod) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
       super(mod);
     }
 

@@ -30,6 +30,7 @@ import org.apache.aries.util.filesystem.IDirectoryFinder;
 import org.osgi.framework.Version;
 
 public class Location {
+//IC see: https://issues.apache.org/jira/browse/ARIES-929
   enum LocationType {
     SUBSYSTEM("subsystem", "subsystem"), IDIRFINDER(IDIR_SCHEME, IDIR_SCHEME), URL("url", null), UNKNOWN("unknown", null);
     final String toString;
@@ -52,6 +53,7 @@ public class Location {
    */
   public Location(String location) throws MalformedURLException, URISyntaxException {
     value = location;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1253
     URI locationUri = null;
     try {
         locationUri = new URI(location);
@@ -69,7 +71,9 @@ public class Location {
       String scheme = locationUri.getScheme();
       if (LocationType.SUBSYSTEM.scheme.equals(scheme)) {
         type = LocationType.SUBSYSTEM;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1147
         SubsystemUri ssUri;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1147
         IllegalArgumentException ssUriException = null;
         try {
           ssUri = new SubsystemUri(location);
@@ -90,10 +94,12 @@ public class Location {
       } else if (LocationType.IDIRFINDER.scheme.equals(scheme)) {
         type = LocationType.IDIRFINDER;
         subsystemUri = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1147
         subsystemUriException = null;
         url = null;
         uri = locationUri;
       } else {                       // otherwise will only accept a url, (a url
+//IC see: https://issues.apache.org/jira/browse/ARIES-1253
         type = LocationType.URL;     // always has a scheme, so fine to have
         subsystemUri = null;         // this inside the 'if isAbsolute' block).
         subsystemUriException = null;
@@ -111,6 +117,7 @@ public class Location {
     	url = null;
     	uri = null;
     	subsystemUri = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1147
     	subsystemUriException = null;
     }
   }
@@ -120,9 +127,11 @@ public class Location {
   }
 
   public String getSymbolicName() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1147
     if (subsystemUriException != null) {
       throw subsystemUriException;
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1147
     return (subsystemUri!=null) ? subsystemUri.getSymbolicName() : null;
   }
 
@@ -149,6 +158,7 @@ public class Location {
     	  // method will never be called.
     	  return FileSystem.getFSRoot(new URL(value).openStream());
       default : // should never get here as switch should cover all types
+//IC see: https://issues.apache.org/jira/browse/ARIES-1253
         throw new UnsupportedOperationException("cannot open location of type " + type);
     }
   }

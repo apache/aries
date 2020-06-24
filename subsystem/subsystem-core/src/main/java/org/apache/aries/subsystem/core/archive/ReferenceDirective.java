@@ -31,6 +31,7 @@ public class ReferenceDirective extends AbstractDirective {
 			return TRUE;
 		if (VALUE_FALSE.equals(value))
 			return FALSE;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
         throw new IllegalArgumentException("Invalid " + NAME + " directive: " + value);
 	}
 	

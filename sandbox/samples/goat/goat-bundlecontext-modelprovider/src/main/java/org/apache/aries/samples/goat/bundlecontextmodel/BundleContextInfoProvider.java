@@ -150,6 +150,7 @@ public class BundleContextInfoProvider implements ModelInfoService, Relationship
 
 
 	public void bundleChanged(BundleEvent arg0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-319
 		String id = getKeyForBundle(arg0.getBundle());
 		if(biCache.containsKey(id)){
 			biCache.remove(id);

@@ -37,13 +37,17 @@ public class RegionContextBundleHelper {
 		String location = subsystem.getLocation() + '/' + subsystem.getSubsystemId();
 		Bundle b = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (b == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			b = subsystem.getRegion().installBundleAtLocation(location, createRegionContextBundle(symbolicName));
 			// The start level of all managed bundles, including the region
 			// context bundle, should be 1.
+//IC see: https://issues.apache.org/jira/browse/ARIES-966
 			b.adapt(BundleStartLevel.class).setStartLevel(1);
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1050
 		ResourceInstaller.newInstance(coordination, b.adapt(BundleRevision.class), subsystem).install();
 		// The region context bundle must be started persistently.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		b.start();
 		subsystem.setRegionContextBundle(b);
 	}
@@ -52,6 +56,7 @@ public class RegionContextBundleHelper {
 		String symbolicName = SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		Bundle bundle = subsystem.getRegion().getBundle(symbolicName, VERSION);
 		if (bundle == null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1050
 			return;
 		BundleRevision revision = bundle.adapt(BundleRevision.class);
 		try {
@@ -68,12 +73,14 @@ public class RegionContextBundleHelper {
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 		manifest.getMainAttributes().putValue(org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION, "2");
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		manifest.getMainAttributes().putValue(Constants.BundleSymbolicName, symbolicName);
 		manifest.getMainAttributes().putValue(Constants.BundleVersion, VERSION.toString());
 		return manifest;
 	}
 	
 	private static InputStream createRegionContextBundle(String symbolicName) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Manifest manifest = createManifest(symbolicName);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		JarOutputStream jos = new JarOutputStream(baos, manifest);

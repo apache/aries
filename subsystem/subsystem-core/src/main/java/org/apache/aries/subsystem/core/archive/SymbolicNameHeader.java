@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 public abstract class SymbolicNameHeader extends AbstractHeader {
 	public SymbolicNameHeader(String name, String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		super(name, value);
 		if (getClauses().size() != 1)
 			throw new IllegalArgumentException("Symbolic name headers must have one, and only one, clause: " + getClauses().size());

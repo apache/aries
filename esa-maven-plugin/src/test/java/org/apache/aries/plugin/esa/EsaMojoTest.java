@@ -56,6 +56,7 @@ public class EsaMojoTest
     public void testBasicEsa()
         throws Exception
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1165
         testBasicEsa( "target/test-classes/unit/basic-esa-test/plugin-config.xml", null );
     }
 
@@ -99,6 +100,7 @@ public class EsaMojoTest
         expectedFiles.add( "META-INF/" );
         expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
         expectedFiles.add( "maven-artifact02-1.0-SNAPSHOT.jar" );
+//IC see: https://issues.apache.org/jira/browse/ARIES-1165
         if (extraExpectedFiles != null)
         {
             expectedFiles.add( extraExpectedFiles );
@@ -216,6 +218,7 @@ public class EsaMojoTest
 
     private Manifest getSubsystemManifest(ZipFile esa) throws Exception {
         ZipEntry entry = esa.getEntry("OSGI-INF/SUBSYSTEM.MF");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
 
         InputStream in = esa.getInputStream(entry);
         Manifest mf = new Manifest(in);
@@ -243,6 +246,7 @@ public class EsaMojoTest
 
         String line;
         while ((line = br.readLine()) != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-876
             if (line.contains(header)) {
                 assertEquals(exactEntry, line);
                 foundHeader = true;
@@ -307,6 +311,7 @@ public class EsaMojoTest
     }
 
     public void testSubsystemStartOrder()
+//IC see: https://issues.apache.org/jira/browse/ARIES-876
         throws Exception
     {
         File testPom = new File( getBasedir(),
@@ -354,8 +359,10 @@ public class EsaMojoTest
 
         attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
         assertNotNull(attributes);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
         assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
         // start-order is actually a directive, shows up here as the name+":"
+//IC see: https://issues.apache.org/jira/browse/ARIES-1230
         assertEquals("1", attributes.get("start-order:"));
         assertNull(attributes.get("type"));
 
@@ -415,6 +422,7 @@ public class EsaMojoTest
     }
 
     public void testBasicEsaWithoutNonBundleJars()
+//IC see: https://issues.apache.org/jira/browse/ARIES-1650
             throws Exception
     {
         File testPom = new File( getBasedir(),
@@ -510,6 +518,7 @@ public class EsaMojoTest
     }
 
     public void testArchiveContentConfigurationSubsystemContentAll()
+//IC see: https://issues.apache.org/jira/browse/ARIES-1490
             throws Exception
     {
         File testPom = new File( getBasedir(),
@@ -636,6 +645,7 @@ public class EsaMojoTest
 
         attributes = header.get("maven-artifact01-1.0-SNAPSHOT");
         assertNotNull(attributes);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
         assertEquals("[1.0.0.SNAPSHOT,1.0.0.SNAPSHOT]", attributes.get("version"));
         assertNull(attributes.get("type"));
 
@@ -653,6 +663,7 @@ public class EsaMojoTest
     }
 
     public void testCustomInstructions()
+//IC see: https://issues.apache.org/jira/browse/ARIES-1175
         throws Exception
     {
         File testPom = new File( getBasedir(),
@@ -700,10 +711,12 @@ public class EsaMojoTest
         testForHeader(esa, "MyHeader", "MyHeader: myValue");
 
         // Test for the Subsystem-Name header
+//IC see: https://issues.apache.org/jira/browse/ARIES-1176
         testForHeader(esa, "Subsystem-Name", "Subsystem-Name: myName");
     }
 
     public void testSubsystemContentType()
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
         throws Exception
     {
         File testPom = new File(getBasedir(),
@@ -756,6 +769,7 @@ public class EsaMojoTest
 
         attributes = header.get("maven-artifact02-1.0-SNAPSHOT");
         assertNotNull(attributes);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
         assertEquals("[1.3,2.5)", attributes.get("version"));
         assertNull(attributes.get("type"));
 

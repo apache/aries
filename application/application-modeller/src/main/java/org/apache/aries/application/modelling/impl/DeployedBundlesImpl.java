@@ -441,6 +441,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
   {
     return AppConstants.DEPLOYMENT_CONTENT + '=' + deployedContent + ' ' +
         AppConstants.DEPLOYMENT_USE_BUNDLE + '=' + deployedUseBundle + ' ' +
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         AppConstants.DEPLOYMENT_PROVISION_BUNDLE + '=' + deployedProvisionBundle;
   }
   
@@ -480,6 +481,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
   {
     logger.debug(LOG_ENTRY, "getRequiredUseBundle");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1071
     Collection<ModelledResource> usedUseBundles =  cachedRequiredUseBundle;
     if (usedUseBundles == null)
     {
@@ -505,6 +507,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * DeployedBundles 
    */
   public Map<String, String> getExtraHeaders() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     logger.debug (LOG_ENTRY, "getExtraHeaders");
     Map<String, String> result = Collections.emptyMap();
     logger.debug (LOG_EXIT, "getExtraHeaders", result);

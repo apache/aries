@@ -100,6 +100,7 @@ public class RecipeBuilder {
         // Custom components should be handled before built-in ones
         // in case we have a custom component that also implements a built-in metadata
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         if (component instanceof DependentComponentFactoryMetadata) { 
             return createDependentComponentFactoryMetadata((DependentComponentFactoryMetadata) component);
         } else if (component instanceof ComponentFactoryMetadata) {
@@ -120,6 +121,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createComponentFactoryMetadata(ComponentFactoryMetadata metadata) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         return new ComponentFactoryRecipe<ComponentFactoryMetadata>(
                 metadata.getId(), metadata, blueprintContainer, getDependencies(metadata));
     }
@@ -138,6 +140,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createPassThroughRecipe(PassThroughMetadata passThroughMetadata) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-243
         return new PassThroughRecipe(getName(passThroughMetadata.getId()), 
             passThroughMetadata.getObject());
     }
@@ -160,6 +163,7 @@ public class RecipeBuilder {
         ReferenceListRecipe recipe = new ReferenceListRecipe(getName(metadata.getId()),
                                                  blueprintContainer,
                                                  metadata,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
                                                  filterRecipe,
                                                  listenersRecipe,
                                                  getDependencies(metadata));
@@ -167,6 +171,7 @@ public class RecipeBuilder {
     }
 
     private ReferenceRecipe createReferenceRecipe(ReferenceMetadata metadata) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
         ValueRecipe filterRecipe = null;
         if (metadata instanceof ExtendedReferenceMetadata) {
             ValueMetadata filterMetadata = ((ExtendedServiceReferenceMetadata) metadata).getExtendedFilter();
@@ -176,6 +181,10 @@ public class RecipeBuilder {
         }
         CollectionRecipe listenersRecipe = null;
         if (metadata.getReferenceListeners() != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
             listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class, Object.class.getName());
             for (ReferenceListener listener : metadata.getReferenceListeners()) {
                 listenersRecipe.add(createRecipe(listener));
@@ -184,13 +193,18 @@ public class RecipeBuilder {
         ReferenceRecipe recipe = new ReferenceRecipe(getName(metadata.getId()),
                                                      blueprintContainer,
                                                      metadata,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
                                                      filterRecipe,
                                                      listenersRecipe,
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
                                                      getDependencies(metadata));
         return recipe;
     }
 
     private Recipe createServiceRecipe(ServiceMetadata serviceExport) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         CollectionRecipe listenersRecipe = new CollectionRecipe(getName(null), ArrayList.class, Object.class.getName());
         if (serviceExport.getRegistrationListeners() != null) {
             for (RegistrationListener listener : serviceExport.getRegistrationListeners()) {
@@ -203,6 +217,7 @@ public class RecipeBuilder {
                                                  getValue(serviceExport.getServiceComponent(), null),
                                                  listenersRecipe,
                                                  getServicePropertiesRecipe(serviceExport),
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
                                                  getDependencies(serviceExport));
         return recipe;
     }
@@ -245,6 +260,7 @@ public class RecipeBuilder {
     }
 
     private boolean allowNonStandardSetters(BeanMetadata beanMetadata) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         if (beanMetadata instanceof ExtendedBeanMetadata) {
             return ((ExtendedBeanMetadata) beanMetadata).getNonStandardSetters();
         }
@@ -260,10 +276,13 @@ public class RecipeBuilder {
                 allowRawConversion(beanMetadata),
                 allowNonStandardSetters(beanMetadata));
         // Create refs for explicit dependencies
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         recipe.setExplicitDependencies(getDependencies(beanMetadata));
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
         recipe.setPrototype(MetadataUtil.isPrototypeScope(beanMetadata) || MetadataUtil.isCustomScope(beanMetadata));
         recipe.setInitMethod(beanMetadata.getInitMethod());
         recipe.setDestroyMethod(beanMetadata.getDestroyMethod());
+//IC see: https://issues.apache.org/jira/browse/ARIES-322
         recipe.setInterceptorLookupKey(beanMetadata);
         List<BeanArgument> beanArguments = beanMetadata.getArguments();
         if (beanArguments != null && !beanArguments.isEmpty()) {
@@ -296,6 +315,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(RegistrationListener listener) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, ServiceListener.class, false, false, false);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         if (listener.getRegistrationMethod() != null) {
@@ -309,6 +329,7 @@ public class RecipeBuilder {
     }
 
     private Recipe createRecipe(ReferenceListener listener) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         BeanRecipe recipe = new BeanRecipe(getName(null), blueprintContainer, AbstractServiceReferenceRecipe.Listener.class, false, false, false);
         recipe.setProperty("listener", getValue(listener.getListenerComponent(), null));
         recipe.setProperty("metadata", listener);
@@ -334,6 +355,8 @@ public class RecipeBuilder {
             return rr;
         } else if (v instanceof CollectionMetadata) {
             CollectionMetadata collectionMetadata = (CollectionMetadata) v;
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
             Class<?> cl = collectionMetadata.getCollectionClass();
             String type = collectionMetadata.getValueType();
             if (cl == Object[].class) {
@@ -343,6 +366,8 @@ public class RecipeBuilder {
                 }
                 return ar;
             } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
                 CollectionRecipe cr = new CollectionRecipe(getName(null), cl != null ? cl : ArrayList.class, type);
                 for (Metadata lv : collectionMetadata.getValues()) {
                     cr.add(getValue(lv, type));
@@ -353,6 +378,8 @@ public class RecipeBuilder {
             return createMapRecipe((MapMetadata) v);
         } else if (v instanceof PropsMetadata) {
             PropsMetadata mapValue = (PropsMetadata) v;
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
             MapRecipe mr = new MapRecipe(getName(null), Properties.class, String.class, String.class);
             for (MapEntry entry : mapValue.getEntries()) {
                 Recipe key = getValue(entry.getKey(), String.class);
@@ -373,6 +400,8 @@ public class RecipeBuilder {
     private MapRecipe createMapRecipe(MapMetadata mapValue) {
         String keyType = mapValue.getKeyType();
         String valueType = mapValue.getValueType();
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         MapRecipe mr = new MapRecipe(getName(null), HashMap.class, keyType, valueType);
         for (MapEntry entry : mapValue.getEntries()) {
             Recipe key = getValue(entry.getKey(), keyType);
@@ -385,6 +414,7 @@ public class RecipeBuilder {
     private String getName(String name) {
         if (name == null) {
             do {
+//IC see: https://issues.apache.org/jira/browse/ARIES-246
                 name = "#recipe-" + recipeIdSpace.nextId();
             } while (names.contains(name) || registry.containsComponentDefinition(name));
         }

@@ -31,6 +31,7 @@ public class Promises {
      * @return A new Promise that has been resolved with the specified value.
      */
     public static <T> Promise<T> resolved(T value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1317
         Deferred<T> def = new Deferred<T>();
         def.resolve(value);
         return def.getPromise();

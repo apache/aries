@@ -79,6 +79,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
         this.bundle = bundle;
         this.schemas = schemas;
         this.springHandler = springHandler;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         springHandler.init();
     }
 
@@ -88,6 +89,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
 
     @Override
     public boolean usePsvi() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         return true;
     }
 
@@ -111,6 +113,8 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
             org.springframework.beans.factory.xml.ParserContext springContext
                     = getOrCreateParserContext(parserContext);
             // Parse spring bean
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
             BeanDefinition bd = springHandler.parse(element, springContext);
             for (String name : springContext.getRegistry().getBeanDefinitionNames()) {
                 if (springContext.getRegistry().getBeanDefinition(name) == bd) {
@@ -135,11 +139,13 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
 
     @Override
     public ComponentMetadata decorate(Node node, ComponentMetadata componentMetadata, ParserContext parserContext) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         return componentMetadata;
     }
 
     private org.springframework.beans.factory.xml.ParserContext getOrCreateParserContext(ParserContext parserContext) {
         ComponentDefinitionRegistry registry = parserContext.getComponentDefinitionRegistry();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         ExtendedBlueprintContainer container = getBlueprintContainer(parserContext);
         // Create spring application context
         SpringApplicationContext applicationContext = getPassThrough(parserContext,
@@ -147,6 +153,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
         if (applicationContext == null) {
             applicationContext = new SpringApplicationContext(container);
             registry.registerComponentDefinition(createPassThrough(parserContext,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1673
                     SPRING_APPLICATION_CONTEXT_ID, applicationContext, "destroy"
             ));
         }
@@ -183,6 +190,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
             registry.registerComponentDefinition(bm);
         }
         // Add the namespace handlers' bundle to the application context classloader
+//IC see: https://issues.apache.org/jira/browse/ARIES-1770
         for (URI uri : parserContext.getNamespaces()) {
             NamespaceHandler ns = parserContext.getNamespaceHandler(uri);
             if (ns instanceof BlueprintNamespaceHandler) {
@@ -200,6 +208,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
     }
 
     private ComponentMetadata createPassThrough(ParserContext parserContext, String id, Object o, String destroy) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1673
         MutablePassThroughMetadata pt = parserContext.createMetadata(MutablePassThroughMetadata.class);
         pt.setId(id + ".factory");
         pt.setObject(new Holder(o));
@@ -240,6 +249,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
     @SuppressWarnings("unchecked")
     private <T> T getPassThrough(ParserContext parserContext, String name, Class<T> clazz) {
         Metadata metadata = parserContext.getComponentDefinitionRegistry().getComponentDefinition(name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1727
         if (metadata instanceof BeanMetadata) {
             BeanMetadata bm = (BeanMetadata) metadata;
             if (bm.getFactoryComponent() instanceof PassThroughMetadata
@@ -260,16 +270,19 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
 
     private org.springframework.beans.factory.xml.ParserContext createSpringParserContext(final ParserContext parserContext, DefaultListableBeanFactory registry) {
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1717
             SpringVersionBridgeXmlBeanDefinitionReader xbdr = new SpringVersionBridgeXmlBeanDefinitionReader(registry);
             Resource resource = new UrlResource(parserContext.getSourceNode().getOwnerDocument().getDocumentURI());
             ProblemReporter problemReporter = new FailFastProblemReporter();
             ReaderEventListener listener = new EmptyReaderEventListener();
             SourceExtractor extractor = new NullSourceExtractor();
             NamespaceHandlerResolver resolver = new SpringNamespaceHandlerResolver(parserContext);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
             xbdr.setProblemReporter(problemReporter);
             xbdr.setEventListener(listener);
             xbdr.setSourceExtractor(extractor);
             xbdr.setNamespaceHandlerResolver(resolver);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1770
             xbdr.setEntityResolver(new EntityResolver() {
                 @Override
                 public InputSource resolveEntity(String publicId, String systemId) throws IOException {
@@ -307,6 +320,7 @@ public class BlueprintNamespaceHandler implements NamespaceHandler, NamespaceHan
     private class SpringVersionBridgeXmlBeanDefinitionReader extends XmlBeanDefinitionReader {
 
         public SpringVersionBridgeXmlBeanDefinitionReader(final BeanDefinitionRegistry registry) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1717
             super(registry);
         }
 

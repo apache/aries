@@ -28,6 +28,7 @@ public class SubsystemException extends RuntimeException {
 	 * Construct a Subsystem exception with no message.
 	 */
 	public SubsystemException() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		super();
 	}
 
@@ -37,6 +38,8 @@ public class SubsystemException extends RuntimeException {
 	 * @param message The message to include in the exception.
 	 */
 	public SubsystemException(String message) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		super(message);
 	}
 

@@ -24,6 +24,7 @@ import java.util.Currency;
 public class CurrencyTypeConverter implements Converter {
 
     public boolean canConvert(Object fromValue, ReifiedType toType) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
         return Currency.class.isAssignableFrom(toType.getRawClass());
     }
 

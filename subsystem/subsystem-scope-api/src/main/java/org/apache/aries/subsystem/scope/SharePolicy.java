@@ -50,6 +50,7 @@ public class SharePolicy {
 	 * @param filter the filter for matching capabilities this policy controls.
 	 */
 	public SharePolicy(String type, String namespace, Filter filter) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
 		if (!(TYPE_EXPORT.equals(type) || TYPE_IMPORT.equals(type)))
 			throw new IllegalArgumentException("Invalid parameter value: type = " + type);
 		this.type = type;

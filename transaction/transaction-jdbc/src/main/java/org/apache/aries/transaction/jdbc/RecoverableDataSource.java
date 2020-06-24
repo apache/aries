@@ -80,6 +80,7 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
      * @org.apache.xbean.Property required=true
      */
     public void setDataSource(CommonDataSource dataSource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1070
         this.dataSource = dataSource;
     }
 
@@ -161,6 +162,7 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
      * @param validateOnMatch
      */
     public void setValidateOnMatch(boolean validateOnMatch) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1211
         this.validateOnMatch = validateOnMatch;
     }
 
@@ -193,6 +195,7 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
      */
     public void start() throws Exception {
         AbstractMCFFactory mcf;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
         if (("xa".equals(transaction) || "local".equals(transaction)) && transactionManager == null) {
             throw new IllegalArgumentException("xa or local transactions specified, but no TransactionManager set");
         }
@@ -207,6 +210,7 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
         } else if (dataSource instanceof DataSource) {
             mcf = new DataSourceMCFFactory();
             if (transaction == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
                 transaction = transactionManager != null ? "local" : "none";
             }
         } else {
@@ -218,6 +222,7 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
         mcf.setPassword(password);
         mcf.init();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1276
         cm = new ConnectionManagerFactory();
         cm.setManagedConnectionFactory(mcf.getConnectionFactory());
         cm.setTransactionManager(transactionManager);
@@ -228,15 +233,18 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
         cm.setPooling(pooling);
         cm.setPoolMaxSize(poolMaxSize);
         cm.setPoolMinSize(poolMinSize);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1211
         cm.setValidateOnMatch(validateOnMatch);
         cm.setBackgroundValidation(backgroundValidation);
         cm.setBackgroundValidationMilliseconds(backgroundValidationMilliseconds);
         cm.setTransaction(transaction);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1246
         cm.setName(name);
         cm.init();
 
         delegate = (DataSource) cm.getManagedConnectionFactory().createConnectionFactory(cm.getConnectionManager());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1150
         if (dataSource instanceof XADataSource) {
             Recovery.recover(name, (XADataSource) dataSource, transactionManager);
         }
@@ -246,6 +254,7 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
      * @org.apache.xbean.DestroyMethod
      */
     public void stop() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1276
         if (cm != null) {
             cm.destroy();
         }

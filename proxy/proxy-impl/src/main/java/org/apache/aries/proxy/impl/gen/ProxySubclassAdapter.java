@@ -417,6 +417,7 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
     }
 
     LOGGER.debug(Constants.LOG_EXIT, "visitMethod", methodVisitorToReturn);
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
 
     return methodVisitorToReturn;
 
@@ -425,6 +426,7 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
   private void processMethod(int access, String name, String desc, String signature,
       String[] exceptions)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     LOGGER.debug(Constants.LOG_ENTRY, "processMethod", new Object[] { access, name, desc,
         signature, exceptions });
 
@@ -565,6 +567,9 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
     switch (returnType.getSort())
     {
       case Type.BOOLEAN:
+//IC see: https://issues.apache.org/jira/browse/ARIES-1803
+//IC see: https://issues.apache.org/jira/browse/ARIES-1797
+//IC see: https://issues.apache.org/jira/browse/ARIES-1796
         try {
           methodAdapter.cast(OBJECT_TYPE, Type.getType(Boolean.class));
         } catch (IllegalArgumentException ex) {
@@ -641,6 +646,9 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
         // in this case check the cast and cast the object to the return
         // type
         methodAdapter.checkCast(returnType);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1803
+//IC see: https://issues.apache.org/jira/browse/ARIES-1797
+//IC see: https://issues.apache.org/jira/browse/ARIES-1796
         try {
           methodAdapter.cast(OBJECT_TYPE, returnType);
         } catch (IllegalArgumentException ex) {
@@ -654,6 +662,7 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
     // end the method
     methodAdapter.endMethod();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     LOGGER.debug(Constants.LOG_EXIT, "processMethod");
   }
 
@@ -688,10 +697,12 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
     // invoke the Class forName putting the Class on the stack
     staticAdapter.invokeStatic(CLASS_TYPE, new Method("forName", CLASS_TYPE,
         new Type[] { STRING_TYPE, Type.BOOLEAN_TYPE, CLASSLOADER_TYPE }));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1093
 
     // put the Class in the static field
     staticAdapter.putStatic(newClassType, currentClassFieldName, CLASS_TYPE);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     LOGGER.debug(Constants.LOG_ENTRY, "addClassStaticField");
   }
 

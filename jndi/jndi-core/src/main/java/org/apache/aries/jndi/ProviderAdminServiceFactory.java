@@ -36,6 +36,7 @@ public class ProviderAdminServiceFactory implements ServiceFactory<ProviderAdmin
     }
 
     public void ungetService(Bundle bundle, ServiceRegistration registration, ProviderAdminService service) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         service.close();
     }
 

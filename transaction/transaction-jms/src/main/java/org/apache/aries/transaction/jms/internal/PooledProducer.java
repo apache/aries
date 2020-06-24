@@ -41,6 +41,7 @@ public class PooledProducer implements MessageProducer {
         this.messageProducer = messageProducer;
         this.destination = destination;
         this.anonymous = messageProducer.getDestination() == null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
 
         this.deliveryMode = messageProducer.getDeliveryMode();
         this.disableMessageID = messageProducer.getDisableMessageID();
@@ -51,6 +52,7 @@ public class PooledProducer implements MessageProducer {
 
     @Override
     public void close() throws JMSException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         if (!anonymous) {
             this.messageProducer.close();
         }
@@ -158,6 +160,7 @@ public class PooledProducer implements MessageProducer {
     }
 
     protected boolean isAnonymous() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         return anonymous;
     }
 

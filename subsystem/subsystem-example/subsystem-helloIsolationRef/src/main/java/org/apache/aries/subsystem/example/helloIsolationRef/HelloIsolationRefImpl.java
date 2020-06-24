@@ -5,6 +5,7 @@ import org.apache.aries.subsystem.example.helloIsolation.HelloIsolation;
 
 public class HelloIsolationRefImpl implements HelloIsolationRef
 {
+//IC see: https://issues.apache.org/jira/browse/ARIES-456
   HelloIsolation helloIsolation = null;
   
   public HelloIsolation getHelloIsolationService()

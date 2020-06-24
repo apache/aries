@@ -27,6 +27,7 @@ public class EsaMavenProjectStub10 extends EsaMavenProjectStub {
 	public Set getArtifacts()
 	{
 		Set artifacts = new LinkedHashSet();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1490
 
 		artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
 		artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact02", "1.0-SNAPSHOT", false ) );

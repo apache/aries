@@ -23,6 +23,8 @@ public class FieldDeclaration extends GenericDeclaration {
     private final String desc;
     private final Object value;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
     FieldDeclaration(int access, String name, String desc, String signature, Object value) {
         super(access, name, signature);
         this.desc = desc;

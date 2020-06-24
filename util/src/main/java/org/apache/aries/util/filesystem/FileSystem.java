@@ -38,6 +38,7 @@ public class FileSystem {
    */
   public static IDirectory getFSRoot(File fs)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 	  return FileSystemImpl.getFSRoot(fs, null);
   }
   
@@ -53,6 +54,7 @@ public class FileSystem {
    */
   public static ICloseableDirectory getFSRoot(InputStream is)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-715
     return FileSystemImpl.getFSRoot(is);
   }
 }

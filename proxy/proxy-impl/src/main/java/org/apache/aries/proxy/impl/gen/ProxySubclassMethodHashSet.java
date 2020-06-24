@@ -38,6 +38,7 @@ public class ProxySubclassMethodHashSet<E> extends HashSet<String>
   public void addMethodArray(java.lang.reflect.Method[] arrayOfEntries)
   {
     LOGGER.debug(Constants.LOG_ENTRY, "addMethodArray", new Object[] { arrayOfEntries });
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
 
     for (java.lang.reflect.Method entry : arrayOfEntries) {
       String methodName = entry.getName();
@@ -54,6 +55,7 @@ public class ProxySubclassMethodHashSet<E> extends HashSet<String>
       LOGGER.debug("Added: {}", added);
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     LOGGER.debug(Constants.LOG_EXIT, "addMethodArray");
   }
 

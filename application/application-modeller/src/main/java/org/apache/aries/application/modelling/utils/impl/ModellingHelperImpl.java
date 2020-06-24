@@ -54,6 +54,7 @@ public class ModellingHelperImpl implements ModellingHelper
 
   
   public boolean areMandatoryAttributesPresent(
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
       Map<String, String> consumerAttributes, Provider p) {
     return areMandatoryAttributesPresent_(consumerAttributes, p);
   }
@@ -96,6 +97,7 @@ public class ModellingHelperImpl implements ModellingHelper
           break;
       }
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     logger.debug(LOG_EXIT, "areMandatoryAttributesPresent_", allPresent);
     return allPresent;
   }
@@ -108,8 +110,10 @@ public class ModellingHelperImpl implements ModellingHelper
       
       return null;
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map<String, Map<String, String>> parsedFragHost = ManifestHeaderProcessor.parseImportString(fragmentHostHeader);
     if(parsedFragHost.size() != 1)
+//IC see: https://issues.apache.org/jira/browse/ARIES-698
       throw new InvalidAttributeException(MessageUtil.getMessage("MORE_THAN_ONE_FRAG_HOST",
           new Object[] {fragmentHostHeader}, 
           "An internal error occurred. A bundle fragment manifest must define exactly one Fragment-Host entry. The following entry was found" + fragmentHostHeader + "."));
@@ -126,6 +130,7 @@ public class ModellingHelperImpl implements ModellingHelper
     String filter = ManifestHeaderProcessor.generateFilter(attribs);
     
     ImportedBundle result = new ImportedBundleImpl(filter, attribs);
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     logger.debug(LOG_EXIT, "buildFragmentHost_", result);
     return result;
   }
@@ -198,6 +203,7 @@ public class ModellingHelperImpl implements ModellingHelper
         }
       }
     } 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     logger.debug(LOG_EXIT, "intersectPackage_", result);
     return result;
   }

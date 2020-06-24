@@ -36,6 +36,7 @@ public class PromisesTest {
 
     @Test
     public void testResolved() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1317
         final Promise<String> promise = Promises.resolved("Resolved");
         assertTrue("Promise resolved", promise.isDone());
         assertEquals("Value matches", "Resolved", promise.getValue());

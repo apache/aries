@@ -95,6 +95,7 @@ public class Handlers {
             QUALIFING_ANNOTATION_CLASSES.add((Class<? extends Annotation>) qualifingAnnotationFinder.getAnnotation());
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
         for (CollectionDependencyAnnotationHandler<? extends Annotation> collectionDependencyAnnotationHandler : ServiceLoader.load(CollectionDependencyAnnotationHandler.class)) {
             COLLECTION_DEPENDENCY_ANNOTATION_HANDLERS.add(collectionDependencyAnnotationHandler);
         }

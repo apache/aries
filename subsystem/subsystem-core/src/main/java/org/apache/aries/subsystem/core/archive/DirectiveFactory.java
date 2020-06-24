@@ -63,6 +63,7 @@ public class DirectiveFactory {
 		map.put(ResolutionDirective.NAME, new Creator() {
 			@Override
 			public Directive create(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 				return ResolutionDirective.getInstance(value);
 			}
 		});

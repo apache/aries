@@ -57,6 +57,7 @@ public interface NamespaceHandlerSet {
      * @return the schema to use to validate the XML
      */
     Schema getSchema(Map<String, String> locations) throws SAXException, IOException;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
 
     /**
      * Add a new Listener to be called when namespace handlers are registerd or unregistered

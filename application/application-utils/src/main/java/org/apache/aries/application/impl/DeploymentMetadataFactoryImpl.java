@@ -38,6 +38,7 @@ public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory
 {
 
   public DeploymentMetadata createDeploymentMetadata(AriesApplication app,
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
       Set<BundleInfo> additionalBundlesRequired) throws ResolverException
   {
     return new DeploymentMetadataImpl(app, additionalBundlesRequired);
@@ -49,6 +50,7 @@ public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory
     try {
       return parseDeploymentMetadata(is);
     } finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-622
       IOUtils.close(is);
     }
   }
@@ -60,9 +62,11 @@ public class DeploymentMetadataFactoryImpl implements DeploymentMetadataFactory
 
   public DeploymentMetadata createDeploymentMetadata(Manifest manifest) throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     try {
       return new DeploymentMetadataImpl(manifest);
     } catch (InvalidAttributeException iae) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-679
       IOException e = new IOException();
       e.initCause(iae);
       throw e;

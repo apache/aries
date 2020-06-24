@@ -51,6 +51,7 @@ public class SingleServiceTrackerTest {
   }
   
   private void createSut() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1024
 	  createSut(null);
   }
   
@@ -138,6 +139,7 @@ public class SingleServiceTrackerTest {
   @Test
   public void testAfterTheFactChoiceWithPropertiesAndFilterWithSecondMatch() {
 	  
+//IC see: https://issues.apache.org/jira/browse/ARIES-1024
 	  createSut("(foo=bar)");
 	  Skeleton.getSkeleton(listener).assertSkeletonNotCalled();
 	  

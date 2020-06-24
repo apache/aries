@@ -66,6 +66,7 @@ public class PingJDBCRead extends HttpServlet
 		try
 			{
 			//TradeJdbc (via TradeServices) uses prepared statements so I am going to make use of it's code.
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
                         TradeServices tradeServices = TradeServiceUtilities.getTradeServices("(mode=JDBC)");
 			symbol = TradeConfig.rndSymbol();
 			

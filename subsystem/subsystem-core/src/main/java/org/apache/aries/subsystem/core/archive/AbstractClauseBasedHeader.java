@@ -79,6 +79,7 @@ public abstract class AbstractClauseBasedHeader<C extends Clause> implements Hea
 	}
 	
 	private static <C> Collection<C> computeClauses(String header, ClauseFactory<C> factory) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		Collection<String> clauseStrs = new ClauseTokenizer(header).getClauses();
 		Set<C> clauses = new HashSet<C>(clauseStrs.size());
 		for (String clause : clauseStrs) {
@@ -95,6 +96,7 @@ public abstract class AbstractClauseBasedHeader<C extends Clause> implements Hea
     
     public AbstractClauseBasedHeader(Collection<C> clauses) {
         if (clauses.isEmpty()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
             throw new IllegalArgumentException("No clauses");
         }
         this.clauses = Collections.synchronizedSet(new HashSet<C>(clauses));

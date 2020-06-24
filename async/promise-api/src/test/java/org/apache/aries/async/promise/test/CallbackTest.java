@@ -32,6 +32,7 @@ public class CallbackTest {
 
     @Test
     public void testCallbacks() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1317
         Deferred<String> def = new Deferred<String>();
         final Promise<String> promise = def.getPromise();
 

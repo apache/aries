@@ -42,6 +42,7 @@ public class AuthorizationInterceptor implements Interceptor {
     private Class<?> beanClass;
 
     public AuthorizationInterceptor(Class<?> beanClass) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1316
         this.beanClass = beanClass;
     }
 
@@ -57,6 +58,7 @@ public class AuthorizationInterceptor implements Interceptor {
     }
 
     public Object preCall(ComponentMetadata cm, Method m, Object... parameters) throws Throwable {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1316
         Annotation ann = new SecurityAnotationParser().getEffectiveAnnotation(beanClass, m);
         if (ann instanceof PermitAll) {
             return null;

@@ -88,6 +88,7 @@ public class BundleBlueprintParser {
    * @param bundleMf BundleManifest to construct the parser from
    */
   public BundleBlueprintParser (BundleManifest bundleMf) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-682
     String bundleBPHeader = bundleMf.getRawAttributes().getValue("Bundle-Blueprint");
     setup (bundleBPHeader);
   }
@@ -110,6 +111,7 @@ public class BundleBlueprintParser {
   static final boolean _blueprintHeaderMandatory;
   static 
   { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-969
 	  String blueprintHeaderMandatory = AccessController.doPrivileged(new PrivilegedAction<String>() 
 	  {
 		  public String run()
@@ -139,6 +141,7 @@ public class BundleBlueprintParser {
       _mfHeader = bundleBPHeader;
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-682
     logger.debug("Bundle-Blueprint header: {}", _mfHeader);
     
     // Break this comma separated list up
@@ -183,6 +186,7 @@ public class BundleBlueprintParser {
    *  @return true if this is a blueprint file according to the Bundle-Blueprint header
    */
   public boolean isBPFile (String directory, String filename) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-682
     logger.debug(LOG_ENTRY, "isBPFile", new Object[] {directory, filename});
       
     boolean result=false;

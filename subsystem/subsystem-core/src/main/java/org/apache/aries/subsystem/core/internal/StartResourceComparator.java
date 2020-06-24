@@ -22,6 +22,7 @@ public class StartResourceComparator implements Comparator<Resource> {
 	private final SubsystemContentHeader header;
 	
 	public StartResourceComparator(SubsystemContentHeader header) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this.header = header;
 	}
 	@Override
@@ -32,6 +33,7 @@ public class StartResourceComparator implements Comparator<Resource> {
 	}
 	
 	private Integer getStartOrder(Resource r) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		SubsystemContentHeader.Clause clause = header.getClause(r);
 		if (clause == null)
 			return -1;

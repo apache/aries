@@ -38,6 +38,7 @@ public class InterceptorTest {
 
     @Test
     public void testRollbackOnException() throws Throwable {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1369
         runPostCall(false);
         runPostCall(true);
     }
@@ -63,6 +64,7 @@ public class InterceptorTest {
     
     private void postCallWithTransaction(Throwable th, boolean expectRollback, boolean failCoordination) throws Throwable {
         IMocksControl c = EasyMock.createControl();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         TransactionManager tm = c.createMock(TransactionManager.class);
         Coordinator coordinator = c.createMock(Coordinator.class);
         ComponentTxData txData = new ComponentTxData(AnnotatedPojo.class);
@@ -73,8 +75,10 @@ public class InterceptorTest {
             tran.setRollbackOnly();
             EasyMock.expectLastCall();
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1362
         Coordination coordination = c.createMock(Coordination.class);
         coordination.end();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1369
         if (failCoordination) {
             EasyMock.expectLastCall().andThrow(coordinationException(th));
         } else {

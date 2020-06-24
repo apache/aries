@@ -85,6 +85,7 @@ public class IsolationTestUtils {
    * This means setting up a global bundle repository as well as a global OBR repository
    */
   public static void prepareSampleBundleV2(BundleContext runtimeCtx, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
       RepositoryGenerator repoGen, RepositoryAdmin repoAdmin, 
       ModellingManager modellingManager)
     throws Exception
@@ -101,6 +102,7 @@ public class IsolationTestUtils {
             public Bundle install(BundleFramework framework, AriesApplication app) throws BundleException {
               File f = new File("sample_2.0.0.jar");
               try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
                 return framework.getIsolatedBundleContext().installBundle(f.toURL().toString());                
               } catch (MalformedURLException mue) {
                 throw new RuntimeException(mue);
@@ -140,6 +142,7 @@ public class IsolationTestUtils {
     attrs.putValue("Bundle-SymbolicName", "org.apache.aries.isolated.sample");
     attrs.putValue("Manifest-Version", "1");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     ModelledResource res = modellingManager.getModelledResource(
         new File("sample_2.0.0.jar").toURI().toString(), 
         attrs,
@@ -151,6 +154,7 @@ public class IsolationTestUtils {
   
   public static HelloWorld findHelloWorldService(BundleContext ctx) throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-773
 	  if (ctx != null)
 	  {
 	      // Dive into the context and pull out the composite bundle for the app
@@ -195,6 +199,7 @@ public class IsolationTestUtils {
     BundleContext appContext = IsolationTestUtils.findIsolatedAppBundleContext(runtimeCtx, appName);
     
     if (appContext != null) {  
+//IC see: https://issues.apache.org/jira/browse/ARIES-773
     	return findHelloWorldService(appContext);
     } else {
       throw new IllegalStateException("Expected to find isolated app ctx, but didn't");

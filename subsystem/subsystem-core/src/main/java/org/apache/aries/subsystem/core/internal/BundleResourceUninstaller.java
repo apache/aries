@@ -22,6 +22,7 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public class BundleResourceUninstaller extends ResourceUninstaller {
 	public BundleResourceUninstaller(Resource resource, BasicSubsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		super(resource, subsystem);
 	}
 	
@@ -31,6 +32,7 @@ public class BundleResourceUninstaller extends ResourceUninstaller {
 		// acted upon. The bundle may or may not actually be a constituent.
 		// This covers the case of unscoped subsystems with shared content
 		// where the resource may not be uninstallable.
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		removeConstituent(subsystem, new BundleConstituent(null, (BundleRevision)resource));
 		if (!isResourceUninstallable())
 			return;
@@ -40,6 +42,7 @@ public class BundleResourceUninstaller extends ResourceUninstaller {
 		// the case where a dependency of the subsystem being acted upon was 
 		// provisioned to another subsystem but is not content of the other
 		// subsystem.
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		removeConstituent(provisionTo, new BundleConstituent(null, (BundleRevision)resource));
 		if (isBundleUninstallable())
 			uninstallBundle();

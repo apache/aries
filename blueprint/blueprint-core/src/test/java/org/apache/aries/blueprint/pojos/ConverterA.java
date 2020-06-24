@@ -27,6 +27,8 @@ import org.osgi.service.blueprint.container.Converter;
 public class ConverterA implements Converter {
 
     public boolean canConvert(Object fromValue, ReifiedType toType) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         return (fromValue instanceof String && toType.getRawClass() == File.class)
         		|| fromValue instanceof PojoB && toType.getRawClass() == URI.class;
     }

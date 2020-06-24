@@ -28,6 +28,7 @@ public class JREInitialContextFactoryBuilder implements InitialContextFactoryBui
 
     public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment)
             throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (contextFactoryClass != null) {
             return Utils.doPrivileged(() -> {

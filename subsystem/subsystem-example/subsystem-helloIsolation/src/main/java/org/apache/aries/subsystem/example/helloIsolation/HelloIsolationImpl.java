@@ -32,6 +32,7 @@ public class HelloIsolationImpl implements HelloIsolation
   public void checkPermission(final Permission permission) throws SecurityException {
       System.out.println("HelloIsolationImpl: enter checkpermission");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-497
     try {
       AccessController.doPrivileged(new PrivilegedExceptionAction() {
         public Object run() throws SecurityException {

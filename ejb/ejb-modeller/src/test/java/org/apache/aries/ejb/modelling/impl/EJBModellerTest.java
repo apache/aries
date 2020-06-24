@@ -62,6 +62,7 @@ public class EJBModellerTest {
     setBasicHeaders(man);
     man.getMainAttributes().putValue("Export-EJB", "");
     modeller.modelServices(new BundleManifest(man), bundleLocation);
+//IC see: https://issues.apache.org/jira/browse/ARIES-837
     ejbLocator.assertCalled(new MethodCall(EJBLocator.class, "findEJBs", BundleManifest.class,
             bundleLocation, ParsedEJBServices.class));
   }

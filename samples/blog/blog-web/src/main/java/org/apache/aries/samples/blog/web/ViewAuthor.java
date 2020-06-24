@@ -48,6 +48,7 @@ public class ViewAuthor extends HttpServlet
     } else {
       PrintWriter out = resp.getWriter();
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
       BloggingService service = JNDIHelper.getBloggingService();
       
       BlogAuthor author = service.getBlogAuthor(email);
@@ -56,6 +57,7 @@ public class ViewAuthor extends HttpServlet
       
       HTMLOutput.writeHTMLHeaderPartTwo(out);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
       out.println("<h3>Name</h3>");
       out.print("<div class=\"text\">");
       out.print(author.getFullName());

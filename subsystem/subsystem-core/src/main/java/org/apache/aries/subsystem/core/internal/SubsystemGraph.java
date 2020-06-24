@@ -29,6 +29,7 @@ public class SubsystemGraph {
 		private final Subsystem s;
 		
 		public SubsystemWrapper(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			s = subsystem;
 		}
 		
@@ -39,6 +40,7 @@ public class SubsystemGraph {
 			if (!(o instanceof SubsystemWrapper))
 				return false;
 			SubsystemWrapper that = (SubsystemWrapper)o;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return s.getLocation().equals(that.s.getLocation());
 		}
 		
@@ -49,6 +51,7 @@ public class SubsystemGraph {
 		@Override
 		public int hashCode() {
 			int result = 17;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			result = 31 * result + s.getLocation().hashCode();
 			return result;
 		}

@@ -23,6 +23,7 @@ public class BundleVersionHeader extends VersionHeader {
 	public static final BundleVersionHeader DEFAULT = new BundleVersionHeader();
 	
 	public BundleVersionHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(DEFAULT_VALUE);
 	}
 

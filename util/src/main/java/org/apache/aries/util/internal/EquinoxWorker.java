@@ -26,6 +26,7 @@ public class EquinoxWorker extends DefaultWorker implements FrameworkUtilWorker 
 
   public ClassLoader getClassLoader(Bundle b) 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-615
     ClassLoader result = null;
     try {
       Object bundleLoaderProxy = invoke(b, "getLoaderProxy");

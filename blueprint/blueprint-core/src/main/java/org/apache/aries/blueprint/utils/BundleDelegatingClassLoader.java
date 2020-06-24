@@ -115,6 +115,7 @@ public class BundleDelegatingClassLoader extends ClassLoader {
                 try {
                     clazz = classLoader.loadClass(name);
                 } catch (ClassNotFoundException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
                     throw new ClassNotFoundException(name + " from bundle " + bundle.getSymbolicName() + "/" + bundle.getVersion(), cnfe);
                 }
             } else {

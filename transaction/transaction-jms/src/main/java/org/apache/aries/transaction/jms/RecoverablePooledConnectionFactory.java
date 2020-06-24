@@ -54,6 +54,7 @@ public class RecoverablePooledConnectionFactory extends XaPooledConnectionFactor
     }
 
     protected ConnectionPool createConnectionPool(Connection connection) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         return new RecoverableConnectionPool(connection, getTransactionManager(), getName());
     }
 
@@ -63,6 +64,7 @@ public class RecoverablePooledConnectionFactory extends XaPooledConnectionFactor
     @Override
     public void start() {
         if (getConnectionFactory() == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
             throw new IllegalArgumentException("connectionFactory must be set");
         }
         if (getTransactionManager() == null) {

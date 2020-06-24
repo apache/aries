@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.core.archive;
 import java.util.Collection;
 
 public interface Clause {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 	Attribute getAttribute(String name);
 	
 	Collection<Attribute> getAttributes();

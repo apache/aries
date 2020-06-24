@@ -58,6 +58,7 @@ public class WabConverterITest extends AbstractIntegrationTest {
 	protected BundleContext bundleContext;
 
 	private void createTestWar(File warFile) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1197
 		ZipFixture testWar = ArchiveFixture.newJar().binary(
 				"WEB-INF/classes/org/apache/aries/web/test/TestClass.class",
 				getClass().getClassLoader().getResourceAsStream(
@@ -79,6 +80,7 @@ public class WabConverterITest extends AbstractIntegrationTest {
 
 		Bundle converted = bundleContext.installBundle(baseUrl
 				+ "?Bundle-SymbolicName=test.war.bundle&Web-ContextPath=foo");
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
 
 		assertNotNull(converted);
 		Dictionary<String, String> man = converted.getHeaders();
@@ -91,6 +93,7 @@ public class WabConverterITest extends AbstractIntegrationTest {
 
 	private boolean waitForURLHandler(String url) {
 		int maxRepetition = 100;
+//IC see: https://issues.apache.org/jira/browse/ARIES-355
 		for (int i = 0; i < maxRepetition; i++) {
 			try {
 				new URL(url);

@@ -41,6 +41,7 @@ public class PlaceholdersUtils {
             ComponentMetadata component = registry.getComponentDefinition(id);
             if (component instanceof ExtendedBeanMetadata) {
                 ExtendedBeanMetadata bean = (ExtendedBeanMetadata) component;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
                 if (bean.getRuntimeClass() != null && AbstractPropertyPlaceholderExt.class.isAssignableFrom(bean.getRuntimeClass())) {
                     String otherPrefix = getPlaceholderProperty(bean, "placeholderPrefix");
                     String otherSuffix = getPlaceholderProperty(bean, "placeholderSuffix");

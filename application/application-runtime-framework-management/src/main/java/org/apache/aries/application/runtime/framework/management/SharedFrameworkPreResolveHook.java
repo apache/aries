@@ -106,8 +106,10 @@ public class SharedFrameworkPreResolveHook implements PreResolveHook
       
       Set<Content> exports = new HashSet<Content>();
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       Map<String, Map<String, String>> parsedImports = ManifestHeaderProcessor.parseImportString(imports);
       for (Map.Entry<String, Map<String, String>> anImport : parsedImports.entrySet()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
         exports.add(ContentFactory.parseContent(anImport.getKey(), anImport.getValue()));
       }
       

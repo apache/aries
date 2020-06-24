@@ -149,6 +149,7 @@ public class AggregateConverterTest extends TestCase {
         assertEquals(this, service.convert(this, AggregateConverterTest.class));
         assertEquals(AggregateConverterTest.class, service.convert(this.getClass().getName(), Class.class));
         assertEquals(int[].class, service.convert("int[]", Class.class));
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
         assertEquals(RegionIterable.class, service.convert(RegionIterable.class.getName(), new GenericType(Class.class, new GenericType(RegionIterable.class))));
         assertTrue(AggregateConverter.isAssignable(RegionIterable.class, new GenericType(Class.class, new GenericType(RegionIterable.class))));
     }
@@ -191,6 +192,7 @@ public class AggregateConverterTest extends TestCase {
         s = new AggregateConverter(new TestBlueprintContainer(null));
         s.registerConverter(new AsianRegionConverter());
         s.registerConverter(new EuRegionConverter());
+//IC see: https://issues.apache.org/jira/browse/ARIES-389
         s.registerConverter(new NullMarkerConverter());
         
         result = s.convert(new Object(), Region.class);
@@ -201,6 +203,7 @@ public class AggregateConverterTest extends TestCase {
     }
 
     public void testGenericWilcard() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         Constructor cns = MyClass.class.getConstructor(MyObject.class);
         assertTrue(AggregateConverter.isAssignable(new Toto(), new GenericType(cns.getGenericParameterTypes()[0])));
 
@@ -210,6 +213,7 @@ public class AggregateConverterTest extends TestCase {
 
     public void testGenericAssignable() throws Exception {
         AggregateConverter s = new AggregateConverter(new TestBlueprintContainer(null));
+//IC see: https://issues.apache.org/jira/browse/ARIES-834
 
         assertNotNull(s.convert(new RegionIterable(), new GenericType(Iterable.class, new GenericType(Region.class))));
 
@@ -220,6 +224,7 @@ public class AggregateConverterTest extends TestCase {
             // Ignore
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
         assertTrue(Iterable.class.isAssignableFrom(RegionIterable.class));
         // note that method signature is fromType, toType - reverse than above
         assertTrue("Type should be assignable.", AggregateConverter.isTypeAssignable(new GenericType(RegionIterable.class), new GenericType(Iterable.class)));
@@ -246,6 +251,7 @@ public class AggregateConverterTest extends TestCase {
     }
 
     public void testConvertCompatibleCollections() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1333
         Object org = Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4));
         Object obj = service.convert(org,
                 GenericType.parse("java.util.List<java.util.List<java.lang.Integer>>", getClass().getClassLoader()));
@@ -310,6 +316,7 @@ public class AggregateConverterTest extends TestCase {
 
     private static class NullMarkerConverter implements Converter {
         public boolean canConvert(Object fromValue, ReifiedType toType) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-389
             return toType.getRawClass().isAssignableFrom(NullMarker.class);
         }
         public Object convert(Object source, ReifiedType toType) throws Exception {
@@ -319,6 +326,7 @@ public class AggregateConverterTest extends TestCase {
 
     private static class RegionIterable implements Iterable<Region> {
         public Iterator<Region> iterator() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-834
             return null;
         }
     }

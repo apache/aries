@@ -51,6 +51,8 @@ public class SpringOsgiCompendiumNamespaceHandler implements NamespaceHandler {
 
     @Override
     public Metadata parse(Element element, ParserContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         fixDom(element, CM_NAMESPACE);
         NamespaceHandler handler = context.getNamespaceHandler(URI.create(CM_NAMESPACE));
         return handler.parse(element, context);

@@ -53,6 +53,7 @@ public class DependencyLifeCycleTest extends SubsystemTest {
 	}
 	
 	private void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_A), importPackage("x"));
 	}
 	
@@ -119,6 +120,7 @@ public class DependencyLifeCycleTest extends SubsystemTest {
 		Subsystem subsystem = installSubsystemFromFile(APPLICATION_A);
 		try {
 			assertConstituent(root, BUNDLE_B);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 			Bundle bundle = context(root).getBundleByName(BUNDLE_B);
 			subsystem.uninstall();
 			assertBundleState(bundle, Bundle.UNINSTALLED);

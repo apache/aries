@@ -71,6 +71,7 @@ import org.slf4j.LoggerFactory;
 public class ServiceRecipe extends AbstractRecipe {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRecipe.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-412
     final static String LOG_ENTRY = "Method entry: {}, args {}";
     final static String LOG_EXIT = "Method exit: {}, returning {}";
 
@@ -151,15 +152,18 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     public boolean isRegistered() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-991
         return registration.get() != null;
     }
 
     public void register() {
         int state = blueprintContainer.getBundleContext().getBundle().getState();
+//IC see: https://issues.apache.org/jira/browse/ARIES-424
         if (state != Bundle.ACTIVE && state != Bundle.STARTING) {
             return;
         }
         createExplicitDependencies();
+//IC see: https://issues.apache.org/jira/browse/ARIES-991
 
         Hashtable props = new Hashtable();
         if (properties == null) {
@@ -182,6 +186,7 @@ public class ServiceRecipe extends AbstractRecipe {
         }
 
         registrationProperties = props;
+//IC see: https://issues.apache.org/jira/browse/ARIES-9
 
         Set<String> classes = getClasses();
         String[] classArray = classes.toArray(new String[classes.size()]);
@@ -192,6 +197,7 @@ public class ServiceRecipe extends AbstractRecipe {
         if (registration.get() == null) {
             ServiceRegistration reg = blueprintContainer.registerService(classArray, new TriggerServiceFactory(this, metadata), props);
             if (!registration.compareAndSet(null, reg) && registration.get() != reg) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1660
                 ServiceUtil.safeUnregisterService(reg);
             }
         }
@@ -210,6 +216,7 @@ public class ServiceRecipe extends AbstractRecipe {
                     listener.unregister(service, registrationProperties);
                 }
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1660
             ServiceUtil.safeUnregisterService(reg);
             
             registration.compareAndSet(reg, null);
@@ -250,6 +257,7 @@ public class ServiceRecipe extends AbstractRecipe {
     private Object internalGetService(Bundle bundle, ServiceRegistration registration) {
         LOGGER.debug("Retrieving service for bundle {} and service registration {}", bundle, registration);
         createService();
+//IC see: https://issues.apache.org/jira/browse/ARIES-623
 
         Object service = this.service;
         // We need the real service ...
@@ -280,6 +288,8 @@ public class ServiceRecipe extends AbstractRecipe {
                 //We can't use the BlueprintRepository because we don't know what interfaces
                 //to use yet! We have to be a bit smarter.
                 ExecutionContext old = ExecutionContext.Holder.setContext(blueprintContainer.getRepository());
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
 
                 try {
                     Object o = serviceRecipe.create();
@@ -289,6 +299,8 @@ public class ServiceRecipe extends AbstractRecipe {
                         validateClasses(o);
                     } else if (o instanceof UnwrapperedBeanHolder) {
                         UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) o;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1063
+//IC see: https://issues.apache.org/jira/browse/ARIES-1065
                         if (holder.unwrapperedBean instanceof ServiceFactory) {
                             //If a service factory is used, make sure the proxy classes implement this
                             //interface so that later on, internalGetService will create the real
@@ -323,6 +335,7 @@ public class ServiceRecipe extends AbstractRecipe {
                     listeners = Collections.emptyList();
                 }
                 LOGGER.debug("Listeners created: {}", listeners);
+//IC see: https://issues.apache.org/jira/browse/ARIES-991
                 if (registration.get() != null) {
                     LOGGER.debug("Calling listeners for initial service registration");
                     for (ServiceListener listener : listeners) {
@@ -409,9 +422,12 @@ public class ServiceRecipe extends AbstractRecipe {
      * @throws ClassNotFoundException
      */
     private Collection<Class<?>> getClassesForProxying(Object template) throws ClassNotFoundException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
         Collection<Class<?>> classes;
         switch (metadata.getAutoExport()) {
             case ServiceMetadata.AUTO_EXPORT_INTERFACES:
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
                 classes = ReflectionUtils.getImplementedInterfacesAsClasses(new HashSet<Class<?>>(), template.getClass());
                 break;
             case ServiceMetadata.AUTO_EXPORT_CLASS_HIERARCHY:
@@ -463,6 +479,7 @@ public class ServiceRecipe extends AbstractRecipe {
     protected void incrementActiveCalls()
     {
         // can be improved with LongAdder but Java 8 or backport (like guava) is needed
+//IC see: https://issues.apache.org/jira/browse/ARIES-1319
         activeCalls.incrementAndGet();
     }
     
@@ -500,6 +517,7 @@ public class ServiceRecipe extends AbstractRecipe {
 
         if (activeCalls.get() == 0) {
             safeDestroyCallback.callback();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1090
             synchronized (monitor) {
                 destroyCallbacks.remove(safeDestroyCallback);
             }
@@ -556,19 +574,25 @@ public class ServiceRecipe extends AbstractRecipe {
                 return original;
             }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-427
             Object intercepted;
             try {
                 Bundle b = FrameworkUtil.getBundle(original.getClass());
+//IC see: https://issues.apache.org/jira/browse/ARIES-526
                 if (b == null) {
                     // we have a class from the framework parent, so use our bundle for proxying.
                     b = blueprintContainer.getBundleContext().getBundle();
                 }
                 InvocationListener collaborator = CollaboratorFactory.create(cm, interceptors);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1319
 
                 intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
                         getClassesForProxying(original), original, collaborator);
             } catch (Exception u) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
                 LOGGER.info("Unable to create a proxy object for the service " + getName() + " defined in bundle " + b.getSymbolicName() + "/" + b.getVersion() + " with id. Returning the original object instead.", u);
                 LOGGER.debug(LOG_EXIT, "getService", original);
                 return original;
@@ -613,6 +637,8 @@ public class ServiceRecipe extends AbstractRecipe {
     }
 
     private boolean isClassAvailable(String clazz) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-436
+//IC see: https://issues.apache.org/jira/browse/ARIES-438
         try {
             getClass().getClassLoader().loadClass(clazz);
             return true;

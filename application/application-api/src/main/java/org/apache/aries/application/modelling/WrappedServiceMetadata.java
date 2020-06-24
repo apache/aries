@@ -35,6 +35,7 @@ public interface WrappedServiceMetadata extends Comparable<WrappedServiceMetadat
    * Get the properties of the associated blueprint service
    * @return Service properties. The values in the Map will be either String or String[]. 
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   Map<String, Object> getServiceProperties();
   
   /**

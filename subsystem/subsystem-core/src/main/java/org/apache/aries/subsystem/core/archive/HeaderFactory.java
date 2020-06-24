@@ -90,40 +90,53 @@ public class HeaderFactory {
 			return new SubsystemContentHeader(value);
 		if (name.equals(SubsystemTypeHeader.NAME))
 			return new SubsystemTypeHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-737
 		if (ExportPackageHeader.NAME.equals(name))
 			return new ExportPackageHeader(value);
 		if (ImportPackageHeader.NAME.equals(name))
 			return new ImportPackageHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (DeployedContentHeader.NAME.equals(name))
 			return new DeployedContentHeader(value);
 		if (ProvisionResourceHeader.NAME.equals(name))
 			return new ProvisionResourceHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (SubsystemManifestVersionHeader.NAME.equals(name))
 			return new SubsystemManifestVersionHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (RequireCapabilityHeader.NAME.equals(name))
 			return new RequireCapabilityHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (SubsystemImportServiceHeader.NAME.equals(name))
 			return new SubsystemImportServiceHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (RequireBundleHeader.NAME.equals(name))
 			return new RequireBundleHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (ProvideCapabilityHeader.NAME.equals(name))
 			return new ProvideCapabilityHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (SubsystemExportServiceHeader.NAME.equals(name))
 			return new SubsystemExportServiceHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (BundleSymbolicNameHeader.NAME.equals(name))
 			return new BundleSymbolicNameHeader(value);
 		if (BundleVersionHeader.NAME.equals(name))
 			return new BundleVersionHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (PreferredProviderHeader.NAME.equals(name))
 			return new PreferredProviderHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (AriesSubsystemParentsHeader.NAME.equals(name))
 			return new AriesSubsystemParentsHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		if (BundleRequiredExecutionEnvironmentHeader.NAME.equals(name))
 			return new BundleRequiredExecutionEnvironmentHeader(value);
 		if (SubsystemLocalizationHeader.NAME.equals(name))
 			return new SubsystemLocalizationHeader(value);
 		if (FragmentHostHeader.NAME.equals(name))
 		    return new FragmentHostHeader(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		if (AriesSubsystemLocationHeader.NAME.equals(value))
 			return new AriesSubsystemLocationHeader(value);
 		return new GenericHeader(name, value);

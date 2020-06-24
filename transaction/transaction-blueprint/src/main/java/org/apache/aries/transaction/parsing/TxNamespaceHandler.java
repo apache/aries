@@ -50,6 +50,7 @@ public class TxNamespaceHandler implements NamespaceHandler {
     
     public TxNamespaceHandler() {
         schemaMap = new HashMap<String, String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1413
         schemaMap.put(TX_NAMESPACE_URI, "transactionv20.xsd");
     }
 
@@ -57,9 +58,12 @@ public class TxNamespaceHandler implements NamespaceHandler {
     {
         LOGGER.debug("parser asked to parse element {} ", elt.getNodeName());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1413
         if ("enable".equals(elt.getLocalName())) {
             Node n = elt.getChildNodes().item(0);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
             if ((n == null || Boolean.parseBoolean(n.getNodeValue())) &&
                 !cdr.containsComponentDefinition(ANNOTATION_PARSER_BEAN_NAME)) {
                 LOGGER.debug("Enabling annotation based transactions");
@@ -72,6 +76,7 @@ public class TxNamespaceHandler implements NamespaceHandler {
     private MutableBeanMetadata createAnnotationParserBean(ParserContext pc, ComponentDefinitionRegistry cdr) {
         MutableBeanMetadata meta = pc.createMetadata(MutableBeanMetadata.class);
         meta.setId(ANNOTATION_PARSER_BEAN_NAME);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         meta.setRuntimeClass(AnnotationProcessor.class);
         meta.setProcessor(true);
         meta.addArgument(passThrough(pc, cdr), ComponentDefinitionRegistry.class.getName(), 0);
@@ -90,6 +95,7 @@ public class TxNamespaceHandler implements NamespaceHandler {
     public ComponentMetadata decorate(Node node, ComponentMetadata cm, ParserContext pc)
     {
         if (node instanceof Element) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
             parseElement((Element) node, pc);
         }
         return cm;
@@ -105,11 +111,13 @@ public class TxNamespaceHandler implements NamespaceHandler {
     @Override
     public URL getSchemaLocation(String namespaceUri)
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1310
         String xsdPath = schemaMap.get(namespaceUri);
         return xsdPath != null ? this.getClass().getResource(xsdPath) : null;
     }
     
     public void setTm(TransactionManager tm) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         this.tm = tm;
     }
     
@@ -121,6 +129,7 @@ public class TxNamespaceHandler implements NamespaceHandler {
     @Override
     public Set<Class> getManagedClasses()
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
         return Collections.emptySet();
     }
     

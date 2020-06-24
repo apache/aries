@@ -50,6 +50,7 @@ public class MBeanServiceTracker extends ServiceTracker {
      * @see ServiceTracker#addingService(ServiceReference)
      */
     public Object addingService(final ServiceReference reference) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         final MBeanServer mbeanServer = (MBeanServer) super.addingService(reference);
         Logger logger = agentContext.getLogger();
         logger.log(LogService.LOG_DEBUG, "Discovered MBean server " + mbeanServer);
@@ -64,6 +65,7 @@ public class MBeanServiceTracker extends ServiceTracker {
      * @see ServiceTracker#removedService(ServiceReference, Object)
      */
     public void removedService(final ServiceReference reference, Object service) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         final MBeanServer mbeanServer = (MBeanServer) service;
         Logger logger = agentContext.getLogger();
         logger.log(LogService.LOG_DEBUG, "MBean server " + mbeanServer+ " is unregistered from ServiceRegistry");

@@ -124,6 +124,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	      boolean suppressAnonymousServices) { 
 	    _logger.debug(LOG_ENTRY, "parseCDRForServices", new Object[]{cdr, suppressAnonymousServices});
 	    List<ExportedService> result = new ArrayList<ExportedService>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-725
 	    for (ComponentMetadata compMetadata : findAllComponents(cdr)) { 
 	      if (compMetadata instanceof ServiceMetadata) { 
 	        ServiceMetadata serviceMetadata = (ServiceMetadata)compMetadata;
@@ -144,6 +145,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	          
 	          Metadata value = entry.getValue();
 	          if (value instanceof CollectionMetadata) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-799
 	            processMultiValueProperty(serviceProps, key, value);
 	          } else { 
 	            serviceProps.put(key, ((ValueMetadata)entry.getValue()).getStringValue());
@@ -187,6 +189,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	    return result; 
 	  }
     private void processMultiValueProperty(Map<String, Object> serviceProps,
+//IC see: https://issues.apache.org/jira/browse/ARIES-799
         String key, Metadata value) {
       List<Metadata> values = ((CollectionMetadata)value).getValues();
       Class<?> collectionClass = ((CollectionMetadata)value).getCollectionClass();
@@ -214,6 +217,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	    if(List.class.isAssignableFrom(collectionClass)) {
 	      return new ArrayList<String>();
 	    } else if (Set.class.isAssignableFrom(collectionClass)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-799
 	      return new LinkedHashSet<String>();
 	    } else if (Queue.class.isAssignableFrom(collectionClass)) {
 	      //This covers Queue and Deque, which is caught by the isAssignableFrom check
@@ -233,6 +237,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	  private List<ImportedService> parseCDRForReferences (ComponentDefinitionRegistry cdr) throws InvalidAttributeException { 
 	    _logger.debug(LOG_ENTRY, "parseCDRForReferences", new Object[]{cdr});
 	    List<ImportedService> result = new ArrayList<ImportedService>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-725
 	    for (ComponentMetadata compMetadata : findAllComponents(cdr)) { 
 	      if (compMetadata instanceof ServiceReferenceMetadata) { 
 	        ServiceReferenceMetadata referenceMetadata = (ServiceReferenceMetadata)compMetadata;
@@ -270,6 +275,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	   * @return a {@link Set} of {@link ComponentMetadata}
 	   */
 	  private Set<ComponentMetadata> findAllComponents(ComponentDefinitionRegistry cdr) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-725
 	      Set<ComponentMetadata> components = new HashSet<ComponentMetadata>();
 	      
 	      for (String name : cdr.getComponentDefinitionNames()) {
@@ -372,9 +378,11 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	      blacklisted |= iface.equals("javax.transaction.TransactionSynchronizationRegistry");
 	      
 	      // ConfigurationAdmin - detect interface
+//IC see: https://issues.apache.org/jira/browse/ARIES-773
 	      blacklisted |= iface.equals("org.osgi.service.cm.ConfigurationAdmin");
 	               
 	      // Don't provision against JNDI references
+//IC see: https://issues.apache.org/jira/browse/ARIES-679
 	      if (blueprintFilter != null && blueprintFilter.trim().length() != 0) { 
 	        Map<String, String> filter = ManifestHeaderProcessor.parseFilter(blueprintFilter);
 	        blacklisted |= filter.containsKey(JNDIConstants.JNDI_SERVICENAME);

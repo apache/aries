@@ -74,6 +74,7 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
         for (int i=0; i<tradeServicesList.length; i++) {
             TradeServices tradeServicesRef = tradeServicesList[i];
             if (tradeServicesRef != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
                 modes.add(i);
             }
         }
@@ -96,6 +97,7 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:bindService()", tradeServices, props);
         if (tradeServices != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
             String mode = (String) props.get("mode");
             tradeServicesList[Enum.valueOf(TradeConfig.ModeType.class, mode).ordinal()] = tradeServices;
         }
@@ -108,6 +110,7 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:unbindService()", tradeServices, props);
         if (tradeServices != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
             String mode = (String) props.get("mode");
             tradeServicesList[Enum.valueOf(TradeConfig.ModeType.class, mode).ordinal()] = null;
         }
@@ -189,6 +192,7 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
             Log.trace("TradeAction:getMarketSummaryInternal()");
         }
         MarketSummaryDataBean marketSummaryData = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
         marketSummaryData = tradeServicesList[TradeConfig.getRunTimeMode().ordinal()].getMarketSummary();
         return marketSummaryData;
     }

@@ -47,6 +47,7 @@ public class Activator implements BundleActivator {
         
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put(Constants.SERVICE_PID, "org.apache.aries.jmx.test.ServiceA");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         String[] interfaces = new String[] { InterfaceA.class.getName(), ManagedService.class.getName() };
 		context.registerService(interfaces, new A(tracker), props);
         

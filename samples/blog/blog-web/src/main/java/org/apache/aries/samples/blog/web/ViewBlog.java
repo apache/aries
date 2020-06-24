@@ -50,6 +50,7 @@ public class ViewBlog extends HttpServlet
   {
     PrintWriter out = resp.getWriter();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
     BloggingService service = JNDIHelper.getBloggingService();
     
     String blogTitle = service.getBlogTitle();
@@ -81,6 +82,7 @@ public class ViewBlog extends HttpServlet
       }
     }
   
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
     Iterator<? extends BlogEntry> posts = service.getBlogEntries(pageNoInt * POSTS_PER_PAGE, POSTS_PER_PAGE).iterator();
     
     out.println("<div class=\"links\"><a href=\"CreateBlogEntryForm\">Create New Post</a> <a href=\"EditAuthorForm\">Create Author</a></div>");
@@ -114,6 +116,7 @@ public class ViewBlog extends HttpServlet
       out.print("\t\t\t<div class=\"postAuthor\"><a href=\"ViewAuthor?email=");
       out.print(post.getAuthorEmail());
       out.print("\">");
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
       out.print(post.getAuthor().getFullName());
       out.println("</a></div>");
       

@@ -42,6 +42,7 @@ import org.junit.Test;
 
 public class TranStrategyTest {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
     TransactionManager tm;
     Transaction t;
     private IMocksControl c;
@@ -60,9 +61,11 @@ public class TranStrategyTest {
       // MANDATORY strategy should throw IllegalStateException when tran manager 
       // status is Status.STATUS_NO_TRANSACTION it should not return null.
       expect(tm.getStatus()).andReturn(Status.STATUS_NO_TRANSACTION);
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
 
       try {
         assertNotNull("TransactionStrategy.MANDATORY.begin(tm) returned null when manager " +
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
               "status is STATUS_NO_TRANSACTION", TransactionAttribute.MANDATORY.begin(tm).getActiveTransaction());
       } catch (IllegalStateException ise) {
           // Expected to be in here
@@ -77,11 +80,13 @@ public class TranStrategyTest {
           Status.STATUS_ROLLING_BACK, Status.STATUS_UNKNOWN };
       
       for (int i = 0; i < invalids.length ; i++) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         c.reset();
         expect(tm.getStatus()).andReturn(invalids[i]);
         expect(tm.getTransaction()).andReturn(null);
         c.replay();
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
           Transaction tran = TransactionAttribute.MANDATORY.begin(tm).getActiveTransaction();
           assertNull("TransactionStrategy.MANDATORY.begin() did not return null when manager status value is " + invalids[i], tran);
         } catch (Exception ise) {
@@ -95,6 +100,7 @@ public class TranStrategyTest {
     public void testMandatoryFinish()
     {
       try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
         TransactionToken tranToken = new TransactionToken(t, null, TransactionAttribute.MANDATORY);
         TransactionAttribute.MANDATORY.finish(tm, tranToken);
       } catch (Exception e) {
@@ -109,8 +115,10 @@ public class TranStrategyTest {
         // NEVER strategy should throw IllegalStateException when tran manager 
         // status is Status.STATUS_ACTIVE it should not return null.
         expect(tm.getStatus()).andReturn(Status.STATUS_ACTIVE);
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
 
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
             assertNotNull("TransactionStrategy.NEVER.begin() returned null when manager status is STATUS_ACTIVE", TransactionAttribute.NEVER.begin(tm));
         } catch (IllegalStateException ise) {
             // Expect to be in here
@@ -130,6 +138,7 @@ public class TranStrategyTest {
             expect(tm.getTransaction()).andReturn(null).anyTimes();
             c.replay();
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
                 assertNull("TransactionStrategy.NEVER.begin() did not return null when manager status value is " + invalids[i], TransactionAttribute.NEVER.begin(tm).getActiveTransaction());
             } catch (Exception ise) {
                 fail("TransactionStrategy.NEVER.begin() threw unexpected exception when manager status value is " + invalids[i]);
@@ -143,6 +152,7 @@ public class TranStrategyTest {
     public void testNeverFinish()
     {
       try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
         TransactionToken tranToken = new TransactionToken(null, null, TransactionAttribute.NEVER);
         TransactionAttribute.NEVER.finish(tm, tranToken);
       } catch (Exception e) {
@@ -155,9 +165,11 @@ public class TranStrategyTest {
     {
       // NOT_SUPPORTED strategy should suspend an active transaction
       // and _NOT_ begin a new one
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
       expect(tm.getStatus()).andReturn(Status.STATUS_ACTIVE);
       expect(tm.suspend()).andReturn(null);
       c.replay();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
       TransactionAttribute.NOT_SUPPORTED.begin(tm);
       c.verify();
        
@@ -168,11 +180,13 @@ public class TranStrategyTest {
           Status.STATUS_ROLLING_BACK, Status.STATUS_UNKNOWN };
       
       for (int i = 0; i < invalids.length ; i++) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
           c.reset();
           expect(tm.getStatus()).andReturn(invalids[i]);
           expect(tm.getTransaction()).andReturn(null).anyTimes();
           c.replay();
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
           assertNull("TransactionStrategy.NOT_SUPPORTED.begin() did not return null when manager status value is " + invalids[i], TransactionAttribute.NOT_SUPPORTED.begin(tm).getActiveTransaction());
         } catch (Exception ise) {
             fail("TransactionStrategy.NOT_SUPPORTED.begin() threw unexpected exception when manager status value is " + invalids[i]);
@@ -188,9 +202,11 @@ public class TranStrategyTest {
       // If finish is called with a previously active transaction, then
       // we expect this transaction to be resumed for a NOT_SUPPORTED strategy
       try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         tm.resume(t);
         EasyMock.expectLastCall();
         c.replay();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         TransactionToken tranToken = new TransactionToken(null, t, TransactionAttribute.NOT_SUPPORTED);
         TransactionAttribute.NOT_SUPPORTED.finish(tm, tranToken);
         c.verify();
@@ -208,6 +224,7 @@ public class TranStrategyTest {
     {
       // If there is no previously active transaction when the REQUIRED strategy
       // is invoked then we expect a call to begin one
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
       expect(tm.getStatus()).andReturn(Status.STATUS_NO_TRANSACTION);
       expect(tm.getTransaction()).andReturn(null);
       tm.begin();
@@ -223,11 +240,13 @@ public class TranStrategyTest {
           Status.STATUS_ROLLING_BACK, Status.STATUS_UNKNOWN };
       
       for (int i = 0; i < invalids.length ; i++) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
           c.reset();
           expect(tm.getStatus()).andReturn(invalids[i]);
           expect(tm.getTransaction()).andReturn(null);
           c.replay();
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
           assertNull("TransactionStrategy.REQUIRED.begin() did not return null when manager status value is " + invalids[i], TransactionAttribute.REQUIRED.begin(tm).getActiveTransaction());
         } catch (Exception ise) {
             fail("TransactionStrategy.REQUIRED.begin() threw unexpected exception when manager status value is " + invalids[i]);
@@ -243,6 +262,7 @@ public class TranStrategyTest {
       // is made with a tran where the tran manager status shows Status.STATUS_MARKED_ROLLBACK
         expect(tm.getStatus()).andReturn(Status.STATUS_MARKED_ROLLBACK);
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
         TransactionToken tranToken = new TransactionToken(t, null, TransactionAttribute.REQUIRED, true);
         tm.rollback();
         expectLastCall();
@@ -256,11 +276,13 @@ public class TranStrategyTest {
         
         // For all other tran manager states we expect a call to commit
         for (int i = 0; i < invalids.length ; i++) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
           c.reset();
           expect(tm.getStatus()).andReturn(invalids[i]);
           tm.commit();
           expectLastCall();
           c.replay();
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
           TransactionAttribute.REQUIRED.finish(tm, tranToken);
           c.verify();
         }
@@ -305,6 +327,7 @@ public class TranStrategyTest {
       // we expect a call to begin a new tran, no call to suspend and null to be
       // returned from TransactionStrategy.REQUIRES_NEW.begin(tm)
       for (int i = 0; i < manStatus.length ; i++) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
           c.reset();
           expect(tm.getStatus()).andReturn(manStatus[i]);
           expect(tm.getTransaction()).andReturn(null);
@@ -312,6 +335,7 @@ public class TranStrategyTest {
           expectLastCall();
           c.replay();
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
           assertNull("TransactionStrategy.REQUIRES_NEW.begin() did not return null when manager status value is " + manStatus[i], TransactionAttribute.REQUIRES_NEW.begin(tm).getActiveTransaction());
         } catch (Exception ise) {
             fail("TransactionStrategy.REQUIRES_NEW.begin() threw unexpected exception when manager status value is " + manStatus[i]);
@@ -339,6 +363,7 @@ public class TranStrategyTest {
         Iterator<Exception> iterator = ees.iterator();
         while (iterator.hasNext()) {
           Exception e = iterator.next();
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
           c.reset();
           expect(tm.getStatus()).andReturn(allStates[i]);
           expect(tm.getTransaction()).andReturn(null).anyTimes();
@@ -361,6 +386,8 @@ public class TranStrategyTest {
       expectLastCall();
       c.replay();
       try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
           TransactionAttribute.REQUIRES_NEW.begin(tm);
       } catch (SystemException se) {
           // Expect to be in here
@@ -371,6 +398,7 @@ public class TranStrategyTest {
       } finally {
           // If Status.STATUS_ACTIVE
       }
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
       c.verify();
       c.reset();
     }
@@ -392,6 +420,7 @@ public class TranStrategyTest {
             expectLastCall();
             c.replay();
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
                 TransactionToken tranToken = new TransactionToken(t, t, TransactionAttribute.REQUIRES_NEW, true);
                 TransactionAttribute.REQUIRES_NEW.finish(tm, tranToken);
             } catch (Exception e) {
@@ -403,6 +432,7 @@ public class TranStrategyTest {
                 expect(tm.getStatus()).andReturn(allStates[i]);
                 requiresNew_assertion(tm, allStates[i]);
                 c.replay();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
                 TransactionToken tranToken = new TransactionToken(t, null, TransactionAttribute.REQUIRES_NEW, true);
                 TransactionAttribute.REQUIRES_NEW.finish(tm, tranToken);
             } catch (Throwable e) {
@@ -434,6 +464,7 @@ public class TranStrategyTest {
       expect(tm.getTransaction()).andReturn(null);
       expect(tm.getStatus()).andReturn(Status.STATUS_ACTIVE);
       c.replay();
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
       assertNull("TransTransactionStrategy.SUPPORTS.begin(tm) did not return null", TransactionAttribute.SUPPORTS.begin(tm).getActiveTransaction());
       c.verify();
     }

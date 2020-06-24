@@ -32,6 +32,7 @@ public class FragmentHostHeader extends AbstractClauseBasedHeader<FragmentHostHe
 		public static final String ATTRIBUTE_BUNDLEVERSION = Constants.BUNDLE_VERSION_ATTRIBUTE;
 		
 		public Clause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		    super(
             		parsePath(clause, Patterns.SYMBOLIC_NAME, false), 
             		parseParameters(clause, false), 
@@ -57,6 +58,7 @@ public class FragmentHostHeader extends AbstractClauseBasedHeader<FragmentHostHe
 	public static final String NAME = Constants.FRAGMENT_HOST;
 	
 	public FragmentHostHeader(Collection<Clause> clauses) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 	    super(clauses);
         if (clauses.size() != 1) {
             throw new IllegalArgumentException("A " + NAME + " header must have one and only one clause");

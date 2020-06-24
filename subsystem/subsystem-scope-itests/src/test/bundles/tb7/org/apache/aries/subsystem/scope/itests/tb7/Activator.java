@@ -10,6 +10,8 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration<Service> serviceReg;
 
 	public void start(final BundleContext bundleContext) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-603
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
 		serviceReg = bundleContext.registerService(
 				Service.class, 
 				new Service() {}, 

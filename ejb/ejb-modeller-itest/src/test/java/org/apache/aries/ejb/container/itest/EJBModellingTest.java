@@ -42,6 +42,7 @@ public class EJBModellingTest extends AbstractEJBModellerTest {
 
 	@Before
 	public void setup() throws BundleException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1213
 		resolveBundles();
 		mrm = context().getService(ModelledResourceManager.class);
 		mm = context().getService(ModellingManager.class);

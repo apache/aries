@@ -49,6 +49,7 @@ public class HelloWorldTest extends SubsystemTest
 
 	@Override
 	public void createApplications() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createApplication("hello", "helloImpl.jar");
 	}
 

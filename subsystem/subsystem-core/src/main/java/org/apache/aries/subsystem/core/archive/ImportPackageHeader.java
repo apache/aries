@@ -73,6 +73,7 @@ public class ImportPackageHeader extends AbstractClauseBasedHeader<ImportPackage
 		}
 		
 		public Clause(String path, Map<String, Parameter> parameters, Collection<Parameter> defaultParameters) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1338
 			super(path, parameters, defaultParameters == null ? Clause.defaultParameters : defaultParameters);
 		}
 		
@@ -89,10 +90,13 @@ public class ImportPackageHeader extends AbstractClauseBasedHeader<ImportPackage
 		
 		
 		public VersionRangeAttribute getVersionRangeAttribute() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1381
 			return (VersionRangeAttribute)getAttribute(Constants.VERSION_ATTRIBUTE);
 		}
 		
 		public ImportPackageRequirement toRequirement(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new ImportPackageRequirement(this, resource);
 		}
 	}
@@ -106,6 +110,7 @@ public class ImportPackageHeader extends AbstractClauseBasedHeader<ImportPackage
 	public static final String RESOLUTION_OPTIONAL = PackageNamespace.RESOLUTION_OPTIONAL;
 	
 	public ImportPackageHeader(Collection<Clause> clauses) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 	    super(clauses);
 	}
 	
@@ -133,9 +138,11 @@ public class ImportPackageHeader extends AbstractClauseBasedHeader<ImportPackage
 	
 	@Override
 	public List<ImportPackageRequirement> toRequirements(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Collection<Clause> clauses = getClauses();
 		List<ImportPackageRequirement> result = new ArrayList<ImportPackageRequirement>(clauses.size());
 		for (Clause clause : clauses) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1338
 			Collection<String> packageNames = clause.getPackageNames();
 			if (packageNames.size() > 1) {
 				for (String packageName : packageNames) {

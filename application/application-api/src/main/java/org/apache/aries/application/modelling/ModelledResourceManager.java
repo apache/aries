@@ -32,6 +32,7 @@ public interface ModelledResourceManager
     /** 
      * Return a fresh input stream
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
     InputStream open() throws IOException;
   }
     
@@ -72,6 +73,7 @@ public interface ModelledResourceManager
    * @throws ModellerException
    */
   ParsedServiceElements getServiceElements (IDirectory archive) throws ModellerException; 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
 
   /**
    * Parse service and reference elements of a bundle

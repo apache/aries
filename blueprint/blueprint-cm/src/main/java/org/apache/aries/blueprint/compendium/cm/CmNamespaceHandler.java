@@ -128,6 +128,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(CmNamespaceHandler.class);
     private static final Set<String> EXT_URIS = Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
                                                     BLUEPRINT_EXT_NAMESPACE_V1_0,
                                                     BLUEPRINT_EXT_NAMESPACE_V1_1,
                                                     BLUEPRINT_EXT_NAMESPACE_V1_2,
@@ -161,10 +162,13 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public void setConfigAdmin(ConfigurationAdmin configAdmin) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1290
+//IC see: https://issues.apache.org/jira/browse/ARIES-1503
         CmNamespaceHandler.configAdmin = configAdmin;
     }
 
     public URL getSchemaLocation(String namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
         if (isCmNamespace(namespace)) {
             String v = namespace.substring("http://aries.apache.org/blueprint/xmlns/blueprint-cm/v".length());
             return getClass().getResource("blueprint-cm-" + v + ".xsd");
@@ -189,6 +193,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public Set<Class> getManagedClasses() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
         return new HashSet<Class>(Arrays.asList(
                 CmPropertyPlaceholder.class,
                 CmManagedServiceFactory.class,
@@ -205,6 +210,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             return parsePropertyPlaceholder(context, element);
         } else if (nodeNameEquals(element, MANAGED_SERVICE_FACTORY_ELEMENT)) {
             return parseManagedServiceFactory(context, element);
+//IC see: https://issues.apache.org/jira/browse/ARIES-315
         } else if (nodeNameEquals(element, CM_PROPERTIES_ELEMENT)) {
             return parseCmProperties(context, element);
         } else {
@@ -231,6 +237,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
 
     private ComponentMetadata parseCmProperties(ParserContext context, Element element) {
         String id = getId(context, element);
+//IC see: https://issues.apache.org/jira/browse/ARIES-315
 
         MutableBeanMetadata factoryMetadata = context.createMetadata(MutableBeanMetadata.class);
         generateIdIfNeeded(context, factoryMetadata);
@@ -264,9 +271,11 @@ public class CmNamespaceHandler implements NamespaceHandler {
         metadata.setId(getId(context, element));
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
         metadata.setRuntimeClass(CmPropertyPlaceholder.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-429
         metadata.setInitMethod("init");
         metadata.setDestroyMethod("destroy");
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-773
         metadata.addProperty("configAdmin", createConfigurationAdminRef(context));
         metadata.addProperty("persistentId", createValue(context, element.getAttribute(PERSISTENT_ID_ATTRIBUTE)));
         String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
@@ -277,6 +286,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
                                     ? element.getAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
                                     : "}";
         metadata.addProperty("placeholderSuffix", createValue(context, suffix));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
         String nullValue = element.hasAttribute(PLACEHOLDER_NULL_VALUE_ATTRIBUTE)
                 ? element.getAttribute(PLACEHOLDER_NULL_VALUE_ATTRIBUTE)
                 : null;
@@ -287,15 +297,18 @@ public class CmNamespaceHandler implements NamespaceHandler {
         if (defaultsRef != null) {
             metadata.addProperty("defaultProperties", createRef(context, defaultsRef));
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-577
         String ignoreMissingLocations = extractIgnoreMissingLocations(element);
         if (ignoreMissingLocations != null) {
             metadata.addProperty("ignoreMissingLocations", createValue(context, ignoreMissingLocations));
         }
         String systemProperties = extractSystemPropertiesAttribute(element);
         if (systemProperties == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-771
             systemProperties = SYSTEM_PROPERTIES_NEVER;
         }
         metadata.addProperty("systemProperties", createValue(context, systemProperties));
+//IC see: https://issues.apache.org/jira/browse/ARIES-429
         String updateStrategy = element.getAttribute(UPDATE_STRATEGY_ATTRIBUTE);
         if (updateStrategy != null) {
             metadata.addProperty("updateStrategy", createValue(context, updateStrategy));
@@ -308,6 +321,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
+//IC see: https://issues.apache.org/jira/browse/ARIES-878
                 if (isCmNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
                         if (defaultsRef != null) {
@@ -316,6 +330,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
                         Metadata props = parseDefaultProperties(context, metadata, e);
                         metadata.addProperty("defaultProperties", props);
                     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-878
                 } else if (isExtNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, LOCATION_ELEMENT)) {
                         locations.add(getTextValue(e));
@@ -333,6 +348,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     private String extractSystemPropertiesAttribute(Element element) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
         for (String uri : EXT_URIS) {
             if (element.hasAttributeNS(uri, SYSTEM_PROPERTIES_ATTRIBUTE)) {
                 return element.getAttributeNS(uri, SYSTEM_PROPERTIES_ATTRIBUTE);
@@ -357,6 +373,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
+//IC see: https://issues.apache.org/jira/browse/ARIES-878
                 if (isCmNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
                         BeanProperty prop = context.parseElement(BeanProperty.class, enclosingComponent, e);
@@ -378,6 +395,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
         factoryMetadata.setRuntimeClass(CmManagedServiceFactory.class);
         factoryMetadata.setInitMethod("init");
         factoryMetadata.setDestroyMethod("destroy");
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         factoryMetadata.addArgument(createRef(context, "blueprintContainer"), null, 0);
         factoryMetadata.addProperty("factoryPid", createValue(context, element.getAttribute(FACTORY_PID_ATTRIBUTE)));
         String autoExport = element.hasAttribute(AUTO_EXPORT_ATTRIBUTE) ? element.getAttribute(AUTO_EXPORT_ATTRIBUTE) : AUTO_EXPORT_DEFAULT;
@@ -412,6 +430,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, INTERFACES_ELEMENT)) {
                         if (interfaces != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-771
                             throw new ComponentDefinitionException("Only one of " + INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
                         }
                         interfaces = parseInterfaceNames(e);
@@ -420,6 +439,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
                         MapMetadata map = context.parseElement(MapMetadata.class,
                             factoryMetadata, e);
                         factoryMetadata.addProperty("serviceProperties", map);
+//IC see: https://issues.apache.org/jira/browse/ARIES-878
                         NodeList enl = e.getChildNodes();
                         for (int j = 0; j < enl.getLength(); j++) {
                             Node enode = enl.item(j);
@@ -489,6 +509,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             metadata.setDestroyMethod("destroy");
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-773
         metadata.addProperty("configAdmin", createConfigurationAdminRef(context));
         metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
@@ -518,6 +539,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
             metadata.setDestroyMethod("destroy");
         }
         metadata.addProperty("blueprintContainer", createRef(context, "blueprintContainer"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-773
         metadata.addProperty("configAdmin", createConfigurationAdminRef(context));
         metadata.addProperty("managedObjectManager", createRef(context, MANAGED_OBJECT_MANAGER_NAME));
         metadata.addProperty("persistentId", createValue(context, persistentId));
@@ -546,6 +568,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
     
     private MutableReferenceMetadata createConfigurationAdminRef(ParserContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-878
         return createServiceRef(context, ConfigurationAdmin.class, null);
     }
     
@@ -567,6 +590,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
     
     private MutableReferenceMetadata createServiceRef(ParserContext context, Class<?> cls, String filter) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-773
         MutableReferenceMetadata m = context.createMetadata(MutableReferenceMetadata.class);
         m.setRuntimeInterface(cls);
         m.setInterface(cls.getName());
@@ -617,6 +641,7 @@ public class CmNamespaceHandler implements NamespaceHandler {
     }
 
     public static boolean isCmNamespace(String uri) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
         return CM_URIS.contains(uri);
     }
 

@@ -33,5 +33,6 @@ public interface MethodAnnotationHandler<A extends Annotation> extends Annotatio
      * @param contextEnricher context enricher
      * @param beanEnricher bean enricher
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
     void handleMethodAnnotation(Class<?> clazz, List<Method> methods, ContextEnricher contextEnricher, BeanEnricher beanEnricher);
 }

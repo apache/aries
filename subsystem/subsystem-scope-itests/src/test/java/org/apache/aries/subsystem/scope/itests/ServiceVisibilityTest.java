@@ -25,6 +25,8 @@ public class ServiceVisibilityTest extends AbstractTest {
 	 */
 	@Test
 	public void test1() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		assertTrue(getScope().getBundles().contains(bundleContext.getBundle()));
 		ScopeUpdate scopeUpdate = getScope().newScopeUpdate();
 		String location = getBundleLocation("tb-7.jar");
@@ -35,6 +37,8 @@ public class ServiceVisibilityTest extends AbstractTest {
 		scopeUpdate.commit();
 		Bundle bundle = bundleContext.getBundle(location);
 		assertNotNull(bundle);
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		assertTrue(getScope().getBundles().contains(bundle));
 		bundle.start();
 		ServiceReference<Service> serviceRef = bundleContext.getServiceReference(Service.class);
@@ -52,6 +56,8 @@ public class ServiceVisibilityTest extends AbstractTest {
 	 */
 	@Test
 	public void test2() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		assertTrue(getScope().getBundles().contains(bundleContext.getBundle()));
 		String location = getBundleLocation("tb-7.jar");
 		assertNull(bundleContext.getBundle(location));

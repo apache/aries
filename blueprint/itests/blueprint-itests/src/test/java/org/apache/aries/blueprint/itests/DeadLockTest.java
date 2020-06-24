@@ -103,6 +103,7 @@ public class DeadLockTest extends AbstractBlueprintIntegrationTest {
     public void testDeadlock() throws Exception {
       bundleContext.registerService("java.util.Set",new HashSet<Object>(), null);
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-1218
       Bundle bundle = getSampleBundle();
       bundle.start();
       

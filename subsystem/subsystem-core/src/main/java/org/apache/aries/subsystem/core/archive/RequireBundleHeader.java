@@ -129,6 +129,7 @@ public class RequireBundleHeader extends AbstractClauseBasedHeader<RequireBundle
 		}
 		
 		public RequireBundleRequirement toRequirement(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new RequireBundleRequirement(this, resource);
 		}
 		
@@ -146,6 +147,7 @@ public class RequireBundleHeader extends AbstractClauseBasedHeader<RequireBundle
 	public static final String NAME = Constants.REQUIRE_BUNDLE;
 	
 	public RequireBundleHeader(Collection<Clause> clauses) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(clauses);
 	}
 	
@@ -174,6 +176,7 @@ public class RequireBundleHeader extends AbstractClauseBasedHeader<RequireBundle
 	public List<RequireBundleRequirement> toRequirements(Resource resource) {
 		List<RequireBundleRequirement> requirements = new ArrayList<RequireBundleRequirement>(clauses.size());
 		for (Clause clause : clauses)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}

@@ -1076,6 +1076,7 @@ public interface BlueprintMetadataMBean {
      * @return the array of component id
      * @throws IOException if the operation fails
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1707
     String[] getComponentIds(long containerServiceId) throws IOException;
     
     /**
@@ -1086,6 +1087,7 @@ public interface BlueprintMetadataMBean {
      * @return the array of component id
      * @throws IOException if the operation fails
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1707
     String[] getComponentIdsByType(long containerServiceId, String type) throws IOException;
     
     /**
@@ -1098,6 +1100,7 @@ public interface BlueprintMetadataMBean {
      * @return the ComponentMetadata
      * @throws IOException if the operation fails
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1707
     CompositeData getComponentMetadata(long containerServiceId, String componentId) throws IOException;
         
     /**

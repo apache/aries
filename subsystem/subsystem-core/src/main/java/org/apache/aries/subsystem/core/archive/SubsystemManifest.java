@@ -44,6 +44,7 @@ public class SubsystemManifest {
 		private Map<String, Header<?>> headers = new HashMap<String, Header<?>>();
 		
 		public SubsystemManifest build() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new SubsystemManifest(headers);
 		}
 		
@@ -52,6 +53,7 @@ public class SubsystemManifest {
 		}
 		
 		public Builder content(Collection<Resource> value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return value == null || value.isEmpty() ? this : content(SubsystemContentHeader.newInstance(value));
 		}
 		
@@ -66,6 +68,7 @@ public class SubsystemManifest {
 		}
 		
 		public Builder manifest(SubsystemManifest value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			for (Entry<String, Header<?>> entry : value.getHeaders().entrySet())
 				header(entry.getValue());
 			return this;
@@ -118,6 +121,7 @@ public class SubsystemManifest {
 	public static final String SUBSYSTEM_VERSION = SubsystemConstants.SUBSYSTEM_VERSION;
 	
 	private static Map<String, Header<?>> parseHeaders(java.util.jar.Manifest manifest) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Map<String, Header<?>> result = new HashMap<String, Header<?>>();
 		for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
 			String key = String.valueOf(entry.getKey());
@@ -127,6 +131,7 @@ public class SubsystemManifest {
 	}
 	
 	private static void fillInDefaults(Map<String, Header<?>> headers) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Header<?> header = headers.get(SUBSYSTEM_VERSION);
 		if (header == null) {
 			headers.put(SUBSYSTEM_VERSION, SubsystemVersionHeader.DEFAULT);
@@ -148,10 +153,12 @@ public class SubsystemManifest {
 	}
 	
 	public SubsystemManifest(java.util.jar.Manifest manifest) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(parseHeaders(manifest));
 	}
 	
 	public SubsystemManifest(File file) throws FileNotFoundException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(new FileInputStream(file));
 	}
 	
@@ -188,8 +195,10 @@ public class SubsystemManifest {
 		}
 		header = headers.get(SUBSYSTEM_CONTENT);
 		if (header == null && content != null && !content.isEmpty()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			headers.put(SubsystemContentHeader.NAME, SubsystemContentHeader.newInstance(content));
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		fillInDefaults(headers);
 		this.headers = Collections.unmodifiableMap(headers);
 	}
@@ -199,26 +208,32 @@ public class SubsystemManifest {
 	}
 	
 	public ExportPackageHeader getExportPackageHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (ExportPackageHeader)getHeaders().get(EXPORT_PACKAGE);
 	}
 	
 	public ImportPackageHeader getImportPackageHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (ImportPackageHeader)getHeaders().get(IMPORT_PACKAGE);
 	}
 	
 	public PreferredProviderHeader getPreferredProviderHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (PreferredProviderHeader)getHeaders().get(PREFERRED_PROVIDER);
 	}
 	
 	public ProvideCapabilityHeader getProvideCapabilityHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (ProvideCapabilityHeader)getHeaders().get(PROVIDE_CAPABILITY);
 	}
 	
 	public RequireBundleHeader getRequireBundleHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (RequireBundleHeader)getHeaders().get(REQUIRE_BUNDLE);
 	}
 	
 	public RequireCapabilityHeader getRequireCapabilityHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (RequireCapabilityHeader)getHeaders().get(REQUIRE_CAPABILITY);
 	}
 	
@@ -227,10 +242,12 @@ public class SubsystemManifest {
 	}
 	
 	public SubsystemExportServiceHeader getSubsystemExportServiceHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (SubsystemExportServiceHeader)getHeaders().get(SUBSYSTEM_EXPORTSERVICE);
 	}
 	
 	public SubsystemImportServiceHeader getSubsystemImportServiceHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (SubsystemImportServiceHeader)getHeaders().get(SUBSYSTEM_IMPORTSERVICE);
 	}
 	
@@ -251,6 +268,7 @@ public class SubsystemManifest {
 	}
 	
 	public List<Capability> toCapabilities(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		ArrayList<Capability> capabilities = new ArrayList<Capability>();
 		for (Header<?> header : headers.values())
 			if (header instanceof CapabilityHeader)
@@ -267,6 +285,7 @@ public class SubsystemManifest {
 	public List<Requirement> toRequirements(Resource resource) {
 		ArrayList<Requirement> requirements = new ArrayList<Requirement>();
 		for (Header<?> header : headers.values())
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			if (header instanceof RequirementHeader && !((header instanceof SubsystemContentHeader) || (header instanceof PreferredProviderHeader)))
 				requirements.addAll(((RequirementHeader<?>)header).toRequirements(resource));
 		requirements.trimToSize();
@@ -275,6 +294,7 @@ public class SubsystemManifest {
 	
 	@Override
 	public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		StringBuilder builder = new StringBuilder("[Subsystem Manifest: ");
 		Iterator<Header<?>> iterator = headers.values().iterator();
 		if (iterator.hasNext()) {
@@ -301,6 +321,7 @@ public class SubsystemManifest {
 
     @Override
     public int hashCode() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
         return 31 * 17 + headers.hashCode();
     }
 

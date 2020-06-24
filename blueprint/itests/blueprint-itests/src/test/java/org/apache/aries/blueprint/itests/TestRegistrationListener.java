@@ -56,6 +56,7 @@ public class TestRegistrationListener extends AbstractBlueprintIntegrationTest {
         // have already been called and properties that were passed to this
         // method should have been not null
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         Map<?, ?> props = listener.getProperties();
         assertNotNull(props);
 
@@ -69,6 +70,7 @@ public class TestRegistrationListener extends AbstractBlueprintIntegrationTest {
     
     @Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         return new Option[] {
                 baseOptions(),
                 Helper.blueprintBundles(),

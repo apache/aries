@@ -119,6 +119,7 @@ public class ImportedServiceImpl implements ImportedService
         result = FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(_attribFilterString));
       } 
     } catch (InvalidSyntaxException isx) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-810
       InvalidAttributeException iax = new InvalidAttributeException(
     		  "A syntax error occurred attempting to parse the blueprint filter string '" 
     		  + _blueprintFilter + "' for element with id " + _id + ": " 
@@ -140,6 +141,7 @@ public class ImportedServiceImpl implements ImportedService
   @Deprecated
   public ImportedServiceImpl (String ifaceName, Map<String, String> attributes) throws InvalidAttributeException {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-425
     _optional = ("optional".equals(attributes.get("availability:")));
     _iface = ifaceName;
     _isMultiple = false;

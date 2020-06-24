@@ -93,6 +93,7 @@ public final class SubsystemPermission extends BasicPermission {
 	private final static int						ACTION_CONTEXT		= 0x00000008;
 	private final static int						ACTION_ALL			= ACTION_EXECUTE | ACTION_LIFECYCLE | ACTION_METADATA | ACTION_CONTEXT;
 	final static int								ACTION_NONE			= 0;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 
 	/**
 	 * The actions in canonical form.
@@ -239,6 +240,7 @@ public final class SubsystemPermission extends BasicPermission {
 			char c;
 
 			// skip whitespace
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			while ((i != -1) && ((c = a[i]) == ' ' || c == '\r' || c == '\n' || c == '\f' || c == '\t'))
 				i--;
 
@@ -309,6 +311,7 @@ public final class SubsystemPermission extends BasicPermission {
 					case '\t' :
 						break;
 					default :
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 						throw new IllegalArgumentException("invalid permission: " + actions);
 				}
 				i--;
@@ -319,6 +322,7 @@ public final class SubsystemPermission extends BasicPermission {
 		}
 
 		if (seencomma) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			throw new IllegalArgumentException("invalid permission: " + actions);
 		}
 
@@ -341,6 +345,7 @@ public final class SubsystemPermission extends BasicPermission {
 
 		try {
 			return FrameworkUtil.createFilter(filterString);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		} catch (InvalidSyntaxException e) {
 			IllegalArgumentException iae = new IllegalArgumentException("invalid filter");
 			iae.initCause(e);
@@ -418,6 +423,7 @@ public final class SubsystemPermission extends BasicPermission {
 		if (requested.subsystem == null) {
 			return false;
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Map<String, Object> requestedProperties = requested.getProperties();
 		if (requestedProperties == null) {
 			/*
@@ -511,6 +517,7 @@ public final class SubsystemPermission extends BasicPermission {
 
 		SubsystemPermission sp = (SubsystemPermission) obj;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (action_mask == sp.action_mask) && ((subsystem == sp.subsystem) || ((subsystem != null) && subsystem.equals(sp.subsystem)))
 				&& (filter == null ? sp.filter == null : filter.equals(sp.filter));
 	}
@@ -593,6 +600,7 @@ public final class SubsystemPermission extends BasicPermission {
 				}
 			});
 			return properties = map;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		} finally {
 			recurse.set(null);
 		}
@@ -640,6 +648,7 @@ final class SubsystemPermissionCollection extends PermissionCollection {
 	@Override
 	public void add(Permission permission) {
 		if (!(permission instanceof SubsystemPermission)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			throw new IllegalArgumentException("invalid permission: " + permission);
 		}
 		if (isReadOnly()) {
@@ -658,6 +667,7 @@ final class SubsystemPermissionCollection extends PermissionCollection {
 				int newMask = sp.action_mask;
 
 				if (oldMask != newMask) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					pc.put(name, new SubsystemPermission(existing.filter, oldMask | newMask));
 				}
 			} else {
@@ -744,6 +754,7 @@ final class SubsystemPermissionCollection extends PermissionCollection {
 	private synchronized void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		ObjectInputStream.GetField gfields = in.readFields();
 		@SuppressWarnings("unchecked")
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		HashMap<String, SubsystemPermission> p = (HashMap<String, SubsystemPermission>) gfields.get("permissions", null);
 		permissions = p;
 		all_allowed = gfields.get("all_allowed", false);

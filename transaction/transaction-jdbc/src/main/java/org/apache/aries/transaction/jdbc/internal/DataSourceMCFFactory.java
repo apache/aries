@@ -57,6 +57,8 @@ public class DataSourceMCFFactory extends AbstractMCFFactory {
 
         @Override
         protected Connection getPhysicalConnection(Subject subject, CredentialExtractor credentialExtractor) throws ResourceException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1550
+//IC see: https://issues.apache.org/jira/browse/ARIES-1171
             try {
                 String userName = credentialExtractor.getUserName();
                 String password = credentialExtractor.getPassword();
@@ -72,6 +74,7 @@ public class DataSourceMCFFactory extends AbstractMCFFactory {
 
         @Override
         public TransactionSupportLevel getTransactionSupport() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1150
             return TransactionSupportLevel.LocalTransaction;
         }
     }

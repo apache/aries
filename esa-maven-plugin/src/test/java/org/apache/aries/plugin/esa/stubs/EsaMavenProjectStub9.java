@@ -37,6 +37,7 @@ public class EsaMavenProjectStub9
 
     public Set getArtifacts()
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
         try
         {
             Set artifacts = new HashSet();

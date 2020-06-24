@@ -46,6 +46,7 @@ public class WAR_URLServiceHandler extends AbstractURLStreamHandlerService imple
   public URLConnection openConnection(URL url) throws IOException
   {
     // Create properties object
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
     CaseInsensitiveMap properties = new CaseInsensitiveMap();
     if (url.getQuery() != null)
     {
@@ -96,6 +97,7 @@ public class WAR_URLServiceHandler extends AbstractURLStreamHandlerService imple
 
   public void start(BundleContext context) throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1198
     Dictionary<String, Object> properties = new Hashtable<String, Object>();
     properties.put( URLConstants.URL_HANDLER_PROTOCOL, new String[] {urlScheme});
     context.registerService(URLStreamHandlerService.class.getName(), this, properties);

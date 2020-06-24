@@ -45,6 +45,7 @@ import org.osgi.framework.Version;
 public class NoOpResolver implements AriesApplicationResolver {
 
     Set<BundleInfo> resolvedBundles = new HashSet<BundleInfo>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-740
 
     public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) {
         resolvedBundles.addAll(app.getBundleInfo());

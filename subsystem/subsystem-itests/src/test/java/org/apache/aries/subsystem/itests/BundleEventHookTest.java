@@ -56,6 +56,7 @@ public class BundleEventHookTest extends SubsystemTest {
 	}
 	
 	private void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_A));
 	}
 	
@@ -152,6 +153,7 @@ public class BundleEventHookTest extends SubsystemTest {
 							// We've been here before and already done what needs doing.
 							return;
 						ServiceReference sr = (ServiceReference)event.getServiceReference();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 						bundleContext.getService(sr);
 						try {
 							// Queue up the installed event.
@@ -206,6 +208,7 @@ public class BundleEventHookTest extends SubsystemTest {
 							// We've been here before and already done what needs doing.
 							return;
 						ServiceReference sr = (ServiceReference)event.getServiceReference();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 						bundleContext.getService(sr);
 						try {
 							// Queue up the installed event for bundle A using B's context.

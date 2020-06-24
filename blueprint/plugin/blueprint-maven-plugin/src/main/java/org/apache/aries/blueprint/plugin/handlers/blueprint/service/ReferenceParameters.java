@@ -24,6 +24,7 @@ import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 class ReferenceParameters {
 
     static boolean needTimeout(long timeout) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1740
         return timeout >= 0;
     }
 

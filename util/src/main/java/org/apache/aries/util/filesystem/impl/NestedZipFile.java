@@ -52,6 +52,7 @@ public class NestedZipFile implements IFile {
 		name = archive.getName() + "/" + (nameInZip.endsWith("/") ? nameInZip.substring(0, nameInZip.length()-1) : nameInZip);
 		size = entry.getSize();
 		lastModified = entry.getTime();
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 		this.cache = cache;
 	}
 	
@@ -75,6 +76,7 @@ public class NestedZipFile implements IFile {
 		name = archive.getName();
 		lastModified = archive.getLastModified();
 		size = archive.getSize();
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 		cache = null;
 	}
 	
@@ -86,6 +88,7 @@ public class NestedZipFile implements IFile {
 		archive = other.archive;
 		nameInZip = other.nameInZip;
 		
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 		this.cache = cache;
 	}
 	
@@ -128,6 +131,7 @@ public class NestedZipFile implements IFile {
 	}
 
 	public InputStream open() throws IOException, UnsupportedOperationException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 		if (cache != null && !!!cache.isClosed()) {
 			ZipFile zip = cache.getZipFile();
 			ZipEntry ze = zip.getEntry(nameInZip);
@@ -157,6 +161,7 @@ public class NestedZipFile implements IFile {
 
 	public URL toURL() throws MalformedURLException
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-679
 		if (nameInZip.length() == 0) return archive.toURL();
 		else {
 			String entryURL = "jar:" + archive.toURL() + "!/" + nameInZip;
@@ -186,6 +191,7 @@ public class NestedZipFile implements IFile {
 	@Override
 	public String toString()
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-679
 		if (nameInZip.length() == 0) return archive.toString();
 		return archive.toString() + "/" + nameInZip;
 	}

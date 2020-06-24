@@ -83,6 +83,7 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
     @Test
     public void testAppWithoutApplicationManifest() throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
 
@@ -101,6 +102,7 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
 
     @Test
     public void testAppWithApplicationManifest() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
 
@@ -110,6 +112,8 @@ public class BasicNoOpResolverTest extends AbstractIntegrationTest {
         AriesApplicationContext ctx = manager.install(app);
         ctx.start();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         HelloWorld hw = context().getService(HelloWorld.class);
         String result = hw.getMessage();
         assertEquals(result, "hello world");

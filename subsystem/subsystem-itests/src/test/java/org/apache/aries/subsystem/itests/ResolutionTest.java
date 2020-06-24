@@ -119,8 +119,11 @@ public class ResolutionTest extends SubsystemTest {
 		createBundleA();
 		createBundleB();
 		createBundleC();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		createBundleD();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		createBundleE();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1222
 		createBundleF();
 		createBundleG();
 		createApplicationA();
@@ -143,6 +146,7 @@ public class ResolutionTest extends SubsystemTest {
 	}
 	
 	private static void createApplicationB() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		createApplicationBManifest();
 		createSubsystem(APPLICATION_B, BUNDLE_D);
 	}
@@ -154,6 +158,7 @@ public class ResolutionTest extends SubsystemTest {
 	}
 	
 	private static void createApplicationC() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		createApplicationCManifest();
 		createSubsystem(APPLICATION_C, BUNDLE_E);
 	}
@@ -165,6 +170,7 @@ public class ResolutionTest extends SubsystemTest {
 	}
 
 	private static void createApplicationD() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1222
 		createApplicationDManifest();
 		createSubsystem(APPLICATION_D, BUNDLE_F);
 	}
@@ -187,6 +193,7 @@ public class ResolutionTest extends SubsystemTest {
 	}
 
 	private void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_A), new Header(Constants.REQUIRE_CAPABILITY, "a"));
 	}
 	
@@ -211,6 +218,7 @@ public class ResolutionTest extends SubsystemTest {
 	}
 	
 	private void createBundleF() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1222
 		createBundle(Collections.singletonList("native.file"), name(BUNDLE_F), new Header(Constants.BUNDLE_NATIVECODE,
 				"native.file; osname=Linux; processor=x86,"
 				+ "native.file; osname=Linux; processor=x86-64,"
@@ -269,6 +277,7 @@ public class ResolutionTest extends SubsystemTest {
 			}
 		}
 		catch (SubsystemException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 			fail("Application A should have installed." + e.getMessage());
 		}
 		finally {
@@ -284,12 +293,14 @@ public class ResolutionTest extends SubsystemTest {
 	 */
 	@Test
 	public void testMissingBundleRequiredExecutionEnvironment() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		Subsystem applicationB = null;
 		try {
 			applicationB = installSubsystemFromFile(APPLICATION_B);
 			fail("Missing BREE should result in installation failure");
 		}
 		catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			e.printStackTrace();
 			assertTrue("Installation failure should be due to resolution error", e.getCause() instanceof ResolutionException);
 		}
@@ -306,6 +317,7 @@ public class ResolutionTest extends SubsystemTest {
 	 */
 	@Test
 	public void testMultipleBundleRequiredExecutionEnvironments() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		Subsystem applicationC = null;
 		try {
 			applicationC = installSubsystemFromFile(APPLICATION_C);
@@ -321,6 +333,7 @@ public class ResolutionTest extends SubsystemTest {
 
 	@Test
 	public void testNativeCodeRequirement() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1222
 		Subsystem applicationD = null;
 		try {
 			applicationD = installSubsystemFromFile(APPLICATION_D);

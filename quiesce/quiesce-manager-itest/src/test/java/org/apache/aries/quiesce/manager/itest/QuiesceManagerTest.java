@@ -63,6 +63,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
 
     @Before
     public void setup() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         manager = context().getService(QuiesceManager.class);
         b1 = bundleContext.getBundle(5);
         b2 = bundleContext.getBundle(6);
@@ -91,6 +92,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
 
         //Try quiescing one bundle with no participants
         manager.quiesceWithFuture(2000, bundleList).get(5000, TimeUnit.MILLISECONDS);
@@ -105,6 +107,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         //Register a mock participant which will report back quiesced immediately
         bundleContext.registerService(QuiesceParticipant.class.getName(), participant1, null);
         //Try quiescing the bundle with immediate return
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         
         manager.quiesceWithFuture(1000,bundleList).get(5000, TimeUnit.MILLISECONDS);
@@ -122,6 +125,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleList.add(b1);
 
         //Try quiescing the bundle with no return
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         manager.quiesce(1000,bundleList);
         timeoutTime = System.currentTimeMillis()+5000;
@@ -142,6 +146,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         
         // we should be finishing in about 5000 millis not 10000
@@ -200,6 +205,8 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
 
         Future<?> future = manager.quiesceWithFuture(2000, Arrays.asList(b1));
 
@@ -215,6 +222,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         assertEquals("Participant 2 has finished", 0, participant2.getFinishedCount());
         assertEquals("Participant 3 has started", 1, participant3.getStartedCount());
         assertEquals("Participant 3 has finished", 0, participant3.getFinishedCount());
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
         assertEquals("Bundle "+b1.getSymbolicName()+" should still be active, because we did not wait long enough", Bundle.ACTIVE, b1.getState());
     }
 
@@ -228,6 +236,8 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
         bundleList.add(b2);
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         assertEquals("Bundle "+b2.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b2.getState());
 
@@ -254,6 +264,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
         bundleList.add(b2);
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
         assertEquals("Bundle "+b2.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b2.getState());
         assertEquals("Bundle "+b3.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b3.getState());
@@ -266,6 +277,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         while (System.currentTimeMillis() < timeoutTime && (b1.getState() == Bundle.ACTIVE || b2.getState() == Bundle.ACTIVE || b3.getState() == Bundle.ACTIVE)) {
             Thread.sleep(500);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-475
         assertEquals("Participant 1 should have started twice as it has been asked to quiesce twice", 2, participant1.getStartedCount());
         assertEquals("Participant 1 should finished twice as it should have returned from two quiesce requests immediately", 2, participant1.getFinishedCount());
         assertEquals("Participant 2 should have started twice as it has been asked to quiesce twice", 2, participant2.getStartedCount());

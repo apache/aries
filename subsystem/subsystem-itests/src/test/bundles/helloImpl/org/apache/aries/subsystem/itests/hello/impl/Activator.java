@@ -21,6 +21,7 @@ import org.osgi.framework.ServiceRegistration;
 
 public class Activator implements BundleActivator {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
 	ServiceRegistration _sr = null;
 	
 	@Override

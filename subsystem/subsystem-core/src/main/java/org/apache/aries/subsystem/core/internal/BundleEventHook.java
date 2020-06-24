@@ -36,6 +36,7 @@ public class BundleEventHook implements EventHook {
 	private List<BundleEvent> events;
 	
 	public BundleEventHook() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-992
 		activator = Activator.getInstance();
 		bundleToRevision = new ConcurrentHashMap<Bundle, BundleRevision>();
 	}
@@ -110,8 +111,10 @@ public class BundleEventHook implements EventHook {
 		 * The newly installed bundle must become a constituent of all the Subsystems of which the bundle
 		 * whose context was used to perform the install is a constituent (OSGI.enterprise spec. 134.10.1.1).
 		 */
+//IC see: https://issues.apache.org/jira/browse/ARIES-992
 		Collection<BasicSubsystem> subsystems = getSubsystems().getSubsystemsReferencing(originRevision);
 		boolean bundleRevisionInstalled=false;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1237
 		for (BasicSubsystem s : subsystems) {
 			for (Resource constituent : s.getConstituents()) {
 				if (constituent instanceof BundleConstituent) {
@@ -131,11 +134,14 @@ public class BundleEventHook implements EventHook {
 	private void handleExplicitlyInstalledBundleRegionDigraph(Bundle origin, BundleRevision bundleRevision) {
 			// The bundle needs to be associated with the scoped subsystem of 
 			// the region used to install the bundle.
+//IC see: https://issues.apache.org/jira/browse/ARIES-992
 			RegionDigraph digraph = activator.getRegionDigraph();
 			Region region = digraph.getRegion(origin);
 			for (BasicSubsystem s : getSubsystems().getSubsystems()) {
 				if ((s.isApplication() || s.isComposite())
 						&& region.equals(s.getRegion())) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					Utils.installResource(bundleRevision, s);
 					return;
 				}

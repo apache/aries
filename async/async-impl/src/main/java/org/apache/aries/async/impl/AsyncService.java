@@ -81,6 +81,7 @@ public class AsyncService implements Async {
 	 * the heap.
 	 */
 	private final WeakHashMap<Class<?>, WeakReference<Class<?>>> proxyLoaderCache
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
 		= new WeakHashMap<Class<?>, WeakReference<Class<?>>>();
 	
 	private final Bundle clientBundle;
@@ -101,6 +102,7 @@ public class AsyncService implements Async {
 		this.logServiceTracker = logServiceTracker;
 	}
 	
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
 	void clear() {
 		proxyLoaderCache.clear();
 	}
@@ -119,7 +121,9 @@ public class AsyncService implements Async {
 		TrackingInvocationHandler handler = new TrackingInvocationHandler(this, 
 				clientBundle, logServiceTracker, service);
 		
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
         synchronized(proxyLoaderCache) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
             T toReturn = cachedMediate(iface, handler);
 		
             if(toReturn != null) {
@@ -140,6 +144,7 @@ public class AsyncService implements Async {
 
 	@SuppressWarnings("unchecked")
 	private <T> T cachedMediate(Class<T> iface, TrackingInvocationHandler handler) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
 		WeakReference<Class<?>> weakReference = proxyLoaderCache.get(iface);
 		Class<?> cached = weakReference == null ? null : weakReference.get();
 		if(cached != null) {
@@ -151,6 +156,7 @@ public class AsyncService implements Async {
 					throw new IllegalArgumentException("Unable to mediate interface: " + iface, e);
 				}
 			} else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
                 try {
                     T t = (T) cached.getConstructor().newInstance();
                     ((Factory)t).setCallbacks(new Callback[] {handler});
@@ -177,13 +183,16 @@ public class AsyncService implements Async {
 		TrackingInvocationHandler handler = new TrackingInvocationHandler(this, 
 				clientBundle, logServiceTracker, ref);
 		
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
         synchronized(proxyLoaderCache) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
             T toReturn = cachedMediate(iface, handler);
             
             if(toReturn != null) {
                 return toReturn;
             } else if(iface.isInterface()) {
                 toReturn = (T) Proxy.newProxyInstance(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1320
 					new ClassLoader(iface.getClassLoader()){}, 
 					new Class[] {iface}, handler);
             } else {

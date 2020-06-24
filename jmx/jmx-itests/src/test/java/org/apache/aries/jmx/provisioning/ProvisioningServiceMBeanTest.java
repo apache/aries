@@ -55,6 +55,7 @@ import org.osgi.service.provisioning.ProvisioningService;
 public class ProvisioningServiceMBeanTest extends AbstractIntegrationTest {
 	@Inject
 	ProvisioningService ps;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 
     @Configuration
     public Option[] configuration() {
@@ -136,6 +137,7 @@ public class ProvisioningServiceMBeanTest extends AbstractIntegrationTest {
         jout.close();
         
         provZip.deleteOnExit();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 		return provZip;
 	}
 }

@@ -42,6 +42,7 @@ public class ReferenceHandler implements CustomDependencyAnnotationHandler<Refer
     public String handleDependencyAnnotation(AnnotatedElement annotatedElement, String name, ContextEnricher contextEnricher) {
         Reference reference = annotatedElement.getAnnotation(Reference.class);
         final Class<?> clazz = getClass(annotatedElement);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1743
         return handleDependencyAnnotation(clazz, reference, name, contextEnricher);
     }
 
@@ -66,6 +67,7 @@ public class ReferenceHandler implements CustomDependencyAnnotationHandler<Refer
                 if (!"".equals(reference.componentName())) {
                     writer.writeAttribute("component-name", reference.componentName());
                 }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1740
                 if (needTimeout(reference.timeout())) {
                     writer.writeAttribute("timeout", String.valueOf(reference.timeout()));
                 }

@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 class ArtifactFilter {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1792
 
     private final Set<Pattern> includeArtifactPatterns;
     private final Set<Pattern> excludeArtifactPatterns;

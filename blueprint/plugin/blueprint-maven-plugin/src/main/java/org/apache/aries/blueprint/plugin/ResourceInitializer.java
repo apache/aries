@@ -24,6 +24,7 @@ import org.apache.maven.project.MavenProject;
 class ResourceInitializer {
     static void prepareBaseDir(MavenProject project, String baseDir){
         Resource resource = new Resource();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1734
         resource.setDirectory(baseDir);
         project.addResource(resource);
     }

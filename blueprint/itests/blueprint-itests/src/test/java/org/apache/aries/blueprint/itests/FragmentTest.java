@@ -40,7 +40,9 @@ public class FragmentTest extends AbstractBlueprintIntegrationTest
   @Test
   public void testFragmentProvidesBlueprintFile() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
     Runnable r = context().getService(Runnable.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
     Assert.assertNotNull("Could not find blueprint registered service", r);
     BlueprintContainer bc = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.test.host");
     Assert.assertNotNull("Could not find blueprint container for bundle", bc);

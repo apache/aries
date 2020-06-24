@@ -39,11 +39,15 @@ public class DefaultWorker implements FrameworkUtilWorker, BundleListener, Frame
 
   static
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-777
+//IC see: https://issues.apache.org/jira/browse/ARIES-777
+//IC see: https://issues.apache.org/jira/browse/ARIES-778
     Bundle bundle = FrameworkUtil.getBundle(DefaultWorker.class);
     BundleContext myContext = bundle == null? null: bundle.getBundleContext();
     
     // This may be created during framework shutdown when the bundle context is null.
     // So we need to cope and not NPE during construction.
+//IC see: https://issues.apache.org/jira/browse/ARIES-608
     if (myContext != null) {
       myFrameworkBundle = myContext.getBundle(0);
     } else {

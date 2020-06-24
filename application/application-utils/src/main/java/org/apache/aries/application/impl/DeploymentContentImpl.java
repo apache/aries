@@ -40,7 +40,9 @@ public final class DeploymentContentImpl implements DeploymentContent {
    * @param version
    */
   public DeploymentContentImpl (String bundleSymbolicName, Version version) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map<String, String> nvMap = new HashMap<String, String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     nvMap.put(AppConstants.DEPLOYMENT_BUNDLE_VERSION, version.toString());
     _content = new ContentImpl (bundleSymbolicName, nvMap);
   }
@@ -79,6 +81,7 @@ public final class DeploymentContentImpl implements DeploymentContent {
   }
 
   public VersionRange getVersion() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     String deployedVersion = _content.getAttribute(AppConstants.DEPLOYMENT_BUNDLE_VERSION);
     VersionRange vr = null;
     if (deployedVersion != null && deployedVersion.length() > 0) {
@@ -101,6 +104,7 @@ public final class DeploymentContentImpl implements DeploymentContent {
   }
   
   public int hashCode() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-188
     return _content.hashCode();
   }
 

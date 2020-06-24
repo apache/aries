@@ -131,6 +131,7 @@ public class ModellingManagerImpl implements ModellingManager
     return new ParsedServiceElementsImpl(services, references);
   }
   public ModelledResource getModelledResource(String fileURI,
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
       Attributes bundleAttributes, ExportedBundle exportedBundle,
       ResourceType resourceType, Collection<ImportedService> importedServices,
       Collection<ExportedService> exportedServices) throws InvalidAttributeException {

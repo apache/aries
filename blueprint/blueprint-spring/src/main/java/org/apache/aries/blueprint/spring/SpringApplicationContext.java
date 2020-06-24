@@ -38,6 +38,7 @@ public class SpringApplicationContext extends AbstractApplicationContext {
 
     public SpringApplicationContext(ExtendedBlueprintContainer container) {
         this.container = container;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         parentClassLoaders.add(container.getClassLoader());
         setClassLoader(new ClassLoader() {
             @Override
@@ -54,6 +55,7 @@ public class SpringApplicationContext extends AbstractApplicationContext {
 
             @Override
             public URL getResource(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1744
                 for (ClassLoader cl : parentClassLoaders) {
                     URL url =  cl.getResource(name);
                     if (url != null) {
@@ -97,6 +99,7 @@ public class SpringApplicationContext extends AbstractApplicationContext {
         });
         this.beanFactory = new BlueprintBeanFactory(container, this);
         prepareBeanFactory(beanFactory);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1567
         prepareRefresh();
     }
 
@@ -122,6 +125,7 @@ public class SpringApplicationContext extends AbstractApplicationContext {
 
     public void addSourceBundle(Bundle bundle) {
         // This should always be not null, but we want to support unit testing
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         if (bundle != null) {
             parentClassLoaders.add(bundle.adapt(BundleWiring.class).getClassLoader());
         }

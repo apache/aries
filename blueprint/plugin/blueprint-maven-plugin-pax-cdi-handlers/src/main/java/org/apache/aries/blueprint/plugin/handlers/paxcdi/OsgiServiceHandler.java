@@ -52,6 +52,8 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
         final String id = name != null ? name : generateReferenceId(clazz, serviceFilter);
 
         contextEnricher.addBean(id, clazz);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
         contextEnricher.addBlueprintContentWriter(getWriterId(id, clazz), getXmlWriter(id, clazz, serviceFilter));
         return id;
     }
@@ -70,6 +72,7 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
                     writer.writeAttribute("component-name", serviceFilter.compName);
                 }
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
         };
     }
 
@@ -132,10 +135,12 @@ public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<Osg
     }
 
     private static class ServiceFilter {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
         final String filter;
         final String compName;
 
         ServiceFilter(String filterValue) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1663
             if (filterValue == null || filterValue.isEmpty()) {
                 filter = null;
                 compName = null;

@@ -23,6 +23,7 @@ public class TestC {
     protected int c = 1;
 
     protected int getFooLen(String foo) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         return foo.length();
     }
 

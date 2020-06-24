@@ -26,5 +26,6 @@ interface BlueprintRegistry extends ContextEnricher {
     BeanRef getMatching(BeanTemplate template);
 
     List<BeanRef> getAllMatching(BeanTemplate template);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
 
 }

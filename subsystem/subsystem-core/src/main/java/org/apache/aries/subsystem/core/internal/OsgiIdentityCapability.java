@@ -40,10 +40,12 @@ public class OsgiIdentityCapability extends AbstractCapability {
 	}
 
 	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(resource, symbolicName, version, IdentityNamespace.TYPE_BUNDLE);
 	}
 
 	public OsgiIdentityCapability(Resource resource, String symbolicName, Version version, String identityType) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 	    this(resource, symbolicName, version, identityType, new HashMap<String, Object>());
 	}
 
@@ -65,14 +67,17 @@ public class OsgiIdentityCapability extends AbstractCapability {
 	public OsgiIdentityCapability(Resource resource, SubsystemManifest manifest) {
 		this(
 				resource,
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				manifest.getSubsystemSymbolicNameHeader().getSymbolicName(),
 				manifest.getSubsystemVersionHeader().getVersion(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				manifest.getSubsystemTypeHeader().getType());
 	}
 
 	public OsgiIdentityCapability(Resource resource, BundleManifest manifest) {
 		this(
 				resource,
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				((SymbolicNameHeader)manifest.getHeader(Constants.BUNDLE_SYMBOLICNAME)).getSymbolicName(),
 				((VersionHeader)manifest.getHeader(Constants.BUNDLE_VERSION)).getVersion(),
 				manifest.getHeader(Constants.FRAGMENT_HOST) == null ? IdentityNamespace.TYPE_BUNDLE : IdentityNamespace.TYPE_FRAGMENT);
@@ -87,6 +92,7 @@ public class OsgiIdentityCapability extends AbstractCapability {
 	}
 
 	public String getNamespace() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return IdentityNamespace.IDENTITY_NAMESPACE;
 	}
 

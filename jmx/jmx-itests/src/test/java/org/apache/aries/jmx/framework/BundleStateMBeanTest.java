@@ -76,6 +76,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
 
 	@Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 		return options(
 				// new VMOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"),
 				// new TimeoutOption( 0 ),
@@ -121,6 +122,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         long[] fragments = mbean.getFragments(a.getBundleId());
         assertEquals(1, fragments.length);
         assertEquals(fragc.getBundleId() , fragments[0]);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 
         // headers
         TabularData headers = mbean.getHeaders(b.getBundleId());
@@ -253,6 +255,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         assertEquals(1, attributeChanges.size());
         AttributeChangeNotification ac = attributeChanges.get(0);
         assertEquals("BundleIds", ac.getAttributeName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         long oldSequence = ac.getSequenceNumber();
         assertTrue(Arrays.equals(idsWithout, (long []) ac.getOldValue()));
         assertTrue(Arrays.equals(idsWith, (long []) ac.getNewValue()));
@@ -262,6 +265,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
         waitForListToReachSize(attributeChanges, 2);
         AttributeChangeNotification ac2 = attributeChanges.get(1);
         assertEquals("BundleIds", ac2.getAttributeName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         assertEquals(oldSequence +1, ac2.getSequenceNumber());
         assertTrue(Arrays.equals(idsWith, (long []) ac2.getOldValue()));
         assertTrue(Arrays.equals(idsWithout, (long []) ac2.getNewValue()));
@@ -288,6 +292,7 @@ public class BundleStateMBeanTest extends AbstractIntegrationTest {
     @SuppressWarnings({ "unchecked" })
     public void testHeaderLocalization() throws Exception {
         Bundle bundleE = context().getBundleByName("org.apache.aries.jmx.test.bundlee");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 
         CompositeData cd = mbean.getBundle(bundleE.getBundleId());
         long id = (Long) cd.get(BundleStateMBean.IDENTIFIER);

@@ -67,6 +67,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
     private ExecutorService executor = new ThreadPoolExecutor(0, 10, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),new ThreadFactory() {
         
         public Thread newThread(Runnable arg0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
             Thread t = new Thread(arg0, "Quiesce Manager Thread");
             t.setDaemon(true);
             return t;
@@ -107,6 +108,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
                 if (priorBundle == null) {
                     bundlesToQuiesce.add(b);
                 }else{
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
                     LOGGER.warn(MESSAGES.getMessage("already.quiescing.bundle", b.getSymbolicName() + '/' + b.getVersion()));
                 }
             }
@@ -125,6 +127,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
         private CountDownLatch latch = new CountDownLatch(1);
         
         public boolean cancel(boolean mayInterruptIfRunning) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
             throw new UnsupportedOperationException(MESSAGES.getMessage("quiesce.cannot.be.canceled"));
         }
 
@@ -164,6 +167,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
      * resulting stop events. 
      */
     public void quiesce(List<Bundle> bundlesToQuiesce) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
         quiesce(defaultTimeout, bundlesToQuiesce);
     }
   
@@ -177,6 +181,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
      * @return
      */
     private static boolean stopBundle(Bundle bundleToStop, Set<Bundle> bundlesToStop) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
         try {
             synchronized (bundlesToStop) {
                 if (bundlesToStop.remove(bundleToStop)) {
@@ -209,6 +214,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
         private final QuiesceFuture future;
         
         public BundleQuiescer(Set<Bundle> bundlesToQuiesce, long timeout, QuiesceFuture future, ConcurrentHashMap<Bundle, Bundle> bundleMap) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
             this.bundlesToQuiesce = new HashSet<Bundle>(bundlesToQuiesce);
             this.timeout = timeout;
             this.future = future;
@@ -225,6 +231,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
                         
                         ScheduledFuture<?> timeoutFuture = timeoutExecutor.schedule(new Runnable() {
                             public void run() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-558
                                 try {
                                   synchronized (bundlesToQuiesce) {
                                       for (Bundle b : new ArrayList<Bundle>(bundlesToQuiesce)) {
@@ -262,6 +269,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
                     }
                 }
             } catch (InvalidSyntaxException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
                 LOGGER.warn(MESSAGES.getMessage("null.is.invalid.filter"));
                 for (Bundle b : bundlesToQuiesce) {
                     stopBundle(b, bundlesToQuiesce);
@@ -338,6 +346,7 @@ public class QuiesceManagerImpl implements QuiesceManager {
 
         private boolean checkOthers(Bundle b) {
             boolean allDone = true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
             Iterator<QuiesceCallbackImpl> it = allCallbacks.iterator();
             while (allDone && it.hasNext()) {
                 allDone = !!!it.next().toQuiesce.contains(b);

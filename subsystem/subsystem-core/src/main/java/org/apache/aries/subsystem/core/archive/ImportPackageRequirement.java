@@ -43,11 +43,13 @@ public class ImportPackageRequirement extends AbstractRequirement {
 		if (versionRange != null) {
 			versionRange.appendToFilter(filter);
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1307
 		for(Attribute packageAttribute : clause.getAttributes()) {
 			if (!(packageAttribute instanceof  VersionRangeAttribute)) {
 			    packageAttribute.appendToFilter(filter);
 			}
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		directives.put(DIRECTIVE_FILTER, filter.append(')').toString());
 		this.resource = resource;
 	}
@@ -64,6 +66,7 @@ public class ImportPackageRequirement extends AbstractRequirement {
 
 	@Override
 	public String getNamespace() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return NAMESPACE;
 	}
 

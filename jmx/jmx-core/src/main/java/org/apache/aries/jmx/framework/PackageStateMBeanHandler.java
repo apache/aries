@@ -50,6 +50,7 @@ public class PackageStateMBeanHandler implements MBeanHandler {
      * Constructs new PackageStateMBeanHandler.
      */
     public PackageStateMBeanHandler(JMXAgentContext agentContext) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         this.agentContext = agentContext;
         this.context = agentContext.getBundleContext();
         this.logger = agentContext.getLogger();
@@ -75,6 +76,7 @@ public class PackageStateMBeanHandler implements MBeanHandler {
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Not compliant MBean", e);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         agentContext.registerMBean(this);
     }
 

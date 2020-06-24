@@ -30,6 +30,7 @@ import org.apache.openejb.persistence.JtaEntityManagerRegistry;
 import org.osgi.framework.BundleContext;
 
 public class AriesPersistenceContextIntegration extends
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     JtaEntityManagerRegistry {
   
   private static final AtomicReference<AriesPersistenceContextIntegration> INSTANCE =

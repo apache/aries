@@ -33,7 +33,9 @@ public class BasicTest extends SubsystemTest {
 	
     @Test
     public void testEmptyFeature() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
     	Subsystem emptyFeature = installSubsystemFromFile("emptyFeature.esa");
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		AssertionError error = null;
 		try {
 			assertSymbolicName("org.apache.aries.subsystem.itests.feature.empty", emptyFeature);
@@ -50,6 +52,7 @@ public class BasicTest extends SubsystemTest {
 		}
 		finally {
 			try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				uninstallSubsystemSilently(emptyFeature);
 			}
 			catch (AssertionError e) {
@@ -66,6 +69,7 @@ public class BasicTest extends SubsystemTest {
      */
     @Test
     public void testEmptySubsystem() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
     	Subsystem emptySubsystem = installSubsystemFromFile("emptySubsystem.esa");
 		AssertionError error = null;
 		try {
@@ -87,6 +91,7 @@ public class BasicTest extends SubsystemTest {
 		}
 		finally {
 			try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				uninstallSubsystemSilently(emptySubsystem);
 			}
 			catch (AssertionError e) {

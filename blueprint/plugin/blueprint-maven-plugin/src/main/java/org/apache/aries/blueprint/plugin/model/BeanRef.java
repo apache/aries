@@ -21,6 +21,7 @@ package org.apache.aries.blueprint.plugin.model;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1735
 final class BeanRef implements Comparable<BeanRef> {
     final String id;
     final Class<?> clazz;
@@ -43,6 +44,7 @@ final class BeanRef implements Comparable<BeanRef> {
     }
 
     boolean conflictsWith(BeanRef bean) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1735
         return id.equals(bean.id) && !clazz.equals(bean.clazz);
     }
 }

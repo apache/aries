@@ -18,11 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.referencelistener;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1669
 class ReferenceListenerDefinition {
     final String ref;
     final String bind;
     final String unbind;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1742
     ReferenceListenerDefinition(String ref, String bind, String unbind) {
         this.ref = ref;
         this.bind = getOrNull(bind);

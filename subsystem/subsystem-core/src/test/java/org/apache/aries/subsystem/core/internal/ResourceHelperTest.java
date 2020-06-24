@@ -26,6 +26,7 @@ import org.osgi.resource.Resource;
 public class ResourceHelperTest {
 	@Test
 	public void testMandatoryDirectiveAbsent() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1022
 		Capability cap = new BasicCapability.Builder()
 				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
 				.attribute(PackageNamespace.PACKAGE_NAMESPACE, "com.foo")

@@ -104,6 +104,7 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
     }
     
     public void init() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-315
         if (serviceId != null) {
             LOGGER.debug("Initializing CmProperties for service={} / pid={}", serviceId, persistentId);
         } else {
@@ -126,10 +127,12 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
     }
 
     public Properties getProperties() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-315
         return properties;
     }
 
     public void updated(Dictionary props) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
         if (initialized) {
             if (serviceId != null) {
                 LOGGER.debug("Service properties updated for service={} / pid={}, {}", new Object[]{serviceId, persistentId, props});
@@ -143,6 +146,7 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
             if (props != null) {
                 JavaUtils.copy(properties, props);
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
             if (!initialized) {
                 initialized = true;
             } else if (update) {
@@ -154,6 +158,7 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
     }
 
     public void updateProperties(ServicePropertiesUpdater service, Dictionary props) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-315
         if (this.serviceId == null || !this.serviceId.equals(service.getId())) {
             return;
         }
@@ -162,6 +167,7 @@ public class CmProperties implements ManagedObject, ServiceProcessor {
         
         synchronized (lock) {
             services.add(service);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
             JavaUtils.copy(props, properties);
         }
     }

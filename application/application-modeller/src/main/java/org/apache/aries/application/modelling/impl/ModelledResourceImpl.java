@@ -97,6 +97,7 @@ public class ModelledResourceImpl implements ModelledResource
    */
   @SuppressWarnings("deprecation")
   public ModelledResourceImpl (String fileURI, Attributes bundleAttributes, ExportedBundle exportedBundle, ResourceType resourceType,
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
       Collection<ImportedService> importedServices, 
       Collection<ExportedService> exportedServices) throws InvalidAttributeException
   { 
@@ -152,6 +153,7 @@ public class ModelledResourceImpl implements ModelledResource
     _exportedPackages = new ArrayList<ExportedPackage>();
     String packageExports = bundleAttributes.getValue(EXPORT_PACKAGE);
     if (packageExports != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       List<NameValuePair> exportedPackages = ManifestHeaderProcessor
         .parseExportString(packageExports);
       for (NameValuePair exportedPackage : exportedPackages) {
@@ -164,6 +166,7 @@ public class ModelledResourceImpl implements ModelledResource
     _importedPackages = new ArrayList<ImportedPackage>();
     String packageImports = bundleAttributes.getValue(IMPORT_PACKAGE);
     if (packageImports != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       Map<String, Map<String, String>> importedPackages = ManifestHeaderProcessor
           .parseImportString(packageImports);
       for (Map.Entry<String, Map<String, String>> importedPackage : importedPackages.entrySet()) {
@@ -180,6 +183,7 @@ public class ModelledResourceImpl implements ModelledResource
       serviceExports = bundleAttributes.getValue(EXPORT_SERVICE);
     } 
     if (serviceExports != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       List<NameValuePair> expServices = ManifestHeaderProcessor
           .parseExportString(serviceExports);
       for (NameValuePair exportedService : expServices) {
@@ -192,6 +196,7 @@ public class ModelledResourceImpl implements ModelledResource
       serviceImports = bundleAttributes.getValue(IMPORT_SERVICE);
     } 
     if (serviceImports != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       Map<String, Map<String, String>> svcImports = ManifestHeaderProcessor
           .parseImportString(serviceImports);
       for (Map.Entry<String, Map<String, String>> importedService : svcImports.entrySet()) {
@@ -204,6 +209,7 @@ public class ModelledResourceImpl implements ModelledResource
     if (_resourceType == ResourceType.BUNDLE) { 
       String requireBundleHeader = bundleAttributes.getValue(REQUIRE_BUNDLE);
       if (requireBundleHeader != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
         Map<String, Map<String, String>> requiredBundles = ManifestHeaderProcessor
             .parseImportString(requireBundleHeader);
         for (Map.Entry<String, Map<String, String>> bundle : requiredBundles.entrySet()) {
@@ -224,6 +230,7 @@ public class ModelledResourceImpl implements ModelledResource
     
       String dynamicImports = bundleAttributes.getValue(DYNAMICIMPORT_PACKAGE);
       if (dynamicImports != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
         Map<String, Map<String, String>> dynamicImportPackages = ManifestHeaderProcessor
             .parseImportString(dynamicImports);
         for (Map.Entry<String, Map<String, String>> dynImportPkg : dynamicImportPackages.entrySet()) {

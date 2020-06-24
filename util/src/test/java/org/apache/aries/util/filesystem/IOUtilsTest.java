@@ -51,6 +51,7 @@ public class IOUtilsTest
   @Test
   public void testZipUpAndUnzipAndDeleteRecursive() throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-483
     new File ("ioUtilsTest").mkdir();
     IOUtils.zipUp(new File("../src/test/resources/zip"), new File("ioUtilsTest/test.zip"));
     
@@ -82,6 +83,7 @@ public class IOUtilsTest
     File tmpDir = new File("target/ioUtilsTest/tmp");
     tmpDir.mkdirs();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-947
     IOUtils.writeOut(tmpDir, "simple.txt", new ByteArrayInputStream( "abc".getBytes()));
     IOUtils.writeOut(tmpDir, "some/relative/directory/complex.txt", new ByteArrayInputStream( "def".getBytes()));
     IOUtils.writeOut(tmpDir, "some/relative/directory/complex2.txt", new ByteArrayInputStream( "ghi".getBytes()));
@@ -130,6 +132,7 @@ public class IOUtilsTest
         fail("Close was invoked");
       }
     };
+//IC see: https://issues.apache.org/jira/browse/ARIES-483
     File f = new File("ioUtilsTest/outtest1");
     f.mkdirs();
     IOUtils.writeOutAndDontCloseInputStream(f, "/fred", is);
@@ -143,6 +146,7 @@ public class IOUtilsTest
   
   @Test 
   public void testCopy() throws IOException{
+//IC see: https://issues.apache.org/jira/browse/ARIES-483
     InputStream is = new InputStream(){
       boolean closed=false;
       int idx=0;

@@ -15,6 +15,8 @@ public class Activator implements BundleActivator, ServiceFactory<Scope> {
 	private static volatile BundleContext bundleContext;
 	
 	public static BundleContext getBundleContext() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		return bundleContext;
 	}
 	

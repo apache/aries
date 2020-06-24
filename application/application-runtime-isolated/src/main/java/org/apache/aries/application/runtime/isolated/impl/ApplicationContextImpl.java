@@ -66,6 +66,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
   private DeploymentMetadata _deploymentMF;
 
   public ApplicationContextImpl(AriesApplication app, ApplicationContextManagerImpl acm)
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
       throws BundleException
   {
     LOGGER.debug(LOG_ENTRY, "ApplicationContextImpl", new Object[] { app, acm });
@@ -73,11 +74,13 @@ public class ApplicationContextImpl implements AriesApplicationContext
     _bundleFrameworkManager = acm.getBundleFrameworkManager();
     _bundleRepositoryManager = acm.getBundleRepositoryManager();
     _bundles = new LinkedHashSet<Bundle>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-487
 
     _application = app;
     _deploymentMF = _application.getDeploymentMetadata();
 
     if (_deploymentMF.getApplicationDeploymentContents() != null
+//IC see: https://issues.apache.org/jira/browse/ARIES-586
         && !_deploymentMF.getApplicationDeploymentContents().isEmpty()) {
       install();
     }
@@ -101,12 +104,14 @@ public class ApplicationContextImpl implements AriesApplicationContext
     List<DeploymentContent> provisionBundlesToFind = new ArrayList<DeploymentContent>(_deploymentMF
         .getApplicationProvisionBundles());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
     try {
     	
       installBundles(provisionBundlesToFind, true);
       installBundles(useBundlesToFind, true);
       installBundles(bundlesToFind, false);
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
       _state = ApplicationState.INSTALLED;
       
       LOGGER.debug("Successfully installed application "
@@ -133,12 +138,14 @@ public class ApplicationContextImpl implements AriesApplicationContext
   {
     LOGGER.debug(LOG_ENTRY, "uninstall");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-768
     if (_state != ApplicationState.UNINSTALLED) {
       // Iterate through all of the bundles that were started when this application was started, 
       // and attempt to stop and uninstall each of them. 
       for (Iterator<Bundle> bundleIter = _bundles.iterator(); bundleIter.hasNext();) {
         Bundle bundleToRemove = bundleIter.next();
   
+//IC see: https://issues.apache.org/jira/browse/ARIES-768
         if (bundleToRemove.getState() != Bundle.UNINSTALLED) {
           try {
             // If Bundle is active, stop it first.
@@ -174,6 +181,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
    * @return the result of execution
    */
   private void installBundles(List<DeploymentContent> bundlesToFind, boolean shared)
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
       throws BundleException
   {
     LOGGER.debug(LOG_ENTRY, "install", new Object[] { bundlesToFind, Boolean.valueOf(shared) });
@@ -209,6 +217,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
        * Ask the repository manager to find us a list of suggested bundles
        * to install based on our content list
        */
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
       Map<DeploymentContent, BundleSuggestion> bundlesToBeInstalled = 
         findBundleSuggestions(bundlesToFind);
 
@@ -217,6 +226,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
        */
       try {
         if (shared) _bundles.addAll(_bundleFrameworkManager.installSharedBundles(
+//IC see: https://issues.apache.org/jira/browse/ARIES-528
             new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), makeAppProxy()));
         else _bundles.add(_bundleFrameworkManager.installIsolatedBundles(
             new ArrayList<BundleSuggestion>(bundlesToBeInstalled.values()), makeAppProxy()));
@@ -233,6 +243,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
    * Create a proxy for the AriesApplication we pass on so as to respect the correct current deployment metadata.
    */
   private AriesApplication makeAppProxy() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-528
     return new AriesApplication() {
       
       public void store(OutputStream out) throws FileNotFoundException, IOException {
@@ -306,6 +317,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
   {
     LOGGER.debug(LOG_ENTRY, "start");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
     if (!(_state == ApplicationState.INSTALLED || 
         _state == ApplicationState.RESOLVED))
       throw new IllegalStateException("Appication is in incorrect state " + _state + " expected " + ApplicationState.INSTALLED + " or " + ApplicationState.RESOLVED);
@@ -343,6 +355,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
   {
     LOGGER.debug(LOG_ENTRY, "stop");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
     if (_state != ApplicationState.ACTIVE)
       throw new IllegalStateException("Appication is in incorrect state " + _state + " expected " + ApplicationState.ACTIVE);
         
@@ -426,6 +439,7 @@ public class ApplicationContextImpl implements AriesApplicationContext
 
   public synchronized void close() throws BundleException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-709
     uninstall();
     _closed = true;
   }

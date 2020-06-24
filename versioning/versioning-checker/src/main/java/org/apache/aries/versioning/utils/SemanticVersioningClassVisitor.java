@@ -35,7 +35,10 @@ public class SemanticVersioningClassVisitor extends ClassVisitor {
     private SerialVersionClassVisitor cv = null;
 
     public SemanticVersioningClassVisitor(URLClassLoader newJarLoader, SerialVersionClassVisitor cv) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
       super(SemanticVersioningUtils.ASM4);
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
       this.loader = newJarLoader;
       this.cv = cv;
     }
@@ -59,6 +62,7 @@ public class SemanticVersioningClassVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         // only interested in public class
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         if (cv != null) {
             cv.visit(version, access, name, signature, superName, interfaces);
         }
@@ -80,6 +84,7 @@ public class SemanticVersioningClassVisitor extends ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String desc,
                                    String signature, Object value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         if (cv != null) {
             cv.visitField(access, name, desc, signature, value);
         }
@@ -102,6 +107,7 @@ public class SemanticVersioningClassVisitor extends ClassVisitor {
                                      String signature, String[] exceptions) {
 
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         if (cv != null) {
             cv.visitMethod(access, name, desc, signature, exceptions);
         }

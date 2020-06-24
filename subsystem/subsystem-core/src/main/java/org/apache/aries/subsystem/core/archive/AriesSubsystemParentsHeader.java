@@ -31,6 +31,7 @@ public class AriesSubsystemParentsHeader extends AbstractClauseBasedHeader<Aries
 		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
 		
 		public Clause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			super(
 					parsePath(clause, Patterns.SYMBOLIC_NAME, false), 
 					parseParameters(clause, true), 
@@ -94,11 +95,13 @@ public class AriesSubsystemParentsHeader extends AbstractClauseBasedHeader<Aries
 			.append(';')
 			.append(Clause.ATTRIBUTE_RESOURCEID)
 			.append('=')
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 			.append(subsystem.getSubsystemId());
 		return builder;
 	}
 	
 	public AriesSubsystemParentsHeader(Collection<Clause> clauses) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(clauses);
 	}
 	

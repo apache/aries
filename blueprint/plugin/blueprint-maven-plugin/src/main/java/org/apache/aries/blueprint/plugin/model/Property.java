@@ -49,6 +49,7 @@ class Property implements Comparable<Property>, XmlWriter {
         this.ref = ref;
         this.value = value;
         this.isField = isField;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
         this.refCollection = refCollection;
     }
 
@@ -102,6 +103,7 @@ class Property implements Comparable<Property>, XmlWriter {
 
         String value = AnnotationHelper.findValue(method.getAnnotations());
         if (value != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
             return new Property(propertyName, null, value, false, null);
         }
 
@@ -113,6 +115,7 @@ class Property implements Comparable<Property>, XmlWriter {
 
             String ref = getForcedRefName(method);
             if (ref == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1619
                 ref = findName(method.getParameterAnnotations()[0]);
             }
             String refFromCustomeDependencyHandler = getRefFromCustomDependencyHandlers(blueprintRegistry, method, ref);
@@ -121,6 +124,7 @@ class Property implements Comparable<Property>, XmlWriter {
             }
 
             if (ref != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
                 return new Property(propertyName, ref, null, false, null);
             }
 
@@ -135,6 +139,7 @@ class Property implements Comparable<Property>, XmlWriter {
                 }
             }
             if (ref != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
                 return new Property(propertyName, ref, null, false, null);
             }
 
@@ -200,11 +205,13 @@ class Property implements Comparable<Property>, XmlWriter {
     }
 
     private static String makeFirstLetterLower(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1562
         return name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
     }
 
     @Override
     public void write(XMLStreamWriter writer) throws XMLStreamException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
         writer.writeStartElement("property");
         writer.writeAttribute("name", name);
         if (ref != null) {

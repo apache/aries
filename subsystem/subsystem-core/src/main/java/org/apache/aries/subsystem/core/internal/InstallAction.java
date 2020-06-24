@@ -46,6 +46,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 		BasicSubsystem result = null;
 		// Acquire the global write lock to prevent all other operations until
 		// the installation is complete. There is no need to hold any other locks.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 		Activator.getInstance().getLockingStrategy().writeLock();
 		try {
 			State state = parent.getState();
@@ -54,6 +55,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 			}
 			// Initialization of a null coordination must be privileged and,
 			// therefore, occur in the run() method rather than in the constructor.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1050
 			Coordination coordination = Utils.createCoordination(parent);
 			try {
 				TargetRegion region = new TargetRegion(parent);
@@ -86,6 +88,8 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 				coordination.fail(t);
 			}
 			finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
+//IC see: https://issues.apache.org/jira/browse/ARIES-1050
 				try {
 					coordination.end();
 				}
@@ -101,6 +105,7 @@ public class InstallAction implements PrivilegedAction<BasicSubsystem> {
 		}
 		finally {
 			// Release the global write lock.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 			Activator.getInstance().getLockingStrategy().writeUnlock();
 		}
 		return result;

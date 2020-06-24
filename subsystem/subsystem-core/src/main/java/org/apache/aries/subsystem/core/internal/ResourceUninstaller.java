@@ -31,6 +31,7 @@ public abstract class ResourceUninstaller {
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type)) {
 			return new SubsystemResourceUninstaller(resource, subsystem);
 		} else if (IdentityNamespace.TYPE_BUNDLE.equals(type) || IdentityNamespace.TYPE_FRAGMENT.equals(type)) {
@@ -58,6 +59,7 @@ public abstract class ResourceUninstaller {
 	protected final BasicSubsystem subsystem;
 
 	public ResourceUninstaller(Resource resource, BasicSubsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (resource == null)
 			throw new NullPointerException("Missing required parameter: resource");
 		if (subsystem == null)
@@ -75,6 +77,7 @@ public abstract class ResourceUninstaller {
 	protected boolean isExplicit() {
 		// The operation is explicit if it was requested by a user, in which
 		// case the resource and subsystem are the same.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (resource.equals(subsystem))
 			return true;
 		// The operation is explicit if it was requested by a scoped subsystem
@@ -84,12 +87,14 @@ public abstract class ResourceUninstaller {
 				return subsystem.getRegion().contains(((BundleRevision)resource).getBundle());
 			// TODO This is insufficient. The unscoped subsystem could be a
 			// dependency in another region, which would make it implicit.
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 			return !((BasicSubsystem)resource).isScoped();
 		}
 		return false;
 	}
 
 	protected boolean isTransitive() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		ProvisionResourceHeader header = subsystem.getDeploymentManifest().getProvisionResourceHeader();
 		if (header == null)
 			return false;
@@ -98,6 +103,7 @@ public abstract class ResourceUninstaller {
 
 	protected boolean isResourceUninstallable() {
 		int referenceCount = Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource).size();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (referenceCount == 0)
 			return true;
 		if (isExplicit()) {
@@ -108,6 +114,7 @@ public abstract class ResourceUninstaller {
 	}
 
 	protected void removeConstituent() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		removeConstituent(subsystem, resource);
 	}
 

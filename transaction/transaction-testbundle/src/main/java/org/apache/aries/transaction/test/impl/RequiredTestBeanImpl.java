@@ -33,6 +33,7 @@ public class RequiredTestBeanImpl extends TestBeanImpl {
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
     public void delegateInsertRow(String name, int value) throws SQLException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         super.delegateInsertRow(name, value);
     }
 

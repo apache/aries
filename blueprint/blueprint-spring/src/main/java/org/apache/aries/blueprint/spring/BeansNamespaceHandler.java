@@ -52,6 +52,8 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
 
     @Override
     public BeanDefinition parse(Element ele, ParserContext parserContext) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         BeanDefinitionHolder bdh = getReader(parserContext).parseElement(ele);
         return bdh != null ? bdh.getBeanDefinition() : null;
     }
@@ -62,6 +64,7 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
     }
 
     private BeanDefinitionReader getReader(ParserContext parserContext) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         BeanDefinitionReader reader = readers.get(parserContext);
         if (reader == null) {
             reader = new BeanDefinitionReader(parserContext.getReaderContext());
@@ -132,6 +135,8 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
         public BeanDefinitionHolder parseElement(Element ele) {
             BeanDefinitionParserDelegate parent = this.delegate;
             this.delegate = createDelegate(getReaderContext(), ele.getOwnerDocument().getDocumentElement(), parent);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
             BeanDefinitionHolder bdh = parseDefaultElement(ele, this.delegate);
             this.delegate = parent;
             return bdh;
@@ -155,6 +160,7 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
                 if (StringUtils.hasText(profileSpec)) {
                     String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
                             profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1717
                     if (!getReaderContext().getReader().getEnvironment().acceptsProfiles(specifiedProfiles)) {
                         return;
                     }
@@ -201,6 +207,8 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
         }
 
         private BeanDefinitionHolder parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
             BeanDefinitionHolder bdh = null;
             if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
                 importBeanDefinitionResource(ele);
@@ -209,6 +217,8 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
                 processAliasRegistration(ele);
             }
             else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
                 bdh = processBeanDefinition(ele, delegate);
             }
             else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
@@ -231,6 +241,7 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
 
             // Resolve system properties: e.g. "${user.dir}"
             location = getReaderContext().getReader().getEnvironment().resolveRequiredPlaceholders(location);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1717
 
             Set<Resource> actualResources = new LinkedHashSet<Resource>(4);
 
@@ -333,6 +344,8 @@ public class BeansNamespaceHandler implements org.springframework.beans.factory.
                 // Send registration event.
                 getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
             return bdHolder;
         }
     }

@@ -42,5 +42,6 @@ public interface RepositoryGenerator
    * @param fout the output stream containing the repository xml
    * @throws IOException
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-618
   void generateRepository(String[] source, OutputStream fout) throws IOException;
 }

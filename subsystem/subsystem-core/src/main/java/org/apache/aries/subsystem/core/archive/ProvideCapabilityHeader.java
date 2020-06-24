@@ -40,6 +40,7 @@ public class ProvideCapabilityHeader extends AbstractClauseBasedHeader<ProvideCa
         }
 
 		public ProvideCapabilityCapability toCapability(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new ProvideCapabilityCapability(this, resource);
 		}
 		
@@ -57,6 +58,7 @@ public class ProvideCapabilityHeader extends AbstractClauseBasedHeader<ProvideCa
 	public static final String NAME = Constants.PROVIDE_CAPABILITY;
 	
 	public ProvideCapabilityHeader(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(
 				value, 
 				new ClauseFactory<Clause>() {
@@ -79,6 +81,7 @@ public class ProvideCapabilityHeader extends AbstractClauseBasedHeader<ProvideCa
 	
 	@Override
 	public List<ProvideCapabilityCapability> toCapabilities(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		List<ProvideCapabilityCapability> result = new ArrayList<ProvideCapabilityCapability>();
 		for (Clause clause : clauses)
 			result.add(clause.toCapability(resource));

@@ -56,7 +56,9 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
         final List<String> interfaceNames = extractServiceInterfaces(serviceProvider);
 
         final List<ServiceProperty> serviceProperties = extractProperties(properties);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         contextEnricher.addBlueprintContentWriter("OsgiServiceProvider/" + annotatedElement + "/" + id, new XmlWriter() {
             @Override
             public void write(XMLStreamWriter writer) throws XMLStreamException {
@@ -82,6 +84,7 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
             writeInterfacesElement(writer, interfaceNames);
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
         if (!serviceProperties.isEmpty()) {
             writeRanking(writer, serviceProperties);
             writeProperties(writer, serviceProperties);
@@ -93,6 +96,7 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
     }
 
     private static List<ServiceProperty> extractProperties(Properties properties) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
         List<ServiceProperty> serviceProperties = new ArrayList<>();
         if (properties != null) {
             for (Property property : properties.value()) {
@@ -121,6 +125,7 @@ public class OsgiServiceProviderHandler implements BeanAnnotationHandler<OsgiSer
     }
 
     private void writeRanking(XMLStreamWriter writer, List<ServiceProperty> serviceProperties) throws XMLStreamException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
         for (ServiceProperty serviceProperty : serviceProperties) {
             if ("service.ranking".equals(serviceProperty.name)) {
                 try {

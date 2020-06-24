@@ -28,6 +28,7 @@ public class BasicCapability extends AbstractCapability {
 		private String namespace;
 		
 		public Builder attribute(String key, Object value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 			attributes.put(key, value);
 			return this;
 		}
@@ -68,6 +69,7 @@ public class BasicCapability extends AbstractCapability {
 	private final String namespace;
 	
 	public BasicCapability(Capability capability, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1390
 	    if (resource == null) {
 	        throw new NullPointerException();
 	    }
@@ -78,6 +80,7 @@ public class BasicCapability extends AbstractCapability {
 	}
 	
 	public BasicCapability(String namespace, Map<String, Object> attributes, Map<String, String> directives, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (namespace == null)
 			throw new NullPointerException();
 		this.namespace = namespace;

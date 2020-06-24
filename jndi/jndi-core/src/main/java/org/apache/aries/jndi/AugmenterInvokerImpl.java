@@ -32,6 +32,7 @@ public class AugmenterInvokerImpl implements AugmenterInvoker {
     private final BundleContext context;
 
     public AugmenterInvokerImpl(BundleContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         this.context = context;
     }
 

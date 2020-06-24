@@ -54,6 +54,7 @@ import org.osgi.service.startlevel.StartLevel;
 public class BundleStateTest {
 
     private void createBundle(StateConfig stateConfig, final List<Notification> received,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
                               final List<AttributeChangeNotification> attributeChanges) throws Exception {
         BundleContext context = mock(BundleContext.class);
         when(context.getBundles()).thenReturn(new Bundle [] {});
@@ -117,6 +118,7 @@ public class BundleStateTest {
     @Test
     public void testNotificationsForBundleEvents() throws Exception {
         StateConfig stateConfig = new StateConfig();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
 
         //holders for Notifications captured
         List<Notification> received = new LinkedList<Notification>();
@@ -153,6 +155,7 @@ public class BundleStateTest {
 
     @Test
     public void testNotificationsForBundleEventsDisabled() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
         StateConfig stateConfig = new StateConfig();
         stateConfig.setBundleChangeNotificationEnabled(false);
 
@@ -174,6 +177,7 @@ public class BundleStateTest {
         Logger logger = mock(Logger.class);
 
         BundleState bundleState = new BundleState(context, admin, startLevel, new StateConfig(), logger);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
 
         MBeanServer server1 = mock(MBeanServer.class);
         MBeanServer server2 = mock(MBeanServer.class);
@@ -221,10 +225,12 @@ public class BundleStateTest {
 
     @Test
     public void testAttributeNotificationDisabled() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
         StateConfig stateConfig = new StateConfig();
         stateConfig.setAttributeChangeNotificationEnabled(false);
 
         //holders for Notifications captured
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
         createBundle(stateConfig, new LinkedList<Notification>(), attributeChanges);
 

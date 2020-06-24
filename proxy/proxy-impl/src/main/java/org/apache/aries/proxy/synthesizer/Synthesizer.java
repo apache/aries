@@ -57,6 +57,7 @@ public class Synthesizer
         //we just need to override the visit method so we can add
         //the synthetic modifier, otherwise we use the methods in
         //a standard writer
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
         writer =   new ClassWriter(reader, 0) ;
         ClassVisitor cv = new CustomClassVisitor((ClassVisitor)writer);
         //call accept on the reader to start the visits
@@ -82,11 +83,13 @@ public class Synthesizer
 
     public CustomClassVisitor( ClassVisitor cv)
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
       super(Opcodes.ASM8, cv);
       
     }
     @Override
     public void visit(int version, int access, String name, String signature,
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
         String superName, String[] interfaces)
     {
       cv.visit(version, access | Opcodes.ACC_SYNTHETIC, name, signature, superName,

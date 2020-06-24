@@ -28,6 +28,7 @@ public class GenericJTAException extends Exception {
 	private static final long serialVersionUID = 3760423779101497679L;
 
 	public GenericJTAException(Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-122
 		super (e);
 	}
 

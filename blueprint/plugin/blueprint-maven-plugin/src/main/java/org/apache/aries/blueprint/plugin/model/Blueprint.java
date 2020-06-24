@@ -50,6 +50,7 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
 
     public Blueprint(BlueprintConfiguration blueprintConfiguration, Collection<Class<?>> beanClasses) {
         this.blueprintConfiguration = blueprintConfiguration;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1605
         initContext();
         parseBeans(beanClasses);
         resolveDependency();
@@ -68,6 +69,7 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
     }
 
     private void parseBean(Class<?> clazz) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         Bean bean = new Bean(clazz, this);
         beanRefStore.addBean(bean.toBeanRef());
         generatedBeans.add(bean);
@@ -108,6 +110,7 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
     }
 
     public List<BeanRef> getAllMatching(BeanTemplate template) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
         return beanRefStore.getAllMatching(template);
     }
 
@@ -131,12 +134,15 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
 
     @Override
     public BlueprintConfiguration getBlueprintConfiguration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         return blueprintConfiguration;
     }
 
     public void write(XMLStreamWriter writer) throws XMLStreamException {
         writeBlueprint(writer);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1737
         writeTypeConverters(writer);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1688
         writeBeans(writer);
         writeCustomWriters(writer);
         writer.writeEndElement();
@@ -165,6 +171,7 @@ public class Blueprint implements BlueprintRegistry, ContextEnricher, XmlWriter 
         writer.writeStartElement("blueprint");
         writer.writeDefaultNamespace(NS_BLUEPRINT);
         if (blueprintConfiguration.getDefaultActivation() != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1736
             writer.writeAttribute("default-activation", blueprintConfiguration.getDefaultActivation().toString());
         }
         if (blueprintConfiguration.getDefaultAvailability() != null) {

@@ -89,6 +89,7 @@ public class TradeConfig {
 	/*Trade SOAP specific parameters */
 	private static String SoapURL =
 		"http://localhost:8080/ariestrader/services/TradeWSServices";
+//IC see: https://issues.apache.org/jira/browse/ARIES-117
 
 	/*Trade XA Datasource specific parameters */
 	public static boolean JDBCDriverNeedsGlobalTransaction = false;
@@ -493,6 +494,7 @@ public class TradeConfig {
 			try {
 				for (int i = 0; i < runTimeModeNames.length; i++) {
 					if (value.equalsIgnoreCase(runTimeModeNames[i])) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
 						setRunTimeMode(ModeType.values()[i]);
 						break;
 					}
@@ -503,6 +505,7 @@ public class TradeConfig {
 						+ "trying to set runtimemode to "
 						+ value
 						+ "reverting to current value: "
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
 						+ runTimeModeNames[getRunTimeMode().ordinal()],
 					e);
 			} // If the value is bad, simply revert to current

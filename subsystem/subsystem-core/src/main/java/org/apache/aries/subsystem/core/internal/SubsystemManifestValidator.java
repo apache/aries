@@ -28,6 +28,7 @@ public class SubsystemManifestValidator {
 		if (subsystem.getResource().getId() == 0) {
 			return;
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		validatePreferredProviderHeader(manifest.getPreferredProviderHeader());
 		validateAriesProvisionDependenciesDirective(subsystem);
 		if (subsystem.isComposite()) {
@@ -41,6 +42,7 @@ public class SubsystemManifestValidator {
 				}
 			}
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		else if (subsystem.isFeature()) {
 			SubsystemTypeHeader subsystemTypeHeader = manifest.getSubsystemTypeHeader();
 			ProvisionPolicyDirective provisionPolicyDirective = subsystemTypeHeader.getProvisionPolicyDirective();
@@ -55,6 +57,7 @@ public class SubsystemManifestValidator {
 	
 	private static void validatePreferredProviderHeader(PreferredProviderHeader header) {
 		if (header == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return;
 		}
 		for (PreferredProviderHeader.Clause clause : header.getClauses()) {

@@ -83,6 +83,7 @@ public final class IntrospectionSupport {
     }
 
     @SuppressWarnings({
+//IC see: https://issues.apache.org/jira/browse/ARIES-1379
         "rawtypes", "unchecked"
     })
     private static Object convert(Object value, Class to) {

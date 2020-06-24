@@ -31,6 +31,7 @@ public interface ServiceModeller {
    * @return
    */
   public ParsedServiceElements modelServices(BundleManifest manifest, IDirectory bundle)
+//IC see: https://issues.apache.org/jira/browse/ARIES-716
     throws ModellerException;
   
 }

@@ -24,6 +24,7 @@ public class ProxyTestClassChildOfAbstract extends ProxyTestClassAbstract implem
 
   @Override
   public String getMessage() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     return "Working";
   }
 

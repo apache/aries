@@ -28,6 +28,7 @@ public interface RelationshipInfoProvider {
 	};
 
 	Collection<RelationshipInfo> getRelationships();
+//IC see: https://issues.apache.org/jira/browse/ARIES-319
 
 	public void registerRelationshipInfoListener(
 			RelationshipInfoListener listener);

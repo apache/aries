@@ -44,6 +44,7 @@ public class WeavingProxyTest extends AbstractProxyTest
 
     @Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1659
       return new Option[] //
       {
        proxyOptions()
@@ -58,6 +59,7 @@ public class WeavingProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalClass() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
     Bundle b = bundleContext.getBundle();
     TestCallable dispatcher = new TestCallable();
     TestCallable template = new TestCallable();
@@ -82,6 +84,7 @@ public class WeavingProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalMethods() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
     Bundle b = bundleContext.getBundle();
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
@@ -100,6 +103,7 @@ public class WeavingProxyTest extends AbstractProxyTest
   {
 
     bundleContext.registerService(ProxyWeavingController.class.getName(), new ProxyWeavingController() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
 
       public boolean shouldWeave(WovenClass arg0, WeavingHelper arg1)
       {
@@ -107,6 +111,7 @@ public class WeavingProxyTest extends AbstractProxyTest
       }
     }, null);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
     Bundle b = bundleContext.getBundle();
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();

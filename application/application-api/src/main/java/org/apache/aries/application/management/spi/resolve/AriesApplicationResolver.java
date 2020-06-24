@@ -64,6 +64,7 @@ public interface AriesApplicationResolver {
    */
   @Deprecated
   Set<BundleInfo> resolve (AriesApplication app, ResolveConstraint... constraints) throws ResolverException ;
+//IC see: https://issues.apache.org/jira/browse/ARIES-181
 
   /** 
    * Return the info for the requested bundle. This method is called when installing
@@ -75,6 +76,7 @@ public interface AriesApplicationResolver {
    * @param bundleVersion      the version of the bundle
    * @return the BundleInfo for the requested bundle, or null if none could be found.
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-162
   BundleInfo getBundleInfo(String bundleSymbolicName, Version bundleVersion);
   
   /**
@@ -90,6 +92,7 @@ public interface AriesApplicationResolver {
    * @return a collection of modelled resource required by this application.
    * @throws ResolverException
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   Collection<ModelledResource> resolve(String appName, String appVersion, Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException;
   
   /**
@@ -104,5 +107,6 @@ public interface AriesApplicationResolver {
    * @throws ResolverException
    */
   Collection<ModelledResource> resolveInIsolation(String appName, String appVersion, Collection<ModelledResource> byValueBundles, Collection<Content> inputs) throws ResolverException;
+//IC see: https://issues.apache.org/jira/browse/ARIES-740
 
 }

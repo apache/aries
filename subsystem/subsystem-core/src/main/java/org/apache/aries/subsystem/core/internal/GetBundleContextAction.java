@@ -33,7 +33,9 @@ public class GetBundleContextAction implements PrivilegedAction<BundleContext> {
 		if (EnumSet.of(State.INSTALL_FAILED, State.UNINSTALLED).contains(
 				subsystem.getState()))
 			return null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		BasicSubsystem subsystem = Utils.findScopedSubsystemInRegion(this.subsystem);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1225
 		Region region = subsystem.getRegion();
 		String bundleName = RegionContextBundleHelper.SYMBOLICNAME_PREFIX + subsystem.getSubsystemId();
 		Bundle bundle = region.getBundle(bundleName, RegionContextBundleHelper.VERSION);

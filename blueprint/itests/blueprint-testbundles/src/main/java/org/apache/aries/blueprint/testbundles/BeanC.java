@@ -31,6 +31,7 @@ public class BeanC implements BeanCItf {
 
     @PostConstruct
     public void start() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         this.initialized++;
     }
 

@@ -53,6 +53,7 @@ public class ServerSideClass {
 	private Map<ModelInfoService, RelationshipInfoProvider.RelationshipInfoListener> rlisteners = new HashMap<ModelInfoService, RelationshipInfoProvider.RelationshipInfoListener>();
 
 	private class ComponentInfoListenerImpl implements
+//IC see: https://issues.apache.org/jira/browse/ARIES-319
 			ComponentInfoProvider.ComponentInfoListener {
 		String server;
 
@@ -75,6 +76,7 @@ public class ServerSideClass {
 		}
 	}
 	private class RelationshipInfoListenerImpl implements
+//IC see: https://issues.apache.org/jira/browse/ARIES-319
 			RelationshipInfoProvider.RelationshipInfoListener {
 		String server;
 
@@ -139,6 +141,7 @@ public class ServerSideClass {
 			if (!(this.ModelInfoService == null)) {
 				// we already had a provider.. we need to shut down the existing
 				// components & relationships in the browsers..
+//IC see: https://issues.apache.org/jira/browse/ARIES-319
 				addFunctionCall("forgetAboutEverything");
 			}
 
@@ -171,6 +174,7 @@ public class ServerSideClass {
 					}
 
 					if (this.ModelInfoService != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-319
 						if (!rlisteners.containsKey(this.ModelInfoService)) {
 							RelationshipInfoProvider.RelationshipInfoListener rl = new RelationshipInfoListenerImpl(
 									this.modelInfoServiceHint);
@@ -201,6 +205,7 @@ public class ServerSideClass {
 
 				System.err.println("Adding Component .. " + b.getId());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-319
 				addFunctionCall("addComponent", b);
 			}
 		}

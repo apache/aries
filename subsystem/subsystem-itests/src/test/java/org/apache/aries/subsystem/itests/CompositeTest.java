@@ -38,10 +38,12 @@ public class CompositeTest extends SubsystemTest {
 	@Override
 	public void createApplications() throws Exception {
 		createBundleA();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		createBundleB();
 		createBundleC();
 		createBundleD();
 		createBundleE();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		createCompositeA();
 		createCompositeB();
 		createCompositeC();
@@ -49,6 +51,7 @@ public class CompositeTest extends SubsystemTest {
 	}
 	
 	private void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_A), version("1.0.0"), exportPackage(PACKAGE_X + ";version=1.0"));
 	}
 	
@@ -70,6 +73,7 @@ public class CompositeTest extends SubsystemTest {
 	}
 	
 	private static void createCompositeA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		createCompositeAManifest();
 		createSubsystem(COMPOSITE_A);
 	}
@@ -102,6 +106,7 @@ public class CompositeTest extends SubsystemTest {
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, COMPOSITE_B);
 		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
 		attributes.put(Constants.REQUIRE_BUNDLE, BUNDLE_A + "; bundle-version=\"[1.0, 2.0)\", does.not.exist; bundle-version=\"[1.0, 2.0)\"");
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		createManifest(COMPOSITE_B + ".mf", attributes);
 	}
 	
@@ -118,11 +123,13 @@ public class CompositeTest extends SubsystemTest {
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, COMPOSITE_D);
 		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
 		attributes.put(Constants.REQUIRE_CAPABILITY, "y; filter:=\"(y=test)\", does.not.exist; filter:=\"(a=b)\"");
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		createManifest(COMPOSITE_D + ".mf", attributes);
 	}
 	
 	@Test
 	public void testExportPackage() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Subsystem composite = installSubsystemFromFile(COMPOSITE_A);
 		try {
 			startSubsystem(composite);
@@ -141,6 +148,7 @@ public class CompositeTest extends SubsystemTest {
 			}
 		}
 		finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			stopSubsystemSilently(composite);
 			uninstallSubsystemSilently(composite);
 		}
@@ -161,6 +169,7 @@ public class CompositeTest extends SubsystemTest {
 				}
 			}
 			finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				uninstallSubsystemSilently(compositeC);
 			}
 		}
@@ -171,6 +180,7 @@ public class CompositeTest extends SubsystemTest {
 	
 	@Test
 	public void testRequireBundle() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Bundle bundleA = installBundleFromFile(BUNDLE_A);
 		try {
 			Subsystem compositeB = installSubsystemFromFile(COMPOSITE_B);
@@ -184,6 +194,7 @@ public class CompositeTest extends SubsystemTest {
 				}
 			}
 			finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				uninstallSubsystemSilently(compositeB);
 			}
 		}
@@ -195,6 +206,7 @@ public class CompositeTest extends SubsystemTest {
 	@Test
 	public void testRequireCapability() throws Exception {
 		Bundle bundleB = installBundleFromFile(BUNDLE_B);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		try {
 			Subsystem compositeD = installSubsystemFromFile(COMPOSITE_D);
 			try {
@@ -207,6 +219,7 @@ public class CompositeTest extends SubsystemTest {
 				}
 			}
 			finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				uninstallSubsystemSilently(compositeD);
 			}
 		}

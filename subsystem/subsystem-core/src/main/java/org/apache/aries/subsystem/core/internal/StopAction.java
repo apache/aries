@@ -44,6 +44,7 @@ public class StopAction extends AbstractAction {
 	@Override
 	public Object run() {
 		// Protect against re-entry now that cycles are supported.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 		if (!Activator.getInstance().getLockingStrategy().set(State.STOPPING, target)) {
 			return null;
 		}
@@ -68,6 +69,7 @@ public class StopAction extends AbstractAction {
 				}
 				// Acquire the global mutual exclusion lock while acquiring the
 				// state change locks of affected subsystems.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 				Activator.getInstance().getLockingStrategy().lock();
 				try {
 					// We are now protected against cycles.
@@ -104,6 +106,7 @@ public class StopAction extends AbstractAction {
 							stopResource(resource);
 						}
 						catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 							logger.error("An error occurred while stopping resource " + resource + " of subsystem " + target, e);
 						}
 					}
@@ -128,6 +131,7 @@ public class StopAction extends AbstractAction {
 				}
 				finally {
 					// Release the state change locks of affected subsystems.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 					Activator.getInstance().getLockingStrategy().unlock(subsystems);
 				}
 			}
@@ -144,17 +148,20 @@ public class StopAction extends AbstractAction {
 	}
 
 	private void stopBundleResource(Resource resource) throws BundleException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		if (target.isRoot())
 			return;
 		((BundleRevision)resource).getBundle().stop();
 	}
 
 	private void stopResource(Resource resource) throws BundleException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (Utils.getActiveUseCount(resource) > 0)
 			return;
 		String type = ResourceHelper.getTypeAttribute(resource);
 		if (SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type)
 				|| SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 				|| SubsystemConstants.SUBSYSTEM_TYPE_FEATURE.equals(type)) {
 			stopSubsystemResource(resource);
 		} else if (IdentityNamespace.TYPE_BUNDLE.equals(type)) {
@@ -184,6 +191,7 @@ public class StopAction extends AbstractAction {
     }
 
 	private void stopSubsystemResource(Resource resource) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		new StopAction(target, (BasicSubsystem)resource, !((BasicSubsystem)resource).isRoot()).run();
 	}
 }

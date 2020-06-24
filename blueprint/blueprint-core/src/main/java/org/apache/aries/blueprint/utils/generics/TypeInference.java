@@ -207,6 +207,7 @@ public class TypeInference {
             }
             methods.add(method);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1282
         methods = applyStaticHidingRules(methods);
         List<Executable<Method>> executables = new ArrayList<Executable<Method>>();
         for (Method method : methods) {
@@ -281,6 +282,7 @@ public class TypeInference {
             TypedObject arg = args.get(i);
             Type needed = parameterTypes[i];
             long sc;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1816
             if (arg.type == null || needed == arg.type) {
                 sc = COST_ASSIGN;
             } else if (allowCast && ClassUtil.getClass(needed).isAssignableFrom(ClassUtil.getClass(arg.type))) {

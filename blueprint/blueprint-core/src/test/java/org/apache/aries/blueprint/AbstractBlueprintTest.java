@@ -37,6 +37,7 @@ import org.xml.sax.SAXException;
 public abstract class AbstractBlueprintTest extends TestCase {
 
     protected ComponentDefinitionRegistryImpl parse(String name) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
         NamespaceHandlerSet handlers = new NamespaceHandlerSet() {
             public Set<URI> getNamespaces() {
                 return null;
@@ -58,6 +59,7 @@ public abstract class AbstractBlueprintTest extends TestCase {
             }
 
             public Schema getSchema(Map<String, String> locations) throws SAXException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
                 return null;
             }
 
@@ -75,6 +77,8 @@ public abstract class AbstractBlueprintTest extends TestCase {
     }
 
     protected ComponentDefinitionRegistryImpl parse(String name, NamespaceHandlerSet handlers) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-63
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         ComponentDefinitionRegistryImpl registry = new ComponentDefinitionRegistryImpl();
         Parser parser = new Parser();
         parser.parse(Collections.singletonList(getClass().getResource(name)));

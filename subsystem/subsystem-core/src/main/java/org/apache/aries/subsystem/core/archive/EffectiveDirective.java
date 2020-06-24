@@ -26,6 +26,7 @@ public class EffectiveDirective extends AbstractDirective {
 	public static final EffectiveDirective DEFAULT = RESOLVE;
 	
 	public static EffectiveDirective getInstance(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (VALUE_ACTIVE.equals(value))
 			return ACTIVE;
 		if (VALUE_RESOLVE.equals(value))

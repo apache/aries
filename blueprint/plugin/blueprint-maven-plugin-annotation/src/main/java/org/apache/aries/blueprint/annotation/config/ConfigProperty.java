@@ -30,5 +30,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ConfigProperty {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1628
     String value();
 }

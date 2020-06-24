@@ -81,11 +81,13 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void testBlueprintCompNamespaceWorks() throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         Bundle bBiz = context().getBundleByName("org.apache.aries.jndi.url.itest.biz");
         assertNotNull(bBiz);
 
         Bundle bweb = context().getBundleByName("org.apache.aries.jndi.url.itest.web");
         assertNotNull(bweb);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1195
         context().getBundleByName("org.ops4j.pax.web.pax-web-extender-war").start();
         printBundleStatus("Before making web request");
         try {
@@ -101,6 +103,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
     private void printBundleStatus(String msg) {
         System.out.println("-----\nprintBundleStatus: " + msg + "\n-----");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1195
         for (Bundle b : bundleContext.getBundles()) {
             System.out.println(b.getSymbolicName() + " " + "state=" + formatState(b.getState()));
         }
@@ -124,12 +127,14 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     }
 
     private String getTestServletResponse() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-527
         HttpURLConnection conn = makeConnection("http://localhost:8080/jndiUrlItest/ITestServlet");
         String response = getHTTPResponse(conn).trim();
         return response;
     }
 
     public Option baseOptions() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1195
         String localRepo = System.getProperty("maven.repo.local");
         if (localRepo == null) {
             localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");

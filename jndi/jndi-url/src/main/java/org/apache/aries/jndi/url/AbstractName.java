@@ -61,6 +61,7 @@ public abstract class AbstractName extends CompositeName {
         String part0 = get(0);
         int index = part0.indexOf(':');
         if (index > 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
             return part0.substring(0, index);
         } else {
             return null;

@@ -52,6 +52,7 @@ public class Connector implements Counter {
     }
     
     public Connection getConn() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         return conn;
     }
 
@@ -71,6 +72,7 @@ public class Connector implements Counter {
             stmt.executeUpdate(sql);
             conn.commit();
         } catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
             throw new RuntimeException(e.getMessage(), e); // NOSONAR
         } finally {
             safeClose(stmt);
@@ -88,6 +90,7 @@ public class Connector implements Counter {
             rs.last();
             count = rs.getRow();
         } catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
             throw new RuntimeException(e.getMessage(), e); // NOSONAR
         }
         finally {
@@ -125,6 +128,7 @@ public class Connector implements Counter {
             try {
                 conn.close();
             } catch (SQLException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
                 throw new IllegalStateException(e);
             }
         }

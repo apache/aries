@@ -55,6 +55,7 @@ class JmxWhiteboardSupport {
 
         // register all mbeans with the new server
         for (MBeanHolder mbean : mbeans.values()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1766
             mbean.register(mbeanServer, null);
         }
     }
@@ -80,6 +81,7 @@ class JmxWhiteboardSupport {
 
         ObjectName objectName = getObjectName(props);
         if (objectName != null || mbean instanceof MBeanRegistration) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1766
             MBeanHolder holder = createMBeanHolder(mbean, objectName);
             if (holder != null) {
                 MBeanServer[] mbeanServers = this.mbeanServers;
@@ -100,6 +102,7 @@ class JmxWhiteboardSupport {
         }
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1766
     MBeanHolder createMBeanHolder(Object mbean, ObjectName objectName) {
         return MBeanHolder.create(mbean, objectName);
     }
@@ -135,6 +138,7 @@ class JmxWhiteboardSupport {
     }
 
     private static String[] getStringPlusProperty(ServiceReference<?> ref, String propertyName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1766
         final String[] res;
         Object prop = ref.getProperty(propertyName);
         if (prop == null) {

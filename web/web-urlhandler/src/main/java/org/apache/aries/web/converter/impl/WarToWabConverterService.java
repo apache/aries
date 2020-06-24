@@ -27,6 +27,7 @@ import org.apache.aries.web.converter.WarToWabConverter;
 public class WarToWabConverterService implements WarToWabConverter {
 
   public WabConversion convert(InputStreamProvider input, String name, Properties properties) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-344
     return new WarToWabConverterImpl(input, name, properties);
   }
 

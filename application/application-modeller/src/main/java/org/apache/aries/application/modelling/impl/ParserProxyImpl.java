@@ -39,6 +39,7 @@ public class ParserProxyImpl extends AbstractParserProxy {
 
   @Override
   protected ComponentDefinitionRegistry parseCDR(List<URL> blueprintsToParse) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
 	  return _parserService.parse(blueprintsToParse, _bundleContext.getBundle());
   }
 

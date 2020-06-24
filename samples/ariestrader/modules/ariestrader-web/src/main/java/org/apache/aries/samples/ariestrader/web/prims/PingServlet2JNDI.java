@@ -62,6 +62,7 @@ public class PingServlet2JNDI extends HttpServlet
 			{
 
 			int iter = TradeConfig.getPrimIterations();
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
 			for (int ii = 0; ii < iter; ii++) {
                             DataSource dataSource = (DataSource) ServiceUtilities.getOSGIService(DataSource.class.getName(),TradeConfig.OSGI_DS_NAME_FILTER);
 			}			

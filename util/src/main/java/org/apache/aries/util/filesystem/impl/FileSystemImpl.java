@@ -43,12 +43,14 @@ public class FileSystemImpl {
 	public static IDirectory getFSRoot(File fs, IDirectory parent)
 	{
 		IDirectory dir = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-562
 
 		if (fs.exists()) {
 			if (fs.isDirectory()) {
 				dir = new DirectoryImpl(fs, fs);
 			} else if (fs.isFile() && isValidZip(fs)) {
 				try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 					dir = new ZipDirectory(fs, parent);
 				} catch (IOException e) {
 					throw new IORuntimeException("IOException in IDirectory.getFSRoot", e);
@@ -95,6 +97,7 @@ public class FileSystemImpl {
 	}
 
   public static ICloseableDirectory getFSRoot(InputStream is) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-715
     File tempFile = null;
     try {
       tempFile = File.createTempFile("inputStreamExtract", ".zip");

@@ -40,6 +40,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put(Constants.SERVICE_PID, "org.apache.aries.jmx.test.ServiceB");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         context.registerService(InterfaceB.class.getName(), new B(), props);
         Dictionary<String, Object> fprops = new Hashtable<String, Object>();
         fprops.put(Constants.SERVICE_PID, "jmx.test.B.factory");

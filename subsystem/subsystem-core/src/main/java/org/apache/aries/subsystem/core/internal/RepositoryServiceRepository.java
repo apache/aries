@@ -31,8 +31,10 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public class RepositoryServiceRepository implements org.apache.aries.subsystem.core.repository.Repository {
     final BundleContext context;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1339
 
 	public RepositoryServiceRepository() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(Activator.getInstance().getBundleContext());
 	}
 
@@ -62,6 +64,7 @@ public class RepositoryServiceRepository implements org.apache.aries.subsystem.c
 
 				Class<?> clazz = repository.getClass();
 				Class<?> repoInterface = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1339
 
 				while (clazz != null && repoInterface == null) {
 				    for (Class<?> intf : clazz.getInterfaces()) {

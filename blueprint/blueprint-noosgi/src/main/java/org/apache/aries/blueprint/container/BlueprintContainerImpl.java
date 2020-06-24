@@ -79,6 +79,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     private NamespaceHandlerSet nsHandlerSet;
     
     public BlueprintContainerImpl(ClassLoader loader, List<URL> resources) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
         this(loader, resources, null, true);
     }
 
@@ -87,6 +88,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     }
 
     public BlueprintContainerImpl(ClassLoader loader, List<URL> resources, Map<String, String> properties, boolean init) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1300
         this(loader, resources, properties, null, init);
     }
     public BlueprintContainerImpl(ClassLoader loader, List<URL> resources, Map<String, String> properties, 
@@ -109,6 +111,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     }
 
     protected NamespaceHandlerSet createNamespaceHandlerSet(Set<URI> namespaces) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1300
         NamespaceHandlerSet handlerSet = createNamespaceHandlerSet();
         // Check namespaces
         Set<URI> unsupported = new LinkedHashSet<URI>();
@@ -120,10 +123,12 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
         if (unsupported.size() > 0) {
             throw new IllegalArgumentException("Unsupported namespaces: " + unsupported.toString());
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1055
         return handlerSet;
     }
 
     protected NamespaceHandlerSet createNamespaceHandlerSet() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1300
         return nsHandlerSet == null ? new SimpleNamespaceHandlerSet() : nsHandlerSet;
     } 
     
@@ -139,6 +144,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
         // Create handler set
         NamespaceHandlerSet handlerSet = createNamespaceHandlerSet(namespaces);
         // Add predefined beans
+//IC see: https://issues.apache.org/jira/browse/ARIES-998
         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
         if (validate) {
             // Validate
@@ -172,6 +178,7 @@ public class BlueprintContainerImpl implements ExtendedBlueprintContainer {
     }
 
     public URL getResource(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-998
         return loader.getResource(name);
     }
 

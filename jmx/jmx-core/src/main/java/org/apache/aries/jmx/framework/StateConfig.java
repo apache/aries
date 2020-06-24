@@ -46,6 +46,7 @@ public class StateConfig implements ManagedService {
     private volatile boolean serviceChangeNotificationEnabled = DEFAULT_SERVICE_CHANGE_NOTIFICATION_ENABLED;
     private volatile boolean bundleChangeNotificationEnabled = DEFAULT_BUNDLE_CHANGE_NOTIFICATION_ENABLED;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
     void setAttributeChangeNotificationEnabled(boolean attributeChangeNotificationEnabled) {
         this.attributeChangeNotificationEnabled = attributeChangeNotificationEnabled;
     }
@@ -78,6 +79,7 @@ public class StateConfig implements ManagedService {
     public void updated(Dictionary<String, ?> dictionary) throws ConfigurationException {
         attributeChangeNotificationEnabled = getBoolean(dictionary, ATTRIBUTE_CHANGE_NOTIFICATION_ENABLED,
                 DEFAULT_ATTRIBUTE_CHANGE_NOTIFICATION_ENABLED);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
         serviceChangeNotificationEnabled = getBoolean(dictionary, SERVICE_CHANGE_NOTIFICATION_ENABLED,
                 DEFAULT_SERVICE_CHANGE_NOTIFICATION_ENABLED);
         bundleChangeNotificationEnabled = getBoolean(dictionary, BUNDLE_CHANGE_NOTIFICATION_ENABLED,
@@ -99,6 +101,7 @@ public class StateConfig implements ManagedService {
      * @return <code>true</code> if OSGi service change notifications are enabled
      */
     public boolean isServiceChangeNotificationEnabled() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
         return serviceChangeNotificationEnabled;
     }
 

@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.core.archive;
 
 public class GenericClause extends AbstractClause {
 	public GenericClause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
         super(
         		parsePath(clause, Patterns.PATHS, false), 
         		parseParameters(clause, false), 

@@ -39,6 +39,7 @@ public interface BundleFrameworkManager
    * the underlying OSGi frameworks should be sure to hold this lock.
    */
   Object SHARED_FRAMEWORK_LOCK = new Object();
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
 
   /**
    * Gets the BundleFramework object associated with the given bundle
@@ -86,6 +87,7 @@ public interface BundleFrameworkManager
   }
   
   public void updateBundles(
+//IC see: https://issues.apache.org/jira/browse/ARIES-399
       DeploymentMetadata newMetadata, 
       DeploymentMetadata oldMetadata, 
       AriesApplication app, 

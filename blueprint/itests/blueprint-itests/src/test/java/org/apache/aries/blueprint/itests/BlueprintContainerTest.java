@@ -29,6 +29,7 @@ public class BlueprintContainerTest extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void test() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1218
     	applyCommonConfiguration(context());
         Bundle bundle = context().getBundleByName("org.apache.aries.blueprint.sample");
         assertNotNull(bundle);
@@ -40,6 +41,7 @@ public class BlueprintContainerTest extends AbstractBlueprintIntegrationTest {
 
     @org.ops4j.pax.exam.Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),

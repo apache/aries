@@ -43,6 +43,7 @@ public interface BeanProcessor extends Processor {
          * that the original Bean had been. 
          * @return new instance of bean.
          */
+//IC see: https://issues.apache.org/jira/browse/ARIES-27
         Object getBean();
     }    
     

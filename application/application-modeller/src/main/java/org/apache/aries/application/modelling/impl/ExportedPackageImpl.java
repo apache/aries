@@ -154,6 +154,7 @@ public class ExportedPackageImpl implements ExportedPackage
   
 	@Override
 	public boolean equals(Object thing) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-545
 		if (thing == this) {
 			return true;
 		} else {

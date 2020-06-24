@@ -378,6 +378,7 @@ public class ManifestHeaderProcessor
    *         with its associated Value being a NameValueMap of any attributes declared.
    */
   public static Map<String, Map<String, String>> parseImportString(String s){
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     NameValueMap retval = new NameValueMap();
     genericImportExportProcess(retval, s);
     return retval;
@@ -494,6 +495,7 @@ public class ManifestHeaderProcessor
    * @throws IllegalArgumentException if the String could not be parsed as a VersionRange
    */
   public static VersionRange parseVersionRange(String s) throws IllegalArgumentException{
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     return new VersionRange(s);
   }
 
@@ -506,6 +508,7 @@ public class ManifestHeaderProcessor
    * @throws IllegalArgumentException if the String could not be parsed as a VersionRange
    */
   public static VersionRange parseVersionRange(String s, boolean exactVersion) throws IllegalArgumentException{
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     return new VersionRange(s, exactVersion);
   }
 
@@ -521,6 +524,7 @@ public class ManifestHeaderProcessor
 	 * @return filter string
 	 */
 	public static String generateFilter(Map<String, String> attribs) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-239
 		StringBuilder filter = new StringBuilder("(&");
 		boolean realAttrib = false;
 		StringBuffer realAttribs = new StringBuffer();
@@ -564,6 +568,7 @@ public class ManifestHeaderProcessor
 				}
 				filter.append(")");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-191
 			} else if (NESTED_FILTER_ATTRIBUTE.equals(attribName)) {
 				// Filters go in whole, no formatting needed
 				realAttrib = true;
@@ -712,6 +717,7 @@ public class ManifestHeaderProcessor
           else
             throw new IllegalArgumentException();
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-239
       } else if (Constants.BUNDLE_VERSION_ATTRIBUTE.equals(attr)) {
         // bundle-version is like version, but may be specified at the
         // same time
@@ -734,6 +740,7 @@ public class ManifestHeaderProcessor
     if (lowerVersion != null) {
       StringBuilder versionAttr = new StringBuilder(lowerVersion);
       if (upperVersion != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-239
         versionAttr.append(",").append(upperVersion).insert(0,
             negatedVersions.contains(lowerVersion) ? '(' : '[').append(
             negatedVersions.contains(upperVersion) ? ')' : ']');

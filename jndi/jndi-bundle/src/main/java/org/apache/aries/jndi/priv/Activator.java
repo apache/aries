@@ -28,6 +28,7 @@ public class Activator implements BundleActivator {
     public Activator() {
         this.activators = new BundleActivator[]{
                 new org.apache.aries.jndi.startup.Activator(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-517
                 new org.apache.aries.jndi.url.Activator()
 		//                new org.apache.aries.jndi.rmi.Activator()
         };

@@ -50,6 +50,7 @@ public class ResolverException extends Exception {
   
   public void setUnsatisfiedRequirements (List<String> reqts) { 
     // Assume the type is unknown if we don't get told it
+//IC see: https://issues.apache.org/jira/browse/ARIES-557
     for (String reqt : reqts)
     {
       _unsatisfiedRequirementMessages.put(reqt, ModellingConstants.OBR_UNKNOWN);

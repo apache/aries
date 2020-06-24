@@ -38,10 +38,12 @@ public class Utils {
 	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 	
 	public static String computeCoordinationName(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1050
 		return subsystem.getSymbolicName() + '-' + subsystem.getSubsystemId();
 	}
 	
 	public static Coordination createCoordination() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		return Activator.getInstance().getCoordinator().begin(BasicSubsystem.ROOT_SYMBOLIC_NAME + "-0", 0);
 	}
 	
@@ -81,6 +83,7 @@ public class Utils {
 	}
 	
 	public static BasicSubsystem findScopedSubsystemInRegion(BasicSubsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		while (!subsystem.isScoped())
 			subsystem = (BasicSubsystem)subsystem.getParents().iterator().next();
 		return subsystem;
@@ -88,6 +91,7 @@ public class Utils {
 
 	public static int getActiveUseCount(Resource resource) {
 		int result = 0;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1441
 		for (BasicSubsystem subsystem : Activator.getInstance().getSubsystems().getSubsystemsReferencing(resource)) {
 			if (	// ACTIVE subsystem referencing the resource.
 					Subsystem.State.ACTIVE.equals(subsystem.getState())
@@ -108,6 +112,7 @@ public class Utils {
 	}
 	
 	public static void handleTrowable(Throwable t) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1445
 		if (t instanceof SubsystemException) {
 			throw (SubsystemException)t;
 		}
@@ -120,6 +125,7 @@ public class Utils {
 	public static void installResource(Resource resource, BasicSubsystem subsystem) {
 		Coordination coordination = Utils.createCoordination(subsystem);
 		try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			ResourceInstaller.newInstance(coordination, resource, subsystem).install();
 		}
 		catch (Throwable t) {
@@ -140,12 +146,14 @@ public class Utils {
 	}
 	
 	public static boolean isBundle(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		String type = ResourceHelper.getTypeAttribute(resource);
 		return IdentityNamespace.TYPE_BUNDLE.equals(type) ||
 				IdentityNamespace.TYPE_FRAGMENT.equals(type);
 	}
 	
 	public static boolean isFragment(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1445
 		String type = ResourceHelper.getTypeAttribute(resource);
 		return IdentityNamespace.TYPE_FRAGMENT.equals(type);
 	}
@@ -170,6 +178,7 @@ public class Utils {
 	 * therefore, uses the Subsystem-Content header from the subsystem manifest.
 	 */
 	public static boolean isContent(BasicSubsystem subsystem, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		SubsystemManifest subsystemManifest = subsystem.getSubsystemManifest();
 		if (subsystemManifest == null)
 			return false;
@@ -199,10 +208,13 @@ public class Utils {
 	}
 	
 	public static boolean isSharedResource(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 		return resource instanceof BasicSubsystem || resource instanceof BundleRevision || resource instanceof BundleRevisionResource;
 	}
 	
 	public static boolean isSubsystem(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		String type = ResourceHelper.getTypeAttribute(resource);
 		return SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION.equals(type) ||
 				SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE.equals(type) ||

@@ -41,6 +41,7 @@ public class JarCreator
   }
 
   private static void createJar(String version) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
     createJarFromFile("../subsystem-example/subsystem-helloIsolation/target/org.apache.aries.subsystem.example.helloIsolation-0.4-SNAPSHOT.jar", version);
     createJarFromFile("../subsystem-example/subsystem-helloIsolationRef/target/org.apache.aries.subsystem.example.helloIsolationRef-0.4-SNAPSHOT.jar", version);
   }

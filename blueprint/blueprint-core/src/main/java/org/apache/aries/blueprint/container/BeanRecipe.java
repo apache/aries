@@ -64,6 +64,9 @@ import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
 public class BeanRecipe extends AbstractRecipe {
 
     static class UnwrapperedBeanHolder {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
+//IC see: https://issues.apache.org/jira/browse/ARIES-1353
         final Object unwrapperedBean;
         final BeanRecipe recipe;
 
@@ -82,6 +85,7 @@ public class BeanRecipe extends AbstractRecipe {
         private final ThreadLocal<Object> deadlockDetector = new ThreadLocal<Object>();
         
         public void voidReference() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-765
             ref.set(null);
         }
 
@@ -141,6 +145,7 @@ public class BeanRecipe extends AbstractRecipe {
         super(name);
         this.blueprintContainer = blueprintContainer;
         this.type = type;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         this.allowFieldInjection = allowFieldInjection;
         this.allowRawConversion = allowRawConversion;
         this.allowNonStandardSetters = allowNonStandardSetters;
@@ -276,6 +281,7 @@ public class BeanRecipe extends AbstractRecipe {
         }
         
         if (factory != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1353
             return getInstanceFromFactory(args, argTypes);
         } else if (factoryMethod != null) {
             return getInstanceFromStaticFactory(args, argTypes);
@@ -298,6 +304,7 @@ public class BeanRecipe extends AbstractRecipe {
                 throw wrapAsCompDefEx(e);
             }
         } else if (matches.size() == 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
             throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + factoryObj.getClass().getName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName());
         } else {
             throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + factoryObj.getClass().getName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName() + ": " + matches.keySet());
@@ -309,12 +316,15 @@ public class BeanRecipe extends AbstractRecipe {
         Object factoryObj = factory.create();
         
         // If the factory is a service reference, we need to get hold of the actual proxy for the service
+//IC see: https://issues.apache.org/jira/browse/ARIES-56
         if (factoryObj instanceof ReferenceRecipe.ServiceProxyWrapper) {
             try {
                 factoryObj = ((ReferenceRecipe.ServiceProxyWrapper) factoryObj).convert(new ReifiedType(Object.class));
             } catch (Exception e) {
                 throw wrapAsCompDefEx(e);
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         } else if (factoryObj instanceof UnwrapperedBeanHolder) {
             factoryObj = wrap((UnwrapperedBeanHolder) factoryObj, Object.class);
         }
@@ -332,6 +342,7 @@ public class BeanRecipe extends AbstractRecipe {
                 throw wrapAsCompDefEx(e);
             }
         } else if (matches.size() == 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
             throw new ComponentDefinitionException("Unable to find a matching factory method " + factoryMethod + " on class " + getTypeName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName());
         } else {
             throw new ComponentDefinitionException("Multiple matching factory methods " + factoryMethod + " found on class " + getTypeName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName() + ": " + matches.keySet());
@@ -343,6 +354,7 @@ public class BeanRecipe extends AbstractRecipe {
             throw new ComponentDefinitionException("No factoryMethod nor class is defined for this bean");
         }
         // Map of matching constructors
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
         Map<Constructor<?>, List<Object>> matches = findMatchingConstructors(getType(), args, argTypes);
         if (matches.size() == 1) {
             try {
@@ -352,6 +364,7 @@ public class BeanRecipe extends AbstractRecipe {
                 throw wrapAsCompDefEx(e);
             }
         } else if (matches.size() == 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
             throw new ComponentDefinitionException("Unable to find a matching constructor on class " + getTypeName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName());
         } else {
             throw new ComponentDefinitionException("Multiple matching constructors found on class " + getTypeName() + " for arguments " + argsToString(args) + " when instanciating bean " + getName() + ": " + matches.keySet());
@@ -368,6 +381,7 @@ public class BeanRecipe extends AbstractRecipe {
     }
 
     private Map<Constructor<?>, List<Object>> findMatchingConstructors(Class type, List<Object> args, List<ReifiedType> types) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
         List<TypeInference.TypedObject> targs = getTypedObjects(args, types);
         TypeInference.Converter cnv = new TIConverter();
         List<TypeInference.Match<Constructor<?>>> m = TypeInference.findMatchingConstructors(type, targs, cnv, reorderArguments);
@@ -421,7 +435,9 @@ public class BeanRecipe extends AbstractRecipe {
     }
 
     protected Object convert(Object obj, Type from, Type to) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         if (allowRawConversion
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
                 && (from instanceof ParameterizedType || to instanceof ParameterizedType)
                 && GenericType.getConcreteClass(from) == GenericType.getConcreteClass(to)) {
             boolean assignable = true;
@@ -509,6 +525,7 @@ public class BeanRecipe extends AbstractRecipe {
      */
     public Method getDestroyMethod(Object instance) throws ComponentDefinitionException {
         Method method = null;        
+//IC see: https://issues.apache.org/jira/browse/ARIES-721
         if (instance != null && destroyMethod != null && destroyMethod.length() > 0) {
             method = ReflectionUtils.getLifecycleMethod(instance.getClass(), destroyMethod);
             if (method == null) {
@@ -534,6 +551,7 @@ public class BeanRecipe extends AbstractRecipe {
         public BeanCreatorChain(BeanProcessor.BeanCreator parentBeanCreator, 
                                 BeanProcessor parentBeanProcessor,
                                 BeanMetadata beanData,
+//IC see: https://issues.apache.org/jira/browse/ARIES-44
                                 String beanName,
                                 ChainType when) {
             this.parentBeanCreator = parentBeanCreator;
@@ -559,6 +577,7 @@ public class BeanRecipe extends AbstractRecipe {
     }
     
     private Object runBeanProcPreInit(Object obj) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-27
         String beanName = getName();
         BeanMetadata beanData = (BeanMetadata) blueprintContainer
           .getComponentDefinitionRegistry().getComponentDefinition(beanName);        
@@ -588,6 +607,7 @@ public class BeanRecipe extends AbstractRecipe {
         // call init method
         if (initMethod != null) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
                 invoke(initMethod, obj, (Object[]) null);
             } catch (Throwable t) {
                 throw new ComponentDefinitionException("Unable to initialize bean " + getName(), getRealCause(t));
@@ -635,18 +655,22 @@ public class BeanRecipe extends AbstractRecipe {
 
         ComponentDefinitionRegistry reg = blueprintContainer
                 .getComponentDefinitionRegistry();
+//IC see: https://issues.apache.org/jira/browse/ARIES-322
         List<Interceptor> interceptors = reg.getInterceptors(interceptorLookupKey);
         if (interceptors != null && interceptors.size() > 0) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-526
                 Bundle b = FrameworkUtil.getBundle(original.getClass());
                 if (b == null) {
                     // we have a class from the framework parent, so use our bundle for proxying.
                     b = blueprintContainer.getBundleContext().getBundle();
                 }
                 intercepted = blueprintContainer.getProxyManager().createInterceptingProxy(b,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1319
                         requiredInterfaces, original, CollaboratorFactory.create(interceptorLookupKey, interceptors));
             } catch (org.apache.aries.proxy.UnableToProxyException e) {
                 Bundle b = blueprintContainer.getBundleContext().getBundle();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
                 throw new ComponentDefinitionException("Unable to create proxy for bean " + name + " in bundle " + b.getSymbolicName() + "/" + b.getVersion(), e);
             }
         } else {
@@ -657,12 +681,15 @@ public class BeanRecipe extends AbstractRecipe {
         
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-765
         if (factory instanceof ReferenceRecipe) {
             ReferenceRecipe rr = (ReferenceRecipe) factory;
             if (rr.getProxyChildBeanClasses() != null) {
                 return createProxyBean(rr);
             }
         } 
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         return new UnwrapperedBeanHolder(internalCreate2(), this);
     }
     
@@ -698,6 +725,7 @@ public class BeanRecipe extends AbstractRecipe {
         // inject properties
         setProperties(obj);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-44
         obj = runBeanProcPreInit(obj);
         
         runBeanProcInit(initMethod, obj);
@@ -711,6 +739,8 @@ public class BeanRecipe extends AbstractRecipe {
     }
     
     static Object wrap(UnwrapperedBeanHolder holder, Collection<Class<?>> requiredViews) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         return holder.recipe.addInterceptors(holder.unwrapperedBean, requiredViews);
     }
     
@@ -726,6 +756,7 @@ public class BeanRecipe extends AbstractRecipe {
     
     @Override
     public void destroy(Object obj) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-847
         if (!(obj instanceof UnwrapperedBeanHolder)) {
             LOGGER.warn("Object to be destroyed is not an instance of UnwrapperedBeanHolder, type: " + obj);
             return;
@@ -739,6 +770,7 @@ public class BeanRecipe extends AbstractRecipe {
         try {
             Method method = getDestroyMethod(obj);
             if (method != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
                 invoke(method, obj, (Object[]) null);
             }
         } catch (ComponentDefinitionException e) {
@@ -748,6 +780,7 @@ public class BeanRecipe extends AbstractRecipe {
             Throwable t = ite.getTargetException();
             BundleContext ctx = blueprintContainer.getBundleContext();
             Bundle b = ctx.getBundle();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
             LOGGER.error("The blueprint bean {} in bundle {}/{} incorrectly threw an exception from its destroy method.", getName(), b.getSymbolicName(), b.getVersion(), t);
         } catch (Exception e) {
             BundleContext ctx = blueprintContainer.getBundleContext();
@@ -792,6 +825,7 @@ public class BeanRecipe extends AbstractRecipe {
             PropertyDescriptor pd = getPropertyDescriptor(clazz, names[i]);
             if (pd.allowsGet()) {
                 try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
                     instance = pd.get(instance, blueprintContainer);
                 } catch (Exception e) {
                     throw new ComponentDefinitionException("Error getting property: " + names[i] + " on bean " + getName() + " when setting property " + propertyName + " on class " + clazz.getName(), getRealCause(e));
@@ -813,6 +847,8 @@ public class BeanRecipe extends AbstractRecipe {
         final PropertyDescriptor pd = getPropertyDescriptor(clazz, names[names.length - 1]);
         if (pd.allowsSet()) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
+//IC see: https://issues.apache.org/jira/browse/ARIES-1793
                 pd.set(instance, propertyValue, blueprintContainer);
             } catch (Exception e) {
                 throw new ComponentDefinitionException("Error setting property: " + pd, getRealCause(e));
@@ -823,6 +859,7 @@ public class BeanRecipe extends AbstractRecipe {
     }
 
     private ReflectionUtils.PropertyDescriptor getPropertyDescriptor(Class<?> clazz, String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         for (ReflectionUtils.PropertyDescriptor pd : ReflectionUtils.getPropertyDescriptors(clazz, allowFieldInjection, allowNonStandardSetters)) {
             if (pd.getName().equals(name)) {
                 return pd;
@@ -840,6 +877,7 @@ public class BeanRecipe extends AbstractRecipe {
     }
 
     private String argsToString(List<Object> args) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
         Iterator<Object> it = args.iterator();
         if (!it.hasNext())
             return "[]";
@@ -883,6 +921,7 @@ public class BeanRecipe extends AbstractRecipe {
             List<Object> list = new ArrayList<Object>();
             for (TypeEntry entry : entries) {
                 if (entry.argument == UNMATCHED) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
                     throw new RuntimeException("There are unmatched generics");
                 } else {
                     list.add(entry.argument);
@@ -916,6 +955,8 @@ public class BeanRecipe extends AbstractRecipe {
                     if (convert) {
                         
                         if (canConvert(arg, entry.type)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
                             try {
                                 val = convert(arg, entry.type);
                             } catch (Exception e) {

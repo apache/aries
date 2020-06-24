@@ -53,6 +53,7 @@ public interface ComponentInfoProvider {
 	 * @return
 	 */
 	Collection<ComponentInfo> getComponents();
+//IC see: https://issues.apache.org/jira/browse/ARIES-319
 
 	/**
 	 * Gets a component for an id previously returned via getComponents, or

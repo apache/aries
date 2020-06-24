@@ -43,6 +43,7 @@ public class ClientWeavingHook implements WeavingHook {
     ClientWeavingHook(BundleContext context, DynamicWeavingActivator dwActivator) {
         activator = dwActivator;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1814
         addedImport = Util.class.getPackage().getName();
     }
 
@@ -52,6 +53,7 @@ public class ClientWeavingHook implements WeavingHook {
         Set<WeavingData> wd = activator.getWeavingData(consumerBundle);
         if (wd != null) {
             activator.log(Level.FINE, "Weaving class " + wovenClass.getClassName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
 
             ClassReader cr = new ClassReader(wovenClass.getBytes());
             ClassWriter cw = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES,
@@ -62,6 +64,7 @@ public class ClientWeavingHook implements WeavingHook {
                 wovenClass.setBytes(cw.toByteArray());
                 if (tsv.additionalImportRequired())
                     wovenClass.getDynamicImports().add(addedImport);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
                 if (activator.isLogEnabled(Level.FINEST)) {
                     StringWriter stringWriter = new StringWriter();
                     ClassReader reader = new ClassReader(wovenClass.getBytes());

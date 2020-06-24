@@ -31,6 +31,7 @@ public abstract class Manifest {
 	protected final java.util.jar.Manifest manifest;
 	
 	public Manifest(InputStream in) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-737
 		this(ManifestProcessor.parseManifest(in));
 	}
 	
@@ -70,6 +71,7 @@ public abstract class Manifest {
 	
 	@Override
 	public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		StringBuilder sb = new StringBuilder();
 		sb.append('[').append(getClass().getName()).append(": ");
 		if (!headers.values().isEmpty()) {

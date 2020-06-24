@@ -36,6 +36,7 @@ public class ManagementException extends Exception {
   
   public ManagementException(String s, Exception e)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
     super(s, e);
   }
 }

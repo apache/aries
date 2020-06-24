@@ -187,6 +187,7 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   @SuppressWarnings("unchecked")
   @Test
   public void testPackageAccessCtor() throws Exception  {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1492
       Class<ProxyTestClassPackageAccessCtor> proxyClass = 
               (Class<ProxyTestClassPackageAccessCtor>) ProxySubclassGenerator.getProxySubclass(ProxyTestClassPackageAccessCtor.class);
       ProxyTestClassPackageAccessCtor proxy = (ProxyTestClassPackageAccessCtor) getProxyInstance(proxyClass); 
@@ -238,6 +239,7 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   @Test
   public void testCovariant() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     ((FakeInvocationHandler)ih).setDelegate(COVARIANT_CLASS.newInstance());
     o = ProxySubclassGenerator.newProxySubclassInstance(COVARIANT_CLASS, ih);
     generatedProxySubclass = o.getClass();
@@ -288,6 +290,7 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
       parents = parent != null ? Collections.singletonList(parent) : Collections.<ClassLoader>emptyList();
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1217
     final Map<String, Object> clLocks = new HashMap<String, Object>();
     protected synchronized Object getClassLoadingLock (String name) {
     	if (!clLocks.containsKey(name)) { 
@@ -348,6 +351,7 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
   
   private Class<?> getGeneratedSubclass() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     return getProxyClass(getTestClass());
   }
 
@@ -362,8 +366,10 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
      */
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       try {
       Object result = (delegate instanceof Callable) ? 
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
           method.invoke(((Callable<?>)delegate).call(), args) : 
           method.invoke(delegate, args) ;
       return result;
@@ -380,11 +386,13 @@ public class ProxySubclassGeneratorTest extends AbstractProxyTest
 
   @Override
   protected Object getProxyInstance(Class<?> proxyClass) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     return getProxyInstance(proxyClass, ih);
   }
   
   private Object getProxyInstance(Class<?> proxyClass, InvocationHandler ih) {
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       if(proxyClass.equals(ProxyTestClassChildOfAbstract.class))
         return proxyClass.newInstance();
       

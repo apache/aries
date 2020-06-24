@@ -63,6 +63,7 @@ public class ParsedEJBServices implements ParsedServiceElements, EJBRegistry {
       return;
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-837
     if(names.size() == 1 && "".equals(names.iterator().next())) {
         all = true;
         return;
@@ -73,6 +74,7 @@ public class ParsedEJBServices implements ParsedServiceElements, EJBRegistry {
   
   public void addEJBView(String ejbName, String ejbType, String interfaceName,
       boolean remote) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     if(ejbType.equalsIgnoreCase("Stateful"))
       return;
     

@@ -73,6 +73,7 @@ public interface ParserContext  {
      * Generate a unique id following the same scheme that the blueprint container
      * uses internally
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
     String generateId();
     
     /**
@@ -94,10 +95,12 @@ public interface ParserContext  {
      * Retrieve the set of namespaces
      */
     Set<URI> getNamespaces();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1770
 
     /**
      * Retrieve the namespace handler for the given uri
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
     NamespaceHandler getNamespaceHandler(URI namespaceUri);
 }
 

@@ -45,12 +45,14 @@ public class HelloworldSampleTest extends AbstractIntegrationTest {
         Bundle bapi = getInstalledBundle("org.apache.aries.samples.blueprint.helloworld.api");
         assertNotNull(bapi);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-664
         failInBundleNotActiveInFiveSeconds(bapi);
         assertEquals(Bundle.ACTIVE, bapi.getState());
 
         Bundle bcli = getInstalledBundle("org.apache.aries.samples.blueprint.helloworld.client");
         assertNotNull(bcli);
         failInBundleNotActiveInFiveSeconds(bcli);
+//IC see: https://issues.apache.org/jira/browse/ARIES-919
 
         Bundle bser = getInstalledBundle("org.apache.aries.samples.blueprint.helloworld.server");
         assertNotNull(bser);
@@ -174,6 +176,7 @@ public class HelloworldSampleTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint" ),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util" ),
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
                 mavenBundle("org.ow2.asm", "asm-all" ),
                 mavenBundle("org.apache.aries.samples.blueprint.helloworld", "org.apache.aries.samples.blueprint.helloworld.api"),
                 mavenBundle("org.apache.aries.samples.blueprint.helloworld", "org.apache.aries.samples.blueprint.helloworld.server"),

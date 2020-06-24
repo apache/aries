@@ -21,6 +21,7 @@ public class StartOrderDirective extends AbstractDirective {
 	private final int startOrder;
 	
 	public StartOrderDirective(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-737
 		super(NAME, value);
 		this.startOrder = Integer.parseInt(value);
 	}

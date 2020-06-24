@@ -30,12 +30,15 @@ import org.osgi.service.blueprint.reflect.Target;
 public class TestBlueprintContainer extends BlueprintContainerImpl {
 
     public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-767
         this(registry, new JdkProxyManager());
     }
 
     public TestBlueprintContainer(ComponentDefinitionRegistryImpl registry, ProxyManager proxyManager) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         super(null, new TestBundleContext(), null, null, null, null, null, null, proxyManager, null);
         resetComponentDefinitionRegistry();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1559
 
         if (registry == null) {
             return;
@@ -66,6 +69,7 @@ public class TestBlueprintContainer extends BlueprintContainerImpl {
 
     @Override
     public ClassLoader getClassLoader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1129
         return Thread.currentThread().getContextClassLoader();
     }
 }

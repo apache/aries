@@ -32,6 +32,7 @@ public class TestResource implements Resource {
 		private final List<TestRequirement.Builder> requirements = new ArrayList<TestRequirement.Builder>();
 		
 		public TestResource build() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new TestResource(capabilities, requirements);
 		}
 		

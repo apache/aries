@@ -26,6 +26,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 class ConfigWriter implements XmlWriter {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1683
 
     private static final String CONFIG_NS = "http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0";
     private Config config;
@@ -40,6 +41,7 @@ class ConfigWriter implements XmlWriter {
         writer.writeDefaultNamespace(CONFIG_NS);
         writer.writeAttribute("persistent-id", config.pid());
         if (!"${".equals(config.placeholderPrefix())) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1683
             writer.writeAttribute("placeholder-prefix", config.placeholderPrefix());
         }
         if (!"}".equals(config.placeholderSuffix())) {
@@ -47,6 +49,7 @@ class ConfigWriter implements XmlWriter {
         }
         writer.writeAttribute("update-strategy", config.updatePolicy());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1628
         DefaultProperty[] defaults = config.defaults();
         if (defaults.length > 0) {
             writer.writeStartElement("default-properties");

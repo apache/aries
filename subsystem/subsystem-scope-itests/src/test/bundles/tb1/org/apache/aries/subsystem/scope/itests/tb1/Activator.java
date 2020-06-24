@@ -12,6 +12,7 @@ import org.osgi.framework.ServiceReference;
 
 public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-603
 		ServiceReference<Scope> scopeRef = bundleContext.getServiceReference(Scope.class);
 		assertNotNull(scopeRef);
 		Scope scope = bundleContext.getService(scopeRef);

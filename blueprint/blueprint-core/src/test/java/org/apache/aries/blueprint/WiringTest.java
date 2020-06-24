@@ -95,6 +95,8 @@ public class WiringTest extends AbstractBlueprintTest {
         
         assertNotNull(pojoa.getSet());
         assertTrue(pojoa.getSet().contains("set value"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         assertTrue(pojoa.getSet().contains(pojob.getUri()));
         assertTrue(pojoa.getSet().contains(URI.create("http://geronimo.apache.org")));
         
@@ -132,6 +134,7 @@ public class WiringTest extends AbstractBlueprintTest {
         assertNotNull(obj3);
         assertTrue(obj3 instanceof ServiceRegistration);    
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-767
         ExecutionContext.Holder.setContext((ExecutionContext) repository);
         for(Recipe r : ((ServiceRecipe)repository.getRecipe("service1")).getDependencies()) {
         	if(r instanceof MapRecipe) {
@@ -156,6 +159,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
     
     public void testSetterDisambiguation() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-366
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
 
@@ -169,6 +173,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
     
     public void testFieldInjection() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-88
       ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
       Repository repository = new TestBlueprintContainer(registry).getRepository();
       
@@ -233,6 +238,8 @@ public class WiringTest extends AbstractBlueprintTest {
 
         ComponentDefinitionRegistryImpl registry = parse("/test-depends-on.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         Map instances = repository.createAll(Arrays.asList("c", "d", "e"), ProxyUtils.asList(Object.class));
         
         List<Callback> callback = CallbackTracker.getCallbacks();
@@ -317,6 +324,7 @@ public class WiringTest extends AbstractBlueprintTest {
         Object obj12 = repository.create("multipleFactoryTypedNull");
         testMultiple(obj12, "hello-boolean", -1, null);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-874
         Object obj13 = repository.create("mapConstruction");
         Map<String, String> constructionMap = new HashMap<String, String>();
         constructionMap.put("a", "b");
@@ -383,6 +391,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
 
     private void testMultiple(Object obj, Map map) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-874
        assertNotNull(obj);
        assertTrue(obj instanceof Multiple);
        assertEquals(map, ((Multiple)obj).getMap());
@@ -395,6 +404,7 @@ public class WiringTest extends AbstractBlueprintTest {
    }
 
     public void testGenerics2() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("gen2");
@@ -448,6 +458,7 @@ public class WiringTest extends AbstractBlueprintTest {
         
         assertEquals(expectedMap, pojo.getMap());
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-82
         obj = repository.create("genericPojo");
         assertTrue(obj instanceof Primavera);
         assertEquals("string", ((Primavera) obj).prop);
@@ -458,12 +469,14 @@ public class WiringTest extends AbstractBlueprintTest {
     }
 
     public void testMixedGenericsTracker() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("tracker");
     }
 
     public void testMixedGenericsTypedTracker() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         try {
@@ -477,6 +490,7 @@ public class WiringTest extends AbstractBlueprintTest {
     public void testMixedGenericsTypedTrackerRaw() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
         repository.create("typedTrackerRaw");
     }
 
@@ -492,6 +506,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
 
     public void testMixedGenericsTypedClassTrackerRaw() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("typedClassTrackerRaw");
@@ -510,12 +525,14 @@ public class WiringTest extends AbstractBlueprintTest {
     }
 
     public void testThreadPoolCreation() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1248
         ComponentDefinitionRegistryImpl registry = parse("/test-threadpool.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("executorService");
     }
 
     public void testCachePojo() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1282
         ComponentDefinitionRegistryImpl registry = parse("/test-cache.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         Thread.currentThread().setContextClassLoader(CachePojos.CacheContainer.class.getClassLoader());
@@ -523,6 +540,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
 
     public void testVarArgPojo() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1098
         ComponentDefinitionRegistryImpl registry = parse("/test-vararg.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         VarArg va = (VarArg) repository.create("vararg");
@@ -603,6 +621,7 @@ public class WiringTest extends AbstractBlueprintTest {
     }
 
     public void testInterceptors() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1793
         ComponentDefinitionRegistryImpl registry = parse("/test-interceptors.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         BeanB b = (BeanB) repository.create("b");

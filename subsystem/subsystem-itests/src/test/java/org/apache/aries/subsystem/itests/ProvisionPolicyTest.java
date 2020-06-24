@@ -79,6 +79,7 @@ public class ProvisionPolicyTest extends SubsystemTest {
 	}
 	
 	private void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_A), importPackage("x"));
 	}
 	

@@ -133,6 +133,7 @@ public class CloseableDirectory implements ICloseableDirectory {
 	protected void cleanup() {}
 	
 	protected void checkNotClosed() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
 		if (isClosed()) throw new IllegalStateException(MessageUtil.getMessage("UTIL0018E"));
 	}
 

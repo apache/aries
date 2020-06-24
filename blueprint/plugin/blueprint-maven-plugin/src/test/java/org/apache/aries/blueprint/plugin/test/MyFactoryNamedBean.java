@@ -31,6 +31,7 @@ public class MyFactoryNamedBean {
     @Produces
     @Named("produced1")
     public MyProduced createBean1() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1508
         return new MyProduced("My message");
     }
 
@@ -47,6 +48,7 @@ public class MyFactoryNamedBean {
     @Singleton
     @Lazy(false)
     public MyProduced createBean2AsEager() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1566
         return new MyProduced("My message");
     }
 

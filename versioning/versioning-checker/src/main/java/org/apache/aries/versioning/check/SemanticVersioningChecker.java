@@ -123,6 +123,7 @@ public class SemanticVersioningChecker {
                 }
             }
             writeRecordToWriter(versionStatusFileWriter, "</semanticVersioning>");
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
 
         } catch (IOException ioe) {
             ioe.printStackTrace();

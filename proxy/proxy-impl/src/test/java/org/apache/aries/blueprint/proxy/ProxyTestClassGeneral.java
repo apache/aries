@@ -52,6 +52,7 @@ public class ProxyTestClassGeneral extends ProxyTestClassSuper
   }
 
   public boolean equals(Object o) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     return o == this;
   }
   

@@ -29,11 +29,13 @@ public interface BeanEnricher {
      * @param value value of attribute
      */
     void addAttribute(String key, String value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
 
     /**
      * Add custom XML inside bean element
      * @param id identifier of writer instance (should be unique)
      * @param blueprintWriter callback used to write custom XML
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
     void addBeanContentWriter(String id, XmlWriter blueprintWriter);
 }

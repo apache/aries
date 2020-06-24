@@ -107,6 +107,7 @@ public class SpringOsgiNamespaceHandler implements NamespaceHandler {
 
     @Override
     public Metadata parse(Element element, ParserContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
         if (REFERENCE_ELEMENT.equals(element.getLocalName())) {
             return parseReference(element, context);
         }
@@ -359,6 +360,8 @@ public class SpringOsgiNamespaceHandler implements NamespaceHandler {
     }
 
     private String nonEmpty(String ref) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         return ref != null && ref.isEmpty() ? null : ref;
     }
 
@@ -397,6 +400,7 @@ public class SpringOsgiNamespaceHandler implements NamespaceHandler {
         Assert.notNull(valueEle, "Element must not be null");
         StringBuilder sb = new StringBuilder();
         NodeList nl = valueEle.getChildNodes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
         for(int i = 0, l = nl.getLength(); i < l; ++i) {
             Node item = nl.item(i);
             if(item instanceof CharacterData && !(item instanceof Comment) || item instanceof EntityReference) {

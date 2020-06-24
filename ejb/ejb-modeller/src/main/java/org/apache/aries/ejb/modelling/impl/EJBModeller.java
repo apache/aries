@@ -45,6 +45,7 @@ public class EJBModeller implements ServiceModeller {
    */
   public ParsedServiceElements modelServices(BundleManifest manifest, IDirectory bundle) 
     throws ModellerException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-837
     logger.debug("modelServices", new Object[] {manifest, bundle});
     ParsedEJBServices ejbServices = new ParsedEJBServices();
     

@@ -45,6 +45,7 @@ public class BlueprintContainerTest {
 
     @Test
     public void testPlaceholders() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
         URL url1 = getClass().getClassLoader().getResource("test.xml");
         URL url2 = getClass().getClassLoader().getResource("test2.xml");
         BlueprintContainerImpl container = new BlueprintContainerImpl(getClass().getClassLoader(), Arrays.asList(url1, url2));
@@ -54,6 +55,7 @@ public class BlueprintContainerTest {
         assertNotNull(foo);
         assertEquals(5, foo.getA());
         assertEquals(1, foo.getB());
+//IC see: https://issues.apache.org/jira/browse/ARIES-998
 
         container.destroy();
     }

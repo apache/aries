@@ -34,6 +34,7 @@ public class HTMLOutput {
 		out.println(" <head>");
 
 		out
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
 				.println("  <link type=\"text/css\" rel=\"stylesheet\" href=\"style/blog.css\"></link>");
 		out.println("  <meta name=\"keywords\" content=\"...\">");
 		out.println("  <meta name=\"description\" content=\"...\">");
@@ -50,6 +51,7 @@ public class HTMLOutput {
 
 	public static final void writeDojoUses(PrintWriter out, String... modules) {
 		out
+//IC see: https://issues.apache.org/jira/browse/ARIES-109
 				.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dijit/themes/tundra/tundra.css\" type=\"text/css\" media=\"screen\"/>");
 		out
 				.println("<link rel=\"Stylesheet\" href=\"http://ajax.googleapis.com/ajax/libs/dojo/1.4.0/dijit/themes/nihilo/nihilo.css\" type=\"text/css\" media=\"screen\"/>");
@@ -100,6 +102,7 @@ public class HTMLOutput {
 		out.println("        <TR>");
 		out.println("         <TD align=\"left\" class=\"topbardiv\" nowrap=\"\">");
 		out
+//IC see: https://issues.apache.org/jira/browse/ARIES-813
 				.println("          <A href=\"http://aries.apache.org/\" title=\"Apache Aries \">");
 		out
 				.println("          <IMG border=\"0\" src=\"images/Arieslogo_Horizontal.gif\">");
@@ -109,6 +112,7 @@ public class HTMLOutput {
 		out
 				.println("          <A href=\"http://www.apache.org/\" title=\"The Apache Software Foundation\">");
 		out
+//IC see: https://issues.apache.org/jira/browse/ARIES-548
 				.println("          <IMG border=\"0\" src=\"images/feather.png\">");
 		out.println("          </A>");
 		out.println("         </TD>");
@@ -130,6 +134,7 @@ public class HTMLOutput {
 		out.println("        <TD>");
 		out.println("         <DIV align=\"right\">");
 		out.println("          <!-- Quicklinks -->");
+//IC see: https://issues.apache.org/jira/browse/ARIES-102
 		out.println("           <p><a href=\"ViewBlog\" style=\"text-decoration: none; color: white\">Blog home</a></p>");
 		out.println("          <!-- Quicklinks -->");
 		out.println("         </DIV>");

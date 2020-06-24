@@ -40,6 +40,7 @@ public class ApplicationRepository implements BundleRepository
 
   public ApplicationRepository(AriesApplication app)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-384
     this.app = app;
   }
   
@@ -50,7 +51,9 @@ public class ApplicationRepository implements BundleRepository
 
   public BundleSuggestion suggestBundleToUse(DeploymentContent content)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
     BundleInfo bundleInfo = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-384
     if ((app.getBundleInfo() != null) && (!app.getBundleInfo().isEmpty())) {
       for (BundleInfo bi : app.getBundleInfo()) {
         if (bi.getSymbolicName().equals(content.getContentName()) && (bi.getVersion().equals(content.getVersion().getExactVersion()))) {
@@ -83,6 +86,7 @@ public class ApplicationRepository implements BundleRepository
 
     public Set<Content> getExportPackage()
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-384
       if (bundleInfo != null) {
       return bundleInfo.getExportPackage();
       } else {
@@ -113,6 +117,7 @@ public class ApplicationRepository implements BundleRepository
     public Bundle install(BundleFramework framework, AriesApplication app) throws BundleException
     {
       if (bundleInfo != null ) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
         return framework.getIsolatedBundleContext().installBundle(bundleInfo.getLocation());
       } else {
         throw new BundleException("Unable to install the bundle, as the BundleInfo is null.");

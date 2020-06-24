@@ -46,12 +46,14 @@ import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findSingl
 import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
 class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1734
 
     private static final String NS_EXT = "http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0";
 
     String id;
     final Class<?> clazz;
     SortedSet<Property> properties = new TreeSet<>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
     List<Argument> constructorArguments = new ArrayList<>();
     final Map<String, String> attributes = new HashMap<>();
     final Map<String, XmlWriter> beanContentWriters = new HashMap<>();
@@ -65,6 +67,7 @@ class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
         introspector = new Introspector(clazz);
 
         setScope(clazz);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         handleCustomBeanAnnotations();
         handleFieldsAnnotation(introspector);
         handleMethodsAnnotation(introspector);
@@ -93,6 +96,7 @@ class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
         for (FieldAnnotationHandler fieldAnnotationHandler : Handlers.FIELD_ANNOTATION_HANDLERS) {
             List<Field> fields = introspector.fieldsWith(fieldAnnotationHandler.getAnnotation());
             if (fields.size() > 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1619
                 fieldAnnotationHandler.handleFieldAnnotation(clazz, fields, contextEnricher, this);
             }
         }
@@ -102,6 +106,7 @@ class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
         for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERS) {
             Object annotation = AnnotationHelper.findAnnotation(clazz.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
                 beanAnnotationHandler.handleBeanAnnotation(clazz, id, contextEnricher, this);
             }
         }
@@ -163,6 +168,7 @@ class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
     }
 
     private boolean needFieldInjection() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1563
         for (Property property : properties) {
             if (property.isField) {
                 return true;
@@ -173,15 +179,18 @@ class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
 
     @Override
     public void addAttribute(String key, String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         attributes.put(key, value);
     }
 
     @Override
     public void addBeanContentWriter(String id, XmlWriter blueprintWriter) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         beanContentWriters.put(id, blueprintWriter);
     }
 
     private void writeCustomContent(XMLStreamWriter writer) throws XMLStreamException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1688
         List<String> customWriterKeys = new ArrayList<>(beanContentWriters.keySet());
         Collections.sort(customWriterKeys);
         for (String customWriterKey : customWriterKeys) {
@@ -212,6 +221,7 @@ class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
         writer.writeAttribute("id", id);
         writer.writeAttribute("class", clazz.getName());
         if (needFieldInjection()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1680
             writer.writeNamespace("ext", NS_EXT);
             writer.writeAttribute("ext", NS_EXT, "field-injection", "true");
         }
@@ -224,6 +234,7 @@ class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
 
     @Override
     public int compareTo(Bean o) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1688
         return id.compareTo(o.id);
     }
 }

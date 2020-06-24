@@ -43,8 +43,10 @@ public class OBRBundleInfo implements BundleInfo
   private final Map<String, String> directives;
 
   public OBRBundleInfo(String symbolicName, Version version, String location,
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
                        Set<Content> importPackage, Set<Content> exportPackage,
                        Set<Content> importService, Set<Content> exportService,
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
                        Set<Content> requireBundle, Map<String, String> attributes,
                        Map<String, String> directives, Map<String, String> headers)
   {
@@ -56,6 +58,7 @@ public class OBRBundleInfo implements BundleInfo
     this.importService = importService;
     this.exportService = exportService;
     this.headers = headers;
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
     this.requireBundle = requireBundle;
     this.attributes = attributes;
     this.directives = directives;
@@ -88,6 +91,7 @@ public class OBRBundleInfo implements BundleInfo
 
   public Set<Content> getImportService()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
     return importService;
   }
 
@@ -103,6 +107,7 @@ public class OBRBundleInfo implements BundleInfo
 
   public Map<String, String> getBundleAttributes()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
     return attributes;
   }
 
@@ -123,6 +128,7 @@ public class OBRBundleInfo implements BundleInfo
 
   public int hashCode() 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-358
     final int prime = 31;
     int result = 1;
     result = prime * result + symbolicName.hashCode();
@@ -144,6 +150,7 @@ public class OBRBundleInfo implements BundleInfo
   public Attributes getRawAttributes()
   {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     Attributes _attributes = new Attributes();
     _attributes.putAll(attributes);
     _attributes.putAll(directives);

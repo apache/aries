@@ -58,7 +58,9 @@ public class InitialContextTest {
      */
     @Before
     public void setup() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-981
         System.setProperty("org.apache.aries.jndi.disable.builder", "false");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         BundleContextMock mock = new BundleContextMock();
         mock.addBundle(mock.getBundle());
         bc = Skeleton.newMock(mock, BundleContext.class);
@@ -111,6 +113,7 @@ public class InitialContextTest {
         props.put(JNDIConstants.JNDI_URLSCHEME, "testURL");
         bc.registerService(ObjectFactory.class.getName(), factory, (Dictionary) props);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
 
         props = new Properties();
         props.put(JNDIConstants.BUNDLE_CONTEXT, bc);
@@ -122,6 +125,7 @@ public class InitialContextTest {
 
     @Test
     public void testLookFromLdapICF() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-513
         InitialContextFactoryBuilder icf = Skeleton.newMock(InitialContextFactoryBuilder.class);
         bc.registerService(new String[]{InitialContextFactoryBuilder.class.getName(), icf.getClass().getName()}, icf, (Dictionary) new Properties());
 
@@ -136,6 +140,7 @@ public class InitialContextTest {
 
         Properties props = new Properties();
         props.put(JNDIConstants.BUNDLE_CONTEXT, bc);
+//IC see: https://issues.apache.org/jira/browse/ARIES-513
         props.put(Context.INITIAL_CONTEXT_FACTORY, "dummy.factory");
         InitialLdapContext ilc = new InitialLdapContext(props, new Control[0]);
 
@@ -146,6 +151,7 @@ public class InitialContextTest {
 
     @Test
     public void testURLLookup() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-540
         ObjectFactory of = new ObjectFactory() {
             public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
                 return dummyContext("result");
@@ -222,6 +228,7 @@ public class InitialContextTest {
     private void registerURLObjectFactory(ObjectFactory of, String scheme) {
         Properties props = new Properties();
         props.setProperty(JNDIConstants.JNDI_URLSCHEME, "test");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         bc.registerService(ObjectFactory.class.getName(), of, (Dictionary) props);
     }
 

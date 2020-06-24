@@ -94,6 +94,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   private static final Logger _logger = LoggerFactory.getLogger("org.apache.aries.application.management.impl");
 
   public void setApplicationMetadataFactory (ApplicationMetadataFactory amf) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-121
     _applicationMetadataFactory = amf;
   }
   
@@ -106,10 +107,12 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   }
   
   public void setDeploymentManifestManager(DeploymentManifestManager dm) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     this.deploymentManifestManager = dm;
   }
 
   public void setLocalPlatform (LocalPlatform lp) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     _localPlatform = lp;
   }
   
@@ -119,6 +122,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   
   public void setBundleContext(BundleContext b)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
     _bundleContext = b;
   }
   
@@ -129,8 +133,10 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   public AriesApplication createApplication(IDirectory ebaFile) throws ManagementException {
     ApplicationMetadata applicationMetadata = null;
     DeploymentMetadata deploymentMetadata = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-344
     Map<String, BundleConversion> modifiedBundles = new HashMap<String, BundleConversion>();
     AriesApplicationImpl application = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-352
     String appPath = ebaFile.toString();
     try {   
       // try to read the app name out of the application.mf
@@ -141,6 +147,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       if (appName == null || appName.isEmpty()) {
           String fullPath = appPath;
           if (fullPath.endsWith("/")) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-351
             fullPath = fullPath.substring(0, fullPath.length() -1);  
           }
               
@@ -161,17 +168,23 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         BundleManifest bm = getBundleManifest (f);
         if (bm != null) {
           if (bm.isValid()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-638
             _logger.debug("File {} is a valid bundle. Adding it to bundle list.", f.getName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
             extraBundlesInfo.add(new SimpleBundleInfo(bm, f.toURL().toExternalForm()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
+//IC see: https://issues.apache.org/jira/browse/ARIES-257
           } else if (deploymentManifest == null) { 
             _logger.debug("File {} is not a valid bundle. Attempting to convert it.", f.getName());
             // We have a jar that needs converting to a bundle, or a war to migrate to a WAB 
             // We only do this if a DEPLOYMENT.MF does not exist.
+//IC see: https://issues.apache.org/jira/browse/ARIES-344
             BundleConversion convertedBinary = null;
             Iterator<BundleConverter> converters = _bundleConverters.iterator();
             List<ConversionException> conversionExceptions = Collections.emptyList();
             while (converters.hasNext() && convertedBinary == null) { 
               try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-638
             	BundleConverter converter = converters.next();
             	_logger.debug("Converting file using {} converter", converter);
                 convertedBinary = converter.convert(ebaFile, f);
@@ -188,8 +201,12 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
               throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0005E", appName));
             }
             if (convertedBinary != null) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-638
               _logger.debug("File {} was successfully converted. Adding it to bundle list.", f.getName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
+//IC see: https://issues.apache.org/jira/browse/ARIES-257
               modifiedBundles.put (f.getName(), convertedBinary);             
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
               extraBundlesInfo.add(convertedBinary.getBundleInfo());
             } else {
               _logger.debug("File {} was not converted.", f.getName());
@@ -209,13 +226,16 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       }
       
       ManifestDefaultsInjector.updateManifest(applicationManifest, appName, ebaFile); 
+//IC see: https://issues.apache.org/jira/browse/ARIES-121
       applicationMetadata = _applicationMetadataFactory.createApplicationMetadata(applicationManifest);
       
       if (deploymentManifest != null) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
         deploymentMetadata = _deploymentMetadataFactory.parseDeploymentMetadata(deploymentManifest);
         
         // Validate: symbolic names must match
         String appSymbolicName = applicationMetadata.getApplicationSymbolicName();
+//IC see: https://issues.apache.org/jira/browse/ARIES-337
         String depSymbolicName = deploymentMetadata.getApplicationSymbolicName();
         if (!appSymbolicName.equals(depSymbolicName)) {
           throw new ManagementException (MessageUtil.getMessage("APPMANAGEMENT0002E", appName, appSymbolicName, depSymbolicName));
@@ -227,6 +247,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       // Store a reference to any modified bundles
       application.setModifiedBundles (modifiedBundles);
     } catch (IOException iox) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-352
       _logger.error ("APPMANAGEMENT0006E", new Object []{appPath, iox});
       throw new ManagementException(iox);
     }
@@ -234,6 +255,8 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   }
 
   private String buildAppContent(Set<BundleInfo> bundleInfos) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
+//IC see: https://issues.apache.org/jira/browse/ARIES-257
       StringBuilder builder = new StringBuilder();
       Iterator<BundleInfo> iterator = bundleInfos.iterator();
       while (iterator.hasNext()) {
@@ -263,6 +286,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
    * the input URL is file://
    */
   public AriesApplication createApplication(URL url) throws ManagementException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     OutputStream os = null;
     AriesApplication app = null;
     try { 
@@ -283,6 +307,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
 
   public AriesApplication resolve(AriesApplication originalApp, ResolveConstraint... constraints) throws ResolverException {
     AriesApplicationImpl application = new AriesApplicationImpl(originalApp.getApplicationMetadata(), originalApp.getBundleInfo(), _localPlatform);
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     Manifest deploymentManifest = deploymentManifestManager.generateDeploymentManifest(originalApp, constraints);
     try {
       application.setDeploymentMetadata(_deploymentMetadataFactory.createDeploymentMetadata(deploymentManifest));
@@ -300,6 +325,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   public AriesApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException {
     
     if (!app.isResolved()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-466
       app = resolve(app);
     }
   
@@ -318,12 +344,15 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     if (ref == null || ref.length == 0) {
         Dictionary dict = new Hashtable();
         dict.put(BundleRepository.REPOSITORY_SCOPE, appScope);
+//IC see: https://issues.apache.org/jira/browse/ARIES-830
         ServiceRegistration serviceReg = _bundleContext.registerService(BundleRepository.class.getName(), 
+//IC see: https://issues.apache.org/jira/browse/ARIES-384
             new ApplicationRepository(app), 
             dict);
         serviceRegistrations.put(app, serviceReg);
     }
   
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
     AriesApplicationContext result = _applicationContextManager.getApplicationContext(app);
     
     // When installing bundles in the .eba file we use the jar url scheme. This results in a
@@ -331,6 +360,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
     // so as a work around we open a url connection to one of the bundles in the eba and
     // if it is a jar url we close the associated JarFile.
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-292
     Iterator<BundleInfo> bi = app.getBundleInfo().iterator();
     
     if (bi.hasNext()) {
@@ -341,6 +371,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
           JarURLConnection urlc = (JarURLConnection) url.openConnection();
           
           // Make sure that we pick up the cached version rather than creating a new one
+//IC see: https://issues.apache.org/jira/browse/ARIES-804
           urlc.setUseCaches(true);
           urlc.getJarFile().close();
         } catch (IOException e) {
@@ -355,6 +386,7 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   
   public void uninstall(AriesApplicationContext appContext) throws BundleException 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-830
     _applicationContextManager.remove(appContext);
     
     // Also unregister the service if we added one for it
@@ -388,7 +420,9 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
    * @throws IOException
    */
   private Manifest parseApplicationManifest (IDirectory source) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     Manifest result = new Manifest();
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     IFile f = source.getFile(AppConstants.APPLICATION_MF);
     if (f != null) { 
       InputStream is = null;
@@ -396,9 +430,11 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
         is = f.open();
         result = ManifestProcessor.parseManifest(is);
       } catch (IOException iox) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
         _logger.error ("APPMANAGEMENT0007E", new Object[]{source.getName(), iox});
         throw iox;
       } finally { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
         IOUtils.close(is);
       }
     }
@@ -417,12 +453,14 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
       in = file.open();
       mf = BundleManifest.fromBundle(in);
     } finally { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       IOUtils.close(in);
     }    
     return mf;
   }
 
   public AriesApplicationContext update(AriesApplication app, DeploymentMetadata depMf) throws UpdateException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-399
     if (!(app instanceof AriesApplicationImpl)) throw new IllegalArgumentException("Argument is not AriesApplication created by this manager");
     
     if (!!!app.getApplicationMetadata().getApplicationSymbolicName().equals(depMf.getApplicationSymbolicName())

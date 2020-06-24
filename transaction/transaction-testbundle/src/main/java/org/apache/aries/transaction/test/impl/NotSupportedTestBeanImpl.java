@@ -28,12 +28,14 @@ public class NotSupportedTestBeanImpl extends TestBeanImpl {
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
     @Override
     public void delegateInsertRow(String name, int value) throws SQLException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         super.delegateInsertRow(name, value);
     }
 
     @Transactional(Transactional.TxType.NOT_SUPPORTED)
     @Override
     public void throwApplicationException() throws SQLException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         super.throwApplicationException();
     }
 

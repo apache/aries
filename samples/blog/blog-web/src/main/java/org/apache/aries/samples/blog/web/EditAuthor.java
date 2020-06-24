@@ -68,6 +68,7 @@ public class EditAuthor extends HttpServlet
       FormServlet.addError(req, "The email field is required.");
       resp.sendRedirect("EditAuthorForm");
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-236
     }else if (!FormatChecker.isValidEmail(email)) {
     	storeParam(req, "email", email);
         storeParam(req, "nickName", nickName);
@@ -79,6 +80,7 @@ public class EditAuthor extends HttpServlet
         resp.sendRedirect("EditAuthorForm");	
     } else {
       BloggingService service = JNDIHelper.getBloggingService();
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
 
       if (service.getBlogAuthor(email) != null) {
         // do an update

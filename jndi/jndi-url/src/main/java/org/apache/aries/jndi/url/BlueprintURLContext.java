@@ -67,6 +67,8 @@ public class BlueprintURLContext implements Context {
     private static ServiceReference<BlueprintContainer> findBPCRef(Bundle b) {
         ServiceReference<?>[] refs = b.getRegisteredServices();
         ServiceReference<?> result = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
         if (refs != null) {
             outer:
             for (ServiceReference<?> r : refs) {
@@ -119,9 +121,11 @@ public class BlueprintURLContext implements Context {
                 }
             }
             result = bpcRef.get();
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
             st.close();
         }
         if (result == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
             throw new ServiceUnavailableException("The BlueprintContainer service for bundle " + b.getSymbolicName() + '/' + b.getVersion() + " can not be located");
         }
         return result;
@@ -146,6 +150,8 @@ public class BlueprintURLContext implements Context {
         Matcher m = graceP.matcher(bundleSymbolicName);
         if (m.matches()) {
             String gracePeriod = m.group(1);
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
             gracePeriodSet = !gracePeriod.equalsIgnoreCase("false"); // See OSGi Enterprise spec 4.2 section 121.3.2.1 step 6
         }
         if (!gracePeriodSet) {
@@ -279,6 +285,7 @@ public class BlueprintURLContext implements Context {
     public Object lookup(Name name) throws NamingException, ServiceUnavailableException {
         ServiceReference<BlueprintContainer> blueprintContainerRef = getBlueprintContainerRef(_callersBundle);
         Object result;
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
         try {
             BlueprintContainer blueprintContainer = _callersBundle.getBundleContext().getService(blueprintContainerRef);
             BlueprintName bpName;

@@ -117,6 +117,7 @@ public class Aries1523Test extends SubsystemTest {
 	
 	private URL createRepositoryXml(DataModelHelper helper) throws Exception {
 		File dir;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1553
 		String cwd = new File("").getAbsolutePath();
 		if (cwd.endsWith(File.separator + "target")) {
 			dir = new File("test-classes/aries1523");

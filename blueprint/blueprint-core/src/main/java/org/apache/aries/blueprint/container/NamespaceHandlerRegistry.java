@@ -42,6 +42,7 @@ public interface NamespaceHandlerRegistry {
      * @return a set of registered <code>NamespaceHandler</code>s compatible with the class space of the given bundle
      */
     NamespaceHandlerSet getNamespaceHandlers(Set<URI> uri, Bundle bundle);
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
 
     /**
      * Destroy this registry

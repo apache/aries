@@ -174,6 +174,7 @@ public class RichBundleContext implements BundleContext {
     }
 
     public ServiceRegistration registerService(Class clazz, Object service, Dictionary props) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         return delegate.registerService(clazz, service, props);
     }
 

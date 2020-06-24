@@ -29,5 +29,6 @@ import org.osgi.service.blueprint.reflect.Target;
 public interface PassThroughMetadata extends ComponentMetadata, Target {
 
     Object getObject();
+//IC see: https://issues.apache.org/jira/browse/ARIES-4
 
 }

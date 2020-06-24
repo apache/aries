@@ -47,6 +47,7 @@ public class OsgiURLContextFactory implements ObjectFactory {
         } else if (obj instanceof String) {
             return findAny(environment, (String) obj);
         } else if (obj instanceof String[]) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
             return findAny(environment, (String[]) obj);
         } else {
             return null;

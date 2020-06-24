@@ -8,6 +8,8 @@ import org.osgi.framework.ServiceRegistration;
 
 public class Utils {
 	public static Bundle findBundle(String symbolicName, BundleContext bundleContext) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Bundle[] bundles = bundleContext.getBundles();
 		for (Bundle bundle : bundles) {
 			if (bundle.getSymbolicName().equals(symbolicName)) {
@@ -18,6 +20,7 @@ public class Utils {
 	}
 	
 	public static Bundle findBundle(String symbolicName, Scope scope) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
 		if (scope == null) return null;
 		for (Bundle b : scope.getBundles()) {
 			if (symbolicName == null) {

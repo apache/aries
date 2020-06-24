@@ -74,6 +74,7 @@ public class Util {
     public static <C,S> ServiceLoader<S> serviceLoaderLoad(Class<S> service, Class<C> caller) {
         if (BaseActivator.activator == null) {
             // The system is not yet initialized. We can't do anything.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
             return null;
         }
 
@@ -87,6 +88,7 @@ public class Util {
         );
 
         if (!(bundleLoader instanceof BundleReference)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
             BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return ServiceLoader.load(service);
         }
@@ -102,6 +104,7 @@ public class Util {
 
         Thread thread = Thread.currentThread();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1864
         return AccessController.doPrivileged(
             new PrivilegedAction<ServiceLoader<S>>() {
                 @Override
@@ -130,6 +133,8 @@ public class Util {
             return null;
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1864
+//IC see: https://issues.apache.org/jira/browse/ARIES-1864
         ClassLoader bundleLoader = AccessController.doPrivileged(
             new PrivilegedAction<ClassLoader>() {
                 @Override
@@ -140,6 +145,7 @@ public class Util {
         );
 
         if (!(bundleLoader instanceof BundleReference)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
             BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return ServiceLoader.load(service, specifiedClassLoader);
         }
@@ -165,6 +171,7 @@ public class Util {
 
         final ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
             BaseActivator.activator.log(Level.INFO, "Temporarily setting Thread Context Classloader to: " + cl);
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
                 @Override
@@ -174,6 +181,7 @@ public class Util {
                 }
             });
         } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
             BaseActivator.activator.log(Level.WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
         }
     }
@@ -194,6 +202,7 @@ public class Util {
                     sm.checkPermission(new ServicePermission(requestedClass, ServicePermission.GET));
                 } catch (AccessControlException ace) {
                     // access denied
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
                     activator.log(Level.INFO, "No permission to obtain service of type: " + requestedClass);
                     return null;
                 }
@@ -205,6 +214,7 @@ public class Util {
 
         Collection<Bundle> bundles = new ArrayList<Bundle>(activator.findProviderBundles(requestedClass));
         activator.log(Level.FINE, "Found bundles providing " + requestedClass + ": " + bundles);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
 
         Collection<Bundle> allowedBundles = activator.findConsumerRestrictions(consumerBundle, className, methodName, args);
 
@@ -314,12 +324,14 @@ public class Util {
     }
 
     private static BundleReference getBundleReference(ClassLoader bundleLoader) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
         if (BaseActivator.activator == null) {
             // The system is not yet initialized. We can't do anything.
             return null;
         }
 
         if (!(bundleLoader instanceof BundleReference)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
             BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return null;
         }
@@ -347,6 +359,7 @@ public class Util {
                     jis.close();
             }
         } catch (IOException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
             BaseActivator.activator.log(Level.SEVERE, "Problem loading class from embedded jar file: " + url +
                 " in bundle " + b.getSymbolicName(), e);
         }
@@ -371,6 +384,7 @@ public class Util {
     private static class WrapperCL extends ClassLoader {
         private final ClassLoader bundleClassloader;
         public WrapperCL(ClassLoader specifiedClassLoader, ClassLoader bundleClassloader) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
             super(specifiedClassLoader);
             this.bundleClassloader = bundleClassloader;
         }

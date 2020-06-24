@@ -117,6 +117,7 @@ public class AsyncServiceTest {
 
     @Test
     public void testMultipleMediationsCacheClassLoader() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
         DelayedEcho raw = new DelayedEcho();
         
         AsyncService service = new AsyncService(null, es, ses,

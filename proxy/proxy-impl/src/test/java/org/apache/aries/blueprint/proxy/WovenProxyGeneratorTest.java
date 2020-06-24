@@ -82,6 +82,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   private static final List<Class<?>> CLASSES = Arrays.asList(new Class<?>[]{ProxyTestClassGeneral.class, ProxyTestClassSuper.class,
     ProxyTestClassFinalMethod.class, ProxyTestClassFinal.class, ProxyTestClassGeneric.class,
     ProxyTestClassGenericSuper.class, ProxyTestClassCovariant.class, ProxyTestClassCovariantOverride.class,
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
     ProxyTestClassUnweavableChild.class, ProxyTestClassUnweavableSibling.class, ProxyTestClassInner.class, 
     ProxyTestClassStaticInner.class, ProxyTestClassUnweavableInnerChild.class, 
     ProxyTestClassUnweavableChildWithFinalMethodParent.class, 
@@ -117,6 +118,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
       
       boolean weave = false;
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-775
       for(Class<?> c : CLASSES) {
         if(c.getName().equals(className)) {
           weave = true;
@@ -124,12 +126,14 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
         }
       }
       if(weave)
+//IC see: https://issues.apache.org/jira/browse/ARIES-819
         bytes = WovenProxyGenerator.getWovenProxy(bytes, this);
       
       return defineClass(className, bytes, 0, bytes.length);
     }
     
     protected URL findResource(String resName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       return WovenProxyGeneratorTest.class.getResource(resName);
     }
   };
@@ -140,8 +144,10 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @BeforeClass
   public static void setUp() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     List<Class<?>> classes = new ArrayList<Class<?>>(CLASSES.size() + OTHER_CLASSES.size());
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-775
     classes.addAll(CLASSES);
     classes.addAll(OTHER_CLASSES);
     
@@ -172,6 +178,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   public void testGenerateAndLoadProxy() throws Exception
   {
     super.testGenerateAndLoadProxy();
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     assertTrue("Should be a WovenProxy", WovenProxy.class.isAssignableFrom(getProxyClass(getTestClass())));
   }
 
@@ -183,6 +190,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   public void testExpectedMethods() throws Exception
   {
     ProxySubclassMethodHashSet<String> originalMethods = getMethods(getTestClass());
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
 
     ProxySubclassMethodHashSet<String> generatedMethods = getMethods(weavingLoader.
         loadClass(getTestClass().getName()));
@@ -264,6 +272,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     assertNotNull(getProxyInstance(woven));
     
     TestListener tl = new TestListener();
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Object ptcuc = getProxyInstance(woven, tl);
     assertCalled(tl, false, false, false);
     
@@ -294,7 +303,9 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testUnweavableSuperWithNoNoargsAllTheWay() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-669
       getProxyClass(ProxyTestClassUnweavableSibling.class);
       fail();
     } catch (RuntimeException re) {
@@ -312,6 +323,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   {
     try{
       getProxyClass(ProxyTestClassUnweavableChildWithFinalMethodParent.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
       fail();
     } catch (RuntimeException re) {
       assertTrue(re.getCause() instanceof FinalModifierException);
@@ -330,6 +342,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   {
     try{
       getProxyClass(ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
       fail();
     } catch (RuntimeException re) {
       assertTrue(re.getCause() instanceof UnableToProxyException);
@@ -342,6 +355,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   public void testInnerWithNoParentNoArgs() throws Exception {
     //An inner class has no no-args (the parent gets added as an arg) so we can't
     //get an instance
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
     try{
       getProxyClass(ProxyTestClassUnweavableInnerChild.class);
       fail();
@@ -354,13 +368,16 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   
   @Test(expected=NoSuchFieldException.class)
   public void testNonSerializableClassHasNoGeneratedSerialVersionUID() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Class<?> woven = getProxyClass(getTestClass());
+//IC see: https://issues.apache.org/jira/browse/ARIES-705
     woven.getDeclaredField("serialVersionUID");
   }
   
   @Test
   public void testSerialization() throws Exception {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-665
     ProxyTestClassSerializable in = new ProxyTestClassSerializable();
     in.value = 5;
     
@@ -378,6 +395,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testInheritedSerialization() throws Exception {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-705
     ProxyTestClassSerializableChild in = new ProxyTestClassSerializableChild();
     in.value = 4;
     
@@ -412,6 +430,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testGeneratedSVUIDisSynthetic() throws Exception {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-669
     Class<?> woven = getProxyClass(ProxyTestClassSerializable.class);
     
     assertTrue(woven.getDeclaredField("serialVersionUID").isSynthetic());
@@ -430,6 +449,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
    */
   @Test
   public void testSuperStaticInitOfChild() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-775
     Class<?> parent = weavingLoader.loadClass(ProxyTestClassStaticInitOfChildParent.class.getName());
     parent.getMethod("doStuff").invoke(null);
   }
@@ -437,6 +457,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Override
   protected Object getProxyInstance(Class<?> proxyClass) {
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       if(proxyClass.getName().equals(ProxyTestClassAbstract.class.getName())) {
         Collection<Class<?>> coll = new ArrayList<Class<?>>();
         coll.add(proxyClass);
@@ -477,6 +498,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   }
   
   protected Object getP3() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     return getProxyInstance(getProxyClass(getTestClass()));
   }
   
@@ -486,6 +508,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
    */
   @Test
   public void testWovenProxyIsSynthetic(){
+//IC see: https://issues.apache.org/jira/browse/ARIES-669
     assertTrue(WovenProxy.class.isSynthetic());
   }
   
@@ -497,10 +520,12 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
    */
   @Test
   public void testWovenClassPlusInterfaces() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     Bundle b = mock(Bundle.class);
     BundleWiring wiring = getWiring(weavingLoader);
     when(b.adapt(BundleWiring.class)).thenReturn(wiring);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     Object toCall = new AsmProxyManager().createDelegatingProxy(b, Arrays.asList(
         getProxyClass(ProxyTestClassAbstract.class), Callable.class), new Callable() {
 

@@ -37,6 +37,7 @@ public class ProxyManagerActivator implements BundleActivator
     try {
       // Try load load a asm class (to make sure it's actually available
       // then create the asm factory
+//IC see: https://issues.apache.org/jira/browse/ARIES-1093
       Class.forName("org.objectweb.asm.ClassVisitor", false, ProxyManagerActivator.class.getClassLoader());
       classProxy = true;
     } catch (Throwable t) {
@@ -52,8 +53,10 @@ public class ProxyManagerActivator implements BundleActivator
       
       try {
         //if ASM is available then we should also try weaving
+//IC see: https://issues.apache.org/jira/browse/ARIES-1093
         Class<?> cls = Class.forName("org.apache.aries.proxy.impl.weaving.ProxyWeavingHook",
         		true, ProxyManagerActivator.class.getClassLoader());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1126
         cls.getConstructor(BundleContext.class).newInstance(context);
       } catch (Throwable t) {
         //We don't care about this, we just won't have registered the hook
@@ -63,6 +66,7 @@ public class ProxyManagerActivator implements BundleActivator
       managerService = new JdkProxyManager();
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-988
     registration = context.registerService(ProxyManager.class.getName(), managerService, null);
   }
 

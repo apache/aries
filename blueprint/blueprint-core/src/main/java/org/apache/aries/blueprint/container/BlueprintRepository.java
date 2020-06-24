@@ -95,6 +95,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
     
     public Object getInstance(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-623
         Future<Object> future = instances.get(name);
         if (future != null && future.isDone()) {
             try {
@@ -122,10 +123,13 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     public void putRecipe(String name, Recipe recipe) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-623
         if (instances.containsKey(name)) {
             throw new ComponentDefinitionException("Name " + name + " is already registered to instance " + getInstance(name));
         }
         recipes.put(name, recipe);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         invertedDependencies = null;
     }
     
@@ -134,6 +138,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
             throw new ComponentDefinitionException("Name " + name + " is already instanciated as " + getInstance(name) + " and cannot be removed.");
 
         recipes.remove(name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         invertedDependencies = null;
     }
 
@@ -157,6 +163,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
     
     public Object create(String name, Collection<Class<?>> proxyInterfaces) throws ComponentDefinitionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
             Object instance = createInstance(name);
@@ -185,6 +193,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
     
     public void createAll(Collection<String> names) throws ComponentDefinitionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         ExecutionContext oldContext = ExecutionContext.Holder.setContext(this);
         try {
             createInstances(names);
@@ -219,6 +229,8 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     private static <S, T> void addToMapSet(Map<S, Set<T>> map, S key, T value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         Set<T> values = map.get(key);
         if (values == null) {
             values = new HashSet<T>();
@@ -347,9 +359,11 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     private Map<String, Object> createInstances(Collection<String> names) {
         // Instance creation is synchronized inside each create method (via the use of futures), so that 
         // a recipe will only created once where appropriate
+//IC see: https://issues.apache.org/jira/browse/ARIES-623
         DependencyGraph graph = new DependencyGraph(this);
         HashMap<String, Object> objects = new LinkedHashMap<String, Object>();
         for (Map.Entry<String, Recipe> entry : graph.getSortedRecipes(names).entrySet()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1467
             String name = entry.getKey();
             ComponentMetadata component = blueprintContainer.getComponentDefinitionRegistry().getComponentDefinition(name);
             boolean prototype = (component instanceof BeanMetadata)
@@ -439,6 +453,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     public void push(Recipe recipe) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
         LinkedList<Recipe> list = stack.get();
         if (list != null && list.contains(recipe)) {
             ArrayList<Recipe> circularity = new ArrayList<Recipe>(list.subList(list.indexOf(recipe), list.size()));
@@ -456,6 +471,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
 
             throw new CircularDependencyException(circularity);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
         if (list == null) {
             list = new LinkedList<Recipe>();
             stack.set(list);
@@ -469,6 +485,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
 
     public boolean containsObject(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-623
         return instances.containsKey(name) || getRecipe(name) != null;
     }
 
@@ -517,6 +534,7 @@ public class BlueprintRepository implements Repository, ExecutionContext {
     }
     
     public boolean canConvert(Object value, ReifiedType type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-366
         return blueprintContainer.getConverter().canConvert(value, type);
     }
 

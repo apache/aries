@@ -34,6 +34,7 @@ public class LazyAttributeResolver implements BeanAnnotationHandler<Lazy> {
     @Override
     public void handleBeanAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         Lazy lazy = annotatedElement.getAnnotation(Lazy.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         beanEnricher.addAttribute("activation", lazy.value() ? "lazy" : "eager");
     }
 

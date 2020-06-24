@@ -34,6 +34,7 @@ public final class ProxyHandler implements InvocationHandler {
   {
     target = dispatcher;
     proxyManager = abstractProxyManager;
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     final InvocationListener nonNullListener;
     if (listener == null) {
       nonNullListener = new DefaultWrapper();
@@ -51,6 +52,7 @@ public final class ProxyHandler implements InvocationHandler {
         try {
           token = nonNullListener.preInvoke(proxy, method, args);
           inInvoke = true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1787
           result = nonNullListener.aroundInvoke(token, proxy, target, method, args);
           inInvoke = false;
           nonNullListener.postInvoke(token, proxy, method, result);
@@ -105,10 +107,12 @@ public final class ProxyHandler implements InvocationHandler {
   {
     // Unwrap calls for equals
     if (method.getName().equals("equals")
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
             && method.getParameterTypes().length == 1 &&
             method.getParameterTypes()[0] == Object.class) {
         Object targetObject = args[0];
         if (proxyManager.isProxy(targetObject)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-522
           args[0] = proxyManager.unwrap(targetObject).call();
         }
     } else if (method.getName().equals("finalize") && method.getParameterTypes().length == 0) {
@@ -116,6 +120,7 @@ public final class ProxyHandler implements InvocationHandler {
         return null;
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     return core.invoke(proxy, method, args);
   }
 

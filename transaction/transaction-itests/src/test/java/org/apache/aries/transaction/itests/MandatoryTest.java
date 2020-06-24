@@ -28,6 +28,7 @@ public class MandatoryTest extends AbstractIntegrationTest {
 
     @Test
     public void testMandatory() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         assertInsertSuccesful();
         assertInsertWithAppExceptionCommitted();
         assertMandatoryTransaction();
@@ -35,6 +36,7 @@ public class MandatoryTest extends AbstractIntegrationTest {
     
     @Test
     public void testInsertWithRuntimeExceptionRolledBack() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         assertInsertWithRuntimeExceptionRolledBack();
     }
     

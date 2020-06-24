@@ -26,6 +26,8 @@ import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 
 public class ScopeManager 
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		implements 
 				EventHook, 
 				EventListenerHook, 

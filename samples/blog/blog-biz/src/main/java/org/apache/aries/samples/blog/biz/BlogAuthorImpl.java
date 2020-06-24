@@ -32,6 +32,7 @@ public class BlogAuthorImpl implements BlogAuthor {
 	private Author author;
 
 	public BlogAuthorImpl(Author a) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-225
 		author = a;
 	}
 

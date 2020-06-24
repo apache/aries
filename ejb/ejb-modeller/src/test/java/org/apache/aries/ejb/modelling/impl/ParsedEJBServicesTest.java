@@ -47,6 +47,7 @@ public class ParsedEJBServicesTest {
   @Test
   public void testEmpty() throws ModellerException {
     ParsedEJBServices pes = new ParsedEJBServices();
+//IC see: https://issues.apache.org/jira/browse/ARIES-837
     pes.setAllowedNames(Arrays.asList(""));
     pes.addEJBView("Foo", "Stateless", "com.acme.Bar", false);
     pes.addEJBView("Baz", "Stateless", "com.acme.Bar", true);
@@ -89,6 +90,7 @@ public class ParsedEJBServicesTest {
   @Test
   public void testCases() throws ModellerException {
     ParsedEJBServices pes = new ParsedEJBServices();
+//IC see: https://issues.apache.org/jira/browse/ARIES-837
     pes.setAllowedNames(Arrays.asList("ALL", "Foo", " "));
     pes.addEJBView("Foo", "STATELESS", "com.acme.Bar", false);
     pes.addEJBView("Bar", "StAtElEsS", "com.acme.Bar", true);

@@ -15,6 +15,7 @@ public class RollbackOnBeanImpl implements RollbackOnBean {
 	@Override
 	@Transactional(value = TxType.REQUIRED)
 	public void throwException(String name, int value) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1690
 		rBean.insertRow(name, value, null);
 		throw new Exception("Test exception");
 	}

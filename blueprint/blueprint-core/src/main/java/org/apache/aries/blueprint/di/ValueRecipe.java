@@ -51,7 +51,10 @@ public class ValueRecipe extends AbstractRecipe {
     @Override
     protected Object internalCreate() throws ComponentDefinitionException {
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
             Type type = getValueType();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
             Object v = null;
             if (value instanceof ExtendedValueMetadata) {
                 v = ((ExtendedValueMetadata) value).getValue();

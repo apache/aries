@@ -33,5 +33,6 @@ public interface FieldAnnotationHandler<A extends Annotation> extends Annotation
      * @param contextEnricher context enricher
      * @param beanEnricher bean enricher
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1619
     void handleFieldAnnotation(Class<?> clazz, List<Field> fields, ContextEnricher contextEnricher, BeanEnricher beanEnricher);
 }

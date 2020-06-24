@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
 
 public class ParserServiceImpl implements ParserService {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1227
     final NamespaceHandlerRegistry _namespaceHandlerRegistry;
     final boolean _ignoreUnknownNamespaceHandlers;
 
@@ -58,6 +59,7 @@ public class ParserServiceImpl implements ParserService {
     }
 
     public ComponentDefinitionRegistry parse(List<URL> urls, Bundle clientBundle, boolean validate) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1227
         Parser parser = new Parser(null, _ignoreUnknownNamespaceHandlers);
         parser.parse(urls);
         return validateAndPopulate(parser, clientBundle, validate);
@@ -68,6 +70,7 @@ public class ParserServiceImpl implements ParserService {
     }
 
     public ComponentDefinitionRegistry parse(InputStream is, Bundle clientBundle, boolean validate) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1227
         Parser parser = new Parser(null, _ignoreUnknownNamespaceHandlers);
         parser.parse(is);
         return validateAndPopulate(parser, clientBundle, validate);
@@ -76,6 +79,7 @@ public class ParserServiceImpl implements ParserService {
     private ComponentDefinitionRegistry validateAndPopulate(Parser parser, Bundle clientBundle, boolean validate)
             throws IOException, SAXException {
         Set<URI> nsuris = parser.getNamespaces();
+//IC see: https://issues.apache.org/jira/browse/ARIES-372
         ComponentDefinitionRegistry cdr;
         NamespaceHandlerSet nshandlers = _namespaceHandlerRegistry.getNamespaceHandlers(nsuris, clientBundle);
         try {

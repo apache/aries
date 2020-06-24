@@ -29,6 +29,7 @@ public interface BlueprintConfiguration {
      * @return values of namespaces parameter
      */
     Set<String> getNamespaces();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
 
     /**
      * @return value of default activation parameter
@@ -39,6 +40,7 @@ public interface BlueprintConfiguration {
      * @return value of default availability parameter
      */
     Availability getDefaultAvailability();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1736
 
     /**
      * @return value of default timeout parameter
@@ -48,5 +50,6 @@ public interface BlueprintConfiguration {
     /**
      * @return custom parameters
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1605
     Map<String, String> getCustomParameters();
 }

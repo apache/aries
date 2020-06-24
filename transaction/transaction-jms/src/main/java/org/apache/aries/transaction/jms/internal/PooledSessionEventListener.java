@@ -44,5 +44,6 @@ interface PooledSessionEventListener {
      *      The PooledSession that has been closed.
      */
     void onSessionClosed(PooledSession session);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
 
 }

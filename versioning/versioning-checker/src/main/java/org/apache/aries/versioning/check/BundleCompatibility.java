@@ -558,6 +558,7 @@ public class BundleCompatibility {
 
   private SemanticVersioningClassVisitor getVisitor(IFile file, URLClassLoader loader) {
    
+//IC see: https://issues.apache.org/jira/browse/ARIES-994
     SerialVersionClassVisitor sv = new SerialVersionClassVisitor(null);
     SemanticVersioningClassVisitor oldcv = new SemanticVersioningClassVisitor(loader, sv);
     try {

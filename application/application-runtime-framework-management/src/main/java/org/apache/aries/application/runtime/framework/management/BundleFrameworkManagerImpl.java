@@ -65,13 +65,16 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   BundleContext _ctx;
   BundleFramework _sharedBundleFramework;
   BundleFrameworkFactory _bundleFrameworkFactory;
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
   BundleFrameworkConfigurationFactory _bundleFrameworkConfigurationFactory;
   Map<Bundle, BundleFramework> _frameworks = new HashMap<Bundle, BundleFramework>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-528
   Map<String, BundleFramework> _frameworksByAppScope = new HashMap<String, BundleFramework>();
   private List<UpdateStrategy> _updateStrategies = Collections.emptyList();
 
   public void setUpdateStrategies(List<UpdateStrategy> updateStrategies)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-399
     _updateStrategies = updateStrategies;
   }
 
@@ -87,6 +90,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
   public void setBundleFrameworkConfigurationFactory(BundleFrameworkConfigurationFactory bfcf)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
     _bundleFrameworkConfigurationFactory = bfcf;
   }
 
@@ -106,6 +110,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   
   public void close()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-591
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       try {
         _sharedBundleFramework.close();
@@ -138,6 +143,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
       _frameworks.put(isolatedFramework.getFrameworkBundle(), isolatedFramework);
       _frameworksByAppScope.put(app.getApplicationMetadata().getApplicationScope(), isolatedFramework);
+//IC see: https://issues.apache.org/jira/browse/ARIES-528
 
       frameworkBundle = isolatedFramework.getFrameworkBundle();
     }
@@ -150,6 +156,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   {
     Collection<Bundle> installedBundles = new ArrayList<Bundle>();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       // Shared bundle : Install to the shared bundle framework
       for (BundleSuggestion suggestion : bundlesToInstall)
@@ -180,8 +187,10 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
     // We should now have a bundleFramework
     if (bundleFramework != null) {
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-559
       try {  
           bundleFramework.init();
+//IC see: https://issues.apache.org/jira/browse/ARIES-559
 
   
         /**
@@ -211,6 +220,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
   public BundleFramework getSharedBundleFramework()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       return _sharedBundleFramework;
     }
@@ -220,6 +230,8 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   {
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       BundleFramework framework = getBundleFramework(b);
+//IC see: https://issues.apache.org/jira/browse/ARIES-528
+//IC see: https://issues.apache.org/jira/browse/ARIES-750
       if (framework != null) {        
         for (Bundle bundle : new ArrayList<Bundle>(framework.getBundles())) {
           framework.uninstall(bundle);
@@ -275,6 +287,8 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
       // Start all bundles inside the framework
       if (framework != null) // App Content
       {        
+//IC see: https://issues.apache.org/jira/browse/ARIES-559
+//IC see: https://issues.apache.org/jira/browse/ARIES-559
         framework.start();
         
         for (Bundle bundle : framework.getBundles())
@@ -293,6 +307,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
       // Stop all bundles inside the framework
       if (framework != null) // App Content
       {
+//IC see: https://issues.apache.org/jira/browse/ARIES-750
         for (Bundle bundle : new ArrayList<Bundle>(framework.getBundles())) {
           framework.stop(bundle);
         }
@@ -333,6 +348,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
     synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
       final BundleFramework appFwk = _frameworksByAppScope.get(app.getApplicationMetadata().getApplicationScope());
+//IC see: https://issues.apache.org/jira/browse/ARIES-528
 
       strategy.update(new UpdateStrategy.UpdateInfo() {
 

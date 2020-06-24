@@ -79,6 +79,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
     private boolean useAnonymousProducers = true;
 
     public void initConnectionsPool() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         if (this.connectionsPool == null) {
             this.connectionsPool = new GenericKeyedObjectPool<ConnectionKey, ConnectionPool>(
                     new KeyedPoolableObjectFactory<ConnectionKey, ConnectionPool>() {
@@ -256,6 +257,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
 
     public void start() {
         LOG.debug("Staring the PooledConnectionFactory: create on start = {}", isCreateConnectionOnStartup());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         stopped.set(false);
         if (isCreateConnectionOnStartup()) {
             try {
@@ -340,6 +342,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
      * @see #setBlockIfSessionPoolIsFull(boolean)
      */
     public boolean isBlockIfSessionPoolIsFull() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         return this.blockIfSessionPoolIsFull;
     }
 
@@ -413,6 +416,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
      * @return true if a Connection is created immediately on a call to {@link #start()}.
      */
     public boolean isCreateConnectionOnStartup() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         return createConnectionOnStartup;
     }
 

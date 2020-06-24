@@ -22,8 +22,10 @@ import org.osgi.framework.VersionRange;
 public class ImportPackageHeaderTest {
 	@Test
 	public void testVersionAttributeWithMultiplePackages() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-901
 		String headerStr = "org.foo;org.bar;org.foo.bar;version=1.3";
 		ImportPackageHeader header = new ImportPackageHeader(headerStr);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		ImportPackageHeader header2 = new ImportPackageHeader(headerStr);
 		assertClauses(header, 1);
 		assertVersionAttribute(header, "org.foo;org.bar;org.foo.bar", "1.3");

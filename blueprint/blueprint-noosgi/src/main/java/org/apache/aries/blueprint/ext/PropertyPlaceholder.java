@@ -139,6 +139,8 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
             }
         }
         if (v == null && systemProperties == SystemProperties.fallback) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
             v = getBlueprintContainer().getProperty(val);
             if (v != null) {
                 LOGGER.debug("Found system property {} with value {}", val, v);
@@ -153,6 +155,7 @@ public class PropertyPlaceholder extends AbstractPropertyPlaceholder {
         if (v == null) {
             LOGGER.debug("Property {} not found", val);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         return v;
     }
 

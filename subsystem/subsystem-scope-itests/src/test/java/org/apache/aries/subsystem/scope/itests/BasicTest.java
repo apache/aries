@@ -23,6 +23,8 @@ public class BasicTest extends AbstractTest {
 	 */
 	@Test
 	public void testRootScopeInitialState() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Scope scope = getScope();
 		Collection<Bundle> bundles = Arrays.asList(bundleContext.getBundles());
 		assertCollectionEquals(bundles, scope.getBundles());
@@ -60,6 +62,8 @@ public class BasicTest extends AbstractTest {
 	
 	@Test
 	public void testInstallBundleIntoRootScope() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Scope scope = getScope();
 		int previousSize = scope.getBundles().size();
 		String location = getBundleLocation("tb-2.jar");
@@ -77,6 +81,8 @@ public class BasicTest extends AbstractTest {
 	
 	@Test
 	public void testCreateChildScope() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Scope scope = getScope();
 		String name = "scope1";
 		ScopeUpdate parent = scope.newScopeUpdate();

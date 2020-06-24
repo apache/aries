@@ -116,6 +116,7 @@ public class EsaArtifactStub
 
     @Override
     public VersionRange getVersionRange() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1255
         return versionRange;
     }
 

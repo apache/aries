@@ -145,6 +145,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         if (isExtNamespace(namespace)) {
             String v = namespace.substring("http://aries.apache.org/blueprint/xmlns/blueprint-ext/v".length());
             return getClass().getResource("blueprint-ext-" + v + ".xsd");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1118
         } else if ("http://www.w3.org/XML/1998/namespace".equals(namespace)) {
             return getClass().getResource("xml.xsd");
         }
@@ -156,7 +157,9 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
 
     public Set<Class> getManagedClasses() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
         return new HashSet<Class>(Arrays.asList(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
                 PropertyPlaceholderExt.class
         ));
     }
@@ -165,11 +168,13 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         LOGGER.debug("Parsing element {{}}{}", element.getNamespaceURI(), element.getLocalName());
         if (nodeNameEquals(element, PROPERTY_PLACEHOLDER_ELEMENT)) {
             return parsePropertyPlaceholder(context, element);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1293
         } else if (nodeNameEquals(element, BEAN)) {
             return context.parseElement(BeanMetadata.class, context.getEnclosingComponent(), element);
         } else if (nodeNameEquals(element, REFERENCE)) {
             RefMetadata rd = context.parseElement(RefMetadata.class, context.getEnclosingComponent(), element);
             return createReference(context, rd.getComponentId());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1129
         } else if (nodeNameEquals(element, NULL_PROXY_ELEMENT)) {
             return parseNullProxy(element, context);
         } else {
@@ -182,14 +187,19 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             return decorateProxyMethod(node, component, context);
         } else if (node instanceof Attr && nodeNameEquals(node, ROLE_ATTRIBUTE)) {
             return decorateRole(node, component, context);
+//IC see: https://issues.apache.org/jira/browse/ARIES-88
         } else if (node instanceof Attr && nodeNameEquals(node, FIELD_INJECTION_ATTRIBUTE)) {
             return decorateFieldInjection(node, component, context);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         } else if (node instanceof Attr && nodeNameEquals(node, NON_STANDARD_SETTERS_ATTRIBUTE)) {
             return decorateNonStandardSetters(node, component, context);
+//IC see: https://issues.apache.org/jira/browse/ARIES-577
         } else if (node instanceof Attr && nodeNameEquals(node, DEFAULT_REFERENCE_BEAN)) {
             return decorateDefaultBean(node, component, context);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
         } else if (node instanceof Attr && nodeNameEquals(node, FILTER_ATTRIBUTE)) {
             return decorateFilter(node, component, context);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1141
         } else if (node instanceof Element && nodeNameEquals(node, ADDITIONAL_INTERFACES)) {
             return decorateAdditionalInterfaces(node, component, context);
         } else if (node instanceof Element && nodeNameEquals(node, BEAN)) {
@@ -197,10 +207,13 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         } else if (node instanceof Element && nodeNameEquals(node, REFERENCE)) {
             RefMetadata rd = context.parseElement(RefMetadata.class, component, (Element) node);
             return createReference(context, rd.getComponentId());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         } else if (node instanceof Attr && nodeNameEquals(node, DAMPING_ATTRIBUTE)) {
             return decorateDamping(node, component, context);
         } else if (node instanceof Attr && nodeNameEquals(node, LIFECYCLE_ATTRIBUTE)) {
             return decorateLifecycle(node, component, context);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
         } else if (node instanceof Attr && nodeNameEquals(node, RAW_CONVERSION_ATTRIBUTE)) {
             return decorateRawConversion(node, component, context);
         } else if (node instanceof Element && nodeNameEquals(node, ARGUMENT)) {
@@ -211,6 +224,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
 
     private ComponentMetadata parseNullProxy(Element element, ParserContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1129
         MutableBeanMetadata mb = context.createMetadata(MutableBeanMetadata.class);
         mb.setRuntimeClass(NullProxy.class);
         mb.addArgument(createRef(context, "blueprintContainer"), null, -1);
@@ -267,6 +281,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
 
     private ComponentMetadata decorateNonStandardSetters(Node node, ComponentMetadata component, ParserContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         if (!(component instanceof BeanMetadata)) {
             throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <bean> element");
         }
@@ -330,6 +345,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
 
     private ComponentMetadata decorateFilter(Node node,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
                                              ComponentMetadata component, ParserContext context)
     {
         if (!(component instanceof ServiceReferenceMetadata)) {
@@ -346,6 +362,8 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
 
     private ComponentMetadata decorateDamping(Node node, ComponentMetadata component, ParserContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         if (!(component instanceof ReferenceMetadata)) {
             throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <reference> element");
         }
@@ -382,6 +400,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
 
     private ComponentMetadata decorateRawConversion(Node node, ComponentMetadata component, ParserContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
         if (!(component instanceof BeanMetadata)) {
             throw new ComponentDefinitionException("Attribute " + node.getNodeName() + " can only be used on a <bean> element");
         }
@@ -424,6 +443,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         metadata.setProcessor(true);
         metadata.setId(getId(context, element));
         metadata.setScope(BeanMetadata.SCOPE_SINGLETON);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         metadata.setRuntimeClass(PropertyPlaceholderExt.class);
         metadata.setInitMethod("init");
         String prefix = element.hasAttribute(PLACEHOLDER_PREFIX_ATTRIBUTE)
@@ -434,6 +454,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
                                     ? element.getAttribute(PLACEHOLDER_SUFFIX_ATTRIBUTE)
                                     : "}";
         metadata.addProperty("placeholderSuffix", createValue(context, suffix));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
         String nullValue = element.hasAttribute(PLACEHOLDER_NULL_VALUE_ATTRIBUTE)
                                     ? element.getAttribute(PLACEHOLDER_NULL_VALUE_ATTRIBUTE)
                                     : null;
@@ -452,6 +473,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
         if (systemProperties != null) {
             metadata.addProperty("systemProperties", createValue(context, systemProperties));
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-727
         String evaluator = element.hasAttribute(EVALUATOR_ATTRIBUTE) ? element.getAttribute(EVALUATOR_ATTRIBUTE) : null;
         if (evaluator != null) {
             metadata.addProperty("evaluator", createReference(context, evaluator));
@@ -463,6 +485,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1141
                 if (isExtNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, DEFAULT_PROPERTIES_ELEMENT)) {
                         if (defaultsRef != null) {
@@ -492,6 +515,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element e = (Element) node;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1141
                 if (isExtNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, PROPERTY_ELEMENT)) {
                         BeanProperty prop = context.parseElement(BeanProperty.class, enclosingComponent, e);
@@ -549,8 +573,10 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
 
     private MutableReferenceMetadata createReference(ParserContext context, String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-727
         MutableReferenceMetadata m = context.createMetadata(MutableReferenceMetadata.class);
         // use the class instance directly rather than loading the class from the specified the interface name.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         m.setRuntimeInterface(PropertyEvaluatorExt.class);
         m.setFilter("(org.apache.aries.blueprint.ext.evaluator.name=" + value + ")");
         m.setBundleContext(ctx);

@@ -28,6 +28,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.List;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1712
 abstract class AbstractTransactionFactory<T extends Annotation> implements BeanAnnotationHandler<T>, MethodAnnotationHandler<T> {
     abstract String getTransactionTypeName(AnnotatedElement annotatedElement);
 
@@ -36,6 +37,7 @@ abstract class AbstractTransactionFactory<T extends Annotation> implements BeanA
     public void handleMethodAnnotation(Class<?> clazz, List<Method> methods, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         final String nsTx1 = Namespaces.getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), Namespaces.PATTERN_NS_TX1);
         if (nsTx1 != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1710
             enableAnnotationTx1(contextEnricher, nsTx1);
             for (final Method method : methods) {
                 final String transactionTypeName = getTransactionTypeName(method);
@@ -51,6 +53,7 @@ abstract class AbstractTransactionFactory<T extends Annotation> implements BeanA
                 });
             }
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1712
         final String nsTx2 = Namespaces.getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), Namespaces.PATTERN_NS_TX2);
         if (nsTx2 != null) {
             insertEnableAnnotationTx2(contextEnricher, nsTx2);
@@ -73,6 +76,7 @@ abstract class AbstractTransactionFactory<T extends Annotation> implements BeanA
                 }
             });
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1712
         final String nsTx2 = Namespaces.getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), Namespaces.PATTERN_NS_TX2);
         if (nsTx2 != null) {
             insertEnableAnnotationTx2(contextEnricher, nsTx2);
@@ -83,6 +87,7 @@ abstract class AbstractTransactionFactory<T extends Annotation> implements BeanA
     private void enableAnnotationTx1(ContextEnricher contextEnricher, final String nsTx1) {
         // TX1 enable-annotation are valid only in 1.2.0 schema
         if (Namespaces.isTX12(nsTx1) && getEnableAnnotationConfig(contextEnricher.getBlueprintConfiguration())) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1710
             insertEnableAnnotationTx1(contextEnricher, nsTx1);
         }
     }

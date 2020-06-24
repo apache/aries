@@ -97,6 +97,7 @@ public class Main {
 
             if (SpiFlyConstants.SPI_CONSUMER_HEADER.equals(consumerHeaderKey)) {
                 manifest.getMainAttributes().remove(new Attributes.Name(SpiFlyConstants.SPI_CONSUMER_HEADER));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1156
                 manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeaderVal);
             } else {
                 // It's SpiFlyConstants.REQUIRE_CAPABILITY
@@ -105,6 +106,7 @@ public class Main {
                 String newConsumerHeaderVal = consumerHeaderVal.replaceAll(
                         "osgi[.]extender;\\s*filter[:][=][\"]?[(]osgi[.]extender[=]osgi[.]serviceloader[.]processor[)][\"]?", "").
                         trim();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1156
                 if (newConsumerHeaderVal.startsWith(","))
                     newConsumerHeaderVal = newConsumerHeaderVal.substring(1);
 
@@ -243,6 +245,7 @@ public class Main {
         JarInputStream jis = new JarInputStream(new FileInputStream(jarFile));
         JarEntry je = null;
         while((je = jis.getNextJarEntry()) != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1934
             File outFile = new File(tempDir, je.getName());
             if (!outFile.getCanonicalPath().startsWith(tempDir.getCanonicalPath())) {
                 throw new IOException("The output file is not contained in the destination directory");

@@ -29,6 +29,7 @@ public class BlueprintProtectionDomain extends ProtectionDomain {
 
     public BlueprintProtectionDomain(Bundle bundle) {
         super(null, null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1768
         this.bundle = bundle;
     }
 

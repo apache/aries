@@ -66,6 +66,7 @@ public interface ModellingManager {
       Collection<ExportedService> exportedServices)
       throws InvalidAttributeException;
   
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   ModelledResource getModelledResource (String fileURI, 
       Attributes bundleAttributes,
       ExportedBundle exportedBundle, 

@@ -38,6 +38,7 @@ public class FelixCapabilityAdapter extends AbstractCapability {
 		String namespace = getNamespace();
 		if (ServiceNamespace.SERVICE_NAMESPACE.equals(namespace))
 			result.put(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, result.get(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE.toLowerCase()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1608
 		else if (BundleNamespace.BUNDLE_NAMESPACE.equals(namespace)) {
 			result.put(BundleNamespace.BUNDLE_NAMESPACE, result.get(org.apache.felix.bundlerepository.Resource.SYMBOLIC_NAME));
 			result.put(BundleNamespace.CAPABILITY_BUNDLE_VERSION_ATTRIBUTE, result.get(org.apache.felix.bundlerepository.Resource.VERSION));

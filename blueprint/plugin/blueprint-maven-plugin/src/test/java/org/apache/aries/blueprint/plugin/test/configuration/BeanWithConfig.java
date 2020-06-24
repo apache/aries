@@ -28,6 +28,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Config(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1683
         pid = "org.apache.aries.my",
         placeholderPrefix = "$[",
         placeholderSuffix = "]",
@@ -44,6 +45,7 @@ public class BeanWithConfig {
     @Produces
     @Named("producedWithConfigProperty")
     public MyProducedWithConstructor createBean(@ConfigProperty("1000") long test) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1661
         return null;
     }
 }

@@ -23,6 +23,7 @@ public class ProxyTestClassInnerClasses {
 
   public static class ProxyTestClassStaticInner {
     public String sayHello() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
       return "Hello";
     }
   }

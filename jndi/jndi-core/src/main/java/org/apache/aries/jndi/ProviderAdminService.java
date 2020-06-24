@@ -32,6 +32,7 @@ public class ProviderAdminService implements JNDIProviderAdmin {
     private DirObjectFactoryHelper helper;
 
     public ProviderAdminService(BundleContext defaultContext, BundleContext callerContext) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
         helper = new DirObjectFactoryHelper(defaultContext, callerContext);
     }
 

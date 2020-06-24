@@ -35,6 +35,7 @@ public class ImportedPackageTest {
 
 	@Test
 	public void testEqualsForIdenticalPackages() throws InvalidAttributeException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-545
 		String packageName = "package.name";
 		String version = "1.0.0";
 		ImportedPackage package1 = instantiatePackage(packageName, version);

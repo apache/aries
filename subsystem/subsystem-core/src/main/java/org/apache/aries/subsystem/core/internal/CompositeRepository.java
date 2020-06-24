@@ -28,6 +28,7 @@ public class CompositeRepository implements org.apache.aries.subsystem.core.repo
 	private final Collection<org.apache.aries.subsystem.core.repository.Repository> repositories;
 	
 	public CompositeRepository(org.apache.aries.subsystem.core.repository.Repository...repositories) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(Arrays.asList(repositories));
 	}
 	

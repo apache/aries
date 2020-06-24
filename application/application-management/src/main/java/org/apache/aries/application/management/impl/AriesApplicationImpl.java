@@ -56,7 +56,9 @@ public class AriesApplicationImpl implements AriesApplication {
   private Map<String, BundleConversion> _modifiedBundles = null;
   
   public AriesApplicationImpl(ApplicationMetadata meta, Set<BundleInfo> bundleInfo,
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       LocalPlatform lp) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     _applicationMetadata = meta;
     _bundleInfo = bundleInfo;
     _deploymentMetadata = null;
@@ -65,6 +67,7 @@ public class AriesApplicationImpl implements AriesApplication {
   }
   
   public AriesApplicationImpl(ApplicationMetadata meta, DeploymentMetadata dep, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       Set<BundleInfo> bundleInfo, LocalPlatform lp) {
     _applicationMetadata = meta;
     _bundleInfo = bundleInfo;
@@ -82,10 +85,12 @@ public class AriesApplicationImpl implements AriesApplication {
   }
 
   public DeploymentMetadata getDeploymentMetadata() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     return _deploymentMetadata;
   }
   
   public void setDeploymentMetadata (DeploymentMetadata dm) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     _deploymentMetadata = dm;
   }
 
@@ -98,6 +103,7 @@ public class AriesApplicationImpl implements AriesApplication {
   }
   
   public void setLocalPlatform (LocalPlatform lp) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     _localPlatform = lp;
   }
 
@@ -106,9 +112,11 @@ public class AriesApplicationImpl implements AriesApplication {
   }
 
   public void store(File f) throws FileNotFoundException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
     if (f.isDirectory()) {
       storeInDirectory(f);
     } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       OutputStream os = new FileOutputStream (f);
       store(os);
       os.close();
@@ -130,11 +138,13 @@ public class AriesApplicationImpl implements AriesApplication {
     // be quite large: the app server implementation will be better able to select
     // an appropriate location. 
     File tempDir = _localPlatform.getTemporaryDirectory();
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
     storeInDirectory(tempDir);    
     // We now have an exploded eba in tempDir which we need to copy into targetStream
     IOUtils.zipUp(tempDir, targetStream);
     if (!IOUtils.deleteRecursive(tempDir))
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       _logger.warn("APPMANAGEMENT0001E", tempDir);
     }
   }
@@ -149,8 +159,10 @@ public class AriesApplicationImpl implements AriesApplication {
     } finally {
       IOUtils.close(out);
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-182
     if (_deploymentMetadata != null) {
       try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
         out = IOUtils.getOutputStream(dir, AppConstants.DEPLOYMENT_MF);
         _deploymentMetadata.store(out);
       } finally {
@@ -166,6 +178,7 @@ public class AriesApplicationImpl implements AriesApplication {
       String bundleLocation = bi.getLocation();
       String bundleFileName = bundleLocation.substring(bundleLocation.lastIndexOf('/') + 1);
       try { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
         out = IOUtils.getOutputStream(dir, bundleFileName);
         URL bundleURL = new URL (bundleLocation);
         InputStream is = bundleURL.openStream();
@@ -178,8 +191,10 @@ public class AriesApplicationImpl implements AriesApplication {
 
     // Write the migrated bundles out
     if (_modifiedBundles != null) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-344
       for (Map.Entry<String, BundleConversion> modifiedBundle : _modifiedBundles.entrySet()) {
         try { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
           out = IOUtils.getOutputStream(dir, modifiedBundle.getKey());
           IOUtils.copy(modifiedBundle.getValue().getInputStream(), out);
         } finally { 

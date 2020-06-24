@@ -45,9 +45,11 @@ public class MyBean3 {
     @Inject
     @Named("serviceB2Id")
     ServiceB serviceB2;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1326
 
     @Inject
     MyProduced myProduced;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1306
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void txNotSupported() {

@@ -144,6 +144,7 @@ public final class MessageUtil
       rb = ResourceBundle.getBundle(baseName);
     } else {
       // if the bundle is OSGi use OSGi resolve rules as best as Java5 allows
+//IC see: https://issues.apache.org/jira/browse/ARIES-697
       ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
         public ClassLoader run() {
             return AriesFrameworkUtil.getClassLoader(b);

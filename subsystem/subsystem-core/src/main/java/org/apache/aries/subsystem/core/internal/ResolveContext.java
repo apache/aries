@@ -99,6 +99,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	}
 	
 	private boolean isResolved(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1445
 		return wirings.containsKey(resource);
 	}
 	
@@ -130,6 +131,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	}
 	
 	private void processWire(Wire wire, Requirement requirement, List<Capability> capabilities) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1667
 		if (requirement.equals(wire.getRequirement())) {
 			capabilities.add(wire.getCapability());
 		}
@@ -277,6 +279,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 
 	@Override
 	public Map<Resource, Wiring> getWirings() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1445
 		return Collections.emptyMap();
 	}
 
@@ -364,6 +367,7 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 	private boolean isValid(Capability capability, Requirement requirement) throws BundleException, IOException, InvalidSyntaxException, URISyntaxException {
 		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(capability.getNamespace()))
 			return true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1523
 		Resource provider = capability.getResource();
 		Resource requirer = requirement.getResource();
 		SubsystemManifest manifest = resource.getSubsystemManifest();
@@ -420,6 +424,8 @@ public class ResolveContext extends org.osgi.service.resolver.ResolveContext {
 		}
 		else {
 			// This is an already installed resource from the system repository.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 			if (Utils.isBundle(resource)) {
 				if (isContent(resource) 
 						&& this.resource.getSubsystemManifest().getSubsystemTypeHeader().getAriesProvisionDependenciesDirective().isResolve()) {

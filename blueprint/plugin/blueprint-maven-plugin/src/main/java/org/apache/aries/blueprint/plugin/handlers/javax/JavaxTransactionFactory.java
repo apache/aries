@@ -37,6 +37,7 @@ import java.util.List;
 
 public class JavaxTransactionFactory extends AbstractTransactionFactory<Transactional> {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1712
     String getTransactionTypeName(AnnotatedElement annotatedElement) {
         Transactional transactional = annotatedElement.getAnnotation(Transactional.class);
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());

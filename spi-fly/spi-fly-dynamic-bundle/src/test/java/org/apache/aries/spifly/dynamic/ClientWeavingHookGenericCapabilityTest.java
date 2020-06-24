@@ -83,6 +83,7 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testAutoConsumerSystemProperty() throws Exception {
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
 
         // Register the bundle that provides the SPI implementation.
         Bundle providerBundle = mockProviderBundle("impl1", 1);
@@ -187,6 +188,7 @@ public class ClientWeavingHookGenericCapabilityTest {
     @Test
     public void testHeadersFromFragment() throws Exception {
         // Register the bundle that provides the SPI implementation.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         Bundle providerBundle = mockProviderBundle("impl1", 1);
         activator.registerProviderBundle("org.apache.aries.mytest.MySPI", providerBundle, new HashMap<String, Object>());
 
@@ -270,6 +272,9 @@ public class ClientWeavingHookGenericCapabilityTest {
         Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
         Assert.assertEquals(1, wc.getDynamicImports().size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1814
+//IC see: https://issues.apache.org/jira/browse/ARIES-1814
+//IC see: https://issues.apache.org/jira/browse/ARIES-1814
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
         Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
@@ -670,6 +675,7 @@ public class ClientWeavingHookGenericCapabilityTest {
 
     @Test
     public void testVersionedRequirement() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(
             SpiFlyConstants.REQUIRE_CAPABILITY,
@@ -825,6 +831,7 @@ public class ClientWeavingHookGenericCapabilityTest {
     }
 
     private Bundle mockConsumerBundle(Dictionary<String, String> headers, Bundle ... otherBundles) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         return mockConsumerBundle(headers, null, otherBundles);
     }
 
@@ -841,6 +848,7 @@ public class ClientWeavingHookGenericCapabilityTest {
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
         EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(rev).anyTimes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
 
         EasyMock.replay(consumerBundle);
 

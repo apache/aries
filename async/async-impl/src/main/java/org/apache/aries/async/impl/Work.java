@@ -35,6 +35,7 @@ public class Work<T> implements Runnable {
 	private final AccessControlContext acc;
 	
 	public Work(MethodCall methodCall, PromiseImpl<T> promiseImpl) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1318
 		this.methodCall = methodCall;
 		this.promiseImpl = promiseImpl;
 		this.acc = AccessController.getContext();

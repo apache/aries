@@ -31,6 +31,7 @@ public class FailedPromisesException extends RuntimeException {
      * @param failed A collection of Promises that have been resolved with a failure. Must not be null.
      */
     public FailedPromisesException(Collection<Promise<?>> failed) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1317
         this(failed, null);
     }
 

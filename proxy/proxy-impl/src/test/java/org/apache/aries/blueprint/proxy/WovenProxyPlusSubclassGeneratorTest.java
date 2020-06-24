@@ -274,6 +274,7 @@ public class WovenProxyPlusSubclassGeneratorTest extends WovenProxyGeneratorTest
   protected Class<?> getProxyClass(Class<?> clazz) {
     try {
       return InterfaceProxyGenerator.getProxyInstance(testBundle, super.getProxyClass(clazz), Collections.EMPTY_SET, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
           new Callable<Object>() {
         public Object call() throws Exception {
           return null;

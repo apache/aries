@@ -49,6 +49,7 @@ public class ApplicationContextImpl implements AriesApplicationContext {
   private BundleContext _bundleContext;
   
   public ApplicationContextImpl (BundleContext b, AriesApplication app) throws BundleException, ManagementException { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     _bundleContext = b;
     _application = app;
     _bundles = new HashMap<BundleInfo, Bundle>();
@@ -56,6 +57,7 @@ public class ApplicationContextImpl implements AriesApplicationContext {
     DeploymentMetadata meta = _application.getDeploymentMetadata();
                 
     AriesApplicationResolver resolver = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-358
     PackageAdmin packageAdmin = null;
     
     ServiceReference resolverRef = b.getServiceReference(AriesApplicationResolver.class.getName());
@@ -67,6 +69,7 @@ public class ApplicationContextImpl implements AriesApplicationContext {
     
       List<DeploymentContent> bundlesToInstall = new ArrayList<DeploymentContent>(meta.getApplicationDeploymentContents());
       bundlesToInstall.addAll(meta.getApplicationProvisionBundles());
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
       bundlesToInstall.addAll(meta.getDeployedUseBundle());
       for (DeploymentContent content : bundlesToInstall) {
         String bundleSymbolicName = content.getContentName();
@@ -101,6 +104,7 @@ public class ApplicationContextImpl implements AriesApplicationContext {
       
       throw be;
     } finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-358
       if (resolver != null) {
           b.ungetService(resolverRef);
       }
@@ -167,6 +171,7 @@ public class ApplicationContextImpl implements AriesApplicationContext {
 
   public void start() throws BundleException 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-162
     _state = ApplicationState.STARTING;
     
     List<Bundle> bundlesWeStarted = new ArrayList<Bundle>();
@@ -205,6 +210,7 @@ public class ApplicationContextImpl implements AriesApplicationContext {
 
   public void setState(ApplicationState state)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-162
     _state = state;
   }
 }

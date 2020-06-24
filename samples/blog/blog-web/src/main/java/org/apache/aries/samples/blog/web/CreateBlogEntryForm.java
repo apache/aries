@@ -51,6 +51,7 @@ public class CreateBlogEntryForm extends FormServlet
     String tags = retrieveOrEmpty(req, "tags");
     
     out.println("<form name=\"createPost\" method=\"post\" action=\"CreateBlogEntry\">");
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
 
     out.println("<div class=\"textEntry\"><label>Title <input dojoType=\"dijit.form.TextBox\" type=\"text\" name=\"title\" value=\"" + title + "\"/></label></div>");
     out.println("<div class=\"textEntry\"><textarea dojoType=\"dijit.Editor\" id=\"text\" name=\"text\">" + text + "</textarea></div>");

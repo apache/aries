@@ -37,6 +37,7 @@ public class ConstructorFinder extends ClassVisitor
 
   public ConstructorFinder()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
     super(Opcodes.ASM8);
   }
 

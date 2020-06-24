@@ -310,6 +310,7 @@ public class AriesSubsystemTest extends SubsystemTest {
 	
 	private void assertCompositeAAfter(Subsystem compositeA) {
 		// applicationA, applicationB, bundleB, region context bundle
+//IC see: https://issues.apache.org/jira/browse/ARIES-968
 		assertConstituents(4, compositeA);
 		assertConstituent(compositeA, APPLICATION_A, null, SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION);
 		assertConstituent(compositeA, APPLICATION_B, null, SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION);

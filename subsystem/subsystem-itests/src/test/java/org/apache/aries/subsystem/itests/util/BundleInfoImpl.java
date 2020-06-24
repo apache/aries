@@ -48,6 +48,7 @@ public class BundleInfoImpl implements BundleInfo {
         	File jarFile = new File(pathToJar);
             this.path = jarFile.toURI().toURL().toString();
             JarFile f = new JarFile(new File(pathToJar));
+//IC see: https://issues.apache.org/jira/browse/ARIES-925
             try {
             	manifest = f.getManifest();
             }

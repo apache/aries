@@ -29,6 +29,7 @@ public class RecoverableConnectionPool extends XaConnectionPool {
     private String name;
 
     public RecoverableConnectionPool(Connection connection, TransactionManager transactionManager, String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         super(connection, transactionManager);
         this.name = name;
     }

@@ -37,6 +37,7 @@ class Namespaces {
     }
     
     static boolean isTX12(String namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1710
         return NS_TX_1_2_0.equals(namespace);
     }
 }

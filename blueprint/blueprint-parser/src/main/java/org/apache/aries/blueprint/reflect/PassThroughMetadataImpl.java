@@ -34,6 +34,7 @@ public class PassThroughMetadataImpl extends ComponentMetadataImpl implements Mu
     }
 
     public PassThroughMetadataImpl(PassThroughMetadata source) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-4
         super(source);
         this.object = source.getObject();
     }
@@ -48,6 +49,7 @@ public class PassThroughMetadataImpl extends ComponentMetadataImpl implements Mu
     }
 
     public void setObject(Object object) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-4
         this.object = object;
     }
 }

@@ -36,6 +36,7 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 	public void testClause() {
 		String clauseStr = "CDC-1.0/Foundation-1.0";
 		BundleRequiredExecutionEnvironmentHeader.Clause clause = new BundleRequiredExecutionEnvironmentHeader.Clause(clauseStr);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		assertClause(clause, clauseStr, "CDC/Foundation", "1.0", "(&(osgi.ee=CDC/Foundation)(version=1.0.0))");
 	}
 	
@@ -60,6 +61,7 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 	@Test
 	public void testHeaderWithOneClause() {
 		String value = "OSGi/Minimum-1.2";
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		String filter = "(&(osgi.ee=OSGi/Minimum)(version=1.2.0))";
 		BundleRequiredExecutionEnvironmentHeader header = new BundleRequiredExecutionEnvironmentHeader(value);
 		assertEquals("Wrong number of clauses", 1, header.getClauses().size());
@@ -82,6 +84,7 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 				"(&(osgi.ee=JavaSE)(version=1.4.0))" +
 				"(&(osgi.ee=JavaSE)(version=1.6.0))" +
 				"(&(osgi.ee=AA/BB)(version=1.7.0))" +
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 				"(osgi.ee=V1-1.5/V2-1.6)" +
 				"(osgi.ee=MyEE-badVersion))";
 		BundleRequiredExecutionEnvironmentHeader header = new BundleRequiredExecutionEnvironmentHeader(value);

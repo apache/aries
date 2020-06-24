@@ -26,6 +26,7 @@ public class VersionAttribute extends AbstractAttribute {
 	}
 	
 	public VersionAttribute(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		super(NAME, Version.parseVersion(value));
 	}
 

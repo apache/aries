@@ -34,6 +34,7 @@ public class BlueprintURLContextFactory implements ObjectFactory {
 
     private static AugmenterInvoker augmenterInvoker = null;
     final private Bundle _callersBundle;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1117
 
     public BlueprintURLContextFactory(Bundle callersBundle) {
         _callersBundle = callersBundle;

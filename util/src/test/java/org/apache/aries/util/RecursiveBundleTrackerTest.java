@@ -38,6 +38,7 @@ import static org.junit.Assert.*;
 
 public class RecursiveBundleTrackerTest {
     BundleContext context;
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
     InternalRecursiveBundleTracker sut;
     
     @Before
@@ -55,6 +56,7 @@ public class RecursiveBundleTrackerTest {
     
     @Test
     public void testCompositeLifeCycle() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
         makeSUT();
         CompositeBundle  cb = composite("test.composite", "1.0.0");
         assertNoTrackers();
@@ -106,6 +108,7 @@ public class RecursiveBundleTrackerTest {
     }
     
     private void assertNoTrackers() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
         assertTrue(BundleTrackerFactory.getAllBundleTracker().isEmpty());        
     }
     
@@ -119,6 +122,7 @@ public class RecursiveBundleTrackerTest {
         BundleTrackerCustomizer customizer = Skeleton.newMock(BundleTrackerCustomizer.class);
 
         sut = new InternalRecursiveBundleTracker(context, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-827
                 Bundle.INSTALLED | Bundle.STARTING | Bundle.ACTIVE | Bundle.STOPPING, customizer, true);
         
         sut.open();

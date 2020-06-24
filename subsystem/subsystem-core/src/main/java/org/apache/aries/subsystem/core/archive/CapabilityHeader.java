@@ -19,5 +19,6 @@ import org.osgi.resource.Capability;
 import org.osgi.resource.Resource;
 
 public interface CapabilityHeader<C extends Clause> extends Header<C> {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	List<? extends Capability> toCapabilities(Resource resource);
 }

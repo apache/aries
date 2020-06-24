@@ -13,6 +13,8 @@ public class Activator implements BundleActivator {
 	private ServiceReference<Scope> scopeRef;
 
 	public void start(BundleContext bundleContext) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-603
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
 		scopeRef = bundleContext.getServiceReference(Scope.class);
 		final Scope scope = bundleContext.getService(scopeRef);
 		scopeProviderReg = bundleContext.registerService(

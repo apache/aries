@@ -10,6 +10,7 @@ public class OnRollbackPojo {
 
     @Transactional(rollbackOn = BatchUpdateException.class)
     public void throwBatchUpdateException(String s) throws BatchUpdateException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1800
         throw new BatchUpdateException();
     }
 

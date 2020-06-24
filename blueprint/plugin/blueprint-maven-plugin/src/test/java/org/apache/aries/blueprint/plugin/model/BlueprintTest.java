@@ -70,6 +70,7 @@ public class BlueprintTest {
     private void assertSpecialRef(String expectedId, Class<?> clazz) {
         Blueprint blueprint = new Blueprint(blueprintConfiguration);
         BeanRef ref = blueprint.getMatching(new BeanTemplate(clazz, new Annotation[]{}));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1308
         assertEquals(expectedId, ref.id);
     }
 

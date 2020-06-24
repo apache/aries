@@ -87,6 +87,7 @@ public final class RecursiveBundleTracker {
      * the additional Class.forName check.
      */
     private static boolean areMultipleFrameworksAvailable(BundleContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-927
     	String compositeBundleFactory = "org.osgi.service.framework.CompositeBundleFactory";
     	try {
     		Class.forName(compositeBundleFactory);
@@ -103,6 +104,7 @@ public final class RecursiveBundleTracker {
      * @see BundleTracker#open()
      */
     public void open() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-827
         if (tracker != null) {
             tracker.open();
         }
@@ -117,6 +119,7 @@ public final class RecursiveBundleTracker {
      * @see BundleTracker#close()
      */
     public void close() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-827
         if (tracker != null) {
             tracker.close();
         }

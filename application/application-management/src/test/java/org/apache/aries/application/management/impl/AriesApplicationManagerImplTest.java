@@ -93,6 +93,7 @@ public class AriesApplicationManagerImplTest {
 
     private AriesApplicationResolver resolver;
     public Manifest generateDeploymentManifest(AriesApplication app,
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         ResolveConstraint... constraints) throws ResolverException
     {
       
@@ -139,6 +140,8 @@ public class AriesApplicationManagerImplTest {
     }
 
     public Manifest generateDeploymentManifest(String appName,
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         String appVersion, Collection<Content> appContent,
         Collection<ModelledResource> byValueBundles,
         Collection<Content> useBundleSet, Collection<Content> otherBundles,
@@ -148,7 +151,9 @@ public class AriesApplicationManagerImplTest {
     }
 
     public DeployedBundles generateDeployedBundles(ApplicationMetadata appMetadata,
+//IC see: https://issues.apache.org/jira/browse/ARIES-464
         Collection<ModelledResource> byValueBundles, Collection<Content> otherBundles)
+//IC see: https://issues.apache.org/jira/browse/ARIES-542
         throws ResolverException {
       // Not required or used in this test
       return null;
@@ -165,6 +170,7 @@ public class AriesApplicationManagerImplTest {
   static class DummyResolver implements AriesApplicationResolver {
     Set<BundleInfo> nextResult;
     public Set<BundleInfo> resolve(AriesApplication app, ResolveConstraint... constraints) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-188
       Set<BundleInfo> info = new HashSet<BundleInfo>(nextResult);
       
       info.addAll(app.getBundleInfo());
@@ -179,7 +185,9 @@ public class AriesApplicationManagerImplTest {
       return null;
     }
     public Collection<ModelledResource> resolve(String appName, String appVersion,
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         Collection<ModelledResource> byValueBundles, Collection<Content> inputs)
+//IC see: https://issues.apache.org/jira/browse/ARIES-542
         throws ResolverException
     {
       
@@ -187,14 +195,17 @@ public class AriesApplicationManagerImplTest {
     }
     @Override
     public Collection<ModelledResource> resolveInIsolation(String appName,
+//IC see: https://issues.apache.org/jira/browse/ARIES-740
             String appVersion, Collection<ModelledResource> byValueBundles,
             Collection<Content> inputs) throws ResolverException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-162
         return null;
     }
   }
   
   static class DummyLocalPlatform implements LocalPlatform {
     public File getTemporaryDirectory() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       File f = File.createTempFile("ebaTmp", null);
       f.delete();
       f.mkdir();
@@ -209,11 +220,14 @@ public class AriesApplicationManagerImplTest {
   static class DummyConverter implements BundleConverter {
 
 	public BundleConversion convert(IDirectory parentEba, IFile toBeConverted)
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
 			throws ConversionException {
 		if (toBeConverted.getName().equals("helloWorld.war")) {
 			InputStream is = null;
             try {
             	is = new FileInputStream(new File("../src/test/resources/conversion/MANIFEST.MF"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
+//IC see: https://issues.apache.org/jira/browse/ARIES-257
             	Manifest warManifest = new Manifest(is);           
             	final File convertedFile = new File("./ariesApplicationManagerImplTest/conversion/helloWorld.war");
             	IOUtils.jarUp(new File("../src/test/resources/conversion/conversion.eba/helloWorld.war"), convertedFile, warManifest);            
@@ -221,6 +235,7 @@ public class AriesApplicationManagerImplTest {
             	return new BundleConversion() {
 
 					public BundleInfo getBundleInfo() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
 						return new SimpleBundleInfo(BundleManifest.fromBundle(convertedFile), location);
 					}
 
@@ -254,6 +269,7 @@ public class AriesApplicationManagerImplTest {
   @BeforeClass 
   public static void preTest() throws Exception { 
     new File("ariesApplicationManagerImplTest/conversion").mkdirs();
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     EbaUnitTestUtils.createEba("../src/test/resources/bundles/test.eba", TEST_EBA);
     File src = new File ("../src/test/resources/bundles/repository/a.handy.persistence.library.jar");
     File dest = new File ("ariesApplicationManagerImplTest/a.handy.persistence.library.jar");
@@ -262,9 +278,11 @@ public class AriesApplicationManagerImplTest {
   }
   
   AriesApplicationManagerImpl _appMgr;
+//IC see: https://issues.apache.org/jira/browse/ARIES-121
   ApplicationMetadataFactory _appMetaFactory;
   DummyResolver _resolver;
   DummyConverter _converter;
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   DummyDMManager _dmMgr;
   @Before
   public void setup() { 
@@ -275,6 +293,7 @@ public class AriesApplicationManagerImplTest {
     _converter = new DummyConverter();
     List<BundleConverter> bundleConverters = new ArrayList<BundleConverter>();
     bundleConverters.add(_converter);
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     _resolver = new DummyResolver(); 
     _dmMgr = new DummyDMManager();
     _dmMgr.setResolver(_resolver);
@@ -303,6 +322,7 @@ public class AriesApplicationManagerImplTest {
     DeploymentMetadata dm = app.getDeploymentMetadata();
     List<DeploymentContent> dcList = dm.getApplicationDeploymentContents();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-188
     assertEquals (2, dcList.size());
     DeploymentContent dc1 = new DeploymentContentImpl ("foo.bar.widgets;deployed-version=1.1.0");
     DeploymentContent dc2 = new DeploymentContentImpl ("my.business.logic;deployed-version=1.1.0");
@@ -319,12 +339,15 @@ public class AriesApplicationManagerImplTest {
   
   @Test
   public void testCreateAndConversion() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
 	  	AriesApplication app = createApplication (CONVERSION_EBA);	    
 	    ApplicationMetadata appMeta = app.getApplicationMetadata();	    
 	    assertEquals (appMeta.getApplicationName(), "conversion.eba");	   
 	    assertEquals (appMeta.getApplicationSymbolicName(), "conversion.eba");	    
 	    assertEquals (appMeta.getApplicationVersion(), new Version("0.0"));	    
 	    List<Content> appContent = appMeta.getApplicationContents();
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
+//IC see: https://issues.apache.org/jira/browse/ARIES-257
 	    assertEquals (2, appContent.size());
 	    Content fbw = new ContentImpl("hello.world.jar;version=\"[1.1.0, 1.1.0]\"");
 	    Content mbl = new ContentImpl("helloWorld.war;version=\"[0.0.0, 0.0.0]\"");
@@ -346,6 +369,8 @@ public class AriesApplicationManagerImplTest {
 	    assertEquals(1, dcList.size());
 	    assertTrue (dcList.contains(dc3));
 	    
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
+//IC see: https://issues.apache.org/jira/browse/ARIES-257
 	    assertEquals(2, app.getBundleInfo().size());
 	    BundleInfo info;
 	    info = findBundleInfo(app.getBundleInfo(), "hello.world.jar");
@@ -369,6 +394,7 @@ public class AriesApplicationManagerImplTest {
   
   @Test
   public void testStoreAndReload() throws Exception { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     AriesApplication app = createApplication (TEST_EBA);
     File dest = new File ("ariesApplicationManagerImplTest/stored.eba");
     app.store(dest);
@@ -394,6 +420,7 @@ public class AriesApplicationManagerImplTest {
     
     AriesApplication newApp = _appMgr.createApplication(storedEba);
     DeploymentMetadata dm = newApp.getDeploymentMetadata();
+//IC see: https://issues.apache.org/jira/browse/ARIES-188
     assertEquals (2, dm.getApplicationDeploymentContents().size());
     assertEquals(1, dm.getApplicationProvisionBundles().size());
     assertEquals (dm.getApplicationSymbolicName(), app.getApplicationMetadata().getApplicationSymbolicName());
@@ -403,6 +430,7 @@ public class AriesApplicationManagerImplTest {
   @Test
   public void testUpdate() throws Exception {
     AriesApplication app = createApplication(TEST_EBA);
+//IC see: https://issues.apache.org/jira/browse/ARIES-399
 
     DeploymentMetadata depMf = createUpdateDepMf();
     
@@ -504,6 +532,7 @@ public class AriesApplicationManagerImplTest {
     String persistenceLibraryLocation = "../src/test/resources/bundles/repository/a.handy.persistence.library.jar";
     File persistenceLibrary = new File (persistenceLibraryLocation);
     BundleManifest mf = BundleManifest.fromBundle(persistenceLibrary);
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
     BundleInfo resolvedPersistenceLibrary = new SimpleBundleInfo(mf, persistenceLibraryLocation); 
     Field v = SimpleBundleInfo.class.getDeclaredField("_version");
     v.setAccessible(true);
@@ -511,8 +540,10 @@ public class AriesApplicationManagerImplTest {
     nextResolverResult.add(resolvedPersistenceLibrary);
     _resolver.setNextResult(nextResolverResult);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-192
     IDirectory testEba = FileSystem.getFSRoot(new File(fileName));    
     AriesApplication app = _appMgr.createApplication(testEba);
+//IC see: https://issues.apache.org/jira/browse/ARIES-182
     app = _appMgr.resolve(app);
     return app;
   }

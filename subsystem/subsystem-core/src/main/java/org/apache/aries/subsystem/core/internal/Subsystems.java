@@ -60,6 +60,7 @@ public class Subsystems {
 			}
 			constituents.add(constituent);
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		subsystem.addedConstituent(constituent, referenced);
 	}
 	
@@ -85,6 +86,7 @@ public class Subsystems {
 			Collection<Resource> result = subsystemToConstituents.get(subsystem);
 			if (result == null)
 				return Collections.emptyList();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return Collections.unmodifiableCollection(new ArrayList<Resource>(result));
 		}
 	}
@@ -124,6 +126,7 @@ public class Subsystems {
 				}
 				Coordination coordination = Utils.createCoordination();
 				try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 					root = new BasicSubsystem(resource);
 					// TODO This initialization is a bit brittle. The root subsystem
 					// must be gotten before anything else will be able to use the
@@ -141,10 +144,12 @@ public class Subsystems {
 			else {
 				// There are persisted subsystems.
 				Coordination coordination = Utils.createCoordination();
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 				Collection<BasicSubsystem> subsystems = new ArrayList<BasicSubsystem>(fileList.size());
 				try {
 					for (File f : fileList) {
 						BasicSubsystem s = new BasicSubsystem(f);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1637
 						if (State.UNINSTALLED.equals(s.getState())) {
 							// left over cache, delete this
 							IOUtils.deleteRecursive(f);
@@ -159,6 +164,8 @@ public class Subsystems {
 									root.getDeploymentManifest().getHeaders().get(
 											DeploymentManifest.ARIESSUBSYSTEM_LASTID).getValue()));
 					graph = new SubsystemGraph(root);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					ResourceInstaller.newInstance(coordination, root, root).install();
 					populateRootSubsystem(root, coordination);
 				} catch (Exception e) {
@@ -180,6 +187,7 @@ public class Subsystems {
 		BundleContext context = Activator.getInstance().getBundleContext().getBundle(org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION).getBundleContext();
 		for (Bundle bundle : context.getBundles()) {
 			BundleRevision revision = bundle.adapt(BundleRevision.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-990
 			if (revision == null)
 				// The bundle has been uninstalled. Do not process.
 				continue;
@@ -203,6 +211,7 @@ public class Subsystems {
 	}
 	
 	public Collection<BasicSubsystem> getSubsystems() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		return new ArrayList<BasicSubsystem>(idToSubsystem.values());
 	}
 	
@@ -231,6 +240,7 @@ public class Subsystems {
 		ArrayList<BasicSubsystem> result = new ArrayList<BasicSubsystem>();
 		synchronized (subsystemToConstituents) {
 			for (BasicSubsystem subsystem : subsystemToConstituents.keySet())
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				if (getConstituents(subsystem).contains(constituent))
 					result.add(subsystem);
 		}
@@ -253,7 +263,10 @@ public class Subsystems {
 	public void removeConstituent(BasicSubsystem subsystem, Resource constituent) {
 		synchronized (subsystemToConstituents) {
 			Set<Resource> constituents = subsystemToConstituents.get(subsystem);
+//IC see: https://issues.apache.org/jira/browse/ARIES-941
+//IC see: https://issues.apache.org/jira/browse/ARIES-943
 			if (constituents != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				constituents.remove(constituent);
 				if (constituents.isEmpty())
 					subsystemToConstituents.remove(subsystem);
@@ -287,6 +300,7 @@ public class Subsystems {
 	
 	private void removeIdToSubsystem(BasicSubsystem subsystem) {
 		long id = subsystem.getSubsystemId();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		idToSubsystem.remove(id);
 	}
 	

@@ -186,6 +186,7 @@ public class ManifestHeaderProcessorTest
 
     int k =0;
     assertEquals("The number of the packages is wrong.", 1, exportPackageReturn.size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     for (NameValuePair nvp : exportPackageReturn) {
       if (nvp.getName().equals("com.acme.foo")) {
         k++;
@@ -203,6 +204,7 @@ public class ManifestHeaderProcessorTest
 
     k =0;
     assertEquals("The number of the packages is wrong.", 2, exportPackageReturn.size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     for (NameValuePair nvp : exportPackageReturn) {
       if (nvp.getName().equals("com.acme.foo")) {
         k++;
@@ -269,6 +271,7 @@ public class ManifestHeaderProcessorTest
      */
     @Test
     public void testGenerateFilter() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       Map<String, String> valueMap = new HashMap<String, String>();
       valueMap.put("version", "[1.2, 2.3]");
       valueMap.put("resulution:", "mandatory");
@@ -280,6 +283,7 @@ public class ManifestHeaderProcessorTest
 
       valueMap.clear();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       valueMap.put("version", "(1.2, 2.3]");
       valueMap.put("resulution:", "mandatory");
       valueMap.put("company", "com");
@@ -490,6 +494,7 @@ public class ManifestHeaderProcessorTest
     @Test
     public void testParseFilter()
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       Map<String,String> attrs = ManifestHeaderProcessor.parseFilter("(package=com.ibm.test)");
       assertEquals("com.ibm.test", attrs.get("package"));
 

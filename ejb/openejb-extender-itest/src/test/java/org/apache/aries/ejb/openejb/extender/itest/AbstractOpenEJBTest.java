@@ -31,6 +31,7 @@ public abstract class AbstractOpenEJBTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1207
         return options(
                 junitBundles(),
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),

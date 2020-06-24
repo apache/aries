@@ -45,6 +45,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
      * @param environment
      */
     public ServiceRegistryContext(BundleContext callerContext, Hashtable<?, ?> environment) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
         super(callerContext, environment);
     }
 
@@ -58,6 +59,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
     }
 
     public NamingEnumeration<NameClassPair> list(String name) throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
         return list(parse(name));
     }
 
@@ -66,6 +68,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
     }
 
     public NamingEnumeration<Binding> listBindings(String name) throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
         return listBindings(parse(name));
     }
 
@@ -80,6 +83,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
         if (validName.hasInterface()) {
             if (OsgiName.FRAMEWORK_PATH.equals(pathFragment) && "bundleContext".equals(validName.getServiceName())) {
                 try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-916
                     SecurityManager sm = System.getSecurityManager();
                     if (sm != null) {
                         AdminPermission adminPermission =
@@ -87,6 +91,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
                         sm.checkPermission(adminPermission);
                     }
                 } catch (AccessControlException accessControlException) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
                     NamingException namingException = new NameNotFoundException("The Caller does not have permissions to get the BundleContext.");
                     namingException.setRootCause(accessControlException);
                     throw namingException;
@@ -94,6 +99,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
                 return callerContext;
             } else if ((OsgiName.SERVICE_PATH.equals(pathFragment) && OsgiName.OSGI_SCHEME.equals(schemeName))
                     || (OsgiName.SERVICES_PATH.equals(pathFragment) && OsgiName.ARIES_SCHEME.equals(schemeName))) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
                 result = ServiceHelper.getService(callerContext, validName, null, true, env, OsgiName.OSGI_SCHEME.equals(schemeName));
             } else if (OsgiName.SERVICE_LIST_PATH.equals(pathFragment)) {
                 result = new ServiceRegistryListContext(callerContext, env, validName);
@@ -113,6 +119,7 @@ public class ServiceRegistryContext extends AbstractServiceRegistryContext imple
 
     private OsgiName convert(Name name) throws NamingException {
         if (name instanceof OsgiName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
             return (OsgiName) name;
         } else if (parentName != null) {
             return new OsgiName(parentName.toString() + "/" + name.toString());

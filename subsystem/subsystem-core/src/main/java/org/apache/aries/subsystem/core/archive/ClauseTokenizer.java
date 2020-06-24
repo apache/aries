@@ -22,12 +22,14 @@ public class ClauseTokenizer {
 	
 	public ClauseTokenizer(String value) {
 		int numOfChars = value.length();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		StringBuilder builder = new StringBuilder(numOfChars);
 		int numOfQuotes = 0;
 		for (char c : value.toCharArray()) {
 			numOfChars--;
 			if (c == ',') {
 				if (numOfQuotes % 2 == 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					addClause(builder.toString().trim());
 					builder = new StringBuilder(numOfChars);
 					continue;

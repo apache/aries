@@ -25,6 +25,7 @@ public class UninstallAction extends AbstractAction {
 	@Override
 	public Object run() {
 		// Protect against re-entry now that cycles are supported.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 		if (!Activator.getInstance().getLockingStrategy().set(State.UNINSTALLING, target)) {
 			return null;
 		}
@@ -47,6 +48,7 @@ public class UninstallAction extends AbstractAction {
 			}
 			finally {
 				// Release the global write lock.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 				Activator.getInstance().getLockingStrategy().writeUnlock();
 			}
 		}

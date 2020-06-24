@@ -65,6 +65,7 @@ public class RunningApplication implements ServiceTrackerCustomizer {
   private ServiceTracker tracker;
   
   private final ConcurrentMap<String, ConcurrentMap<Context, PersistenceUnitReferenceInfo>> 
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
     unitRegistrations = new ConcurrentHashMap<String, ConcurrentMap<Context, PersistenceUnitReferenceInfo>>();
   
   private final ConcurrentMap<String, ConcurrentMap<Context, PersistenceContextReferenceInfo>> 
@@ -76,6 +77,7 @@ public class RunningApplication implements ServiceTrackerCustomizer {
     
     for(EnterpriseBeanInfo bean : enterpriseBeans) {
       for(PersistenceUnitReferenceInfo pui : bean.jndiEnc.persistenceUnitRefs) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
         ConcurrentMap<Context, PersistenceUnitReferenceInfo> map = unitRegistrations.
            get(pui.persistenceUnitName);
         
@@ -140,6 +142,7 @@ public class RunningApplication implements ServiceTrackerCustomizer {
     Dictionary<String, String> d = bundle.getHeaders();
     String valueOfExportEJBHeader = d.get("Export-EJB");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-837
     if((valueOfExportEJBHeader == null)){
       return;
     }
@@ -153,6 +156,7 @@ public class RunningApplication implements ServiceTrackerCustomizer {
       names.add(nvp.getName());
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-837
     if(valueOfExportEJBHeader.trim().equals("")){
         names = new AllCollection<String>();
       }
@@ -240,6 +244,7 @@ public class RunningApplication implements ServiceTrackerCustomizer {
       
         EntityManagerFactory emf = (EntityManagerFactory)bundle.getBundleContext().getService(reference);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
         for(Entry<Context, PersistenceUnitReferenceInfo> e : pUnitRefs.entrySet()) {
           try {
             e.getKey().bind(e.getValue().referenceName, emf);
@@ -277,6 +282,8 @@ public class RunningApplication implements ServiceTrackerCustomizer {
 
   public void removedService(ServiceReference reference, Object service) {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
     Map<Context, PersistenceUnitReferenceInfo> pUnitRefs = unitRegistrations.
         get(reference.getProperty(PersistenceUnitConstants.OSGI_UNIT_NAME));
     Map<Context, PersistenceContextReferenceInfo> pCtxRefs = contextRegistrations.
@@ -291,6 +298,7 @@ public class RunningApplication implements ServiceTrackerCustomizer {
     
     if(pUnitRefs.size() > 0 || pCtxRefs.size() > 0) {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
       for(Entry<Context, PersistenceUnitReferenceInfo> e : pUnitRefs.entrySet()) {
         try {
           e.getKey().unbind(e.getValue().referenceName);

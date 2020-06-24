@@ -29,10 +29,12 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public class OsgiIdentityRequirement extends AbstractRequirement {
 	private static Filter createFilter(String symbolicName, Version version, String type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-730
 		return createFilter(
 				symbolicName,
 				new StringBuilder()
 					.append('(')
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					.append(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE)
 					.append('=')
 					.append(version)
@@ -44,11 +46,13 @@ public class OsgiIdentityRequirement extends AbstractRequirement {
 	private static Filter createFilter(String symbolicName, VersionRange versionRange, String type) {
 		return createFilter(
 				symbolicName,
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				versionRange.toFilterString(Constants.VERSION_ATTRIBUTE),
 				type);
 	}
 	
 	private static Filter createFilter(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Map<String, Object> attributes = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0).getAttributes();
 		String symbolicName = String.valueOf(attributes.get(IdentityNamespace.IDENTITY_NAMESPACE));
 		Version version = Version.parseVersion(String.valueOf(attributes.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE)));
@@ -67,6 +71,7 @@ public class OsgiIdentityRequirement extends AbstractRequirement {
 	
 	private static String createFilterString(String symbolicName, String versionFilter, String type) {
 		return new StringBuilder("(&(")
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			.append(IdentityNamespace.IDENTITY_NAMESPACE)
 			.append('=')
 			.append(symbolicName)
@@ -98,6 +103,7 @@ public class OsgiIdentityRequirement extends AbstractRequirement {
 	private OsgiIdentityRequirement(Filter filter, Resource resource, boolean transitive) {
 		this.resource = resource;
 		this.transitive = transitive;
+//IC see: https://issues.apache.org/jira/browse/ARIES-748
 		directives.put(Constants.FILTER_DIRECTIVE, filter.toString());
 		// TODO Let's not add these directives until we know what we're doing and that
 		// we really need them.
@@ -117,6 +123,7 @@ public class OsgiIdentityRequirement extends AbstractRequirement {
 
 	@Override
 	public String getNamespace() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return IdentityNamespace.IDENTITY_NAMESPACE;
 	}
 

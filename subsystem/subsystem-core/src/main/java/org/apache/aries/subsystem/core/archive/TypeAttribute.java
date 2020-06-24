@@ -23,6 +23,7 @@ public class TypeAttribute extends AbstractAttribute {
 	public static final String NAME = "type";
 	
 	public static TypeAttribute newInstance(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-730
 		if (value == null || value.length() == 0)
 			return DEFAULT;
 		return new TypeAttribute(value);
@@ -37,6 +38,7 @@ public class TypeAttribute extends AbstractAttribute {
 	}
 
 	public String getType() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (String)getValue();
 	}
 }

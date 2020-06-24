@@ -51,6 +51,7 @@ public class WeavingData {
         this.argRestrictions = argRestrictions;
         this.allowedBundles = allowedBundles;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
         StringBuffer sb = new StringBuffer();
         sb.append("{WeavingData: {className: '");
         sb.append(getClassName());
@@ -101,6 +102,7 @@ public class WeavingData {
 
     @Override
     public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
         return _string;
     }
 

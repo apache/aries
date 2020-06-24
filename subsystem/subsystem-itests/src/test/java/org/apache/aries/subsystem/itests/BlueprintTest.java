@@ -21,6 +21,7 @@ public class BlueprintTest extends SubsystemTest
     private static final String BLUEPRINT_ESA = "target/blueprint.esa";
 
     protected void init() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
         writeToFile(createBlueprintEsa(), BLUEPRINT_ESA);
     }
 
@@ -31,6 +32,7 @@ public class BlueprintTest extends SubsystemTest
 		try { 
 			startSubsystem(subsystem);
 			BundleContext bc = subsystem.getBundleContext();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 			Hello h = new RichBundleContext(bc).getService(Hello.class);
 			String message = h.saySomething();
 			assertEquals("Wrong message back", "messageFromBlueprint", message);
@@ -41,6 +43,7 @@ public class BlueprintTest extends SubsystemTest
 	}
 
     private InputStream createBlueprintEsa() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 	    return TinyBundles.bundle()
 	        .add("OSGI-INF/SUBSYSTEM.MF", getResource("blueprint/OSGI-INF/SUBSYSTEM.MF"))
 	        .add("blueprint.jar", createBlueprintTestBundle())

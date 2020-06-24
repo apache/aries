@@ -55,6 +55,7 @@ public class EJBServiceExport implements ExportedService {
     
     serviceProperties = new HashMap<String, Object>();
     serviceProperties.put("ejb.name", ejbName);
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     serviceProperties.put("ejb.type", correctCase(ejbType));
     if(remote)
       serviceProperties.put("service.exported.interfaces", interfaceName);
@@ -72,6 +73,7 @@ public class EJBServiceExport implements ExportedService {
    * @return
    */
   private String correctCase(String ejbType) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     String result = ejbType.substring(0, 1).toUpperCase();
     result += ejbType.substring(1).toLowerCase();
     return result;

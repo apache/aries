@@ -36,6 +36,7 @@ public class ExportedPackageTest {
 
 	@Test
 	public void testEqualsForIdenticalPackages() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-545
 		String packageName = "package.name";
 		String version = "1.0.0";
 		ExportedPackage package1 = instantiatePackage(packageName, version);

@@ -67,6 +67,7 @@ public class KeySequenceDirect {
                 int keyVal = 0;
                 stmt2.setString(1, keyName);
                 stmt2.setInt(2, keyVal);
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
                 stmt2.executeUpdate();
                 stmt2.close();
                 stmt.close();
@@ -83,6 +84,7 @@ public class KeySequenceDirect {
             stmt = conn.prepareStatement(updateKeyValueSQL);
             stmt.setInt(1, keyVal + TradeConfig.KEYBLOCKSIZE);
             stmt.setString(2, keyName);
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
             stmt.executeUpdate();
             stmt.close();
 

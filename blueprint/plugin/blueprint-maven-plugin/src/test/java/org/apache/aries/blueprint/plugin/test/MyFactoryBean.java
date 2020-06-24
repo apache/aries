@@ -33,6 +33,7 @@ public class MyFactoryBean {
     
     @Inject
     ServiceB serviceB;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1306
 
     @Produces
     public MyProduced create() {
@@ -41,6 +42,7 @@ public class MyFactoryBean {
 
     @Produces
     public MyProducedWithConstructor createBeanWithParameters(MyBean1 myBean1, @Value("100") int bla, @OsgiService(filter = "myRef") @Named("ser1") ServiceC myReference) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1531
         return new MyProducedWithConstructor(null);
     }
 }

@@ -34,6 +34,7 @@ public class ComponentTxData {
         }
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1887
     Optional<TransactionalAnnotationAttributes> getEffectiveType(Method m) {
         if (txMap.containsKey(m)) {
             return getTxAttr(m);
@@ -53,6 +54,7 @@ public class ComponentTxData {
     private Optional<TransactionalAnnotationAttributes> getFromMethod(Method m) {
         try {
             Method effectiveMethod = beanClass.getMethod(m.getName(), m.getParameterTypes());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1887
             Optional<TransactionalAnnotationAttributes> txAttr = getTxAttr(effectiveMethod);
             txMap.put(m, txAttr);
             return txAttr;
@@ -85,9 +87,11 @@ public class ComponentTxData {
                 Transactional methodAnnotation = m.getAnnotation(Transactional.class);
                 TxType t = getType(methodAnnotation);
                 if (t != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1887
                    TransactionalAnnotationAttributes txData = new TransactionalAnnotationAttributes(t,
                             methodAnnotation.dontRollbackOn(), methodAnnotation.rollbackOn());
                    assertAllowedModifier(m);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1887
                    txMap.put(m, Optional.of(txData));
                    shouldAssignInterceptor = true;
                 } else if (defaultType != null){

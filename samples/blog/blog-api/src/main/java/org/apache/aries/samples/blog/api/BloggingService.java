@@ -27,6 +27,7 @@ public interface BloggingService
    *  @return the title of the Blog
    */
   String getBlogTitle();
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
 
   /** 
    * Get the author associated with a given email address.
@@ -44,6 +45,7 @@ public interface BloggingService
    */
   BlogEntry getBlogEntry(long id);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
 
   /**
    * Update the attributes of an author.
@@ -54,6 +56,7 @@ public interface BloggingService
    * @param bio the biography for this author
    * @param dob the date of birth for this author
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
   void updateBlogAuthor(String email, String nickName, String name, String bio, String dob);
   
   /**
@@ -85,6 +88,7 @@ public interface BloggingService
    * @param bio the author's biography
    * @param dob the author's date of birth
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
   void createBlogAuthor(String email, String nickName, String name, String bio, String dob);
   
   /**

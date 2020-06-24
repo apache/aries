@@ -91,6 +91,7 @@ public abstract class AbstractProxyTest {
   protected abstract Object setDelegate(Object proxy, Callable<Object> dispatcher);
   
   protected Class<?> getTestClass() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
 	  return ProxyTestClassGeneral.class;
   }
   
@@ -114,6 +115,7 @@ public abstract class AbstractProxyTest {
   @Test
   public void testGenerateAndLoadProxy() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     assertNotNull("Generated proxy subclass was null", getProxyClass(getTestClass()));
     assertNotNull("Generated proxy subclass instance was null", getProxyInstance(getProxyClass(getTestClass())));
   }
@@ -135,6 +137,7 @@ public abstract class AbstractProxyTest {
   @Test
   public void testMethodArgs() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Method m = getDeclaredMethod(getTestClass(), "testArgs", double.class,
         short.class, long.class, char.class, byte.class, boolean.class);
     Character xc = Character.valueOf('x');
@@ -150,6 +153,7 @@ public abstract class AbstractProxyTest {
   @Test
   public void testReturnVoid() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Method m = getDeclaredMethod(getTestClass(), "testReturnVoid");
     //for these weaving tests we are loading the woven test classes on a different classloader
     //to this class so we need to set the method accessible
@@ -163,6 +167,7 @@ public abstract class AbstractProxyTest {
   @Test
   public void testReturnInt() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Method m = getDeclaredMethod(getTestClass(), "testReturnInt");
     //for these weaving tests we are loading the woven test classes on a different classloader
     //to this class so we need to set the method accessible
@@ -177,6 +182,7 @@ public abstract class AbstractProxyTest {
   @Test
   public void testReturnInteger() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Method m = getDeclaredMethod(getTestClass(), "testReturnInteger");
     Integer returned = (Integer) m.invoke(getProxyInstance(getProxyClass(getTestClass())));
     assertEquals("Expected object was not returned from invocation", Integer.valueOf(1), returned);
@@ -190,6 +196,7 @@ public abstract class AbstractProxyTest {
   {
     Method m = null;
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       m = getDeclaredMethod(getTestClass(), "bMethod");
     } catch (NoSuchMethodException nsme) {
       m = getProxyClass(getTestClass()).getSuperclass().getDeclaredMethod("bMethod");
@@ -205,6 +212,7 @@ public abstract class AbstractProxyTest {
   {
     Method m = null;
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       m = getDeclaredMethod(getTestClass(), "bProMethod");
     } catch (NoSuchMethodException nsme) {
       m = getProxyClass(getTestClass()).getSuperclass().getDeclaredMethod("bProMethod");
@@ -223,6 +231,7 @@ public abstract class AbstractProxyTest {
   {
     Method m = null;
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       m = getDeclaredMethod(getTestClass(), "bDefMethod");
     } catch (NoSuchMethodException nsme) {
       m = getProxyClass(getTestClass()).getSuperclass().getDeclaredMethod("bDefMethod", new Class[] {});
@@ -241,6 +250,7 @@ public abstract class AbstractProxyTest {
   {
     Class<?> proxy = getProxyClass(ProxyTestClassCovariantOverride.class);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Method m = getDeclaredMethod(ProxyTestClassCovariantOverride.class, "getCovariant");
     Object returned = m.invoke(getProxyInstance(proxy));
     assertTrue("Object was of wrong type: " + returned.getClass().getSimpleName(),
@@ -256,6 +266,7 @@ public abstract class AbstractProxyTest {
     Class<?> proxy = getProxyClass(ProxyTestClassGeneric.class);
     
     Object o = getProxyInstance(proxy);
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Method m = getDeclaredMethod(ProxyTestClassGeneric.class, "setSomething", String.class);
     m.invoke(o, "aString");
     
@@ -275,6 +286,7 @@ public abstract class AbstractProxyTest {
   @Test
   public void testRetrieveClass() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Class<?> retrieved = getProxyClass(getTestClass());
     assertNotNull("The new class was null", retrieved);
     assertEquals("The same class was not returned", retrieved, getProxyClass(getTestClass()));
@@ -295,6 +307,7 @@ public abstract class AbstractProxyTest {
     
     assertTrue("Should be equal", p1.equals(p2));
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Object p4 = getProxyInstance(getProxyClass(getTestClass()));
     Object p5 = getProxyInstance(getProxyClass(getTestClass()));
     
@@ -310,6 +323,7 @@ public abstract class AbstractProxyTest {
   public void testInterception() throws Throwable {
     
     TestListener tl = new TestListener();
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     Object obj = getProxyInstance(getProxyClass(getTestClass()), tl);
     
     assertCalled(tl, false, false, false);
@@ -322,6 +336,7 @@ public abstract class AbstractProxyTest {
     tl.clear();
     assertCalled(tl, false, false, false);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     m = getDeclaredMethod(getTestClass(), "testException", new Class[] {});
     try {
       m.invoke(obj);
@@ -335,6 +350,7 @@ public abstract class AbstractProxyTest {
     tl.clear();
     assertCalled(tl, false, false, false);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     m = getDeclaredMethod(getTestClass(), "testInternallyCaughtException", new Class[] {});
     try {
       m.invoke(obj);
@@ -350,6 +366,7 @@ public abstract class AbstractProxyTest {
   }
   @Test
   public void testStaticInner() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
     assertNotNull(getProxyInstance(getProxyClass(ProxyTestClassStaticInner.class)));
   }
   @Test
@@ -365,6 +382,7 @@ public abstract class AbstractProxyTest {
   @Test
   public void testAbstractClass() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     Object ptca = getProxyInstance(getProxyClass(ProxyTestClassAbstract.class));
     ptca = setDelegate(ptca, new Callable<Object>() {
 
@@ -380,6 +398,7 @@ public abstract class AbstractProxyTest {
   }
   
   public static BundleWiring getWiring(ClassLoader loader) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       BundleWiring wiring = mock(BundleWiring.class);
       when(wiring.getClassLoader()).thenReturn(loader);
       return wiring;

@@ -75,6 +75,7 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
     public Object addingService(ServiceReference reference) {
         Logger logger = agentContext.getLogger();
         Object trackedService = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         long serviceId = (Long) reference.getProperty(Constants.SERVICE_ID);
         //API stipulates versions for compendium services with static ObjectName
         //This shouldn't happen but added as a consistency check
@@ -85,6 +86,8 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
             mbean = constructInjectMBean(trackedService);
             agentContext.registerMBean(AbstractCompendiumHandler.this);
         } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-862
+//IC see: https://issues.apache.org/jira/browse/ARIES-884
             String serviceDescription = getServiceDescription(reference);
             logger.log(LogService.LOG_WARNING, "Detected secondary ServiceReference for [" + serviceDescription
                     + "] with " + Constants.SERVICE_ID + " [" + serviceId + "] Only 1 instance will be JMX managed");
@@ -99,10 +102,13 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
      */
     public void removedService(ServiceReference reference, Object service) {
         Logger logger = agentContext.getLogger();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         long serviceID = (Long) reference.getProperty(Constants.SERVICE_ID);
         if (trackedId.compareAndSet(serviceID, 0)) {
             logger.log(LogService.LOG_INFO, "Unregistering MBean with ObjectName [" + getName() + "] for service with "
                     + Constants.SERVICE_ID + " [" + serviceID + "]"); 
+//IC see: https://issues.apache.org/jira/browse/ARIES-663
+//IC see: https://issues.apache.org/jira/browse/ARIES-782
             agentContext.unregisterMBean(AbstractCompendiumHandler.this);
             context.ungetService(reference);
         } else {
@@ -113,9 +119,12 @@ public abstract class AbstractCompendiumHandler extends ServiceTracker implement
     }
 
     private String getServiceDescription(ServiceReference reference) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-862
+//IC see: https://issues.apache.org/jira/browse/ARIES-884
         String serviceDescription = (String) reference.getProperty(Constants.SERVICE_DESCRIPTION);
         if (serviceDescription == null) {
             Object obj = reference.getProperty(Constants.OBJECTCLASS);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
             if (obj instanceof String[]) {
                 StringBuilder sb = new StringBuilder();
                 for (String s : (String[]) obj) {

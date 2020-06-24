@@ -43,6 +43,8 @@ public class DependentComponentFactoryRecipe extends ComponentFactoryRecipe<Depe
 
     @Override
     public boolean isStaticLifecycle() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         return false;
     }
 

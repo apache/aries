@@ -31,6 +31,7 @@ public class ModellerException extends Exception {
   }
   
   public ModellerException (String s, Throwable t) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-814
     super (s, t);
   }
 }

@@ -54,6 +54,7 @@ public interface JNDIProviderAdmin {
 	 */
 	public Object getObjectInstance(Object refInfo, Name name, Context context,
 			Map<?,?> environment) throws Exception;
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
 
 	/**
 	 * Resolve the object from the given reference.
@@ -69,5 +70,6 @@ public interface JNDIProviderAdmin {
 	 *         resolve the JNDI reference.
 	 */
 	public Object getObjectInstance(Object refInfo, Name name, Context context,
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
 			Map<?,?> environment, Attributes attributes) throws Exception;
 }

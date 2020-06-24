@@ -48,6 +48,7 @@ public abstract class AbstractServiceRegistryContext implements Context {
         env.putAll((Map<? extends String, ? extends Object>) environment);
         // ARIES-397:, If the caller has provided a BundleContext
         // in the hashtable, use this in preference to callerContext
+//IC see: https://issues.apache.org/jira/browse/ARIES-1117
         if (augmenterInvoker == null && callerContext != null) {
             ServiceReference augmenterSR = callerContext.getServiceReference(AugmenterInvoker.class.getName());
             if (augmenterSR != null) augmenterInvoker = (AugmenterInvoker) callerContext.getService(augmenterSR);
@@ -67,6 +68,7 @@ public abstract class AbstractServiceRegistryContext implements Context {
         env = new HashMap<>();
         env.putAll((Map<? extends String, Object>) environment);
         Hashtable<String, Object> environmentHT = new Hashtable<>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1117
         environmentHT.putAll(env);
         // ARIES-397: If the caller has provided a BundleContext
         // in the hashtable, use this in preference to callerContext

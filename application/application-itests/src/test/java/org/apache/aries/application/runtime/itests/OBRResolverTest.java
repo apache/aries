@@ -188,6 +188,7 @@ public class OBRResolverTest extends AbstractIntegrationTest {
     @Test(expected = ResolverException.class)
     public void testProvisionExcludeLocalRepo() throws Exception {
         // do not provision against the local runtime
+//IC see: https://issues.apache.org/jira/browse/ARIES-496
         System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
         generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
 
@@ -209,6 +210,7 @@ public class OBRResolverTest extends AbstractIntegrationTest {
 
     @Test
     public void test_resolve_self_contained_app_in_isolation() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-740
         assertEquals(2, createAndResolveSelfContainedApp("org.osgi.framework").size());
     }
 
@@ -256,14 +258,24 @@ public class OBRResolverTest extends AbstractIntegrationTest {
         generateOBRRepoXML(TRANSITIVE_BUNDLE_BY_REFERENCE + ".jar", CORE_BUNDLE_BY_REFERENCE + ".jar");
 
         RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         Repository[] repos = repositoryAdmin.listRepositories();
         for (Repository repo : repos) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-335
+//IC see: https://issues.apache.org/jira/browse/ARIES-335
             repositoryAdmin.removeRepository(repo.getURI());
         }
 
         repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("blog.eba")));
         //installing requires a valid url for the bundle in repository.xml.
@@ -275,6 +287,8 @@ public class OBRResolverTest extends AbstractIntegrationTest {
         List<DeploymentContent> provision = depMeta.getApplicationProvisionBundles();
 
         assertEquals(provision.toString(), 3, provision.size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-358
+//IC see: https://issues.apache.org/jira/browse/ARIES-820
 
         List<String> bundleSymbolicNames = new ArrayList<String>();
 
@@ -285,7 +299,9 @@ public class OBRResolverTest extends AbstractIntegrationTest {
         assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_REFERENCE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_REFERENCE));
         assertTrue("Bundle " + TRANSITIVE_BUNDLE_BY_VALUE + " not found.", bundleSymbolicNames.contains(TRANSITIVE_BUNDLE_BY_VALUE));
         assertTrue("Bundle " + BUNDLE_IN_FRAMEWORK + " not found.", bundleSymbolicNames.contains(BUNDLE_IN_FRAMEWORK));
+//IC see: https://issues.apache.org/jira/browse/ARIES-358
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
         AriesApplicationContext ctx = manager.install(app);
         ctx.start();
 
@@ -299,8 +315,10 @@ public class OBRResolverTest extends AbstractIntegrationTest {
 
 
     private void generateOBRRepoXML(String... bundleFiles) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         Set<ModelledResource> mrs = new HashSet<ModelledResource>();
         FileOutputStream fout = new FileOutputStream("repository.xml");
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         RepositoryGenerator repositoryGenerator = context().getService(RepositoryGenerator.class);
         ModelledResourceManager modelledResourceManager = context().getService(ModelledResourceManager.class);
         for (String fileName : bundleFiles) {

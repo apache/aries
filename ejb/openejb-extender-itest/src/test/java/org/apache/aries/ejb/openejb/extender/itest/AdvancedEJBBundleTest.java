@@ -56,6 +56,7 @@ public class AdvancedEJBBundleTest extends AbstractOpenEJBTest {
 
     @Configuration
     public static Option[] jpaConfig() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1207
         return options(
                 mavenBundle("org.apache.derby", "derby").versionAsInProject(),
                 mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api").versionAsInProject(),

@@ -53,8 +53,10 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
    */
   public ZipDirectory(File zip1, ZipEntry entry1, ZipDirectory parent, ZipCloseableDirectory cache)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
     super(zip1, entry1, parent, cache);
     zipRoot = false;
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
     root = parent.getRoot();
   }
 
@@ -67,6 +69,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
    */
   public ZipDirectory(File fs, IDirectory parent) throws MalformedURLException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
     super(fs, parent);
     root = (parent == null) ? this : parent.getRoot();
     zipRoot = true;
@@ -83,11 +86,13 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     IFile result = null;
 
     String entryName = isZipRoot() ? name : getNameInZip() + "/" + name;
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 
     ZipEntry entryFile = getEntry(entryName);
 
     if (entryFile != null) {
       if (!!!entryFile.isDirectory()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
         result = new ZipFileImpl(zip, entryFile, buildParent(entryFile), cache);
       } else {
         result = new ZipDirectory(zip, entryFile, buildParent(entryFile), cache);
@@ -108,6 +113,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     String name = foundEntry.getName();
 
     name = name.substring(getNameInZip().length());
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 
     String[] paths = name.split("/");
 
@@ -116,6 +122,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     if (!!!isZipRoot()) baseBuilderCrapThingToGetRoundFindBugs.append('/');
     // Build 'result' as a chain of ZipDirectories. This will only work if java.util.ZipFile recognises every
     // directory in the chain as being a ZipEntry in its own right.
+//IC see: https://issues.apache.org/jira/browse/ARIES-521
     outer: if (paths != null && paths.length > 1) {
       for (int i = 0; i < paths.length - 1; i++) {
         String path = paths[i];
@@ -125,6 +132,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
           result = this;
           break outer;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
         result = new ZipDirectory(zip, dirEntry, result, cache);
         baseBuilderCrapThingToGetRoundFindBugs.append('/');
       }
@@ -153,11 +161,14 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 
 	  ZipFile z = openZipFile();
 	  List<? extends ZipEntry> entries = Collections.list(z.entries());
+//IC see: https://issues.apache.org/jira/browse/ARIES-562
 
 	  for (ZipEntry possibleEntry : entries) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 		  if (isInDir(getNameInZip(), possibleEntry, includeFilesInNestedSubdirs)) {
 			  ZipDirectory parent = includeFilesInNestedSubdirs ? buildParent(possibleEntry) : this;
 			  if (possibleEntry.isDirectory()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 				  files.add(new ZipDirectory(zip, possibleEntry, parent, cache));
 			  } else {
 				  files.add(new ZipFileImpl(zip, possibleEntry, parent, cache));
@@ -218,6 +229,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
   }
 
   public boolean isZipRoot() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 	  return zipRoot;
   }
 

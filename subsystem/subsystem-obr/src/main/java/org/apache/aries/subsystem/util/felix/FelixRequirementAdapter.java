@@ -64,6 +64,7 @@ public class FelixRequirementAdapter extends AbstractRequirement {
 		/* (1) The Felix OBR specific "mandatory:<*" syntax must be stripped out of the filter.
 		 * (2) The namespace must be translated.
 		 */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1522
 		String namespace = getNamespace();
 		String filter = requirement.getFilter()
 				.replaceAll("\\(mandatory\\:\\<\\*[^\\)]*\\)", "")

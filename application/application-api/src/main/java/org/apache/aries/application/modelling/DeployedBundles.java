@@ -98,5 +98,6 @@ public interface DeployedBundles {
    * This method returns the extra headers and their values. 
    * @return the extra headers
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   Map<String, String> getExtraHeaders();
 }

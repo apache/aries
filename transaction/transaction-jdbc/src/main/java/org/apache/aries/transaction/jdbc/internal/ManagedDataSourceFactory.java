@@ -51,6 +51,7 @@ public class ManagedDataSourceFactory {
         for (String key : reference.getPropertyKeys()) {
             this.properties.put(key, reference.getProperty(key));
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
         this.dataSource = (CommonDataSource) reference.getBundle().getBundleContext().getService(reference);
     }
 
@@ -102,9 +103,11 @@ public class ManagedDataSourceFactory {
 
         Hashtable<String, Object> props = new Hashtable<String, Object>(this.properties);
         props.put("aries.managed", "true");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
         if (isXaDataSource) {
             props.put("aries.xa.aware", "true");
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1276
         props.put("jmx.objectname", "org.apache.aries.transaction:type=jdbc,name=" + getResourceName());
         props.put(Constants.SERVICE_RANKING, getInt(Constants.SERVICE_RANKING, 0) + 1000);
 
@@ -138,6 +141,7 @@ public class ManagedDataSourceFactory {
             registration.unregister();
             registration = null;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1276
         if (ds != null) {
             ds.stop();
         }

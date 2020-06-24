@@ -46,6 +46,7 @@ public class ProviderBundleTrackerCustomizerTest {
         @Override
         public void start(BundleContext context) throws Exception {}
     };
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
 
     @Test
     public void testAddingRemovedBundle() throws Exception {
@@ -84,6 +85,7 @@ public class ProviderBundleTrackerCustomizerTest {
         BundleContext implBC = mockSPIBundleContext(EasyMock.createNiceMock(ServiceRegistration.class));
         Bundle spiBundle = mockSPIBundle(implBC);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
         assertNull("The SpiFly bundle itself should be ignored", customizer.addingBundle(spiBundle, null));
     }
@@ -93,6 +95,7 @@ public class ProviderBundleTrackerCustomizerTest {
         BundleContext implBC = mockSPIBundleContext(EasyMock.createNiceMock(ServiceRegistration.class));
         Bundle implBundle = mockSPIBundle(implBC, null);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, null);
         assertNull("Bundle doesn't opt-in so should be ignored", customizer.addingBundle(implBundle, null));
     }
@@ -157,12 +160,14 @@ public class ProviderBundleTrackerCustomizerTest {
 
     @Test
     public void testMultipleProviderServices() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1901
         BundleContext implBC = mockSPIBundleContext(EasyMock.createNiceMock(ServiceRegistration.class));
         Bundle implBundle = mockMultiSPIBundle(implBC);
         Bundle spiBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(spiBundle.getBundleId()).andReturn(25l).anyTimes();
         EasyMock.replay(spiBundle);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, spiBundle);
         assertEquals(2, customizer.addingBundle(implBundle, null).size());
     }
@@ -206,6 +211,7 @@ public class ProviderBundleTrackerCustomizerTest {
     }
 
     private Bundle mockMultiSPIBundle(BundleContext implBC) throws ClassNotFoundException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1901
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
 

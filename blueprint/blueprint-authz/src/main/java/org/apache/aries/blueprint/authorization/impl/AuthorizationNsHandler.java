@@ -38,6 +38,7 @@ public class AuthorizationNsHandler implements NamespaceHandler {
     private void parseElement(Element elt, ComponentMetadata cm, ParserContext pc) {
         ComponentDefinitionRegistry cdr = pc.getComponentDefinitionRegistry();
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-1472
         if ("enable".equals(elt.getLocalName()) && NS_AUTHZ.equals(elt.getNamespaceURI()) 
             && !cdr.containsComponentDefinition(AuthorizationBeanProcessor.AUTH_PROCESSOR_BEAN_NAME)) {
             cdr.registerComponentDefinition(authBeanProcessor(pc, cdr));
@@ -72,6 +73,7 @@ public class AuthorizationNsHandler implements NamespaceHandler {
     }
 
     public URL getSchemaLocation(String namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1472
         if (NS_AUTHZ.equals(namespace)) {
             return this.getClass().getResource("/authz10.xsd");
         } else {

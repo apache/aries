@@ -39,6 +39,7 @@ public class BundleFrameworkFactoryImpl implements BundleFrameworkFactory
       CompositeBundleFactory cbf = (CompositeBundleFactory) bc.getService(sr);
 
       CompositeBundle compositeBundle = cbf.installCompositeBundle(
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
           config.getFrameworkProperties(), 
           config.getFrameworkID(),
           config.getFrameworkManifest());

@@ -88,6 +88,7 @@ public class ServiceEventData {
         this.serviceId = (Long) serviceReference.getProperty(Constants.SERVICE_ID);
         this.serviceInterfaces = (String[]) serviceReference.getProperty(Constants.OBJECTCLASS);
         this.eventType = serviceEvent.getType();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1468
         Bundle bundle = serviceReference.getBundle();
         if (bundle != null) {
             this.bundleId = bundle.getBundleId();

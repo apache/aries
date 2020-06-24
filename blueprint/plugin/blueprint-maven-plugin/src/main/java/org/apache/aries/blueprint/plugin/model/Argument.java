@@ -43,6 +43,7 @@ class Argument implements XmlWriter {
         this.value = findValue(annotations);
         if (value != null) {
             ref = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
             refCollection = null;
             return;
         }
@@ -90,6 +91,7 @@ class Argument implements XmlWriter {
 
     @Override
     public void write(XMLStreamWriter writer) throws XMLStreamException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
         writer.writeStartElement("argument");
         if (ref != null) {
             writer.writeAttribute("ref", ref);

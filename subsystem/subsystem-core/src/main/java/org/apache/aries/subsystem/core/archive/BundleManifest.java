@@ -17,7 +17,9 @@ import org.osgi.framework.Constants;
 
 public class BundleManifest extends Manifest {
 	public BundleManifest(java.util.jar.Manifest manifest) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-737
 		super(manifest);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		fillInDefaults();
 	}
 	

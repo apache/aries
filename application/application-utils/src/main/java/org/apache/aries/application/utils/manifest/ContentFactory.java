@@ -33,6 +33,7 @@ public class ContentFactory {
    * @return Content object
    */
   public static Content parseContent(String bundleSymbolicName, String versionRange) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     return new ContentImpl(bundleSymbolicName, ManifestHeaderProcessor.parseVersionRange(versionRange));
   }
   

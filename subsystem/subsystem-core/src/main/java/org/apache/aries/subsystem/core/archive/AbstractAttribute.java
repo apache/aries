@@ -15,11 +15,13 @@ package org.apache.aries.subsystem.core.archive;
 
 public abstract class AbstractAttribute extends AbstractParameter implements Attribute {
 	public AbstractAttribute(String name, Object value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 		super(name, value);
 	}
 	
 	@Override
     public StringBuilder appendToFilter(StringBuilder builder) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-737
 		return builder.append('(').append(getName()).append('=').append(getValue()).append(')');
 	}
 

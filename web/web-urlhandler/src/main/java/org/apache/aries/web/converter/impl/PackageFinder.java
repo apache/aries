@@ -198,6 +198,7 @@ public class PackageFinder extends ClassVisitor//AnnotationVisitor, SignatureVis
   public AnnotationVisitor visitAnnotation(String descriptor, boolean visible)
   {
     addPackage(getDescriptorInfo(descriptor));
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
     return pfav;
   }
 
@@ -213,6 +214,7 @@ public class PackageFinder extends ClassVisitor//AnnotationVisitor, SignatureVis
     else addResolvedSignaturePackages(signature);
 
     if (value instanceof Type) addPackage(getType((Type) value));
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
     return pffv;
   }
 
@@ -229,6 +231,7 @@ public class PackageFinder extends ClassVisitor//AnnotationVisitor, SignatureVis
 
     addPackages(getResolvedPackageNames(exceptions));
     return pfmv;
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
 
   }
 
@@ -257,6 +260,7 @@ public class PackageFinder extends ClassVisitor//AnnotationVisitor, SignatureVis
 
     public PackageFinderSignatureVisitor()
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
       super(asmVersion);
     }
     

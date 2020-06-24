@@ -24,6 +24,7 @@ import java.lang.reflect.Modifier;
 public class MethodDeclaration extends GenericDeclaration {
     private final String desc;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
     MethodDeclaration(int access, String name, String desc, String signature, String[] exceptions) {
         super(access, name, signature);
         this.desc = desc;

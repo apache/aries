@@ -257,6 +257,7 @@ public class FragmentBuilder {
             } else if ((expecting & CHAR) > 0) {            
                 sb.append(c);
             } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
                 throw new IllegalArgumentException(MessageUtil.getMessage("UTIL0012E", value));
             }
         }

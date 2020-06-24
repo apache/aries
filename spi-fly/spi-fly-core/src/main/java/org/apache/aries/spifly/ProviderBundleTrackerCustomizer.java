@@ -65,6 +65,7 @@ import aQute.libg.glob.Glob;
 public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer {
     private static final String METAINF_SERVICES = "META-INF/services";
     private static final List<String> MERGE_HEADERS = Arrays.asList(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         Constants.IMPORT_PACKAGE, Constants.REQUIRE_BUNDLE, Constants.EXPORT_PACKAGE,
         Constants.PROVIDE_CAPABILITY, Constants.REQUIRE_CAPABILITY);
 
@@ -78,10 +79,13 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public List<ServiceRegistration> addingBundle(final Bundle bundle, BundleEvent event) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1985
         BundleRevision bundleRevision = bundle.adapt(BundleRevision.class);
         if (bundle.equals(spiBundle) || ((bundleRevision != null) && ((bundleRevision.getTypes() & TYPE_FRAGMENT) == TYPE_FRAGMENT)))
             return null; // don't process the SPI bundle itself
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         log(Level.FINE, "Bundle Considered for SPI providers: "
             + bundle.getSymbolicName());
 
@@ -90,8 +94,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         Map<String, Object> customAttributes = new HashMap<String, Object>();
         if (bundle.getHeaders().get(SpiFlyConstants.REQUIRE_CAPABILITY) != null) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
                 providedServices = readServiceLoaderMediatorCapabilityMetadata(bundle, customAttributes);
             } catch (InvalidSyntaxException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
                 log(Level.SEVERE, "Unable to read capabilities from bundle " + bundle, e);
             }
         }
@@ -102,6 +108,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             if ("*".equals(header)) {
                 providedServices = new ArrayList<String>();
             } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
                 providedServices = Stream.of(header.split(",")).map(String::trim).collect(toList());
             }
             discoveryMode = DiscoveryMode.SPI_PROVIDER_HEADER;
@@ -125,6 +132,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     + bundle.getSymbolicName());
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         for (String serviceType : providedServices) {
             // Eagerly register any services that are explicitly listed, as they may not be found in META-INF/services
             activator.registerProviderBundle(serviceType, bundle, customAttributes);
@@ -142,6 +150,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             try {
                 final Class<?> cls = bundle.loadClass(details.instanceType);
                 log(Level.INFO, "Loaded SPI provider: " + cls);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
 
                 if (details.properties != null) {
                     ServiceRegistration reg = null;
@@ -186,6 +195,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         for (URL serviceFileURL : serviceFileURLs) {
             log(Level.INFO, "Found SPI resource: " + serviceFileURL);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
 
             try {
                 BufferedReader reader = new BufferedReader(
@@ -209,6 +219,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                         }
 
                         final Hashtable<String, Object> properties;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
                         if (discoveryMode == DiscoveryMode.SPI_PROVIDER_HEADER) {
                             properties = new Hashtable<String, Object>();
                         }
@@ -242,12 +253,14 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         return serviceDetails;
     }
     private Entry<List<String>, List<URL>> getFromAutoProviderProperty(Bundle bundle, Map<String, Object> customAttributes) {
         return activator.getAutoProviderInstructions().map(
             Parameters::stream
         ).orElseGet(MapStream::empty).filterKey(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1984
             i ->
                 Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
         ).values().findFirst().map(
@@ -297,6 +310,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     }
 
     private String getHeaderFromBundleOrFragment(Bundle bundle, String headerName, String matchString) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         Parameters headerParameters = new Parameters(bundle.getHeaders().get(headerName));
         if (matches(headerParameters.toString(), matchString) && !MERGE_HEADERS.contains(headerName)) {
             return headerParameters.isEmpty() ? null : headerParameters.toString();
@@ -308,6 +322,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             if (wiring != null) {
                 for (BundleWire wire : wiring.getProvidedWires("osgi.wiring.host")) {
                     Bundle fragment = wire.getRequirement().getRevision().getBundle();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
                     Parameters fragmentParameters = new Parameters(fragment.getHeaders().get(headerName));
                     if (MERGE_HEADERS.contains(headerName)) {
                         headerParameters.mergeWith(fragmentParameters, false);
@@ -345,7 +360,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         if (requirementHeader == null)
             return null;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
         Parameters requirements = OSGiHeader.parseHeader(requirementHeader);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1863
         Entry<String, ? extends Map<String, String>> extenderRequirement = ConsumerHeaderProcessor.findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
         if (extenderRequirement == null)
             return null;
@@ -359,9 +376,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         List<String> serviceNames = new ArrayList<String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1863
         for (Entry<String, ? extends Map<String, String>> serviceLoaderCapability : ConsumerHeaderProcessor.findAllMetadata(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
             for (Entry<String, String> entry : serviceLoaderCapability.getValue().entrySet()) {
                 if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(entry.getKey())) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
                     serviceNames.add(entry.getValue().trim());
                     continue;
                 }
@@ -378,12 +397,14 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     // null means don't register,
     // otherwise the return value should be taken as the service registration properties
     private Hashtable<String, Object> findServiceRegistrationProperties(Bundle bundle, String spiName, String implName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         Object capabilityHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.PROVIDE_CAPABILITY);
         if (capabilityHeader == null)
             return null;
 
         Parameters capabilities = OSGiHeader.parseHeader(capabilityHeader.toString());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1901
         for (Map.Entry<String, Attrs> entry : capabilities.entrySet()) {
             String key = ConsumerHeaderProcessor.removeDuplicateMarker(entry.getKey());
             Attrs attrs = entry.getValue();
@@ -434,6 +455,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 }
             }
         } catch (IOException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
             log(Level.SEVERE, "Problem opening embedded jar file: " + url, e);
         }
         return urls;
@@ -441,6 +463,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         removedBundle(bundle, event, registrations);
         addingBundle(bundle, event);
     }
@@ -455,6 +478,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         for (ServiceRegistration reg : (List<ServiceRegistration>) registrations) {
             reg.unregister();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
             log(Level.INFO, "Unregistered: " + reg);
         }
     }
@@ -467,6 +491,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         activator.log(level, message, th);
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
     enum DiscoveryMode {
         SPI_PROVIDER_HEADER,
         AUTO_PROVIDERS_PROPERTY,

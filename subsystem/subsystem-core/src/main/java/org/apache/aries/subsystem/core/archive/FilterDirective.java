@@ -23,6 +23,7 @@ public class FilterDirective extends AbstractDirective {
 	
 	public FilterDirective(String value) {
 		super(NAME, value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		filter = SimpleFilter.parse(value);
 	}
 
@@ -38,6 +39,7 @@ public class FilterDirective extends AbstractDirective {
 	
 	@Override
     public int hashCode() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
         return 31 * 17 + filter.hashCode();
     }
     

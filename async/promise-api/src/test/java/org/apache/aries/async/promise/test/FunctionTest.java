@@ -34,6 +34,7 @@ public class FunctionTest {
 
     @Test
     public void testFilter() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1317
         testFilter("hello");
         testFilter("!reject");
         testFilter("fail");

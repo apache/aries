@@ -42,7 +42,9 @@ public class RequiresNewTest extends AbstractIntegrationTest {
     @Test
     public void testClientTransactionRollback() throws Exception {
         int initialRows = counter.countRows();
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         tran.begin();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         rnBean.insertRow("testWithClientTran", 1, null);
         tran.rollback();
         int finalRows = counter.countRows();
@@ -58,6 +60,7 @@ public class RequiresNewTest extends AbstractIntegrationTest {
     public void testClientTransactionAndApplicationException() throws Exception {
         int initialRows = counter.countRows();
         tran.begin();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         rBean.insertRow("testWithClientTranAndWithAppException", 1, null);
         try {
             rnBean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
@@ -79,6 +82,7 @@ public class RequiresNewTest extends AbstractIntegrationTest {
     public void testClientTransactionAndRuntimeException() throws Exception {
         int initialRows = counter.countRows();
         tran.begin();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         rBean.insertRow("testWithClientTranAndWithRuntimeException", 1, null);
         try {
             rnBean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));

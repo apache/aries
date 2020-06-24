@@ -33,6 +33,7 @@ public class SubsystemImportServiceHeader extends AbstractClauseBasedHeader<Subs
 		public static final String DIRECTIVE_RESOLUTION = ResolutionDirective.NAME;
 
 		private static final Collection<Parameter> defaultParameters = generateDefaultParameters(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 				EffectiveDirective.ACTIVE,
 				ResolutionDirective.MANDATORY,
 				CardinalityDirective.SINGLE);
@@ -82,6 +83,7 @@ public class SubsystemImportServiceHeader extends AbstractClauseBasedHeader<Subs
 		}
 
 		public SubsystemImportServiceRequirement toRequirement(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new SubsystemImportServiceRequirement(this, resource);
 		}
 	}
@@ -117,6 +119,7 @@ public class SubsystemImportServiceHeader extends AbstractClauseBasedHeader<Subs
 	public List<SubsystemImportServiceRequirement> toRequirements(Resource resource) {
 		List<SubsystemImportServiceRequirement> requirements = new ArrayList<SubsystemImportServiceRequirement>(clauses.size());
 		for (Clause clause : clauses)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}

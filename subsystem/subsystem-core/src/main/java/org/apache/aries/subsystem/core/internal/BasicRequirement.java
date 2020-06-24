@@ -32,6 +32,7 @@ public class BasicRequirement extends AbstractRequirement {
 		private String namespace;
 		
 		public Builder attribute(String key, Object value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 			attributes.put(key, value);
 			return this;
 		}
@@ -72,6 +73,7 @@ public class BasicRequirement extends AbstractRequirement {
 	private final Resource resource;
 	
 	public BasicRequirement(Requirement requirement, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		attributes = requirement.getAttributes();
 		directives = requirement.getDirectives();
 		namespace = requirement.getNamespace();
@@ -79,6 +81,7 @@ public class BasicRequirement extends AbstractRequirement {
 	}
 	
 	public BasicRequirement(String namespace, String filter) throws InvalidSyntaxException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(namespace, FrameworkUtil.createFilter(filter));
 	}
 	
@@ -94,6 +97,7 @@ public class BasicRequirement extends AbstractRequirement {
 	}
 	
 	private BasicRequirement(String namespace, Map<String, Object> attributes, Map<String, String> directives, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		if (namespace == null)
 			throw new NullPointerException();
 		this.namespace = namespace;

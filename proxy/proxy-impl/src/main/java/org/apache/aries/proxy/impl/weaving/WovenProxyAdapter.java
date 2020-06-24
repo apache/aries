@@ -30,6 +30,7 @@ import org.objectweb.asm.commons.Method;
  * Used to weave classes processed by the {@link ProxyWeavingHook}
  */
 final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
+//IC see: https://issues.apache.org/jira/browse/ARIES-669
 
   private boolean sVUIDGenerated = false;
 
@@ -43,6 +44,7 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
    */
   protected final MethodVisitor getWeavingMethodVisitor(int access, String name,
       String desc, String signature, String[] exceptions, Method currentMethod,
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       String methodStaticFieldName, Type currentMethodDeclaringType,
       boolean currentMethodDeclaringTypeIsInterface) {
     MethodVisitor methodVisitorToReturn;
@@ -50,6 +52,7 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
       methodVisitorToReturn = new WovenProxyConcreteMethodAdapter(cv.visitMethod(
           access, name, desc, signature, exceptions), access, name, desc,
           exceptions, methodStaticFieldName, currentMethod, typeBeingWoven,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1186
           currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
     } else {
       methodVisitorToReturn = cv.visitMethod(access, name, desc, signature, exceptions);
@@ -63,6 +66,7 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
       String arg3, Object arg4) {
     
     //If this sVUID is generated then make it synthetic
+//IC see: https://issues.apache.org/jira/browse/ARIES-705
     if(sVUIDGenerated && "serialVersionUID".equals(name)) {
       
       //If we aren't a serializable class then don't add a generated sVUID
@@ -76,6 +80,7 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
   }
 
   public void setSVUIDGenerated(boolean b) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-669
     sVUIDGenerated  = b;
   }
   

@@ -68,6 +68,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     _applicationMetadata = app.getApplicationMetadata();
     _deploymentContent = new ArrayList<DeploymentContent>();
     _provisionSharedContent = new ArrayList<DeploymentContent>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     _deployedUseBundleContent = new ArrayList<DeploymentContent>();
     
     Map<String, VersionRange> appContent = new HashMap<String, VersionRange>();
@@ -76,6 +77,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
       appContent.put(c.getContentName(), c.getVersion());
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     Map<String, VersionRange> useBundles = new HashMap<String, VersionRange>();
     for (Content c : app.getApplicationMetadata().getUseBundles()) {
       useBundles.put(c.getContentName(), c.getVersion());
@@ -110,6 +112,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
 
     Attributes attributes = mf.getMainAttributes();
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     parseDeploymentContent(attributes.getValue(AppConstants.DEPLOYMENT_CONTENT), _deploymentContent);
     parseDeploymentContent(attributes.getValue(AppConstants.DEPLOYMENT_PROVISION_BUNDLE), _provisionSharedContent);
     parseDeploymentContent(attributes.getValue(AppConstants.DEPLOYMENT_USE_BUNDLE), _deployedUseBundleContent);
@@ -190,6 +193,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
   }
   
   public List<DeploymentContent> getApplicationProvisionBundles() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-188
     return Collections.unmodifiableList(_provisionSharedContent);
   }
 
@@ -207,6 +211,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
 
 
   public void store(File f) throws FileNotFoundException, IOException{
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     FileOutputStream fos = new FileOutputStream (f);
     store(fos);
     fos.close();
@@ -219,6 +224,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     attributes.putValue(Attributes.Name.MANIFEST_VERSION.toString(), AppConstants.MANIFEST_VERSION);
     attributes.putValue(AppConstants.APPLICATION_VERSION, getApplicationVersion().toString());
     attributes.putValue(AppConstants.APPLICATION_SYMBOLIC_NAME, getApplicationSymbolicName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     if ((_deploymentContent != null) && (!_deploymentContent.isEmpty())) {
       attributes.putValue(AppConstants.DEPLOYMENT_CONTENT, getDeploymentContentsAsString(_deploymentContent));
     }
@@ -261,6 +267,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
 
   private void parseDeploymentContent(String content, List<DeploymentContent> contents)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-188
     List<String> pcList = ManifestProcessor.split(content, ",");
     for (String s : pcList) {
       contents.add(new DeploymentContentImpl(s));
@@ -269,6 +276,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
 
   private void parseContent(String content, Collection<Content> contents)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     List<String> pcList = ManifestProcessor.split(content, ",");
     for (String s : pcList) {
       contents.add(new ContentImpl(s));

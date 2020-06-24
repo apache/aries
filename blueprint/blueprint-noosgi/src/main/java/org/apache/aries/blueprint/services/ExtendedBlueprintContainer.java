@@ -34,6 +34,7 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     Class loadClass(String name) throws ClassNotFoundException;
 
     URL getResource(String name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-998
 
     AccessControlContext getAccessControlContext();
 
@@ -42,5 +43,6 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     <T extends Processor> List<T> getProcessors(Class<T> type);
 
     String getProperty(String key);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
 
 }

@@ -90,6 +90,7 @@ public class FileUtilsTest
       fout.close();
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-947
     IOUtils.writeOut(tmpDir, "simple.jar", new ByteArrayInputStream("abc".getBytes()));
     IOUtils.writeOut(tmpDir, "simple.war", new ByteArrayInputStream("sss".getBytes()));
     IOUtils.writeOut(tmpDir, "simple.txt", new ByteArrayInputStream("abc".getBytes()));

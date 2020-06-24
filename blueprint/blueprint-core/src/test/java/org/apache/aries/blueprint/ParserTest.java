@@ -70,6 +70,7 @@ public class ParserTest extends AbstractBlueprintTest {
         assertEquals(2, deps.size());
         assertTrue(deps.contains("pojoB"));
         assertTrue(deps.contains("pojoC"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1
         assertEquals("org.apache.aries.blueprint.pojos.PojoA", local.getClassName());
         List<BeanArgument> params = local.getArguments();
         assertNotNull(params);
@@ -153,6 +154,7 @@ public class ParserTest extends AbstractBlueprintTest {
 
 
     public void testCustomNodes() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
         ComponentDefinitionRegistry registry = parse("/test-custom-nodes.xml", new TestNamespaceHandlerSet());
         
         ComponentMetadata metadata;
@@ -174,6 +176,7 @@ public class ParserTest extends AbstractBlueprintTest {
         Metadata propertyValue = propertyMetadata.getValue();
         assertTrue(propertyValue instanceof BeanMetadata);
         BeanMetadata innerComp = (BeanMetadata) propertyValue;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1
         assertEquals("org.apache.aries.CacheProperty", innerComp.getClassName()); 
         
         metadata = registry.getComponentDefinition("myCache");
@@ -185,6 +188,7 @@ public class ParserTest extends AbstractBlueprintTest {
     
     public void testScopes() throws Exception {
         ComponentDefinitionRegistry registry = parse("/test-scopes.xml", new TestNamespaceHandlerSet());
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
 
         ComponentMetadata metadata = registry.getComponentDefinition("fooService");
         assertNotNull(metadata);
@@ -228,10 +232,12 @@ public class ParserTest extends AbstractBlueprintTest {
         }
 
         public boolean isComplete() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
             return true;
         }
 
         public NamespaceHandler getNamespaceHandler(URI namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
             if (CACHE.equals(namespace)) {
                 return new TestNamespaceHandler();
             } else if (TEST.equals(namespace)) {
@@ -246,6 +252,7 @@ public class ParserTest extends AbstractBlueprintTest {
         }
 
         public Schema getSchema(Map<String, String> locations) throws SAXException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
             return null;
         }
 
@@ -263,6 +270,7 @@ public class ParserTest extends AbstractBlueprintTest {
 
         public URL getSchemaLocation(String namespace) {
             // TODO Auto-generated method stub
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
             return null;
         }
 
@@ -318,6 +326,7 @@ public class ParserTest extends AbstractBlueprintTest {
             
             String className;
             if (context.getEnclosingComponent() == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1
                 className = "org.apache.aries.Cache";
             } else {
                 className = "org.apache.aries.CacheProperty";

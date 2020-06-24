@@ -58,6 +58,7 @@ public class ReflectionUtilsTest {
     @BeforeClass
     public static void before() throws ClassNotFoundException
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1312
         mockBlueprint = EasyMock.createNiceMock(ExtendedBlueprintContainer.class);
         final Capture<String> nameCapture = new Capture<String>();
         EasyMock.expect(mockBlueprint.loadClass(EasyMock.capture(nameCapture))).andAnswer(new IAnswer<Class<?>>() {
@@ -103,6 +104,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testGetterOnly() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(GetterOnly.class, true, false);
         
         assertEquals(2, sut.length);
@@ -112,6 +114,7 @@ public class ReflectionUtilsTest {
         assertTrue(sut[1].allowsGet());
         assertFalse(sut[1].allowsSet());
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         assertEquals("test", sut[1].get(new GetterOnly(), mockBlueprint));
     }
     
@@ -124,6 +127,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testSetterOnly() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(SetterOnly.class, false, false);
         
         assertEquals(2, sut.length);
@@ -133,6 +137,7 @@ public class ReflectionUtilsTest {
         assertTrue(sut[1].allowsSet());
         
         SetterOnly so = new SetterOnly();
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         sut[1].set(so, "trial", mockBlueprint);
         assertEquals("trial", so.retrieve());
     }
@@ -146,6 +151,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testSetterAndGetter() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(SetterAndGetter.class, false, false);
         
         assertEquals(2, sut.length);
@@ -155,6 +161,7 @@ public class ReflectionUtilsTest {
         assertTrue(sut[1].allowsSet());
         
         SetterAndGetter sag = new SetterAndGetter();
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         sut[1].set(sag, "tribulation", mockBlueprint);
         assertEquals("tribulation", sut[1].get(sag, mockBlueprint));
     }
@@ -171,8 +178,10 @@ public class ReflectionUtilsTest {
 
     @Test
     public void testDuplicateGetter() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(DuplicateGetter.class, false, false);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-1805
         assertEquals(2, sut.length);
         assertEquals("class", sut[0].getName());
         assertEquals("field", sut[1].getName());
@@ -201,6 +210,7 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testFieldsAndProps() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(FieldsAndProps.class, true, false);
         
         assertEquals(3, sut.length);
@@ -212,6 +222,7 @@ public class ReflectionUtilsTest {
         assertTrue(sut[1].allowsGet());
         assertTrue(sut[1].allowsSet());
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         assertEquals("ordeal", sut[1].get(fap, mockBlueprint));
         sut[1].set(fap, "calvary", mockBlueprint);
         assertEquals("calvary", sut[1].get(fap, mockBlueprint));
@@ -233,10 +244,12 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testOverloadedSetters() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(OverloadedSetters.class, false, false);
         
         OverloadedSetters os = new OverloadedSetters();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         sut[1].set(os, "scrutiny", mockBlueprint);
         assertEquals("scrutiny", os.field);
         
@@ -250,8 +263,10 @@ public class ReflectionUtilsTest {
     
     @Test(expected=ComponentDefinitionException.class)
     public void testApplicableSetter() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(OverloadedSetters.class, false, false);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         sut[1].set(new OverloadedSetters(), new Inconvertible(), mockBlueprint);
     }
     
@@ -262,8 +277,10 @@ public class ReflectionUtilsTest {
     
     @Test(expected=ComponentDefinitionException.class)
     public void testMultipleMatchesByConversion() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(MultipleMatchesByConversion.class, false, false);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         sut[1].set(new MultipleMatchesByConversion(), new HashSet<String>(), mockBlueprint);
     }
 
@@ -279,8 +296,10 @@ public class ReflectionUtilsTest {
     
     @Test(expected=ComponentDefinitionException.class)
     public void testMultipleSettersMatchByType() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(MultipleMatchesByType.class, false, false);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         sut[1].set(new MultipleMatchesByType(), new LinkedList<String>(), mockBlueprint);
     }
     
@@ -301,8 +320,10 @@ public class ReflectionUtilsTest {
     
     @Test
     public void testNullDisambiguation() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         loadProps(NullSetterDisambiguation.class, false, false);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
         sut[1].set(new NullSetterDisambiguation(), null, mockBlueprint);
         assertEquals(-1, NullSetterDisambiguation.field);
     }

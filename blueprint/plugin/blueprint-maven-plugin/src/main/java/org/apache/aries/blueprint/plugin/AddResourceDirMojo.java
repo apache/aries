@@ -47,6 +47,7 @@ public class AddResourceDirMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1734
         ResourceInitializer.prepareBaseDir(project, baseDir);
     }
 }

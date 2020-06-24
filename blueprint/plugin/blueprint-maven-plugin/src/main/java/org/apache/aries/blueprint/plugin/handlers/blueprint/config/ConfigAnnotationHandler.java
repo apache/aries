@@ -36,6 +36,7 @@ public class ConfigAnnotationHandler implements BeanAnnotationHandler<Config>{
     public void handleBeanAnnotation(AnnotatedElement annotatedElement, String id,
                                      ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         Config config = annotatedElement.getAnnotation(Config.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1683
         contextEnricher.addBlueprintContentWriter("cm/property-placeholder", new ConfigWriter(config));
     }
 

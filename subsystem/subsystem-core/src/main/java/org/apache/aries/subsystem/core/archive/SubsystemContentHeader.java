@@ -91,6 +91,7 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 		}
 		
 		public SubsystemContentRequirement toRequirement(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new SubsystemContentRequirement(this, resource);
 		}
 		
@@ -135,6 +136,7 @@ public class SubsystemContentHeader extends AbstractClauseBasedHeader<SubsystemC
 	private final String originalValue;
 	
 	public SubsystemContentHeader(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(
 				value, 
 				new ClauseFactory<Clause>() {

@@ -42,6 +42,7 @@ public class TwitterQuery implements BundleActivator {
 			QueryResult result = twitter.search(query);
 		    List<Tweet> tweets = result.getTweets(); 
 		    System.out.println("hits:" + tweets.size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1060
 		    for (Tweet tweet : tweets) {
 		        System.out.println(tweet.getFromUser() + ":" + StringEscapeUtils.unescapeXml(tweet.getText()));
 		    }

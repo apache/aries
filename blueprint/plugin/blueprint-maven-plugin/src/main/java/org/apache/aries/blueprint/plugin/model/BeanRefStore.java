@@ -28,6 +28,7 @@ class BeanRefStore {
     private SortedSet<BeanRef> reg = new TreeSet<BeanRef>();
 
     void addBean(BeanRef beanRef) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1735
         rejectOnConflict(beanRef);
         reg.add(beanRef);
     }
@@ -49,6 +50,7 @@ class BeanRefStore {
         return null;
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
     List<BeanRef> getAllMatching(BeanTemplate template) {
         List<BeanRef> refs = new ArrayList<>();
         for (BeanRef bean : reg) {

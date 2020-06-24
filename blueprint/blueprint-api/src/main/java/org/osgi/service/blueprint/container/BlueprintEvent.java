@@ -226,6 +226,7 @@ public class BlueprintEvent {
 		this.timestamp = System.currentTimeMillis();
 		this.bundle = bundle;
 		this.extenderBundle = extenderBundle;
+//IC see: https://issues.apache.org/jira/browse/ARIES-481
 	    this.dependencies = dependencies == null ? null
                         : (String[]) dependencies.clone();;
 		this.cause = cause;

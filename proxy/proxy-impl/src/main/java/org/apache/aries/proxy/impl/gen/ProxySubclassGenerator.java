@@ -78,10 +78,12 @@ public class ProxySubclassGenerator
   public static Class<?> getProxySubclass(Class<?> aClass, ClassLoader loader) throws UnableToProxyException
   {
     LOGGER.debug(Constants.LOG_ENTRY, "getProxySubclass", new Object[] { aClass });
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
 
     // in the special case where the loader is null we use a default classloader
     // this is for subclassing java.* or javax.* packages, so that one will do
     if (loader == null) loader = defaultClassLoader;
+//IC see: https://issues.apache.org/jira/browse/ARIES-360
 
     ConcurrentMap<String, String> proxyMap;
     synchronized (loader) {
@@ -118,6 +120,7 @@ public class ProxySubclassGenerator
         try {
           classToReturn = loader.loadClass(className);
         } catch (ClassNotFoundException cnfe) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
           LOGGER.debug(Constants.LOG_EXCEPTION, cnfe);
           throw new UnableToLoadProxyException(className, cnfe);
         }
@@ -149,6 +152,7 @@ public class ProxySubclassGenerator
     }
 
     LOGGER.debug(Constants.LOG_EXIT, "getProxySubclass", classToReturn);
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
 
     return classToReturn;
   }
@@ -163,6 +167,7 @@ public class ProxySubclassGenerator
       throws UnableToProxyException
   {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     LOGGER.debug(Constants.LOG_ENTRY, "newProxySubclassInstance", new Object[] {
         classToProxy, loader, ih });
 
@@ -184,6 +189,7 @@ public class ProxySubclassGenerator
       setIHMethod.invoke(proxySubclassInstance, ih);
       LOGGER.debug("Invoked proxy subclass constructor");
     } catch (NoSuchMethodException nsme) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
       LOGGER.debug(Constants.LOG_EXCEPTION, nsme);
       throw new ProxyClassInstantiationException(classToProxy, nsme);
     } catch (InvocationTargetException ite) {
@@ -196,6 +202,7 @@ public class ProxySubclassGenerator
       LOGGER.debug(Constants.LOG_EXCEPTION, iae);
       throw new ProxyClassInstantiationException(classToProxy, iae);
     } catch (VerifyError ve) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
         LOGGER.info(String.format("The no-argument constructor of class %s is private and therefore it may not be possible to generate a valid proxy.", 
                                   classToProxy));
         LOGGER.debug(Constants.LOG_EXCEPTION, ve);
@@ -210,6 +217,7 @@ public class ProxySubclassGenerator
   private static Class<?> generateAndLoadSubclass(Class<?> aClass, ClassLoader loader)
       throws UnableToProxyException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     LOGGER.debug(Constants.LOG_ENTRY, "generateAndLoadSubclass", new Object[] { aClass,
         loader });
 
@@ -236,6 +244,7 @@ public class ProxySubclassGenerator
       clazz = loadClassFromBytes(loader, getBinaryName(fullNewClassName), byteClassData, aClass
           .getName());
     } catch (IOException ioe) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
       LOGGER.debug(Constants.LOG_EXCEPTION, ioe);
       throw new ProxyClassBytecodeGenerationException(aClass.getName(), ioe);
     } catch (TypeNotPresentException tnpe) {
@@ -275,6 +284,7 @@ public class ProxySubclassGenerator
   private static Class<?> loadClassFromBytes(ClassLoader loader, String name, byte[] classData,
       String classToProxyName) throws UnableToProxyException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     LOGGER.debug(Constants.LOG_ENTRY, "loadClassFromBytes", new Object[] { loader, name,
         classData });
 
@@ -289,6 +299,7 @@ public class ProxySubclassGenerator
           ProxySubclassGenerator.class.getProtectionDomain());
       defineClassMethod.setAccessible(false);
     } catch (ClassNotFoundException cnfe) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
       LOGGER.debug(Constants.LOG_EXCEPTION, cnfe);
       throw new ProxyClassDefinitionException(classToProxyName, cnfe);
     } catch (NoSuchMethodException nsme) {
@@ -319,6 +330,7 @@ public class ProxySubclassGenerator
     boolean isProxySubclass = (proxies != null && proxies.containsValue(aClass.getName()));
 
     LOGGER.debug(Constants.LOG_EXIT, "isProxySubclass", isProxySubclass);
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
 
     return isProxySubclass;
   }
@@ -339,6 +351,7 @@ public class ProxySubclassGenerator
     while (!clazz.getName().startsWith("java.") && !clazz.getName().startsWith("javax.")) {
       for (Method m : clazz.getDeclaredMethods()) {
         //Static finals are ok, because we won't be overriding them :)
+//IC see: https://issues.apache.org/jira/browse/ARIES-743
         if (isFinal(m.getModifiers()) && !Modifier.isStatic(m.getModifiers())) {
           finalMethods.add(m.toGenericString());
         }
@@ -354,6 +367,7 @@ public class ProxySubclassGenerator
     }
 
     LOGGER.debug(Constants.LOG_EXIT, "scanForFinalModifiers");
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
 
   }
 
@@ -372,6 +386,7 @@ public class ProxySubclassGenerator
         ih = (InvocationHandler) o.getClass().getDeclaredMethod("getInvocationHandler",
             new Class[] {}).invoke(o, new Object[] {});
       } catch (IllegalArgumentException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
         LOGGER.debug(Constants.LOG_EXCEPTION, e);
       } catch (SecurityException e) {
         LOGGER.debug(Constants.LOG_EXCEPTION, e);

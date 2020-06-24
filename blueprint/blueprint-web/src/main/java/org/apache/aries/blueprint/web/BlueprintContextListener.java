@@ -60,10 +60,12 @@ public class BlueprintContextListener implements ServletContextListener {
 
     public void contextInitialized(ServletContextEvent event) {
         ServletContext servletContext = event.getServletContext();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1323
         String location = servletContext.getInitParameter(CONTEXT_LOCATION);
         if (location == null) {
             location = DEFAULT_CONTEXT_LOCATION;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
         List<URL> resourcePaths = new ArrayList<URL>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
@@ -73,6 +75,7 @@ public class BlueprintContextListener implements ServletContextListener {
             }
             servletContext.log("Loading Blueprint contexts " + resourcePaths);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
             Map<String, String> properties = new HashMap<String, String>();
             String propLocations = servletContext.getInitParameter(PROPERTIES);
             if (propLocations != null) {
@@ -96,6 +99,7 @@ public class BlueprintContextListener implements ServletContextListener {
                 }
             }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1323
             NamespaceHandlerSet nsHandlerSet = getNamespaceHandlerSet(servletContext, classLoader);
             BlueprintContainerImpl container = new BlueprintContainerImpl(classLoader, resourcePaths, properties, nsHandlerSet, true);
             servletContext.setAttribute(CONTAINER_ATTRIBUTE, container);
@@ -105,6 +109,7 @@ public class BlueprintContextListener implements ServletContextListener {
     }
     
     protected NamespaceHandlerSet getNamespaceHandlerSet(ServletContext servletContext, ClassLoader tccl) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1323
         NamespaceHandlerSet nsSet = getNamespaceHandlerSetFromParameter(servletContext, tccl);
         if (nsSet != null) {
             return nsSet;
@@ -114,6 +119,7 @@ public class BlueprintContextListener implements ServletContextListener {
 
     protected NamespaceHandlerSet getNamespaceHandlerSetFromParameter(ServletContext servletContext, ClassLoader tccl) {
         String handlersProp = servletContext.getInitParameter(NAMESPACE_HANDLERS_PARAMETER);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1323
         if (handlersProp == null) {
             return null;
         }

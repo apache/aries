@@ -40,6 +40,7 @@ public class DelegateContext implements DirContext, LdapContext {
     private ContextProvider contextProvider;
 
     public DelegateContext(BundleContext bundleContext, Hashtable<?, ?> theEnv) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
         this.bundleContext = bundleContext;
         env.putAll(theEnv);
         rebind = false;
@@ -48,6 +49,8 @@ public class DelegateContext implements DirContext, LdapContext {
     public DelegateContext(BundleContext bundleContext, ContextProvider contextProvider) throws NamingException {
         this.bundleContext = bundleContext;
         this.contextProvider = contextProvider;
+//IC see: https://issues.apache.org/jira/browse/ARIES-440
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
         env.putAll(contextProvider.getContext().getEnvironment());
         rebind = true;
     }
@@ -72,6 +75,8 @@ public class DelegateContext implements DirContext, LdapContext {
 
     public void close() throws NamingException {
         if (contextProvider != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-440
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
             contextProvider.close();
         }
 
@@ -108,6 +113,7 @@ public class DelegateContext implements DirContext, LdapContext {
     }
 
     public Hashtable<?, ?> getEnvironment() throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         Hashtable<Object, Object> theEnv = new Hashtable<>();
         theEnv.putAll(env);
         return theEnv;
@@ -197,6 +203,7 @@ public class DelegateContext implements DirContext, LdapContext {
 
     protected Context findContext(String name) throws NamingException {
         Context toReturn;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
 
         if (name.contains(":")) {
             toReturn = getURLContext(name);
@@ -215,6 +222,8 @@ public class DelegateContext implements DirContext, LdapContext {
             if (contextProvider == null) {
                 throw new NoInitialContextException();
             } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-440
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
                 return contextProvider.getContext();
             }
         } else {
@@ -231,6 +240,8 @@ public class DelegateContext implements DirContext, LdapContext {
             String scheme = name.substring(0, index);
 
             ContextProvider provider = urlContexts.get(scheme);
+//IC see: https://issues.apache.org/jira/browse/ARIES-440
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
 
             if (provider == null || !provider.isValid()) {
                 provider = ContextHelper.createURLContext(bundleContext, scheme, env);
@@ -368,6 +379,7 @@ public class DelegateContext implements DirContext, LdapContext {
     }
 
     public ExtendedResponse extendedOperation(ExtendedRequest request)
+//IC see: https://issues.apache.org/jira/browse/ARIES-513
             throws NamingException {
         return ((LdapContext) getDefaultContext()).extendedOperation(request);
     }

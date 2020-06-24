@@ -12,6 +12,8 @@ public class SharePolicies {
 	private final Map<String, Map<String, List<SharePolicy>>> typeToSharePolicies = Collections.synchronizedMap(new HashMap<String, Map<String, List<SharePolicy>>>());
 	
 	public SharePolicies() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		init();
 	}
 	

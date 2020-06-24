@@ -132,6 +132,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     }
 
     public Class getRuntimeInterface() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-330
         return runtimeInterface;
     }
 
@@ -140,6 +141,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     }
     
     public BundleContext getBundleContext() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-727
       return bundleContext;
     }
     
@@ -148,6 +150,7 @@ public abstract class ServiceReferenceMetadataImpl extends ComponentMetadataImpl
     }
 
     public ValueMetadata getExtendedFilter() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
         return extendedFilter;
     }
 

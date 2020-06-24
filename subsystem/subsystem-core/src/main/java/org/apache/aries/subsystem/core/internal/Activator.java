@@ -53,6 +53,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 
     private static volatile Activator instance;
 	public static Activator getInstance() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1356
 	    Activator result = instance;
 	    if (result == null)
             throw new IllegalStateException("The activator has not been initialized or has been shutdown");
@@ -78,10 +79,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private final Collection<ServiceRegistration<?>> registrations = new HashSet<ServiceRegistration<?>>();
 	
 	public BundleContext getBundleContext() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return bundleContext;
 	}
 
 	public LockingStrategy getLockingStrategy() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 		return lockingStrategy;
 	}
 
@@ -90,6 +93,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	}
 
     public ServiceModeller getServiceModeller() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
         return serviceModeller;
     }
 
@@ -98,6 +102,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	}
 
 	public Collection<IDirectoryFinder> getIDirectoryFinders() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-929
 		return Collections.unmodifiableCollection(finders);
 	}
 
@@ -106,10 +111,12 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	}
 
 	public Subsystems getSubsystems() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return subsystems;
 	}
 
 	public SubsystemServiceRegistrar getSubsystemServiceRegistrar() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		logger.debug(LOG_ENTRY, "getSubsystemServiceRegistrar");
 		SubsystemServiceRegistrar result = registrar;
 		logger.debug(LOG_EXIT, "getSubsystemServiceRegistrar", result);
@@ -117,6 +124,8 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	}
 
 	public SystemRepository getSystemRepository() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 		return systemRepositoryManager.getSystemRepository();
 	}
 
@@ -124,6 +133,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	public synchronized void start(BundleContext context) throws Exception {
 		logger.debug(LOG_ENTRY, "start", context);
 		bundleContext = context;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 		lockingStrategy = new LockingStrategy(bundleContext.getProperty(LOCK_TIMEOUT));
 		serviceTracker = new ServiceTracker<Object, Object>(bundleContext, generateServiceFilter(), this);
 		serviceTracker.open();
@@ -145,16 +155,23 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		synchronized (Activator.class) {
 			instance = Activator.this;
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1062
 		subsystems = new Subsystems();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
+//IC see: https://issues.apache.org/jira/browse/ARIES-992
 		registerBundleEventHook();
 		registrations.add(bundleContext.registerService(ResolverHookFactory.class, new SubsystemResolverHookFactory(subsystems), null));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
         Dictionary<String, Object> handlerProps = new Hashtable<String, Object>();
         handlerProps.put(ContentHandler.CONTENT_TYPE_PROPERTY, ConfigAdminContentHandler.CONTENT_TYPES);
         configAdminHandler = new ConfigAdminContentHandler(bundleContext);
         registrations.add(bundleContext.registerService(ContentHandler.class, configAdminHandler, handlerProps));
 		registrar = new SubsystemServiceRegistrar(bundleContext);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 		systemRepositoryManager = new SystemRepositoryManager(bundleContext.getBundle(0).getBundleContext());
         systemRepositoryManager.open();
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		BasicSubsystem root = subsystems.getRootSubsystem();
 		bundleEventHook.activate();
 		root.start();
@@ -165,7 +182,10 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		if (!isActive())
 			return;
 		bundleEventHook.deactivate();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 		systemRepositoryManager.close();
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		new StopAction(subsystems.getRootSubsystem(), subsystems.getRootSubsystem(), true).run();
 		for (ServiceRegistration<?> registration : registrations) {
 			try {
@@ -175,7 +195,9 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				logger.debug("Service had already been unregistered", e);
 			}
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
         configAdminHandler.shutDown();
+//IC see: https://issues.apache.org/jira/browse/ARIES-992
 		bundleEventHook.processPendingEvents();
 		synchronized (Activator.class) {
 			instance = null;
@@ -187,6 +209,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		if (services == null)
 			return null;
 		for (Object alternate : services)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
 			if (service.isInstance(alternate))
 					return service.cast(alternate);
 		return null;
@@ -207,6 +230,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append("org.osgi.service.repository.Repository").append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
 				.append(MODELLED_RESOURCE_MANAGER).append(")(")
 				.append(org.osgi.framework.Constants.OBJECTCLASS).append('=')
 				.append(IDirectoryFinder.class.getName()).append("))").toString();
@@ -215,11 +239,13 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private boolean hasRequiredServices() {
 		return coordinator != null &&
 				regionDigraph != null &&
+//IC see: https://issues.apache.org/jira/browse/ARIES-952
 				resolver != null;
 	}
 
 	private boolean isActive() {
 		synchronized (Activator.class) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-921
 			return instance != null && getSubsystems() != null;
 		}
 	}
@@ -227,6 +253,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	private void registerBundleEventHook() {
 		Dictionary<String, Object> properties = new Hashtable<String, Object>(1);
 		properties.put(org.osgi.framework.Constants.SERVICE_RANKING, Integer.MAX_VALUE);
+//IC see: https://issues.apache.org/jira/browse/ARIES-992
 		bundleEventHook = new BundleEventHook();
 		registrations.add(bundleContext.registerService(EventHook.class, bundleEventHook, properties));
 	}
@@ -254,6 +281,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 			regionDigraph = (RegionDigraph) service;
 		else if (service instanceof Resolver && resolver == null)
 			resolver = (Resolver) service;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
 		else {
 			try {
 				Class clazz = getClass().getClassLoader().loadClass(MODELLED_RESOURCE_MANAGER);
@@ -285,6 +313,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 	public synchronized void removedService(ServiceReference<Object> reference, Object service) {
 		if (service instanceof Coordinator) {
 			if (service.equals(coordinator)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
 				Coordinator coordinator = findAlternateServiceFor(Coordinator.class);
 				if (coordinator == null)
 					deactivate();
@@ -293,6 +322,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 		else if (service instanceof RegionDigraph) {
 			if (service.equals(regionDigraph)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
 				RegionDigraph regionDigraph = findAlternateServiceFor(RegionDigraph.class);
 				if (regionDigraph == null)
 					deactivate();
@@ -301,12 +331,14 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer<Obje
 		}
 		else if (service instanceof Resolver) {
 			if (service.equals(resolver)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
 				Resolver resolver = findAlternateServiceFor(Resolver.class);
 				if (resolver == null)
 					deactivate();
 				this.resolver = resolver;
 			}
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-929
 		else if (service instanceof IDirectoryFinder)
 			finders.remove(service);
         else {

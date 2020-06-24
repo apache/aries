@@ -111,6 +111,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	public SubsystemTest(boolean installModeller) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		this.installModeler = installModeller;
 	}
 
@@ -127,6 +128,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 
 	@Configuration
 	public Option[] configuration() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 	    new File("target").mkdirs();
 	    init();
 		return new Option[] {
@@ -137,7 +139,9 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 				mavenBundle("org.apache.aries",             "org.apache.aries.util").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 				when(installModeler).useOptions(modelerBundles()),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
                 when(installConfigAdmin).useOptions(
                         mavenBundle("org.apache.felix",     "org.apache.felix.configadmin").versionAsInProject()),
 				mavenBundle("org.apache.aries.subsystem",   "org.apache.aries.subsystem.api").versionAsInProject(),
@@ -150,11 +154,13 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.event").versionAsInProject(),
 				mavenBundle("org.eclipse.equinox",          "org.eclipse.equinox.region").version("1.1.0.v20120522-1841"),
 				mavenBundle("org.osgi",                     "org.osgi.enterprise").versionAsInProject(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 				mavenBundle("org.easymock",					"easymock").versionAsInProject(),
                 mavenBundle("org.ops4j.pax.logging",        "pax-logging-api").versionAsInProject(),
                 mavenBundle("org.ops4j.pax.logging",        "pax-logging-service").versionAsInProject(),
                 mavenBundle("org.ops4j.pax.tinybundles",    "tinybundles").versionAsInProject(),
                 mavenBundle("biz.aQute.bnd",                "bndlib").versionAsInProject(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1523
                 mavenBundle("org.apache.aries.subsystem",	"org.apache.aries.subsystem.obr").versionAsInProject(),
                 mavenBundle("org.apache.felix",				"org.apache.felix.bundlerepository").versionAsInProject(),	
 //				org.ops4j.pax.exam.container.def.PaxRunnerOptions.vmOption("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"),
@@ -172,6 +178,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
     }
 
     private Option modelerBundles() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
         return CoreOptions.composite(
         		mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").versionAsInProject(),
         		mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").versionAsInProject(),
@@ -212,6 +219,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			createApplications();
 			createdApplications = true;
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 		bundleContext.getBundle(0).getBundleContext().addServiceListener(subsystemEvents, '(' + Constants.OBJECTCLASS + '=' + Subsystem.class.getName() + ')');
 	}
 	
@@ -241,6 +249,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected RichBundleContext context(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		return new RichBundleContext(subsystem.getBundleContext());
 	}
 
@@ -251,7 +260,9 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
     }
 
 	protected void assertBundleState(int state, String symbolicName, Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
     	Bundle bundle = context(subsystem).getBundleByName(symbolicName);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1144
     	assertNotNull("Bundle not found: " + symbolicName, bundle);
     	assertBundleState(bundle, state);
     }
@@ -261,6 +272,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected Subsystem assertChild(Subsystem parent, String symbolicName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-968
 		return assertChild(parent, symbolicName, null, null);
 	}
 
@@ -281,6 +293,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertChildren(int size, Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-737
 		assertEquals("Wrong number of children", size, subsystem.getChildren().size());
 	}
 
@@ -299,6 +312,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertConstituent(Subsystem subsystem, String symbolicName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertConstituent(subsystem, symbolicName, Version.emptyVersion);
 	}
 
@@ -313,6 +327,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	protected Resource assertConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
 		Resource constituent = getConstituent(subsystem, symbolicName, version, type);
 		assertNotNull("Constituent not found: " + symbolicName + ';' + version + ';' + type, constituent);
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		return constituent;
 	}
 
@@ -348,6 +363,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 			SubsystemEventHandler.ServiceEventInfo event,
 			int eventType) {
 		// TODO Could accept a ServiceRegistration as an argument and verify it against the one in the event.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertNotNull("No event", event);
 		assertEquals("Wrong ID", id, event.getId());
 		assertEquals("Wrong symbolic name", symbolicName, event.getSymbolicName());
@@ -358,6 +374,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected String assertHeaderExists(Subsystem subsystem, String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		String header = subsystem.getSubsystemHeaders(null).get(name);
 		assertNotNull("Missing header: " + name, header);
 		return header;
@@ -373,6 +390,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 
 	protected void assertLastId(long id) throws Exception {
 		Subsystem root = getRootSubsystem();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Field lastId = SubsystemIdentifier.class.getDeclaredField("lastId");
 		lastId.setAccessible(true);
 		assertEquals("Wrong lastId", id, lastId.getLong(root));
@@ -397,6 +415,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertNotConstituent(Subsystem subsystem, String symbolicName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertNotConstituent(subsystem, symbolicName, Version.emptyVersion, IdentityNamespace.TYPE_BUNDLE);
 	}
 
@@ -406,6 +425,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertParent(Subsystem expected, Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		for (Subsystem parent : subsystem.getParents()) {
 			if (parent.equals(expected))
 				return;
@@ -415,6 +435,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertProvisionPolicy(Subsystem subsystem, boolean acceptsDependencies) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		String headerStr = subsystem.getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_TYPE);
 		assertNotNull("Missing subsystem type header", headerStr);
 		SubsystemTypeHeader header = new SubsystemTypeHeader(headerStr);
@@ -426,6 +447,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertRefresh(Collection<Bundle> bundles) throws InterruptedException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-968
 		FrameworkWiring wiring = getSystemBundleAsFrameworkWiring();
 		final AtomicBoolean refreshed = new AtomicBoolean(false);
 		wiring.refreshBundles(bundles, new FrameworkListener[]{ new FrameworkListener() {
@@ -451,26 +473,31 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertRegionContextBundle(Subsystem s) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Bundle b = getRegionContextBundle(s);
 		assertEquals("Not active", Bundle.ACTIVE, b.getState());
 		assertEquals("Wrong location", s.getLocation() + '/' + s.getSubsystemId(), b.getLocation());
 		assertEquals("Wrong symbolic name", "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), b.getSymbolicName());
 		assertEquals("Wrong version", Version.parseVersion("1.0.0"), b.getVersion());
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertConstituent(s, "org.osgi.service.subsystem.region.context." + s.getSubsystemId(), Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 	}
 
 	protected void assertResolve(Collection<Bundle> bundles) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-968
 		FrameworkWiring wiring = getSystemBundleAsFrameworkWiring();
 		assertTrue("Bundles not resolved", wiring.resolveBundles(bundles));
 	}
 
 	protected void assertServiceEventsInstall(Subsystem subsystem) throws InterruptedException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertEvent(subsystem, Subsystem.State.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 	}
 
 	protected void assertServiceEventsResolve(Subsystem subsystem) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		assertServiceEventResolved(subsystem, ServiceEvent.MODIFIED);
 	}
 
@@ -481,6 +508,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 
 	protected void assertServiceEventsStop(Subsystem subsystem) throws InterruptedException {
 		assertEvent(subsystem, Subsystem.State.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		assertServiceEventResolved(subsystem, ServiceEvent.MODIFIED);
 		// Don't forget about the unregistering event, which will have the same state as before.
 		assertServiceEventResolved(subsystem, ServiceEvent.UNREGISTERING);
@@ -491,7 +519,10 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertStartLevel(Bundle bundle, int expected) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		assertNotNull("Bundle is null", bundle);
+//IC see: https://issues.apache.org/jira/browse/ARIES-966
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		assertEquals("Wrong start level", expected, bundle.adapt(BundleStartLevel.class).getStartLevel());
 	}
 
@@ -500,6 +531,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertState(EnumSet<State> expected, State actual) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertTrue("Wrong state: expected=" + expected + ", actual=" + actual, expected.contains(actual));
 	}
 
@@ -512,26 +544,31 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected Subsystem assertSubsystemLifeCycle(File file) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		Subsystem rootSubsystem = context().getService(Subsystem.class);
         assertNotNull("Root subsystem was null", rootSubsystem);
         Subsystem subsystem = rootSubsystem.install(file.toURI().toURL().toExternalForm());
         assertNotNull("The subsystem was null", subsystem);
         assertState(EnumSet.of(State.INSTALLING, State.INSTALLED), subsystem.getState());
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertEvent(subsystem, Subsystem.State.INSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.INSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertChild(rootSubsystem, subsystem);
         subsystem.start();
         assertState(EnumSet.of(State.RESOLVING, State.RESOLVED, State.STARTING, State.ACTIVE), subsystem.getState());
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertEvent(subsystem, Subsystem.State.RESOLVING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.STARTING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.ACTIVE, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		subsystem.stop();
 		assertState(EnumSet.of(State.STOPPING, State.RESOLVED), subsystem.getState());
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertEvent(subsystem, Subsystem.State.STOPPING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.RESOLVED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		subsystem.uninstall();
 		assertState(EnumSet.of(State.UNINSTALLING, State.UNINSTALLED), subsystem.getState());
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertEvent(subsystem, Subsystem.State.UNINSTALLING, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertEvent(subsystem, Subsystem.State.UNINSTALLED, subsystemEvents.poll(subsystem.getSubsystemId(), 5000));
 		assertNotChild(rootSubsystem, subsystem);
@@ -543,6 +580,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertSymbolicName(String expected, Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		assertSymbolicName(expected, subsystem.getSymbolicName());
 	}
 
@@ -551,6 +589,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertType(String expected, Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertEquals("Wrong type", expected, subsystem.getType());
 	}
 
@@ -559,6 +598,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void assertVersion(Version expected, Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-752
 		assertVersion(expected, subsystem.getVersion());
 	}
 
@@ -567,6 +607,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected Header version(String version) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		return new Header(Constants.BUNDLE_VERSION, version);
 	}
 
@@ -594,6 +635,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		return new Header(Constants.PROVIDE_CAPABILITY, capability);
 	}
 	protected static void createBundle(Header...  headers) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1222
 		createBundle(Collections.<String> emptyList(), headers);
 	}
 
@@ -616,6 +658,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		for (Entry<String, String> header : headers.entrySet()) {
 			manifest.attribute(header.getKey(), header.getValue());
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1222
 		for (String path : emptyFiles) {
 			bundle.file(path).end();
 		}
@@ -646,6 +689,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected static void createSubsystem(String name, String...contents) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		File manifest = new File(name + ".mf");
 		ZipFixture fixture = ArchiveFixture.newZip();
 		if (manifest.exists())
@@ -661,11 +705,14 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected Subsystem findSubsystemService(long id) throws InvalidSyntaxException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		String filter = "(" + SubsystemConstants.SUBSYSTEM_ID_PROPERTY + "=" + id + ")";
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		return context().getService(Subsystem.class, filter, 5000);
 	}
 
 	protected Subsystem getChild(Subsystem parent, String symbolicName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-968
 		return getChild(parent, symbolicName, null, null);
 	}
 
@@ -691,6 +738,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	public static Object getIdentityAttribute(Resource resource, String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 	    List<Capability> capabilities = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE);
         Capability capability = capabilities.get(0);
         return capability.getAttributes().get(name);
@@ -715,6 +763,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
    }
 
    protected Resource getConstituent(Subsystem subsystem, String symbolicName, Version version, String type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		for (Resource resource : subsystem.getConstituents()) {
 			if (symbolicName.equals(getSymbolicNameAttribute(resource))) {
 				if (version == null)
@@ -732,11 +781,13 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected AriesSubsystem getConstituentAsAriesSubsystem(Subsystem subsystem, String symbolicName, Version version, String type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-968
 		Resource resource = getConstituent(subsystem, symbolicName, version, type);
 		return (AriesSubsystem)resource;
 	}
 
 	protected Bundle getConstituentAsBundle(Subsystem subsystem, String symbolicName, Version version, String type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		return getConstituentAsBundleRevision(subsystem, symbolicName, version, type).getBundle();
 	}
 
@@ -746,12 +797,15 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected Subsystem getConstituentAsSubsystem(Subsystem subsystem, String symbolicName, Version version, String type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-968
 		Resource resource = getConstituent(subsystem, symbolicName, version, type);
 		return (Subsystem)resource;
 	}
 
 	protected Region getRegion(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		RegionDigraph digraph = context().getService(RegionDigraph.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1021
 		String name = getRegionName(subsystem);
 		Region region = digraph.getRegion(name);
 		assertNotNull("Region not found: " + name, region);
@@ -759,18 +813,21 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected Bundle getRegionContextBundle(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		BundleContext bc = subsystem.getBundleContext();
 		assertNotNull("No region context bundle", bc);
 		return bc.getBundle();
 	}
 
 	protected String getRegionName(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1021
 		if (subsystem.getSubsystemId() == 0)
 			return "org.eclipse.equinox.region.kernel";
 		return subsystem.getSymbolicName() + ';' + subsystem.getVersion() + ';' + subsystem.getType() + ';' + subsystem.getSubsystemId();
 	}
 
 	protected AriesSubsystem getRootAriesSubsystem() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		return context().getService(AriesSubsystem.class);
 	}
 
@@ -790,22 +847,27 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected Bundle getSystemBundle() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-966
 		return bundleContext.getBundle(Constants.SYSTEM_BUNDLE_LOCATION);
 	}
 
 	protected FrameworkStartLevel getSystemBundleAsFrameworkStartLevel() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		return getSystemBundle().adapt(FrameworkStartLevel.class);
 	}
 
 	protected FrameworkWiring getSystemBundleAsFrameworkWiring() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-968
 		return getSystemBundle().adapt(FrameworkWiring.class);
 	}
 
 	protected Bundle getSubsystemCoreBundle() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 		return context().getBundleByName(SUBSYSTEM_CORE_NAME);
 	}
 
 	protected Bundle installBundleFromFile(String fileName) throws FileNotFoundException, BundleException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		return installBundleFromFile(new File(fileName), getRootSubsystem());
 	}
 
@@ -841,6 +903,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 	
 	protected Subsystem installSubsystemFromFile(Subsystem parent, File file, String location) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		return installSubsystem(parent, location, new URL(file.toURI().toURL().toExternalForm()).openStream());
 	}
 
@@ -863,6 +926,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	        ariesProvisionDepsAtInstall = configChecks[0].booleanValue();
 	    }
 	    subsystemEvents.clear();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	    Subsystem subsystem = parent.install(location, content);
 	    assertSubsystemNotNull(subsystem);
 	    assertEvent(subsystem, State.INSTALLING, 5000);
@@ -885,6 +949,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void registerRepositoryService(Repository repository) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		serviceRegistrations.add(bundleContext.registerService(
 				Repository.class, repository, null));
 	}
@@ -921,12 +986,14 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void restartSubsystemsImplBundle() throws BundleException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		Bundle b = getSubsystemCoreBundle();
 		b.stop();
 		b.start();
 	}
 
 	protected void startBundle(Bundle bundle) throws BundleException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		startBundle(bundle, getRootSubsystem());
 	}
 
@@ -956,6 +1023,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		if (!ariesProvisionDependenciesAtInstall) {
 		    assertEvent(subsystem, State.INSTALLED, 5000);
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertEvent(subsystem, State.RESOLVING, 5000);
 		assertEvent(subsystem, State.RESOLVED, 5000);
 		assertEvent(subsystem, State.STARTING, 5000);
@@ -964,6 +1032,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void startSubsystemFromResolved(Subsystem subsystem) throws InterruptedException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		assertState(State.RESOLVED, subsystem);
 		subsystemEvents.clear();
 		subsystem.start();
@@ -973,6 +1042,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void stopAndUninstallSubsystemSilently(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		stopSubsystemSilently(subsystem);
 		uninstallSubsystemSilently(subsystem);
 	}
@@ -981,12 +1051,14 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		assertState(State.ACTIVE, subsystem);
 		subsystemEvents.clear();
 		subsystem.stop();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertEvent(subsystem, State.STOPPING, 5000);
 		assertEvent(subsystem, State.RESOLVED, 5000);
 		assertState(State.RESOLVED, subsystem);
 	}
 
 	protected void stopSubsystemSilently(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		try {
 			stopSubsystem(subsystem);
 		}
@@ -996,6 +1068,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void uninstallSilently(Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (bundle == null)
 			return;
 		try {
@@ -1014,7 +1087,10 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		BasicSubsystem basicSubsystem = (BasicSubsystem)subsystem;
 		AriesProvisionDependenciesDirective directive = basicSubsystem.getAriesProvisionDependenciesDirective();
 		Bundle b = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-941
+//IC see: https://issues.apache.org/jira/browse/ARIES-943
 		Region region = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		RegionDigraph digraph = context().getService(RegionDigraph.class);
 		if (!quietly) {
 			if (directive.isResolve()) {
@@ -1037,6 +1113,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		}
 		Collection<Subsystem> parents = subsystem.getParents();
 		if (!EnumSet.of(State.INSTALL_FAILED, State.INSTALLED, State.INSTALLING).contains(state)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			assertEvent(subsystem, State.INSTALLED, 5000);
 		}
 		assertEvent(subsystem, State.UNINSTALLING, 5000);
@@ -1045,6 +1122,8 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 		for (Subsystem parent : parents) {
 			assertNotChild(parent, subsystem);
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-941
+//IC see: https://issues.apache.org/jira/browse/ARIES-943
 		if (subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_APPLICATION)
 				|| subsystem.getType().equals(SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE)) {
 			assertEquals("Region context bundle not uninstalled", Bundle.UNINSTALLED, b.getState());
@@ -1053,6 +1132,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void uninstallSubsystemSilently(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (subsystem == null)
 			return;
 		try {
@@ -1064,6 +1144,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 
 	protected void writeToFile(InputStream is, String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
         try {
             FileOutputStream dest = new FileOutputStream(name);
             StreamUtils.copyStream(is, dest, true);
@@ -1074,6 +1155,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 
     protected static void write(String file, ArchiveFixture.AbstractFixture fixture) throws IOException
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		write(new File(file), fixture);
 	}
 
@@ -1089,6 +1171,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 
 	static void createApplication(String name, String ... contents) throws Exception
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 		ClassLoader cl = SubsystemTest.class.getClassLoader();
         ZipFixture feature = ArchiveFixture
 				.newZip()
@@ -1120,12 +1203,15 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 	}
 	
 	protected static String normalizeBundleLocation(String location) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-941
+//IC see: https://issues.apache.org/jira/browse/ARIES-943
 		if (location.startsWith("initial@"))
 			return location.substring(8);
 		return location;
 	}
 
 	protected InputStream getResource(String path) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 	    InputStream is = this.getClass().getClassLoader().getResourceAsStream(path);
 	    if (is == null) {
 	        throw new IllegalArgumentException("No resource found at path " + path);

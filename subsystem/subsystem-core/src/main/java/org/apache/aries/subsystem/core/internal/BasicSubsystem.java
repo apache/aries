@@ -92,6 +92,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	
 	public BasicSubsystem(SubsystemResource resource, InputStream deploymentManifest) throws URISyntaxException, IOException, BundleException, InvalidSyntaxException {
 		this.resource = resource;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		final File file = new File(Activator.getInstance().getBundleContext().getDataFile(""), Long.toString(resource.getId()));
 		file.mkdirs();
 		Coordination coordination = Activator.getInstance().getCoordinator().peek();
@@ -148,8 +149,10 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	
 	@Override
 	public boolean equals(Object o) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (o == this)
 			return true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		if (!(o instanceof BasicSubsystem))
 			return false;
 		BasicSubsystem that = (BasicSubsystem)o;
@@ -161,6 +164,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		// First, add the capabilities from the manifest.
 		SubsystemManifest manifest = getSubsystemManifest();
 		List<Capability> result = manifest.toCapabilities(this);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1590
 		if (namespace != null)
 			for (Iterator<Capability> i = result.iterator(); i.hasNext();)
 				if (!i.next().getNamespace().equals(namespace))
@@ -192,12 +196,14 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		// First, add the requirements from the manifest.
 		SubsystemManifest manifest = getSubsystemManifest();
 		List<Requirement> result = manifest.toRequirements(this);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1590
 		if (namespace != null)
 			for (Iterator<Requirement> i = result.iterator(); i.hasNext();)
 				if (!i.next().getNamespace().equals(namespace))
 					i.remove();
 		if (isScoped())
 			return result;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
 		for (Resource constituent : getConstituents())
 			if (header.contains(constituent))
@@ -219,12 +225,14 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 
 	@Override
 	public BundleContext getBundleContext() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		SecurityManager.checkContextPermission(this);
 		return AccessController.doPrivileged(new GetBundleContextAction(this));
 	}
 
 	@Override
 	public Collection<Subsystem> getChildren() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return Activator.getInstance().getSubsystems().getChildren(this);
 	}
 
@@ -236,17 +244,21 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 
 	@Override
 	public String getLocation() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		SecurityManager.checkMetadataPermission(this);
 		return getDeploymentManifestHeaderValue(DeploymentManifest.ARIESSUBSYSTEM_LOCATION);
 	}
 
 	@Override
 	public Collection<Subsystem> getParents() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		AriesSubsystemParentsHeader header = getDeploymentManifest().getAriesSubsystemParentsHeader();
 		if (header == null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-737
 			return Collections.emptyList();
 		Collection<Subsystem> result = new ArrayList<Subsystem>(header.getClauses().size());
 		for (AriesSubsystemParentsHeader.Clause clause : header.getClauses()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 			BasicSubsystem subsystem = Activator.getInstance().getSubsystems().getSubsystemById(clause.getId());
 			if (subsystem == null)
 				continue;
@@ -311,9 +323,11 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		// It cannot be done within StartAction because we only want to change 
 		// it on an explicit start operation but StartAction is also used for
 		// implicit operations.
+//IC see: https://issues.apache.org/jira/browse/ARIES-920
 		AccessController.doPrivileged(new PrivilegedAction<Object>() {
 			@Override
 			public Object run() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 				setAutostart(true);
 				return null;
 			}
@@ -361,6 +375,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		}
 	}
 	
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 	void addedParent(BasicSubsystem subsystem, boolean referenceCount) {
 		try {
 			if (logger.isDebugEnabled())
@@ -402,6 +417,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	    if (bundle == null) {
 	        // At best, RegionDigraph.getRegion(String) is linear time.
 	        // Continue to call this when necessary, however, as a fail safe.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	        return Activator.getInstance().getRegionDigraph().getRegion(getRegionName());
 	    }
 	    // RegionDigraph.getRegion(Bundle) is constant time.
@@ -424,6 +440,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 			catch (Exception e) {
 				throw new SubsystemException(e);
 			}
+//IC see: https://issues.apache.org/jira/browse/ARIES-922
 			Collection<DeployedContentHeader.Clause> missingResources = resource.getMissingResources();
 			if (!missingResources.isEmpty()) {
 				if (isRoot())
@@ -473,6 +490,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	}
 	
 	boolean isReadyToStart() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		if (isRoot())
 			return true;
 		for (Subsystem parent : getParents())
@@ -492,6 +510,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	}
 	
 	boolean isRoot() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return ROOT_LOCATION.equals(getLocation());
 	}
 	
@@ -507,6 +526,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		DeployedContentHeader.Clause clause = header.getClause(resource);
 		if (clause == null)
 			return;
+//IC see: https://issues.apache.org/jira/browse/ARIES-922
 		removedContent(Collections.singleton(clause));
 	}
 	
@@ -547,6 +567,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		}
 	}
 	
+//IC see: https://issues.apache.org/jira/browse/ARIES-1034
 	synchronized void setDeploymentManifest(DeploymentManifest value) throws IOException {
 		deploymentManifest = value;
 		Coordination coordination = Activator.getInstance().getCoordinator().peek();
@@ -608,6 +629,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		} catch (Exception e) {
 			throw new SubsystemException(e);
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Activator.getInstance().getSubsystemServiceRegistrar().update(this);
 		synchronized (this) {
 			if (logger.isDebugEnabled())
@@ -657,6 +679,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		// Unscoped subsystems import everything already.
 		if (!isScoped())
 			return;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1021
 		RegionUpdater updater = new RegionUpdater(getRegion(), ((BasicSubsystem)getParents().iterator().next()).getRegion());
 		try {
 			updater.addRequirements(requirements);
@@ -688,6 +711,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 		public void ended(Coordination coordination) throws Exception {
 			if (logger.isDebugEnabled())
 				logger.debug("Saving deployment manifests because coordination {} ended", coordination.getName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1034
 			Map<Class<?>, Object> variables = coordination.getVariables();
 			Set<BasicSubsystem> dirtySubsystems;
 			synchronized (variables) {
@@ -711,6 +735,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 
 	@Override
 	public Map<String, String> getDeploymentHeaders() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		SecurityManager.checkMetadataPermission(this);
 		return AccessController.doPrivileged(new GetDeploymentHeadersAction(this));
 	}
@@ -719,6 +744,7 @@ public class BasicSubsystem implements Resource, AriesSubsystem {
 	public AriesSubsystem install(String location, final InputStream content, InputStream deploymentManifest) {
 		AriesSubsystem result = null;
 		IDirectory directory = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		try {
 			directory = content == null ? null : 
 				AccessController.doPrivileged(new PrivilegedAction<IDirectory>() {

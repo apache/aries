@@ -53,11 +53,14 @@ public class SpringBeanProcessor implements BeanProcessor, ComponentDefinitionRe
 
     @Override
     public void process(ComponentDefinitionRegistry componentDefinitionRegistry) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1673
         applicationContext.refresh();
     }
 
     @Override
     public Object beforeInit(Object o, String s, BeanCreator beanCreator, BeanMetadata beanMetadata) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         if (beanMetadata instanceof SpringMetadata || beanMetadata == null) {
             return o;
         }

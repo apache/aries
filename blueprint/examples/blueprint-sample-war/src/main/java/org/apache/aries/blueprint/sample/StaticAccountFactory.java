@@ -18,6 +18,7 @@ package org.apache.aries.blueprint.sample;
 
 public class StaticAccountFactory {
     public static Account createAccount(long number) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
         return new Account(number);
      }
 }

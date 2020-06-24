@@ -93,6 +93,7 @@ public class BundleRepositoryManagerImpl implements BundleRepositoryManager
 
     String appScope = appName + "_" + appVersion;
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
     String filter = "(|(" + BundleRepository.REPOSITORY_SCOPE + "=" + BundleRepository.GLOBAL_SCOPE + ")(" + BundleRepository.REPOSITORY_SCOPE + "="
         + appScope + "))";
     try {
@@ -148,6 +149,7 @@ public class BundleRepositoryManagerImpl implements BundleRepositoryManager
 
         List<BundleSuggestion> thoughts = bundlesuggestions.get(bundleToFind.getExactVersion());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
         if (thoughts != null) {
           Collections.sort(thoughts, new Comparator<BundleSuggestion>() {
             public int compare(BundleSuggestion o1, BundleSuggestion o2)
@@ -164,6 +166,7 @@ public class BundleRepositoryManagerImpl implements BundleRepositoryManager
       if (suggestion != null) {
         urlToBeInstalled.put(bundleToFind, suggestion);
       } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
         throw new ContextException("Unable to find bundle "+bundleToFind.getContentName() + "/" + bundleToFind.getExactVersion());
       }
     }

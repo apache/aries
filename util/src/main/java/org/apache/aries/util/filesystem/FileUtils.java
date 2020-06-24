@@ -32,6 +32,7 @@ public class FileUtils {
    * @return true if the file is a bundle, false else
    */
   public static boolean isBundle(File file) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-618
     BundleManifest bm = BundleManifest.fromBundle(file);
     return ((bm != null) && (bm.isValid()));
   }

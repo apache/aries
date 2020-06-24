@@ -23,6 +23,7 @@ public class TransactionalDef {
     private final String type;
 
     public TransactionalDef(String method, String type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         this.method = method;
         this.type = type;
     }

@@ -31,6 +31,7 @@ public class SubsystemVersionHeader extends VersionHeader {
 	}
 	
 	public SubsystemVersionHeader(Version value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		super(NAME, value);
 	}
 }

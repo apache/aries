@@ -61,6 +61,7 @@ public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest 
     @org.ops4j.pax.exam.Configuration
     public Option[] config() {
         return new Option[] {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1215
             baseOptions(), 
             Helper.blueprintBundles(), 
             keepCaches(),
@@ -114,6 +115,7 @@ public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest 
     @Test
     public void test2() throws Exception {
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory2", null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1312
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put("a", "5");
         cf.update(props);
@@ -145,6 +147,7 @@ public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest 
     @Test
     public void test3() throws Exception {
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1312
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put("a", "5");
         cf.update(props);
@@ -179,6 +182,7 @@ public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest 
     @Test
     public void testCreateAndUpdate() throws Exception {
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory3", null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1312
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put("a", "5");
         cf.update(props);
@@ -238,6 +242,7 @@ public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest 
     @SuppressWarnings("rawtypes")
     @Test
     public void testCreateAndUpdateUsingUpdateMethod() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1312
         Configuration cf = ca.createFactoryConfiguration("blueprint-sample-managed-service-factory4", null);
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put("a", "5");
@@ -309,7 +314,11 @@ public class ManagedServiceFactoryTest extends AbstractBlueprintIntegrationTest 
         assertEquals("5", sr.getProperty("a"));
         assertNull(sr.getProperty("b"));
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1312
         props = new Hashtable<String, String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         props.put("a", "5");
         props.put("b", "foo");
         cf.update(props);

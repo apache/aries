@@ -21,12 +21,14 @@ public class BPHelloImpl implements Hello
 	private String _message;
 	public void setMessage(String msg) 
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-909
 		_message = msg;
 	}
 	
 	private String _initMessage;
 	public void setInitMessage(String initMsg) 
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-909
 		_initMessage = initMsg;
 	}
 	

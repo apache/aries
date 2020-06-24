@@ -68,10 +68,12 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   private Collection<ServiceModeller> modellingPlugins;
 
   public void setModellingPlugins(Collection<ServiceModeller> modellingPlugins) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-716
     this.modellingPlugins = modellingPlugins;
   }
 
   public void setModellingManager (ModellingManager m) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     _modellingManager = m;
   }
 
@@ -98,6 +100,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   }
   
   public ParsedServiceElements getServiceElements(InputStreamProvider archive) throws ModellerException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-716
       ICloseableDirectory dir = null;
       try {
           dir = FileSystem.getFSRoot(archive.open());
@@ -139,10 +142,12 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
     try { 
       for (InputStream is : blueprints) {
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
           ParsedServiceElements pse = getParserProxy().parseAllServiceElements(is);
           services.addAll(pse.getServices());
           references.addAll(pse.getReferences());
         } finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-716
           IOUtils.close(is);
         }
       }
@@ -157,6 +162,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   }
 
   public ModelledResource getModelledResource(IDirectory bundle) throws ModellerException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
       try {
           return getModelledResource(bundle.toURL().toURI().toString(), bundle);
       } catch (MalformedURLException mue) {
@@ -167,6 +173,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   }
 
   public ModelledResource getModelledResource(String uri, InputStreamProvider bundle) throws ModellerException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-716
       ICloseableDirectory dir = null;
       try {
           dir = FileSystem.getFSRoot(bundle.open());
@@ -195,6 +202,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
   }
   
   private ModelledResource model(String uri, BundleManifest bm, ParsedServiceElements pse) throws ModellerException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
       Attributes attributes = bm.getRawAttributes();
       ModelledResource mbi = null;
       try {
@@ -228,10 +236,12 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
     /* OSGi R5 Spec, section 121.3.4: "If the Bundle-Blueprint header is specified but empty, then the Blueprint 
      * bundle must not be managed. This can be used to temporarily disable a Blueprint bundle."
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-969
     if (bpParser.mightContainBlueprint()) { 
 	    List<IFile> files = bundle.listAllFiles();
 	    Iterator<IFile> it = files.iterator();
 	    while (it.hasNext()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-562
 	        IFile file = it.next();         
 	        String directoryFullPath = file.getName(); 
 	        String directoryName = "";
@@ -240,7 +250,9 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager
 	        	// This bundle may be nested within another archive. In that case, we need to trim
 	        	// /bundleFileName.jar from the front of the directory. 
 	        	int bundleNameLength = bundle.getName().length();
+//IC see: https://issues.apache.org/jira/browse/ARIES-774
 	            directoryName = directoryFullPath.substring(bundleNameLength, directoryFullPath.lastIndexOf("/"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-774
 	            if (directoryName.startsWith("/") && directoryName.length() > 1) { 
 	            	directoryName = directoryName.substring(1);
 	            }

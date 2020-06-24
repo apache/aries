@@ -58,5 +58,6 @@ public interface WarToWabConverter {
    * (if it exists) and also the results of the scan of the WAR file.
    * @return
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-344
   WabConversion convert(InputStreamProvider input, String name, Properties properties) throws IOException;
 }

@@ -81,6 +81,7 @@ public class OBRCapability implements Capability
   public Property[] getProperties()
   {
     logger.debug(LOG_ENTRY, "getProperties");
+//IC see: https://issues.apache.org/jira/browse/ARIES-604
     DataModelHelper helper = repositoryAdmin.getHelper();
     
     List<Property> properties = new ArrayList<Property>();
@@ -100,6 +101,7 @@ public class OBRCapability implements Capability
           if (value instanceof String[]) {
             String newValue = Arrays.toString((String[])value);
             value = newValue.substring(1, newValue.length() - 1);
+//IC see: https://issues.apache.org/jira/browse/ARIES-799
           } else if (value instanceof Collection) {
             //We can't rely on Collections having a sensible toString() as it isn't
             //part of the API (although all base Java ones do). We can use an array
@@ -119,6 +121,7 @@ public class OBRCapability implements Capability
           if (Constants.VERSION_ATTRIBUTE.equals(name) || (Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name))) {
             type =  "version";
           } else if (Constants.OBJECTCLASS.equals(name) || (Constants.MANDATORY_DIRECTIVE + ":").equals(name) ||
+//IC see: https://issues.apache.org/jira/browse/ARIES-799
               entry.getValue() instanceof String[] || entry.getValue() instanceof Collection)
             type = "set";
           return type;

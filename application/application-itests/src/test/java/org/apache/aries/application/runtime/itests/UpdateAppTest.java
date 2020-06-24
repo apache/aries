@@ -132,6 +132,8 @@ public class UpdateAppTest extends AbstractIntegrationTest {
     @Test
     @Ignore
     public void testFineUpdate() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = setupApp();
 
@@ -214,6 +216,8 @@ public class UpdateAppTest extends AbstractIntegrationTest {
     }
 
     private AriesApplication setupApp() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
         AriesApplicationContext ctx = manager.install(app);
@@ -227,6 +231,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
 
     private AriesApplicationContext updateApp(AriesApplicationManager manager, AriesApplication app) throws Exception {
         IsolationTestUtils.prepareSampleBundleV2(bundleContext,
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
                 context().getService(RepositoryGenerator.class),
                 context().getService(RepositoryAdmin.class),
                 context().getService(ModellingManager.class));
@@ -264,6 +269,7 @@ public class UpdateAppTest extends AbstractIntegrationTest {
 
                 // do not provision against the local runtime
                 systemProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP).value("true"),
+//IC see: https://issues.apache.org/jira/browse/ARIES-496
 
                 // Bundles
                 junitBundles(),

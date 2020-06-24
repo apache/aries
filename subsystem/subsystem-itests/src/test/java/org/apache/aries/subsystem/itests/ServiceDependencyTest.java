@@ -147,6 +147,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 
 	
 	private static void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBlueprintBundle(
 				BUNDLE_A, 
 				new StringBuilder()
@@ -154,6 +155,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 					.append("<blueprint ")
 					.append("xmlns=\"http://www.osgi.org/xmlns/blueprint/v1.0.0\">")
 					.append("<reference ")
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 					.append("interface=\"bundle.b\" ")
 					.append("filter=\"(active=true)(mode=shared)\"")
 					.append("/>")
@@ -166,6 +168,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 	}
 	
 	private static void createBundleB() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBlueprintBundle(
 				BUNDLE_B, 
 				new StringBuilder()
@@ -266,6 +269,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 			try {
 				Subsystem child = installSubsystemFromFile(parent, APPLICATION_A);
 				try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 					assertSubsystemImportServiceHeader(child, "bundle.b;filter:=\"(&(active=true)(mode=shared))\";resolution:=mandatory;cardinality:=single;effective:=active");
 				}
 				finally {
@@ -303,6 +307,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 		try {
 			Subsystem subsystem = installSubsystemFromFile(APPLICATION_B);
 			try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 				assertSubsystemImportServiceHeader(subsystem, "bundle.a;resolution:=optional;cardinality:=single;effective:=active");
 			}
 			finally {

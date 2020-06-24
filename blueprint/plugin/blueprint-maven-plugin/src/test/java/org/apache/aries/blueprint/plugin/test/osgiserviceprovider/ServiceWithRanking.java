@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 @OsgiServiceProvider
 @Properties({
     @Property(name = "service.ranking", value = "100")
+//IC see: https://issues.apache.org/jira/browse/ARIES-1641
 })
 public class ServiceWithRanking implements ServiceA {
 }

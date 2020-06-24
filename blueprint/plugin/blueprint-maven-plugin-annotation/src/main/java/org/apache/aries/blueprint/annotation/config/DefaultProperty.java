@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.annotation.config;
 
 public @interface DefaultProperty {
     String key();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1628
 
     String value();
 }

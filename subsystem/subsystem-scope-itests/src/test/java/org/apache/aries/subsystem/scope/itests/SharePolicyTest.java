@@ -165,6 +165,8 @@ public class SharePolicyTest extends AbstractTest {
 			String tb6Location = getBundleLocation("tb-6.jar");
 			InstallInfo tb5Info = new InstallInfo(tb5Location, new URL(tb5Location));
 			InstallInfo tb6Info = new InstallInfo(tb6Location, new URL(tb6Location));
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 			ScopeUpdate rootUpdate = getScope().newScopeUpdate();
 			addPackageExportPolicy("org.apache.aries.subsystem.scope.itests.tb6", rootUpdate);
 			ScopeUpdate tb5Update = rootUpdate.newChild("tb5");
@@ -176,6 +178,8 @@ public class SharePolicyTest extends AbstractTest {
 			assertNotNull(tb5);
 			FrameworkWiring frameworkWiring = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
 			assertFalse(frameworkWiring.resolveBundles(Arrays.asList(new Bundle[]{tb5})));
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 			rootUpdate = getScope().newScopeUpdate();
 			ScopeUpdate tb6Update = rootUpdate.newChild("tb6");
 			rootUpdate.getChildren().add(tb6Update);

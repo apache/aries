@@ -31,6 +31,7 @@ public class ProvisionResourceHeader extends AbstractClauseBasedHeader<Provision
 		public static final String ATTRIBUTE_TYPE = TypeAttribute.NAME;
 		
 		public Clause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			super(
             		parsePath(clause, Patterns.SYMBOLIC_NAME, false), 
             		parseParameters(clause, false), 
@@ -74,6 +75,7 @@ public class ProvisionResourceHeader extends AbstractClauseBasedHeader<Provision
 		StringBuilder builder = new StringBuilder();
 		for (Resource resource : resources) {
 			appendResource(resource, builder);
+//IC see: https://issues.apache.org/jira/browse/ARIES-730
 			builder.append(',');
 		}
 		// Remove the trailing comma.
@@ -103,6 +105,7 @@ public class ProvisionResourceHeader extends AbstractClauseBasedHeader<Provision
 	}
 		
 	public ProvisionResourceHeader(Collection<Clause> clauses) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(clauses);
 	}
 	

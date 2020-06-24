@@ -129,6 +129,7 @@ public class RememberingInputStream extends InputStream {
 
   @Override
   public long skip(long n) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
     throw new IOException(MessageUtil.getMessage("UTIL0017E"));
   }
 

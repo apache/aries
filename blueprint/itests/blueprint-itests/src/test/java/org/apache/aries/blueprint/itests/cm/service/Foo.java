@@ -50,6 +50,7 @@ public class Foo implements FooInterface {
     }
 
     public Long getC() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
         return c;
     }
 
@@ -58,6 +59,7 @@ public class Foo implements FooInterface {
     }
 
     public Object getD() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         return d;
     }
 

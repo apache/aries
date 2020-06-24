@@ -29,6 +29,7 @@ import java.util.Map;
 public class InitContextExample implements ContextInitializationHandler {
     @Override
     public void initContext(ContextEnricher contextEnricher) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1605
         final Map<String, String> customParameters = contextEnricher.getBlueprintConfiguration().getCustomParameters();
         for (final String param : customParameters.keySet()) {
             if (param.startsWith("example.")) {

@@ -36,6 +36,7 @@ import org.osgi.framework.Bundle;
 public class QuiesceBlogSampleWithEbaTest extends AbstractBlogIntegrationTest {
 	@Inject
 	QuiesceManager quiesceMgr;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1210
 
 	@Test
 	public void test() throws Exception {

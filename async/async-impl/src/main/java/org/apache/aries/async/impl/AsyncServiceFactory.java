@@ -38,6 +38,7 @@ public class AsyncServiceFactory implements ServiceFactory<Async> {
 	
 	public AsyncServiceFactory(ExecutorService executor, ScheduledExecutorService ses, 
 			ServiceTracker<LogService, LogService> logServiceTracker) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1318
 		this.logServiceTracker = logServiceTracker;
 		this.executor = executor;
 		this.ses = ses;
@@ -50,6 +51,7 @@ public class AsyncServiceFactory implements ServiceFactory<Async> {
 	}
 
 	public void ungetService(Bundle bundle,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1603
 			ServiceRegistration<Async> registration, Async service) {
 		((AsyncService) service).clear();
 	}

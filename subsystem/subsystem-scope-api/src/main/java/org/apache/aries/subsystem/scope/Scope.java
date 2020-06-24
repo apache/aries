@@ -79,6 +79,7 @@ public interface Scope {
 	 */
 	String getLocation();
 	
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
 	Scope getParent();
 	
 	ScopeUpdate newScopeUpdate();

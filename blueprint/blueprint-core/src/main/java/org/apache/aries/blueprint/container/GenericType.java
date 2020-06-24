@@ -56,6 +56,7 @@ public class GenericType extends ReifiedType {
         primitiveClasses.put("boolean", boolean.class);
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
     enum BoundType {
         Exact,
         Extends,
@@ -80,6 +81,7 @@ public class GenericType extends ReifiedType {
     }
 
     public static GenericType parse(String rawType, final Object loader) throws ClassNotFoundException, IllegalArgumentException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-336
         final String type = rawType.trim();
         // Check if this is an array
         if (type.endsWith("[]")) {
@@ -105,6 +107,7 @@ public class GenericType extends ReifiedType {
             return new GenericType(primitiveClasses.get(type));
         }
         // Extends
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         if (type.startsWith("? extends ")) {
             String raw = type.substring("? extends ".length());
             return new GenericType(((ClassLoader) loader).loadClass(raw), BoundType.Extends);
@@ -118,6 +121,7 @@ public class GenericType extends ReifiedType {
         if (loader instanceof ClassLoader) {
             return new GenericType(((ClassLoader) loader).loadClass(type));
         } else if (loader instanceof Bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-336
             try {
                 return AccessController.doPrivileged(new PrivilegedExceptionAction<GenericType>() {
                     public GenericType run() throws ClassNotFoundException {
@@ -155,6 +159,7 @@ public class GenericType extends ReifiedType {
 
     @Override
     public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         StringBuilder sb = new StringBuilder();
         if (boundType == BoundType.Extends) {
             sb.append("? extends ");
@@ -169,6 +174,7 @@ public class GenericType extends ReifiedType {
                 return cl.getComponentType().getName() + "[]";
             }
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         sb.append(cl.getName());
         if (parameters.length > 0) {
             sb.append("<");
@@ -180,6 +186,7 @@ public class GenericType extends ReifiedType {
             }
             sb.append(">");
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         return sb.toString();
     }
 
@@ -191,6 +198,7 @@ public class GenericType extends ReifiedType {
         if (getRawClass() != other.getRawClass()) {
             return false;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         if (boundType != other.boundType) {
             return false;
         }
@@ -213,6 +221,7 @@ public class GenericType extends ReifiedType {
     }
 
     static ReifiedType bound(ReifiedType type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         if (type instanceof GenericType
                 && ((GenericType) type).boundType != BoundType.Exact) {
             GenericType t = (GenericType) type;

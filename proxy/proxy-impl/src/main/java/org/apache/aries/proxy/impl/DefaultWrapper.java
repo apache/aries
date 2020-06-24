@@ -26,6 +26,7 @@ public class DefaultWrapper implements InvocationListener {
 
 
   public Object preInvoke(Object proxy, Method m, Object[] args)
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       throws Throwable {
     return null;
   }

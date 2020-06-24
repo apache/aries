@@ -27,6 +27,7 @@ public class AriesSubsystemLocationHeader implements Header<Clause> {
 	private final String value;
 
 	public AriesSubsystemLocationHeader(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		if (value == null) {
 			throw new NullPointerException();
 		}

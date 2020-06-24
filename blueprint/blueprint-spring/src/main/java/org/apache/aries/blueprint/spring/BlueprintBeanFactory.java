@@ -51,6 +51,7 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory implements 
     public BlueprintBeanFactory(ExtendedBlueprintContainer container, ResourceLoader resourceLoader) {
         super(new WrapperBeanFactory(container));
         this.container = container;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1744
         this.resourceLoader = resourceLoader;
     }
 
@@ -81,6 +82,7 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory implements 
 
     @Override
     public Resource getResource(String location) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1744
         return resourceLoader.getResource(location);
     }
 
@@ -123,6 +125,7 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory implements 
 
         @Override
         public String getClassName() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
             return null;
         }
 

@@ -131,6 +131,7 @@ public class ArchiveFixture
      * @return
      */
     public ZipFixture end() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       return (parent == null) ? (ZipFixture) this : parent;
     }
   }
@@ -287,6 +288,7 @@ public class ArchiveFixture
         bytes = bout.toByteArray();
       }
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-611
       return new ByteArrayInputStream(bytes);
     }
   }
@@ -374,6 +376,7 @@ public class ArchiveFixture
      */
     public ZipFixture binary(String path, InputStream input) throws IOException {
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
       if (input == null) throw new IllegalArgumentException("Provided input stream cannot be null");
       
       IStreamFixture child = new IStreamFixture(this, input);
@@ -450,6 +453,7 @@ public class ArchiveFixture
     
     public void writeOut(OutputStream out) throws IOException 
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-611
       copy(getInputStream(), out);
     }
     
@@ -459,6 +463,7 @@ public class ArchiveFixture
        * For better reuse this method delegate the writing to writeAllEntries, which
        * can be reused by the JarFixture.
        */
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
       ByteArrayOutputStream bout = new ByteArrayOutputStream();
       ZipOutputStream zout = new ZipOutputStream(bout);
       try {
@@ -469,6 +474,7 @@ public class ArchiveFixture
       
       bytes = bout.toByteArray();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-611
       return new ByteArrayInputStream(bytes);
     }
   }

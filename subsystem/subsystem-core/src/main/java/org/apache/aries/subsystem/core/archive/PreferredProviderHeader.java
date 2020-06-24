@@ -28,6 +28,7 @@ public class PreferredProviderHeader extends AbstractClauseBasedHeader<Preferred
 		public static final String ATTRIBUTE_VERSION = VersionRangeAttribute.NAME_VERSION;
 		
 		public Clause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			super(
 					parsePath(clause, Patterns.SYMBOLIC_NAME, false), 
 					parseParameters(clause, true),
@@ -61,6 +62,7 @@ public class PreferredProviderHeader extends AbstractClauseBasedHeader<Preferred
 		}
         
 		public PreferredProviderRequirement toRequirement(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new PreferredProviderRequirement(this, resource);
 		}
 		
@@ -78,6 +80,7 @@ public class PreferredProviderHeader extends AbstractClauseBasedHeader<Preferred
 	public static final String NAME = SubsystemConstants.PREFERRED_PROVIDER;
 	
 	public PreferredProviderHeader(Collection<Clause> clauses) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(clauses);
 	}
 	
@@ -111,6 +114,7 @@ public class PreferredProviderHeader extends AbstractClauseBasedHeader<Preferred
 	
 	@Override
 	public List<PreferredProviderRequirement> toRequirements(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		List<PreferredProviderRequirement> requirements = new ArrayList<PreferredProviderRequirement>(clauses.size());
 		for (Clause clause : clauses)
 			requirements.add(clause.toRequirement(resource));

@@ -32,6 +32,7 @@ import javax.security.auth.login.LoginException;
 public class JAASHelper {
 
     public static <T> void doAs(final String[] groups, PrivilegedAction<T> action) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         Configuration config = new Configuration() {
     
             @Override

@@ -43,6 +43,7 @@ public class TestClient {
 	 */
     public Set<String> testService(String input, Class<MySPI> service) {
         Set<String> results = new HashSet<String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1321
 
         // Try to irritate TCCLSetterVisitor by forcing an (irrelevant) LDC.
         @SuppressWarnings("unused")
@@ -60,6 +61,7 @@ public class TestClient {
      */
     public Set<String> testService2(String input) throws Exception {
         Set<String> results = new HashSet<String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1801
 
         Class<?> cls = Class.forName("org.apache.aries.mytest.MySPI");
         ServiceLoader<?> loader = ServiceLoader.load(cls);

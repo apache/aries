@@ -26,6 +26,7 @@ import java.io.ObjectInputStream;
 @SuppressWarnings("serial")
 public class ProxyTestClassSerializableInterface implements
     ProxyTestSerializableInterface {
+//IC see: https://issues.apache.org/jira/browse/ARIES-705
 
   public int value;
   

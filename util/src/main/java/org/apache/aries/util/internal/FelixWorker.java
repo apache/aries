@@ -34,6 +34,7 @@ public final class FelixWorker extends DefaultWorker implements FrameworkUtilWor
     Bundle b = FrameworkUtil.getBundle(FelixWorker.class);
     try {
       getCurrentModuleMethod = b.getClass().getDeclaredMethod("getCurrentModule");
+//IC see: https://issues.apache.org/jira/browse/ARIES-691
       moduleClass = b.getClass().getClassLoader().loadClass("org.apache.felix.framework.ModuleImpl");
       getClassLoader = moduleClass.getDeclaredMethod("getClassLoader");
       
@@ -51,6 +52,7 @@ public final class FelixWorker extends DefaultWorker implements FrameworkUtilWor
     if (getCurrentModuleMethod != null) {
       try {
         Object result = getCurrentModuleMethod.invoke(b);
+//IC see: https://issues.apache.org/jira/browse/ARIES-691
         if (result != null && moduleClass.isInstance(result)) {
           Object cl = getClassLoader.invoke(result);
           
@@ -66,6 +68,7 @@ public final class FelixWorker extends DefaultWorker implements FrameworkUtilWor
 
   public boolean isValid()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-691
     return getCurrentModuleMethod != null && moduleClass != null && getClassLoader != null;
   }
 }

@@ -488,7 +488,9 @@ public class ScopeAdminTest extends AbstractTest {
     @Ignore
     public void testScopeAffinity() throws Exception {
         // install helloIsolation 0.3 in scope_test1
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
         Scope scope1 = createScope(scope, "scope_test1", 
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
                 "mvn:org.apache.aries.subsystem/org.apache.aries.subsystem.example.helloIsolation/0.1-SNAPSHOT",
                 "0.3");
         
@@ -501,6 +503,8 @@ public class ScopeAdminTest extends AbstractTest {
         ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test3");
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
         su.getChildren().add(childScopeUpdate);
         addPackageImportPolicy("org.osgi.framework", childScopeUpdate);
         Scope scope3 = childScopeUpdate.getScope();
@@ -514,6 +518,7 @@ public class ScopeAdminTest extends AbstractTest {
                 ")");*/
         final Filter filter1 = FrameworkUtil.createFilter(
                 "(&" + 
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
                   "(osgi.wiring.package=org.apache.aries.subsystem.example.helloIsolation)" +
                   //"(scopeName=scope_test1)" +  
                 ")");
@@ -537,6 +542,8 @@ public class ScopeAdminTest extends AbstractTest {
 
         // build up installInfo object for the scope
         InstallInfo info2 = new InstallInfo("helloIsolationRef", new URL("mvn:org.apache.aries.subsystem/org.apache.aries.subsystem.example.helloIsolationRef/0.1-SNAPSHOT"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 
         List<InstallInfo> bundlesToInstall = childScopeUpdate.getBundlesToInstall();
         bundlesToInstall.add(info2);
@@ -545,6 +552,8 @@ public class ScopeAdminTest extends AbstractTest {
         su.commit();
         
         // start all bundles in the scope scope_test3
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
         Collection<Bundle> bundlesToStart = childScopeUpdate.getScope().getBundles();
         for (Bundle b : bundlesToStart) {
             try {
@@ -557,6 +566,9 @@ public class ScopeAdminTest extends AbstractTest {
         }
         
         /*  // install helloIsolationRef in root scope
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
         URL url1 = new URL("mvn:org.apache.aries.subsystem/org.apache.aries.subsystem.example.helloIsolationRef/0.1-SNAPSHOT");
         Bundle helloIsolationRef = bundleContext.installBundle("helloIsolationRef1-rootScope", url1.openStream());
    
@@ -567,6 +579,7 @@ public class ScopeAdminTest extends AbstractTest {
         }*/
         
         // remove child scope - cleanup
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
         su = scope.newScopeUpdate();
         Collection<ScopeUpdate> scopes = su.getChildren();
         scopes.clear();
@@ -614,9 +627,11 @@ public class ScopeAdminTest extends AbstractTest {
 //    }
 
     private Scope createScope(Scope scope, String scopeName, String loc, String version) throws MalformedURLException, InvalidSyntaxException, BundleException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
         ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild(scopeName);
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
         su.getChildren().add(childScopeUpdate);
         addPackageImportPolicy("org.osgi.framework", childScopeUpdate);
         addPackageImportPolicy("org.osgi.util.tracker", childScopeUpdate);
@@ -654,6 +669,10 @@ public class ScopeAdminTest extends AbstractTest {
         su.commit();
         
         // start all bundles in the scope scope_test1
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
         Collection<Bundle> bundlesToStart = childScopeUpdate.getScope().getBundles();
         for (Bundle b : bundlesToStart) {
             b.start();

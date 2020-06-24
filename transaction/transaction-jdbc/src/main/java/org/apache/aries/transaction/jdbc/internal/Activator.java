@@ -40,6 +40,7 @@ import java.util.Hashtable;
 @SuppressWarnings("rawtypes")
 public class Activator implements BundleActivator,
                                   ServiceTrackerCustomizer<CommonDataSource, ManagedDataSourceFactory>,
+//IC see: https://issues.apache.org/jira/browse/ARIES-924
                                   SingleServiceTracker.SingleServiceListener
 {
 
@@ -62,6 +63,7 @@ public class Activator implements BundleActivator,
             LOGGER.error("Unable to register JDBC blueprint namespace handler", e);
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
         Filter filter;
         String flt = "(&(|(objectClass=javax.sql.XADataSource)(objectClass=javax.sql.DataSource))(!(aries.managed=true)))";
         try {
@@ -71,6 +73,7 @@ public class Activator implements BundleActivator,
         }
         t = new ServiceTracker<CommonDataSource, ManagedDataSourceFactory>(ctx, filter, this);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-924
         tm = new SingleServiceTracker<AriesTransactionManager>(ctx, AriesTransactionManager.class, this);
         tm.open();
     }
@@ -79,6 +82,7 @@ public class Activator implements BundleActivator,
         tm.close();
         t.close();
         if (nshReg != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1259
             for (ServiceRegistration reg : nshReg) {
                 safeUnregisterService(reg);
             }
@@ -87,7 +91,9 @@ public class Activator implements BundleActivator,
 
     public ManagedDataSourceFactory addingService(ServiceReference<CommonDataSource> ref) {
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
             LOGGER.info("Wrapping DataSource " + ref);
+//IC see: https://issues.apache.org/jira/browse/ARIES-924
             ManagedDataSourceFactory mdsf = new ManagedDataSourceFactory(ref, tm.getService());
             mdsf.register();
             return mdsf;
@@ -131,6 +137,7 @@ public class Activator implements BundleActivator,
     @Override
     public void serviceFound()
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-924
         t.open();
     }
 
@@ -150,6 +157,7 @@ public class Activator implements BundleActivator,
     static class JdbcNamespaceHandler {
 
         public static ServiceRegistration[] register(BundleContext context) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1259
             XBeanNamespaceHandler nsh20 = new XBeanNamespaceHandler(
                     "http://aries.apache.org/xmlns/transaction-jdbc/2.0",
                     "org.apache.aries.transaction.jdbc-2.0.xsd",

@@ -46,6 +46,7 @@ public class ChainTest {
     @Test
     public void testThenSuccess() throws Exception {
         Deferred<String> def = new Deferred<String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1317
 
         Promise<String> chain = def.getPromise().then(new Success<String, String>() {
             @Override

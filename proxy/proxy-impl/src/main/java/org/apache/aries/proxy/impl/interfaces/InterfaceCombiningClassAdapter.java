@@ -40,6 +40,7 @@ import org.objectweb.asm.commons.Method;
  * This class is used to aggregate several interfaces into a real class which implements all of them
  */
 final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcodes {
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
 
   /** The superclass we should use */
   private final Class<?> superclass;
@@ -59,9 +60,15 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
    * @param loader
    * @param interfaces
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
   InterfaceCombiningClassAdapter(String className,
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       ClassLoader loader, Class<?> superclass, Collection<Class<?>> interfaces) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
     super(Opcodes.ASM8);
+//IC see: https://issues.apache.org/jira/browse/ARIES-819
     writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader);
     ClassVisitor cv = new OSGiFriendlyClassVisitor(writer, ClassWriter.COMPUTE_FRAMES);
     adapter = new InterfaceUsingWovenProxyAdapter(cv, className, loader);
@@ -76,6 +83,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
       i++;
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
     adapter.visit(ProxyUtils.getWeavingJavaVersion(), ACC_PUBLIC | ACC_SYNTHETIC, className, null,
         (superclass == null) ? AbstractWovenProxyAdapter.OBJECT_TYPE.getInternalName() :
           Type.getInternalName(superclass), interfaceNames);
@@ -84,6 +92,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
 
   @Override
   public final MethodVisitor visitMethod(int access, String name, String desc,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1486
           String sig, String[] arg4) {
       //If we already implement this method (from another interface) then we don't
       //want a duplicate. We also don't want to copy any static init blocks (these
@@ -95,11 +104,13 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
       else if(((access & (ACC_PRIVATE|ACC_SYNTHETIC)) == (ACC_PRIVATE|ACC_SYNTHETIC))) {
           // private, synthetic methods on interfaces don't need to be proxied.       
           return null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1546
       } else if (((access & (ACC_STATIC)) == (ACC_STATIC))) {
           //static methods on interfaces don't need to be proxied
           return null;
       }
       else {//We're going to implement this method, so make it non abstract!
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
           return adapter.visitMethod(access, name, desc, null, arg4);
       }
   }
@@ -112,6 +123,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
   final byte[] generateBytes() throws UnableToProxyException {
     if(!!!done) {
       for(Class<?> c : interfaces) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
         adapter.setCurrentMethodDeclaringType(Type.getType(c), true);
         try {
           AbstractWovenProxyAdapter.readClass(c, this);
@@ -121,6 +133,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
       }
 
       Class<?> clazz = superclass;
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
 
       while(clazz != null && (clazz.getModifiers() & Modifier.ABSTRACT) != 0) {
         adapter.setCurrentMethodDeclaringType(Type.getType(clazz), false);
@@ -128,8 +141,10 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
         clazz = clazz.getSuperclass();
       }
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       adapter.setCurrentMethodDeclaringType(AbstractWovenProxyAdapter.OBJECT_TYPE, false);
       visitObjectMethods();
+//IC see: https://issues.apache.org/jira/browse/ARIES-693
 
       adapter.visitEnd();
       done  = true;
@@ -139,6 +154,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
   }
 
   private void visitAbstractMethods(Class<?> clazz) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     for(java.lang.reflect.Method m : clazz.getDeclaredMethods()) {
       int modifiers = m.getModifiers();
       if((modifiers & Modifier.ABSTRACT) != 0) {
@@ -159,6 +175,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
    * even if they are not on any of the interfaces
    */
   private void visitObjectMethods() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       MethodVisitor visitor = visitMethod(ACC_PUBLIC | ACC_ABSTRACT, "toString", "()Ljava/lang/String;", null, null);
       if (visitor != null) visitor.visitEnd();
       

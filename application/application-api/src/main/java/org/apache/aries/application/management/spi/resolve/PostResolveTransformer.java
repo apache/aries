@@ -32,5 +32,6 @@ public interface PostResolveTransformer
  * @throws ResolverException
  */
   DeployedBundles postResolveProcess(ApplicationMetadata appMetaData, DeployedBundles deployedBundles) throws ResolverException;
+//IC see: https://issues.apache.org/jira/browse/ARIES-464
 
 }

@@ -663,6 +663,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
       Map.Entry<Requirement, Set<String>> entry = iterator.next();
       Requirement req = entry.getKey();
       for (Capability cap :caps) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         if (req.isSatisfied(cap)){ // remove the key from the map
           iterator.remove();
           break;
@@ -689,6 +690,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
      List<ImportedBundle> result = new ArrayList<ImportedBundle>();
      for (Content c : content) {
        try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
        result.add(modellingManager.getImportedBundle(c.getContentName(), c.getVersion().toString()));
        } catch (InvalidAttributeException iae) {
          throw new ResolverException(iae);
@@ -705,6 +707,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
      if ((bundleInfos != null) && (!!!bundleInfos.isEmpty())) {
        for (BundleInfo bi : bundleInfos) {
          try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
          result.add(modellingManager.getModelledResource(null, bi, null, null));
          } catch (InvalidAttributeException iae) {
            throw new ResolverException(iae);
@@ -716,6 +719,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
   
    private Repository getLocalRepository(RepositoryAdmin admin) 
    {
+//IC see: https://issues.apache.org/jira/browse/ARIES-358
        Repository localRepository = repositoryAdmin.getLocalRepository();
        
        Resource[] resources = localRepository.getResources();
@@ -730,6 +734,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
    
 
    private boolean excludeLocalRuntime() {   
+//IC see: https://issues.apache.org/jira/browse/ARIES-496
      return Boolean.parseBoolean(System.getProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP));     
    }
 

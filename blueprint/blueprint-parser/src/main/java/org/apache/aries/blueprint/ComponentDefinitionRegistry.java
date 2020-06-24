@@ -38,6 +38,7 @@ public interface ComponentDefinitionRegistry  {
      * @return the <code>ComponentMetadata</code> or <code>null</code> if the id does not match
      * any registered component 
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-249
     ComponentMetadata getComponentDefinition(String id);
     
     /**
@@ -94,6 +95,7 @@ public interface ComponentDefinitionRegistry  {
      * @param component the component the interceptor is to be registered against
      * @param interceptor the interceptor to be used
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-47
     void registerInterceptorWithComponent(ComponentMetadata component, Interceptor interceptor);
     
     /**

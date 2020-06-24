@@ -37,6 +37,7 @@ public class BlogEntryImpl implements BlogEntry
 
   public BlogAuthor getAuthor()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
     return new BlogAuthorImpl(theEntry.getAuthor());
     
   }

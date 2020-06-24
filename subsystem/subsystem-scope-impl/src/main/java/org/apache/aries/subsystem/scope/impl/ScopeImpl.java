@@ -27,6 +27,8 @@ public class ScopeImpl implements Scope {
 	private final SharePolicies sharePolicies;
 	
 	public ScopeImpl(long id, String name, String location, long parentId, Collection<Bundle> bundles, SharePolicies sharePolicies, Scopes scopes) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		this.id = id;
 		this.name = name;
 		this.location = location;
@@ -59,6 +61,8 @@ public class ScopeImpl implements Scope {
 	}
 	
 	public Scope getParent() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		return scopes.getScope(parentId);
 	}
 

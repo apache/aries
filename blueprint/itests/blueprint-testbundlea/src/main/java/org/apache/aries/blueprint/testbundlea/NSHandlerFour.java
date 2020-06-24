@@ -47,7 +47,9 @@ public class NSHandlerFour implements NamespaceHandler{
             final String id = element.getAttributeNS(NSURI, ATTRIB_ID);
             MutableBeanMetadata bm = context.createMetadata(MutableBeanMetadata.class);
             bm.setId(id);
+//IC see: https://issues.apache.org/jira/browse/ARIES-626
             bm.setScope("PROTOTYPE");
+//IC see: https://issues.apache.org/jira/browse/ARIES-626
             bm.setClassName(TestBean.class.getName());
             retval = bm;
         }
@@ -60,6 +62,7 @@ public class NSHandlerFour implements NamespaceHandler{
     }
 
     public Set<Class> getManagedClasses() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-626
         Class cls = TestBean.class;
         return Collections.singleton(cls);
     }

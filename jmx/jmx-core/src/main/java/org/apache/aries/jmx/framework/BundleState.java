@@ -97,6 +97,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
         this.bundleContext = bundleContext;
         this.packageAdmin = packageAdmin;
         this.startLevel = startLevel;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         this.stateConfig = stateConfig;
         this.logger = logger;
     }
@@ -402,6 +403,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
             if (bundleListener == null) {
                 bundleListener = new BundleListener() {
                     public void bundleChanged(BundleEvent event) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
                         if (stateConfig != null && !stateConfig.isBundleChangeNotificationEnabled()) {
                             return;
                         }
@@ -438,6 +440,7 @@ public class BundleState extends NotificationBroadcasterSupport implements Bundl
     }
 
     protected AttributeChangeNotification getAttributeChangeNotification(BundleEvent event) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         if (stateConfig != null && !stateConfig.isAttributeChangeNotificationEnabled()) {
             return null;
         }

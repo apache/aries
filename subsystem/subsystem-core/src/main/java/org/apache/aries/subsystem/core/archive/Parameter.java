@@ -14,7 +14,9 @@
 package org.apache.aries.subsystem.core.archive;
 
 public interface Parameter {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 	String getName();
 	
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	Object getValue();
 }

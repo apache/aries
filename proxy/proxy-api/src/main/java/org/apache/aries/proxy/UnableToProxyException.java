@@ -28,6 +28,7 @@ public class UnableToProxyException extends Exception
 
   public UnableToProxyException(Class<?> clazz)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
     this(clazz.getName(), clazz.getName());
   }
 
@@ -44,6 +45,7 @@ public class UnableToProxyException extends Exception
   
   public UnableToProxyException(String className, String message)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-637
     super(message);
     this.className = className;
   }

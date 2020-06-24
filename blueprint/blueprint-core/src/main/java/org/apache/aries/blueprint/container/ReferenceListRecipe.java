@@ -56,6 +56,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
     public ReferenceListRecipe(String name,
                          ExtendedBlueprintContainer blueprintContainer,
                          ReferenceListMetadata metadata,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
                          ValueRecipe filterRecipe,
                          CollectionRecipe listenersRecipe,
                          List<Recipe> explicitDependencies) {
@@ -65,6 +66,8 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
 
     @Override
     public boolean isStaticLifecycle() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         return false;
     }
 
@@ -119,6 +122,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                     }
                 } else {
                     dispatcher = new ServiceDispatcher(reference);
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
                     Set<Class<?>> interfaces = new HashSet<Class<?>>();
                     Class<?> clz = getInterfaceClass();
                     if (clz != null) interfaces.add(clz);
@@ -199,6 +203,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
                 proxy = null;
                 Bundle bundle = ref.getBundle();
                 if (bundle != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-829
                     BundleContext ctx = getBundleContextForServiceLookup();
                     if (ctx != null) {
                         try {
@@ -212,6 +217,7 @@ public class ReferenceListRecipe extends AbstractServiceReferenceRecipe {
         }
 
         public synchronized Object call() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-923
             if (service == null && reference != null) {
                 service = getServiceSecurely(reference);
             }

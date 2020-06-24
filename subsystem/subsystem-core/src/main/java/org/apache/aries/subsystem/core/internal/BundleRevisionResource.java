@@ -65,6 +65,8 @@ public class BundleRevisionResource implements Resource {
 	}
 	
 	public BundleRevision getRevision() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 	    return revision;
 	}
 	

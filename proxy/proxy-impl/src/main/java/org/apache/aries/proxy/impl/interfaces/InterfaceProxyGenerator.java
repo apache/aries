@@ -48,11 +48,13 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
 
   public InterfaceProxyGenerator()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
     super(Opcodes.ASM8);
     
   }
 
   private static final Map<BundleWiring, WeakReference<ProxyClassLoader>> cache =
+//IC see: https://issues.apache.org/jira/browse/ARIES-1161
             new WeakHashMap<BundleWiring, WeakReference<ProxyClassLoader>>(128);
   
   /**
@@ -67,6 +69,7 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
    * @throws UnableToProxyException
    */
   public static Object getProxyInstance(Bundle client, Class<?> superclass,
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       Collection<Class<?>> ifaces, Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException{
     
     if(superclass != null && (superclass.getModifiers() & Modifier.FINAL) != 0)
@@ -77,12 +80,14 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
     SortedSet<Class<?>> interfaces = createSet(ifaces);
     
     synchronized (cache) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1161
       BundleWiring wiring = client == null ? null : (BundleWiring)client.adapt(BundleWiring.class);
       WeakReference<ProxyClassLoader> ref = cache.get(wiring);
       
       if(ref != null)
         pcl = ref.get();
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       if (pcl != null && pcl.isInvalid(interfaces)) {
           pcl = null;
           cache.remove(wiring);
@@ -95,6 +100,7 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
     }
 
     Class<?> c = pcl.createProxyClass(superclass, interfaces);
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
 
     try {
       Constructor<?> con = c.getDeclaredConstructor(Callable.class, InvocationListener.class);
@@ -113,8 +119,11 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
    * @return
    */
   private static SortedSet<Class<?>> createSet(Collection<Class<?>> ifaces) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     SortedSet<Class<?>> classes = new TreeSet<Class<?>>(new Comparator<Class<?>>() {
       public int compare(Class<?> object1, Class<?> object2) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1342
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
         if (object1.getName().equals(object2.getName())) {
           return 0;
         } else if (object1.isAssignableFrom(object2)) {
@@ -127,6 +136,8 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
         // types have separate inheritance trees, but it does matter which one is first or second, so we
         // won't end up with duplicates
         // however we can't mark them as equal cause one of them will be removed
+//IC see: https://issues.apache.org/jira/browse/ARIES-1618
+//IC see: https://issues.apache.org/jira/browse/ARIES-1342
         return object1.getName().compareTo(object2.getName());
       }
     });

@@ -39,6 +39,7 @@ public class BundleWiringStateMBeanHandler implements MBeanHandler {
     private BundleWiringState revisionsStateMBean;
 
     public BundleWiringStateMBeanHandler(JMXAgentContext agentContext) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         this.agentContext = agentContext;
         this.bundleContext = agentContext.getBundleContext();
         this.logger = agentContext.getLogger();
@@ -55,6 +56,7 @@ public class BundleWiringStateMBeanHandler implements MBeanHandler {
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + BundleWiringStateMBean.class.getName(), e);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         agentContext.registerMBean(this);
     }
 
@@ -70,6 +72,7 @@ public class BundleWiringStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         agentContext.unregisterMBean(this);
     }
 

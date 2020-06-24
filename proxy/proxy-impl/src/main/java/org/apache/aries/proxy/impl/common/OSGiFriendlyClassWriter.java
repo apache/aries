@@ -60,6 +60,7 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
   @Override
   protected final String getCommonSuperClass(String arg0, String arg1) {
     //If either is Object, then Object must be the answer
+//IC see: https://issues.apache.org/jira/browse/ARIES-819
     if(arg0.equals(OBJECT_INTERNAL_NAME) || arg1.equals(OBJECT_INTERNAL_NAME)) {
       return OBJECT_INTERNAL_NAME;
     }
@@ -80,6 +81,7 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
           if(is != null) {
             ClassReader cr = new ClassReader(is);
             arg00 = cr.getSuperName();
+//IC see: https://issues.apache.org/jira/browse/ARIES-819
             if(arg00 == null) {
               if (names.size() == 2) {
                 return OBJECT_INTERNAL_NAME; //arg0 is an interface
@@ -99,6 +101,7 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
           if(is != null) {
             ClassReader cr = new ClassReader(is);
             arg11 = cr.getSuperName();
+//IC see: https://issues.apache.org/jira/browse/ARIES-819
             if(arg11 == null) {
               if (names.size() == 3) {
                 return OBJECT_INTERNAL_NAME;  //arg1 is an interface
@@ -114,6 +117,7 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
         }
       }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       String msg = String.format("The class %s and %s do not have a common super class.", arg0, arg1);
       if (unable == null) {
           throw new RuntimeException(msg);

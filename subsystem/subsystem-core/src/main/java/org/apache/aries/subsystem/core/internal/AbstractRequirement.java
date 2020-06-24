@@ -22,6 +22,7 @@ import org.osgi.resource.Requirement;
 public abstract class AbstractRequirement implements Requirement {
 	@Override
 	public boolean equals(Object o) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (o == this)
 			return true;
 		if (!(o instanceof Requirement))
@@ -36,6 +37,8 @@ public abstract class AbstractRequirement implements Requirement {
 	
 	private Filter filter;
 	public Filter getFilter() throws InvalidSyntaxException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1388
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 	    String filterStr = getDirectives().get(Constants.FILTER_DIRECTIVE);
 	    if (filterStr == null) {
 	        return null;
@@ -61,6 +64,7 @@ public abstract class AbstractRequirement implements Requirement {
 	
 	@Override
 	public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return new StringBuffer().append(getClass().getName()).append(": ")
 				.append("namespace=").append(getNamespace())
 				.append(", attributes=").append(getAttributes())

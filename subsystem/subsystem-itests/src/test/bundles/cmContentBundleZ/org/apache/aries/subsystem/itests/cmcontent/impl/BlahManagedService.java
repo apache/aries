@@ -12,6 +12,7 @@ public class BlahManagedService implements ManagedService {
     private final BundleContext bundleContext;
 
     public BlahManagedService(BundleContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
         bundleContext = context;
     }
 
@@ -23,6 +24,7 @@ public class BlahManagedService implements ManagedService {
             props.put("test.pid", p.get(Constants.SERVICE_PID));
             bundleContext.registerService(String.class, "Blah!", props);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1352
         if ("Hello".equals(p.get("configVal"))) {
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put("test.pid", p.get(Constants.SERVICE_PID));

@@ -69,6 +69,7 @@ public class AnnotationProcessor implements BeanProcessor {
     
     @Override
     public Object afterInit(Object arg0, String arg1, BeanCreator arg2, BeanMetadata arg3) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
         return arg0;
     }
 

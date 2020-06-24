@@ -49,6 +49,7 @@ public class BundleFrameworkImpl implements BundleFramework
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(BundleFrameworkImpl.class);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-559
   List<Bundle> _bundles;
   CompositeBundle _compositeBundle;
   Framework _framework;
@@ -67,7 +68,9 @@ public class BundleFrameworkImpl implements BundleFramework
   @Override
   public void start() throws BundleException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-586
     _compositeBundle.getCompositeFramework().init();
+//IC see: https://issues.apache.org/jira/browse/ARIES-518
     _compositeBundle.start(Bundle.START_ACTIVATION_POLICY);
     if ( _packageAdminTracker == null)
     {
@@ -77,6 +80,7 @@ public class BundleFrameworkImpl implements BundleFramework
     }
     
     // make sure inner bundles are now startable
+//IC see: https://issues.apache.org/jira/browse/ARIES-726
     if (startLevelIncreased.compareAndSet(false, true)) {
         increaseStartLevel(_compositeBundle.getCompositeFramework().getBundleContext());
     }
@@ -89,10 +93,12 @@ public class BundleFrameworkImpl implements BundleFramework
     {
       _compositeBundle.getCompositeFramework().start();
   
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
       _packageAdminTracker = new ServiceTracker(_compositeBundle.getCompositeFramework().getBundleContext(),
           PackageAdmin.class.getName(), null);
       _packageAdminTracker.open();
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-726
       setupStartLevelToPreventAutostart(_compositeBundle.getCompositeFramework().getBundleContext());
     }
   }
@@ -190,12 +196,14 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public void start(Bundle b) throws BundleException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-559
     if (b.getState() != Bundle.ACTIVE && !isFragment(b)) 
       b.start(Bundle.START_ACTIVATION_POLICY);
   }
 
   public void stop(Bundle b) throws BundleException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-472
     if (!isFragment(b))
       b.stop();
   }
@@ -213,6 +221,7 @@ public class BundleFrameworkImpl implements BundleFramework
   public List<Bundle> getBundles()
   {
     // Ensure our bundle list is refreshed
+//IC see: https://issues.apache.org/jira/browse/ARIES-559
     ArrayList latestBundles = new ArrayList<Bundle>();
     for (Bundle appBundle : _framework.getBundleContext().getBundles())
     {
@@ -269,6 +278,8 @@ public class BundleFrameworkImpl implements BundleFramework
 
   public Bundle install(BundleSuggestion suggestion, AriesApplication app) throws BundleException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
+//IC see: https://issues.apache.org/jira/browse/ARIES-559
     Bundle installedBundle = suggestion.install(this, app);
     _bundles.add(installedBundle);
     

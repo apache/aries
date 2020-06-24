@@ -30,11 +30,13 @@ public class ExportPackageCapability extends AbstractCapability {
 	private final Resource resource;
 	
 	public ExportPackageCapability(String packageName, Collection<Parameter> parameters, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		attributes.put(NAMESPACE, packageName);
 		for (Parameter parameter : parameters) {
 			if (parameter instanceof Attribute)
 				attributes.put(parameter.getName(), parameter.getValue());
 			else
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				directives.put(parameter.getName(), ((Directive)parameter).getValue());
 		}
 		this.resource = resource;

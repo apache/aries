@@ -30,6 +30,7 @@ public class ConsumerRestriction {
     }
 
     public String getClassName() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
         return className;
     }
 

@@ -61,6 +61,7 @@ public class BundleResourceInstaller extends ResourceInstaller {
 				}
 			}
 			else
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 				this.resource = resource;
 			this.revision = revision;
 		}
@@ -169,6 +170,8 @@ public class BundleResourceInstaller extends ResourceInstaller {
 	
 	public Resource install() {
 		BundleRevision revision;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 		if (resource instanceof BundleRevision) {
 			revision = (BundleRevision)resource;
 		}
@@ -184,12 +187,15 @@ public class BundleResourceInstaller extends ResourceInstaller {
 			}
 		}
 		addReference(revision);
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		addConstituent(new BundleConstituent(resource, revision));
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return revision;
 	}
 	
 	private BundleRevision installBundle() throws Exception {
 		final Bundle bundle;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1451
 		Method getContent = resource.getClass().getMethod("getContent");
 		getContent.setAccessible(true);
 		InputStream is = (InputStream)getContent.invoke(resource);

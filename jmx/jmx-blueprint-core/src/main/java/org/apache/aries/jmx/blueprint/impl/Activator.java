@@ -72,6 +72,7 @@ public class Activator implements BundleActivator {
             try {
                 LOGGER.debug("Adding MBeanServer: {}", servicereference);
                 final MBeanServer mbeanServer = (MBeanServer) bundleContext.getService(servicereference);
+//IC see: https://issues.apache.org/jira/browse/ARIES-985
                 if (mbeanServer != null) {
                     Activator.this.registerMBeans(mbeanServer);
                 }
@@ -85,6 +86,7 @@ public class Activator implements BundleActivator {
         public void removedService(ServiceReference servicereference, Object obj) {
             try {
                 LOGGER.debug("Removing MBeanServer: {}", servicereference);
+//IC see: https://issues.apache.org/jira/browse/ARIES-985
                 Activator.this.deregisterMBeans((MBeanServer) obj);
             } catch (Throwable e) {
                 LOGGER.debug("uncaught exception in removedService", e);
@@ -102,6 +104,7 @@ public class Activator implements BundleActivator {
         LOGGER.debug("Registering bundle state monitor with MBeanServer: {} with name: {}",
                         mbeanServer, blueprintStateName);
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-985
             StandardMBean blueprintState = new RegistrableStandardEmitterMBean(new BlueprintState(bundleContext), BlueprintStateMBean.class);
             mbeanServer.registerMBean(blueprintState, blueprintStateName);
         } catch (InstanceAlreadyExistsException e) {
@@ -116,6 +119,7 @@ public class Activator implements BundleActivator {
         LOGGER.debug("Registering bundle metadata monitor with MBeanServer: {} with name: {}",
                     mbeanServer, blueprintMetadataName);
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-985
             StandardMBean blueprintMetadata = new StandardMBean(new BlueprintMetadata(bundleContext), BlueprintMetadataMBean.class);
             mbeanServer.registerMBean(blueprintMetadata, blueprintMetadataName);
         } catch (InstanceAlreadyExistsException e) {

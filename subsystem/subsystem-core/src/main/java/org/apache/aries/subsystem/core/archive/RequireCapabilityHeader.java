@@ -72,11 +72,13 @@ public class RequireCapabilityHeader extends AbstractClauseBasedHeader<RequireCa
 		}
 		
 		public RequireCapabilityRequirement toRequirement(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new RequireCapabilityRequirement(this, resource);
 		}
 		
 		@Override
 		public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			StringBuilder builder = new StringBuilder()
 					.append(getPath());
 			for (Parameter parameter : getParameters()) {
@@ -89,6 +91,7 @@ public class RequireCapabilityHeader extends AbstractClauseBasedHeader<RequireCa
 	public static final String NAME = Constants.REQUIRE_CAPABILITY;
 	
 	public RequireCapabilityHeader(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(
 				value, 
 				new ClauseFactory<Clause>() {
@@ -117,6 +120,7 @@ public class RequireCapabilityHeader extends AbstractClauseBasedHeader<RequireCa
 	public List<RequireCapabilityRequirement> toRequirements(Resource resource) {
 		List<RequireCapabilityRequirement> requirements = new ArrayList<RequireCapabilityRequirement>(clauses.size());
 		for (Clause clause : clauses)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			requirements.add(clause.toRequirement(resource));
 		return requirements;
 	}

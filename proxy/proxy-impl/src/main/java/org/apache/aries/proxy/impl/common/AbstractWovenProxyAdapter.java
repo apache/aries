@@ -69,6 +69,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
 
   /** Access modifier for a public generated method */
   private static final int PUBLIC_GENERATED_METHOD_ACCESS = ACC_PUBLIC | ACC_FINAL
+//IC see: https://issues.apache.org/jira/browse/ARIES-668
       | ACC_SYNTHETIC;
   /** The internal name for Throwable */
   static final String THROWABLE_INAME = Type.getInternalName(Throwable.class);
@@ -209,10 +210,13 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    *          The ClassLoader loading this class
    */
   public AbstractWovenProxyAdapter(ClassVisitor writer, String className,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
       ClassLoader loader) {
     super(Opcodes.ASM5, writer);
     typeBeingWoven = Type.getType("L" + className.replace('.', '/') + ";");
     //By default we expect to see methods from a concrete class
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     currentMethodDeclaringType = typeBeingWoven;
     currentMethodDeclaringTypeIsInterface = false;
     this.loader = loader;
@@ -225,6 +229,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
 
     // always update to the most recent version of the JVM
     version = JAVA_CLASS_VERSION;
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
 
     superType = Type.getType("L" + superName + ";");
 
@@ -236,6 +241,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
           loader);
 
       isSerializable = Serializable.class.isAssignableFrom(superClass) || 
+//IC see: https://issues.apache.org/jira/browse/ARIES-705
                        Arrays.asList(interfaces).contains(Type.getInternalName(Serializable.class)) ||
                        checkInterfacesForSerializability(interfaces);
       
@@ -257,6 +263,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
           }
           //Don't use reflection - it can be dangerous
           superHasNoArgsConstructor = superHasNoArgsConstructor(superName, name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-775
 
         } else {
           superHasNoArgsConstructor = true;
@@ -279,7 +286,9 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       // If this happens we're about to hit bigger trouble on verify, so we
       // should stop weaving and fail. Make sure we don't cause the hook to
       // throw an error though.
+//IC see: https://issues.apache.org/jira/browse/ARIES-673
       UnableToProxyException u = new UnableToProxyException(name, e);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       cannotLoadSuperClassException(superName, u);
     }
   }
@@ -299,6 +308,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    */
   private final boolean superHasNoArgsConstructor(String superName, String name) {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-775
     ConstructorFinder cf = new ConstructorFinder();
     
     try {
@@ -310,12 +320,14 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       new ClassReader(is).accept(cf, ClassReader.SKIP_FRAMES + ClassReader.SKIP_DEBUG + ClassReader.SKIP_CODE);
     } catch (IOException ioe) {
       UnableToProxyException u = new UnableToProxyException(name, ioe);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       cannotLoadSuperClassException(superName, u);
     }
     return cf.hasNoArgsConstructor();
   }
   
   private boolean checkInterfacesForSerializability(String[] interfaces) throws ClassNotFoundException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-705
     for(String iface : interfaces)
     {
       if(Serializable.class.isAssignableFrom(Class.forName(
@@ -339,12 +351,14 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
     
     Method currentMethod = new Method(name, desc);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     getKnownMethods().add(currentMethod);
     
     MethodVisitor methodVisitorToReturn = null;
 
     // Only weave "real" instance methods. Not constructors, initializers or
     // compiler generated ones.
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     if ((access & (ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC 
         | ACC_NATIVE | ACC_BRIDGE)) == 0 && !!!name.equals("<init>") && 
         !!!name.equals("<clinit>")) {
@@ -355,17 +369,22 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
       String methodStaticFieldName = "methodField" + getSanitizedUUIDString();
       transformedMethods.put(methodStaticFieldName, new TypeMethod(
            currentMethodDeclaringType, currentMethod));
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
 
       // Surround the MethodVisitor with our weaver so we can manipulate the code
       methodVisitorToReturn = getWeavingMethodVisitor(access, name, desc,
           signature, exceptions, currentMethod, methodStaticFieldName,
           currentMethodDeclaringType, currentMethodDeclaringTypeIsInterface);
+//IC see: https://issues.apache.org/jira/browse/ARIES-669
     } else if (name.equals("<clinit>")){
       //there is an existing clinit method, change the fields we use
       //to write our init code to static_init_UUID instead
       staticInitMethod = new Method("static_init_" + UU_ID, Type.VOID_TYPE, NO_ARGS);
       staticInitMethodFlags = staticInitMethodFlags | ACC_FINAL;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
       methodVisitorToReturn = new AdviceAdapter(Opcodes.ASM8, cv.visitMethod(access, name, desc, signature,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
           exceptions), access, name, desc){
         @Override
         protected void onMethodEnter()
@@ -376,6 +395,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
         }
       };
     } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       if(currentMethod.getArgumentTypes().length == 0 && name.equals("<init>"))
         hasNoArgsConstructor = true;
       //This isn't a method we want to weave, so just get the default visitor
@@ -394,12 +414,14 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
   public void visitEnd() {
     LOGGER.debug(Constants.LOG_ENTRY, "visitEnd");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     for(Class<?> c : nonObjectSupers) {
       setCurrentMethodDeclaringType(Type.getType(c), false);
       try {
         readClass(c, new MethodCopyingClassAdapter(this, loader, c, typeBeingWoven, 
             getKnownMethods(), transformedMethods));
       } catch (IOException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
         String msg = format("Unexpected error processing %s when weaving %s.",
                             c.getName(), typeBeingWoven.getClassName());
         throw new RuntimeException(msg, e);
@@ -425,6 +447,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
   }
   
   public Set<Method> getKnownMethods() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     return knownMethods;
   }
 
@@ -441,6 +464,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    */
   protected abstract MethodVisitor getWeavingMethodVisitor(int access, String name,
   String desc, String signature, String[] exceptions, Method currentMethod,
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
   String methodStaticFieldName, Type currentMethodDeclaringType,
   boolean currentMethodDeclaringTypeIsInterface);
   
@@ -539,6 +563,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
     
     // Write a protected no-args constructor for this class
     methodAdapter = getMethodGenerator(ACC_PROTECTED | ACC_SYNTHETIC, ARGS_CONSTRUCTOR);
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
 
     // /////////////////////////////////////////////////////
     // Implement the constructor
@@ -551,11 +576,13 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
 
       if (superHasNoArgsConstructor)
         methodAdapter.invokeConstructor(superType, NO_ARGS_CONSTRUCTOR);
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       else {
         if(hasNoArgsConstructor)
           methodAdapter.invokeConstructor(typeBeingWoven, NO_ARGS_CONSTRUCTOR);
         else
           throw new RuntimeException(new UnableToProxyException(typeBeingWoven.getClassName(), 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
               String.format("The class %s and its superclass %s do not have no-args constructors and cannot be woven.",
                             typeBeingWoven.getClassName(), superType.getClassName())));
       }
@@ -600,10 +627,12 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
 
     for (String methodStaticFieldName : transformedMethods.keySet()) {
       // add a private static field for the method
+//IC see: https://issues.apache.org/jira/browse/ARIES-1724
       cv.visitField(ACC_PRIVATE | ACC_STATIC | ACC_SYNTHETIC,
           methodStaticFieldName, METHOD_TYPE.getDescriptor(), null, null)
           .visitEnd();
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-669
     GeneratorAdapter staticAdapter = new GeneratorAdapter(staticInitMethodFlags,
         staticInitMethod, null, null, cv);
 
@@ -684,6 +713,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    */
   public static void readClass(Class<?> c, ClassVisitor adapter) throws IOException {
     String className = c.getName().replace(".", "/") + ".class";
+//IC see: https://issues.apache.org/jira/browse/ARIES-1546
 
     //Load the class bytes and copy methods across
     ClassLoader loader = c.getClassLoader();
@@ -728,6 +758,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
   }
 
   public final void setCurrentMethodDeclaringType(Type type, boolean isInterface) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     currentMethodDeclaringType = type;
     currentMethodDeclaringTypeIsInterface = isInterface;
   }

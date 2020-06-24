@@ -23,6 +23,8 @@ public class UninstallBundleTest extends AbstractTest {
 	
 	@Test
 	public void test() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		ScopeUpdate scopeUpdate = getScope().newScopeUpdate();
 		assertTrue("The bundle should have been removed", scopeUpdate.getBundles().remove(bundle));
 		assertTrue("The commit should have been successful", scopeUpdate.commit());
@@ -37,6 +39,8 @@ public class UninstallBundleTest extends AbstractTest {
 		location = getBundleLocation("tb-2.jar");
 		bundle = bundleContext.getBundle(location);
 		assertNull("The bundle should not exist", bundle);
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		installBundles(getScope(), new String[]{"tb-2.jar"});
 		bundle = bundleContext.getBundle(location);
 		assertNotNull("The bundle should exist", bundle);

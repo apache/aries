@@ -33,6 +33,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         // Expose blueprint namespace handler if xbean is present
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1379
             Dictionary<String, Object> props = new Hashtable<String, Object>();
             props.put("osgi.service.blueprint.namespace", JMS_NS_URI);
             context.registerService(NamespaceHandler.class, jmsNamespaceHandler(context), props);
@@ -44,6 +45,7 @@ public class Activator implements BundleActivator {
     }
 
     private NamespaceHandler jmsNamespaceHandler(BundleContext context) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1379
         return new XBeanNamespaceHandler(
                 JMS_NS_URI,
                 "org.apache.aries.transaction.jms.xsd",

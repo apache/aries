@@ -30,6 +30,7 @@ import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
 
 class TrackingInvocationHandler implements InvocationHandler, net.sf.cglib.proxy.InvocationHandler {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1318
 
 	private static final Map<Class<?>, Object> RETURN_VALUES;
 	

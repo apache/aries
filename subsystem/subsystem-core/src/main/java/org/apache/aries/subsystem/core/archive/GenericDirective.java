@@ -15,6 +15,7 @@ package org.apache.aries.subsystem.core.archive;
 
 public class GenericDirective extends AbstractDirective {
 	public GenericDirective(String name, String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 		super(name, value);
 	}
 }

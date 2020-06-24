@@ -49,6 +49,7 @@ public class DirectoryImpl extends FileImpl implements IDirectory
     File desiredFile = new File(file, name);
     IFile result = null;
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-252
     if (desiredFile.exists()) 
     {
         if(!desiredFile.isDirectory())
@@ -68,6 +69,7 @@ public class DirectoryImpl extends FileImpl implements IDirectory
 
   public List<IFile> listFiles()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     List<IFile> files = new ArrayList<IFile>();
     File[] filesInDir = file.listFiles();
     if (filesInDir != null) {
@@ -91,6 +93,7 @@ public class DirectoryImpl extends FileImpl implements IDirectory
         if (f.isFile()) {
           files.add(new FileImpl(f, rootDirFile));
         } else if (f.isDirectory()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
           IDirectory subdir = new DirectoryImpl(f, rootDirFile);
           files.add(subdir);
           files.addAll(subdir.listAllFiles());
@@ -132,6 +135,7 @@ public class DirectoryImpl extends FileImpl implements IDirectory
   }
 
   public ICloseableDirectory toCloseable() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 	return new CloseableDirectory(this);
   }
 }

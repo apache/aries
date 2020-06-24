@@ -42,6 +42,7 @@ public class RepositoryServiceRepositoryTest {
         ServiceReference<Object> sr2 = EasyMock.createMock(ServiceReference.class);
         @SuppressWarnings("unchecked")
         ServiceReference<Object> sr3 = EasyMock.createMock(ServiceReference.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1339
 
         EasyMock.expect(bc.getAllServiceReferences("org.osgi.service.repository.Repository", null)).
             andReturn(new ServiceReference[] {sr, sr2, sr3}).anyTimes();
@@ -74,6 +75,7 @@ public class RepositoryServiceRepositoryTest {
         assertEquals(1, cap2.getAttributes().size());
         assertEquals("b", cap2.getAttributes().get("org.foo"));
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1339
         Map<String, String> dirs3 = Collections.singletonMap("filter", "(x=y)");
         Requirement req3 = new TestRequirement("ns1", dirs3);
         Collection<Capability> res3 = rsr.findProviders(req3);

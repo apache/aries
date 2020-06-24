@@ -23,6 +23,7 @@ public class IdSpace {
     private AtomicLong currentId = new AtomicLong(0);
     
     public long nextId() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-246
         return currentId.getAndIncrement();
     }
 }

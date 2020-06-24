@@ -222,7 +222,9 @@ public class EbaMojo
         getLog().debug( "outputDirectory[" + outputDirectory + "]" );
         getLog().debug( "finalName[" + finalName + "]" );
         getLog().debug( "generateManifest[" + generateManifest + "]" );
+//IC see: https://issues.apache.org/jira/browse/ARIES-212
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-732
         if (archiveContent == null) {
         	archiveContent = new String("applicationContent");
         }
@@ -230,6 +232,7 @@ public class EbaMojo
         getLog().debug( "archiveContent[" + archiveContent + "]" );        
         getLog().info( "archiveContent[" + archiveContent + "]" );        
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
         zipArchiver.setIncludeEmptyDirs( includeEmptyDirs );
         zipArchiver.setCompress( true );
         zipArchiver.setForced( forceCreation );
@@ -240,6 +243,7 @@ public class EbaMojo
                 File generatedJarFile = new File( outputDirectory, finalName + ".jar" );
                 if (generatedJarFile.exists()) {
                     getLog().info( "Including generated jar file["+generatedJarFile.getName()+"]");
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
                     zipArchiver.addFile(generatedJarFile, finalName + ".jar");
                 }
             }
@@ -253,7 +257,9 @@ public class EbaMojo
         // Copy dependencies
         try
         {
+//IC see: https://issues.apache.org/jira/browse/ARIES-732
             Set<Artifact> artifacts = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1094
             if (useTransitiveDependencies || "all".equals(archiveContent)) {
                 // if use transitive is set (i.e. true) then we need to make sure archiveContent does not contradict (i.e. is set
                 // to the same compatible value or is the default).
@@ -261,6 +267,7 @@ public class EbaMojo
                     throw new MojoExecutionException("<useTransitiveDependencies/> and <archiveContent/> incompatibly configured.  <useTransitiveDependencies/> is deprecated in favor of <archiveContent/>." );            		
             	}
             	else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
                     artifacts = project.getArtifacts();            		
             	}
             } else {
@@ -332,6 +339,7 @@ public class EbaMojo
         // Include custom manifest if necessary
         try
         {
+//IC see: https://issues.apache.org/jira/browse/ARIES-212
             if (!generateManifest) {
             	includeCustomApplicationManifestFile();
             }
@@ -373,6 +381,7 @@ public class EbaMojo
 
         try
         {
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
             if (addMavenDescriptor) {
                 if (project.getArtifact().isSnapshot()) {
                     project.setVersion(project.getArtifact().getVersion());
@@ -415,11 +424,13 @@ public class EbaMojo
 		try {
 			// TODO: add support for dependency version ranges. Need to pick
 			// them up from the pom and convert them to OSGi version ranges.
+//IC see: https://issues.apache.org/jira/browse/ARIES-229
 			FileUtils.fileAppend(fileName, MANIFEST_VERSION + ": " + "1" + "\n");
 			FileUtils.fileAppend(fileName, APPLICATION_MANIFESTVERSION + ": " + "1" + "\n");
 			FileUtils.fileAppend(fileName, APPLICATION_SYMBOLICNAME + ": "
 					+ getApplicationSymbolicName(project.getArtifact()) + "\n");
 			FileUtils.fileAppend(fileName, APPLICATION_VERSION + ": "
+//IC see: https://issues.apache.org/jira/browse/ARIES-331
 					+ getApplicationVersion() + "\n");
 			FileUtils.fileAppend(fileName, APPLICATION_NAME + ": " + project.getName() + "\n");
 			FileUtils.fileAppend(fileName, APPLICATION_DESCRIPTION + ": "
@@ -434,9 +445,11 @@ public class EbaMojo
 			} else {
 				artifacts = project.getDependencyArtifacts();
 			}
+//IC see: https://issues.apache.org/jira/browse/ARIES-316
 			artifacts = selectArtifacts(artifacts);
 			Iterator<Artifact> iter = artifacts.iterator();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-229
 			FileUtils.fileAppend(fileName, APPLICATION_CONTENT + ": ");
 			if (iter.hasNext()) {
 				Artifact artifact = iter.next();
@@ -452,6 +465,8 @@ public class EbaMojo
 				FileUtils.fileAppend(fileName, ",\n "
 						+ maven2OsgiConverter.getBundleSymbolicName(artifact)
 						+ ";version=\""
+//IC see: https://issues.apache.org/jira/browse/ARIES-316
+//IC see: https://issues.apache.org/jira/browse/ARIES-316
 						+ Analyzer.cleanupVersion(artifact.getVersion())
 //						+ maven2OsgiConverter.getVersion(artifact.getVersion())
 						+ "\"");
@@ -460,6 +475,7 @@ public class EbaMojo
 			FileUtils.fileAppend(fileName, "\n");
 
 			// Add any service imports or exports
+//IC see: https://issues.apache.org/jira/browse/ARIES-229
 			if (instructions.containsKey(APPLICATION_EXPORTSERVICE)) {
 				FileUtils.fileAppend(fileName, APPLICATION_EXPORTSERVICE + ": "
 						+ instructions.get(APPLICATION_EXPORTSERVICE) + "\n");
@@ -468,6 +484,7 @@ public class EbaMojo
 				FileUtils.fileAppend(fileName, APPLICATION_IMPORTSERVICE + ": "
 						+ instructions.get(APPLICATION_IMPORTSERVICE) + "\n");
 			}
+//IC see: https://issues.apache.org/jira/browse/ARIES-733
 			if (instructions.containsKey(APPLICATION_USEBUNDLE)) {
 				FileUtils.fileAppend(fileName, APPLICATION_USEBUNDLE + ": "
 						+ instructions.get(APPLICATION_USEBUNDLE) + "\n");
@@ -484,6 +501,7 @@ public class EbaMojo
     // The maven2OsgiConverter assumes the artifact is a jar so we need our own
 	// This uses the same fallback scheme as the converter
     private String getApplicationSymbolicName(Artifact artifact) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-228
 		if (instructions.containsKey(APPLICATION_SYMBOLICNAME)) {
 			return instructions.get(APPLICATION_SYMBOLICNAME).toString();
 		}
@@ -491,6 +509,7 @@ public class EbaMojo
     }
     
     private String getApplicationVersion() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-331
         if (instructions.containsKey(APPLICATION_VERSION)) {
             return instructions.get(APPLICATION_VERSION).toString();
         }
@@ -510,10 +529,12 @@ public class EbaMojo
         throws IOException
     {
         if (applicationManifestFile == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-732
             throw new NullPointerException("Application manifest file location not set.  Use <generateManifest>true</generateManifest> if you want it to be generated.");
         }
         File appMfFile = applicationManifestFile;
         if (appMfFile.exists()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-212
             getLog().info( "Using APPLICATION.MF "+ applicationManifestFile);
             File metaInfDir = new File(getBuildDir(), "META-INF");
             FileUtils.copyFileToDirectory( appMfFile, metaInfDir);
@@ -525,6 +546,7 @@ public class EbaMojo
      */
     private Set<Artifact> selectArtifacts(Set<Artifact> artifacts) 
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-316
         Set<Artifact> selected = new LinkedHashSet<Artifact>();
         for (Artifact artifact : artifacts) {
             String scope = artifact.getScope();

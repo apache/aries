@@ -50,7 +50,9 @@ public interface DeploymentManifestManager
    * @return DeployedBundles model of the deployed application
    * @throws ResolverException
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   DeployedBundles generateDeployedBundles( 
+//IC see: https://issues.apache.org/jira/browse/ARIES-464
       ApplicationMetadata appMetadata, 
       Collection<ModelledResource> byValueBundles, 
       Collection<Content> otherBundles) throws ResolverException;
@@ -64,6 +66,7 @@ public interface DeploymentManifestManager
    * @return the deployment manifest
    * @throws ResolverException
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   Manifest generateDeploymentManifest (
       String appSymbolicName, 
       String appVersion, 

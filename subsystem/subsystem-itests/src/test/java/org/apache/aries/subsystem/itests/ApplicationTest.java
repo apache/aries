@@ -159,6 +159,7 @@ public class ApplicationTest extends SubsystemTest {
 			assertBundleState(Bundle.RESOLVED|Bundle.ACTIVE, "org.apache.aries.subsystem.itests.tb3", getRootSubsystem());
     	}
     	finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
     		stopSubsystemSilently(application1);
     		uninstallSubsystemSilently(application1);
     	}
@@ -186,6 +187,7 @@ public class ApplicationTest extends SubsystemTest {
     
     @Test
     public void testRequireCapability() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
     	File file = new File(BUNDLE_B);
     	// The following input stream is closed by the bundle context.
     	Bundle b = getRootSubsystem().getBundleContext().installBundle(file.toURI().toString(), new FileInputStream(file));
@@ -195,11 +197,14 @@ public class ApplicationTest extends SubsystemTest {
 	    		startSubsystem(application);
 	    	}
 	    	finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	    		stopSubsystemSilently(application);
 	    		uninstallSubsystemSilently(application);
 	    	}
     	}
     	finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
     		uninstallSilently(b);
     	}
     }
@@ -228,6 +233,7 @@ public class ApplicationTest extends SubsystemTest {
     			.namespace(PackageNamespace.PACKAGE_NAMESPACE)
     			.attribute(PackageNamespace.PACKAGE_NAMESPACE, "org.apache.aries.subsystem.itests.tb3")
     			.attribute(PackageNamespace.CAPABILITY_VERSION_ATTRIBUTE, "0.0.0"))
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
     	.content(createTestBundle3Content())
     	.build();
     }

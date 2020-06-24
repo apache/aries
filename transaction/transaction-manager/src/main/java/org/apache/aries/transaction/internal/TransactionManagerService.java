@@ -80,6 +80,7 @@ public class TransactionManagerService {
         // Transaction timeout
         int transactionTimeout = getInt(this.properties, TRANSACTION_TIMEOUT, DEFAULT_TRANSACTION_TIMEOUT);
         if (transactionTimeout <= 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
             throw new ConfigurationException(TRANSACTION_TIMEOUT, "The transaction timeout property must be greater than zero.");
         }
 
@@ -94,15 +95,18 @@ public class TransactionManagerService {
                 transactionManager = new SpringTransactionManagerCreator().create(transactionTimeout, xidFactory, transactionLog);
                 useSpring = true;
             } catch (NoClassDefFoundError e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1069
                 transactionManager = new AriesTransactionManagerImpl(transactionTimeout, xidFactory, transactionLog);
             }
         } catch (XAException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
             throw new RuntimeException("An exception occurred during transaction recovery.", e);
         }
     }
 
     public void start() throws Exception {
         List<String> clazzes = new ArrayList<String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1069
         clazzes.add(AriesTransactionManager.class.getName());
         clazzes.add(TransactionManager.class.getName());
         clazzes.add(TransactionSynchronizationRegistry.class.getName());
@@ -116,6 +120,7 @@ public class TransactionManagerService {
     }
 
     public void close() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1516
         if(serviceRegistration != null) {
           try {
             serviceRegistration.unregister();
@@ -143,6 +148,7 @@ public class TransactionManagerService {
             try {
                 return Integer.parseInt(value);
             } catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 throw new ConfigurationException(property, "The property " + property + " should have an integer value, but the value " + value + " is not an integer.", e);
             }
         }
@@ -155,6 +161,7 @@ public class TransactionManagerService {
             try {
                 return Boolean.parseBoolean(value);
             } catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 throw new ConfigurationException(property, "The property " + property + " should have a boolean value, but the value " + value + " is not a boolean.", e);
             }
         }
@@ -167,6 +174,7 @@ public class TransactionManagerService {
             String bufferClassName = getString(properties, HOWL_BUFFER_CLASS_NAME, "org.objectweb.howl.log.BlockLogBuffer");
             int bufferSizeKBytes = getInt(properties, HOWL_BUFFER_SIZE, 4);
             if (bufferSizeKBytes < 1 || bufferSizeKBytes > 32) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 throw new ConfigurationException(HOWL_BUFFER_SIZE, "The buffer size must be between one and thirty-two.");
             }
             boolean checksumEnabled = getBool(properties, HOWL_CHECKSUM_ENABLED, true);
@@ -178,6 +186,7 @@ public class TransactionManagerService {
             int maxLogFiles = getInt(properties, HOWL_MAX_LOG_FILES, 2);
             int minBuffers = getInt(properties, HOWL_MIN_BUFFERS, 4);
             if (minBuffers < 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 throw new ConfigurationException(HOWL_MIN_BUFFERS, "The minimum number of buffers must be greater than zero.");
             }
             int maxBuffers = getInt(properties, HOWL_MAX_BUFFERS, 0);
@@ -204,7 +213,9 @@ public class TransactionManagerService {
                         maxLogFiles,
                         minBuffers,
                         threadsWaitingForceThreshold,
+//IC see: https://issues.apache.org/jira/browse/ARIES-881
                         flushPartialBuffers,
+//IC see: https://issues.apache.org/jira/browse/ARIES-873
                         xidFactory,
                         null);
                 ((HOWLLog) result).doStart();
@@ -226,6 +237,7 @@ public class TransactionManagerService {
     public static class SpringTransactionManagerCreator {
 
         public AriesTransactionManagerImpl create(int defaultTransactionTimeoutSeconds, XidFactory xidFactory, TransactionLog transactionLog) throws XAException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1069
             return new AriesPlatformTransactionManager(defaultTransactionTimeoutSeconds, xidFactory, transactionLog);
         }
 

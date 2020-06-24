@@ -32,6 +32,7 @@ public class SubsystemExportServiceCapability extends AbstractCapability {
 	private final Resource resource;
 	
 	public SubsystemExportServiceCapability(SubsystemExportServiceHeader.Clause clause, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		StringBuilder builder = new StringBuilder("(&(")
 				.append(Constants.OBJECTCLASS).append('=')
 				.append(clause.getObjectClass()).append(')');

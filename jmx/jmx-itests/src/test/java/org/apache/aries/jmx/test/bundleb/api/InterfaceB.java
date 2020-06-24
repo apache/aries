@@ -30,6 +30,7 @@ public interface InterfaceB {
     
     void configure(Dictionary<String, Object> props);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 	Dictionary getConfig();
     
 }

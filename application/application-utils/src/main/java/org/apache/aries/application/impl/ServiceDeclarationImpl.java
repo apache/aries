@@ -72,6 +72,7 @@ public class ServiceDeclarationImpl implements ServiceDeclaration
   @Override
   public int hashCode()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     final int prime = 31;
     int result = 1;
     result = prime * result + ((filter == null) ? 0 : filter.hashCode());

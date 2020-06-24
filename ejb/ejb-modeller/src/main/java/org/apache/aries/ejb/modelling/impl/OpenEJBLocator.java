@@ -58,6 +58,7 @@ public class OpenEJBLocator implements EJBLocator {
     private final String entry;
     
     public ClasspathIDirectory(IDirectory parent, String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
       this.parent = parent;
       this.entry = (name.endsWith("/")) ? name : name + "/";
     }
@@ -147,6 +148,7 @@ public class OpenEJBLocator implements EJBLocator {
     logger.debug("Scanning " + manifest.getSymbolicName() + "_" + manifest.getManifestVersion() +
         " for EJBs");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     String ejbJarLocation = (manifest.getRawAttributes().getValue(
         "Web-ContextPath") == null) ? "META-INF/ejb-jar.xml" : "WEB-INF/ejb-jar.xml";
     
@@ -158,6 +160,7 @@ public class OpenEJBLocator implements EJBLocator {
       EjbModule module = new EjbModule(ejbJar);
       
       //We build our own because we can't trust anyone to get the classpath right otherwise!
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
       module.setFinder(new IDirectoryFinder(AnnotationDeployer.class.getClassLoader(), 
           getClassPathLocations(manifest, bundle)));
       
@@ -192,6 +195,7 @@ public class OpenEJBLocator implements EJBLocator {
     
     String rawCp = manifest.getRawAttributes().getValue(Constants.BUNDLE_CLASSPATH);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     logger.debug("Classpath is " + rawCp);
     
     if(rawCp == null || rawCp.trim() == "")
@@ -243,6 +247,7 @@ public class OpenEJBLocator implements EJBLocator {
     String name = sb.getEjbName();
     String type = sb.getSessionType().toString();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     logger.debug("Found EJB " + name + " of type " + type);
     
     boolean added = false;

@@ -48,6 +48,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         return options(
         		jmxRuntime(),
         		bundlea()
@@ -88,6 +89,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         TabularData table = packagaState.listPackages();
         assertNotNull("TabularData containing CompositeData with packages info shouldn't be null", table);
         assertEquals("TabularData should be a type PACKAGES", PackageStateMBean.PACKAGES_TYPE, table.getTabularType());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         Collection<?> colData = table.values();
         assertNotNull("Collection of CompositeData shouldn't be null", colData);
         assertFalse("Collection of CompositeData should contain elements", colData.isEmpty());

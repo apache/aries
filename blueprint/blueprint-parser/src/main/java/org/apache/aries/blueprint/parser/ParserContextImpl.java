@@ -79,6 +79,7 @@ public class ParserContextImpl implements ParserContext {
     }
     
     public String generateId() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         return parser.generateId();
     }
 
@@ -96,11 +97,13 @@ public class ParserContextImpl implements ParserContext {
 
     @Override
     public Set<URI> getNamespaces() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1770
         return Collections.unmodifiableSet(parser.getNamespaces());
     }
 
     @Override
     public NamespaceHandler getNamespaceHandler(URI namespaceUri) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         return parser.getNamespaceHandler(namespaceUri);
     }
 }

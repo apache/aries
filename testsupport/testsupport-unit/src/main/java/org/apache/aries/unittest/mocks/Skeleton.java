@@ -263,6 +263,7 @@ public final class Skeleton implements InvocationHandler
     {
       return (Skeleton)ih;
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
     throw new IllegalArgumentException("The supplied proxy (" + mock + ") was not an Aries dynamic mock ");
   }
   
@@ -989,6 +990,7 @@ public final class Skeleton implements InvocationHandler
   {
     Assert.assertFalse( "The method call " + 
                         call + 
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
                         " occurred in the skeleton " + 
                         this.toString(), checkCall(call));
   }

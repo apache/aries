@@ -75,8 +75,10 @@ public class JMXAgentImpl implements JMXAgent {
      */
     public JMXAgentImpl(BundleContext context, StateConfig stateConfig, Logger logger) {
         this.context = context;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         this.stateConfig = stateConfig;
         this.logger = logger;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1304
         this.mbeanServers = new IdentityHashMap<MBeanServer, Boolean>();
         this.mbeansHandlers = new IdentityHashMap<MBeanHandler, Boolean>();
     }
@@ -90,8 +92,11 @@ public class JMXAgentImpl implements JMXAgent {
         // Those handlers do not track dependencies
         JMXAgentContext agentContext = new JMXAgentContext(context, this, logger);
         MBeanHandler frameworkHandler = new FrameworkMBeanHandler(agentContext);
+//IC see: https://issues.apache.org/jira/browse/ARIES-663
+//IC see: https://issues.apache.org/jira/browse/ARIES-782
         mbeansHandlers.put(frameworkHandler, Boolean.FALSE);
         frameworkHandler.open();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         MBeanHandler bundleStateHandler = new BundleStateMBeanHandler(agentContext, stateConfig);
         mbeansHandlers.put(bundleStateHandler, Boolean.FALSE);
         bundleStateHandler.open();
@@ -125,7 +130,10 @@ public class JMXAgentImpl implements JMXAgent {
      * @see org.apache.aries.jmx.agent.JMXAgent#registerMBeans(javax.management.MBeanServer)
      */
     public synchronized void registerMBeans(final MBeanServer server) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-663
+//IC see: https://issues.apache.org/jira/browse/ARIES-782
         for (MBeanHandler mbeanHandler : mbeansHandlers.keySet()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
             if (mbeansHandlers.get(mbeanHandler) == Boolean.TRUE) {
                 String name = mbeanHandler.getName();
                 StandardMBean mbean = mbeanHandler.getMbean();
@@ -148,6 +156,7 @@ public class JMXAgentImpl implements JMXAgent {
                 }
             }
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1304
         mbeanServers.put(server, Boolean.TRUE);
     }
 
@@ -157,6 +166,7 @@ public class JMXAgentImpl implements JMXAgent {
     public synchronized void unregisterMBeans(final MBeanServer server) {
         for (MBeanHandler mBeanHandler : mbeansHandlers.keySet()) {
             if (mbeansHandlers.get(mBeanHandler) == Boolean.TRUE) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1304
                 try {
                     String name = mBeanHandler.getName();
                     StandardMBean mbean = mBeanHandler.getMbean();
@@ -185,6 +195,7 @@ public class JMXAgentImpl implements JMXAgent {
      * @see org.apache.aries.jmx.agent.JMXAgent#registerMBean(org.apache.aries.jmx.MBeanHandler)
      */
     public synchronized void registerMBean(final MBeanHandler mBeanHandler) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1304
         for (MBeanServer server : mbeanServers.keySet()) {
             String name = mBeanHandler.getName();
             StandardMBean mbean = mBeanHandler.getMbean();
@@ -215,7 +226,10 @@ public class JMXAgentImpl implements JMXAgent {
      * @see org.apache.aries.jmx.agent.JMXAgent#unregisterMBean(org.apache.aries.jmx.MBeanHandler)
      */
     public synchronized void unregisterMBean(final MBeanHandler mBeanHandler) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1304
         for (MBeanServer server : mbeanServers.keySet()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-663
+//IC see: https://issues.apache.org/jira/browse/ARIES-782
             String name = mBeanHandler.getName();
             try {
                 logger.log(LogService.LOG_INFO, "Unregistering mbean " + " to MBeanServer " + server + " with name "
@@ -233,6 +247,7 @@ public class JMXAgentImpl implements JMXAgent {
                 return;
             }
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         mbeansHandlers.put(mBeanHandler, Boolean.FALSE);
     }
 

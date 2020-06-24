@@ -33,6 +33,7 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
     private BundleContext defaultContext;
 
     public OSGiObjectFactoryBuilder(BundleContext ctx) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
         defaultContext = ctx;
     }
 
@@ -45,6 +46,7 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Context nameCtx,
                                     Hashtable<?, ?> environment) throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         return getObjectInstance(obj, name, nameCtx, environment, null);
     }
 
@@ -54,10 +56,13 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
                                     Hashtable<?, ?> environment,
                                     Attributes attrs) throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1243
+//IC see: https://issues.apache.org/jira/browse/ARIES-1243
         if (environment == null) {
             environment = new Hashtable();
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
         BundleContext callerContext = getCallerBundleContext(environment);
         if (callerContext == null) {
             return obj;
@@ -67,7 +72,9 @@ public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFac
     }
 
     private BundleContext getCallerBundleContext(Hashtable<?, ?> environment) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         Activator.getAugmenterInvoker().augmentEnvironment(environment);
+//IC see: https://issues.apache.org/jira/browse/ARIES-554
         BundleContext context = Utils.getBundleContext(environment, NamingManager.class);
         if (context == null) {
             context = Utils.getBundleContext(environment, DirectoryManager.class);

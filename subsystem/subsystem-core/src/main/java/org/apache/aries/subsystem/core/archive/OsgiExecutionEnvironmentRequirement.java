@@ -37,6 +37,7 @@ public class OsgiExecutionEnvironmentRequirement extends AbstractRequirement {
 	}
 	
 	public OsgiExecutionEnvironmentRequirement(Collection<BundleRequiredExecutionEnvironmentHeader.Clause> clauses, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		if (clauses.isEmpty()) {
 			throw new IllegalArgumentException();
 		}

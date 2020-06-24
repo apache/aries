@@ -21,6 +21,7 @@ package org.apache.aries.spifly;
 import org.osgi.framework.Version;
 
 public interface SpiFlyConstants {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
     String SPECIFICATION_VERSION_STRING = "1.0.0";
     Version SPECIFICATION_VERSION = new Version(SPECIFICATION_VERSION_STRING);
     // Not taken from OSGi Constants because this code needs to compile with the 4.2 OSGi classes.
@@ -37,11 +38,13 @@ public interface SpiFlyConstants {
     // ServiceLoader capability and related directive
     String SERVICELOADER_CAPABILITY_NAMESPACE = "osgi.serviceloader";
     String REGISTER_DIRECTIVE = "register:";
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
 
     // Service registration property
     String SERVICELOADER_MEDIATOR_PROPERTY = "serviceloader.mediator";
     String PROVIDER_IMPLCLASS_PROPERTY = ".org.apache.aries.spifly.provider.implclass";
     String PROVIDER_DISCOVERY_MODE = ".org.apache.aries.spifly.provider.discovery.mode";
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
 
     // The names of the extenders involved
     String PROCESSOR_EXTENDER_NAME = "osgi.serviceloader.processor";
@@ -49,6 +52,7 @@ public interface SpiFlyConstants {
 
     // Pre-baked requirements for consumer and provider
     String CLIENT_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + FILTER_DIRECTIVE +
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
             "=\"(" + EXTENDER_CAPABILITY_NAMESPACE + "=" + PROCESSOR_EXTENDER_NAME + ")\"";
     String PROVIDER_REQUIREMENT = EXTENDER_CAPABILITY_NAMESPACE + "; " + FILTER_DIRECTIVE +
             "=\"(" + EXTENDER_CAPABILITY_NAMESPACE + "=" + REGISTRAR_EXTENDER_NAME + ")\"";

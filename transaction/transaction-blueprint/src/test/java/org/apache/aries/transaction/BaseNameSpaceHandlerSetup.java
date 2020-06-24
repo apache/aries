@@ -50,6 +50,7 @@ public class BaseNameSpaceHandlerSetup {
         control = EasyMock.createControl();
         b = control.createMock(Bundle.class);
         TransactionManager tm = control.createMock(TransactionManager.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         Coordinator coordinator = control.createMock(Coordinator.class);
         control.replay();
 
@@ -57,6 +58,7 @@ public class BaseNameSpaceHandlerSetup {
         namespaceHandler.setTm(tm);
         namespaceHandler.setCoordinator(coordinator);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1413
         String[] namespaces = new String[] { "http://aries.apache.org/xmlns/transactions/v2.0.0" };
         nhri = new DummyNamespaceHandlerRegistry();
         nhri.addNamespaceHandlers(namespaces, namespaceHandler);
@@ -65,6 +67,7 @@ public class BaseNameSpaceHandlerSetup {
     @After
     public void tearDown() throws Exception{
         control.verify();
+//IC see: https://issues.apache.org/jira/browse/ARIES-578
         b = null;
         nhri = null;
     }

@@ -62,6 +62,7 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
     AccessControlContext getAccessControlContext();
 
     void reload();
+//IC see: https://issues.apache.org/jira/browse/ARIES-429
 
     ProxyManager getProxyManager();
     
@@ -72,11 +73,13 @@ public interface ExtendedBlueprintContainer extends BlueprintContainer {
      * Throws IllegalArgumentException if the bean metadata does not exist in this blueprint container
      * Throws ComponentDefinitionException if the injection process fails - this may have rendered the supplied Object unusable by partially completing the injection process
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-790
     void injectBeanInstance(BeanMetadata bmd, Object o)
             throws IllegalArgumentException, ComponentDefinitionException;
 
     ExecutorService getExecutors();
 
     ClassLoader getClassLoader();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
 
 }

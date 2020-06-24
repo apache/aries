@@ -174,11 +174,13 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private boolean sourcesChanged() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1687
         return buildContext.hasDelta(new File(project.getCompileSourceRoots().iterator().next()));
     }
 
     private void writeBlueprint(Blueprint blueprint) throws Exception {
         ResourceInitializer.prepareBaseDir(project, baseDir);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1734
 
         File dir = new File(baseDir, generatedDir);
         File file = new File(dir, generatedFileName);
@@ -192,7 +194,9 @@ public class GenerateMojo extends AbstractMojo {
 
     private ClassFinder createProjectScopeFinder() throws Exception {
         List<URL> urls = new ArrayList<>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1597
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1792
         long startTime = System.currentTimeMillis();
         ClassRealm classRealm = new ClassRealm(new ClassWorld(), "maven-blueprint-plugin-classloader", getClass().getClassLoader());
         classRealm.addURL(new File(project.getBuild().getOutputDirectory()).toURI().toURL());
@@ -223,6 +227,7 @@ public class GenerateMojo extends AbstractMojo {
     }
 
     private List<String> getPackagesToScan() throws MojoExecutionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1644
         List<String> toScan = scanPaths;
         if (scanPaths == null || scanPaths.size() == 0 || scanPaths.iterator().next() == null) {
             getLog().info("Scan paths not specified - searching for packages");

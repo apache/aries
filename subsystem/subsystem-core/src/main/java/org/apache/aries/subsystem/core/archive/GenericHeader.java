@@ -19,6 +19,7 @@ import java.util.Collections;
 public class GenericHeader extends AbstractClauseBasedHeader<GenericHeader.Clause> {
 	public static class Clause extends AbstractClause {
 		public Clause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			super(
 					clause,
 					Collections.<String, Parameter>emptyMap(),

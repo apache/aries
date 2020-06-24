@@ -50,6 +50,7 @@ public class BundleRevisionResourceTest {
     public void testNoModellerServiceCapabilities() {
         BundleRevision br = createNiceMock(BundleRevision.class);
         expect(br.getCapabilities(anyObject(String.class))).andReturn(Collections.<Capability>emptyList());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1389
         expect(br.getRequirements(anyObject(String.class))).andReturn(Collections.<Requirement>emptyList());
         replay(br);
         BundleRevisionResource brr = new BundleRevisionResource(br);
@@ -58,8 +59,10 @@ public class BundleRevisionResourceTest {
 
     @Test
     public void testNoModellerServiceRequirements() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1214
         BundleRevision br = EasyMock.createNiceMock(BundleRevision.class);
         expect(br.getRequirements(anyObject(String.class))).andReturn(Collections.<Requirement>emptyList());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1389
         expect(br.getCapabilities(anyObject(String.class))).andReturn(Collections.<Capability>emptyList());
         replay(br);
         BundleRevisionResource brr = new BundleRevisionResource(br);

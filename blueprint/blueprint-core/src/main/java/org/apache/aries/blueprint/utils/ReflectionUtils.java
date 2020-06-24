@@ -89,6 +89,7 @@ public class ReflectionUtils {
     }
     
     public static Set<Class<?>> getImplementedInterfacesAsClasses(Set<Class<?>> classes, Class<?> clazz) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
         if (clazz != null && clazz != Object.class) {
             for (Class<?> itf : clazz.getInterfaces()) {
                 if (Modifier.isPublic(itf.getModifiers())) {
@@ -113,6 +114,7 @@ public class ReflectionUtils {
 
     public static Method getLifecycleMethod(Class clazz, String name) {
         if (name != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-894
             for (Method method : getPublicMethods(clazz)) {
                 if (method.getName().equals(name)
                         && method.getParameterTypes().length == 0
@@ -125,6 +127,7 @@ public class ReflectionUtils {
     }
 
     public static Method[] getPublicMethods(Class clazz) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-894
         WeakReference<Method[]> ref = publicMethods.get(clazz);
         Method[] methods = ref != null ? ref.get() : null;
         if (methods == null) {
@@ -187,6 +190,7 @@ public class ReflectionUtils {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : getPublicMethods(clazz)) {
             Class[] methodParams = method.getParameterTypes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-82
             if (name.equals(method.getName()) && Void.TYPE.equals(method.getReturnType()) && methodParams.length == paramTypes.length && !method.isBridge()) {
                 boolean assignable = true;
                 for (int i = 0; i < paramTypes.length && assignable; i++) {
@@ -201,6 +205,7 @@ public class ReflectionUtils {
     }
 
     public static PropertyDescriptor[] getPropertyDescriptors(Class clazz, boolean allowFieldInjection) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         return getPropertyDescriptors(clazz, allowFieldInjection, false);
     }
 
@@ -220,6 +225,7 @@ public class ReflectionUtils {
             Set<String> illegalProperties = new HashSet<String>();
             
             for (Method method : getPublicMethods(clazz)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
                 if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) {
                     continue;
                 }
@@ -237,6 +243,7 @@ public class ReflectionUtils {
                     propertyNames.add(name);
                 } else if (name.length() > 3 && name.startsWith("get") && resultType != Void.TYPE && argTypes.length == 0) {
                     name = decapitalize(name.substring(3));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1805
                     Method getter = getters.get(name);
                     if (getter == null) {
                         propertyNames.add(name);
@@ -261,7 +268,9 @@ public class ReflectionUtils {
             }
 
             if (allowNonStandardSetters) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-894
                 for (Method method : getPublicMethods(clazz)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-82
                     if (Modifier.isStatic(method.getModifiers()) || method.isBridge()) {
                         continue;
                     }
@@ -290,6 +299,7 @@ public class ReflectionUtils {
             }            
             
             if (allowFieldInjection) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-500
                 for (Class cl = clazz; cl != null && cl != Object.class; cl = cl.getSuperclass()) {
                     for (Field field : cl.getDeclaredFields()) {
                         if (!!!Modifier.isStatic(field.getModifiers())) {
@@ -398,6 +408,7 @@ public class ReflectionUtils {
         protected abstract void internalSet(ExtendedBlueprintContainer container, Object instance, Object value) throws Exception;        
         
         public Object get(final Object instance, final ExtendedBlueprintContainer container) throws Exception {            
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
             if (container.getAccessControlContext() == null) {
                 return internalGet(container, instance);
             } else {
@@ -457,6 +468,7 @@ public class ReflectionUtils {
 
         @Override
         protected Object internalGet(ExtendedBlueprintContainer container, Object instance) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-531
             if (mpd.allowsGet()) return mpd.internalGet(container, instance);
             else if (fpd.allowsGet()) return fpd.internalGet(container, instance);
             else throw new UnsupportedOperationException();
@@ -478,6 +490,7 @@ public class ReflectionUtils {
         
         public FieldPropertyDescriptor(String name, Field field) {
             super(name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
             this.fieldName = field.getName();
             this.declaringClass = new WeakReference(field.getDeclaringClass());
         }
@@ -491,6 +504,7 @@ public class ReflectionUtils {
         }
         
         private Field getField(ExtendedBlueprintContainer container) throws ClassNotFoundException, NoSuchFieldException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
             if (declaringClass.get() == null) throw new ClassNotFoundException("Declaring class was garbage collected");
             
             return declaringClass.get().getDeclaredField(fieldName);
@@ -510,6 +524,7 @@ public class ReflectionUtils {
                     else throw (RuntimeException) e;
                 }
             } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
                 return doInternalGet(container, instance);
             }
         }
@@ -526,6 +541,7 @@ public class ReflectionUtils {
         }
 
         protected void internalSet(final ExtendedBlueprintContainer container, final Object instance, final Object value) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
             try {
                 Boolean wasSet = AccessController.doPrivileged(new PrivilegedExceptionAction<Boolean>() {
                     public Boolean run() throws Exception {
@@ -537,6 +553,7 @@ public class ReflectionUtils {
                     }                        
                 });
                 if(!!!wasSet) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
                   doInternalSet(container, instance, value);
                 }
             } catch (PrivilegedActionException pae) {
@@ -565,6 +582,7 @@ public class ReflectionUtils {
          * @return
          */
         private boolean useContainersPermission(ExtendedBlueprintContainer container) throws ClassNotFoundException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
             if (declaringClass.get() == null) throw new ClassNotFoundException("Declaring class was garbage collected");
             ClassLoader loader = declaringClass.get().getClassLoader();
             
@@ -585,6 +603,7 @@ public class ReflectionUtils {
         private final List<WeakReference<Class<?>>> argClasses;
         
         public MethodDescriptor(Method method) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
             methodName = method.getName();
             declaringClass = new WeakReference<Class<?>>(method.getDeclaringClass());
             
@@ -619,6 +638,7 @@ public class ReflectionUtils {
                 builder.append(wcl.get());
             }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-894
             builder.append(")");
             return builder.toString();
         }
@@ -652,6 +672,7 @@ public class ReflectionUtils {
         }
         
         protected Object internalGet(ExtendedBlueprintContainer container, Object instance) 
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
                 throws Exception {
             if (getter != null) {
                 return getter.getMethod(container).invoke(instance);
@@ -663,8 +684,10 @@ public class ReflectionUtils {
         protected void internalSet(ExtendedBlueprintContainer container, Object instance, Object value) throws Exception {
             
             Method setterMethod = findSetter(container, value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
 
             if (setterMethod != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1288
                 setterMethod.invoke(instance, convert(value, resolveParameterType(instance.getClass(), setterMethod)));
             } else {
                 throw new ComponentDefinitionException(
@@ -719,6 +742,7 @@ public class ReflectionUtils {
         private Method findSetter(ExtendedBlueprintContainer container, Object value) throws Exception {
             Class<?> valueType = (value == null) ? null : value.getClass();
             
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
             Method getterMethod = (getter != null) ? getter.getMethod(container) : null;
             Collection<Method> setterMethods = getSetters(container);
             
@@ -766,6 +790,7 @@ public class ReflectionUtils {
                             result = m;
                         } else {
                             throw new ComponentDefinitionException(
+//IC see: https://issues.apache.org/jira/browse/ARIES-387
                                     "Ambiguous setter method for property "
                                             + getName()
                                             + ". More than one method matches the  parameter type "
@@ -782,6 +807,7 @@ public class ReflectionUtils {
         
         // ensure there is a setter that matches the type of the getter
         private boolean hasSameTypeSetter(Method getterMethod, Collection<Method> setterMethods) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
             if (getterMethod == null) {
                 return true;
             }
@@ -798,6 +824,7 @@ public class ReflectionUtils {
 
         private Method findMethodWithConversion(Collection<Method> setterMethods, Object value) throws Exception {
             ExecutionContext ctx = ExecutionContext.Holder.getContext();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1793
             Method matchingMethod = null;
             for (Method m : setterMethods) {
                 Type paramType = m.getGenericParameterTypes()[0];

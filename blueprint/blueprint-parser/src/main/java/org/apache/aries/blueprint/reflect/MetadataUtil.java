@@ -88,6 +88,7 @@ public class MetadataUtil {
         else if (source instanceof CollectionMetadata) {
             return new CollectionMetadataImpl((CollectionMetadata)source);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-4
         else if (source instanceof PassThroughMetadata) {
             return new PassThroughMetadataImpl((PassThroughMetadata)source);
         }
@@ -150,6 +151,7 @@ public class MetadataUtil {
             return type.cast(new ReferenceMetadataImpl());
         } else if (CollectionMetadata.class.isAssignableFrom(type)) {
             return type.cast(new CollectionMetadataImpl());
+//IC see: https://issues.apache.org/jira/browse/ARIES-4
         } else if (PassThroughMetadata.class.isAssignableFrom(type)) {
             return type.cast(new PassThroughMetadataImpl());
         } else {
@@ -201,6 +203,7 @@ public class MetadataUtil {
     }
     
     public static boolean isCustomScope(BeanMetadata metadata) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
         return (metadata.getScope() != null &&
                 !BeanMetadata.SCOPE_PROTOTYPE.equals(metadata.getScope()) &&
                 !BeanMetadata.SCOPE_SINGLETON.equals(metadata.getScope()));

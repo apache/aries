@@ -17,15 +17,18 @@ import org.osgi.framework.Constants;
 
 public class AttributeFactory {
 	public static Attribute createAttribute(String name, String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 		if (Constants.VERSION_ATTRIBUTE.equals(name)) {
 			if (Character.isDigit(value.charAt(0)))
 				return new VersionAttribute(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
             return new VersionRangeAttribute(value);
 		}
 		if (TypeAttribute.NAME.equals(name))
 			return new TypeAttribute(value);
 		if (DeployedVersionAttribute.NAME.equals(name))
 			return new DeployedVersionAttribute(value);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (BundleVersionAttribute.NAME.equals(name))
 			return new BundleVersionAttribute(value);
 		return new GenericAttribute(name, value);

@@ -43,6 +43,7 @@ public abstract class AbstractIntegrationTest {
     }
     
     public String getLocalRepo() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1197
     	String localRepo = System.getProperty("maven.repo.local");
     	if (localRepo == null) {
     		localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");

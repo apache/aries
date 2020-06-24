@@ -48,6 +48,8 @@ public class MapRecipe extends AbstractRecipe {
         if (type == null) throw new NullPointerException("type is null");
         this.typeClass = type;
         this.entries = new ArrayList<Recipe[]>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         this.keyType = keyType;
         this.valueType = valueType;
     }
@@ -64,6 +66,8 @@ public class MapRecipe extends AbstractRecipe {
     }
     
     private ReifiedType getType(Object o) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         ReifiedType type;
         if (o instanceof Class) {
             type = new ReifiedType((Class) o);
@@ -98,10 +102,13 @@ public class MapRecipe extends AbstractRecipe {
             throw new ComponentDefinitionException("Specified map type does not implement the Map interface: " + mapType.getName());
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-874
         ReifiedType defaultConvertKeyType = getType(keyType);
         ReifiedType defaultConvertValueType = getType(valueType);
                 
         // add map entries
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         try {
             for (Recipe[] entry : entries) {
                 ReifiedType convertKeyType = workOutConversionType(entry[0], defaultConvertKeyType);

@@ -40,6 +40,7 @@ public class PropertyPlaceholderTest extends PropertyPlaceholderExt {
         bind("prop2","world");
         bind("prop3","10");
         bind("prop4","20");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1601
         bind("prop5","nested");
         bind("prop-nested","hello nested world!");
         bind("prop-recursive-1","${prop-recursive-2}");
@@ -67,6 +68,7 @@ public class PropertyPlaceholderTest extends PropertyPlaceholderExt {
 
     @Test
     public void nestedProps() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1601
         sut = makeProperty("${prop-${prop5}}");
         assertEquals("hello nested world!", sut.getStringValue());
     }

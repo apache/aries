@@ -19,6 +19,7 @@ import org.osgi.framework.ServiceRegistration;
 
 public class Utils {
 	public static void closeQuietly(Closeable closeable) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-729
 		if (closeable == null) return;
 		try {
 			closeable.close();

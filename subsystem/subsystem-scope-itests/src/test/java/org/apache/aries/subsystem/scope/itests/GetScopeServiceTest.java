@@ -25,6 +25,8 @@ public class GetScopeServiceTest extends AbstractTest {
 	 */
 	@Test
 	public void test1() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Scope scope = getScope();
 		assertEquals(0, scope.getId());
 		assertEquals("root", scope.getName());
@@ -42,6 +44,8 @@ public class GetScopeServiceTest extends AbstractTest {
 		ServiceReference<ScopeProvider> scopeProviderRef = bundleContext.getServiceReference(ScopeProvider.class);
 		ScopeProvider scopeProvider = bundleContext.getService(scopeProviderRef);
 		Scope scope = scopeProvider.getScope();
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		assertEquals(getScope(), scope);
 		assertTrue(scope.getBundles().contains(bundle));
 		bundleContext.ungetService(scopeProviderRef);
@@ -88,6 +92,10 @@ public class GetScopeServiceTest extends AbstractTest {
 	 */
 	@Test
 	public void test4() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Scope scope = getScope();
 		Bundle bundle = installBundle("tb-3.jar");
 		ScopeUpdate scopeUpdate = scope.newScopeUpdate();
@@ -104,6 +112,10 @@ public class GetScopeServiceTest extends AbstractTest {
 		bundle.start();
 		ServiceReference<ScopeProvider> scopeProviderRef = bundleContext.getServiceReference(ScopeProvider.class);
 		ScopeProvider scopeProvider = bundleContext.getService(scopeProviderRef);
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		scope = scopeProvider.getScope();
 		assertEquals("tb3", scope.getName());
 		assertTrue(scope.getBundles().contains(bundle));

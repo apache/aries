@@ -116,6 +116,7 @@ public class BlueprintContainerImpl
     private static final Logger LOGGER = LoggerFactory.getLogger(BlueprintContainerImpl.class);
 
     private static final Class[] SECURITY_BUGFIX = {
+//IC see: https://issues.apache.org/jira/browse/ARIES-838
             BlueprintDomainCombiner.class,
             BlueprintProtectionDomain.class,
     };
@@ -165,7 +166,9 @@ public class BlueprintContainerImpl
 
     public BlueprintContainerImpl(Bundle bundle, BundleContext bundleContext, Bundle extenderBundle, BlueprintListener eventDispatcher,
                                   NamespaceHandlerRegistry handlers, ExecutorService executor, ScheduledExecutorService timer,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1726
                                   List<URL> pathList, ProxyManager proxyManager, Collection<URI> namespaces) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
         this.bundle = bundle;
         this.bundleContext = bundleContext;
         this.extenderBundle = extenderBundle;
@@ -173,21 +176,28 @@ public class BlueprintContainerImpl
         this.handlers = handlers;
         this.pathList = pathList;
         this.converter = new AggregateConverter(this);
+//IC see: https://issues.apache.org/jira/browse/ARIES-63
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         this.componentDefinitionRegistry = new ComponentDefinitionRegistryImpl();
         this.executors = executor != null ? new ExecutorServiceWrapper(executor) : null;
         this.timer = timer;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1886
         this.timeout = getDefaultTimeout();
         this.processors = new ArrayList<Processor>();
         if (System.getSecurityManager() != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1768
             this.accessControlContext = BlueprintDomainCombiner.createAccessControlContext(bundle);
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
         } else {
             this.accessControlContext = null;
         }
         this.proxyManager = proxyManager;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         this.additionalNamespaces = namespaces;
     }
 
     public ExecutorService getExecutors() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-896
         return executors;
     }
 
@@ -214,6 +224,7 @@ public class BlueprintContainerImpl
     }
 
     private long getDefaultTimeout() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1886
         long timeout = DEFAULT_TIMEOUT;
         try {
             timeout = Long.getLong(DEFAULT_TIMEOUT_PROPERTY, DEFAULT_TIMEOUT);
@@ -237,6 +248,7 @@ public class BlueprintContainerImpl
             LOGGER.debug("Timeout directive: {}", timeoutDirective);
             timeout = Integer.parseInt(timeoutDirective);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1886
         else {
         	timeout = getDefaultTimeout();
         }
@@ -247,8 +259,10 @@ public class BlueprintContainerImpl
             waitForDependencies = Boolean.parseBoolean(graceperiod);
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1138
         xmlValidation = bundleContext.getProperty(BlueprintConstants.XML_VALIDATION_PROPERTY);
         if (xmlValidation == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1395
             xmlValidation = paths.get(0).getDirective(BlueprintConstants.XML_VALIDATION);
         }
         // enabled if null or "true"; structure-only if "structure"; disabled otherwise
@@ -262,17 +276,24 @@ public class BlueprintContainerImpl
     }
 
     public void reload() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
         synchronized (scheduled) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
             if (destroyed.get()) {
                 return;
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-677
             tidyupComponents();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1120
             resetComponentDefinitionRegistry();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1430
             cancelFutureIfPresent();
             this.repository = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1738
             this.processors.clear();
             timeout = 5 * 60 * 1000;
             waitForDependencies = true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1395
             xmlValidation = null;
             if (handlerSet != null) {
                 handlerSet.removeListener(this);
@@ -285,6 +306,7 @@ public class BlueprintContainerImpl
     }
     
     protected void resetComponentDefinitionRegistry() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1120
         this.componentDefinitionRegistry.reset();
         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintContainer", this));
         componentDefinitionRegistry.registerComponentDefinition(new PassThroughMetadataImpl("blueprintBundle", bundle));
@@ -300,6 +322,7 @@ public class BlueprintContainerImpl
     }
 
     public State getState() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
         return state;
     }
 
@@ -309,23 +332,29 @@ public class BlueprintContainerImpl
     private void doRun() {
         try {
             for (;;) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
                 if (destroyed.get()) {
                     return;
                 }
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
                 if (bundle.getState() != Bundle.ACTIVE && bundle.getState() != Bundle.STARTING) {
                     return;
                 }
                 if (bundle.getBundleContext() != bundleContext) {
                     return;
                 }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1009
                 LOGGER.debug("Running container for blueprint bundle {}/{} in state {}", getBundle().getSymbolicName(), getBundle().getVersion(), state);
                 switch (state) {
                     case Unknown:
+//IC see: https://issues.apache.org/jira/browse/ARIES-713
                         readDirectives();
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATING, getBundle(), getExtenderBundle()));
                         parser = new Parser();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1726
                         parser.parse(pathList);
                         namespaces = parser.getNamespaces();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
                         if (additionalNamespaces != null) {
                             namespaces.addAll(additionalNamespaces);
                         }
@@ -344,12 +373,14 @@ public class BlueprintContainerImpl
                             }
                         }
                         if (missing.size() > 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1009
                             LOGGER.info("Blueprint bundle {}/{} is waiting for namespace handlers {}", getBundle().getSymbolicName(), getBundle().getVersion(), missingURIs);
                             eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundle(), getExtenderBundle(), missing.toArray(new String[missing.size()])));
                             return;
                         }
                         resetComponentDefinitionRegistry();
                         if (xmlValidation == null || "true".equals(xmlValidation)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
                             for (URI ns : handlerSet.getNamespaces()) {
                                 NamespaceHandler handler = handlerSet.getNamespaceHandler(ns);
                                 if (handler instanceof NamespaceHandler2) {
@@ -362,6 +393,7 @@ public class BlueprintContainerImpl
                         }
                         try {
                             if (xmlValidation == null || "true".equals(xmlValidation)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
                                 parser.validate(handlerSet.getSchema(parser.getSchemaLocations()));
                             } else if ("structure".equals(xmlValidation)) {
                                 parser.validate(handlerSet.getSchema(parser.getSchemaLocations()), new ValidationHandler());
@@ -375,6 +407,7 @@ public class BlueprintContainerImpl
                             // we remain in the current state
                             handlerSet.getNamespaces().add(e.getNamespace());
                         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
                         break;
                     }
                     case Populated:
@@ -383,9 +416,11 @@ public class BlueprintContainerImpl
                         Runnable r = new Runnable() {
                             public void run() {
                                 synchronized (scheduled) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
                                     if (destroyed.get()) {
                                         return;
                                     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1430
                                     String[] missingDependecies = getMissingDependencies();
                                     if (missingDependecies.length == 0) {
                                         return;
@@ -393,7 +428,9 @@ public class BlueprintContainerImpl
                                     Throwable t = new TimeoutException();
                                     state = State.Failed;
                                     tidyupComponents();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1009
                                     LOGGER.error("Unable to start container for blueprint bundle {}/{} due to unresolved dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependecies), t);
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
                                     eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundle(), getExtenderBundle(), missingDependecies, t));
                                 }
                             }
@@ -421,6 +458,8 @@ public class BlueprintContainerImpl
                         if (waitForDependencies) {
                             String[] missingDependencies = getMissingDependencies();
                             if (missingDependencies.length > 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1009
+//IC see: https://issues.apache.org/jira/browse/ARIES-1009
                                 LOGGER.info("Blueprint bundle {}/{} is waiting for dependencies {}", getBundle().getSymbolicName(), getBundle().getVersion(), Arrays.asList(missingDependencies));
                                 eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.GRACE_PERIOD, getBundle(), getExtenderBundle(), missingDependencies));
                                 return;
@@ -429,9 +468,11 @@ public class BlueprintContainerImpl
                         state = State.Create;
                         break;
                     case Create:
+//IC see: https://issues.apache.org/jira/browse/ARIES-713
                         cancelFutureIfPresent();
                         instantiateEagerComponents();
                         //Register the services after the eager components are ready, as per 121.6
+//IC see: https://issues.apache.org/jira/browse/ARIES-1201
                         registerServices();
                         // Register the BlueprintContainer in the OSGi registry
                         int bs = bundle.getState();
@@ -443,6 +484,7 @@ public class BlueprintContainerImpl
                                     JavaUtils.getBundleVersion(bundle));
                             registration = registerService(new String[]{BlueprintContainer.class.getName()}, this, props);
                         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1009
                         LOGGER.info("Blueprint bundle {}/{} has been started", getBundle().getSymbolicName(), getBundle().getVersion());
                         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.CREATED, getBundle(), getExtenderBundle()));
                         state = State.Created;
@@ -453,10 +495,12 @@ public class BlueprintContainerImpl
                 }
             }
         } catch (Throwable t) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-976
             try {
                 state = State.Failed;
                 cancelFutureIfPresent();
                 tidyupComponents();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1009
                 LOGGER.error("Unable to start container for blueprint bundle {}/{}", getBundle().getSymbolicName(), getBundle().getVersion(), t);
                 eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.FAILURE, getBundle(), getExtenderBundle(), t));
             } catch (RuntimeException re) {
@@ -468,6 +512,7 @@ public class BlueprintContainerImpl
 
     public Class loadClass(final String name) throws ClassNotFoundException {
         if (accessControlContext == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
             return bundle.loadClass(name);
         } else {
             try {
@@ -488,6 +533,7 @@ public class BlueprintContainerImpl
 
     @Override
     public ClassLoader getClassLoader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         return getBundle().adapt(BundleWiring.class).getClassLoader();
     }
 
@@ -521,6 +567,7 @@ public class BlueprintContainerImpl
     
     public BlueprintRepository getRepository() {
         if (repository == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-246
             repository = new RecipeBuilder(this, tempRecipeIdSpace).createRepository();
         }
         return repository;
@@ -538,6 +585,7 @@ public class BlueprintContainerImpl
             }
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         Map<String, Object> objects = getRepository().createAll(typeConverters, ProxyUtils.asList(Converter.class));
         for (String name : typeConverters) {
             Object obj = objects.get(name);
@@ -567,6 +615,7 @@ public class BlueprintContainerImpl
                 continue;
             }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
             Object obj = null;
             if (ComponentDefinitionRegistryProcessor.class.isAssignableFrom(clazz)) {
                 obj = repository.create(bean.getId(), ProxyUtils.asList(ComponentDefinitionRegistryProcessor.class));
@@ -579,6 +628,7 @@ public class BlueprintContainerImpl
             if (obj == null) {
                 continue;
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
             untrackServiceReferences();
             updateUninstantiatedRecipes();
             getSatisfiableDependenciesMap(true);
@@ -586,6 +636,7 @@ public class BlueprintContainerImpl
         }
     }
     private void updateUninstantiatedRecipes() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-246
         Repository tmpRepo = new RecipeBuilder(this, tempRecipeIdSpace).createRepository();
         
         LOGGER.debug("Updating blueprint repository");
@@ -655,6 +706,7 @@ public class BlueprintContainerImpl
             }
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-773
         synchronized (satisfiablesLock) {
             satisfiables = null;
         }
@@ -678,9 +730,12 @@ public class BlueprintContainerImpl
         if (destroyed.get()) {
             return;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
         LOGGER.debug("Notified satisfaction {} in bundle {}/{}: {}",
                 satisfiable.getName(), bundle.getSymbolicName(), getBundle().getVersion(), satisfiable.isSatisfied());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         if ((state == State.Create || state == State.Created) && satisfiable.isStaticLifecycle()) {
             if (satisfiable.isSatisfied()) {
                 repository.reCreateInstance(satisfiable.getName());
@@ -797,10 +852,12 @@ public class BlueprintContainerImpl
     }
     
     public Set<String> getComponentIds() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1120
         return new LinkedHashSet<String>(componentDefinitionRegistry.getComponentDefinitionNames());
     }
     
     public Object getComponentInstance(String id) throws NoSuchComponentException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
         if (repository == null || destroyed.get()) {
             throw new NoSuchComponentException(id);
         }
@@ -901,6 +958,7 @@ public class BlueprintContainerImpl
     }
 
     public void destroy() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
         synchronized (scheduled) {
             destroyed.set(true);
         }
@@ -923,6 +981,7 @@ public class BlueprintContainerImpl
         tidyupComponents();
 
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYED, getBundle(), getExtenderBundle()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1009
         LOGGER.debug("Container destroyed for blueprint bundle {}/{}", getBundle().getSymbolicName(), getBundle().getVersion());
     }
 
@@ -940,16 +999,23 @@ public class BlueprintContainerImpl
         destroyed.set(true);
         eventDispatcher.blueprintEvent(new BlueprintEvent(BlueprintEvent.DESTROYING, getBundle(), getExtenderBundle()));
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-713
+//IC see: https://issues.apache.org/jira/browse/ARIES-713
         cancelFutureIfPresent();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1660
         ServiceUtil.safeUnregisterService(registration);
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
+//IC see: https://issues.apache.org/jira/browse/ARIES-867
         if (handlerSet != null) {
             handlerSet.removeListener(this);
             handlerSet.destroy();
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
         LOGGER.debug("Blueprint container {} quiesced", getBundle().getSymbolicName(), getBundle().getVersion());
     }
 
     private void cancelFutureIfPresent() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-713
         if (timeoutFuture != null) {
             timeoutFuture.cancel(false);
         }
@@ -963,14 +1029,24 @@ public class BlueprintContainerImpl
 
     public void namespaceHandlerUnregistered(URI uri) {
         if (handlerSet != null && handlerSet.getNamespaces().contains(uri)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
             synchronized (scheduled) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
                 if (destroyed.get()) {
                     return;
                 }
+//IC see: https://issues.apache.org/jira/browse/ARIES-677
+//IC see: https://issues.apache.org/jira/browse/ARIES-677
                 tidyupComponents();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1120
+//IC see: https://issues.apache.org/jira/browse/ARIES-1120
                 resetComponentDefinitionRegistry();
+//IC see: https://issues.apache.org/jira/browse/ARIES-713
+//IC see: https://issues.apache.org/jira/browse/ARIES-1430
                 cancelFutureIfPresent();
                 this.repository = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1738
                 this.processors.clear();
                 handlerSet.removeListener(this);
                 handlerSet.destroy();
@@ -985,10 +1061,12 @@ public class BlueprintContainerImpl
     private void tidyupComponents() {
         unregisterServices();
         destroyComponents();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1020
         untrackServiceReferences();
     }
 
     public void injectBeanInstance(BeanMetadata bmd, Object o)
+//IC see: https://issues.apache.org/jira/browse/ARIES-790
             throws IllegalArgumentException, ComponentDefinitionException {
         ExecutionContext origContext
                 = ExecutionContext.Holder.setContext((ExecutionContext) getRepository());
@@ -1021,6 +1099,7 @@ public class BlueprintContainerImpl
         }
         @Override
         public void error(SAXParseException exception) throws SAXException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1395
             final String cvctext = exception.getMessage(); 
             if (cvctext != null && 
                 (cvctext.startsWith("cvc-datatype-valid.1") || cvctext.startsWith("cvc-attribute.3"))) {

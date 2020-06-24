@@ -11,6 +11,7 @@ public class DynamicImportHelloImpl implements Hello {
 	
 	@Override
 	public String saySomething() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-868
 		return "Hello, this is something";
 	}
 

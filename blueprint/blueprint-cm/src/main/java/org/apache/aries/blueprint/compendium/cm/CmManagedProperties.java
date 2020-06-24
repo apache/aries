@@ -145,14 +145,17 @@ public class CmManagedProperties implements ManagedObject, BeanProcessor {
     }
 
     public void updated(final Dictionary props) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
         if (!initialized) {
             properties = props;
             initialized = true;
             return;
         }
         LOGGER.debug("Configuration updated for bean={} / pid={}", beanName, persistentId);
+//IC see: https://issues.apache.org/jira/browse/ARIES-878
         synchronized (lock) {
             properties = props;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1257
             for (Object bean : beans) {
                 updated(bean, properties);
             }

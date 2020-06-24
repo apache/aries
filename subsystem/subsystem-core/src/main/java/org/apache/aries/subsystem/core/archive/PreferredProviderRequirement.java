@@ -29,6 +29,7 @@ public class PreferredProviderRequirement extends AbstractRequirement {
 	private final Resource resource;
 	
 	public PreferredProviderRequirement(
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			PreferredProviderHeader.Clause clause, Resource resource) {
 		StringBuilder builder = new StringBuilder("(&(")
 				.append(NAMESPACE).append('=')

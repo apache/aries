@@ -69,6 +69,7 @@ public class ZipFileImpl implements IFile
     this.entry = entry1;
 
     this.zipPathToRoot = parent1.getZipPathToRoot();
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 
     name = zipPathToRoot + entry1.getName();
 
@@ -106,6 +107,7 @@ public class ZipFileImpl implements IFile
     	zipPathToRoot = name+"/";
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
     lastModified = zip1.lastModified();
     size = zip1.length();
     url = zip1.toURI().toURL().toExternalForm();
@@ -121,6 +123,7 @@ public class ZipFileImpl implements IFile
 	  parent = other.parent;
 	  url = other.url;
 	  zipPathToRoot = other.zipPathToRoot;
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 	  this.cache = cache;
   }
 
@@ -137,6 +140,7 @@ public class ZipFileImpl implements IFile
   }
 
   public IDirectory convertNested() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-562
 	  if (isDirectory()) return convert();
 	  else if (FileSystemImpl.isValidZip(this)) return new NestedZipDirectory(this);
 	  else return null;
@@ -154,6 +158,7 @@ public class ZipFileImpl implements IFile
 
   public String getNameInZip()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 	  if (entry == null) return "";
 	  else {
 		  String name = entry.getName();
@@ -196,6 +201,7 @@ public class ZipFileImpl implements IFile
   public URL toURL() throws MalformedURLException
   {
     URL result;
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
 
     if(name.equals(zipPathToRoot))
       result = new URL(url);
@@ -235,6 +241,7 @@ public class ZipFileImpl implements IFile
   @Override
   public String toString()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-679
 	  if (name != null && name.length() != 0) return url.substring(5)+ "/" + name;
 	  else return url.substring(5);
   }
@@ -242,6 +249,7 @@ public class ZipFileImpl implements IFile
   ZipFile openZipFile(){
     ZipFile z = null;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
     if (cache != null && !!!cache.isClosed()) {
     	z = cache.getZipFile();
     } else {
@@ -291,6 +299,7 @@ public class ZipFileImpl implements IFile
 
     @Override
     public int read(byte[] b) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1612
       return is.read(b);
     }
 

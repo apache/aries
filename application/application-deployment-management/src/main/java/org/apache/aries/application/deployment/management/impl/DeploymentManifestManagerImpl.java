@@ -585,6 +585,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
    */
   private boolean providesPackage(ModelledResource bundle, String importPackages)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map<String, Map<String, String>> imports = ManifestHeaderProcessor.parseImportString(importPackages);
     
     try {
@@ -613,9 +614,11 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
 
     _logger.debug(LOG_ENTRY, "toImportedBundle", new Object[]{content});
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-464
     Set<ImportedBundle> result = new HashSet<ImportedBundle>();
     for (Content c : content) {
       try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         result.add(modellingManager.getImportedBundle(c.getContentName(), c.getVersion().toString()));
       } catch (InvalidAttributeException iax) { 
         ResolverException rx = new ResolverException (iax);
@@ -633,6 +636,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
   {
     Collection<Content> contents = new ArrayList<Content>();
     for (ImportedBundle ib : ibs) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       contents.add(ContentFactory.parseContent(ib.getSymbolicName(), ib.getVersionRange()));
     }
     return contents;

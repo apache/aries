@@ -30,6 +30,7 @@ public class SharingPolicyValidator {
 		
 		public Visitor(Capability capability) {
 			this.capability = capability;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			visited = new HashSet<Region>();
 		}
 		

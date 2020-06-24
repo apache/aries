@@ -64,6 +64,7 @@ public class FileSystemTest
   public void basicRootDirTestsWithFiles() throws IOException
   {
     File baseDir = new File(getTestResourceDir(), "/app1");
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     File manifest = new File(baseDir, "META-INF/APPLICATION.MF");
     IDirectory dir = FileSystem.getFSRoot(baseDir);
 
@@ -83,6 +84,7 @@ public class FileSystemTest
     IDirectory dir = FileSystem.getFSRoot(baseDir);
 
     File desiredFile = new File(baseDir, "META-INF/APPLICATION.MF");
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
 
     runBasicDirTest(dir, desiredFile.length(), desiredFile.lastModified());
     runBasicDirTest(dir.toCloseable(), desiredFile.length(), desiredFile.lastModified());
@@ -114,6 +116,7 @@ public class FileSystemTest
   @Test(expected=UnsupportedOperationException.class)
   public void basicRootDirTestsWithZipInputStream() throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-715
     File baseDir = new File("fileSystemTest/app2.zip");
     ICloseableDirectory dir = FileSystem.getFSRoot(new FileInputStream(baseDir));
 
@@ -127,7 +130,10 @@ public class FileSystemTest
   @Test
   public void testInvalidFSRoot() throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 	  File baseDir = new File(getTestResourceDir(), "/app1");
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
 	  File manifest = new File(baseDir, "META-INF/APPLICATION.MF");
 	  try {
 	      FileSystem.getFSRoot(manifest);
@@ -145,6 +151,7 @@ public class FileSystemTest
   public void nestedZipInDirectory() throws IOException
   {
 	IDirectory dir = FileSystem.getFSRoot(new File("").getAbsoluteFile());
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 
 	// base convert does not do nested zips
 	IDirectory zip = dir.getFile("fileSystemTest/app2.zip").convert();
@@ -173,6 +180,7 @@ public class FileSystemTest
 	// check URLs are correct
 	checkManifest(appMf.toURL().openStream());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 	runBasicDirTest(zip, "fileSystemTest/app2.zip/", appMf.getSize(), appMf.getLastModified());
   }
 
@@ -183,6 +191,7 @@ public class FileSystemTest
   public void nestedZipInZip() throws IOException
   {
 	  IDirectory outer = FileSystem.getFSRoot(new File("fileSystemTest/outer.zip"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-562
 
 	  IFile innerFile = outer.getFile("app2.zip");
 	  assertNotNull(innerFile);
@@ -203,6 +212,7 @@ public class FileSystemTest
   @Test
   public void nestedZipInZipInputStream() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-715
     ICloseableDirectory outer = FileSystem.getFSRoot(new FileInputStream("fileSystemTest/outer.zip"));
     try {
       IFile innerFile = outer.getFile("app2.zip");
@@ -212,9 +222,11 @@ public class FileSystemTest
       assertNotNull(inner);
 
       File desiredFile = new File(new File(getTestResourceDir(), "/app1"), "META-INF/APPLICATION.MF");
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
 
       // no size information when stream reading :(
       runBasicDirTest(inner, "app2.zip/", -1, desiredFile.lastModified());
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
       runBasicDirTest(inner.toCloseable(), "app2.zip/", desiredFile.length(), desiredFile.lastModified());
     } finally {
       outer.close();
@@ -253,13 +265,17 @@ public class FileSystemTest
   @Test
   public void basicDirTestsWithZipInputStream() throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-715
     File baseDir = new File("fileSystemTest/app2.zip");
     ICloseableDirectory dir = FileSystem.getFSRoot(new FileInputStream(baseDir));
 
     try {
       File desiredFile = new File(new File(getTestResourceDir(), "/app1"), "META-INF/APPLICATION.MF");
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
 
       runBasicDirTest(dir, desiredFile.length(), desiredFile.lastModified());
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
       runBasicDirTest(dir.toCloseable(), desiredFile.length(), desiredFile.lastModified());
     } finally {
       dir.close();
@@ -276,6 +292,7 @@ public class FileSystemTest
 
 	  long start = System.currentTimeMillis();
 	  for (int i=0; i<N; i++) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
 		  ZipEntry ze = zip.getEntry("META-INF/APPLICATION.MF");
 		  InputStream is = zip.getInputStream(ze);
 		  is.close();
@@ -309,6 +326,8 @@ public class FileSystemTest
 
 	  start = System.currentTimeMillis();
 	  for (int i=0; i<N; i++) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
 		  IFile appMf = dir.getFile("META-INF/APPLICATION.MF");
 		  InputStream is = appMf.open();
 		  is.close();
@@ -339,6 +358,7 @@ public class FileSystemTest
 
     out.close();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-562
     zipFile = new File("outer.zip");
     out = new ZipOutputStream(new FileOutputStream(zipFile));
     index = new File("fileSystemTest").getAbsolutePath().length();
@@ -351,6 +371,7 @@ public class FileSystemTest
 
   private static File getTestResourceDir() {
 	  File root = new File("").getAbsoluteFile();
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 
 	  if (root.getName().equals("target")) return new File("../src/test/resources");
 	  else return new File("src/test/resources");
@@ -362,6 +383,7 @@ public class FileSystemTest
   @AfterClass
   public static void destroyZip()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-562
 	  IOUtils.deleteRecursive(new File("fileSystemTest"));
   }
 
@@ -436,6 +458,7 @@ public class FileSystemTest
 
   private void runBasicDirTest(IDirectory dir, long len, long time) throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 	  runBasicDirTest(dir, "", len, time);
   }
 
@@ -454,9 +477,11 @@ public class FileSystemTest
     assertNull("for some reason our fake app has a fake blueprint file.", dir.getFile("OSGI-INF/blueprint/aries.xml"));
 
     IFile file = dir.getFile("META-INF/APPLICATION.MF");
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
 
     assertNotNull("we could not find the application manifest", file);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-562
     assertNull(file.convert());
     assertNull(file.convertNested());
 
@@ -469,6 +494,7 @@ public class FileSystemTest
     assertTrue(file.isFile());
 
     List<IFile> files = dir.listFiles();
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
     filterOutSvn(files);
     assertEquals(1, files.size());
 
@@ -477,6 +503,7 @@ public class FileSystemTest
     assertEquals(3, allFiles.size());
 
     assertEquals(namePrefix+"META-INF", allFiles.get(1).getParent().getName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 
     IFile metaInf = files.get(0);
 
@@ -489,6 +516,7 @@ public class FileSystemTest
     assertEquals(2, files.size());
 
     for (IFile aFile : dir) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
       if (!aFile.getName().contains(".svn")) {
         assertTrue(aFile.isDirectory());
         assertEquals(namePrefix+"META-INF", aFile.getName());
@@ -497,8 +525,10 @@ public class FileSystemTest
     }
 
     checkManifest(file.open());
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 
     IFile applicationMF2 = dir.getFile("META-INF/APPLICATION.MF");
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
 
     Assert.assertEqualsContract(file, applicationMF2, dir);
     Assert.assertHashCodeEquals(file, applicationMF2, true);

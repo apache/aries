@@ -53,6 +53,7 @@ public final class Utils {
      * @throws NamingException
      */
     public static BundleContext getBundleContext(final Map<?, ?> env, final Class<?> namingClass) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         return doPrivileged(() -> doGetBundleContext(env, namingClass));
     }
 
@@ -74,6 +75,7 @@ public final class Utils {
 
             // working from the root of the stack look for the first instance in the stack of this class
             int i = classStack.length - 1;
+//IC see: https://issues.apache.org/jira/browse/ARIES-554
             for (; i >= 0; i--) {
                 if (namingClass.isAssignableFrom(classStack[i])) {
                     break;
@@ -95,6 +97,7 @@ public final class Utils {
         while (result == null && cl != null) {
             if (cl instanceof BundleReference) {
                 Bundle b = ((BundleReference) cl).getBundle();
+//IC see: https://issues.apache.org/jira/browse/ARIES-764
                 result = b.getBundleContext();
                 if (result == null) {
                     try {
@@ -113,6 +116,7 @@ public final class Utils {
     }
 
     public static String getSystemProperty(final String key, final String defaultValue) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         return doPrivileged(() -> System.getProperty(key, defaultValue));
     }
 
@@ -121,6 +125,7 @@ public final class Utils {
         if (map instanceof Hashtable<?, ?>) {
             env = (Hashtable<?, ?>) map;
         } else if (map == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
             env = new Hashtable<>();
         } else {
             env = new Hashtable<Object, Object>(map);
@@ -166,6 +171,7 @@ public final class Utils {
     }
 
     public static <U, V> Iterator<V> map(Iterator<U> iterator, Function<U, V> mapper) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         return new MappedIterator<>(iterator, mapper);
     }
 

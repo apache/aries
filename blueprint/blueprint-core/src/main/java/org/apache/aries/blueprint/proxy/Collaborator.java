@@ -60,6 +60,7 @@ public class Collaborator implements InvocationListener, Serializable {
      */
     public Object preInvoke(Object o, Method m, Object[] parameters)
             throws Throwable {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1319
         Deque<StackElement> stack = new ArrayDeque<StackElement>(interceptors.size());
         if (interceptors != null) {
             try {
@@ -85,6 +86,7 @@ public class Collaborator implements InvocationListener, Serializable {
      */
     public void postInvoke(Object token, Object o, Method method,
                            Object returnType) throws Throwable {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
 
         Deque<StackElement> calledInterceptors =
                 (Deque<StackElement>) token;
@@ -95,6 +97,7 @@ public class Collaborator implements InvocationListener, Serializable {
                     se.interceptor.postCallWithReturn(cm, method, returnType, se
                             .getPreCallToken());
                 } catch (Throwable t) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-443
                     LOGGER.debug("postCallInterceptorWithReturn", t);
                     // propagate this to invoke ... further interceptors will be
                     // called via the postCallInterceptorWithException method
@@ -110,6 +113,8 @@ public class Collaborator implements InvocationListener, Serializable {
     public void postInvokeExceptionalReturn(Object token, Object o, Method method,
                                             Throwable exception) throws Throwable {
         Throwable tobeRethrown = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1319
+//IC see: https://issues.apache.org/jira/browse/ARIES-1319
         Deque<StackElement> calledInterceptors =
                 (Deque<StackElement>) token;
         while (!calledInterceptors.isEmpty()) {
@@ -120,6 +125,7 @@ public class Collaborator implements InvocationListener, Serializable {
                         .getPreCallToken());
             } catch (Throwable t) {
                 // log the exception
+//IC see: https://issues.apache.org/jira/browse/ARIES-443
                 LOGGER.debug("postCallInterceptorWithException", t);
                 if (tobeRethrown == null) {
                     tobeRethrown = t;

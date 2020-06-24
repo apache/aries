@@ -67,6 +67,7 @@ public final class ContextHelper {
             ObjectFactory factory = urlObjectFactory.get();
 
             if (factory != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-540
                 return new URLContextProvider(context, urlObjectFactory.getReference(), factory, env);
             }
         }
@@ -80,6 +81,7 @@ public final class ContextHelper {
         ServicePair<ObjectFactory> result = null;
 
         ServiceReference<ObjectFactory> ref = Activator.getUrlFactory(urlScheme);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
 
         if (ref == null) {
 
@@ -109,6 +111,7 @@ public final class ContextHelper {
         final Bundle jndiBundle = FrameworkUtil.getBundle(ContextHelper.class);
         // if we are outside OSGi (like in our unittests) then we would get Null back here, so just make sure we don't.
         if (jndiBundle != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
             BundleContext jndiBundleContext = Utils.doPrivileged(jndiBundle::getBundleContext);
             if (!jndiBundleContext.getClass().equals(context.getClass())) {
                 //the context passed in must have come from a child framework
@@ -119,6 +122,8 @@ public final class ContextHelper {
 
         ContextProvider provider = getContextProvider(context, environment);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-440
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
         if (provider != null) {
             return new DelegateContext(context, provider);
         } else {
@@ -126,12 +131,14 @@ public final class ContextHelper {
             if (contextFactoryClass == null) {
                 return new DelegateContext(context, environment);
             } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
                 throw new NoInitialContextException("Unable to find the InitialContextFactory " + contextFactoryClass + ".");
             }
         }
     }
 
     public static ContextProvider getContextProvider(BundleContext context,
+//IC see: https://issues.apache.org/jira/browse/ARIES-647
                                                      Hashtable<?, ?> environment)
             throws NamingException {
 
@@ -139,6 +146,7 @@ public final class ContextHelper {
         String contextFactoryClass = (String) environment.get(Context.INITIAL_CONTEXT_FACTORY);
         if (contextFactoryClass == null) {
             // 1. get ContextFactory using builder
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
             provider = getInitialContextUsingBuilder(context, environment)
             // 2. lookup all ContextFactory services
                     .orElseGet(() -> getInitialContextUsingFactoryServices(context, environment)

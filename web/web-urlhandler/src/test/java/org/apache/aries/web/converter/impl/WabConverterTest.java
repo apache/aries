@@ -66,6 +66,7 @@ public class WabConverterTest
   @Test
   public void testNullManifest() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
     Properties properties = new Properties();
     properties.put(WarToWabConverter.WEB_CONTEXT_PATH, "/test");
     WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, properties);
@@ -79,11 +80,13 @@ public class WabConverterTest
   @Test
   public void testImportPackageMerge() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
     Properties properties = new Properties();
     properties.put(WarToWabConverter.WEB_CONTEXT_PATH, "/test");
     WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(new byte[0]), WAR_FILE_NAME, properties);
     
     Manifest input = new Manifest();
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
     input.getMainAttributes().putValue(Constants.IMPORT_PACKAGE, "com.ibm.test,javax.servlet.http");
     
     Manifest res = sut.updateManifest(input);
@@ -100,10 +103,13 @@ public class WabConverterTest
   @Test
   public void testImportPackageWithAttributesMerge() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-135
       Attributes attrs = convertWithProperties(
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
                 WarToWabConverter.WEB_CONTEXT_PATH, "/test",
                 Constants.IMPORT_PACKAGE, "javax.servlet.jsp; version=\"[2.0,2.1]\",javax.servlet.jsp.tagext; version=\"[2.0,2.1]\"");
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
       String actual = attrs.getValue(Constants.IMPORT_PACKAGE);
       System.out.println(actual);
       assertEquals(
@@ -125,9 +131,11 @@ public class WabConverterTest
     out.write("hello world".getBytes());
     out.close();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-114
     InputStreamProvider input = makeTestFile(bout.toByteArray());
     
     Properties props = new Properties();
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
     props.put(WarToWabConverter.WEB_CONTEXT_PATH, "/test");
     props.put(Constants.BUNDLE_SYMBOLICNAME, "test.bundle");
     WarToWabConverterImpl sut = new WarToWabConverterImpl(input, WAR_FILE_NAME, props);
@@ -139,6 +147,7 @@ public class WabConverterTest
   
   @Test 
   public void testDefaultProperties() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
     Attributes attrs = convertWithProperties(
             WarToWabConverter.WEB_CONTEXT_PATH, "/test");
     
@@ -163,6 +172,7 @@ public class WabConverterTest
   
   @Test
   public void testPropertyCaseInsensitiveSupport() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
     Attributes attrs = convertWithProperties(
         "web-contextpath", "WebFiles",
         "bundle-VErsion", "1.0",
@@ -171,6 +181,7 @@ public class WabConverterTest
     assertEquals("/WebFiles", attrs.getValue(WarToWabConverter.WEB_CONTEXT_PATH));
     assertEquals("1.0", attrs.getValue(Constants.BUNDLE_VERSION));
     assertEquals("org.apache.aries.test;version=2.5,org.apache.aries.test.eba;version=1.0," + DEFAULT_IMPORTS,
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
                  attrs.getValue(Constants.IMPORT_PACKAGE));
   }
   
@@ -183,6 +194,7 @@ public class WabConverterTest
     attrs.putValue(Constants.IMPORT_PACKAGE, "org.apache.util,org.apache.test;version=1.0");
     attrs.putValue(Constants.BUNDLE_CLASSPATH, "jsp/classes");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
     attrs = convertWithProperties(m, 
         WarToWabConverter.WEB_CONTEXT_PATH, "WebFiles");
        
@@ -251,6 +263,7 @@ public class WabConverterTest
       bytes = bout.toByteArray();
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-114
     WarToWabConverterImpl sut = new WarToWabConverterImpl(makeTestFile(bytes), WAR_FILE_NAME, properties);
     return sut.getWABManifest().getMainAttributes();
   }
@@ -261,6 +274,7 @@ public class WabConverterTest
   
   
   private InputStreamProvider makeTestFile(final byte[] content) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-114
     return new InputStreamProvider() {      
       public InputStream getInputStream() throws IOException {
         return new ByteArrayInputStream(content);

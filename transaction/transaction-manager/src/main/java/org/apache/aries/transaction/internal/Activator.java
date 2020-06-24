@@ -51,6 +51,7 @@ public class Activator implements BundleActivator, ManagedService {
         this.bundleContext = bundleContext;
         // Make sure TransactionManager comes up even if no config admin is installed
         Dictionary<String, Object> properties = getInitialConfig();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1621
         updated(properties);
         bundleContext.registerService(ManagedService.class.getName(), this, getProps());
     }
@@ -77,6 +78,7 @@ public class Activator implements BundleActivator, ManagedService {
 
     private Dictionary<String, Object> getProps() {
         Dictionary<String, Object> props = new Hashtable<String, Object>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-809
         props.put(Constants.SERVICE_PID, PID);
         return props;
     }
@@ -90,6 +92,7 @@ public class Activator implements BundleActivator, ManagedService {
         if (properties == null) {
             properties = getProps();
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1621
         if (!equals(this.properties, properties)) {
             deleted();
 
@@ -101,6 +104,7 @@ public class Activator implements BundleActivator, ManagedService {
                     TransactionLogUtils.copyActiveTransactions((Dictionary<String, Object>) this.properties, properties);
                 }
             } catch (IOException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 log.error("An exception occurred starting the transaction manager.", e);
             }
 
@@ -109,6 +113,7 @@ public class Activator implements BundleActivator, ManagedService {
             try {
                 manager.start();
             } catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 log.error("An exception occurred starting the transaction manager.", e);
             }
         }
@@ -139,6 +144,7 @@ public class Activator implements BundleActivator, ManagedService {
             try {
                 manager.close();
             } catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 log.error("An exception occurred stopping the transaction manager.", e);
             } finally {
                 manager = null;

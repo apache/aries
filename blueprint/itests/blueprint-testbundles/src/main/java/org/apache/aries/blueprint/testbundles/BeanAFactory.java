@@ -19,6 +19,7 @@ package org.apache.aries.blueprint.testbundles;
 public class BeanAFactory {
 
     public static BeanA createBean(String arg1) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         return new BeanA(arg1);
     }
 }

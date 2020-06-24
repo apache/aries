@@ -18,6 +18,7 @@ import org.osgi.resource.Capability;
 public abstract class AbstractCapability implements Capability {
 	@Override
 	public boolean equals(Object o) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (o == this)
 			return true;
 		if (!(o instanceof Capability))

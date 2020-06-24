@@ -51,6 +51,7 @@ public class ConfigurationAdminMBeanTest extends AbstractIntegrationTest {
 	private ConfigurationAdminMBean mbean;
 	
 	@Inject
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 	InterfaceA managedServiceA; 
 	
 	@Inject
@@ -82,6 +83,7 @@ public class ConfigurationAdminMBeanTest extends AbstractIntegrationTest {
     @SuppressWarnings("unchecked")
     public void testMBeanInterface() throws Exception {
         // get bundles
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         Bundle a = getBundleByName("org.apache.aries.jmx.test.bundlea");
         
         // ManagedService operations

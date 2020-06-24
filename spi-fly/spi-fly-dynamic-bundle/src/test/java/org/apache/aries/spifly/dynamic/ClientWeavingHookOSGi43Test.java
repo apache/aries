@@ -96,6 +96,7 @@ public class ClientWeavingHookOSGi43Test  {
         Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
         Assert.assertEquals(1, wc.getDynamicImports().size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1814
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
         Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
@@ -242,6 +243,7 @@ public class ClientWeavingHookOSGi43Test  {
         EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(null).anyTimes();
         EasyMock.replay(consumerBundle);
 

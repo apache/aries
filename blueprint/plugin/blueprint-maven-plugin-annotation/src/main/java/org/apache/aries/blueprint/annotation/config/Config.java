@@ -31,12 +31,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Config {
     String pid();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1628
 
     String updatePolicy() default "reload";
+//IC see: https://issues.apache.org/jira/browse/ARIES-1661
 
     String placeholderPrefix() default "${";
 
     String placeholderSuffix() default "}";
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1628
     DefaultProperty[] defaults() default {};
 }

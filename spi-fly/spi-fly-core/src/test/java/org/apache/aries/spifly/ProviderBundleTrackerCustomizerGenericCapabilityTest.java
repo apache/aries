@@ -62,6 +62,7 @@ import aQute.bnd.header.Parameters;
 public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     @Test
     public void testAddingRemovedBundle() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
         EasyMock.replay(mediatorBundle);
@@ -118,6 +119,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         ServiceRegistration<?> sreg = EasyMock.createNiceMock(ServiceRegistration.class);
         EasyMock.replay(sreg);
 
@@ -145,6 +147,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         BundleRevision rev = EasyMock.createMock(BundleRevision.class);
         EasyMock.expect(rev.getWiring()).andReturn(bw).anyTimes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1985
         EasyMock.expect(rev.getTypes()).andReturn(0).anyTimes();
         EasyMock.replay(rev);
         Bundle implBundle = mockSPIBundle(implBC, headers, rev);
@@ -194,6 +197,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         assertSame(implBundle, bundles.iterator().next());
 
         Map<String, Object> attrs = activator.getCustomBundleAttributes("org.apache.aries.mytest.MySPI", implBundle);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         assertEquals(4, attrs.size());
         assertEquals("yeah", attrs.get("approval"));
     }
@@ -317,6 +321,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
         headers.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI; approval=yeah;" +
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
                 SpiFlyConstants.REGISTER_DIRECTIVE + "=\"\"");
         Bundle implBundle = mockSPIBundle(implBC, headers);
 
@@ -328,6 +333,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         assertSame(implBundle, bundles.iterator().next());
 
         Map<String, Object> attrs = activator.getCustomBundleAttributes("org.apache.aries.mytest.MySPI", implBundle);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
         assertEquals(attrs.toString(), 1, attrs.size());
         assertEquals("yeah", attrs.get("approval"));
     }
@@ -355,6 +361,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
         headers.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI2; approval=yeah; " +
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
                 SpiFlyConstants.REGISTER_DIRECTIVE + "=\"org.apache.aries.spifly.impl4.MySPIImpl4b\"");
         Bundle implBundle = mockSPIBundle4(implBC, headers);
 
@@ -593,6 +600,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     private Bundle mockSPIBundle(BundleContext implBC, Dictionary<String, String> headers) throws ClassNotFoundException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         return mockSPIBundle(implBC, headers, null);
     }
 
@@ -604,6 +612,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(implBundle.getSymbolicName()).andReturn("bsn").anyTimes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
 
         // List the resources found at META-INF/services in the test bundle
         URL dir = getClass().getResource("impl1/META-INF/services");
@@ -616,6 +625,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         Class<?> cls = getClass().getClassLoader().loadClass("org.apache.aries.spifly.impl1.MySPIImpl1");
         EasyMock.<Object>expect(implBundle.loadClass("org.apache.aries.spifly.impl1.MySPIImpl1")).andReturn(cls).anyTimes();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         if (rev != null)
             EasyMock.expect(implBundle.adapt(BundleRevision.class)).andReturn(rev).anyTimes();
 
@@ -628,6 +638,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
 
         implBC.registerService(EasyMock.anyString(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
                                EasyMock.anyObject(),
                                (Dictionary<String,?>)EasyMock.anyObject());
         EasyMock.expectLastCall().andAnswer(new IAnswer<ServiceRegistration<Object>>() {

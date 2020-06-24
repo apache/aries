@@ -31,6 +31,7 @@ public class TransactionToken
    private Coordination coordination;
    
    public TransactionToken(Transaction activeTransaction, Transaction suspendedTransaction,
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
            TransactionAttribute transactionAttribute)
    {
     this(activeTransaction, suspendedTransaction, transactionAttribute, false);
@@ -54,10 +55,12 @@ public class TransactionToken
    }
 
    public void setSuspendedTransaction(Transaction suspendedTransaction) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
        this.suspendedTransaction = suspendedTransaction;
    }
 
    public TransactionAttribute getTransactionAttribute() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-354
        return transactionAttribute;
    }
 
@@ -70,6 +73,7 @@ public class TransactionToken
    }
    
    public Coordination getCoordination() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1362
     return coordination;
    }
    

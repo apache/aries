@@ -46,6 +46,7 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
         List list = (List) container.getComponentInstance("springList");
         System.out.println(list);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         BeanCItf beanC = (BeanCItf) list.get(4);
         assertEquals(1, beanC.getInitialized());
 
@@ -63,6 +64,8 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
             baseOptions(),
             Helper.blueprintBundles(),
             // Blueprint spring
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring"),
             // Spring
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.aopalliance"),
@@ -74,6 +77,7 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-expression"),
             mvnBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.spring-tx"),
             // Axon namespace handler for testing
+//IC see: https://issues.apache.org/jira/browse/ARIES-1567
             mavenBundle("org.axonframework", "axon-core", "2.4.4"),
             // test bundle
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.testbundles", false),

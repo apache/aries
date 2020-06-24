@@ -72,6 +72,8 @@ public class PreferredProviderRepository implements org.apache.aries.subsystem.c
 	 */
 	private boolean isValid(Capability capability) {
 		for (BasicSubsystem parent : resource.getParents()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1416
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 			Resource provider = capability.getResource();
 			if (provider instanceof BundleRevision) {
 				// To keep the optimization below, wrap bundle revisions with

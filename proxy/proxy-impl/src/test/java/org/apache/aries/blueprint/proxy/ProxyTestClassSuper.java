@@ -45,6 +45,7 @@ public class ProxyTestClassSuper
   }
   
   public Object getTargetObject() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     return null;
   }
   

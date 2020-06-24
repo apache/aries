@@ -78,19 +78,23 @@ public class WarToWabConverterImpl implements WabConversion {
   private boolean signed;
 
   public WarToWabConverterImpl(InputStreamProvider warFile, String name, Properties properties) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
       this(warFile, name, new CaseInsensitiveMap(properties));
   }
   
   public WarToWabConverterImpl(InputStreamProvider warFile, String name, CaseInsensitiveMap properties) throws IOException {
     this.properties = properties;
     classPath = new ArrayList<String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-434
     importPackages = new TreeSet<String>();
     exemptPackages = new TreeSet<String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-114
     input = warFile;
     this.warName = name;
   }
     
   private void generateManifest() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-176
     if (wabManifest != null) {
         // WAB manifest is already generated
         return;
@@ -100,6 +104,7 @@ public class WarToWabConverterImpl implements WabConversion {
     try {
       jarInput = new JarInputStream(input.getInputStream());
       Manifest manifest = jarInput.getManifest();
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
       if (isBundle(manifest)) {
           wabManifest = updateBundleManifest(manifest);
       } else {
@@ -114,6 +119,7 @@ public class WarToWabConverterImpl implements WabConversion {
   }
 
   private void convert() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-176
     if (wab != null) {
         // WAB is already converted
         return;
@@ -129,15 +135,20 @@ public class WarToWabConverterImpl implements WabConversion {
     // Copy across all entries from the original jar
     int val;
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-114
       jarOutput = new JarOutputStream(output, wabManifest);
+//IC see: https://issues.apache.org/jira/browse/ARIES-114
+//IC see: https://issues.apache.org/jira/browse/ARIES-114
       jarInput = new JarInputStream(input.getInputStream());
       byte[] buffer = new byte[2048];
       while ((entry = jarInput.getNextEntry()) != null) {
         // skip signature files if war is signed
+//IC see: https://issues.apache.org/jira/browse/ARIES-208
         if (signed && isSignatureFile(entry.getName())) {
             continue;
         }
         jarOutput.putNextEntry(entry);        
+//IC see: https://issues.apache.org/jira/browse/ARIES-176
         while ((val = jarInput.read(buffer)) > 0) {
           jarOutput.write(buffer, 0, val);
         }
@@ -156,6 +167,7 @@ public class WarToWabConverterImpl implements WabConversion {
   }
 
   private boolean isBundle(Manifest manifest)  {
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
       if (manifest == null) {
           return false;          
       }
@@ -233,7 +245,9 @@ public class WarToWabConverterImpl implements WabConversion {
   }
 
   protected Manifest updateBundleManifest(Manifest manifest) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
       String webCPath = properties.get(WEB_CONTEXT_PATH);
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
       if (webCPath == null) {
           webCPath = manifest.getMainAttributes().getValue(WEB_CONTEXT_PATH);
       }
@@ -258,6 +272,7 @@ public class WarToWabConverterImpl implements WabConversion {
   
   private void checkParameter(String parameter) throws IOException {
       if (properties.containsKey(parameter)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
           throw new IOException("Cannot override " + parameter + " header when converting a bundle");
       }
   }
@@ -268,6 +283,7 @@ public class WarToWabConverterImpl implements WabConversion {
     if (manifest == null) {
       manifest = new Manifest();
       manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1");
+//IC see: https://issues.apache.org/jira/browse/ARIES-208
     } else {
       // remove digest attributes if was is signed
       signed = removeDigestAttributes(manifest);
@@ -279,7 +295,9 @@ public class WarToWabConverterImpl implements WabConversion {
     // Web-ContextPath
     //
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
     String webCPath = properties.get(WEB_CONTEXT_PATH);
+//IC see: https://issues.apache.org/jira/browse/ARIES-139
     if (webCPath == null) {
         throw new IOException(WEB_CONTEXT_PATH + " parameter is missing.");
     }
@@ -298,6 +316,7 @@ public class WarToWabConverterImpl implements WabConversion {
     // Bundle-ManifestVersion
     //
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
     String manifestVersion = properties.get(Constants.BUNDLE_MANIFESTVERSION);
     if (manifestVersion == null) {
         manifestVersion = manifest.getMainAttributes().getValue(Constants.BUNDLE_MANIFESTVERSION);
@@ -323,6 +342,7 @@ public class WarToWabConverterImpl implements WabConversion {
     
     // Get the list from the URL and add to classpath (removing duplicates)
     mergePathList(properties.get(Constants.BUNDLE_CLASSPATH), classpath, ",");
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
 
     // Get the existing list from the manifest file and add to classpath
     // (removing duplicates)
@@ -335,6 +355,7 @@ public class WarToWabConverterImpl implements WabConversion {
       classPathValue.append(entry);
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-135
     if (!classpath.isEmpty()) {
       properties.put(Constants.BUNDLE_CLASSPATH, classPathValue.toString().substring(1));
     }
@@ -373,6 +394,7 @@ public class WarToWabConverterImpl implements WabConversion {
     
     // Get the list from the URL and add to classpath (removing duplicates)
     mergePathList(properties.get(Constants.IMPORT_PACKAGE), packages, ",");
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
 
     // Get the existing list from the manifest file and add to classpath
     // (removing duplicates)
@@ -400,11 +422,13 @@ public class WarToWabConverterImpl implements WabConversion {
       importValues.append(",");
       importValues.append(entry);
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-135
     if (!packages.isEmpty()) {
       properties.put(Constants.IMPORT_PACKAGE, importValues.toString().substring(1));
     }
      
     // Take the properties map and add them to the manifest file
+//IC see: https://issues.apache.org/jira/browse/ARIES-155
     for (Map.Entry<String, String> entry : properties.entrySet()) {
         String key = entry.getKey();
         String value = entry.getValue();
@@ -431,6 +455,7 @@ public class WarToWabConverterImpl implements WabConversion {
   
   // pathlist = A "delim" delimitted list of path entries
   private static void mergePathList(String pathlist, ArrayList<String> paths, String delim) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-135
       if (pathlist != null) {
           List<String> tokens = parseDelimitedString(pathlist, delim, true);
           for (String token : tokens) {
@@ -493,6 +518,7 @@ public class WarToWabConverterImpl implements WabConversion {
   
   private static boolean removeDigestAttributes(Manifest manifest) {
       boolean foundDigestAttribute = false;
+//IC see: https://issues.apache.org/jira/browse/ARIES-208
       for (Map.Entry<String, Attributes> entry : manifest.getEntries().entrySet()) {
           Attributes attributes = entry.getValue();
           for (Object attributeName : attributes.keySet()) {    
@@ -522,6 +548,7 @@ public class WarToWabConverterImpl implements WabConversion {
   }
   
   public InputStream getWAB() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-176
     convert();
     return wab.getInputStream();
   }

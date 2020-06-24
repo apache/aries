@@ -17,6 +17,7 @@ import org.apache.aries.subsystem.ContentHandler;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 class CustomResources {
     private CustomResources() {
         // Only static methods

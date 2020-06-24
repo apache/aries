@@ -29,6 +29,7 @@ public class MyProduced {
     
     @Inject
     ServiceA serviceA;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1306
 
     public MyProduced(String message) {
         this.message = message;

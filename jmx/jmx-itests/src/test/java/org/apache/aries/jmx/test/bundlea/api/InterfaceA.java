@@ -30,6 +30,7 @@ public interface InterfaceA extends ManagedService {
 
     boolean invoke();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 	Dictionary getConfig();
     
 }

@@ -57,6 +57,7 @@ public class SubsystemTypeHeader extends AbstractClauseBasedHeader<SubsystemType
 	public static final SubsystemTypeHeader DEFAULT = new SubsystemTypeHeader(TYPE_APPLICATION);
 	
 	public SubsystemTypeHeader(Clause clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(Collections.singleton(clause));
 	}
 	
@@ -85,6 +86,7 @@ public class SubsystemTypeHeader extends AbstractClauseBasedHeader<SubsystemType
 	}
 	
 	public ProvisionPolicyDirective getProvisionPolicyDirective() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		return clauses.iterator().next().getProvisionPolicyDirective();
 	}
 	

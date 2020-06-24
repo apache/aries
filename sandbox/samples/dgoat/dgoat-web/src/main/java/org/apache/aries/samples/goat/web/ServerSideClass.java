@@ -56,6 +56,7 @@ public class ServerSideClass {
 	private Map<ModelInfoService, RelationshipInfoProvider.RelationshipInfoListener> rlisteners = new HashMap<ModelInfoService, RelationshipInfoProvider.RelationshipInfoListener>();
 
 	public ServerSideClass(ModelInfoService blah) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-476
 		this.blah = blah;
 	}
 	private class ComponentInfoListenerImpl implements
@@ -271,6 +272,7 @@ public class ServerSideClass {
 						String name = (String.valueOf(sr
 								.getProperty("displayName")));
 						
+//IC see: https://issues.apache.org/jira/browse/ARIES-476
 						Long bid = sr.getBundle().getBundleId();
 						
 						System.err.println("ZZZZ Name: " + name);

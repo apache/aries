@@ -78,6 +78,7 @@ public class RepositoryGenerator {
             }
             
             // if repository.xml already exists, no need to generate it
+//IC see: https://issues.apache.org/jira/browse/ARIES-910
             if (new File(obrPath + REPOSITORY_FILE).exists()) {
                 registerOBR();
                 generated = true;
@@ -105,6 +106,7 @@ public class RepositoryGenerator {
                 doc = RepositoryDescriptorGenerator.generateRepositoryDescriptor(
                         "Subsystem Repository description", infos);
                 FileOutputStream fout = new FileOutputStream(obrPath
+//IC see: https://issues.apache.org/jira/browse/ARIES-910
                         + REPOSITORY_FILE);
     
                 TransformerFactory.newInstance().newTransformer().transform(
@@ -136,6 +138,7 @@ public class RepositoryGenerator {
     
             try {
                 this.repositoryAdmin.addRepository(new File(obrPath
+//IC see: https://issues.apache.org/jira/browse/ARIES-910
                         + REPOSITORY_FILE).toURI().toURL());
             } catch (Exception e) {
                 LOGGER.warn("Exception occurred when register obr", e);
@@ -188,6 +191,8 @@ public class RepositoryGenerator {
         
 
         Object type = props.get(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 
         return new FelixResourceAdapter(res);
     }

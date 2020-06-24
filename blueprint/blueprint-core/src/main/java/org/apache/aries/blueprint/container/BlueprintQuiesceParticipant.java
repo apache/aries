@@ -66,6 +66,7 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant {
             }
 
             //If we are quiescing, then we need to quiesce this threadpool!
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
             shutdownMe |= b.equals(ctx.getBundle());
         }
 
@@ -100,6 +101,7 @@ public class BlueprintQuiesceParticipant implements QuiesceParticipant {
                 Set<String> names = repository.getNames();
                 container.quiesce();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-634
                 QuiesceDelegatingCallback qdcbk = new QuiesceDelegatingCallback(callback, bundleToQuiesce);
                 for (String name : names) {
                     Recipe recipe = repository.getRecipe(name);

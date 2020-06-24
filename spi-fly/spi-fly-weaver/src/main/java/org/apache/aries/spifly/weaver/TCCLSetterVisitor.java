@@ -64,6 +64,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
     private boolean woven = false;
 
     public TCCLSetterVisitor(ClassVisitor cv, String className, Set<WeavingData> weavingData) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1860
         super(Opcodes.ASM7, cv);
         this.targetClass = Type.getType("L" + className.replace('.', '/') + ";");
         this.weavingData = weavingData;
@@ -98,6 +99,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
 
              methodNames.add(methodName);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
              if (ServiceLoader.class.getName().equals(wd.getClassName())) {
                  continue;
              }
@@ -155,6 +157,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
         private int lastVar;
 
         public TCCLSetterMethodVisitor(MethodVisitor mv, int access, String name, String descriptor) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1860
             super(Opcodes.ASM7, mv, access, name, descriptor);
         }
 
@@ -184,6 +187,8 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
          */
         @Override
         public void visitVarInsn(int opcode, int var) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1321
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
             lastLDCType = null;
             this.lastOpcode = opcode;
             this.lastVar = var;
@@ -198,6 +203,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
          */
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
             if (opcode != INVOKESTATIC) {
                 super.visitMethodInsn(opcode, owner, name, desc, itf);
                 return;
@@ -257,6 +263,7 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
 
             //Call the original instruction
             super.visitMethodInsn(opcode, owner, name, desc, itf);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1437
 
             //If no exception then go to the finally (finally blocks are a catch block with a jump)
             Label afterCatch = newLabel();

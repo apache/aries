@@ -29,6 +29,7 @@ public class RequireBundleRequirement extends AbstractRequirement {
 	private final Resource resource;
 	
 	public RequireBundleRequirement(
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			RequireBundleHeader.Clause clause, Resource resource) {
 		directives = new HashMap<String, String>(clause.getDirectives().size() + 1);
 		for (Directive directive : clause.getDirectives())

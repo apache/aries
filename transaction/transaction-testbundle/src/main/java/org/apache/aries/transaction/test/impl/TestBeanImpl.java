@@ -28,6 +28,7 @@ public class TestBeanImpl implements TestBean {
 
     @Override
     public void insertRow(String name, int value, Exception e) throws SQLException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         connector.insertRow(name, value);
         if (e instanceof SQLException) { 
             throw (SQLException) e;
@@ -48,6 +49,7 @@ public class TestBeanImpl implements TestBean {
 
     @Override
     public void throwRuntimeException() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
         throw new RuntimeException("Test exception"); // NOSONAR
     }
 
@@ -56,6 +58,7 @@ public class TestBeanImpl implements TestBean {
     }
     
     public void setConnector(Connector connector) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         this.connector = connector;
     }
 

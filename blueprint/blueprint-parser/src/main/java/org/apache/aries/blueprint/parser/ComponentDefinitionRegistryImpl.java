@@ -57,6 +57,7 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     }
 
     public void reset() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-429
         components.clear();
         typeConverters.clear();
         interceptors.clear();
@@ -80,6 +81,7 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
             // TODO: should we generate a unique name?
             throw new IllegalArgumentException("Component must have a valid id");
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-4
         if (id.startsWith("blueprint") && !(component instanceof PassThroughMetadataImpl)) {
             // TODO: log a warning
         }
@@ -91,6 +93,7 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     }
 
     public void removeComponentDefinition(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-47
         ComponentMetadata removed = components.remove(name);
         if(removed!=null){
             interceptors.remove(removed);
@@ -109,6 +112,7 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     }
 
     public void registerInterceptorWithComponent(ComponentMetadata component, Interceptor interceptor) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-47
         if(interceptor!=null){
             List<Interceptor> componentInterceptorList = interceptors.get(component);
             if(componentInterceptorList==null){
@@ -128,6 +132,7 @@ public class ComponentDefinitionRegistryImpl implements ComponentDefinitionRegis
     }
 
     public List<Interceptor> getInterceptors(ComponentMetadata component) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-249
         List<Interceptor> result = interceptors.get(component);
         return (result == null) ? Collections.<Interceptor>emptyList() : result;
     }

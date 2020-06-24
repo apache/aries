@@ -79,6 +79,7 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
         assertNotNull(listener.getReference());
         assertEquals("Hello world!", a.hello("world"));
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         Hashtable<String, Object> props = new Hashtable<String, Object>();
         props.put(Constants.SERVICE_RANKING, Integer.valueOf(1));
         ServiceRegistration reg2 = bundleContext.registerService(InterfaceA.class.getName(), new InterfaceA() {
@@ -88,6 +89,7 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
         }, props);
 
         waitForAsynchronousHandling();
+//IC see: https://issues.apache.org/jira/browse/ARIES-905
 
         assertNotNull(listener.getA());
         assertNotNull(listener.getReference());
@@ -101,6 +103,7 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
 
         reg2.unregister();
         waitForAsynchronousHandling();
+//IC see: https://issues.apache.org/jira/browse/ARIES-905
 
         assertNull(listener.getA());
         assertNull(listener.getReference());
@@ -114,6 +117,7 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void testListReferences() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
         assertNotNull(blueprintContainer);
 
@@ -121,6 +125,7 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
         assertNull(listener.getA());
         assertNull(listener.getReference());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         List<?> refs = (List<?>) blueprintContainer.getComponentInstance("ref-list");
         assertNotNull(refs);
         assertTrue(refs.isEmpty());
@@ -132,6 +137,7 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
         };
         bundleContext.registerService(InterfaceA.class.getName(), testService, null);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-905
         waitForAsynchronousHandling();
         assertNotNull(listener.getA());
         assertNotNull(listener.getReference());
@@ -145,17 +151,21 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void testDefaultReference() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
       BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
       assertNotNull(blueprintContainer);
+//IC see: https://issues.apache.org/jira/browse/ARIES-577
 
       Runnable refRunnable = (Runnable) blueprintContainer.getComponentInstance("refWithDefault");
       DefaultRunnable defaultRunnable = (DefaultRunnable) blueprintContainer.getComponentInstance("defaultRunnable");
       refRunnable.run();
+//IC see: https://issues.apache.org/jira/browse/ARIES-905
       waitForAsynchronousHandling();
       Thread.sleep(2000);
       
       assertEquals("The default runnable was not called", 1, defaultRunnable.getCount());
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
       final AtomicBoolean called = new AtomicBoolean(false);
       Runnable mockService = new Runnable() {
         public void run() {
@@ -171,9 +181,11 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
       
       assertEquals("The default runnable was called when a service was bound", 1, defaultRunnable.getCount());
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
       Assert.assertTrue("Service should have been called", called.get());
       
       reg.unregister();
+//IC see: https://issues.apache.org/jira/browse/ARIES-905
       waitForAsynchronousHandling();
       Thread.sleep(2000);
 
@@ -184,8 +196,10 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
     
     @Test
     public void testReferencesCallableInDestroy() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-612
       bundleContext.registerService(Runnable.class.getName(), new Thread(), null);
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
       BlueprintContainer blueprintContainer = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.sample");
       assertNotNull(blueprintContainer);
       
@@ -213,12 +227,14 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
 
     private void waitForAsynchronousHandling() throws InterruptedException {
       // Since service events are handled asynchronously in AbstractServiceReferenceRecipe, pause
+//IC see: https://issues.apache.org/jira/browse/ARIES-905
        Thread.sleep(200);
       
    }
 
    @Configuration
     public static Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         return new Option[] {
                 CoreOptions.junitBundles(),
                 Helper.blueprintBundles(),

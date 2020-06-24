@@ -29,6 +29,7 @@ public class AnnotatedPojo {
 
     @Transactional(TxType.SUPPORTS)
     protected int checkValue(String key) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         return 0;
     }
 

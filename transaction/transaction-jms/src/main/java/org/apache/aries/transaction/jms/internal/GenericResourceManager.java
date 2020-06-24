@@ -68,6 +68,7 @@ public class GenericResourceManager {
     }
 
     public String getPassword() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         return password;
     }
 
@@ -132,6 +133,7 @@ public class GenericResourceManager {
 
                     public NamedXAResource getNamedXAResource() throws SystemException {
                         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
                             final XAConnection xaConnection;
                             if (rm.getUserName() != null && rm.getPassword() != null) {
                                 xaConnection = connFactory.createXAConnection(rm.getUserName(), rm.getPassword());

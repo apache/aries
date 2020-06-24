@@ -56,6 +56,7 @@ public final class ServiceHelper {
 
     public static Object getService(BundleContext ctx, OsgiName lookupName, String id,
                                     boolean dynamicRebind, Map<String, Object> env, boolean requireProxy) throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-250
         String interfaceName = lookupName.getInterface();
         String filter = lookupName.getFilter();
         String serviceName = lookupName.getServiceName();
@@ -166,9 +167,11 @@ public final class ServiceHelper {
         // to proxy, we try those classes again but instead pull the Class objects off
         // the service rather than from the bundle exporting that service.
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
         Bundle serviceProviderBundle = pair.ref.getBundle();
         Bundle owningBundle = ctx.getBundle();
         ProxyManager proxyManager = Activator.getProxyManager();
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
 
         Collection<String> classesNotFound = new ArrayList<>();
         for (String interfaceName : interfaces) {
@@ -178,6 +181,7 @@ public final class ServiceHelper {
                     clazz.add(potentialClass);
                 }
             } catch (ClassNotFoundException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1095
                 classesNotFound.add(interfaceName);
             }
         }
@@ -186,6 +190,7 @@ public final class ServiceHelper {
             Class<?> ifacesOnService[] = ctx.getService(pair.ref).getClass().getInterfaces();
             for (String interfaceName : classesNotFound) {
                 Class<?> thisClass = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1095
                 for (Class<?> c : getAllInterfaces(ifacesOnService)) {
                     if (c.getName().equals(interfaceName)) {
                         thisClass = c;
@@ -201,10 +206,12 @@ public final class ServiceHelper {
         }
 
         if (clazz.isEmpty()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
             throw new IllegalArgumentException(Arrays.asList(interfaces).toString());
         }
 
         Callable<Object> ih = new JNDIServiceDamper(ctx, interface1, filter, pair, dynamicRebind, timeout);
+//IC see: https://issues.apache.org/jira/browse/ARIES-508
 
         // The ClassLoader needs to be able to load the service interface
         // classes so it needs to be
@@ -212,10 +219,12 @@ public final class ServiceHelper {
         // on this adapter.
 
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
             return proxyManager.createDelegatingProxy(serviceProviderBundle, clazz, ih, null);
         } catch (UnableToProxyException e) {
             throw new IllegalArgumentException(e);
         } catch (RuntimeException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
             throw new IllegalArgumentException("Unable to create a proxy for " + pair.ref + ".", e);
         }
     }
@@ -233,6 +242,7 @@ public final class ServiceHelper {
 
                 for (ServiceReference<?> ref : refs) {
                     Object service = ctx.getService(ref);
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
 
                     if (service != null) {
                         p = new ServicePair();
@@ -261,6 +271,7 @@ public final class ServiceHelper {
             refs = ctx.getServiceReferences(interface1, filter);
 
             if (refs == null || refs.length == 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
                 refs = ctx.getServiceReferences((String) null, "(" + JNDIConstants.JNDI_SERVICENAME + "="
                         + serviceName + ')');
             }
@@ -278,6 +289,7 @@ public final class ServiceHelper {
 
     public static Object getService(BundleContext ctx, ServiceReference<?> ref) {
         Object service = ctx.getService(ref);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
         if (service == null) {
             return null;
         }
@@ -399,10 +411,12 @@ public final class ServiceHelper {
             interfaceName = i;
             filter = f;
             dynamic = d;
+//IC see: https://issues.apache.org/jira/browse/ARIES-508
             rebindTimeout = timeout;
         }
 
         public Object call() throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-311
             if (pair == null || pair.ref.getBundle() == null) {
                 if (dynamic) {
                     pair = findService(ctx, interfaceName, filter);
@@ -424,6 +438,7 @@ public final class ServiceHelper {
             if (pair == null) {
                 throw new ServiceException(interfaceName, ServiceException.UNREGISTERED);
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-356
             return pair.service;
         }
     }

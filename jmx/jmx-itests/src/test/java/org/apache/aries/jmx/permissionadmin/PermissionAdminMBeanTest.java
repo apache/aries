@@ -40,6 +40,7 @@ public class PermissionAdminMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         return options(
             jmxRuntime(),
             bundlea()

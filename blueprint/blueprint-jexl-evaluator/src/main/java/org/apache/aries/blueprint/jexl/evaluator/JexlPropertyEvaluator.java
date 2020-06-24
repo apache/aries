@@ -31,6 +31,7 @@ public class JexlPropertyEvaluator implements PropertyEvaluatorExt {
 
     public Object evaluate(String expression, Map<String, Object> properties) {
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
             JexlEngine engine = new JexlEngine();
             MapContext context = new MapContext(properties);
             Expression exp = engine.createExpression(expression);

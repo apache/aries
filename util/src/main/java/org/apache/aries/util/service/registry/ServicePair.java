@@ -48,6 +48,8 @@ public class ServicePair<T>
   public T get()
   {
     if (serviceObject == null && ref.getBundle() != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-649
+//IC see: https://issues.apache.org/jira/browse/ARIES-647
       serviceObject = AccessController.doPrivileged(new PrivilegedAction<T>() {
           public T run()
           {

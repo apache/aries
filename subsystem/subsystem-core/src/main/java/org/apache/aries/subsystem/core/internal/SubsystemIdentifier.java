@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.core.internal;
 public class SubsystemIdentifier {
 	private static long lastId;
 	
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	synchronized static long getLastId() {
 		return lastId;
 	}

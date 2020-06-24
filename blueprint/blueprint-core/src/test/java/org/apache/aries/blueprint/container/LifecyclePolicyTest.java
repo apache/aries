@@ -123,6 +123,7 @@ public class LifecyclePolicyTest {
         EasyMock.expect(namespaceHandlerSet.getNamespaces()).andReturn(namespaces).anyTimes();
         namespaceHandlerSet.addListener(container);
         EasyMock.expectLastCall();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1138
         EasyMock.expect(bundleContext.getProperty(BlueprintConstants.XML_VALIDATION_PROPERTY))
                 .andReturn(null);
         Properties props = new Properties();

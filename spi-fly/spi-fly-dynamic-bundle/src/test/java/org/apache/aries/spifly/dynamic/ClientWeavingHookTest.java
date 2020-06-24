@@ -157,6 +157,7 @@ public class ClientWeavingHookTest {
 
     @Test
     public void testBasicServiceLoaderUsage2() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1801
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
         consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
 
@@ -193,6 +194,7 @@ public class ClientWeavingHookTest {
 
     @Test
     public void testBasicServiceLoaderUsage3() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
         consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
 
@@ -255,6 +257,9 @@ public class ClientWeavingHookTest {
         Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
         Assert.assertEquals(1, wc.getDynamicImports().size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1814
+//IC see: https://issues.apache.org/jira/browse/ARIES-1814
+//IC see: https://issues.apache.org/jira/browse/ARIES-1814
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
         Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
@@ -552,6 +557,7 @@ public class ClientWeavingHookTest {
         testConsumerBundleWeaving(consumerBundle1, wh, Collections.singleton("impl4"), "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
         testConsumerBundleWeaving(consumerBundle2, wh, Collections.singleton("olleh"), thisJVMsDBF);
         testConsumerBundleWeaving(consumerBundle3, wh, Collections.<String>emptySet(), thisJVMsDBF);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1321
         testConsumerBundleWeavingNonConst(consumerBundle1, wh, Collections.singleton("impl4"), "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory");
         testConsumerBundleWeavingNonConst(consumerBundle2, wh, Collections.singleton("olleh"), thisJVMsDBF);
         testConsumerBundleWeavingNonConst(consumerBundle3, wh, Collections.<String>emptySet(), thisJVMsDBF);
@@ -582,6 +588,7 @@ public class ClientWeavingHookTest {
 
     private void testConsumerBundleWeavingNonConst(Bundle consumerBundle, WeavingHook wh, Set<String> testClientResult, String jaxpClientResult) throws Exception {
         // Weave the TestClient class.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1321
         URL clsUrl = getClass().getResource("TestClient.class");
         WovenClass wc = new MyWovenClass(clsUrl, TestClient.class.getName(), consumerBundle);
         wh.weave(wc);
@@ -612,6 +619,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+//IC see: https://issues.apache.org/jira/browse/ARIES-936
         Assert.assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
     }
 
@@ -661,6 +669,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+//IC see: https://issues.apache.org/jira/browse/ARIES-936
         Assert.assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
     }
 
@@ -816,6 +825,7 @@ public class ClientWeavingHookTest {
         EasyMock.expect(consumerBundle.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(consumerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(consumerBundle.getBundleId()).andReturn(Long.MAX_VALUE).anyTimes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         EasyMock.expect(consumerBundle.adapt(BundleRevision.class)).andReturn(null).anyTimes();
         EasyMock.replay(consumerBundle);
 

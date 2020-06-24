@@ -43,7 +43,10 @@ class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
   private boolean hasSVUID;
 
   public SyntheticSerialVerUIDAdder(WovenProxyAdapter cv) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
     super(ASM8, cv);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
     wpa = cv;
   }
 
@@ -52,6 +55,7 @@ class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
 
   @Override
   public void visit(
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
       final int version,
       final int access,
       final String name,

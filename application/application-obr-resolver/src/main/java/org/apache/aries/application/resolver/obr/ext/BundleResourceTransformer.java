@@ -21,6 +21,7 @@ package org.apache.aries.application.resolver.obr.ext;
 
 public interface BundleResourceTransformer {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   BundleResource transform (BundleResource b);
 }
 

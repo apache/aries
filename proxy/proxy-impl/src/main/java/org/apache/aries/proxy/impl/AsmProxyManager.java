@@ -47,6 +47,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
   static final ClassLoader bootClassLoader = new ClassLoader(Object.class.getClassLoader()) { /* boot class loader */};
 	
   public Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException
   {
     Object proxyObject = null;
@@ -61,6 +62,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
     // if we find any class that isn't an interface we need to use
     // the subclass proxy
     Set<Class<?>> notInterfaces = new HashSet<Class<?>>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     Set<Class<?>> interfaces = new HashSet<Class<?>>();
     
     for (Class<?> clazz : classes) {
@@ -82,6 +84,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
       // if we need to use the subclass proxy then we need to find
       // the most specific class
       Class<?> classToProxy = getLowestSubclass(notInterfaces);
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       if(WovenProxy.class.isAssignableFrom(classToProxy)) {
         
         if(isConcrete(classToProxy) && implementsAll(classToProxy, interfaces)) {
@@ -104,6 +107,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
                 " and is final. This means that we cannot create a proxy for both the class and all of the requested interfaces.");
           }
           proxyObject = InterfaceProxyGenerator.getProxyInstance(clientBundle, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
               classToProxy, interfaces, dispatcher, listener);
         }
       } 
@@ -113,6 +117,8 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
         // If we could generate a proper constructor this would not be necessary, but since we have to rely
         // on the generated serialization constructor to bypass the JVM verifier, we don't have much choice
         ClassLoader classLoader = classToProxy.getClassLoader();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1238
+//IC see: https://issues.apache.org/jira/browse/ARIES-1216
         if (classLoader == null) {
         	classLoader = bootClassLoader;
         }
@@ -159,6 +165,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
            // Ignore
          }
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1546
         try {
           // use bootClassLoader as last fallback
           return bootClassLoader.loadClass(name);
@@ -251,6 +258,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
   @Override
   protected boolean isProxyClass(Class<?> clazz)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     return WovenProxy.class.isAssignableFrom(clazz) || ProxySubclassGenerator.isProxySubclass(clazz) || Proxy.isProxyClass(clazz);
   }
 

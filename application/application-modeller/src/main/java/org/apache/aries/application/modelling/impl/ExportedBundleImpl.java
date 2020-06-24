@@ -55,6 +55,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
     logger.debug(LOG_ENTRY, "ExportedBundleImpl", attrs);
     String symbolicName = attrs.getValue(Constants.BUNDLE_SYMBOLICNAME);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map<String,Map<String, String>> map = ManifestHeaderProcessor.parseImportString(symbolicName);
     
     //This should have one entry, which is keyed on the symbolicName
@@ -66,6 +67,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
       throw iax;
     }
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map.Entry<String, Map<String, String>> entry =  map.entrySet().iterator().next();
     
     symbolicName = entry.getKey();
@@ -99,6 +101,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
     
     String fragmentHost = attrs.getValue(Constants.FRAGMENT_HOST);
     if (fragmentHost != null) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
       _fragHost = ModellingHelperImpl.buildFragmentHost_(fragmentHost);
       _attributes.put(Constants.FRAGMENT_HOST, fragmentHost);
     } else { 

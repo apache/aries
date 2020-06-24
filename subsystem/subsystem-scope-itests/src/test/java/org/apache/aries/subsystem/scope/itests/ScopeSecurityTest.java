@@ -166,6 +166,7 @@ public class ScopeSecurityTest extends AbstractTest {
         
         // remove child scope
         su = scope.newScopeUpdate();
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
         Collection<ScopeUpdate> scopes = su.getChildren();
         
         // obtain child scope admin from service registry
@@ -217,6 +218,8 @@ public class ScopeSecurityTest extends AbstractTest {
             
         }
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
         ScopeUpdate su = scope.newScopeUpdate();
         
         ScopeUpdate childScopeUpdate = su.newChild("scope_test1");
@@ -230,6 +233,7 @@ public class ScopeSecurityTest extends AbstractTest {
                 "(&" + 
                   "(osgi.service=org.apache.aries.subsystem.example.helloIsolation.HelloIsolation)" +
                 ")");
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
         List<SharePolicy> packagePolicies = sharePolicies.get(BundleRevision.PACKAGE_NAMESPACE);
         if (packagePolicies == null) {
             packagePolicies = new ArrayList<SharePolicy>();
@@ -244,6 +248,7 @@ public class ScopeSecurityTest extends AbstractTest {
         servicePolicies.add(new SharePolicy(SharePolicy.TYPE_EXPORT, "scope.share.service", filter2));
 
         // build up installInfo object for the scope
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
         InstallInfo info1 = new InstallInfo("helloIsolation", new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolation/0.4-SNAPSHOT"));
         InstallInfo info2 = new InstallInfo("helloIsolationRef", new URL("mvn:org.apache.aries.subsystem.example/org.apache.aries.subsystem.example.helloIsolationRef/0.4-SNAPSHOT"));
 
@@ -282,6 +287,8 @@ public class ScopeSecurityTest extends AbstractTest {
         // test bundle service find hook
         //ServiceReference sr = bundleContext.getServiceReference(HelloIsolation.class.getName());
         //assertNull("sr should be null", sr);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
         Collection<Scope> children = scope.getChildren();
         assertEquals(1, children.size());
         
@@ -316,7 +323,10 @@ public class ScopeSecurityTest extends AbstractTest {
         bundleContext.installBundle("org.apache.felix.fileinstall-rootScope", url.openStream());
         
         // remove child scope
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
         su = scope.newScopeUpdate();
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
         Collection<ScopeUpdate> scopes = su.getChildren();
         
         // obtain child scope admin from service registry
@@ -343,6 +353,7 @@ public class ScopeSecurityTest extends AbstractTest {
    
     @Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
         return options(
         	baseOptions(),
 
@@ -355,6 +366,7 @@ public class ScopeSecurityTest extends AbstractTest {
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.api"),
             mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.scope.impl")
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 
             // uncomment the following line if you want to turn on security.  the policy file can be found in src/test/resources dir and you want to update the value of -Djava.security.policy to 
             // the exact location of the policy file.

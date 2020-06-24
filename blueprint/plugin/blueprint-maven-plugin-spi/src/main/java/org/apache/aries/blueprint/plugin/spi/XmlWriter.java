@@ -30,5 +30,6 @@ public interface XmlWriter {
      * @param xmlStreamWriter xml writer provided by plugin
      * @throws XMLStreamException when exception occurred during writing XML
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
     void write(XMLStreamWriter xmlStreamWriter) throws XMLStreamException;
 }

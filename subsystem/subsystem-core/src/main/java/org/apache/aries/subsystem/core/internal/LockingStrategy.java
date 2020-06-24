@@ -20,6 +20,7 @@ public class LockingStrategy {
 
 	public LockingStrategy(String tryLockTime) {
 		int value = 600; // ten mins by default
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 		if (tryLockTime != null) {
 			try {
 				value = Integer.parseInt(tryLockTime);
@@ -89,6 +90,7 @@ public class LockingStrategy {
 					if (!subsystem.stateChangeLock().tryLock()) {
 						unlock(locked);
 						locked.clear();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 						if (!condition.await(TRY_LOCK_TIME, TimeUnit.SECONDS)) {
 							throw new SubsystemException("Unable to acquire the state change lock in time: " + subsystem);
 						}

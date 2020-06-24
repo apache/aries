@@ -36,6 +36,7 @@ public interface ContextEnricher {
      * @param blueprintWriter callback used to write custom XML
      */
     void addBlueprintContentWriter(String id, XmlWriter blueprintWriter);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
 
     /**
      * @return plugin configuration from pom.xml

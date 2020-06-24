@@ -11,6 +11,7 @@ import org.osgi.service.cm.ManagedService;
 public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
         Dictionary<String, Object> blahProps = new Hashtable<String, Object>();
         blahProps.put(Constants.SERVICE_PID, "com.blah.Blah");
         context.registerService(ManagedService.class, new BlahManagedService(context), blahProps);

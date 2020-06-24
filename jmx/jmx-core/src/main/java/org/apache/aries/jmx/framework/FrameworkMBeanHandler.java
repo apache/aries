@@ -53,6 +53,7 @@ public class FrameworkMBeanHandler implements MBeanHandler {
      * @param agentContext agent context
      */
     public FrameworkMBeanHandler(JMXAgentContext agentContext) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         this.agentContext = agentContext;
         this.context = agentContext.getBundleContext();
         this.logger = agentContext.getLogger();
@@ -80,6 +81,7 @@ public class FrameworkMBeanHandler implements MBeanHandler {
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Not compliant MBean", e);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         agentContext.registerMBean(this);
     }
 

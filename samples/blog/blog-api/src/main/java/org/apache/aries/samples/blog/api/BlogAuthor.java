@@ -52,5 +52,6 @@ public interface BlogAuthor
    * 
    * @return a list of Blog Entries
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
   List <? extends BlogEntry> getEntries();
 }

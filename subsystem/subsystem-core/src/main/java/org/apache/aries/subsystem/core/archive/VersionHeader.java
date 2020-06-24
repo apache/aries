@@ -19,6 +19,7 @@ public abstract class VersionHeader extends AbstractHeader {
 	protected final Version version;
 	
 	public VersionHeader(String name, String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(name, Version.parseVersion(value));
 	}
 	

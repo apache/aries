@@ -75,6 +75,7 @@ public class TypeInferenceTest {
 
     @Test
     public void testParameterWithNullCollections() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1816
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
         BeanRecipe recipe = new BeanRecipe("sessionDef", container, FactoryWithList.class, false, false, false);
         recipe.setArguments(Collections.singletonList(null));
@@ -95,6 +96,7 @@ public class TypeInferenceTest {
     public static class FactoryWithList {
 
         public static String init(List<Integer> ints) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1816
             return "Hello!";
         }
 

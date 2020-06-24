@@ -36,6 +36,7 @@ import org.osgi.framework.wiring.BundleWiring;
 public abstract class AbstractProxyManager implements ProxyManager
 {
   public final Object createDelegatingProxy(Bundle clientBundle, Collection<Class<?>> classes,
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       Callable<Object> dispatcher, Object template) 
     throws UnableToProxyException
   {
@@ -62,6 +63,7 @@ public abstract class AbstractProxyManager implements ProxyManager
       throws UnableToProxyException 
   {
     if(dispatcher == null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       throw new NullPointerException("You must specify a dipatcher");
     
     if (template instanceof WovenProxy) {
@@ -119,7 +121,9 @@ public abstract class AbstractProxyManager implements ProxyManager
 
   protected synchronized ClassLoader getClassLoader(final Bundle clientBundle, Collection<Class<?>> classes) 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-767
     if (clientBundle != null && clientBundle.getState() == Bundle.UNINSTALLED) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       throw new IllegalStateException(format("The bundle %s at version %s with id %d has been uninstalled.", 
                                              clientBundle.getSymbolicName(), clientBundle.getVersion(), clientBundle.getBundleId()));
     }
@@ -129,6 +133,7 @@ public abstract class AbstractProxyManager implements ProxyManager
     if (classes.size() == 1) cl = classes.iterator().next().getClassLoader();
 
     if (cl == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
         cl = getWiringClassloader(clientBundle);
     }
     
@@ -141,6 +146,7 @@ public abstract class AbstractProxyManager implements ProxyManager
   }
 
   private Object duplicateProxy(Collection<Class<?>> classes, Callable<Object> dispatcher, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       Object template, InvocationListener listener)
   {
     Object proxyObject = null;

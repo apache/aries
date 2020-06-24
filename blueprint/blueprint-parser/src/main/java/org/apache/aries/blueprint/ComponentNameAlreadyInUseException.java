@@ -21,6 +21,7 @@ public class ComponentNameAlreadyInUseException extends RuntimeException {
   private String conflictingName;
 
   public ComponentNameAlreadyInUseException(String conflictingName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
       this.conflictingName = conflictingName;
   }
   

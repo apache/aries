@@ -55,6 +55,7 @@ public class CompendiumHandlerTest {
         Object service = new Object();
 
         ServiceReference reference = mock(ServiceReference.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         when(reference.getProperty(Constants.SERVICE_ID)).thenReturn(1L);
         when(reference.getProperty(Constants.OBJECTCLASS)).thenReturn("the class");
 
@@ -87,6 +88,7 @@ public class CompendiumHandlerTest {
 
         Object service = new Object();
         ServiceReference reference = mock(ServiceReference.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         when(reference.getProperty(Constants.SERVICE_ID)).thenReturn(1L);
         when(reference.getProperty(Constants.OBJECTCLASS)).thenReturn("the class");
 
@@ -109,6 +111,8 @@ public class CompendiumHandlerTest {
         verify(bundleContext).ungetService(reference);
         //unregister is invoked on context
         verify(agentContext).unregisterMBean(target);
+//IC see: https://issues.apache.org/jira/browse/ARIES-663
+//IC see: https://issues.apache.org/jira/browse/ARIES-782
 
     }
 

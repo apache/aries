@@ -36,6 +36,7 @@ public class DependsOnAttributeResolver implements BeanAnnotationHandler<Depends
     public void handleBeanAnnotation(AnnotatedElement annotatedElement, String id, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         DependsOn annotation = annotatedElement.getAnnotation(DependsOn.class);
         String[] value = annotation.value();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         if (value.length == 0) {
             return;
         }

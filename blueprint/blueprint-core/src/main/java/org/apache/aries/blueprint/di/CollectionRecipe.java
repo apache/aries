@@ -42,6 +42,8 @@ public class CollectionRecipe extends AbstractRecipe {
 
     public CollectionRecipe(String name, Class<?> collectionType, String valueType) {
         super(name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         if (collectionType == null) throw new NullPointerException("type is null");
         this.collectionTypeClass = collectionType;
         this.defaultValueType = (valueType != null) ? valueType : Object.class.getName();
@@ -60,6 +62,8 @@ public class CollectionRecipe extends AbstractRecipe {
 
     protected Object internalCreate() throws ComponentDefinitionException {
         Class type = getCollection(collectionTypeClass);
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
 
         if (!ReflectionUtils.hasDefaultConstructor(type)) {
             throw new ComponentDefinitionException("Type does not have a default constructor " + type.getName());
@@ -77,6 +81,8 @@ public class CollectionRecipe extends AbstractRecipe {
         }
         Collection instance = (Collection) o;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         ReifiedType defaultConversionType = loadType(defaultValueType);
         Type conversionType = null;
         for (Recipe recipe : list) {

@@ -52,6 +52,7 @@ public class EditAuthorForm extends FormServlet
   {
     String pageTitle = "Create Author";
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
     BloggingService service = JNDIHelper.getBloggingService();
     String email = getEmail(req);
     
@@ -72,6 +73,7 @@ public class EditAuthorForm extends FormServlet
     if ("".equals(email)) {
       email = req.getParameter("email");
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-236
     if(FormatChecker.isValidEmail(email))
     	return email;
     else 
@@ -87,6 +89,7 @@ public class EditAuthorForm extends FormServlet
     String dob = retrieveOrEmpty(req, "dob");
     String email = getEmail(req);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
     BloggingService service = JNDIHelper.getBloggingService();
     
     if (email != null && !!!"".equals(email)) {

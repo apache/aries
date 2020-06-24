@@ -65,6 +65,7 @@ final class Introspector {
                 fieldsByName.put(field.getName(), field);
 
                 // ...and if it meets the annotation requirement, add the field name to the set of accepted field names
+//IC see: https://issues.apache.org/jira/browse/ARIES-1481
                 if (hasAnyRequiredAnnotation(field, requiredAnnotations)) {
                     acceptedFieldNames.add(field.getName());
                 }
@@ -74,8 +75,10 @@ final class Introspector {
 
         // Add all accepted fields to acceptedFields
         List<Field> acceptedFields = Lists.newArrayList();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1481
         for (String fieldName : acceptedFieldNames) {
             Collection<Field> fields = fieldsByName.get(fieldName);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1481
             validateOnlyOneFieldWithName(fieldName, fields);
             acceptedFields.addAll(fields);
         }
@@ -103,6 +106,7 @@ final class Introspector {
     @SafeVarargs
     private final boolean hasAnyRequiredAnnotation(Field field, Class<? extends Annotation>... requiredAnnotations) {
         if (requiredAnnotations.length == 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1481
             throw new IllegalArgumentException("Must specify at least one annotation");
         }
         for (Class<? extends Annotation> requiredAnnotation : requiredAnnotations) {
@@ -117,6 +121,7 @@ final class Introspector {
     final List<Method> methodsWith(Class<? extends Annotation>... annotationClasses) {
         List<Method> methods = new ArrayList<>();
         for (Method method : originalClazz.getMethods()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1562
             for(Class<? extends Annotation> annotationClass : annotationClasses) {
                 if (method.getAnnotation(annotationClass) != null) {
                     methods.add(method);

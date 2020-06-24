@@ -24,6 +24,7 @@ public class HelloWorldImpl implements HelloWorld {
   private String msg = "hello world";
   
   public void setMessage(String msg) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-398
     this.msg = msg;
   }
   

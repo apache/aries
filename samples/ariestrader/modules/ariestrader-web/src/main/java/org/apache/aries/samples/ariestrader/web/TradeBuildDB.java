@@ -49,6 +49,7 @@ public class TradeBuildDB {
      * Populate a Trade DB using standard out as a log
      */
     public TradeBuildDB() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-402
         this(new java.io.PrintWriter(System.out), false);
     }
 
@@ -70,10 +71,12 @@ public class TradeBuildDB {
         }
 
         // TradeStatistics.statisticsEnabled=false; // disable statistics
+//IC see: https://issues.apache.org/jira/browse/ARIES-117
         out.println("<HEAD><BR><EM> TradeBuildDB: Building AriesTrader Database...</EM><BR>"
             + "This operation will take several minutes. Please wait...</HEAD>");
         out.println("<BODY>");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-402
         if (createTables) {
             boolean success = false;
             String dbProductName = null;
@@ -97,7 +100,9 @@ public class TradeBuildDB {
             try {
                 out.println("<BR>TradeBuildDB: **** Database Product detected: "
                     + dbProductName + " ****</BR>");
+//IC see: https://issues.apache.org/jira/browse/ARIES-402
                 if (dbProductName.startsWith("DB2/")) { // if db is DB2
+//IC see: https://issues.apache.org/jira/browse/ARIES-539
                     fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "db2" + File.separatorChar + "Table.ddl";
                 } else if (dbProductName.startsWith("Apache Derby")) { // if db is Derby
                     fileLocation = File.separatorChar + "dbscripts" + File.separatorChar + "derby" + File.separatorChar + "Table.ddl";
@@ -135,6 +140,7 @@ public class TradeBuildDB {
             }
 
             // send the sql commands buffer to drop and recreate the AriesTrader tables
+//IC see: https://issues.apache.org/jira/browse/ARIES-117
             out.println("<BR>TradeBuildDB: **** Dropping and Recreating the AriesTrader tables... ****</BR>");
             try {
                 success = tradeDBManager.recreateDBTables(sqlBuffer, out);
@@ -167,6 +173,7 @@ public class TradeBuildDB {
             symbol = "s:" + i;
             companyName = "S" + i + " Incorporated";
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
                 tradeServices.createQuote(symbol, companyName,
 				    new java.math.BigDecimal(TradeConfig.rndPrice()));
                 if (i % 10 == 0) {
@@ -219,6 +226,7 @@ public class TradeBuildDB {
                     for (int j = 0; j < holdings; j++) {
                         symbol = TradeConfig.rndSymbol();
                         quantity = TradeConfig.rndQuantity();
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
                         tradeServices.buy(userID, symbol, quantity,
 						    TradeConfig.orderProcessingMode);
                     }
@@ -246,6 +254,7 @@ public class TradeBuildDB {
 
     public Object[] parseDDLToBuffer(URL ddlFile) throws Exception {
         BufferedReader br = null;
+//IC see: https://issues.apache.org/jira/browse/ARIES-402
         InputStreamReader ir = null;
         ArrayList sqlBuffer = new ArrayList(30); // initial capacity 30 assuming we have 30 ddl-sql statements to read
 

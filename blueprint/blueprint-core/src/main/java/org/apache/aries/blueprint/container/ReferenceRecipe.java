@@ -74,11 +74,14 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     public ReferenceRecipe(String name,
                            ExtendedBlueprintContainer blueprintContainer,
                            ReferenceMetadata metadata,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
                            ValueRecipe filterRecipe,
                            CollectionRecipe listenersRecipe,
                            List<Recipe> explicitDependencies) {
         super(name, blueprintContainer, metadata, filterRecipe, listenersRecipe, explicitDependencies);
         this.metadata = metadata;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         if (metadata instanceof ExtendedReferenceMetadata) {
             staticLifecycle = ((ExtendedReferenceMetadata) metadata).getLifecycle()
                     == ExtendedReferenceMetadata.LIFECYCLE_STATIC;
@@ -109,6 +112,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 }
             }
             // Create the proxy
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
             Set<Class<?>> interfaces = new HashSet<Class<?>>();
             Class<?> clz = getInterfaceClass();
             if (clz != null) interfaces.add(clz);
@@ -117,6 +121,8 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                 interfaces.addAll(loadAllClasses(((ExtendedReferenceMetadata) metadata).getExtraInterfaces()));
             }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
             Object result;
             if (isStaticLifecycle()) {
                 result = getService();
@@ -160,6 +166,8 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     protected void track(ServiceReference ref) {
         boolean replace;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         if (metadata instanceof ExtendedReferenceMetadata) {
             replace = ((ExtendedReferenceMetadata) metadata).getDamping()
                         == ExtendedReferenceMetadata.DAMPING_GREEDY;
@@ -183,16 +191,20 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     @Override
     public boolean isStaticLifecycle() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         return staticLifecycle;
     }
 
     protected void bind(ServiceReference ref) {
         LOGGER.debug("Binding reference {} to {}", getName(), ref);
         synchronized (monitor) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-765
             ServiceReference oldReference = trackedServiceReference;
             trackedServiceReference = ref;
             voidProxiedChildren();
             bind(trackedServiceReference, proxy);
+//IC see: https://issues.apache.org/jira/browse/ARIES-897
             if (ref != oldReference) {
                 if (oldReference != null && trackedService != null) {
                     try {
@@ -212,10 +224,14 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         synchronized (monitor) {
             if (trackedServiceReference != null) {
                 unbind(trackedServiceReference, proxy);
+//IC see: https://issues.apache.org/jira/browse/ARIES-765
                 ServiceReference oldReference = trackedServiceReference;
                 trackedServiceReference = null;
                 voidProxiedChildren();
                 if (trackedService != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-829
+//IC see: https://issues.apache.org/jira/browse/ARIES-829
+//IC see: https://issues.apache.org/jira/browse/ARIES-875
                     try {
                         getBundleContextForServiceLookup().ungetService(oldReference);
                     } catch (IllegalStateException ise) {
@@ -230,12 +246,15 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
 
     private Object getService() throws InterruptedException {
         synchronized (monitor) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-59
             if (isStarted() && trackedServiceReference == null && metadata.getTimeout() > 0
                     && metadata.getAvailability() == ServiceReferenceMetadata.AVAILABILITY_MANDATORY) {
                 //Here we want to get the blueprint bundle itself, so don't use #getBundleContextForServiceLookup()
+//IC see: https://issues.apache.org/jira/browse/ARIES-1314
                 blueprintContainer.getEventDispatcher().blueprintEvent(createWaitingevent());
                 monitor.wait(metadata.getTimeout());
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-577
             Object result = null;
             if (trackedServiceReference == null) {
                 if (isStarted()) {
@@ -251,6 +270,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
                         } else {
                             failed = false;
                         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1129
                         BlueprintRepository repository = ((BlueprintContainerImpl) blueprintContainer).getRepository();
                         ExecutionContext oldContext = null;
                         try {
@@ -278,6 +298,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
             } else {
 
                 if (trackedService == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-863
                     trackedService = getServiceSecurely(trackedServiceReference);
                 }
 
@@ -292,6 +313,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
     }
 
     private BlueprintEvent createWaitingevent() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1314
         return new BlueprintEvent(BlueprintEvent.WAITING,
                 blueprintContainer.getBundleContext().getBundle(),
                 blueprintContainer.getExtenderBundle(),
@@ -311,6 +333,7 @@ public class ReferenceRecipe extends AbstractServiceReferenceRecipe {
         if (proxyChildBeanClasses != null) {
             synchronized (proxiedChildren) {
                 for (Iterator<WeakReference<Voidable>> it = proxiedChildren.iterator(); it.hasNext(); ) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-765
                     Voidable v = it.next().get();
                     if (v == null)
                         it.remove();

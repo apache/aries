@@ -66,6 +66,7 @@ public class Activator implements BundleActivator {
     private OSGiObjectFactoryBuilder ofBuilder;
 
     public static Collection<ServiceReference<InitialContextFactoryBuilder>> getInitialContextFactoryBuilderServices() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         return instance.icfBuilders.getReferences();
     }
 
@@ -148,19 +149,23 @@ public class Activator implements BundleActivator {
         icfBuilders = new CachingServiceTracker<>(trackerBundleContext, InitialContextFactoryBuilder.class);
         urlObjectFactoryFinders = new CachingServiceTracker<>(trackerBundleContext, URLObjectFactoryFinder.class);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-981
         if (!disableBuilder(context)) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
                 OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder();
                 try {
                     NamingManager.setInitialContextFactoryBuilder(builder);
                 } catch (IllegalStateException e) {
                     // use reflection to force the builder to be used
                     if (forceBuilder(context)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
                         originalICFBuilder = swapStaticField(InitialContextFactoryBuilder.class, builder);
                     }
                 }
                 icfBuilder = builder;
             } catch (NamingException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
                 LOGGER.debug("A failure occurred when attempting to register an InitialContextFactoryBuilder with the NamingManager. " +
                         "Support for calling new InitialContext() will not be enabled.", e);
             } catch (IllegalStateException e) {
@@ -179,11 +184,13 @@ public class Activator implements BundleActivator {
                 } catch (IllegalStateException e) {
                     // use reflection to force the builder to be used
                     if (forceBuilder(context)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
                         originalOFBuilder = swapStaticField(ObjectFactoryBuilder.class, builder);
                     }
                 }
                 ofBuilder = builder;
             } catch (NamingException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
                 LOGGER.info("A failure occurred when attempting to register an ObjectFactoryBuilder with the NamingManager. " +
                         "Looking up certain objects may not work correctly.", e);
             } catch (IllegalStateException e) {
@@ -196,6 +203,7 @@ public class Activator implements BundleActivator {
             }
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
         context.registerService(JNDIProviderAdmin.class.getName(),
                 new ProviderAdminServiceFactory(context),
                 null);
@@ -208,7 +216,9 @@ public class Activator implements BundleActivator {
                 new ContextManagerServiceFactory(),
                 null);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1117
         context.registerService(AugmenterInvoker.class.getName(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
                 augmenterInvoker = new AugmenterInvokerImpl(context),
                 null);
     }
@@ -227,6 +237,8 @@ public class Activator implements BundleActivator {
             swapStaticField(ObjectFactoryBuilder.class, originalOFBuilder);
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-440
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
         icfBuilders.close();
         urlObjectFactoryFinders.close();
         objectFactories.close();
@@ -238,6 +250,7 @@ public class Activator implements BundleActivator {
     private boolean forceBuilder(BundleContext context) {
         String forceBuilderProp = context.getProperty(FORCE_BUILDER);
         if (forceBuilderProp != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-981
             return !"false".equals(forceBuilderProp) && !"no".equals(forceBuilderProp);
         }
         BundleRevision revision = context.getBundle().adapt(BundleRevision.class);
@@ -254,6 +267,7 @@ public class Activator implements BundleActivator {
     }
 
     private String getClassName(Class<?> expectedType) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
         try {
             for (Field field : NamingManager.class.getDeclaredFields()) {
                 if (expectedType.equals(field.getType())) {
@@ -273,6 +287,7 @@ public class Activator implements BundleActivator {
      * ObjectFactoryBuilder on the NamingManager so try to use reflection.
      */
     private static <T> T swapStaticField(Class<T> expectedType, Object value) throws IllegalStateException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         try {
             for (Field field : NamingManager.class.getDeclaredFields()) {
                 if (expectedType.equals(field.getType())) {

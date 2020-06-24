@@ -18,6 +18,7 @@ public abstract class AbstractParameter implements Parameter {
 	protected final Object value;
 	
 	public AbstractParameter(String name, Object value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		if (name == null || value == null) {
 			throw new NullPointerException();
 		}

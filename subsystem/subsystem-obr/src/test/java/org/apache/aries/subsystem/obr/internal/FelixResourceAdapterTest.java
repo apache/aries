@@ -42,6 +42,7 @@ public class FelixResourceAdapterTest {
 		FelixResourceAdapter adapter = new FelixResourceAdapter(resource);
 		List<org.osgi.resource.Capability> caps = adapter.getCapabilities(null);
 		// osgi.identity, osgi.content. osgi.wiring.host, and osgi.wiring.package
+//IC see: https://issues.apache.org/jira/browse/ARIES-1523
 		assertEquals("Null namespace should return all capabilities", 4, caps.size());
 	}
 }

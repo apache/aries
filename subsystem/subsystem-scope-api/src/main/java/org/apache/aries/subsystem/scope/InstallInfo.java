@@ -36,6 +36,7 @@ public class InstallInfo {
 	 * @param location the location of the bundle.
 	 */
 	public InstallInfo(String location, URL content) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
 		this(location == null ? content.toExternalForm() : location, content.openStream());
 	}
 	

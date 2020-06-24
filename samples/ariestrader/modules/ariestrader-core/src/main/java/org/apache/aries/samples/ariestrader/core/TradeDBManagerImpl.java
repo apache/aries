@@ -88,6 +88,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
             dbProductName = dbmd.getDatabaseProductName();
         }
         catch (SQLException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-117
             Log.error(e, "TradeDBManagerImpl:checkDBProductName() -- Error checking the AriesTrader Database Product Name");
         }
         finally {
@@ -203,6 +204,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
             }
 
             stmt = getStatement(conn, "delete from holdingejb where holdingejb.account_accountid is null");
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
             stmt.executeUpdate();
             stmt.close();
 
@@ -262,6 +264,7 @@ public class TradeDBManagerImpl implements TradeDBManager {
 
             stmt =
             getStatement(conn, "update accountejb set logoutCount=0,loginCount=0 where profile_userID like 'uid:%'");
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
             stmt.executeUpdate();
             stmt.close();
 

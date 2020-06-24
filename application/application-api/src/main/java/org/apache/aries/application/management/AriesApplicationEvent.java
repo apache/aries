@@ -28,6 +28,7 @@ public abstract class AriesApplicationEvent {
    * Get the type of the event
    * @return the event type.
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
   abstract public AriesApplicationContext.ApplicationState getType();
   
   /**

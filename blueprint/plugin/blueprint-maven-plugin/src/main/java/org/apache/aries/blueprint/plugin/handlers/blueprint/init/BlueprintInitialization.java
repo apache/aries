@@ -28,6 +28,7 @@ import org.osgi.service.blueprint.container.Converter;
 public class BlueprintInitialization implements ContextInitializationHandler {
     @Override
     public void initContext(ContextEnricher contextEnricher) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1605
         contextEnricher.addBean("blueprintBundleContext", BundleContext.class);
         contextEnricher.addBean("blueprintBundle", Bundle.class);
         contextEnricher.addBean("blueprintContainer", BlueprintContainer.class);

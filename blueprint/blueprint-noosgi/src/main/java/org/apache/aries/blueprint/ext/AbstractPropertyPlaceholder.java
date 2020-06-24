@@ -85,6 +85,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     public String getNullValue() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         return nullValue;
     }
 
@@ -93,6 +94,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     }
 
     public ExtendedBlueprintContainer getBlueprintContainer() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-998
         return blueprintContainer;
     }
 
@@ -328,12 +330,14 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         // TODO: we need to handle escapes on the prefix / suffix
         Matcher matcher = getPattern().matcher(str);
         while (matcher.find()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1601
             String n = matcher.group(1);
             int idx = n.indexOf(placeholderPrefix);
             if (idx >= 0) {
                 matcher.region(matcher.start(1) + idx, str.length());
                 continue;
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
             Object rep = retrieveValue(matcher.group(1));
             if (rep != null) {
                 if (rep instanceof String || !matcher.group(0).equals(str)) {
@@ -372,6 +376,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
         }
 
         public String getStringValue() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
             retrieve();
             return retrievedValue instanceof String ? (String) retrievedValue : null;
         }

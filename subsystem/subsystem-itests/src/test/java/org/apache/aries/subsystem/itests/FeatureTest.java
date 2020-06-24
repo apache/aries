@@ -39,7 +39,9 @@ public class FeatureTest extends SubsystemTest {
 	@Override
 	public void createApplications() throws Exception {
 		createApplication("feature2", new String[]{"tb2.jar", "tb3.jar"});
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		createApplication("feature1", new String[]{"tb1.jar", "feature2.esa", "tb3.jar"});
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		createApplication("feature3", new String[]{"tb3.jar"});
 	}
 
@@ -51,13 +53,16 @@ public class FeatureTest extends SubsystemTest {
 		try {
 			assertSymbolicName("org.apache.aries.subsystem.feature1", feature1);
 			assertVersion("1.0.0", feature1);
+//IC see: https://issues.apache.org/jira/browse/ARIES-910
 			assertConstituents(3, feature1);
 			assertChildren(1, feature1);
 			feature2 = feature1.getChildren().iterator().next();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			assertEvent(feature2, Subsystem.State.INSTALLING, 5000);
 			assertEvent(feature2, Subsystem.State.INSTALLED, 5000);
 			assertSymbolicName("org.apache.aries.subsystem.feature2", feature2);
 			assertVersion("1.0.0", feature2);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb2", Version.parseVersion("2.0.0"), IdentityNamespace.TYPE_BUNDLE);
 			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 			assertConstituents(2, feature2);
@@ -77,9 +82,12 @@ public class FeatureTest extends SubsystemTest {
 		}
 		finally {
 			try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				uninstallSubsystem(feature1);
 				if (feature2 != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					assertEvent(feature2, Subsystem.State.INSTALLED, 5000);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					assertEvent(feature2, Subsystem.State.UNINSTALLING, 5000);
 					assertEvent(feature2, Subsystem.State.UNINSTALLED, 5000);
 					assertNotChild(feature1, feature2);
@@ -95,12 +103,15 @@ public class FeatureTest extends SubsystemTest {
 	
 	@Test
 	public void testPersistence() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Subsystem feature3Before = installSubsystemFromFile("feature3.esa");
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Subsystem feature3After = null;
 		AssertionError error = null;
 		try {
 			assertFeature3(feature3Before);
 			// Uninstall then reinstall the subsystem for a more robust test of the subsystem ID persistence.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			uninstallSubsystem(feature3Before);
 			feature3Before = installSubsystemFromFile("feature3.esa");
 			assertLastId(2);
@@ -122,6 +133,7 @@ public class FeatureTest extends SubsystemTest {
 		finally {
 			try {
 				if (feature3After != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 					uninstallSubsystem(feature3After);
 				}
 			}
@@ -135,15 +147,18 @@ public class FeatureTest extends SubsystemTest {
 	
 	@Test
 	public void testSharedContent() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Subsystem feature1 = installSubsystemFromFile("feature1.esa");
 		AssertionError error = null;
 		try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			assertConstituent(feature1, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 			Subsystem feature2 = feature1.getChildren().iterator().next();
 			// TODO This needs to be better implemented and put into a utility method on the superclass.
 			while (!feature2.getState().equals(Subsystem.State.INSTALLED))
 				Thread.sleep(100);
 			assertConstituent(feature2, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			uninstallSubsystem(feature2);
 			assertNotChild(feature1, feature2);
 			assertConstituent(feature1, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
@@ -154,6 +169,7 @@ public class FeatureTest extends SubsystemTest {
 		}
 		finally {
 			try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				uninstallSubsystem(feature1);
 			}
 			catch (AssertionError e) {
@@ -165,6 +181,7 @@ public class FeatureTest extends SubsystemTest {
 	}
 	
 	private void assertContainsConstituent(Collection<Resource> constituents, Resource constituent) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		for (Resource resource : constituents) {
 			if (ResourceHelper.areEqual(constituent, resource))
 				return;
@@ -245,6 +262,7 @@ public class FeatureTest extends SubsystemTest {
 	private void assertFeature3(Subsystem subsystem) {
 		assertChildren(0, subsystem);
 		assertConstituents(1, subsystem);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertConstituent(subsystem, "org.apache.aries.subsystem.itests.tb3", Version.parseVersion("1.0.0"), IdentityNamespace.TYPE_BUNDLE);
 //		subsystem.getHeaders();
 //		subsystem.getHeaders("");

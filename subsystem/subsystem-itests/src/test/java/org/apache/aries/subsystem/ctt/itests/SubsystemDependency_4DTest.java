@@ -12,6 +12,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
 
 /*
  *  D) Test that Local Repository takes priority over registered repositories
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
      - Register repository R2
      - Using the Root subsystem, install a scoped subsystem with the following content bundles
        - Bundle C
@@ -31,6 +32,7 @@ public class SubsystemDependency_4DTest extends SubsystemDependencyTestBase
 	
 	@Override
 	public void createApplications() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		super.createApplications();
 		createApplication4d();
 		registerRepositoryR2();
@@ -41,6 +43,7 @@ public class SubsystemDependency_4DTest extends SubsystemDependencyTestBase
 	public void verifyBundesFandGinstalledIntoRootSubsystem() throws Exception
 	{
 		startSubsystem();
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
 		verifyBundlesInstalled (bundleContext, "Root", BUNDLE_F, BUNDLE_G);
 		stopSubsystem();
 	}

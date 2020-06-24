@@ -41,11 +41,13 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleWiring;
 
 /** An implementation of ClassLoader that will be used to define our proxy class */
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
 final class ProxyClassLoader extends ClassLoader {
   
   private static final ProtectionDomain PROXY_PROTECTION_DOMAIN;
   
   static {
+//IC see: https://issues.apache.org/jira/browse/ARIES-678
     PermissionCollection pc = new Permissions();
     pc.add(new AllPermission());
     PROXY_PROTECTION_DOMAIN = new ProtectionDomain(null, pc);
@@ -53,9 +55,11 @@ final class ProxyClassLoader extends ClassLoader {
   
   /** A {@link Map} of classes we already know */
   private final ConcurrentMap<LinkedHashSet<Class<?>>, String> classes = 
+//IC see: https://issues.apache.org/jira/browse/ARIES-746
                 new ConcurrentHashMap<LinkedHashSet<Class<?>>, String>();
   
   private final ConcurrentMap<String, Class<?>> locatedClasses = 
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
                 new ConcurrentHashMap<String, Class<?>>();
   
   private final Set<Class<?>> ifaces = new HashSet<Class<?>>();
@@ -64,6 +68,7 @@ final class ProxyClassLoader extends ClassLoader {
   
   public ProxyClassLoader(Bundle bundle) {
 //    super(AriesFrameworkUtil.getClassLoader(bundle));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     super(getClassloader(bundle));
   }
 
@@ -80,6 +85,7 @@ final class ProxyClassLoader extends ClassLoader {
       return WovenProxy.class;
     else if (InvocationListener.class.getName().equals(className))
       return InvocationListener.class;
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     else {
       Class<?> c = locatedClasses.get(className);
       if(c != null)
@@ -111,6 +117,7 @@ final class ProxyClassLoader extends ClassLoader {
    * @return
    */
   public boolean isInvalid(Set<Class<?>> createSet) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-694
       for (Class<?> iface : createSet) {
           try {
               Class<?> newIFace = Class.forName(iface.getName(), false, this);
@@ -125,6 +132,7 @@ final class ProxyClassLoader extends ClassLoader {
 
   public Class<?> createProxyClass(Class<?> superclass, SortedSet<Class<?>> interfaces) throws UnableToProxyException {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     LinkedHashSet<Class<?>> createSet = new LinkedHashSet<Class<?>>(interfaces);
     //Even a null superclass helps with key uniqueness
     createSet.add(superclass);
@@ -144,6 +152,7 @@ final class ProxyClassLoader extends ClassLoader {
     wLock.lock();
     try {
       //We want the superclass, but only if it isn't null
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       ifaces.addAll(interfaces);
       if(superclass != null) ifaces.add(superclass);
     } finally {
@@ -153,6 +162,7 @@ final class ProxyClassLoader extends ClassLoader {
     className = "Proxy" + AbstractWovenProxyAdapter.getSanitizedUUIDString();
     
     InterfaceCombiningClassAdapter icca = new InterfaceCombiningClassAdapter(
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
         className, this, superclass, interfaces);
     
     //Use a special protection domain that grants AllPermission to our Proxy
@@ -161,6 +171,7 @@ final class ProxyClassLoader extends ClassLoader {
     
     try {
       byte[] bytes = icca.generateBytes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-678
       Class<?> c = defineClass(className, bytes, 0, bytes.length, 
           PROXY_PROTECTION_DOMAIN);
       String old = classes.putIfAbsent(createSet, className);

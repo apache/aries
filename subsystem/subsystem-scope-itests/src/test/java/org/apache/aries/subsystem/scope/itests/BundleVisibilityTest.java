@@ -58,6 +58,10 @@ public class BundleVisibilityTest extends AbstractTest {
 	 */
 	@Test
 	public void test2() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Scope scope = getScope();
 		assertTrue(scope.getBundles().contains(bundleContext.getBundle()));
 		ScopeUpdate scopeUpdate = scope.newScopeUpdate();

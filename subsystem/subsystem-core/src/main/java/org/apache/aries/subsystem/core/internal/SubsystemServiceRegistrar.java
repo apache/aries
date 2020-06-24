@@ -69,6 +69,7 @@ public class SubsystemServiceRegistrar {
 		Dictionary<String, Object> properties;
 		synchronized (this) {
 			if (map.containsKey(child))
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				return;
 			map.put(child, null);
 			properties = properties(child, parent);
@@ -113,6 +114,7 @@ public class SubsystemServiceRegistrar {
 		synchronized (this) {
 			registration = map.remove(subsystem);
 			if (registration == null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
 		}
 		registration.unregister();
@@ -124,6 +126,7 @@ public class SubsystemServiceRegistrar {
 		synchronized (this) {
 			registration = map.get(subsystem);
 			if (registration == null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				throw new IllegalStateException("Subsystem '" + subsystem + "' is not registered");
 			properties = properties(subsystem, registration);
 		}
@@ -131,12 +134,14 @@ public class SubsystemServiceRegistrar {
 	}
 	
 	private Dictionary<String, Object> properties(BasicSubsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Dictionary<String, Object> result = new Hashtable<String, Object>();
 		result.put(SubsystemConstants.SUBSYSTEM_ID_PROPERTY, subsystem.getSubsystemId());
 		result.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME_PROPERTY, subsystem.getSymbolicName());
 		result.put(SubsystemConstants.SUBSYSTEM_VERSION_PROPERTY, subsystem.getVersion());
 		result.put(SubsystemConstants.SUBSYSTEM_TYPE_PROPERTY, subsystem.getType());
 		result.put(SubsystemConstants.SUBSYSTEM_STATE_PROPERTY, subsystem.getState());
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		result.put(Constants.SubsystemServicePropertyRegions, Collections.singleton(subsystem.getRegionName()));
 		return result;
 	}

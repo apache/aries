@@ -52,10 +52,12 @@ import org.osgi.framework.BundleContext;
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractProxyTest {
   @Inject
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
   BundleContext bundleContext;
   
   @Inject
   ProxyManager mgr;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
 
   public final static class TestCallable implements Callable<Object> {
     private Object list = new ArrayList<Object>();
@@ -78,6 +80,7 @@ public abstract class AbstractProxyTest {
      * with a no-args constructor.
      */
     protected TestDelegate() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-861
         super();
         this.message = null;
       }
@@ -155,6 +158,7 @@ public abstract class AbstractProxyTest {
 
   @Test
   public void testEquals() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
     Bundle b = bundleContext.getBundle();
     
     TestCallable c = new TestCallable();
@@ -194,6 +198,7 @@ public abstract class AbstractProxyTest {
   
   @Test
   public void testInterception() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
     Bundle b = bundleContext.getBundle();
     
     TestDelegate td = new TestDelegate("Hello");
@@ -234,6 +239,8 @@ public abstract class AbstractProxyTest {
   
   @Test
   public void testDelegationAndInterception() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
     Bundle b = bundleContext.getBundle();
     
     TestCallable c = new TestCallable();
@@ -300,7 +307,9 @@ public abstract class AbstractProxyTest {
               mavenBundle("org.ow2.asm", "asm-commons").versionAsInProject(),
               mavenBundle("org.ow2.asm", "asm").versionAsInProject(),
               mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1659
               mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1221
               mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()
               /* vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
               waitForFrameworkStartup(),*/

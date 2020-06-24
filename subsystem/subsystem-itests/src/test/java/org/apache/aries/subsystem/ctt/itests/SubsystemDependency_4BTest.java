@@ -16,6 +16,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
 
 /*
  * B) Test with no pre-installed transitive resources
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
      - Register repository R2
      - Using the Root subsystem, install a scoped subsystem with the following content bundles and no local repository
        - Bundle C
@@ -32,6 +33,7 @@ public class SubsystemDependency_4BTest extends SubsystemDependencyTestBase
 	
 	@Override
 	public void createApplications() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		super.createApplications();
 		createTestApplicationB();
 	}
@@ -74,6 +76,7 @@ public class SubsystemDependency_4BTest extends SubsystemDependencyTestBase
 		Subsystem s = installSubsystemFromFile(APPLICATION_B);
 		startSubsystem(s);
 		verifyRequireBundleWiring (s, BUNDLE_D, BUNDLE_A);
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
 		stopSubsystem(s);
 	}
 
@@ -97,6 +100,7 @@ public class SubsystemDependency_4BTest extends SubsystemDependencyTestBase
 		attributes.put(SubsystemConstants.SUBSYSTEM_CONTENT, appContent);
 		attributes.put(Constants.IMPORT_PACKAGE, "x");
 		attributes.put(Constants.REQUIRE_BUNDLE, BUNDLE_A);
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
 		attributes.put(Constants.REQUIRE_CAPABILITY, "y");
 		createManifest(APPLICATION_B + ".mf", attributes);
 		createSubsystem(APPLICATION_B);

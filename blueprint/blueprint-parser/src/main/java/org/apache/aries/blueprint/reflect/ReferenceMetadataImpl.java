@@ -55,6 +55,7 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
     }
 
     public void setDefaultBean(String defaultBeanId) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-577
       this.defaultBeanId = defaultBeanId;
     }
 
@@ -74,13 +75,17 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
                 ", filter='" + filter + '\'' +
                 ", referenceListeners=" + referenceListeners +
                 ", timeout=" + timeout +
+//IC see: https://issues.apache.org/jira/browse/ARIES-1141
                 ", additonalInterfaces=" + getExtraInterfaces() +
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
                 ", damping=" + getDamping() +
                 ", lifecycle=" + getLifecycle() +
                 ']';
     }
 
     public Collection<Class<?>> getProxyChildBeanClasses() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-765
         return proxyChildBeanClasses;
     }
 
@@ -89,6 +94,7 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
     }
 
     public Collection<String> getExtraInterfaces() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1141
         if (extraInterfaces == null) {
             return Collections.emptyList();
         }
@@ -100,6 +106,8 @@ public class ReferenceMetadataImpl extends ServiceReferenceMetadataImpl implemen
     }
 
     public int getDamping() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
         return damping;
     }
 

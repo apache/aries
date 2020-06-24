@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
 class RefCollection implements XmlWriter {
     private final String type;
     private final List<String> refs;

@@ -9,6 +9,7 @@ import org.osgi.service.subsystem.Subsystem;
 public class ModelledResourceManagerTest extends SubsystemTest {
 	
 	public ModelledResourceManagerTest() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		super(false);
 	}
 	

@@ -38,11 +38,13 @@ import org.osgi.service.resolver.Resolver;
 
 public class DependencyCalculator {
 	private static class ResolveContext extends
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			org.osgi.service.resolver.ResolveContext {
 	    private final CapabilitySetRepository repository = new CapabilitySetRepository();
 		private final Collection<Resource> resources;
 
 		public ResolveContext(Collection<Resource> resources) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1396
 		    this.resources = resources;
 			for (Resource resource : resources) {
 			    repository.addResource(resource);
@@ -84,6 +86,7 @@ public class DependencyCalculator {
 		public int insertHostedCapability(List<Capability> capabilities,
 				HostedCapability hostedCapability) {
 			int sz = capabilities.size();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1485
 			capabilities.add(sz, hostedCapability);
 	        return sz;
 		}
@@ -97,6 +100,7 @@ public class DependencyCalculator {
 			
 			public Resource() {
 				Map<String, Object> attributes = new HashMap<String, Object>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-997
 				attributes.put(IdentityNamespace.IDENTITY_NAMESPACE, org.apache.aries.subsystem.core.internal.Constants.ResourceTypeSynthesized);
 				attributes.put(IdentityNamespace.CAPABILITY_TYPE_ATTRIBUTE, org.apache.aries.subsystem.core.internal.Constants.ResourceTypeSynthesized);
 				identity = new BasicCapability(IdentityNamespace.IDENTITY_NAMESPACE, attributes, null, this);
@@ -118,6 +122,7 @@ public class DependencyCalculator {
 
 		public MissingCapability(Requirement requirement) {
 			this.requirement = requirement;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			initializeAttributes();
 		}
 
@@ -142,11 +147,13 @@ public class DependencyCalculator {
 		}
 		
 		private void initializeAttributes() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-895
 			String filter = requirement.getDirectives().get(Constants.FILTER_DIRECTIVE);
 			if (filter == null)
 				return;
 			Pattern pattern = Pattern.compile("\\(([^<>~(=]+)(?:=|<=|>=|~=)([^)]+)\\)");
 			Matcher matcher = pattern.matcher(filter);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			while (matcher.find())
 				attributes.put(matcher.group(1), matcher.group(2));
 		}

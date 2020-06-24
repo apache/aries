@@ -56,6 +56,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
 	@Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         return CoreOptions.options(
             // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
             // new TimeoutOption( 0 ),
@@ -86,6 +87,7 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetCurrentRevisionDeclaredRequirements() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         Bundle a = getBundleByName("org.apache.aries.jmx.test.bundlea");
         BundleRevision br = (BundleRevision) a.adapt(BundleRevision.class);
 
@@ -337,6 +339,8 @@ public class BundleWiringStateMBeanTest extends AbstractIntegrationTest {
         Map<String, Object> aMap = new HashMap<String, Object>();
         for (CompositeData jmxAttr : (Collection<CompositeData>) jmxAttributes.values()) {
             PropertyData<Object> pd = PropertyData.from(jmxAttr);
+//IC see: https://issues.apache.org/jira/browse/ARIES-862
+//IC see: https://issues.apache.org/jira/browse/ARIES-884
             Object val = pd.getValue();
             if (val instanceof Object[]) {
                 val = Arrays.asList((Object [])val);

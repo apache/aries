@@ -32,6 +32,7 @@ public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase
 	
 	@Override
 	public void createApplications() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		super.createApplications();
 		createTestApplicationA();
 		registerRepositoryR1();
@@ -66,6 +67,9 @@ public class SubsystemDependency_4ATest extends SubsystemDependencyTestBase
 		startSubsystem(s);
 		verifyCapabilityWiring (s, BUNDLE_E, "y", BUNDLE_B);
 		stopSubsystem(s);
+//IC see: https://issues.apache.org/jira/browse/ARIES-893
+//IC see: https://issues.apache.org/jira/browse/ARIES-893
+//IC see: https://issues.apache.org/jira/browse/ARIES-893
 		uninstallSubsystem(s);
 	}
 	

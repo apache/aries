@@ -12,7 +12,10 @@ import org.osgi.framework.ServiceRegistration;
 
 public class Activator implements BundleActivator {
 	public void start(final BundleContext bundleContext) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		bundleContext.registerService(
+//IC see: https://issues.apache.org/jira/browse/ARIES-603
+//IC see: https://issues.apache.org/jira/browse/ARIES-594
 				BundleProvider.class, 
 				new BundleProvider() {
 					public Bundle getBundle(long id) {

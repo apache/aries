@@ -129,6 +129,7 @@ public class ModellerTest {
 
         boolean foundFirstPackage = false;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-676
         for (ImportedPackage pack : resource.getImportedPackages()) {
             if ("javax.jms".equals(pack.getPackageName()) && "1.1.0".equals(pack.getVersionRange()))
                 foundFirstPackage = true;
@@ -145,6 +146,7 @@ public class ModellerTest {
 
         // sanity check that we have parsed the services
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-725
         assertEquals(4, resource.getExportedServices().size());
         assertEquals(4, resource.getImportedServices().size());
 

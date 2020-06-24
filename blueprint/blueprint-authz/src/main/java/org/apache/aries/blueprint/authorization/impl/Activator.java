@@ -29,6 +29,7 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         AuthorizationNsHandler handler = new AuthorizationNsHandler();
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put("osgi.service.blueprint.namespace", "http://aries.apache.org/xmlns/authorization/v1.0.0");

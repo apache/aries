@@ -44,6 +44,7 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
   @Override
   public URL getResource(final String name)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     return AccessController.doPrivileged(new PrivilegedAction<URL>() {
 	public URL run()
       {
@@ -86,6 +87,7 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
       if (cause instanceof IOException) throw (IOException)cause;
       if (cause instanceof RuntimeException) throw (RuntimeException)cause;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-679
       IOException ioe = new IOException(name);
       ioe.initCause(cause);
       throw ioe;
@@ -112,6 +114,7 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
   public Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException
   {
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-704
       Class<?> result = AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
         public Class<?> run() throws ClassNotFoundException
         {
@@ -134,6 +137,7 @@ public class BundleToClassLoaderAdapter extends ClassLoader implements BundleRef
 
   public Bundle getBundle()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-234
     return b;
   }
 }

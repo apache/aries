@@ -39,6 +39,7 @@ class AnnotationHelper {
         for (ValueInjectionHandler<? extends Annotation> valueInjectionHandler : Handlers.VALUE_INJECTION_HANDLERS) {
             classes.add(valueInjectionHandler.getAnnotation());
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
         for (CollectionDependencyAnnotationHandler<? extends Annotation> collectionDependencyAnnotationHandler : Handlers.COLLECTION_DEPENDENCY_ANNOTATION_HANDLERS) {
             classes.add(collectionDependencyAnnotationHandler.getAnnotation());
         }

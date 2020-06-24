@@ -23,6 +23,7 @@ import org.osgi.resource.Resource;
 public class InstallResourceComparator implements Comparator<Resource> {
 	@Override
 	public int compare(Resource r1, Resource r2) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		String r1type = getResourceType(r1);
 		String r2type = getResourceType(r2);
 		if (r1type.equals(r2type))

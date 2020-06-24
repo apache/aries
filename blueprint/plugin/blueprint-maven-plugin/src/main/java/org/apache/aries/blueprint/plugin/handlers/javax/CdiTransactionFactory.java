@@ -39,6 +39,7 @@ import java.util.Set;
 
 public class CdiTransactionFactory extends AbstractTransactionFactory<Transactional> {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1712
     String getTransactionTypeName(AnnotatedElement annotatedElement) {
         final Transactional transactional = annotatedElement.getAnnotation(Transactional.class);
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());

@@ -31,6 +31,7 @@ public final class WovenProxyAbstractMethodAdapter extends AbstractWovenProxyMet
  
   public WovenProxyAbstractMethodAdapter(MethodVisitor mv, int access, String name,
       String desc, String methodStaticFieldName, Method currentTransformMethod,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1186
       Type typeBeingWoven, Type methodDeclaringType, boolean isMethodDeclaringTypeInterface, boolean isDefaultMethod) {
     super(mv, access, name, desc, methodStaticFieldName, currentTransformMethod,
         typeBeingWoven, methodDeclaringType, isMethodDeclaringTypeInterface, isDefaultMethod);

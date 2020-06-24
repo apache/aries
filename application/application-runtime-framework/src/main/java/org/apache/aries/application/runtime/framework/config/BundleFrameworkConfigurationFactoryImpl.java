@@ -50,6 +50,7 @@ public class BundleFrameworkConfigurationFactoryImpl implements BundleFrameworkC
     // will also attempt to listen on the same port which will cause port clashs. Setting this
     // to null essentially turns the console off.
     frameworkConfig.put("osgi.console", "none");
+//IC see: https://issues.apache.org/jira/browse/ARIES-602
 
     String flowedSystemPackages = EquinoxFrameworkUtils.calculateSystemPackagesToFlow(
         EquinoxFrameworkUtils.getSystemExtraPkgs(parentCtx), metadata.getImportPackage());
@@ -82,6 +83,7 @@ public class BundleFrameworkConfigurationFactoryImpl implements BundleFrameworkC
     /**
      * Set up CompositeServiceFilter-Import header for framework manifest
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-770
     StringBuilder serviceImportFilter = new StringBuilder();
     String txRegsitryImport = "(" + Constants.OBJECTCLASS + "=" + EquinoxFrameworkConstants.TRANSACTION_REGISTRY_BUNDLE + ")";
 
@@ -122,6 +124,7 @@ public class BundleFrameworkConfigurationFactoryImpl implements BundleFrameworkC
     // will also attempt to listen on the same port which will cause port clashs. Setting this
     // to null essentially turns the console off.
     frameworkConfig.put("osgi.console", "none");
+//IC see: https://issues.apache.org/jira/browse/ARIES-602
 
     if (parentCtx.getProperty(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA) != null)
       frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, parentCtx

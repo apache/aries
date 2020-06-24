@@ -44,6 +44,7 @@ public interface DeploymentMetadataFactory {
    */
   @Deprecated
   public DeploymentMetadata createDeploymentMetadata (AriesApplication app, Set<BundleInfo> bundleInfo)
+//IC see: https://issues.apache.org/jira/browse/ARIES-188
     throws ResolverException;
   
   /**

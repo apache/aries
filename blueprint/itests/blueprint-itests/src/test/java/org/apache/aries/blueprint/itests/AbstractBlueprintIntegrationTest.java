@@ -69,6 +69,7 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
             localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
         }
         return composite(junitBundles(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1660
                          systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
                          when(localRepo != null)
                              .useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo)),
@@ -87,6 +88,7 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
     }
 
     protected void applyCommonConfiguration(BundleContext ctx) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1218
         ConfigurationAdmin ca = (new RichBundleContext(ctx)).getService(ConfigurationAdmin.class);
         Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
         Hashtable<String, String> props = new Hashtable<String, String>();

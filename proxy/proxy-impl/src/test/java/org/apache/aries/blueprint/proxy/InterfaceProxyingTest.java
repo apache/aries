@@ -75,6 +75,7 @@ public class InterfaceProxyingTest {
 
   @Before
   public void setup() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     testBundle = Mockito.mock(Bundle.class);
     BundleWiring bundleWiring = Mockito.mock(BundleWiring.class);
     Mockito.when(testBundle.adapt(BundleWiring.class)).thenReturn(bundleWiring);
@@ -93,8 +94,11 @@ public class InterfaceProxyingTest {
   @Test
   public void testGetProxyInstance2() throws Exception{
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     Collection<Class<? extends Object>> classes = Arrays.asList(Closeable.class, Iterable.class, Map.class);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
     
     assertTrue(o instanceof Closeable);
@@ -113,7 +117,9 @@ public class InterfaceProxyingTest {
     TestListener tl = new TestListener();
     TestCallable tc = new TestCallable();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     Callable<Object> o = (Callable<Object>) InterfaceProxyGenerator.getProxyInstance(testBundle, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
         null, classes, tc, tl);
     
     assertCalled(tl, false, false, false);
@@ -170,6 +176,7 @@ public class InterfaceProxyingTest {
   public void testCaching() throws Exception {
     Collection<Class<?>> classes = new ArrayList<Class<?>>(Arrays.asList(Closeable.class));
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     Object o1 = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
     Object o2 = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
     
@@ -183,19 +190,24 @@ public class InterfaceProxyingTest {
     final TestCallable tc = new TestCallable();
     tc.setReturn(5);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
     Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(tc), null);
     
     assertTrue(o instanceof ProxyTestInterface);
     
     assertTrue(o instanceof Callable);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     assertEquals(5, ((Callable<Object>)o).call());
   }
   
   @Test
   public void testHandlesObjectMethods() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-746
       TestListener listener = new TestListener();
+//IC see: https://issues.apache.org/jira/browse/ARIES-693
       List<String> list = Arrays.asList("one", "two", "three");
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       Object proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, null, Arrays.<Class<?>>asList(List.class), constantly(list), listener);
       
       // obeys hashCode and equals, they *are* on the interface (actually they're
@@ -215,6 +227,7 @@ public class InterfaceProxyingTest {
       Runnable runnable = new Runnable() {
         public void run() {}
       };
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       proxied = InterfaceProxyGenerator.getProxyInstance(testBundle, null, Arrays.<Class<?>>asList(Runnable.class), constantly(runnable), listener);
       
       // obeys hashCode and equals, they *are not* on the interface
@@ -229,6 +242,7 @@ public class InterfaceProxyingTest {
   private static class TestClassLoader extends ClassLoader {
       public TestClassLoader() throws Exception {
           
+//IC see: https://issues.apache.org/jira/browse/ARIES-694
           InputStream is = TestClassLoader.class.getClassLoader().getResourceAsStream("org/apache/aries/blueprint/proxy/TestInterface.class");
           ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
@@ -246,6 +260,7 @@ public class InterfaceProxyingTest {
   
   @Test
   public void testNoStaleProxiesForRefreshedBundle() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       Bundle bundle = mock(Bundle.class);
       
       TestClassLoader loader = new TestClassLoader();
@@ -254,6 +269,7 @@ public class InterfaceProxyingTest {
       when(bundle.adapt(BundleWiring.class)).thenReturn(wiring);
       Class<?> clazz = loader.loadClass("org.apache.aries.blueprint.proxy.TestInterface");
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       Object proxy = InterfaceProxyGenerator.getProxyInstance(bundle, null, Arrays.<Class<?>>asList(clazz), constantly(null), null);
       assertTrue(clazz.isInstance(proxy));
 
@@ -263,6 +279,7 @@ public class InterfaceProxyingTest {
       
       TestClassLoader loaderToo = new TestClassLoader();
       when(bundle.getLastModified()).thenReturn(20l);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
 
       // let's change the returned revision
       BundleWiring wiring2 = AbstractProxyTest.getWiring(loaderToo);
@@ -270,12 +287,14 @@ public class InterfaceProxyingTest {
       
       Class<?> clazzToo = loaderToo.loadClass("org.apache.aries.blueprint.proxy.TestInterface");
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-801
       Object proxyToo = InterfaceProxyGenerator.getProxyInstance(bundle, null, Arrays.<Class<?>>asList(clazzToo), constantly(null), null);
       assertTrue(clazzToo.isInstance(proxyToo));
 
       ClassLoader parent2= proxyToo.getClass().getClassLoader().getParent();
 
       // 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       assertTrue("parents should be different, as the are the classloaders of different bundle revisions", parent1 != parent2);
   }
 
@@ -285,6 +304,8 @@ public class InterfaceProxyingTest {
   public void checkDuplicateInterfaces() throws UnableToProxyException
   {
     Collection<Class<?>> classes = Collections.<Class<?>>singletonList(AriesTransactionManager.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1618
+//IC see: https://issues.apache.org/jira/browse/ARIES-1342
 
     Object o = InterfaceProxyGenerator.getProxyInstance(testBundle, null, classes, constantly(null), null);
 

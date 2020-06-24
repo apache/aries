@@ -34,6 +34,7 @@ public class TestRepository implements Repository {
 		private final Collection<Resource> resources = new HashSet<Resource>();
 		
 		public TestRepository build() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new TestRepository(resources);
 		}
 		

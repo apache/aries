@@ -59,6 +59,7 @@ public class EBAInstaller implements ArtifactInstaller
   public void install(File applicationLocation) throws Exception
   {
     AriesApplication app = applicationManager
+//IC see: https://issues.apache.org/jira/browse/ARIES-207
         .createApplication(FileSystem.getFSRoot(applicationLocation));
     
     String appSymName = app.getApplicationMetadata().getApplicationSymbolicName();
@@ -69,6 +70,7 @@ public class EBAInstaller implements ArtifactInstaller
         app.getApplicationMetadata().getApplicationContents() });
 
     AriesApplicationContext context = applicationManager.install(app);
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
 
     LOGGER.debug("installed app {} {} state: {}", new Object[] {
         appSymName, appVersion,
@@ -87,6 +89,7 @@ public class EBAInstaller implements ArtifactInstaller
 
   public void uninstall(File applicationLocation) throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
     AriesApplicationContext context = appContexts.get(applicationLocation);
     
     String appSymName = context.getApplication().getApplicationMetadata().getApplicationSymbolicName();

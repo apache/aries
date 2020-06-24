@@ -497,6 +497,7 @@ public class TradeServletAction {
                     .getPage(TradeConfig.PORTFOLIO_PAGE));
             // log the exception with an error level of 3 which means, handled
             // exception but would invalidate a automation run
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
             Log.error(
                             e,
                             "TradeServletAction.doPortfolio(...)",
@@ -657,6 +658,7 @@ public class TradeServletAction {
             // just log the exception and then later on I will redisplay the
             // portfolio page
             // because this is just a user exception
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
             Log.error(e,
                       "TradeServletAction.doSell(...)",
                       "illegal argument, information should be in exception string",

@@ -47,5 +47,6 @@ public interface BlueprintConstants  {
     String SYNCHRONOUS_PROPERTY = "org.apache.aries.blueprint.synchronous";
 
     String XML_VALIDATION_PROPERTY = "org.apache.aries.blueprint.xml.validation";
+//IC see: https://issues.apache.org/jira/browse/ARIES-1138
 
 }

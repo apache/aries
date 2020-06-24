@@ -34,6 +34,7 @@ public final class WovenProxyConcreteMethodAdapter extends AbstractWovenProxyMet
   
   public WovenProxyConcreteMethodAdapter(MethodVisitor mv, int access, String name,
       String desc, String[] exceptions, String methodStaticFieldName, Method currentTransformMethod,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1186
       Type typeBeingWoven, Type methodDeclaringType, boolean isMethodDeclaringTypeInterface) {
     //If we're running on Java 6+ We need to inline any JSR instructions because we're computing stack frames.
     //otherwise we can save the overhead

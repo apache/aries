@@ -102,6 +102,7 @@ public class EbaMojoTest
         assertTrue( entries.hasMoreElements() );
 
         assertTrue( entries.hasMoreElements() );
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
 
         int missing = getSizeOfExpectedFiles(entries, expectedFiles);
         assertEquals("Missing files: " + expectedFiles,  0, missing);
@@ -151,6 +152,7 @@ public class EbaMojoTest
         assertTrue( entries.hasMoreElements() );
 
         assertTrue( entries.hasMoreElements() );
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
 
         int missing = getSizeOfExpectedFiles(entries, expectedFiles);
         assertEquals("Missing files: " + expectedFiles,  0, missing);
@@ -205,6 +207,7 @@ public class EbaMojoTest
     }
 
     public void testApplicationManifestGeneration()
+//IC see: https://issues.apache.org/jira/browse/ARIES-733
         throws Exception
     {
         File testPom = new File( getBasedir(),
@@ -283,6 +286,7 @@ public class EbaMojoTest
 
 
     public void testArchiveContentConfigurationNoBundles()
+//IC see: https://issues.apache.org/jira/browse/ARIES-732
         throws Exception
     {
         File testPom = new File( getBasedir(),
@@ -377,6 +381,7 @@ public class EbaMojoTest
     }
 
     public void testArchiveContentConfigurationAllBundles()
+//IC see: https://issues.apache.org/jira/browse/ARIES-1094
         throws Exception
     {
         File testPom = new File( getBasedir(),
@@ -402,12 +407,17 @@ public class EbaMojoTest
 
         //expected files/directories inside the eba file
         List expectedFiles = new ArrayList();
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
 
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.properties" );
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/pom.xml" );
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/maven-eba-test/" );
         expectedFiles.add( "META-INF/maven/org.apache.maven.test/" );
         expectedFiles.add( "META-INF/maven/" );
+//IC see: https://issues.apache.org/jira/browse/ARIES-267
+//IC see: https://issues.apache.org/jira/browse/ARIES-267
         expectedFiles.add( "META-INF/APPLICATION.MF" );
         expectedFiles.add( "META-INF/" );
         expectedFiles.add( "maven-artifact01-1.0-SNAPSHOT.jar" );
@@ -422,6 +432,7 @@ public class EbaMojoTest
 
         int missing = getSizeOfExpectedFiles(entries, expectedFiles);
         assertEquals("Missing files: " + expectedFiles,  0, missing);
+//IC see: https://issues.apache.org/jira/browse/ARIES-120
 
     }
 

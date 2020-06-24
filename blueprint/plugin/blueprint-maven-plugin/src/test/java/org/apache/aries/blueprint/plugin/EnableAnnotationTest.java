@@ -71,6 +71,7 @@ public class EnableAnnotationTest {
     }
 
     private void writeXML(String namespace, String enableAnnotations) throws XMLStreamException,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1736
             UnsupportedEncodingException, ParserConfigurationException, SAXException, IOException {
         Set<String> namespaces = new HashSet<>(Arrays.asList(NS_JPA, namespace));
         Map<String, String> customParameters = new HashMap<>();
@@ -118,6 +119,7 @@ public class EnableAnnotationTest {
     }
 
     private Document readToDocument(byte[] xmlAsBytes, boolean nameSpaceAware)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1736
             throws ParserConfigurationException,
             SAXException, IOException {
 

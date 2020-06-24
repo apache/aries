@@ -82,6 +82,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
 				mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
 				mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1221
                 mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx").versionAsInProject(),
                 mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.core.whiteboard").versionAsInProject(),
 				mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx.api").versionAsInProject(),
@@ -169,6 +170,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
     }
 	
     protected ObjectName waitForMBean(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         return waitForMBean(name, 20);
     }
 

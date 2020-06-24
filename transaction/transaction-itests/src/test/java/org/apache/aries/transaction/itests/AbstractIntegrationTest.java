@@ -53,6 +53,7 @@ import org.osgi.framework.BundleException;
 @ExamReactorStrategy(PerClass.class)
 public abstract class AbstractIntegrationTest {
     @Inject
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
     BundleContext bundleContext;
     
     @Inject
@@ -60,10 +61,12 @@ public abstract class AbstractIntegrationTest {
     
     @Inject
     Counter counter;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
 
     protected boolean clientTransaction = true;
 
     public Option baseOptions() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1189
         String localRepo = System.getProperty("maven.repo.local");
         if (localRepo == null) {
             localRepo = System.getProperty("org.ops4j.pax.url.mvn.localRepository");
@@ -83,6 +86,7 @@ public abstract class AbstractIntegrationTest {
     @Configuration
     public Option[] configuration() {
         return new Option[] {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
                 baseOptions(),
                 frameworkProperty("org.osgi.framework.system.packages")
                     .value("javax.accessibility,javax.activation,javax.activity,javax.annotation,javax.annotation.processing,javax.crypto,javax.crypto.interfaces,javax.crypto.spec,javax.imageio,javax.imageio.event,javax.imageio.metadata,javax.imageio.plugins.bmp,javax.imageio.plugins.jpeg,javax.imageio.spi,javax.imageio.stream,javax.jws,javax.jws.soap,javax.lang.model,javax.lang.model.element,javax.lang.model.type,javax.lang.model.util,javax.management,javax.management.loading,javax.management.modelmbean,javax.management.monitor,javax.management.openmbean,javax.management.relation,javax.management.remote,javax.management.remote.rmi,javax.management.timer,javax.naming,javax.naming.directory,javax.naming.event,javax.naming.ldap,javax.naming.spi,javax.net,javax.net.ssl,javax.print,javax.print.attribute,javax.print.attribute.standard,javax.print.event,javax.rmi,javax.rmi.CORBA,javax.rmi.ssl,javax.script,javax.security.auth,javax.security.auth.callback,javax.security.auth.kerberos,javax.security.auth.login,javax.security.auth.spi,javax.security.auth.x500,javax.security.cert,javax.security.sasl,javax.sound.midi,javax.sound.midi.spi,javax.sound.sampled,javax.sound.sampled.spi,javax.sql,javax.sql.rowset,javax.sql.rowset.serial,javax.sql.rowset.spi,javax.swing,javax.swing.border,javax.swing.colorchooser,javax.swing.event,javax.swing.filechooser,javax.swing.plaf,javax.swing.plaf.basic,javax.swing.plaf.metal,javax.swing.plaf.multi,javax.swing.plaf.synth,javax.swing.table,javax.swing.text,javax.swing.text.html,javax.swing.text.html.parser,javax.swing.text.rtf,javax.swing.tree,javax.swing.undo,javax.tools,javax.xml,javax.xml.bind,javax.xml.bind.annotation,javax.xml.bind.annotation.adapters,javax.xml.bind.attachment,javax.xml.bind.helpers,javax.xml.bind.util,javax.xml.crypto,javax.xml.crypto.dom,javax.xml.crypto.dsig,javax.xml.crypto.dsig.dom,javax.xml.crypto.dsig.keyinfo,javax.xml.crypto.dsig.spec,javax.xml.datatype,javax.xml.namespace,javax.xml.parsers,javax.xml.soap,javax.xml.stream,javax.xml.stream.events,javax.xml.stream.util,javax.xml.transform,javax.xml.transform.dom,javax.xml.transform.sax,javax.xml.transform.stax,javax.xml.transform.stream,javax.xml.validation,javax.xml.ws,javax.xml.ws.handler,javax.xml.ws.handler.soap,javax.xml.ws.http,javax.xml.ws.soap,javax.xml.ws.spi,javax.xml.xpath,org.ietf.jgss,org.omg.CORBA,org.omg.CORBA.DynAnyPackage,org.omg.CORBA.ORBPackage,org.omg.CORBA.TypeCodePackage,org.omg.CORBA.portable,org.omg.CORBA_2_3,org.omg.CORBA_2_3.portable,org.omg.CosNaming,org.omg.CosNaming.NamingContextExtPackage,org.omg.CosNaming.NamingContextPackage,org.omg.Dynamic,org.omg.DynamicAny,org.omg.DynamicAny.DynAnyFactoryPackage,org.omg.DynamicAny.DynAnyPackage,org.omg.IOP,org.omg.IOP.CodecFactoryPackage,org.omg.IOP.CodecPackage,org.omg.Messaging,org.omg.PortableInterceptor,org.omg.PortableInterceptor.ORBInitInfoPackage,org.omg.PortableServer,org.omg.PortableServer.CurrentPackage,org.omg.PortableServer.POAManagerPackage,org.omg.PortableServer.POAPackage,org.omg.PortableServer.ServantLocatorPackage,org.omg.PortableServer.portable,org.omg.SendingContext,org.omg.stub.java.rmi,org.w3c.dom,org.w3c.dom.bootstrap,org.w3c.dom.css,org.w3c.dom.events,org.w3c.dom.html,org.w3c.dom.ls,org.w3c.dom.ranges,org.w3c.dom.stylesheets,org.w3c.dom.traversal,org.w3c.dom.views,org.xml.sax,org.xml.sax.ext,org.xml.sax.helpers"),
@@ -105,6 +109,7 @@ public abstract class AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core").versionAsInProject(),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl").versionAsInProject(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
                 jta12Bundles(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.manager").versionAsInProject(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint").versionAsInProject(),
@@ -114,15 +119,19 @@ public abstract class AbstractIntegrationTest {
 
                 //debug(),
                 //new TimeoutOption( 0 ),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1189
         };
     }
 
     protected Option debug() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         return vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
     }
 
     private Option jta12Bundles() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
             return CoreOptions.composite(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1364
                 mavenBundle("javax.interceptor", "javax.interceptor-api").versionAsInProject(),
                 mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax-inject").versionAsInProject(),
                 mavenBundle("javax.el", "javax.el-api").versionAsInProject(),
@@ -150,12 +159,14 @@ public abstract class AbstractIntegrationTest {
 
     // Test with client transaction and runtime exception - the user transaction is rolled back
     protected void assertInsertWithRuntimeExceptionRolledBack() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         TestBean bean = getBean();
         int initialRows = counter.countRows();
 
         if (clientTransaction) {
             tran.begin();
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         bean.insertRow("testWithClientTranAndWithRuntimeException", 1, null);
         try {
             bean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
@@ -183,6 +194,7 @@ public abstract class AbstractIntegrationTest {
         if (clientTransaction) {
             tran.begin();
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         bean.insertRow("testWithClientTranAndWithAppException", 1, null);
         try {
             bean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
@@ -204,6 +216,7 @@ public abstract class AbstractIntegrationTest {
         if (clientTransaction ) {
             tran.begin();
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         bean.insertRow("testWithClientTran", 1, null);
         if (clientTransaction ) {
             tran.commit();
@@ -215,6 +228,7 @@ public abstract class AbstractIntegrationTest {
     protected void assertInsertFails() throws Exception {
         TestBean bean = getBean();
         int initialRows = counter.countRows();
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         if (clientTransaction ) {
             tran.begin();
         }
@@ -256,6 +270,7 @@ public abstract class AbstractIntegrationTest {
     // Test without client transaction - an exception is thrown because a transaction is mandatory
     protected void assertMandatoryTransaction() throws SQLException {
           try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
               getBean().insertRow("testWithoutClientTran", 1, null);
               fail("IllegalStateException not thrown");
           } catch (IllegalStateException e) {
@@ -266,6 +281,7 @@ public abstract class AbstractIntegrationTest {
     protected abstract TestBean getBean();
 
     protected void assertDelegateInsert() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         TestBean bean = getBean();
         int initialRows = counter.countRows();
     

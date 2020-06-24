@@ -26,5 +26,6 @@ import org.apache.aries.blueprint.PassThroughMetadata;
 public interface MutablePassThroughMetadata extends PassThroughMetadata, MutableComponentMetadata {
 
     void setObject(Object object);
+//IC see: https://issues.apache.org/jira/browse/ARIES-4
 
 }

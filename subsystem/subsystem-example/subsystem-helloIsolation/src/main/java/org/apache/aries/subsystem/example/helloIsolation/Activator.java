@@ -40,6 +40,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         System.out.println("bundle helloIsolation start");
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-497
         SecurityManager security = System.getSecurityManager();
         if (security != null) {
             System.out.println("HelloIsolationImpl: system manager is not null");

@@ -25,6 +25,7 @@ import org.osgi.resource.Resource;
 public abstract class AbstractHeader implements Header<Clause> {
 	// TODO This is specific to deployment manifests and shouldn't be at this level.
 	protected static void appendResource(Resource resource, StringBuilder builder) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Map<String, Object> attributes = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE).get(0).getAttributes();
 		String symbolicName = (String)attributes.get(IdentityNamespace.IDENTITY_NAMESPACE);
 		Version version = (Version)attributes.get(IdentityNamespace.CAPABILITY_VERSION_ATTRIBUTE);
@@ -45,6 +46,7 @@ public abstract class AbstractHeader implements Header<Clause> {
 	protected final String value;
 	
 	public AbstractHeader(String name, String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -99,6 +101,7 @@ public abstract class AbstractHeader implements Header<Clause> {
 
 	@Override
     public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return new StringBuilder(getClass().getName())
 		.append(": name=")
 		.append(name)

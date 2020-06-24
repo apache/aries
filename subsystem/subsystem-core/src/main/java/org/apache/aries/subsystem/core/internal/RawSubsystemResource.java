@@ -124,14 +124,17 @@ public class RawSubsystemResource implements Resource {
 	private final Collection<TranslationFile> translations;
 
 	public RawSubsystemResource(String location, IDirectory content, BasicSubsystem parent) throws URISyntaxException, IOException, ResolutionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		id = SubsystemIdentifier.getNextId();
 		this.location = new Location(location);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		this.parentSubsystem = parent;
 		if (content == null)
 			content = this.location.open();
 		try {
             SubsystemManifest manifest = computeSubsystemManifest(content);
             resources = computeResources(content, manifest);
+//IC see: https://issues.apache.org/jira/browse/ARIES-997
 			fakeImportServiceResource = createFakeResource(manifest);
 			localRepository = computeLocalRepository();
 			manifest = computeSubsystemManifestBeforeRequirements(content, manifest);
@@ -147,6 +150,7 @@ public class RawSubsystemResource implements Resource {
 	}
 
 	public RawSubsystemResource(File file, BasicSubsystem parent) throws IOException, URISyntaxException, ResolutionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		this(FileSystem.getFSRoot(file), parent);
 	}
 
@@ -155,8 +159,10 @@ public class RawSubsystemResource implements Resource {
 		requirements = subsystemManifest.toRequirements(this);
 		capabilities = subsystemManifest.toCapabilities(this);
 		deploymentManifest = initializeDeploymentManifest(idir);
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		id = Long.parseLong(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_ID).getValue());
 		location = new Location(deploymentManifest.getHeaders().get(DeploymentManifest.ARIESSUBSYSTEM_LOCATION).getValue());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		parentSubsystem = parent;
 		translations = Collections.emptyList();
 		Map<String, Header<?>> headers = deploymentManifest.getHeaders();
@@ -186,6 +192,7 @@ public class RawSubsystemResource implements Resource {
 	}
 
 	private static Resource createFakeResource(SubsystemManifest manifest) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-997
 		Header<?> importServiceHeader = manifest.getHeaders().get(APPLICATION_IMPORT_SERVICE_HEADER);
 		if (importServiceHeader == null) {
 			return null;
@@ -223,6 +230,7 @@ public class RawSubsystemResource implements Resource {
 			capBuilder.namespace(ServiceNamespace.SERVICE_NAMESPACE);
 			capBuilder.attribute(ServiceNamespace.CAPABILITY_OBJECTCLASS_ATTRIBUTE, objectClasses);
 			if (filter != null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 				capBuilder.attributes(new HashMap<String, Object>(SimpleFilter.attributes(filter)));
 			capBuilder.attribute("service.imported", "");
 			capBuilder.resource(fakeResource);
@@ -234,6 +242,7 @@ public class RawSubsystemResource implements Resource {
 
 	@Override
 	public boolean equals(Object o) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (o == this)
 			return true;
 		if (!(o instanceof RawSubsystemResource))
@@ -259,6 +268,7 @@ public class RawSubsystemResource implements Resource {
 	}
 
 	public long getId() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		return id;
 	}
 
@@ -293,6 +303,7 @@ public class RawSubsystemResource implements Resource {
 	@Override
 	public int hashCode() {
 		int result = 17;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		result = 31 * result + getLocation().hashCode();
 		return result;
 	}
@@ -316,6 +327,7 @@ public class RawSubsystemResource implements Resource {
 	}
 
 	private void addSubsystemContentHeader(SubsystemManifest.Builder builder, SubsystemManifest manifest) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		addHeader(builder, computeSubsystemContentHeader(manifest));
 	}
 
@@ -340,6 +352,7 @@ public class RawSubsystemResource implements Resource {
 	}
 
 	private DeploymentManifest computeDeploymentManifest(IDirectory directory) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return computeExistingDeploymentManifest(directory);
 	}
 
@@ -357,6 +370,7 @@ public class RawSubsystemResource implements Resource {
 		for (Requirement requirement : requirements) {
 			if (!PackageNamespace.PACKAGE_NAMESPACE.equals(requirement.getNamespace()))
 				continue;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			clauses.add(ImportPackageHeader.Clause.valueOf(requirement));
 		}
 		if (clauses.isEmpty())
@@ -366,6 +380,7 @@ public class RawSubsystemResource implements Resource {
 	}
 
 	private org.apache.aries.subsystem.core.repository.Repository computeLocalRepository() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-997
 		if (fakeImportServiceResource != null) {
 			Collection<Resource> temp = new ArrayList<Resource>(resources);
 			temp.add(fakeImportServiceResource);
@@ -381,6 +396,7 @@ public class RawSubsystemResource implements Resource {
 		for (Requirement requirement : requirements) {
 			if (!BundleNamespace.BUNDLE_NAMESPACE.equals(requirement.getNamespace()))
 				continue;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			clauses.add(RequireBundleHeader.Clause.valueOf(requirement));
 		}
 		if (clauses.isEmpty())
@@ -395,12 +411,14 @@ public class RawSubsystemResource implements Resource {
 		ArrayList<RequireCapabilityHeader.Clause> clauses = new ArrayList<RequireCapabilityHeader.Clause>();
 		for (Requirement requirement : requirements) {
 			String namespace = requirement.getNamespace();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1328
 			if (namespace.startsWith("osgi.") && !(
 					// Don't filter out the osgi.ee namespace...
 					namespace.equals(ExecutionEnvironmentNamespace.EXECUTION_ENVIRONMENT_NAMESPACE) ||
 					// ...or the osgi.service namespace.
 					namespace.equals(ServiceNamespace.SERVICE_NAMESPACE)))
 				continue;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			clauses.add(RequireCapabilityHeader.Clause.valueOf(requirement));
 		}
 		if (clauses.isEmpty())
@@ -420,6 +438,7 @@ public class RawSubsystemResource implements Resource {
 			// Empty subsystems (i.e. subsystems with no content) are allowed.
 			return Collections.emptyList();
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		List<Requirement> requirements = header.toRequirements(this);
 		List<Resource> resources = new ArrayList<Resource>(requirements.size());
 		// TODO Do we need the system repository in here (e.g., for features)?
@@ -453,8 +472,10 @@ public class RawSubsystemResource implements Resource {
 			return Collections.emptyList();
 		ArrayList<Resource> result = new ArrayList<Resource>(files.size());
 		for (IFile file : directory.listFiles()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
             if (file.isFile()) {
                 addResource(file, file.convertNested(), manifest, result);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1720
             } else if (!file.getName().endsWith("OSGI-INF")) {
                 addResource(file, file.convert(), manifest, result);
             }
@@ -467,6 +488,7 @@ public class RawSubsystemResource implements Resource {
             IOException, ResolutionException, MalformedURLException {
         String name = file.getName();
         if (name.endsWith(".esa")) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1729
             result.add(new RawSubsystemResource(convertFileToLocation(file), content, parentSubsystem));
         } else if (name.endsWith(".jar")) {
             try {
@@ -500,6 +522,7 @@ public class RawSubsystemResource implements Resource {
             } catch (Exception e) {
                 // Ignore if the resource is an invalid bundle or not a bundle at all.
                 if (logger.isDebugEnabled()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1729
                     logger.debug("File \"" + file.getName() + "\" in subsystem with location \"" + location + "\" will be ignored because it is not recognized as a supported resource.", e);
                 }
             }
@@ -528,17 +551,20 @@ public class RawSubsystemResource implements Resource {
     private SubsystemContentHeader computeSubsystemContentHeader(SubsystemManifest manifest) {
 		SubsystemContentHeader header = manifest.getSubsystemContentHeader();
 		if (header == null && !resources.isEmpty())
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			header = SubsystemContentHeader.newInstance(resources);
 		return header;
 	}
 
 	private SubsystemImportServiceHeader computeSubsystemImportServiceHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		if (requirements.isEmpty())
 			return null;
 		ArrayList<SubsystemImportServiceHeader.Clause> clauses = new ArrayList<SubsystemImportServiceHeader.Clause>(requirements.size());
 		for (Requirement requirement : requirements) {
 			if (!ServiceNamespace.SERVICE_NAMESPACE.equals(requirement.getNamespace()))
 				continue;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			clauses.add(SubsystemImportServiceHeader.Clause.valueOf(requirement));
 		}
 		if (clauses.isEmpty())
@@ -554,6 +580,7 @@ public class RawSubsystemResource implements Resource {
 		addImportPackageHeader(builder);
 		addRequireBundleHeader(builder);
 		addRequireCapabilityHeader(builder);
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		addSubsystemImportServiceHeader(builder);
 		return builder.build();
 	}
@@ -561,6 +588,7 @@ public class RawSubsystemResource implements Resource {
 	private SubsystemManifest computeSubsystemManifestBeforeRequirements(IDirectory content, SubsystemManifest manifest) throws MalformedURLException {
 		SubsystemManifest.Builder builder = new SubsystemManifest.Builder().manifest(manifest);
 		addSubsystemSymbolicNameHeader(builder, manifest);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		addSubsystemVersionHeader(builder, manifest);
 		addSubsystemTypeHeader(builder, manifest);
 		addSubsystemContentHeader(builder, manifest);
@@ -570,6 +598,7 @@ public class RawSubsystemResource implements Resource {
 
 	private SubsystemSymbolicNameHeader computeSubsystemSymbolicNameHeader(SubsystemManifest manifest) {
 		SubsystemSymbolicNameHeader header = manifest.getSubsystemSymbolicNameHeader();
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		if (header != null)
 			return header;
 		String symbolicName = location.getSymbolicName();
@@ -630,6 +659,7 @@ public class RawSubsystemResource implements Resource {
 	}
 	
 	private DeploymentManifest initializeDeploymentManifest(IDirectory idir)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			throws IOException {
 		Manifest manifest = ManifestProcessor.obtainManifestFromAppDir(idir,
 				"OSGI-INF/DEPLOYMENT.MF");
@@ -638,6 +668,7 @@ public class RawSubsystemResource implements Resource {
 		else
 			return new DeploymentManifest.Builder()
 					.manifest(getSubsystemManifest())
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 					.location(BasicSubsystem.ROOT_LOCATION).autostart(true).id(0)
 					.lastId(SubsystemIdentifier.getLastId())
 					.state(State.INSTALLING)
@@ -652,6 +683,7 @@ public class RawSubsystemResource implements Resource {
 			return new SubsystemManifest(manifest);
 		else
 			return new SubsystemManifest.Builder()
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 					.symbolicName(BasicSubsystem.ROOT_SYMBOLIC_NAME)
 					.version(BasicSubsystem.ROOT_VERSION)
 					.type(SubsystemTypeHeader.TYPE_APPLICATION

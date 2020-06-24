@@ -66,6 +66,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     private ServiceRegistration registration;
 
     public CmManagedServiceFactory(ExtendedBlueprintContainer blueprintContainer) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         super(blueprintContainer.getBundleContext(), null);
         this.blueprintContainer = blueprintContainer;
     }
@@ -78,11 +79,14 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
         props.put(Constants.BUNDLE_SYMBOLICNAME, bundle.getSymbolicName());
         props.put(Constants.BUNDLE_VERSION, bundle.getHeaders().get(Constants.BUNDLE_VERSION));
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         registration = blueprintContainer.getBundleContext().registerService(ManagedServiceFactory.class.getName(), this, (Dictionary) props);
     }
 
     public void destroy() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1660
         ServiceUtil.safeUnregister(registration);
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         super.destroy();
     }
 
@@ -127,7 +131,9 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     }
 
     private void getRegistrationProperties(Dictionary properties, boolean update) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         String pid = (String) properties.get(Constants.SERVICE_PID);
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         CmProperties cm = findServiceProcessor();
         if (cm == null) {
             while (!properties.isEmpty()) {
@@ -153,6 +159,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
             }
         }
         properties.put(Constants.SERVICE_RANKING, ranking);
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         properties.put(Constants.SERVICE_PID, pid);
     }
 
@@ -188,8 +195,10 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     }
 
     private Method findDestroyMethod(Class clazz, Class... args) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         Method method = null;
         if (componentDestroyMethod != null && componentDestroyMethod.length() > 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1436
             List<Method> methods = ReflectionUtils.findCompatibleMethods(clazz, componentDestroyMethod, args);
             if (methods != null && !methods.isEmpty()) {
                 method = methods.get(0);
@@ -200,6 +209,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
 
     protected Object doCreate(Dictionary properties) throws Exception {
         updateComponentProperties(null, copy(properties));
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         Object component = blueprintContainer.getComponentInstance(managedComponentName);
         getRegistrationProperties(properties, false);
         return component;
@@ -212,6 +222,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
     }
 
     protected void doDestroy(Object service, Dictionary properties, int code) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1436
         Method method = findDestroyMethod(service.getClass(), int.class);
         if (method != null) {
             try {
@@ -269,6 +280,7 @@ public class CmManagedServiceFactory extends BaseManagedServiceFactory<Object> {
                 classes = new HashSet<String>(interfaces);
                 break;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-584
         return classes.toArray(new String[classes.size()]);
     }
 

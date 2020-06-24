@@ -24,6 +24,7 @@ public class ResolutionDirective extends AbstractDirective {
 	public static final ResolutionDirective OPTIONAL = new ResolutionDirective(VALUE_OPTIONAL);
 	
 	public ResolutionDirective() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(VALUE_MANDATORY);
 	}
 	
@@ -32,6 +33,7 @@ public class ResolutionDirective extends AbstractDirective {
 			return MANDATORY;
 		if (VALUE_OPTIONAL.equals(value))
 			return OPTIONAL;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
         throw new IllegalArgumentException("Invalid " + Constants.RESOLUTION_DIRECTIVE + " directive: " + value);
 	}
 	

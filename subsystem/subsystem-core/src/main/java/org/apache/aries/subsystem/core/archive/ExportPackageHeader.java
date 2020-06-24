@@ -31,6 +31,7 @@ public class ExportPackageHeader extends AbstractClauseBasedHeader<ExportPackage
 		public static final String DIRECTIVE_USES = Constants.USES_DIRECTIVE;
 		
 		public Clause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
             super(
             		parsePath(clause, Patterns.PACKAGE_NAMES, false), 
             		parseParameters(clause, false), 
@@ -81,6 +82,7 @@ public class ExportPackageHeader extends AbstractClauseBasedHeader<ExportPackage
 		}
 		
 		public Collection<String> getPackageNames() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			return Arrays.asList(path.split(";"));
 		}
 
@@ -100,6 +102,7 @@ public class ExportPackageHeader extends AbstractClauseBasedHeader<ExportPackage
 		}
         
 		public Collection<ExportPackageCapability> toCapabilities(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			Collection<String> packageNames = getPackageNames();
 			Collection<ExportPackageCapability> result = new ArrayList<ExportPackageCapability>(packageNames.size());
 			for (String packageName : packageNames) {
@@ -134,6 +137,7 @@ public class ExportPackageHeader extends AbstractClauseBasedHeader<ExportPackage
 	
 	@Override
 	public List<ExportPackageCapability> toCapabilities(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		List<ExportPackageCapability> result = new ArrayList<ExportPackageCapability>();
 		for (Clause clause : clauses)
 			result.addAll(clause.toCapabilities(resource));

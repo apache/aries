@@ -62,6 +62,7 @@ public class ClassDeclaration extends GenericDeclaration {
     }
 
     public Map<String, FieldDeclaration> getAllFields() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         Map<String, FieldDeclaration> allFields = new HashMap<String, FieldDeclaration>(getFields());
         Map<String, FieldDeclaration> fieldsFromSupers = getFieldsInUpperChain();
         putIfAbsent(allFields, fieldsFromSupers);
@@ -90,6 +91,7 @@ public class ClassDeclaration extends GenericDeclaration {
     public Map<String, Set<MethodDeclaration>> getAllMethods() {
 
         Map<String, Set<MethodDeclaration>> methods = new HashMap<String, Set<MethodDeclaration>>(getMethods());
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         Map<String, Set<MethodDeclaration>> methodsFromSupers = getMethodsInUpperChain();
         for (Map.Entry<String, Set<MethodDeclaration>> superMethodsEntry : methodsFromSupers.entrySet()) {
             Set<MethodDeclaration> overloadingMethods = methods.get(superMethodsEntry.getKey());
@@ -140,6 +142,7 @@ public class ClassDeclaration extends GenericDeclaration {
                 SerialVersionClassVisitor cv = new SerialVersionClassVisitor(null);
                 SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
                 ClassReader cr = new ClassReader(jarsLoader.getResourceAsStream(superClass + SemanticVersioningUtils.classExt));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
                 cr.accept(svc, 0);
                 ClassDeclaration cd = svc.getClassDeclaration();
                 if (cd != null) {
@@ -159,11 +162,14 @@ public class ClassDeclaration extends GenericDeclaration {
         if ((superClass != null)) {
             // load the super class of the cd
             SerialVersionClassVisitor cv = new SerialVersionClassVisitor(null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
 
             SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
             // use URLClassLoader to load the class
             try {
                 ClassReader cr = new ClassReader(jarsLoader.getResourceAsStream(superClass + SemanticVersioningUtils.classExt));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
                 cr.accept(svc, 0);
                 ClassDeclaration cd = svc.getClassDeclaration();
                 if (cd != null) {
@@ -192,6 +198,7 @@ public class ClassDeclaration extends GenericDeclaration {
 
     private void addFieldInUpperChain(Map<String, FieldDeclaration> fields) {
         putIfAbsent(fieldsInUpperChain, fields);
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
 
     }
 
@@ -224,6 +231,7 @@ public class ClassDeclaration extends GenericDeclaration {
         if (className != null) {
             // load the super class of the cd
             SerialVersionClassVisitor cv = new SerialVersionClassVisitor(null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
 
             SemanticVersioningClassVisitor svc = new SemanticVersioningClassVisitor(jarsLoader, cv);
             try {
@@ -286,6 +294,7 @@ public class ClassDeclaration extends GenericDeclaration {
     public BinaryCompatibilityStatus getBinaryCompatibleStatus(ClassDeclaration old) {
         // check class signature, fields, methods
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         BinaryCompatibilityStatus reasons = new BinaryCompatibilityStatus();
         if (old == null) {
             return reasons;
@@ -309,6 +318,7 @@ public class ClassDeclaration extends GenericDeclaration {
         // public changed to non-public
         String prefix = " The class " + getName();
         if (!!!originalClass.isAbstract() && isAbstract()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
             reasons.add(prefix + " was not abstract but is changed to be abstract.");
         }
         if (!!!originalClass.isFinal() && isFinal()) {
@@ -348,6 +358,7 @@ public class ClassDeclaration extends GenericDeclaration {
         if (bef_fd.isPublic() || bef_fd.isProtected()) {
             String prefix = "The " + (bef_fd.isPublic() ? "public" : "protected") + " field " + fieldName;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
 
             if (cur_fd == null) {
                 reasons.add(prefix + " has been deleted.");
@@ -395,9 +406,11 @@ public class ClassDeclaration extends GenericDeclaration {
             // check to see whether the serializable id is the same
             //ignore if it is enum
             if ((!getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS) && (!old.getAllSupers().contains(SemanticVersioningUtils.ENUM_CLASS)))) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-975
                 long oldValue = getSerialVersionUID(old);
                 long curValue = getSerialVersionUID(this);
                 if ((oldValue != curValue)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
                     reasons.add("The serializable class is no longer back compatible as the value of SerialVersionUID has changed from " + oldValue + " to " + curValue + ".");
                 }
             }
@@ -406,6 +419,7 @@ public class ClassDeclaration extends GenericDeclaration {
     }
 
     private long getSerialVersionUID(ClassDeclaration cd) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-994
       FieldDeclaration serialID = cd.getAllFields().get(SemanticVersioningUtils.SERIAL_VERSION_UTD);
       if (serialID != null) {
         if (serialID.isFinal() && serialID.isStatic() && Type.LONG_TYPE.equals(Type.getType(serialID.getDesc()))) {
@@ -437,6 +451,7 @@ public class ClassDeclaration extends GenericDeclaration {
         // method changed from not abstract -> abstract
         Map<String, Set<MethodDeclaration>> oldMethods = originalClass.getAllMethods();
         Map<String, Set<MethodDeclaration>> newMethods = getAllMethods();
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         areMethodsBinaryCompatible(oldMethods, newMethods, reasons);
     }
 
@@ -462,6 +477,7 @@ public class ClassDeclaration extends GenericDeclaration {
             for (MethodDeclaration md : oldMDSigs) {
                 String mdName = md.getName();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
                 String prefix = "The " + SemanticVersioningUtils.getReadableMethodSignature(mdName, md.getDesc());
                 if (md.isProtected() || md.isPublic()) {
                     boolean found = false;
@@ -477,6 +493,7 @@ public class ClassDeclaration extends GenericDeclaration {
 
                                 if (!!!Modifier.isFinal(md.getAccess()) && !!!Modifier.isStatic(md.getAccess()) && Modifier.isFinal(new_md.getAccess())) {
                                     compatible = false;
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
                                     reasons.add(prefix + " was not final but has been changed to be final.");
                                 }
                                 if (Modifier.isStatic(md.getAccess()) != Modifier.isStatic(new_md.getAccess())) {
@@ -510,6 +527,7 @@ public class ClassDeclaration extends GenericDeclaration {
                         if (!isMethodInSuperClass(md)) {
 
                             compatible = false;
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
                             reasons.add(prefix + " has been deleted or its return type or parameter list has changed.");
                         } else {
                             if (newMDSigs != null) {
@@ -531,6 +549,7 @@ public class ClassDeclaration extends GenericDeclaration {
         // Check the newly added method has not caused binary incompatibility
         for (Map.Entry<String, Collection<MethodDeclaration>> extraMethodSet : extraMethods.entrySet()) {
             for (MethodDeclaration md : extraMethodSet.getValue()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
                 String head = "The " + SemanticVersioningUtils.getReadableMethodSignature(md.getName(), md.getDesc());
                 isNewMethodSpecialCase(md, head, reasons);
             }
@@ -594,6 +613,7 @@ public class ClassDeclaration extends GenericDeclaration {
             for (MethodDeclaration value : overloaddingMethods) {
                 // method signature and name same and also the method should not be less accessible
                 if (md.equals(value) && (!!!SemanticVersioningUtils.isLessAccessible(md, value)) && (value.isStatic() == md.isStatic())) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-979
                     return true;
                 }
             }
@@ -623,6 +643,7 @@ public class ClassDeclaration extends GenericDeclaration {
                     if (md.equals(value)) {
                         if (SemanticVersioningUtils.isLessAccessible(value, md)) {
                             special = true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
                             reasons.add(prefix + " is less accessible than the same method in its parent.");
                         }
                         if (value.isStatic()) {
@@ -648,6 +669,7 @@ public class ClassDeclaration extends GenericDeclaration {
         boolean containsAll = getAllSupers().containsAll(oldSupers);
         if (!!!containsAll) {
             oldSupers.removeAll(getAllSupers());
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
             reasons.add("The superclasses or superinterfaces have stopped being super: " + oldSupers.toString() + ".");
         }
     }

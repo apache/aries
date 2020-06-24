@@ -31,6 +31,7 @@ import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import java.lang.reflect.AnnotatedElement;
 
 public class BeanHandler implements
+//IC see: https://issues.apache.org/jira/browse/ARIES-1676
         BeanFinder<Bean>,
         FactoryMethodFinder<Bean>,
         NamedLikeHandler<Bean>,

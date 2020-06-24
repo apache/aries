@@ -232,6 +232,7 @@ public class NoOsgiRecipeBuilder {
             IdRefRecipe rnr = new IdRefRecipe(getName(null), componentName);
             return rnr;
         } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1700
             throw new IllegalStateException("Unsupported value: " + (v != null ? v.getClass().getName() : "null"));
         }
     }

@@ -70,6 +70,7 @@ public class BlueprintURLContextTest {
   
   static class AnotherComponent extends SimpleComponent { 
     public AnotherComponent (String i) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
       super(i);
     }
     @Override
@@ -100,12 +101,14 @@ public class BlueprintURLContextTest {
   
   @BeforeClass
   public static void setup() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-981
     System.setProperty("org.apache.aries.jndi.disable.builder", "false");
     bundle = Skeleton.newMock(new BundleMock("aBundle", new Hashtable<String, String>()), Bundle.class);
     BundleContext bc = bundle.getBundleContext();
     new org.apache.aries.jndi.startup.Activator().start(bc);
     Activator a = new Activator();
     a.start(bc);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
     ProxyManager pm = (ProxyManager) Proxy.newProxyInstance(
             BlueprintURLContext.class.getClassLoader(),
             new Class[]{ProxyManager.class},
@@ -155,6 +158,7 @@ public class BlueprintURLContextTest {
   public void testTwoLevelComponentLookup() throws Exception { 
     InitialContext ctx = new InitialContext();
     Context ctx2 = (Context) ctx.lookup("blueprint:comp");
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
     SimpleComponent sc = (SimpleComponent) ctx2.lookup("comp2"); 
     assertNotNull (sc);
     String msg = sc.getIdMessage();
@@ -194,6 +198,7 @@ public class BlueprintURLContextTest {
       } else if (compId.equals("comp2")) { 
         assertEquals ("comp2 class wrong in list", AnotherComponent.class.getName(), compClass);
       }
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
       expectedCompIds.remove(compId);
     }
     assertEquals ("Not all expected components were found", expectedCompIds.size(), 0);
@@ -227,6 +232,7 @@ public class BlueprintURLContextTest {
   
   @Test 
   public void testBlueprintTimeoutExtractionBothSpecified() { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
     Bundle b = bundleMock ("bundle.name;x=y;p:=q;blueprint.graceperiod:=true;blueprint.timeout:=10000;a=b;c:=d");
     int timeout = BlueprintURLContext.getGracePeriod(b);
     assertEquals ("graceperiod wrong", 10000, timeout);

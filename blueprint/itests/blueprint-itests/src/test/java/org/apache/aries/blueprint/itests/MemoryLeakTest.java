@@ -51,6 +51,7 @@ public class MemoryLeakTest extends AbstractBlueprintIntegrationTest {
         long lossage = startFreeMemory - endFreeMemory;
         System.out.println("We lost: " + lossage);
         // increase the lossage value as it may depends of the JDK
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         assertTrue("We lost: " + lossage, lossage < 77000000);
     }
 

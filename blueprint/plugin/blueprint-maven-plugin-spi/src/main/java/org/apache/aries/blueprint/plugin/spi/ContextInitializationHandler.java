@@ -27,5 +27,6 @@ public interface ContextInitializationHandler {
      *
      * @param contextEnricher context enricher
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1605
     void initContext(ContextEnricher contextEnricher);
 }

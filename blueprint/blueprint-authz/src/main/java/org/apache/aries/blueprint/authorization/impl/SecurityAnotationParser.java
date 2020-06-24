@@ -33,6 +33,7 @@ import javax.annotation.security.RolesAllowed;
  * @see RolesAllowed
  */
 class SecurityAnotationParser {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
 
     /**
      * Get the effective annotation regarding method annotations override class annotations.
@@ -42,6 +43,7 @@ class SecurityAnotationParser {
      * @param m Method to check
      * @return effective annotation (either DenyAll, PermitAll or RolesAllowed)
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-1316
     Annotation getEffectiveAnnotation(Class<?> beanClass, Method m) {
         Annotation classLevel = getAuthAnnotation(beanClass);
         try {
@@ -73,6 +75,7 @@ class SecurityAnotationParser {
      * @return
      */
     public boolean isSecured(Class<?> clazz) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         if (clazz == Object.class) {
             return false;
         }

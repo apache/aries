@@ -71,6 +71,7 @@ public class ConnectionManagerFactory {
     }
 
     public void init() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
         if (transactionManager == null && ("xa".equals(transaction) || "local".equals(transaction))) {
             throw new IllegalArgumentException("transactionManager must be set");
         }
@@ -84,6 +85,7 @@ public class ConnectionManagerFactory {
         // Apply the default value for property if necessary
         if (transactionSupport == null) {
             // No transaction
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
             if ("local".equalsIgnoreCase(transaction)) {
                 transactionSupport = LocalTransactions.INSTANCE;
             } else if ("none".equalsIgnoreCase(transaction)) {
@@ -142,11 +144,13 @@ public class ConnectionManagerFactory {
         if (connectionTracker == null) {
             connectionTracker = new ConnectionTrackingCoordinator();
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1250
         if (transactionManagerMonitor == null && transactionManager != null) {
             transactionManagerMonitor = new GeronimoTransactionListener(connectionTracker);
             transactionManager.addTransactionAssociationListener(transactionManagerMonitor);
         }
         if (connectionManager == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1211
             if (validateOnMatch || backgroundValidation) {
                 // Wrap the original ManagedConnectionFactory to add validation capability
                 managedConnectionFactory = new ValidatingDelegatingManagedConnectionFactory((UserPasswordManagedConnectionFactory) managedConnectionFactory);
@@ -160,6 +164,7 @@ public class ConnectionManagerFactory {
                         connectionTracker,
                         transactionManager,
                         managedConnectionFactory,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1246
                         name != null ? name : getClass().getName(),
                         getClass().getClassLoader(),
                         backgroundValidationMilliseconds);
@@ -172,6 +177,7 @@ public class ConnectionManagerFactory {
                         connectionTracker,
                         transactionManager,
                         managedConnectionFactory,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1246
                         name != null ? name : getClass().getName(),
                         getClass().getClassLoader());
             }
@@ -219,6 +225,7 @@ public class ConnectionManagerFactory {
     }
 
     public String getName() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1246
         return name;
     }
 
@@ -295,6 +302,7 @@ public class ConnectionManagerFactory {
     }
 
     public boolean isValidateOnMatch() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1211
         return validateOnMatch;
     }
 

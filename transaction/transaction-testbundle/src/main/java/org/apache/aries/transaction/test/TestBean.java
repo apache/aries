@@ -25,6 +25,7 @@ import java.sql.SQLException;
  *
  */
 public interface TestBean {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
     void delegateInsertRow(String name, int value) throws SQLException;
     void insertRow(String name, int value, Exception e) throws SQLException;
     void throwApplicationException() throws SQLException;

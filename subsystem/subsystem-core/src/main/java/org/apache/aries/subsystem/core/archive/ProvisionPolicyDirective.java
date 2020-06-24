@@ -26,6 +26,7 @@ public class ProvisionPolicyDirective extends AbstractDirective {
 	public static final ProvisionPolicyDirective DEFAULT = REJECT_DEPENDENCIES;
 	
 	public static ProvisionPolicyDirective getInstance(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (VALUE_ACCEPT_DEPENDENCIES.equals(value))
 			return ACCEPT_DEPENDENCIES;
 		if (VALUE_REJECT_DEPENDENCIES.equals(value))

@@ -33,11 +33,13 @@ public class SecurityAnnoationParserTest {
     private SecurityAnotationParser annParser;
     
     public SecurityAnnoationParserTest() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         annParser = new SecurityAnotationParser();
     }
     
     @Test
     public void testIsSecured() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         Assert.assertTrue(annParser.isSecured(SecuredClass.class));
         Assert.assertFalse(annParser.isSecured(Object.class));
         Assert.assertFalse(annParser.isSecured(Activator.class));
@@ -58,6 +60,7 @@ public class SecurityAnnoationParserTest {
     }
 
     private Annotation getEffective(String methodName) throws NoSuchMethodException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1316
         return annParser.getEffectiveAnnotation(SecuredClass.class, SecuredClass.class.getMethod(methodName));
     }
     

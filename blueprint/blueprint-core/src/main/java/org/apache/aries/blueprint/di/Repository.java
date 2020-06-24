@@ -57,10 +57,13 @@ public interface Repository {
      * @throws ComponentDefinitionException if the recipe is already instantiated
      */
     void removeRecipe(String name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-246
 
     Object create(String name) throws ComponentDefinitionException;
     
     Object create(String name, Collection<Class<?>> proxyInterfaces) throws ComponentDefinitionException;
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
 
     void createAll(Collection<String> names) throws ComponentDefinitionException;
     

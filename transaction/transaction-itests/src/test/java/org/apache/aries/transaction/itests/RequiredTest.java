@@ -28,6 +28,7 @@ public class RequiredTest extends AbstractIntegrationTest {
 
     @Test
     public void testInsertSuccesful() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         clientTransaction = false;
         assertInsertSuccesful();
     }

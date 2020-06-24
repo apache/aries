@@ -14,5 +14,6 @@
 package org.apache.aries.subsystem.core.archive;
 
 public interface Directive extends Parameter {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	String getValue();
 }

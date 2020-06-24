@@ -64,6 +64,7 @@ public class BundleStateMBeanHandlerTest {
         JMXAgent agent = mock(JMXAgent.class);
         JMXAgentContext agentContext = new JMXAgentContext(context, agent, logger);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         BundleStateMBeanHandler handler = new BundleStateMBeanHandler(agentContext, new StateConfig());
         handler.open();
 

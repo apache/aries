@@ -9,6 +9,7 @@ import org.osgi.framework.BundleContext;
 public class MbeanServerActivator implements BundleActivator {
 
 	public void start(BundleContext context) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 		MBeanServer mBeanServer = MBeanServerFactory.createMBeanServer();
 		context.registerService(MBeanServer.class, mBeanServer, null);
 	}

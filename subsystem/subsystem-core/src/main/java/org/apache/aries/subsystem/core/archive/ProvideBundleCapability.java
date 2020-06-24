@@ -32,6 +32,7 @@ public class ProvideBundleCapability extends AbstractCapability {
 	public static final String NAMESPACE = BundleNamespace.BUNDLE_NAMESPACE;
 	
 	private static Map<String, Object> initializeAttributes(BundleSymbolicNameHeader bsn, BundleVersionHeader version) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (version == null) {
 			version = new BundleVersionHeader();
 		}

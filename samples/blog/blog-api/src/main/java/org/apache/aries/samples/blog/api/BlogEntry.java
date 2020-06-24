@@ -39,6 +39,7 @@ public interface BlogEntry
    * @return the author's display name or email address if display name is null
    */
   BlogAuthor getAuthor();
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
 
   /**
    * Get the email address of the author of the blog posting.

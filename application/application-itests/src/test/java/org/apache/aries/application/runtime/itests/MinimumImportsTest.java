@@ -70,6 +70,7 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
 
         // need to fake a application manager to export the service in order to pass the resolving for the client
         // In the real situation, we don't allow customers' bundles to explicitly import the runtime services.
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         ZipFixture bundle = ArchiveFixture.newJar().manifest()
                 .attribute(Constants.BUNDLE_SYMBOLICNAME, fake_app_management)
                 .attribute(Constants.BUNDLE_MANIFESTVERSION, "2")
@@ -141,10 +142,12 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
         AppMgrClientBlueprintListener acbl = new AppMgrClientBlueprintListener();
         ServiceRegistration sr = bundleContext.registerService("org.osgi.service.blueprint.container.BlueprintListener", acbl, null);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("appmgrclienttest.eba")));
         RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         Repository[] repos = repositoryAdmin.listRepositories();
         for (Repository repo : repos) {
             repositoryAdmin.removeRepository(repo.getURI());
@@ -152,6 +155,7 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
 
         repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
         AriesApplicationContext ctx = manager.install(app);
         ctx.start();
 
@@ -162,6 +166,7 @@ public class MinimumImportsTest extends AbstractIntegrationTest {
         }
         assertNotNull("Timed out - didn't receive Blueprint CREATED or FAILURE event", acbl.success);
         assertTrue("Received Blueprint FAILURE event", acbl.success);
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
 
         ctx.stop();
         manager.uninstall(ctx);

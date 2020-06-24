@@ -36,6 +36,7 @@ public class SubsystemUri {
 	private final Version version;
 	
 	public SubsystemUri(String location) throws URISyntaxException, MalformedURLException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (!location.startsWith("subsystem://"))
 			throw new IllegalArgumentException(location);
 		URI uri = new URI(location);
@@ -61,6 +62,7 @@ public class SubsystemUri {
 	
 	public SubsystemUri(String symbolicName, Version version, URL url) {
 		// TODO symbolicName should conform to OSGi grammar.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (symbolicName == null || symbolicName.length() == 0)
 			throw new IllegalArgumentException(
 					"Missing required parameter: symbolicName");
@@ -83,6 +85,7 @@ public class SubsystemUri {
 
     @SuppressWarnings("deprecation")
 	public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		StringBuilder builder = new StringBuilder("subsystem://");
 		if (url != null) {
 			try {

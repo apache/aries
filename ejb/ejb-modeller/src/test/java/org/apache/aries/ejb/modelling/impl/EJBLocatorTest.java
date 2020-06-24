@@ -39,6 +39,7 @@ public class EJBLocatorTest {
   
   @Before
   public void setup() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     registry = Skeleton.newMock(EJBRegistry.class);
   }
   
@@ -83,6 +84,8 @@ public class EJBLocatorTest {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "test/ejbs/StatelessSessionBean.class");
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     addToZip(zos, "test/ejbs/StatefulSessionBean.class");
     zos.close();
     
@@ -98,6 +101,7 @@ public class EJBLocatorTest {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     addToZip(zos, "test/ejbs/StatelessSessionBean.class", "no/test/ejb/StatelessSessionBean.class");
     addToZip(zos, "test/ejbs/StatefulSessionBean.class", "no/test/ejb/StatefulSessionBean.class");
     zos.close();
@@ -111,6 +115,7 @@ public class EJBLocatorTest {
   @Test
   public void testEJBJARAndAnnotatedOnClasspathInZip() throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "ejb-jar.xml", "META-INF/ejb-jar.xml");
@@ -127,6 +132,7 @@ public class EJBLocatorTest {
   @Test
   public void testEJBJARInWebZip() throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
@@ -202,6 +208,7 @@ public class EJBLocatorTest {
   @Test
   public void testEJBJARAndAnnotatedOnClasspathInWebZip() throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
     addToZip(zos, "ejb-jar.xml", "WEB-INF/ejb-jar.xml");
@@ -231,6 +238,7 @@ public class EJBLocatorTest {
   private void addToZip(ZipOutputStream zos, String src, String outLocation) throws IOException {
     zos.putNextEntry(new ZipEntry(outLocation));
     IOUtils.copy(getClass().getClassLoader().
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
         getResourceAsStream(src), zos);
     zos.closeEntry();
   }
@@ -266,6 +274,7 @@ public class EJBLocatorTest {
     else
       s.assertNotCalled(mc);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     mc = new MethodCall(EJBRegistry.class, "addEJBView",
         String.class, "STATEFUL", String.class, boolean.class);
     

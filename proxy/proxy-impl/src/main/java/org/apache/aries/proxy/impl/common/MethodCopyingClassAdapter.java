@@ -141,6 +141,7 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
         //odd, but if class Super has a protected method foo(), then class Sub, that extends Super, cannot
         //call ((Super)o).foo() in code (it can call super.foo()). If we are in the same package then this
     	//gets around the problem, but if not the class will fail verification.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
         if(!samePackage && (access & ACC_PROTECTED) != 0) {
             methodHiddenException(name);
         }
@@ -157,6 +158,7 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
   }
 
 private void methodHiddenException(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     String msg = format("The method %s in class %s cannot be called by %s because it is in a different package.",
                         name, superToCopy.getName(), overridingClassType.getClassName());
     throw new RuntimeException(msg,
@@ -177,7 +179,10 @@ private void methodHiddenException(String name) {
     private final Method currentTransformMethod;
     
     public CopyingMethodAdapter(GeneratorAdapter mv, Type superType, 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
         Method currentTransformMethod) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
       super(Opcodes.ASM8);
       this.mv = mv;
       this.superType = superType;
@@ -215,6 +220,7 @@ private void methodHiddenException(String name) {
       mv.visitCode();
       
       //Equivalent to return super.method(args);
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       mv.loadThis();
 	  mv.loadArgs();
 	  mv.visitMethodInsn(INVOKESPECIAL, superType.getInternalName(),

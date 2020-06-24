@@ -498,6 +498,7 @@ public class TradeJdbc implements TradeServices {
         PreparedStatement stmt = getStatement(conn, removeHoldingSQL);
 
         stmt.setInt(1, holdingID);
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
         stmt.executeUpdate();
         stmt.close();
 
@@ -506,6 +507,7 @@ public class TradeJdbc implements TradeServices {
         stmt = getStatement(conn, removeHoldingFromOrderSQL);
 
         stmt.setInt(1, holdingID);
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
         stmt.executeUpdate();
         stmt.close();
 
@@ -1132,6 +1134,7 @@ public class TradeJdbc implements TradeServices {
             }
 
             BigDecimal newPrice = changeFactor.multiply(oldPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
+//IC see: https://issues.apache.org/jira/browse/ARIES-275
             BigDecimal low = quoteData.getLow();
             BigDecimal high= quoteData.getHigh();
             if (newPrice.compareTo(high) == 1) high = newPrice;
@@ -1160,10 +1163,12 @@ public class TradeJdbc implements TradeServices {
         stmt.setBigDecimal(1, newPrice);
         stmt.setBigDecimal(2, newPrice);
         stmt.setDouble(3, newVolume);
+//IC see: https://issues.apache.org/jira/browse/ARIES-275
         stmt.setBigDecimal(4, low);
         stmt.setBigDecimal(5, high);
         stmt.setString(6, symbol);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
         stmt.executeUpdate();
         stmt.close();
     }
@@ -1205,6 +1210,7 @@ public class TradeJdbc implements TradeServices {
             stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
             stmt.setString(2, userID);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
             stmt.executeUpdate();
             stmt.close();
 
@@ -1287,6 +1293,8 @@ public class TradeJdbc implements TradeServices {
             stmt.setInt(6, loginCount);
             stmt.setInt(7, logoutCount);
             stmt.setString(8, userID);
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
             stmt.executeUpdate();
             stmt.close();
 
@@ -1297,6 +1305,11 @@ public class TradeJdbc implements TradeServices {
             stmt.setString(4, address);
             stmt.setString(5, email);
             stmt.setString(6, creditCard);
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
+//IC see: https://issues.apache.org/jira/browse/ARIES-186
             stmt.executeUpdate();
             stmt.close();
 
@@ -1556,6 +1569,7 @@ public class TradeJdbc implements TradeServices {
 
     private static final String updateQuotePriceVolumeSQL =
         "update quoteejb set " + "price = ?, change1 = ? - open1, volume = ?, low = ?, high = ? " + "where symbol = ?";
+//IC see: https://issues.apache.org/jira/browse/ARIES-275
 
     public void init() {
         if (initialized)
@@ -1604,6 +1618,7 @@ public class TradeJdbc implements TradeServices {
      * @return TradeConfig.ModeType
      */
     public TradeConfig.ModeType getMode() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
         return TradeConfig.ModeType.JDBC;
     }
 

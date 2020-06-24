@@ -34,6 +34,7 @@ import org.osgi.framework.BundleContext;
 public class BPQuiesceTest {
   @Test
   public void canQuiesceNoBPBundle() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1312
     IMocksControl c = EasyMock.createControl();
     BundleContext ctx = c.createMock(BundleContext.class);
     Bundle bpBundle = c.createMock(Bundle.class);
@@ -55,6 +56,7 @@ public class BPQuiesceTest {
         result.release();
       }
     };
+//IC see: https://issues.apache.org/jira/browse/ARIES-1312
     c.replay();
     bqp.quiesce(qc, Arrays.asList(testBundle));
     c.verify();

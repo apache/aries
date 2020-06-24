@@ -35,6 +35,8 @@ public class ProxyUtils
    * @return
    */
   public static int getWeavingJavaVersion() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-817
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
     if (weavingJavaVersion == -1 ) {
       //In order to avoid an inconsistent stack error the version of the woven byte code needs to match
       //the level of byte codes in the original class
@@ -43,14 +45,19 @@ public class ProxyUtils
           LOGGER.debug("Weaving to Java 14");
           weavingJavaVersion = Opcodes.V14;
           break;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1905
         case Opcodes.V13:
           LOGGER.debug("Weaving to Java 13");
           weavingJavaVersion = Opcodes.V13;
           break;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1905
         case Opcodes.V12:
           LOGGER.debug("Weaving to Java 12");
           weavingJavaVersion = Opcodes.V12;
           break;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1803
+//IC see: https://issues.apache.org/jira/browse/ARIES-1797
+//IC see: https://issues.apache.org/jira/browse/ARIES-1796
         case Opcodes.V11:
           LOGGER.debug("Weaving to Java 11");
           weavingJavaVersion = Opcodes.V11;

@@ -32,6 +32,7 @@ import javax.inject.Singleton;
         @Property(name = "test4:[]", value = "val1|val2"),
         @Property(name = "test5:Short[]", value = "1|2|3"),
         @Property(name = "test6:java.lang.Double[]", value = "1.5|0.8|-7.1")
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
 })
 @Singleton
 public class ServiceWithTypedParameters {

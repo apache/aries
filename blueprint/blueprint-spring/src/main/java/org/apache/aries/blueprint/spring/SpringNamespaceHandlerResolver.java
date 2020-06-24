@@ -38,6 +38,7 @@ public class SpringNamespaceHandlerResolver implements NamespaceHandlerResolver 
             if (handler instanceof BlueprintNamespaceHandler) {
                 return ((BlueprintNamespaceHandler) handler).getSpringHandler();
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
             else if (handler != null) {
                 return new SpringNamespaceHandler(parserContext, handler);
             }

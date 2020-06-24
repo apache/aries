@@ -53,6 +53,7 @@ public final class JavaUtils {
     public static Version getBundleVersion(Bundle bundle) {
         Dictionary headers = bundle.getHeaders();
         String version = (String) headers.get(Constants.BUNDLE_VERSION);
+//IC see: https://issues.apache.org/jira/browse/ARIES-10
         return (version != null) ? Version.parseVersion(version) : Version.emptyVersion;
     }
 

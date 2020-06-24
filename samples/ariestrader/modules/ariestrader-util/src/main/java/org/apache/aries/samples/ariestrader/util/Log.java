@@ -28,6 +28,7 @@ public class Log {
 
 	public static void log(String message)
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-117
         log.debug("AriesTrader Log:" + new java.util.Date() + "------\n\t ");
 		log.debug(message);
 	}

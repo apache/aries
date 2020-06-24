@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.pojos;
 
 interface GenericFactory<T,U> {
+//IC see: https://issues.apache.org/jira/browse/ARIES-82
     T getObject();
     T getObject(U value);
 }

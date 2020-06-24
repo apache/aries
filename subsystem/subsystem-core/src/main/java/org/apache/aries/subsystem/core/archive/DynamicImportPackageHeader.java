@@ -25,6 +25,7 @@ import org.osgi.resource.Resource;
 public class DynamicImportPackageHeader extends AbstractClauseBasedHeader<DynamicImportPackageHeader.Clause> implements RequirementHeader<DynamicImportPackageHeader.Clause> {
     public static class Clause extends AbstractClause {
 		public Clause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			super(
 					parsePath(clause, Patterns.WILDCARD_NAMES, true),
 					parseParameters(clause, true), 
@@ -56,6 +57,7 @@ public class DynamicImportPackageHeader extends AbstractClauseBasedHeader<Dynami
 	public static final String NAME = Constants.DYNAMICIMPORT_PACKAGE;
 	
 	public DynamicImportPackageHeader(Collection<Clause> clauses) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(clauses);
 	}
 	

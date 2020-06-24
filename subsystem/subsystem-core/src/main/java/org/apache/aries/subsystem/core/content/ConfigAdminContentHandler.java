@@ -39,6 +39,7 @@ public class ConfigAdminContentHandler implements ContentHandler {
     private Map<String, Dictionary<String, Object>> configurations = new ConcurrentHashMap<String, Dictionary<String, Object>>();
 
     public ConfigAdminContentHandler(BundleContext ctx) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1352
         this.ctx = ctx;
         cmTracker = new ServiceTracker<ConfigurationAdmin, ConfigurationAdmin>(
                 ctx, ConfigurationAdmin.class, null);
@@ -89,6 +90,7 @@ public class ConfigAdminContentHandler implements ContentHandler {
                         symbolicName + " to subsystem " + subsystem.getSymbolicName()));
                 return;
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1352
             Configuration[] matchingConfs = cm.listConfigurations(
                     ctx.createFilter("(service.pid=" + symbolicName + ")").toString());
             if(matchingConfs == null || matchingConfs.length == 0) {

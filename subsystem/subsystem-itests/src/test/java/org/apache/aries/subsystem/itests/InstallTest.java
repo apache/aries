@@ -50,6 +50,7 @@ import org.osgi.service.subsystem.SubsystemException;
 @ExamReactorStrategy(PerMethod.class)
 public class InstallTest extends SubsystemTest {
 	public InputStream getResourceAsStream(String path) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		return SubsystemTest.class.getClassLoader().getResourceAsStream(path);
 	}
 	
@@ -58,6 +59,7 @@ public class InstallTest extends SubsystemTest {
 		createCompositeDirEsa();
 		createApplication("feature3", "tb3.jar");
 		createApplication("feature2", "tb3.jar", "tb2.jar");
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		createBundleA();
 		createBundleB();
 		createApplicationA();
@@ -93,6 +95,7 @@ public class InstallTest extends SubsystemTest {
 
 		File userDir = new File(System.getProperty("user.dir"));
     	IDirectory idir = FileSystem.getFSRoot(userDir);
+//IC see: https://issues.apache.org/jira/browse/ARIES-942
     	File compositeDir = new File(userDir, "compositeDir");
     	compositeDir.mkdir();
     	IOUtils.unpackZip(idir.getFile("compositeDir.esa"), compositeDir);
@@ -100,12 +103,14 @@ public class InstallTest extends SubsystemTest {
 	
 	@Test
 	public void testReturnExistingSubsystemWithSameLocation() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Subsystem subsystem1 = installSubsystemFromFile("feature3.esa");
 		try {
 			Subsystem subsystem2 = subsystem1.install(subsystem1.getLocation());
 			assertSame(subsystem1, subsystem2);
 		}
 		finally {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			uninstallSubsystemSilently(subsystem1);
 		}
 	}
@@ -117,6 +122,7 @@ public class InstallTest extends SubsystemTest {
      */
     @Test
     public void testLocationAsDirectoryUrl() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-942
     	File file = new File("compositeDir");
     	try {
     		Subsystem subsystem = installSubsystem(getRootSubsystem(), file.toURI().toString(), null, (Boolean[]) null);
@@ -179,6 +185,7 @@ public class InstallTest extends SubsystemTest {
 	private static final String BUNDLE_A = "bundle.a.jar";
 	
 	private void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_A));
 	}
     
@@ -188,6 +195,7 @@ public class InstallTest extends SubsystemTest {
 	private static final String APPLICATION_A = "application.a.esa";
 	
 	private void createApplicationA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-972
 		createApplicationAManifest();
 		createSubsystem(APPLICATION_A, BUNDLE_A);
 	}
@@ -248,6 +256,7 @@ public class InstallTest extends SubsystemTest {
 	private static final String BUNDLE_B = "bundle.b.war";
 	
 	private void createBundleB() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_B));
 	}
 	
@@ -284,6 +293,7 @@ public class InstallTest extends SubsystemTest {
 	
 	@Test
     public void testLocationAsEmptyString() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
     	try {
     		Subsystem a = installSubsystemFromFile(getRootSubsystem(), new File(APPLICATION_A), "");
     		try {

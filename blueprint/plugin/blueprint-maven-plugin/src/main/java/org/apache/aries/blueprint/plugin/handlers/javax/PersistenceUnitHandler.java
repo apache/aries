@@ -42,6 +42,7 @@ public class PersistenceUnitHandler implements FieldAnnotationHandler<Persistenc
 
     @Override
     public void handleFieldAnnotation(Class<?> clazz, List<Field> fields, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1610
         final String nsJpa1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_JPA1);
         if (nsJpa1 != null) {
             for (final Field field : fields) {
@@ -51,6 +52,7 @@ public class PersistenceUnitHandler implements FieldAnnotationHandler<Persistenc
                     @Override
                     public void write(XMLStreamWriter writer) throws XMLStreamException {
                         writer.writeEmptyElement("unit");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1610
                         writer.writeDefaultNamespace(nsJpa1);
                         writer.writeAttribute("unitname", persistenceUnit.unitName());
                         writer.writeAttribute("property", name);

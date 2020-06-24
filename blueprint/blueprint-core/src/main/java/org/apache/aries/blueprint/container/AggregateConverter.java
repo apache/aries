@@ -83,6 +83,7 @@ public class AggregateConverter implements Converter {
         public final Object value;
 
         public ConversionResult(Converter converter, Object value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-389
             this.converter = converter;
             this.value = value;
         }
@@ -106,6 +107,8 @@ public class AggregateConverter implements Converter {
     public boolean canConvert(Object fromValue, final ReifiedType toType) {
         if (fromValue == null) {
             return true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         } else if (fromValue instanceof UnwrapperedBeanHolder) {
             fromValue = ((UnwrapperedBeanHolder) fromValue).unwrapperedBean;
         }
@@ -130,7 +133,10 @@ public class AggregateConverter implements Converter {
         }
         
         // TODO implement better logic ?!
+//IC see: https://issues.apache.org/jira/browse/ARIES-366
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
             convert(toTest, toType);
             return true;
         } catch (Exception e) {
@@ -146,6 +152,8 @@ public class AggregateConverter implements Converter {
         // First convert service proxies
         if (fromValue instanceof Convertible) {
             return ((Convertible) fromValue).convert(type);
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         } else if (fromValue instanceof UnwrapperedBeanHolder) {
             UnwrapperedBeanHolder holder = (UnwrapperedBeanHolder) fromValue;
             if (isAssignable(holder.unwrapperedBean, type)) {
@@ -159,6 +167,7 @@ public class AggregateConverter implements Converter {
         }
         
         final Object finalFromValue = fromValue;
+//IC see: https://issues.apache.org/jira/browse/ARIES-389
         ConversionResult result = null;
         AccessControlContext acc = blueprintContainer.getAccessControlContext();
         if (acc == null) {
@@ -166,6 +175,8 @@ public class AggregateConverter implements Converter {
         } else {
             result = AccessController.doPrivileged(new PrivilegedExceptionAction<ConversionResult>() {
                 public ConversionResult run() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
                     return convertWithConverters(finalFromValue, type);
                 }            
             }, acc);
@@ -187,6 +198,7 @@ public class AggregateConverter implements Converter {
                 throw new Exception("Unable to convert value " + fromValue + " to type " + type);
             }
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-389
         return result.value;
     }
 
@@ -332,6 +344,7 @@ public class AggregateConverter implements Converter {
         if (obj.getClass().isArray()) {
             for (int i = 0; i < Array.getLength(obj); i++) {
                 try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1333
                     Object ov = Array.get(obj, i);
                     Object cv = convert(ov, valueType);
                     newCol.add(cv);
@@ -384,6 +397,7 @@ public class AggregateConverter implements Converter {
                     throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting map entry)", t);
                 }
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1333
             return newDic;
         }
     }
@@ -403,6 +417,7 @@ public class AggregateConverter implements Converter {
                     throw new Exception("Unable to convert from " + obj + " to " + type + "(error converting map entry)", t);
                 }
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1333
             return newMap;
         } else {
             boolean converted = false;
@@ -437,6 +452,7 @@ public class AggregateConverter implements Converter {
         boolean converted = array.getClass() != obj.getClass();
         for (int i = 0; i < Array.getLength(obj); i++) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1333
                 Object ov = Array.get(obj, i);
                 Object nv = convert(ov, componentType);
                 converted |= nv != ov;
@@ -455,6 +471,7 @@ public class AggregateConverter implements Converter {
         if (target.size() == 0) {
             return unwrap(target.getRawClass()).isAssignableFrom(unwrap(source.getClass()));
         } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
             return isTypeAssignable(getType(source), target);
         }
     }
@@ -471,7 +488,9 @@ public class AggregateConverter implements Converter {
         if (from.equals(to)) {
             return true;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         if (from.getRawClass() == to.getRawClass()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
             if (to.size() == 0) {
                 return true;
             }
@@ -489,6 +508,7 @@ public class AggregateConverter implements Converter {
                     return true;
                 }
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1572
         } else {
             ReifiedType t = getExactSuperType(from, to.getRawClass());
             if (t != null) {
@@ -576,6 +596,7 @@ public class AggregateConverter implements Converter {
     }
 
     private static boolean isWildcardCompatible(ReifiedType from, ReifiedType to) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         BoundType fromBoundType = GenericType.boundType(from);
         BoundType toBoundType = GenericType.boundType(to);
         if (toBoundType == BoundType.Extends) {

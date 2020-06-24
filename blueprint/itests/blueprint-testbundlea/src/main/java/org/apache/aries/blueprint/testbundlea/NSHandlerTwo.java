@@ -54,6 +54,7 @@ public class NSHandlerTwo implements NamespaceHandler{
         //debug/trace calls to toString etc will mess up the interceptor
         //log, and break tests if tracked. So we filter them out here.
         private boolean isIgnorableMethod(Method m){
+//IC see: https://issues.apache.org/jira/browse/ARIES-85
             if(m.getDeclaringClass()==Object.class){
                 return true;
             }
@@ -75,6 +76,7 @@ public class NSHandlerTwo implements NamespaceHandler{
             args+="]";
             String token = cm.getId() +":"+ m.getName() +":"+args+":"+System.currentTimeMillis();
             
+//IC see: https://issues.apache.org/jira/browse/ARIES-85
             if(!isIgnorableMethod(m))
               interceptorLog.add("PRECALL:"+token);
             
@@ -89,6 +91,7 @@ public class NSHandlerTwo implements NamespaceHandler{
         }
         
         public void postCallWithException(ComponentMetadata cm, Method m,
+//IC see: https://issues.apache.org/jira/browse/ARIES-270
                 Throwable ex, Object preCallToken) throws Throwable {
             
             if(!isIgnorableMethod(m))

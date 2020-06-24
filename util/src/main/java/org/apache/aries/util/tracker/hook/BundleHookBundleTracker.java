@@ -59,6 +59,7 @@ public class BundleHookBundleTracker<T> extends BundleTracker {
     /**
      * The {@code BundleTrackerCustomizer} object for this tracker.
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-983
     final BundleTrackerCustomizer customizer;
     /**
      * Tracked bundles: {@code Bundle} object -> customized Object and
@@ -132,6 +133,7 @@ public class BundleHookBundleTracker<T> extends BundleTracker {
     @Override
     public void open() {
         final Tracked t;
+//IC see: https://issues.apache.org/jira/browse/ARIES-851
         synchronized (this) {
             if (tracked != null) {
                 return;

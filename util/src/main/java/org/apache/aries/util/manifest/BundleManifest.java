@@ -130,6 +130,7 @@ public class BundleManifest
       }
     }
     else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       throw new IllegalArgumentException(MessageUtil.getMessage("UTIL0016E", f.getAbsolutePath()));
     }
   }
@@ -158,6 +159,7 @@ public class BundleManifest
 
     String result = null;
     if (rawSymName != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
       NameValuePair info = ManifestHeaderProcessor.parseBundleSymbolicName(rawSymName);
       result = info.getName();
     }
@@ -185,6 +187,7 @@ public class BundleManifest
   }
 
   public boolean isValid() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
     return getManifestVersion() != null && getSymbolicName() != null;
   }
 }

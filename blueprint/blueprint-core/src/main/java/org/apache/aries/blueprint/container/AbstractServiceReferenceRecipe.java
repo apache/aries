@@ -98,6 +98,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     protected AbstractServiceReferenceRecipe(String name,
                                              ExtendedBlueprintContainer blueprintContainer,
                                              ServiceReferenceMetadata metadata,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
                                              ValueRecipe filterRecipe,
                                              CollectionRecipe listenersRecipe,
                                              List<Recipe> explicitDependencies) {
@@ -113,6 +114,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         this.optional = (metadata.getAvailability() == ReferenceMetadata.AVAILABILITY_OPTIONAL);
         this.filter = createOsgiFilter(metadata, null);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-1314
         accessControlContext = (System.getSecurityManager() != null) ? createAccessControlContext() : null;
     }
 
@@ -130,8 +132,10 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
                 satisfied.set(optional);
                 // Synchronized block on references so that service events won't interfere with initial references tracking
                 // though this may not be sufficient because we don't control ordering of those events
+//IC see: https://issues.apache.org/jira/browse/ARIES-896
                 synchronized (tracked) {
                     getBundleContextForServiceLookup().addServiceListener(this, getOsgiFilter());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
                     ServiceReference[] references = getBundleContextForServiceLookup().getServiceReferences((String) null, getOsgiFilter());
                     tracked.setInitial(references != null ? references : new ServiceReference[0]);
                 }
@@ -147,8 +151,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     public void stop() {
         if (started.compareAndSet(true, false)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-896
             tracked.close();
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-727
                 getBundleContextForServiceLookup().removeServiceListener(this);
             } catch (IllegalStateException e) {
                 // Ignore in case bundle context is already invalidated
@@ -192,6 +199,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     public String getOsgiFilter() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
         if (filterRecipe != null && blueprintContainer instanceof BlueprintContainerImpl) {
             BlueprintContainerImpl.State state = ((BlueprintContainerImpl) blueprintContainer).getState();
             switch (state) {
@@ -231,6 +239,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     @SuppressWarnings("unchecked")
     protected Object getServiceSecurely(final ServiceReference serviceReference) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1314
         if (accessControlContext == null) {
             return getBundleContextForServiceLookup().getService(serviceReference);
         } else {
@@ -287,6 +296,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     protected List<Class<?>> loadAllClasses(Iterable<String> interfaceNames) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
         List<Class<?>> classes = new ArrayList<Class<?>>();
         for (String name : interfaceNames) {
             Class<?> clazz = loadClass(name);
@@ -317,12 +327,14 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         } else {
             // Check class proxying
             boolean proxyClass = false;
+//IC see: https://issues.apache.org/jira/browse/ARIES-787
             if (metadata instanceof ExtendedServiceReferenceMetadata) {
                 proxyClass = (((ExtendedServiceReferenceMetadata) metadata).getProxyMethod() & ExtendedServiceReferenceMetadata.PROXY_METHOD_CLASSES) != 0;
             }
             if (!proxyClass) {
                 for (Class cl : interfaces) {
                     if (!cl.isInterface()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-49
                         throw new ComponentDefinitionException("A class " + cl.getName() + " was found in the interfaces list, but class proxying is not allowed by default. The ext:proxy-method='classes' attribute needs to be added to this service reference.");
                     }
                 }
@@ -335,9 +347,11 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     public void serviceChanged(ServiceEvent event) {
         int eventType = event.getType();
+//IC see: https://issues.apache.org/jira/browse/ARIES-896
         ServiceReference ref = event.getServiceReference();
         switch (eventType) {
             case ServiceEvent.REGISTERED:
+//IC see: https://issues.apache.org/jira/browse/ARIES-896
                 serviceAdded(ref, event);
                 break;
             case ServiceEvent.MODIFIED:
@@ -379,6 +393,8 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             synchronized (tracked) {
                 satisfied = optional || !tracked.isEmpty();
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
             setSatisfied(satisfied);
             untrack(ref);
         }
@@ -401,6 +417,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
 
     protected BundleContext getBundleContextForServiceLookup() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-727
         if (metadata instanceof ExtendedServiceReferenceMetadata && ((ExtendedServiceReferenceMetadata) metadata).getRuntimeInterface() != null) {
             BundleContext context = ((ExtendedServiceReferenceMetadata) metadata).getBundleContext();
             if (context != null) {
@@ -416,6 +433,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
         // so that it will only be true if the value actually changed
         if (satisfied.getAndSet(s) != s) {
             LOGGER.debug("Service reference with filter {} satisfied {}", getOsgiFilter(), this.satisfied);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1498
             SatisfactionListener listener = this.satisfactionListener;
             if (listener != null) {
                 listener.notifySatisfaction(this);
@@ -431,6 +449,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     protected void updateListeners() {
         boolean empty;
+//IC see: https://issues.apache.org/jira/browse/ARIES-896
         synchronized (tracked) {
             empty = tracked.isEmpty();
         }
@@ -462,6 +481,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
     }
     
     public List<ServiceReference> getServiceReferences() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-896
         ServiceReference[] refs;
         synchronized (tracked) {
             refs = new ServiceReference[tracked.size()];
@@ -611,6 +631,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             members.add(flt);
         }
         // Handle extended filter
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
         if (extendedFilter != null && extendedFilter.length() > 0) {
             if (!extendedFilter.startsWith("(")) {
                 extendedFilter = "(" + extendedFilter + ")";
@@ -624,6 +645,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
             interfaceName = runtimeClass.getName();
         }
         if (interfaceName != null && interfaceName.length() > 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1141
             if (metadata instanceof ExtendedReferenceMetadata) {
                 ExtendedReferenceMetadata erm = (ExtendedReferenceMetadata) metadata;
                 if (!erm.getExtraInterfaces().isEmpty()) {
@@ -663,6 +685,7 @@ public abstract class AbstractServiceReferenceRecipe extends AbstractRecipe impl
 
     private class Tracked extends AbstractTracked<ServiceReference, ServiceReference, ServiceEvent> {
         @Override
+//IC see: https://issues.apache.org/jira/browse/ARIES-896
         ServiceReference customizerAdding(ServiceReference item, ServiceEvent related) {
             return item;
         }

@@ -89,6 +89,7 @@ public class TestBundleContext implements BundleContext {
     }
 
     public ServiceReference getServiceReference(Class aClass) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         return null;
     }
 
@@ -117,6 +118,7 @@ public class TestBundleContext implements BundleContext {
     }
 
     public <S> ServiceRegistration<S> registerService(Class<S> aClass, S s, Dictionary<String,?> dictionary) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         return null;
     }
 

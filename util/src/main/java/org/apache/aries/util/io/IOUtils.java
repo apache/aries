@@ -49,6 +49,7 @@ public class IOUtils
   public static void copy(InputStream in, OutputStream out) throws IOException
   {
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-483
       copyAndDoNotCloseInputStream(in, out);
     }
     finally {
@@ -62,6 +63,7 @@ public class IOUtils
   public static void copyAndDoNotCloseInputStream(InputStream in, OutputStream out) throws IOException
   {
     int len;
+//IC see: https://issues.apache.org/jira/browse/ARIES-483
     byte[] b = new byte[1024];
     while ((len = in.read(b)) != -1)
       out.write(b,0,len);
@@ -76,6 +78,7 @@ public class IOUtils
       if (c != null)
         c.close();
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-483
     catch (IOException e) {
       c = null;
     }
@@ -88,6 +91,7 @@ public class IOUtils
    */
   public static void close(ZipFile file) throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-488
     if (file != null) file.close();
   }
   
@@ -106,6 +110,7 @@ public class IOUtils
       outputDirectory = new File(outputDir, dirName);
       
       if (!!!outputDirectory.exists() && !!!outputDirectory.mkdirs())
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
         throw new IOException(MessageUtil.getMessage("UTIL0015E", relativePath));
     }
     else
@@ -140,6 +145,7 @@ public class IOUtils
    */
   public static void writeOutAndDontCloseInputStream(File outputDir, String relativePath, InputStream content) throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-483
     OutputStream out = null;
     try {
       out = getOutputStream(outputDir, relativePath);
@@ -156,6 +162,7 @@ public class IOUtils
   @SuppressWarnings("unchecked")
   public static void zipUp (File rootDir, OutputStream targetStream) throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     ZipOutputStream out = null;
     try { 
       out = new ZipOutputStream (targetStream);
@@ -171,6 +178,7 @@ public class IOUtils
   @SuppressWarnings("unchecked")
   public static void zipUp(File rootDir, File targetFile) throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-483
     ZipOutputStream out = null; 
     try {
       out = new ZipOutputStream(new FileOutputStream(targetFile));
@@ -274,6 +282,7 @@ public class IOUtils
         isZip = false;                             // It's not a zip - that's ok, we'll return that below. 
       }
       if(isZip){
+//IC see: https://issues.apache.org/jira/browse/ARIES-1934
         do {
           File outFile = new File(outputDir, zipEntry.getName());
           if (!outFile.getCanonicalPath().startsWith(outputDir.getCanonicalPath())) {

@@ -30,6 +30,7 @@ public class JNDIHelper {
 		try {
 			InitialContext ic = new InitialContext();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-368
 			return (BloggingService) ic.lookup("osgi:service/"
 					+ BloggingService.class.getName());
 		} catch (NamingException e) {

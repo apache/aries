@@ -27,6 +27,7 @@ public class ProvideCapabilityCapability extends AbstractCapability {
 	private final Resource resource;
 	
 	public ProvideCapabilityCapability(ProvideCapabilityHeader.Clause clause, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		namespace = clause.getNamespace();
 		for (Parameter parameter : clause.getParameters()) {
 			if (parameter instanceof Attribute)

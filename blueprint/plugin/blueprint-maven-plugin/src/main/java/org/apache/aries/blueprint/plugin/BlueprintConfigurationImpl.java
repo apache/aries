@@ -39,8 +39,10 @@ public class BlueprintConfigurationImpl implements BlueprintConfiguration {
     private final Long defaultTimeout;
 
     public BlueprintConfigurationImpl(Set<String> namespaces, Activation defaultActivation, Map<String, String> customParameters, Availability defaultAvailability, Long defaultTimeout) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         this.namespaces = namespaces != null ? namespaces : new HashSet<>(Arrays.asList(NS_TX2, NS_JPA2));
         this.defaultActivation = defaultActivation;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1736
         this.customParameters = customParameters == null ? new HashMap<String, String>() : customParameters;
         this.defaultAvailability = defaultAvailability;
         this.defaultTimeout = defaultTimeout;
@@ -65,6 +67,7 @@ public class BlueprintConfigurationImpl implements BlueprintConfiguration {
 
     @Override
     public Availability getDefaultAvailability() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1736
         return defaultAvailability;
     }
 
@@ -75,6 +78,7 @@ public class BlueprintConfigurationImpl implements BlueprintConfiguration {
 
     @Override
     public Map<String, String> getCustomParameters() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1605
         return customParameters;
     }
 }

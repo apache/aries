@@ -27,6 +27,7 @@ public enum ResourceType {BUNDLE, PACKAGE, SERVICE, COMPOSITE, OTHER;
    */
   @Override
   public String toString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     return super.toString().toLowerCase();
   }
 }

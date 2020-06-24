@@ -41,6 +41,7 @@ public class URLContextProvider extends ContextProvider {
         try {
             return (Context) factory.getObjectInstance(null, null, null, environment);
         } catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
             throw (NamingException) new NamingException().initCause(e);
         }
     }

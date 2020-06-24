@@ -24,6 +24,7 @@ public class NamedPrincipal implements Principal {
     private String name;
 
     public NamedPrincipal(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         this.name = name;
     }
 

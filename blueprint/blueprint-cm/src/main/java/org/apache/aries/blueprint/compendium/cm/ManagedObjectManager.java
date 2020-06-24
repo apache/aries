@@ -45,12 +45,14 @@ public class ManagedObjectManager {
         ConfigurationWatcher reg = map.get(key);
         if (reg == null) {
             reg = new ConfigurationWatcher(); 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
             ServiceRegistration registration = cm.getBundle().getBundleContext().registerService(ManagedService.class.getName(), reg, (Dictionary) props);
             reg.setRegistration(registration);            
             map.put(key, reg);
         }
         reg.add(cm);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
         try {
             Dictionary<String, Object> config = CmUtils.getProperties(reg.getRegistration().getReference(), key);
             cm.updated(config);
@@ -66,6 +68,7 @@ public class ManagedObjectManager {
             reg.remove(cm);
             if (reg.isEmpty()) {
                 map.remove(key);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1660
                 ServiceUtil.safeUnregister(reg.getRegistration());
             }
         }
@@ -81,6 +84,7 @@ public class ManagedObjectManager {
         
         public void updated(final Dictionary props) throws ConfigurationException {
             // Run in a separate thread to avoid re-entrance
+//IC see: https://issues.apache.org/jira/browse/ARIES-878
             new Thread() {
                 public void run() {
                     for (ManagedObject cm : list) {

@@ -51,6 +51,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   }
   
   public AriesApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-162
     ApplicationContextImpl result;
     if (_appToContextMap.containsKey(app)) { 
       result = _appToContextMap.get(app);
@@ -65,7 +66,9 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   }
 
   public Set<AriesApplicationContext> getApplicationContexts() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
     Set<AriesApplicationContext> result = new HashSet<AriesApplicationContext>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-162
     for (Map.Entry<AriesApplication, ApplicationContextImpl> entry: _appToContextMap.entrySet()) {
       result.add (entry.getValue());
     }
@@ -93,6 +96,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
 
   private void uninstall(ApplicationContextImpl app)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-196
     Set<Bundle> bundles = app.getApplicationContent();
     for (Bundle b : bundles) {
       try {
@@ -114,6 +118,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   }
 
   public AriesApplicationContext update(AriesApplication app, DeploymentMetadata oldMetadata) throws UpdateException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-399
     ApplicationContextImpl oldCtx = _appToContextMap.get(app);
     
     if (oldCtx == null) {

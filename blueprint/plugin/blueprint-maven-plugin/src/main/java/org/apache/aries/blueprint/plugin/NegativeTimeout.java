@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1736
 class NegativeTimeout extends RuntimeException {
     NegativeTimeout(long defaultTimeout) {
         super("Default timeout cannot be negative " + defaultTimeout);

@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractRecipe implements Recipe {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(AbstractRecipe.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-855
 
     protected final String name;
     protected boolean prototype = true;
@@ -64,6 +65,7 @@ public abstract class AbstractRecipe implements Recipe {
 
         // if this recipe has already been executed in this context, return the
         // currently registered value
+//IC see: https://issues.apache.org/jira/browse/ARIES-623
         Object result = context.getPartialObject(name);
         if (result != null) {
             return result;
@@ -74,6 +76,7 @@ public abstract class AbstractRecipe implements Recipe {
         boolean didCreate = false;
         try {
             if (!prototype) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-855
                 FutureTask<Object> objectCreation = new FutureTask<Object>(
                         new Callable<Object>() {
                             public Object call()
@@ -100,6 +103,7 @@ public abstract class AbstractRecipe implements Recipe {
                         throw (ComponentDefinitionException) ee.getCause();
                     else if (ee.getCause() instanceof RuntimeException)
                         throw (RuntimeException) ee.getCause();
+//IC see: https://issues.apache.org/jira/browse/ARIES-855
                     else
                         throw (Error) ee.getCause();
                 }
@@ -135,6 +139,8 @@ public abstract class AbstractRecipe implements Recipe {
     }
 
     protected boolean canConvert(Object obj, ReifiedType type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-703
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
         return ExecutionContext.Holder.getContext().canConvert(obj, type);
     }
 
@@ -143,6 +149,7 @@ public abstract class AbstractRecipe implements Recipe {
     }
 
     protected Object convert(Object obj, Type type) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
         return ExecutionContext.Holder.getContext().convert(obj, new GenericType(type));
     }
 
@@ -159,6 +166,7 @@ public abstract class AbstractRecipe implements Recipe {
         if (typeName == null) {
             return null;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-855
         return doLoadType(typeName, fromClassLoader, true, false);
     }
 
@@ -206,6 +214,7 @@ public abstract class AbstractRecipe implements Recipe {
 
     public String toString() {
         return getClass().getSimpleName() + "[" + "name='" + name + '\'' + ']';
+//IC see: https://issues.apache.org/jira/browse/ARIES-855
 
     }
 

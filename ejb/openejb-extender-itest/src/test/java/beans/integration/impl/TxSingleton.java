@@ -31,6 +31,7 @@ import beans.integration.Tx;
 public class TxSingleton implements Tx {
 
   private TransactionSynchronizationRegistry getTSR() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     BundleContext ctx = FrameworkUtil.getBundle(TxSingleton.class).getBundleContext();
     return (TransactionSynchronizationRegistry) ctx.getService(
         ctx.getServiceReference("javax.transaction.TransactionSynchronizationRegistry"));

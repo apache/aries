@@ -51,6 +51,7 @@ public class ServiceStateMBeanHandlerTest {
         JMXAgent agent = mock(JMXAgent.class);
         JMXAgentContext agentContext = new JMXAgentContext(context, agent, logger);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         ServiceStateMBeanHandler handler = new ServiceStateMBeanHandler(agentContext, new StateConfig());
         handler.open();
 

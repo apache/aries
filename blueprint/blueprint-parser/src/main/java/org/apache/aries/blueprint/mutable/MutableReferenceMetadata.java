@@ -31,13 +31,18 @@ public interface MutableReferenceMetadata extends ExtendedReferenceMetadata, Mut
 
     void setTimeout(long timeout);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-577
     void setDefaultBean(String value);
     
     void setProxyChildBeanClasses(Collection<Class<?>> classes);
+//IC see: https://issues.apache.org/jira/browse/ARIES-765
 
     void setExtraInterfaces(Collection<String> interfaces);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1141
 
     void setDamping(int damping);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1535
+//IC see: https://issues.apache.org/jira/browse/ARIES-1536
 
     void setLifecycle(int lifecycle);
 }

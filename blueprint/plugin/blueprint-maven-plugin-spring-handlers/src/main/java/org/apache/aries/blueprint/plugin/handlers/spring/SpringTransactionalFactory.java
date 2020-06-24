@@ -58,6 +58,7 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
 
     @Override
     public void handleMethodAnnotation(Class<?> clazz, List<Method> methods, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1710
         final String nsTx1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX1);     
         if (nsTx1 != null) {
             enableAnnotationTx1(contextEnricher, nsTx1);
@@ -78,6 +79,7 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
         }
         final String nsTx2 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX2);
         if (nsTx2 != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1710
             insertEnableAnnotationTx2(contextEnricher, nsTx2);
         }
     }
@@ -101,6 +103,7 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
         }
         final String nsTx2 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_TX1);
         if (nsTx2 != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1710
             insertEnableAnnotationTx2(contextEnricher, nsTx2);
         }
     }
@@ -116,6 +119,7 @@ public class SpringTransactionalFactory implements BeanAnnotationHandler<Transac
     
     private void enableAnnotationTx1(ContextEnricher contextEnricher, final String nsTx1) {
         // TX1 enable-annotation are valid only in 1.2.0 schema
+//IC see: https://issues.apache.org/jira/browse/ARIES-1710
         if (NS_TX_1_2_0.equals(nsTx1) && getEnableAnnotationConfig(contextEnricher.getBlueprintConfiguration())) {
             insertEnableAnnotationTx1(contextEnricher, nsTx1);
         }

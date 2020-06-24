@@ -34,6 +34,7 @@ import org.apache.aries.application.modelling.WrappedServiceMetadata;
 public class ExportedServiceHelper {
 
   public static String generatePortableExportedServiceToString(ExportedService svc) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     List<String> interfaces = new ArrayList<String>(svc.getInterfaces());
     Collections.sort(interfaces);
     

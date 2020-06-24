@@ -29,6 +29,7 @@ public class BlueprintName extends AbstractName {
     private static final long serialVersionUID = 7460901600614300179L;
 
     public BlueprintName(String name) throws InvalidNameException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
         super(name);
     }
 

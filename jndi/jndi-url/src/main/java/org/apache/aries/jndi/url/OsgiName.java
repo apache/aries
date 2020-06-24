@@ -43,6 +43,7 @@ public final class OsgiName extends AbstractName {
     private static final long serialVersionUID = 6617580228852444656L;
 
     public OsgiName(String name) throws InvalidNameException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
         super(name);
     }
 
@@ -73,6 +74,7 @@ public final class OsgiName extends AbstractName {
         StringBuilder builder = new StringBuilder();
 
         if (parts.hasMoreElements()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
 
             while (parts.hasMoreElements()) {
                 builder.append(parts.nextElement());

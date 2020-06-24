@@ -33,6 +33,7 @@ public final class JdkProxyManager extends AbstractProxyManager implements Proxy
   public Object createNewProxy(Bundle clientBundle, Collection<Class<?>> classes, 
       Callable<Object> dispatcher, InvocationListener listener) throws UnableToProxyException 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
     return Proxy.newProxyInstance(getClassLoader(clientBundle, classes), getInterfaces(classes), new ProxyHandler(this, dispatcher, listener));
   }
 
@@ -40,6 +41,7 @@ public final class JdkProxyManager extends AbstractProxyManager implements Proxy
   {
     for (Class<?> clazz : classes) {
         if (!!!clazz.isInterface()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
           throw new UnableToProxyException(clazz, String.format("The class %s is not an interface and therefore a proxy cannot be generated.", clazz.getName()));
         } 
     }

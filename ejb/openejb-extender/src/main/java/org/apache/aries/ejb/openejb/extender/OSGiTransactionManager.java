@@ -98,6 +98,7 @@ public class OSGiTransactionManager implements TransactionManager,
   }
   
   public void destroy() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     INSTANCE.set(null);
     tmTracker.close();
     tsrTracker.close();

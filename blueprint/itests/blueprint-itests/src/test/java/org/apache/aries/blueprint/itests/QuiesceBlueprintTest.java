@@ -53,6 +53,7 @@ public class QuiesceBlueprintTest extends AbstractBlueprintIntegrationTest {
 
   	public synchronized void bundleQuiesced(Bundle... bundlesQuiesced) {
   		System.out.println("bundleQuiesced "+ Arrays.toString(bundlesQuiesced));
+//IC see: https://issues.apache.org/jira/browse/ARIES-634
   	  calls++;
   	}
   	
@@ -79,6 +80,7 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 
   @Configuration
   public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
     return new Option[] {
             baseOptions(),
             bootDelegationPackages("javax.transaction", "javax.transaction.*"),
@@ -142,6 +144,7 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 	    List<Bundle> bundles = new ArrayList<Bundle>();
 	    bundles.add(bundle);
 	    
+//IC see: https://issues.apache.org/jira/browse/ARIES-517
 	    Thread t = new Thread(new TestBeanClient((TestBean)obj, 2000));
 	    t.start();
 
@@ -155,6 +158,7 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 	    
 	    Assert.assertTrue("Quiesce callback should not have occurred yet; calls should be 0, but it is "+callback.getCalls(), callback.getCalls()==0);
 	    
+//IC see: https://issues.apache.org/jira/browse/ARIES-634
 	    t.join();
 	    
 	    System.out.println("After join");
@@ -203,6 +207,7 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 	        assertNotNull(bundleb);
 	        bundleb.start();
 	        
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
 	        Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.blueprint.testbundleb");
 	        
 			participant.quiesce(callbackB, Collections.singletonList(getBundle(
@@ -215,6 +220,7 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 		    Assert.assertTrue("Quiesce callback B should have occurred; calls should be 1, but it is "+callbackB.getCalls(), callbackB.getCalls()==1);
 		    Assert.assertTrue("Quiesce callback A should not have occurred yet; calls should be 0, but it is "+callbackA.getCalls(), callbackA.getCalls()==0);
 		    
+//IC see: https://issues.apache.org/jira/browse/ARIES-634
 		    bundleb.stop();
 		    
 		    participant.quiesce(callbackA, Collections.singletonList(getBundle(
@@ -269,8 +275,10 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 		    
 		    Thread t = new Thread(new TestBeanClient((TestBean)obj, 1500));
 		    t.start();
+//IC see: https://issues.apache.org/jira/browse/ARIES-412
 		    Thread.sleep(200);
 	        
+//IC see: https://issues.apache.org/jira/browse/ARIES-634
 			  participant.quiesce(callback, bundles);
 			
 		    System.out.println("Called Quiesce");
@@ -300,6 +308,10 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
    //the bundle is being quiesced.
 	  
    System.out.println("In testMultiRequestQuiesce");
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
 	Object obj = context().getService(TestBean.class);
 	
 	if (obj != null)

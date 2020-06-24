@@ -35,6 +35,7 @@ public class FireAndForgetWork implements Runnable {
 	private final AccessControlContext acc;
 	
 	public FireAndForgetWork(MethodCall methodCall, PromiseImpl<Void> cleanup, PromiseImpl<Void> started) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1318
 		this.methodCall = methodCall;
 		this.cleanup = cleanup;
 		this.started = started;

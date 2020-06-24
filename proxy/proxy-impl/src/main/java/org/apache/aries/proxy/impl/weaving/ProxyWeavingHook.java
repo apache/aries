@@ -65,12 +65,16 @@ public final class ProxyWeavingHook implements WeavingHook, WeavingHelper {
   private final ServiceTracker controllers;
 
   @SuppressWarnings({
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
  "unchecked", "rawtypes"
 })
 public ProxyWeavingHook(BundleContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1126
     String enabledProp = context != null ? context.getProperty(WEAVING_ENABLED_CLASSES) : null;
     enabled = parseMatchers(enabledProp, WEAVING_ENABLED_CLASSES_DEFAULT);
+//IC see: https://issues.apache.org/jira/browse/ARIES-786
     disabled = parseMatchers(context != null ? context.getProperty(WEAVING_DISABLED_CLASSES) : null, WEAVING_DISABLED_CLASSES_DEFAULT);
+//IC see: https://issues.apache.org/jira/browse/ARIES-826
     controllers = new ServiceTracker(context, ProxyWeavingController.class.getName(), null);
     controllers.open();
     
@@ -98,15 +102,18 @@ public ProxyWeavingHook(BundleContext context) {
         }
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-786
     if (!isEnabled(wovenClass.getClassName()) || isDisabled(wovenClass.getClassName())) {
         return;
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-826
     if (shouldWeave(wovenClass)) {
       byte[] bytes = null;
       
       try {
         bytes = WovenProxyGenerator.getWovenProxy(wovenClass.getBytes(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-819
                 wovenClass.getBundleWiring().getClassLoader());
         
       } catch (Exception e) {
@@ -114,6 +121,7 @@ public ProxyWeavingHook(BundleContext context) {
             e.getCause() instanceof UnableToProxyException){
           //This is a weaving failure that should be logged, but the class
           //can still be loaded
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
           LOGGER.trace(String.format("The class %s cannot be woven, it may not be possible for the runtime to proxy this class.",
                                      wovenClass.getClassName()), e);
         } else {
@@ -132,6 +140,7 @@ public ProxyWeavingHook(BundleContext context) {
 
 
     private List<Pattern> parseMatchers(String matchers, String def) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-786
         String[] strings = (matchers != null ? matchers : def).split(",");
         List<Pattern> patterns = new ArrayList<Pattern>();
         for (String str : strings) {
@@ -165,6 +174,7 @@ public ProxyWeavingHook(BundleContext context) {
     
     public boolean isWoven(Class<?> clazz)
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-826
       return WovenProxy.class.isAssignableFrom(clazz);
     }
 
@@ -176,6 +186,7 @@ public ProxyWeavingHook(BundleContext context) {
                   wovenClass.getBundleWiring().getClassLoader());
           return WovenProxy.class.isAssignableFrom(superClass);
       } catch (ClassNotFoundException e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
           throw weavingException(wovenClass, e);
       }
     }
@@ -203,6 +214,7 @@ public ProxyWeavingHook(BundleContext context) {
   }
 
   private WeavingException weavingException(WovenClass wovenClass, Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
     String msg = format("There was a serious error trying to weave the class %s. See the associated exception for more information.",
                             wovenClass.getClassName());
     // This is a failure that should stop the class loading!

@@ -91,6 +91,7 @@ public class BeanRecipeTest {
 
 
     static public interface A {
+//IC see: https://issues.apache.org/jira/browse/ARIES-894
         String getA();
         void setA(String a);
     }
@@ -146,8 +147,11 @@ public class BeanRecipeTest {
 
     @Test
     public void parameterWithGenerics() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         BeanRecipe recipe = new BeanRecipe("example", container, ExampleService.class, false, false, false);
+//IC see: https://issues.apache.org/jira/browse/ARIES-843
         recipe.setArguments(Arrays.<Object>asList(new ExampleImpl()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
@@ -156,7 +160,9 @@ public class BeanRecipeTest {
 
     @Test
     public void parameterWithComplexGenerics1() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1572
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false, false, false);
         recipe.setArguments(Arrays.<Object>asList(new MyClass()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
@@ -167,6 +173,7 @@ public class BeanRecipeTest {
     @Test
     public void parameterWithComplexGenerics2() throws Exception {
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         BeanRecipe recipe = new BeanRecipe("example", container, MyService.class, false, false, false);
         recipe.setArguments(Arrays.<Object>asList(new MyClass3()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
@@ -176,7 +183,9 @@ public class BeanRecipeTest {
 
     @Test
     public void constructorWithGenerics() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1116
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         BeanRecipe recipe = new BeanRecipe("example", container, MessageDriven.class, false, false, false);
         recipe.setArguments(Arrays.<Object>asList(new DummySequentialPolicy()));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
@@ -186,7 +195,9 @@ public class BeanRecipeTest {
 
     @Test
     public void constructorWithVarArg() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1098
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         BeanRecipe recipe = new BeanRecipe("example", container, VarArg.class, false, false, false);
         recipe.setArguments(Arrays.<Object>asList(Arrays.asList("-web")));
         recipe.setArgTypes(Arrays.<String>asList((String) null));
@@ -261,8 +272,11 @@ public class BeanRecipeTest {
 
     @Test
     public void protectedClassAccess() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         BlueprintContainerImpl container = new BlueprintContainerImpl(null, null, null, null, null, null, null, null, null, null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         BeanRecipe recipe = new BeanRecipe("a", container, null, false, false, false);
+//IC see: https://issues.apache.org/jira/browse/ARIES-894
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory().create()));
         recipe.setFactoryMethod("getA");
         ExecutionContext.Holder.setContext(new BlueprintRepository(container));
@@ -291,6 +305,7 @@ public class BeanRecipeTest {
             // ok
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         recipe = new BeanRecipe("a", container, null, false, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
         recipe.setFactoryMethod("create");
@@ -324,6 +339,7 @@ public class BeanRecipeTest {
             // ok
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
         recipe = new BeanRecipe("a", container, null, false, false, false);
         recipe.setFactoryComponent(new PassThroughRecipe("factory", new Factory()));
         recipe.setFactoryMethod("create");
@@ -336,6 +352,7 @@ public class BeanRecipeTest {
 
     private Set<Method> applyStaticHidingRules(Collection<Method> methods) {
 		try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-960
 			Method m = TypeInference.class.getDeclaredMethod("applyStaticHidingRules", Collection.class);
 			m.setAccessible(true);
 			return new HashSet<Method>((List<Method>) m.invoke(null, methods));

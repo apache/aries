@@ -46,6 +46,7 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
     if(email == null) throw new IllegalArgumentException("Email must not be null");
    
     Date dateOfBirth;
+//IC see: https://issues.apache.org/jira/browse/ARIES-291
     dateOfBirth = (dob == null || "".equals(dob)) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(dob);
 	
     persistenceService.createAuthor(email, dateOfBirth, name, displayName, bio);
@@ -53,6 +54,7 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
   
   public List<? extends BlogAuthor> getAllAuthors()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
     List<? extends Author> authors = persistenceService.getAllAuthors();
     return adaptAuthor(authors);
   }
@@ -62,6 +64,7 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
     if(emailAddress == null) throw new IllegalArgumentException("Email must not be null");
     Author a = persistenceService.getAuthor(emailAddress);
     if (a != null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-291
       return new BlogAuthorImpl(a);
     else
       return null;
@@ -75,15 +78,18 @@ public class BlogAuthorManagerImpl implements BlogAuthorManager
   
   public void updateAuthor(String email, String dob, String name, String displayName, String bio) throws ParseException
   { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-291
     if(email == null) throw new IllegalArgumentException("Email must not be null");
    
     Date dateOfBirth;
     dateOfBirth = (dob == null || "".equals(dob)) ? null : new SimpleDateFormat("yyyy-MM-dd").parse(dob);
+//IC see: https://issues.apache.org/jira/browse/ARIES-253
 
     persistenceService.updateAuthor(email, dateOfBirth, name, displayName, bio);
   }
   
   private List<? extends BlogAuthor> adaptAuthor(List<? extends Author> authors) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-225
     return new BlogListAdapter<BlogAuthor, Author>(authors, BlogAuthorImpl.class, Author.class);
   }
  

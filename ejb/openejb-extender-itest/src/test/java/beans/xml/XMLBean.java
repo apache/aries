@@ -19,6 +19,7 @@ package beans.xml;
 public class XMLBean implements LocalIface, RemoteIface {
 
   public String getRemoteString() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     return "A Remote Call";
   }
 

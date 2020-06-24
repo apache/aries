@@ -28,6 +28,7 @@ public class JpaBlogSampleWithEbaTest extends AbstractBlogIntegrationTest {
 
 	@Test
 	public void test() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1210
 		MavenArtifactUrlReference eba = maven()
 				.groupId("org.apache.aries.samples.blog")
 				.artifactId("org.apache.aries.samples.blog.jpa.eba")
@@ -46,6 +47,7 @@ public class JpaBlogSampleWithEbaTest extends AbstractBlogIntegrationTest {
 		assertBlogServicesStarted();
 		checkBlogWebAccess();
 		
+//IC see: https://issues.apache.org/jira/browse/ARIES-313
 		ctx.stop();
 		manager.uninstall(ctx);
 	}

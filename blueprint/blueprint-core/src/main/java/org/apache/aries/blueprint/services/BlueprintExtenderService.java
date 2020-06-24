@@ -31,6 +31,7 @@ public interface BlueprintExtenderService {
      * @return container
      */
     BlueprintContainer createContainer(Bundle bundle);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1121
 
     /**
      * Create Blueprint container for the application bundle using a list of Blueprint resources 
@@ -48,6 +49,7 @@ public interface BlueprintExtenderService {
      * @return container
      */
     BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths, Collection<URI> namespaces);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
 
     /**
      * Get an existing container for the application bundle

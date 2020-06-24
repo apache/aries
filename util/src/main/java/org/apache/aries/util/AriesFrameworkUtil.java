@@ -32,6 +32,7 @@ public final class AriesFrameworkUtil
   
   static {
     Bundle b = FrameworkUtil.getBundle(AriesFrameworkUtil.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-776
     String bundleClassName = b == null ? "": b.getClass().getName();
     if (isEquinox(bundleClassName)) {
       worker = new EquinoxWorker();
@@ -52,6 +53,7 @@ public final class AriesFrameworkUtil
    */
   public static ClassLoader getClassLoader(Bundle b)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     if (b != null && b.getState() != Bundle.UNINSTALLED && b.getState() != Bundle.INSTALLED) {
       return worker.getClassLoader(b);
     } else {
@@ -66,6 +68,7 @@ public final class AriesFrameworkUtil
    */
   private static boolean isEquinox(String bundleClassName) 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-609
     if (bundleClassName.startsWith("org.eclipse.osgi")) {
       try {
         Class.forName("org.eclipse.osgi.framework.internal.core.BundleHost");
@@ -86,6 +89,7 @@ public final class AriesFrameworkUtil
    */
   public static ClassLoader getClassLoaderForced(Bundle b)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     if (b == null)
       return null;
     try {
@@ -105,6 +109,7 @@ public final class AriesFrameworkUtil
   @SuppressWarnings("rawtypes")
   public static void safeUnregisterService(ServiceRegistration reg) 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-567
     if(reg != null) {
       try {
         reg.unregister();

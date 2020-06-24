@@ -39,6 +39,7 @@ public abstract class AbstractAction implements PrivilegedAction<Object> {
 	}
 	
 	protected void checkValid() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		BasicSubsystem s = (BasicSubsystem)Activator.getInstance().getSubsystemServiceRegistrar().getSubsystemService(target);
 		if (s != target)
 			throw new IllegalStateException("Detected stale subsystem instance: " + s);

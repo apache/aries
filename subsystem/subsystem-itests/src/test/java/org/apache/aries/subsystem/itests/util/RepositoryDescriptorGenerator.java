@@ -80,6 +80,7 @@ public final class RepositoryDescriptorGenerator
 	  Element rootElement = document.createElement("repository");
 	  rootElement.setAttribute("name", name);
 	  document.appendChild(rootElement);
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	  for (org.osgi.resource.Resource resource : resources) {
 		  Element element = document.createElement("resource");
 		  String version = String.valueOf(ResourceHelper.getVersionAttribute(resource));

@@ -36,6 +36,7 @@ public class BasicProxyTest extends AbstractProxyTest
 {
   @Configuration
   public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1659
     return new Option[] //
     {
      proxyOptions()
@@ -50,7 +51,9 @@ public class BasicProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalClass() throws UnableToProxyException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
     Bundle b = bundleContext.getBundle();
+//IC see: https://issues.apache.org/jira/browse/ARIES-467
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
     classes.add(TestCallable.class);
@@ -69,12 +72,14 @@ public class BasicProxyTest extends AbstractProxyTest
   @Test
   public void checkProxydefaultMethodInterface() throws UnableToProxyException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1486
       Bundle b = bundleContext.getBundle();
       Callable<Object> c = new TestCallable();
       Collection<Class<?>> classes = new ArrayList<Class<?>>();
       // proxy an interface with a default methods (on Java 8).
       classes.add(java.lang.CharSequence.class);
       try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
           mgr.createDelegatingProxy(b, classes, c, null);
       } catch (FinalModifierException e) {
           String msg = e.getMessage();
@@ -90,6 +95,7 @@ public class BasicProxyTest extends AbstractProxyTest
   @Test
   public void checkProxyFinalMethods() throws UnableToProxyException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1190
     Bundle b = bundleContext.getBundle();
     Callable<Object> c = new TestCallable();
     Collection<Class<?>> classes = new ArrayList<Class<?>>();
@@ -99,6 +105,7 @@ public class BasicProxyTest extends AbstractProxyTest
     };
     classes.add(r.getClass());
     try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-633
       mgr.createDelegatingProxy(b, classes, c, null);
     } catch (FinalModifierException e) {
       assertTrue("The methods didn't appear in the message", e.getMessage().contains("run"));

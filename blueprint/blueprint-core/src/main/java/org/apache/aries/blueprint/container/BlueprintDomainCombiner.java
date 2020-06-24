@@ -30,6 +30,7 @@ public class BlueprintDomainCombiner implements DomainCombiner {
     private final Bundle bundle;
 
     public static AccessControlContext createAccessControlContext(Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1768
         return new AccessControlContext(AccessController.getContext(), new BlueprintDomainCombiner(bundle));
     }
 

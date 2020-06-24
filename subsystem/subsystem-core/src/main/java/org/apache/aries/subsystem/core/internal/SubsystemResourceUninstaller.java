@@ -33,7 +33,9 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	public void uninstall() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		removeReferences();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		try {
 			if (isResourceUninstallable())
 				uninstallSubsystem();
@@ -41,12 +43,14 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 		finally {
 			removeConstituents();
 			removeChildren();
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			removeSubsystem();
 		}
 	}
 	
 	private void removeChildren() {
 		if (!isExplicit()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 			removeChild((BasicSubsystem)subsystem, (BasicSubsystem)resource);
 			return;
 		}
@@ -55,19 +59,24 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	}
 	
 	private void removeConstituents() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (!isExplicit()) {
 			removeConstituent();
 			return;
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		for (Subsystem subsystem : ((BasicSubsystem)resource).getParents())
 			removeConstituent((BasicSubsystem)subsystem, (BasicSubsystem)resource);
 	}
 	
 	private void removeReferences() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (!isExplicit()) {
 			removeReference();
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1228
 		else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 			for (Subsystem subsystem : ((BasicSubsystem)resource).getParents())
 				removeReference((BasicSubsystem)subsystem, (BasicSubsystem)resource);
 			Subsystems subsystems = Activator.getInstance().getSubsystems();
@@ -84,6 +93,7 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 	
 	private void uninstallSubsystem() {
 		BasicSubsystem subsystem = (BasicSubsystem) resource;
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		try {
 			if (subsystem.getState().equals(Subsystem.State.RESOLVED))
 				subsystem.setState(State.INSTALLED);
@@ -105,6 +115,8 @@ public class SubsystemResourceUninstaller extends ResourceUninstaller {
 				}
 			}
 			subsystem.setState(State.UNINSTALLED);
+//IC see: https://issues.apache.org/jira/browse/ARIES-941
+//IC see: https://issues.apache.org/jira/browse/ARIES-943
 			Activator activator = Activator.getInstance();
 			activator.getSubsystemServiceRegistrar().unregister(subsystem);
 			if (subsystem.isScoped()) {

@@ -40,7 +40,9 @@ public class ApplicationMetadataImplTest
   @Test
   public void testBasicMetadataCreation() throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-121
     ApplicationMetadataFactory manager = new ApplicationMetadataFactoryImpl();
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     ApplicationMetadata app = manager.parseApplicationMetadata(getClass().getResourceAsStream("/META-INF/APPLICATION.MF"));
     
     Assert.assertEquals("Travel Reservation", app.getApplicationName());
@@ -48,6 +50,7 @@ public class ApplicationMetadataImplTest
   @Test
   public void testMetadataCreation() throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     ApplicationMetadataFactory manager = new ApplicationMetadataFactoryImpl();
     ApplicationMetadata app = manager.parseApplicationMetadata(getClass().getResourceAsStream("/META-INF/APPLICATION4.MF"));
     assertEquals("Travel Reservation", app.getApplicationName());
@@ -56,6 +59,7 @@ public class ApplicationMetadataImplTest
     List<Content> appContents = app.getApplicationContents();
     assertEquals(2, appContents.size());
     Content appContent1 = new ContentImpl("com.travel.reservation.business");
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     Map<String, String> attrs = new HashMap<String, String>();
     attrs.put("version", "\"[1.1.0,1.2.0)\"");
     Content appContent2 = new ContentImpl("com.travel.reservation.web", attrs);

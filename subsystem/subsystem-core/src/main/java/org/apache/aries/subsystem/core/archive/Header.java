@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.core.archive;
 import java.util.Collection;
 
 public interface Header<C extends Clause> {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 	Collection<C> getClauses();
 	
 	String getName();

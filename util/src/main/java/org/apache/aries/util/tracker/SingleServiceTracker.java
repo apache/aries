@@ -52,6 +52,7 @@ public final class SingleServiceTracker<T>
   {
     public void serviceChanged(ServiceEvent event) 
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-511
       if (open.get()) {
         if (event.getType() == ServiceEvent.UNREGISTERING) {
           ServiceReference deadRef = event.getServiceReference();
@@ -70,6 +71,7 @@ public final class SingleServiceTracker<T>
     ctx = context;
     this.className = clazz.getName();
     serviceListener = sl;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1024
     this.filterString = '(' + Constants.OBJECTCLASS + '=' + className + ')';
   }
   
@@ -107,6 +109,7 @@ public final class SingleServiceTracker<T>
 
   private void findMatchingReference(ServiceReference original) {
     boolean clear = true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1024
     ServiceReference ref;
     if(isCustomFilter) {
       try {
@@ -133,6 +136,7 @@ public final class SingleServiceTracker<T>
           ctx.ungetService(ref);
         }
       }
+//IC see: https://issues.apache.org/jira/browse/ARIES-519
     } else if (original == null){
       clear = false;
     }
@@ -148,6 +152,7 @@ public final class SingleServiceTracker<T>
     int foundLostReplaced = -1;
 
     // Make sure we don't try to get a lock on null
+//IC see: https://issues.apache.org/jira/browse/ARIES-484
     Object lock;
     
     // we have to choose our lock.

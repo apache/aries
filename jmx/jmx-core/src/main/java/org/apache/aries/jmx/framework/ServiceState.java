@@ -86,6 +86,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
             throw new IllegalArgumentException("Argument bundleContext cannot be null");
         }
         this.bundleContext = bundleContext;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         this.stateConfig = stateConfig;
         this.logger = logger;
     }
@@ -254,6 +255,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
             if (serviceListener == null) {
                 serviceListener = new AllServiceListener() {
                     public void serviceChanged(ServiceEvent serviceevent) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
                         if (stateConfig != null && !stateConfig.isServiceChangeNotificationEnabled()) {
                             return;
                         }
@@ -292,6 +294,7 @@ public class ServiceState extends NotificationBroadcasterSupport implements Serv
     }
 
     protected AttributeChangeNotification getAttributeChangeNotification(ServiceEvent serviceevent) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         if (stateConfig != null && !stateConfig.isAttributeChangeNotificationEnabled()) {
             return null;
         }

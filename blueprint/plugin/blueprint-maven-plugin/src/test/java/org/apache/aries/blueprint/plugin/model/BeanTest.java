@@ -55,6 +55,7 @@ public class BeanTest {
         bean.resolveDependency(blueprint);
         assertEquals(MyBean1.class, bean.clazz);
         assertEquals("myBean1", bean.id); // Name derived from class name
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         assertEquals(2, getPersistenceFields(bean).size());
         assertEquals(Sets.newHashSet("em", "emf"), getPersistenceFields(bean));
         assertEquals(1, bean.properties.size());
@@ -63,7 +64,9 @@ public class BeanTest {
         assertEquals("bean2", prop.name);
         assertEquals("serviceA", prop.ref);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1475
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1501
                 new TransactionalDef("txNotSupported", "NotSupported"),
                 new TransactionalDef("txMandatory", "Mandatory"),
                 new TransactionalDef("txNever", "Never"),
@@ -79,11 +82,15 @@ public class BeanTest {
         bean.resolveDependency(blueprint);
         assertEquals(MyBean3.class, bean.clazz);
         assertEquals("myBean3", bean.id); // Name derived from class name
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         assertEquals("There should be no persistence fields", 0, getPersistenceFields(bean).size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1326
         assertEquals(5, bean.properties.size());
         assertEquals("prototype", bean.attributes.get("scope"));
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1475
         Set<TransactionalDef> expectedTxs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1501
                 new TransactionalDef("txNotSupported", "NotSupported"),
                 new TransactionalDef("txMandatory", "Mandatory"),
                 new TransactionalDef("txNever", "Never"),
@@ -132,6 +139,7 @@ public class BeanTest {
     }
 
     private Set<String> getPersistenceFields(Bean bean) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         Set<String> beanWriters = bean.beanContentWriters.keySet();
         Set<String> persistenceFields = new HashSet<>();
         for (String beanWriter : beanWriters) {

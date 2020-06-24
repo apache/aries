@@ -29,7 +29,9 @@ public class DeployedVersionAttribute extends AbstractAttribute {
 	
 	@Override
 	public StringBuilder appendToFilter(StringBuilder builder) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		VersionRange versionRange = new VersionRange(VersionRange.LEFT_CLOSED, getVersion(), getVersion(), VersionRange.RIGHT_CLOSED);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		return builder.append(versionRange.toFilterString(VersionRangeAttribute.NAME_VERSION));
 	}
 
@@ -38,6 +40,7 @@ public class DeployedVersionAttribute extends AbstractAttribute {
 	}
 	
 	public Version getVersion() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return deployedVersion;
 	}
 }

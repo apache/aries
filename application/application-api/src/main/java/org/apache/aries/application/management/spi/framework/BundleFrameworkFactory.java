@@ -32,5 +32,6 @@ public interface BundleFrameworkFactory
    * @throws BundleException
    */
   public BundleFramework createBundleFramework(BundleContext bc, BundleFrameworkConfiguration config)
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
       throws BundleException;
 }

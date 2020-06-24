@@ -48,6 +48,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
   private final boolean nested;
 
   public InternalRecursiveBundleTracker(BundleContext context, int stateMask,
+//IC see: https://issues.apache.org/jira/browse/ARIES-827
       BundleTrackerCustomizer customizer, boolean nested)
   {
     super(context, stateMask, null);
@@ -66,8 +67,10 @@ public class InternalRecursiveBundleTracker extends BundleTracker
     Object o = null;
 
     if (b instanceof CompositeBundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-800
       customizedProcessBundle(this, b, event, false);
       o = b;
+//IC see: https://issues.apache.org/jira/browse/ARIES-827
     } else if (nested) {
       // Delegate to our customizer for normal bundles
       if (customizer != null) {
@@ -86,6 +89,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
   public void modifiedBundle(Bundle b, BundleEvent event, Object object)
   {
     if (b instanceof CompositeBundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-800
       customizedProcessBundle(this, b, event, false);
     } else {
       // Delegate to our customizer for normal bundles
@@ -103,6 +107,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
   public void removedBundle(Bundle b, BundleEvent event, Object object)
   {
     if (b instanceof CompositeBundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-800
       customizedProcessBundle(this, b, event, true);
     } else {
       if (customizer != null) {
@@ -123,6 +128,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
       // bundle is already active and there is no event associated
       // this can happen when bundle is first time added to the tracker 
       // or when the tracker is being closed.
+//IC see: https://issues.apache.org/jira/browse/ARIES-800
       if (event == null && !!!removing) {
         if (cb.getState() == Bundle.INSTALLED || cb.getState() == Bundle.RESOLVED || cb.getState() == Bundle.STARTING || cb.getState() == Bundle.ACTIVE) {
           openTracker(btc, cb, bundleScope, mask);
@@ -132,6 +138,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
         if (removing || event.getType() == BundleEvent.STOPPED || event.getType() == BundleEvent.UNRESOLVED || event.getType() == BundleEvent.UNINSTALLED) {
           // if CompositeBundle is being stopped, let's remove the bundle
           // tracker(s) associated with the composite bundle
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
           String bundleId = b.getSymbolicName()+"/"+b.getVersion();
           alreadyRecursedContexts.remove(bundleId);
           
@@ -140,6 +147,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
             // bundle trackers
             BundleTrackerFactory.unregisterAndCloseBundleTracker(bundleScope);
           }
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
         } else if (event.getType() == BundleEvent.INSTALLED || event.getType() == BundleEvent.RESOLVED || event.getType() == BundleEvent.STARTING) {
           openTracker(btc, cb, bundleScope, mask);
         }
@@ -153,11 +161,13 @@ public class InternalRecursiveBundleTracker extends BundleTracker
     // let's process each of the bundle in the CompositeBundle
     BundleContext compositeBundleContext = cb.getCompositeFramework().getBundleContext();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-568
     String bundleId = cb.getSymbolicName()+"/"+cb.getVersion();
     if (alreadyRecursedContexts.putIfAbsent(bundleId, bundleId) == null) {
 
       // let's track each of the bundle in the CompositeBundle
       BundleTracker bt = new InternalRecursiveBundleTracker(compositeBundleContext, stateMask,
+//IC see: https://issues.apache.org/jira/browse/ARIES-827
           customizer, true);
       bt.open();
       BundleTrackerFactory.registerBundleTracker(bundleScope, bt);

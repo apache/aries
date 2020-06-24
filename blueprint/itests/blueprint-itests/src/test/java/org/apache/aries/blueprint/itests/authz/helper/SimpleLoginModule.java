@@ -33,6 +33,7 @@ public class SimpleLoginModule implements LoginModule {
 
     @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
                            Map<String, ?> options) {
         this.subject = subject;
         this.name = (String)options.get("username");

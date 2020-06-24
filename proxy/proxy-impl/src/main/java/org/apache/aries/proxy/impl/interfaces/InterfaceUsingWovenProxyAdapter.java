@@ -44,10 +44,12 @@ final class InterfaceUsingWovenProxyAdapter extends AbstractWovenProxyAdapter {
    */ 
   protected final AbstractWovenProxyMethodAdapter getWeavingMethodVisitor(int access, String name,
       String desc, String signature, String[] exceptions, Method currentMethod,
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
       String methodStaticFieldName, Type currentMethodDeclaringType,
       boolean currentMethodDeclaringTypeIsInterface) {
     
     boolean isDefaultMethod = currentMethodDeclaringTypeIsInterface && 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1186
         ((access & (ACC_ABSTRACT | ACC_PUBLIC | ACC_STATIC)) == ACC_PUBLIC);
       
       

@@ -84,6 +84,7 @@ public class StartAction extends AbstractAction {
 	public StartAction(BasicSubsystem instigator, BasicSubsystem requestor, BasicSubsystem target, Coordination coordination, Restriction restriction) {
 		super(requestor, target, false);
 		this.instigator = instigator;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1050
 		this.coordination = coordination;
 		this.restriction = restriction;
 	}
@@ -197,6 +198,7 @@ public class StartAction extends AbstractAction {
 	@Override
 	public Object run() {
 		// Protect against re-entry now that cycles are supported.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 		if (!Activator.getInstance().getLockingStrategy().set(State.STARTING, target)) {
 			return null;
 		}
@@ -206,6 +208,7 @@ public class StartAction extends AbstractAction {
 			// If necessary, install the dependencies.
 	    	if (State.INSTALLING.equals(target.getState()) && !Utils.isProvisionDependenciesInstall(target)) {
 	    		// Acquire the global write lock while installing dependencies.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 				Activator.getInstance().getLockingStrategy().writeLock();
 				try {
 					// We are now protected against installs, starts, stops, and uninstalls.
@@ -228,6 +231,7 @@ public class StartAction extends AbstractAction {
 						}
 						// Downgrade to the read lock in order to prevent 
 		    			// installs and uninstalls but allow starts and stops.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 						Activator.getInstance().getLockingStrategy().readLock();
 		    		}
 		    		catch (Throwable t) {
@@ -241,6 +245,7 @@ public class StartAction extends AbstractAction {
 				}
 				finally {
 					// Release the global write lock as soon as possible.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 					Activator.getInstance().getLockingStrategy().writeUnlock();
 				}
 	    	}
@@ -263,6 +268,7 @@ public class StartAction extends AbstractAction {
 	    		affectedResources = computeAffectedResources(target);
 				// Acquire the global mutual exclusion lock while acquiring the
 				// state change locks of affected subsystems.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 				Activator.getInstance().getLockingStrategy().lock();
 				try {
 					// We are now protected against cycles.
@@ -323,6 +329,7 @@ public class StartAction extends AbstractAction {
 					}
 					finally {
 						// Release the state change locks of affected subsystems.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 						Activator.getInstance().getLockingStrategy().unlock(affectedResources.subsystems());
 					}
 				}
@@ -347,6 +354,7 @@ public class StartAction extends AbstractAction {
 		}
 		finally {
 			// Protection against re-entry no longer required.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1609
 			Activator.getInstance().getLockingStrategy().unset(State.STARTING, target);
 		}
 		return null;
@@ -366,6 +374,7 @@ public class StartAction extends AbstractAction {
 	private static void emitResolvingEvent(BasicSubsystem subsystem) {
 		// Don't propagate a RESOLVING event if this is a persisted subsystem
 		// that is already RESOLVED.
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		if (State.INSTALLED.equals(subsystem.getState()))
 			subsystem.setState(State.RESOLVING);
 	}
@@ -373,6 +382,7 @@ public class StartAction extends AbstractAction {
 	private static void emitResolvedEvent(BasicSubsystem subsystem) {
 		// No need to propagate a RESOLVED event if this is a persisted
 		// subsystem already in the RESOLVED state.
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		if (State.RESOLVING.equals(subsystem.getState()))
 			subsystem.setState(State.RESOLVED);
 	}
@@ -429,6 +439,7 @@ public class StartAction extends AbstractAction {
 	}
 
 	private static void setExportIsolationPolicy(final BasicSubsystem subsystem, Coordination coordination) throws InvalidSyntaxException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (!subsystem.isComposite())
 			return;
 		final Region from = ((BasicSubsystem)subsystem.getParents().iterator().next()).getRegion();
@@ -540,6 +551,7 @@ public class StartAction extends AbstractAction {
 	}
 
 	private void startBundleResource(Resource resource, Coordination coordination) throws BundleException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-918
 		if (target.isRoot())
 			// Starting the root subsystem should not affect bundles within the
 			// root region.
@@ -552,18 +564,22 @@ public class StartAction extends AbstractAction {
 		if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0)
 			return;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		if (logger.isDebugEnabled()) {
 			int bundleStartLevel = bundle.adapt(BundleStartLevel.class).getStartLevel();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1239
 			Bundle systemBundle=Activator.getInstance().getBundleContext().getBundle(0);
 			int fwStartLevel = systemBundle.adapt(FrameworkStartLevel.class).getStartLevel();
 			logger.debug("StartAction: starting bundle " + bundle.getSymbolicName()
 				+ " " + bundle.getVersion().toString()
+//IC see: https://issues.apache.org/jira/browse/ARIES-1239
 				+ " bundleStartLevel=" + bundleStartLevel
 				+ " frameworkStartLevel=" + fwStartLevel);
 		}
 
 		bundle.start(Bundle.START_TRANSIENT | Bundle.START_ACTIVATION_POLICY);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1252
 		if (logger.isDebugEnabled()) {
 			logger.debug("StartAction: bundle " + bundle.getSymbolicName()
 				+ " " + bundle.getVersion().toString()
@@ -616,14 +632,17 @@ public class StartAction extends AbstractAction {
     }
 
 	private void startSubsystemResource(Resource resource, final Coordination coordination) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		final BasicSubsystem subsystem = (BasicSubsystem)resource;
 		if (!isTargetStartable(instigator, target, subsystem)) {
 			 return;
 		}
 		// Subsystems that are content resources of another subsystem must have
 		// their autostart setting set to started.
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		if (Utils.isContent(this.target, subsystem))
 			subsystem.setAutostart(true);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1050
 		new StartAction(instigator, target, subsystem, coordination).run();
 		if (coordination == null)
 			return;
@@ -633,6 +652,7 @@ public class StartAction extends AbstractAction {
 			}
 
 			public void failed(Coordination coordination) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 				new StopAction(target, subsystem, !subsystem.isRoot()).run();
 			}
 		});
@@ -646,6 +666,7 @@ public class StartAction extends AbstractAction {
 	private static void logFailedResolution(BasicSubsystem subsystem, Collection<Bundle> bundles) {
 		//work out which bundles could not be resolved
 		Collection<Bundle> unresolved = new ArrayList<Bundle>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1245
 		StringBuilder diagnostics = new StringBuilder();
 		diagnostics.append(String.format("Unable to resolve bundles for subsystem/version/id %s/%s/%s:\n", 
 				subsystem.getSymbolicName(), subsystem.getVersion(), subsystem.getSubsystemId()));

@@ -47,6 +47,7 @@ import org.osgi.framework.InvalidSyntaxException;
 @ExamReactorStrategy(PerMethod.class)
 public abstract class AbstractTest extends AbstractIntegrationTest {
 	@Inject
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 	Scope scope;
 	
 	protected void addPackageExportPolicy(String packageName, ScopeUpdate scopeUpdate) throws InvalidSyntaxException {
@@ -116,6 +117,8 @@ public abstract class AbstractTest extends AbstractIntegrationTest {
 	}
 	
 	protected Bundle findBundle(String symbolicName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		return Utils.findBundle(symbolicName, bundleContext);
 	}
 	
@@ -161,6 +164,7 @@ public abstract class AbstractTest extends AbstractIntegrationTest {
 	}
 	
 	protected Scope getScope() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		return scope;
 	}
 	
@@ -188,6 +192,7 @@ public abstract class AbstractTest extends AbstractIntegrationTest {
 	}
 	
 	protected Option baseOptions() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
         String localRepo = System.getProperty("maven.repo.local");
      
         if (localRepo == null) {

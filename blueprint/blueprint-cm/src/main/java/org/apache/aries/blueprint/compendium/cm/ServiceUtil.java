@@ -26,6 +26,7 @@ public final class ServiceUtil {
     }
     
     public static void safeUnregister(ServiceRegistration<?> sreg) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1660
         if (sreg != null) {
             try {
                 sreg.unregister();

@@ -45,9 +45,13 @@ public class ProxySubclassHierarchyAdapter extends ClassVisitor implements Opcod
 
   private static Logger LOGGER = LoggerFactory.getLogger(ProxySubclassHierarchyAdapter.class);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
   ProxySubclassHierarchyAdapter(ProxySubclassAdapter adapter, Collection<String> methodsToImplement)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
     super(Opcodes.ASM8);
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
     LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassHeirarchyAdapter", new Object[] {
         this, adapter, methodsToImplement });
 
@@ -75,6 +79,7 @@ public class ProxySubclassHierarchyAdapter extends ClassVisitor implements Opcod
     }
 
     LOGGER.debug(Constants.LOG_EXIT, "visitMethod");
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
 
     // always return null because we don't want to copy any method code
     return null;

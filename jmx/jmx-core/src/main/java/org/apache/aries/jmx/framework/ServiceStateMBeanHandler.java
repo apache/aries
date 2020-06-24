@@ -52,6 +52,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
 
     public ServiceStateMBeanHandler(JMXAgentContext agentContext, StateConfig stateConfig) {
         this.agentContext = agentContext;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         this.stateConfig = stateConfig;
         this.bundleContext = agentContext.getBundleContext();
         this.logger = agentContext.getLogger();
@@ -62,12 +63,14 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#open()
      */
     public void open() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         serviceStateMBean = new ServiceState(bundleContext, stateConfig, logger);
         try {
             mbean = new RegistrableStandardEmitterMBean(serviceStateMBean, ServiceStateMBean.class);
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + ServiceStateMBean.class.getName(), e);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         agentContext.registerMBean(this);
     }
 
@@ -89,6 +92,7 @@ public class ServiceStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         agentContext.unregisterMBean(this);
        // ensure dispatcher is shutdown even if postDeRegister is not honored
        if (serviceStateMBean != null) {

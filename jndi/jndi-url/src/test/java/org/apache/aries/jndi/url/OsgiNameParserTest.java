@@ -51,8 +51,10 @@ public class OsgiNameParserTest
     checkName("osgi","servicelist","java.lang.Runnable", "(a=b)");
     checkName("osgi","servicelist","jdbc", "grok", "DataSource");
     checkName("osgi", "framework", "bundleContext");
+//IC see: https://issues.apache.org/jira/browse/ARIES-250
     checkName("osgi","service","javax.sql.DataSource", "(osgi.jndi.servicee.name=jdbc/myDataSource)");
     checkName("osgi","service","javax.sql.DataSource", "(&(a=/b)(c=/d))");
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
     checkName("osgi", "service");
   }
   
@@ -108,6 +110,7 @@ public class OsgiNameParserTest
     
     if (elements.length > 1) {
       assertEquals(elements[0], n.getInterface());
+//IC see: https://issues.apache.org/jira/browse/ARIES-250
       if (elements.length == 2) {
         assertTrue("There is no filter in the name", n.hasFilter());
         assertEquals(elements[1], n.getFilter());

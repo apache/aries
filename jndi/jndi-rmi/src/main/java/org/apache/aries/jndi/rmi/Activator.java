@@ -38,6 +38,7 @@ public class Activator implements BundleActivator {
         LOGGER.debug("Registering RMI url handler");
 
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
             Hashtable<String, Object> props = new Hashtable<>();
             props.put(JNDIConstants.JNDI_URLSCHEME, new String[]{"rmi"});
             reg = context.registerService(

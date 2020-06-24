@@ -42,6 +42,7 @@ public class HeaderParser  {
         if (header == null || header.trim().length() == 0) {
             return elements;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-953
         String[] clauses = header.split(",(?![^\\(\\)]*(\\)))");
         for (String clause : clauses) {
             String[] tokens = clause.split(";");

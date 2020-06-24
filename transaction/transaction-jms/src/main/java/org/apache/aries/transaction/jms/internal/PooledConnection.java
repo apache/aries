@@ -66,6 +66,7 @@ public class PooledConnection implements TopicConnection, QueueConnection, Poole
     @Override
     public void close() throws JMSException {
         this.cleanupConnectionTemporaryDestinations();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         this.cleanupAllLoanedSessions();
         if (this.pool != null) {
             this.pool.decrementReferenceCount();
@@ -154,6 +155,7 @@ public class PooledConnection implements TopicConnection, QueueConnection, Poole
         // Store the session so we can close the sessions that this PooledConnection
         // created in order to ensure that consumers etc are closed per the JMS contract.
         loanedSessions.add(result);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
 
         // Add a event listener to the session that notifies us when the session
         // creates / destroys temporary destinations and closes etc.
@@ -237,6 +239,7 @@ public class PooledConnection implements TopicConnection, QueueConnection, Poole
      */
     protected void cleanupAllLoanedSessions() {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         for (PooledSession session : loanedSessions) {
             try {
                 session.close();

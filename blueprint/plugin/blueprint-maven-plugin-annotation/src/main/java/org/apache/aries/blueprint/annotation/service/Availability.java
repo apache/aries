@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.annotation.service;
 
 public enum Availability {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1742
     MANDATORY,
     OPTIONAL
 }

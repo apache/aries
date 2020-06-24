@@ -39,6 +39,7 @@ public class XaConnectionPool extends ConnectionPool {
     private final TransactionManager transactionManager;
 
     public XaConnectionPool(Connection connection, TransactionManager transactionManager) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         super(connection);
         this.transactionManager = transactionManager;
     }

@@ -48,8 +48,10 @@ public final class SimpleBundleInfo implements BundleInfo {
   private String _location;
   
   public SimpleBundleInfo(BundleManifest bm, String location) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
     _contentName = new ContentImpl(
         bm.getSymbolicName(), 
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
         ManifestHeaderProcessor.parseBundleSymbolicName(bm.getSymbolicName()).getAttributes());
     _version = bm.getVersion();
     _attributes = bm.getRawAttributes();
@@ -64,14 +66,17 @@ public final class SimpleBundleInfo implements BundleInfo {
   }
   
   public Set<Content> getExportService() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-172
     if (_exportServices == null) {
       _exportServices = getContentSetFromHeader (_attributes, Constants.EXPORT_SERVICE);
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-714
     return _exportServices;
   }
 
   public Map<String, String> getHeaders() {
     Map<String, String> result = new HashMap<String, String>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
     for (Entry<Object, Object> h: _attributes.entrySet()) {
       Attributes.Name name = (Attributes.Name) h.getKey();
       String value = (String) h.getValue();
@@ -88,6 +93,7 @@ public final class SimpleBundleInfo implements BundleInfo {
   }
 
   public Set<Content> getImportService() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-172
     if (_importServices == null) {
       _importServices = getContentSetFromHeader (_attributes, Constants.IMPORT_SERVICE);
     }
@@ -99,6 +105,7 @@ public final class SimpleBundleInfo implements BundleInfo {
   }
 
   public String getSymbolicName() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
     return _contentName.getContentName();
   }
 
@@ -111,6 +118,7 @@ public final class SimpleBundleInfo implements BundleInfo {
     List<String> splitHeader = ManifestHeaderProcessor.split(header, ",");
     HashSet<Content> result = new HashSet<Content>();
     for (String s: splitHeader) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
       Content c = new ContentImpl(s);
       result.add(c);
     }
@@ -119,6 +127,7 @@ public final class SimpleBundleInfo implements BundleInfo {
 
   public Map<String, String> getBundleAttributes()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
     return _contentName.getAttributes();
   }
 
@@ -129,6 +138,7 @@ public final class SimpleBundleInfo implements BundleInfo {
 
   public Set<Content> getRequireBundle()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
     if (_requireBundle == null) {
       _requireBundle = getContentSetFromHeader(_attributes, Constants.REQUIRE_BUNDLE);
     }
@@ -143,8 +153,10 @@ public final class SimpleBundleInfo implements BundleInfo {
    */
   public boolean equals(Object other)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-183
     if (other == null) return false;
     if (other == this) return true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
     if (other instanceof SimpleBundleInfo) {
       return _location.equals(((SimpleBundleInfo)other)._location);
     }
@@ -159,11 +171,13 @@ public final class SimpleBundleInfo implements BundleInfo {
   
   public String toString()
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
     return _contentName.getContentName() + "_" + getVersion();
   }
   public Attributes getRawAttributes()
   {
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     return _attributes;
   }
 }

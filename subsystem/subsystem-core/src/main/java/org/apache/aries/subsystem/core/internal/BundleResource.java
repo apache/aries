@@ -59,6 +59,7 @@ import org.osgi.service.subsystem.SubsystemException;
 
 public class BundleResource implements Resource, org.apache.aries.subsystem.core.repository.RepositoryContent {
 	private static BundleManifest computeManifest(IDirectory directory, IFile content) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1729
 		org.apache.aries.util.manifest.BundleManifest bm = 
 				org.apache.aries.util.manifest.BundleManifest.fromBundle(directory);
 		if (bm == null) {
@@ -80,11 +81,14 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 	public BundleResource(IFile content) {
 		this.content = content;
 		IDirectory dir = content.isDirectory() ? content.convert() : content.convertNested();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1729
 		manifest = computeManifest(dir, content);
+//IC see: https://issues.apache.org/jira/browse/ARIES-952
 		computeRequirementsAndCapabilities(dir);
 	}
 
 	public List<Capability> getCapabilities(String namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		if (namespace == null)
 			return Collections.unmodifiableList(capabilities);
 		ArrayList<Capability> result = new ArrayList<Capability>(capabilities.size());
@@ -122,6 +126,7 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 			}
 		}
 		catch (Exception e) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 			throw new SubsystemException(e);
 		}
 	}
@@ -130,6 +135,7 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 		if (namespace == null)
 			return Collections.unmodifiableList(requirements);
 		ArrayList<Requirement> result = new ArrayList<Requirement>(requirements.size());
+//IC see: https://issues.apache.org/jira/browse/ARIES-925
 		for (Requirement requirement : requirements)
 			if (namespace.equals(requirement.getNamespace()))
 				result.add(requirement);
@@ -160,10 +166,12 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 		RequireCapabilityHeader rch = (RequireCapabilityHeader)manifest.getHeader(RequireCapabilityHeader.NAME);
 		if (rch != null)
 			for (RequireCapabilityHeader.Clause clause : rch.getClauses())
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 				requirements.add(new RequireCapabilityRequirement(clause, this));
 	}
 	
 	private void computeOsgiExecutionEnvironmentRequirement() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		RequirementHeader<?> header = (RequirementHeader<?>)manifest.getHeader(BundleRequiredExecutionEnvironmentHeader.NAME);
 		if (header == null)
 			return;
@@ -211,12 +219,14 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 	private void computeOsgiWiringPackageCapabilities() {
 		ExportPackageHeader eph = (ExportPackageHeader)manifest.getHeader(ExportPackageHeader.NAME);
 		if (eph != null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			capabilities.addAll(eph.toCapabilities(this));
 	}
 	
 	private void computeOsgiWiringPackageRequirements() {
 		ImportPackageHeader iph = (ImportPackageHeader)manifest.getHeader(ImportPackageHeader.NAME);
 		if (iph != null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			requirements.addAll(iph.toRequirements(this));
 	}
 	
@@ -235,6 +245,7 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 			return;
 		// Compute service requirements and capabilities if the optional
 		// ModelledResourceManager service is present.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
 		ServiceModeller modeller = getServiceModeller();
 		if (modeller == null)
 			return;
@@ -250,6 +261,7 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 		computeOsgiWiringPackageRequirements();
 		computeGenericRequirements();
 		computeOsgiWiringBundleRequirements();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1072
 		computeOsgiExecutionEnvironmentRequirement();
 		computeOsgiWiringHostRequirement();
 		computeOsgiWiringHostCapability();
@@ -275,6 +287,7 @@ public class BundleResource implements Resource, org.apache.aries.subsystem.core
 	}
 
 	private ServiceModeller getServiceModeller() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1172
 		return Activator.getInstance().getServiceModeller();
 	}
 

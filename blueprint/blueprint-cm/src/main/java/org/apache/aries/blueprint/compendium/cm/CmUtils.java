@@ -59,6 +59,7 @@ public class CmUtils {
     }
 
     public static Dictionary<String, Object> getProperties(ServiceReference service, String persistentId) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
         BundleContext bc = service.getBundle().getBundleContext();
         ServiceReference<ConfigurationAdmin> caRef = bc.getServiceReference(ConfigurationAdmin.class);
         try {
@@ -66,6 +67,7 @@ public class CmUtils {
             Configuration config = getConfiguration(ca, persistentId);
             if (config != null) {
                 Dictionary<String, Object> props = new CaseInsensitiveDictionary(config.getProperties());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1701
                 Bundle bundle = caRef.getBundle();
                 if (bundle != null) {
                     BundleContext caBc = bundle.getBundleContext();

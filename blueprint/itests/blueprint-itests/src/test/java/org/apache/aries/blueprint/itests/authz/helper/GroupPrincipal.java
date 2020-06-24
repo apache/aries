@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.itests.authz.helper;
 
 public class GroupPrincipal extends NamedPrincipal {
     public GroupPrincipal(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         super(name);
     }
 }

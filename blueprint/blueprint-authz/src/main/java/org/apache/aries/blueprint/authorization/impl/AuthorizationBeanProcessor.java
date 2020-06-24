@@ -48,13 +48,16 @@ public class AuthorizationBeanProcessor implements BeanProcessor {
     }
 
     public Object beforeInit(Object bean, String beanName, BeanCreator beanCreator, BeanMetadata beanData) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1472
         if (bean instanceof Processor) {
             // Never enhance other processors
             return bean;
         }
         Class<?> c = bean.getClass();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         if (new SecurityAnotationParser().isSecured(c)) {
             LOGGER.debug("Adding annotation based authorization interceptor for bean {} with class {}", beanName, c);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1316
             cdr.registerInterceptorWithComponent(beanData, new AuthorizationInterceptor(bean.getClass()));
         }
         return bean;

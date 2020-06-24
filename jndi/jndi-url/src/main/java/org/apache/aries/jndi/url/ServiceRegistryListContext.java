@@ -44,6 +44,8 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
 
     public NamingEnumeration<NameClassPair> list(String name) throws NamingException {
         if (!"".equals(name)) throw new NameNotFoundException(name);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
         final ServiceReference[] refs = getServiceRefs();
         return new ServiceNamingEnumeration<>(callerContext, refs, new ThingManager<NameClassPair>() {
             public NameClassPair get(BundleContext ctx, ServiceReference<?> ref) {
@@ -82,6 +84,7 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
     }
 
     public Object lookup(String name) throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1183
         Object result = ServiceHelper.getService(callerContext, parentName, name, false, env, true);
         if (result == null) {
             throw new NameNotFoundException(name);
@@ -112,6 +115,7 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
 
         private ServiceNamingEnumeration(BundleContext context, ServiceReference<?>[] theRefs, ThingManager<T> manager) {
             ctx = context;
+//IC see: https://issues.apache.org/jira/browse/ARIES-501
             refs = (theRefs != null) ? theRefs : new ServiceReference[0];
             mgr = manager;
         }
@@ -122,6 +126,7 @@ public class ServiceRegistryListContext extends AbstractServiceRegistryContext i
         }
 
         public boolean hasMore() throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-128
             return hasMoreElements();
         }
 

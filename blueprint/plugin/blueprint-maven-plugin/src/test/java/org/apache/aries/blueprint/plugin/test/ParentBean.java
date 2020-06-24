@@ -32,6 +32,7 @@ public class ParentBean {
 
     @Autowired
     ServiceA bean2;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1481
 
     @PersistenceContext(unitName="person")
     EntityManager em;

@@ -39,6 +39,7 @@ public class FelixResourceAdapter implements Resource, RepositoryContent {
 	public boolean equals(Object o) {
 		if (o == this) 
 			return true;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1554
 		if (!(o instanceof FelixResourceAdapter)) 
 			return false;
 		FelixResourceAdapter that = (FelixResourceAdapter)o;
@@ -60,6 +61,8 @@ public class FelixResourceAdapter implements Resource, RepositoryContent {
 	}
 	
 	public List<Capability> getCapabilities(String namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1410
+//IC see: https://issues.apache.org/jira/browse/ARIES-1244
 	    ArrayList<Capability> result = new ArrayList<Capability>();
 		namespace = NamespaceTranslator.translate(namespace);
 		if (namespace == null || namespace.equals(IdentityNamespace.IDENTITY_NAMESPACE)) {
@@ -77,6 +80,7 @@ public class FelixResourceAdapter implements Resource, RepositoryContent {
 			    return Collections.unmodifiableList(result);
 			}
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-1523
 		if (namespace == null || namespace.equals(HostNamespace.HOST_NAMESPACE)) {
 			result.add(new OsgiWiringHostCapability(this, resource.getSymbolicName(), resource.getVersion()));
 			if (namespace != null) {

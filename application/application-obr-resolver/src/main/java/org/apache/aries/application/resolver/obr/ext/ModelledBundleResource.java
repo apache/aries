@@ -172,6 +172,7 @@ public class ModelledBundleResource implements ModelledResource {
         Object pkg = props.remove(ResourceType.PACKAGE.toString());
         // bundle symbolic name and version will be in additionalProps, so do not 
         // need to be passed in separately. 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         ExportedPackage info = modellingManager.getExportedPackage(this, pkg.toString(), props);
         packageCapabilities.add(info);
       } else if (ResourceType.SERVICE.toString().equals(capability.getName())) { 
@@ -182,6 +183,7 @@ public class ModelledBundleResource implements ModelledResource {
         if (rankingText != null) ranking = Integer.parseInt(rankingText);
         // objectClass may come out as a String or String[]
         Object rawObjectClass = props.remove (Constants.OBJECTCLASS);
+//IC see: https://issues.apache.org/jira/browse/ARIES-411
         if (rawObjectClass == null) {
         	// get it from service
         	ifaces = Arrays.asList((String)props.get(ModellingConstants.OBR_SERVICE));
@@ -193,6 +195,7 @@ public class ModelledBundleResource implements ModelledResource {
         	}
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         ExportedService svc = modellingManager.getExportedService(name, ranking, ifaces, props);
         serviceCapabilties.add(svc);
 

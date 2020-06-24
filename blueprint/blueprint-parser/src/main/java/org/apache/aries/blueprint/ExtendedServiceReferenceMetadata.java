@@ -33,10 +33,13 @@ public interface ExtendedServiceReferenceMetadata extends ServiceReferenceMetada
 
     int getProxyMethod();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-330
     Class getRuntimeInterface();
     
     BundleContext getBundleContext();
+//IC see: https://issues.apache.org/jira/browse/ARIES-727
 
     ValueMetadata getExtendedFilter();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1082
 
 }

@@ -25,6 +25,7 @@ import org.osgi.framework.ServiceRegistration;
 public class ContextManagerServiceFactory implements ServiceFactory<ContextManagerService> {
 
     public ContextManagerService getService(Bundle bundle, ServiceRegistration<ContextManagerService> registration) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
         return new ContextManagerService(bundle.getBundleContext());
     }
 

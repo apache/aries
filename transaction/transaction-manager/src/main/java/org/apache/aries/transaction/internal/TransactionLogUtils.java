@@ -149,6 +149,8 @@ public class TransactionLogUtils {
             // move old dir to backup dir
             backupDir = new File(newLogDirectory + String.format("-%016x", System.currentTimeMillis()));
             if (!oldDir.renameTo(backupDir)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 log.warn("Can't backup old transaction logs directory: {}", oldDir.getAbsolutePath());
                 return false;
             }
@@ -175,6 +177,7 @@ public class TransactionLogUtils {
             newLog = TransactionManagerService.createTransactionLog(newConfiguration, xidFactory2);
 
             if (!(oldLog instanceof HOWLLog)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 log.info("TransactionLog {} is not recoverable", oldLogDirectory);
                 return false;
             }
@@ -188,6 +191,7 @@ public class TransactionLogUtils {
 
             Collection<Recovery.XidBranchesPair> pairs = from.recover(xidFactory1);
             for (Recovery.XidBranchesPair xidBranchesPair : pairs) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1728
                 log.info("Copying active transaction with XID {}", xidBranchesPair.getXid());
                 for (TransactionBranchInfo branchInfo : xidBranchesPair.getBranches()) {
                     log.info("- Copying branch {} for resource {}", branchInfo.getBranchXid(), branchInfo.getResourceName());

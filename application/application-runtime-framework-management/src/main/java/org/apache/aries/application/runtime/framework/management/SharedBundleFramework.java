@@ -60,6 +60,7 @@ public class SharedBundleFramework
    * @throws InvalidSyntaxException
    */
   private static void createSharedBundleFramework(BundleContext bc,
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
       BundleFrameworkConfigurationFactory bundleFrameworkConfigFactory,
       BundleFrameworkFactory bundleFrameworkFactory) throws ContextException
   {
@@ -77,6 +78,7 @@ public class SharedBundleFramework
       sharedFramework = bundleFrameworkFactory.createBundleFramework(bc, config);
 
       sharedFramework.start();
+//IC see: https://issues.apache.org/jira/browse/ARIES-518
 
     } catch (BundleException e) {
       LOGGER.debug(LOG_EXIT, "createSharedBundleFramework", e);
@@ -99,6 +101,7 @@ public class SharedBundleFramework
    * @throws SharedFrameworkCreationException
    */
   public synchronized static BundleFramework getSharedBundleFramework(BundleContext bc,
+//IC see: https://issues.apache.org/jira/browse/ARIES-493
       BundleFrameworkConfigurationFactory bfcf,
       BundleFrameworkFactory bff) throws ContextException
   {
@@ -139,6 +142,7 @@ public class SharedBundleFramework
       compositeManifest.put(Constants.BUNDLE_SYMBOLICNAME, BundleFramework.SHARED_BUNDLE_FRAMEWORK);
       
       // Add blueprint so that it is available to applications, unless configuration has already been provided.
+//IC see: https://issues.apache.org/jira/browse/ARIES-754
       String existingImports = (String) compositeManifest.get(Constants.IMPORT_PACKAGE);
       if (existingImports == null){
         compositeManifest.put(Constants.IMPORT_PACKAGE, RUNTIME_PACKAGES);

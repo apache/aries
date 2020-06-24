@@ -46,6 +46,7 @@ public class ValueMetadataImpl implements MutableValueMetadata {
     }
 
     public ValueMetadataImpl(Object value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         this.value = value;
     }
 
@@ -74,6 +75,7 @@ public class ValueMetadataImpl implements MutableValueMetadata {
     }
 
     public Object getValue() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         return value;
     }
 

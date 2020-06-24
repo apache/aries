@@ -88,14 +88,17 @@ public class BlueprintFileWriterTest {
         long start = System.currentTimeMillis();
         Set<Class<?>> beanClasses = findClasses(classFinder, Arrays.asList(
                 MyBean1.class.getPackage().getName(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1742
                 ReferenceListenerToProduceWithoutAnnotation.class.getPackage().getName(),
                 BeanWithReferences.class.getPackage().getName()
         ));
         Set<String> namespaces = new HashSet<>(Arrays.asList(NS_JPA, NS_TX1));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1663
         Map<String, String> customParameters = new HashMap<>();
         customParameters.put("ex.t", "1");
         customParameters.put("example.p1", "v1");
         customParameters.put("example.p2", "v2");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1736
         BlueprintConfigurationImpl blueprintConfiguration = new BlueprintConfigurationImpl(namespaces, null, customParameters, null, null);
         Blueprint blueprint = new Blueprint(blueprintConfiguration, beanClasses);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -113,6 +116,7 @@ public class BlueprintFileWriterTest {
     public void testGenerateBeanWithInitDestroyAndfieldInjection() throws Exception {
         Node bean1 = getBeanById("myBean1");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1562
         assertXpathEquals(bean1, "@class", MyBean1.class.getName());
         assertXpathEquals(bean1, "@init-method", "init");
         assertXpathEquals(bean1, "@destroy-method", "destroy");
@@ -143,7 +147,9 @@ public class BlueprintFileWriterTest {
     @Test
     public void testGenerateCDITransactional() throws Exception {
         Node bean1 = getBeanById("cdiTransactionalAnnotatedBean");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1611
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1475
         NodeList txs = (NodeList) xpath.evaluate("transaction", bean1, XPathConstants.NODESET);
         Set<TransactionalDef> defs = new HashSet<TransactionalDef>();
         for (int i = 0; i < txs.getLength(); ++i) {
@@ -151,6 +157,9 @@ public class BlueprintFileWriterTest {
             defs.add(new TransactionalDef(xpath.evaluate("@method", tx), xpath.evaluate("@value", tx)));
         }
         Set<TransactionalDef> expectedDefs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1562
+//IC see: https://issues.apache.org/jira/browse/ARIES-1663
+//IC see: https://issues.apache.org/jira/browse/ARIES-1663
                 new TransactionalDef("txNotSupported", "NotSupported"),
                 new TransactionalDef("txMandatory", "Mandatory"),
                 new TransactionalDef("txNever", "Never"),
@@ -164,6 +173,7 @@ public class BlueprintFileWriterTest {
     public void testGeneratePersistenceContext() throws Exception {
         Node bean1 = getBeanById("myBean1");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1562
         assertXpathEquals(bean1, "context/@unitname", "person");
         assertXpathEquals(bean1, "context/@property", "em");
     }
@@ -219,6 +229,7 @@ public class BlueprintFileWriterTest {
     @Test
     public void testGenerateServiceWithRanking() throws Exception {
         Node serviceWithRanking = getServiceByRef("serviceWithRanking");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1641
 
         assertXpathDoesNotExist(serviceWithRanking, "@interface");
         assertXpathEquals(serviceWithRanking, "@auto-export", "interfaces");
@@ -232,9 +243,11 @@ public class BlueprintFileWriterTest {
     public void testGenerateBeanWithConstructorInjection() throws Exception {
         Node myBean5 = getBeanById("myBean5");
         assertXpathEquals(myBean5, "@class", MyBean5.class.getName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1563
         assertXpathDoesNotExist(myBean5, "@field-injection");
         assertXpathDoesNotExist(myBean5, "property");
         assertXpathEquals(myBean5, "count(argument)", "8");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1562
         assertXpathEquals(myBean5, "argument[1]/@ref", "my2");
         assertXpathEquals(myBean5, "argument[2]/@ref", "my1");
         assertXpathEquals(myBean5, "argument[3]/@ref", "serviceABImpl");
@@ -248,6 +261,7 @@ public class BlueprintFileWriterTest {
     @Test
     public void testGenerateBeanWithConstructorInjectionWithoutInjectAnnotation() throws Exception {
         // Bean with constructor injection
+//IC see: https://issues.apache.org/jira/browse/ARIES-1521
         Node myBean6 = getBeanById("myBean6");
         assertXpathEquals(myBean6, "argument[1]/@ref", "my2");
     }
@@ -330,6 +344,7 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(service, "@auto-export", "interfaces");
         assertXpathDoesNotExist(service, "@interface");
         assertXpathDoesNotExist(service, "interfaces");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1641
         assertXpathEquals(service, "@ranking", "100");
         assertXpathEquals(service, "count(service-properties/entry)", "2");
         assertXpathEquals(service, "service-properties/entry[@key='n1']/@value", "v1");
@@ -341,6 +356,7 @@ public class BlueprintFileWriterTest {
     public void testSetterInjection() throws Exception {
         Node bean1 = getBeanById("beanWithSetters");
         assertXpathDoesNotExist(bean1, "@field-injection");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1563
 
         assertXpathDoesNotExist(bean1, "property[@name='useless']");
         assertXpathDoesNotExist(bean1, "property[@name='iOnlyHaveSetPrefix']");
@@ -350,6 +366,7 @@ public class BlueprintFileWriterTest {
 
         assertXpathEquals(bean1, "property[@name='myValue']/@value", "test");
         assertXpathEquals(bean1, "property[@name='serviceA1']/@ref", "my1");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
         assertXpathEquals(bean1, "property[@name='serviceA2']/@ref", "my2");
         assertXpathEquals(bean1, "property[@name='serviceB']/@ref", "serviceABImpl");
         assertXpathEquals(bean1, "property[@name='serviceB2']/@ref", "serviceB2Id");
@@ -372,6 +389,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void testGenerateReferenceWithoutFilterAndComponentName() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1663
         Node reference = getReferenceById("serviceD");
         assertXpathEquals(reference, "@interface", ServiceD.class.getName());
         assertXpathDoesNotExist(reference, "@filter");
@@ -381,6 +399,7 @@ public class BlueprintFileWriterTest {
     @Test
     public void testLazyWithTrueBeanHasActivationEager() throws Exception {
         Node bean = getBeanById("beanWithSetters");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1566
 
         assertXpathEquals(bean, "@activation", "eager");
     }
@@ -409,6 +428,7 @@ public class BlueprintFileWriterTest {
     @Test
     public void testBeanWithoutDependsOnHasNotDependsOnAttribute() throws Exception {
         Node bean = getBeanById("beanWithSetters");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1568
 
         assertXpathDoesNotExist(bean, "@depends-on");
     }
@@ -450,6 +470,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void testInitContextHandler() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1605
         Node example1 = (Node) xpath.evaluate("/blueprint/example[@id='p1']", document, XPathConstants.NODE);
         Node example2 = (Node) xpath.evaluate("/blueprint/example[@id='p2']", document, XPathConstants.NODE);
 
@@ -459,6 +480,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void testProducesWithConfigProperty() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1661
         Node bean = getBeanById("producedWithConfigProperty");
         assertXpathEquals(bean, "@class", "org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor");
         assertXpathEquals(bean, "@factory-ref", "beanWithConfig");
@@ -542,6 +564,7 @@ public class BlueprintFileWriterTest {
     @Test
     public void referenceListnerForReferenceList() throws Exception {
         assertNotNull(getBeanById("referenceListenerListBean"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1669
 
         Node referenceList = getReferenceListById("serviceAList-a-bc");
         assertXpathEquals(referenceList, "@filter", "(b=c)");
@@ -680,6 +703,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void beanAnnotationCreatesBasicBean() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1676
         Node bean = getBeanById("basicBean");
         assertXpathEquals(bean, "@class", BasicBean.class.getName());
         assertXpathDoesNotExist(bean, "@scope");
@@ -758,6 +782,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void typedProperties() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1677
         Node service = getServiceByRef("serviceWithTypedParameters");
         assertXpathEquals(service, "count(service-properties/entry)", "6");
         assertXpathEquals(service, "service-properties/entry[@key='test1']/@value", "test");
@@ -792,6 +817,7 @@ public class BlueprintFileWriterTest {
     @Test
     public void shouldInjectDependencyByQualifierFromFactory() throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1681
         Node bean1 = getBeanById("testBean1");
         assertXpathEquals(bean1, "@factory-method", "create1");
 
@@ -805,6 +831,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void shouldGeneratePropertyPlaceholder() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1683
         Node propertyPlaceholder = getPropertyPlaceholderByPersistentId("org.apache.aries.my");
         assertXpathEquals(propertyPlaceholder, "@placeholder-prefix", "$[");
         assertXpathEquals(propertyPlaceholder, "@placeholder-suffix", "]");
@@ -816,6 +843,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void shouldInjectListViaField() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1733
         Node bean = getBeanById("beanWithCollections");
         assertXpathEquals(bean, "count(property[@name='listFieldInject']/list/ref)", "4");
         assertXpathEquals(bean, "property[@name='listFieldInject']/list/ref[1]/@component-id", "i1Impl1");
@@ -948,6 +976,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void shouldFindTypeConverters() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1737
         Node typeConverters = getTypeConverters();
         assertXpathEquals(typeConverters, "count(*)", "2");
         assertXpathEquals(typeConverters, "ref[1]/@component-id", "converter1");
@@ -956,6 +985,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void shouldInjectReferenceViaField() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1742
         Node bean = getBeanById("beanWithReferences");
         assertXpathEquals(bean, "property[@name='ref1Field']/@ref", "ref1");
         assertXpathEquals(bean, "property[@name='myRef1Field']/@ref", "myRef1");
@@ -1085,6 +1115,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void shouldGenerateSimplestServiceFromBean() throws XPathExpressionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1743
         Node service = getServiceByRef("simplestService");
         assertXpathEquals(service, "@auto-export", "interfaces");
         assertXpathDoesNotExist(service, "service-properties");
@@ -1245,6 +1276,7 @@ public class BlueprintFileWriterTest {
 
     @Test
     public void shouldInjectReferenceListViaField() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1740
         Node bean = getBeanById("beanWithReferenceLists");
         assertXpathEquals(bean, "property[@name='ref1Field']/@ref", "listOf-ref1");
         assertXpathEquals(bean, "property[@name='myRef1Field']/@ref", "myRef1List");
@@ -1397,6 +1429,7 @@ public class BlueprintFileWriterTest {
 
     private static Document readToDocument(byte[] xmlAsBytes, boolean nameSpaceAware) throws ParserConfigurationException,
             SAXException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1663
 
         InputStream is = new ByteArrayInputStream(xmlAsBytes);
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -1410,10 +1443,12 @@ public class BlueprintFileWriterTest {
     }
 
     private static Node getTypeConverters() throws XPathExpressionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1737
         return (Node) xpath.evaluate("/blueprint/type-converters", document, XPathConstants.NODE);
     }
 
     private static Node getCmPropertiesById(String id) throws XPathExpressionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1661
         return (Node) xpath.evaluate("/blueprint/cm-properties[@id='" + id + "']", document, XPathConstants.NODE);
     }
 
@@ -1426,10 +1461,12 @@ public class BlueprintFileWriterTest {
     }
 
     private static Node getReferenceListById(String id) throws XPathExpressionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1669
         return (Node) xpath.evaluate("/blueprint/reference-list[@id='" + id + "']", document, XPathConstants.NODE);
     }
 
     private static Node getPropertyPlaceholderByPersistentId(String id) throws XPathExpressionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1683
         return (Node) xpath.evaluate("/blueprint/property-placeholder[@persistent-id='" + id + "']", document, XPathConstants.NODE);
     }
 }

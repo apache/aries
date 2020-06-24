@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 public class BundleToClassLoaderAdapterTest {
     @Test(expected=ClassNotFoundException.class)
     public void testInheritance() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-704
         ClassLoader testLoader = new ClassLoader(makeSUT(false)) {
         };
         

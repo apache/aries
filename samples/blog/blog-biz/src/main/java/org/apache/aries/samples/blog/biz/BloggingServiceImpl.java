@@ -39,6 +39,8 @@ public class BloggingServiceImpl implements BloggingService {
 
     // Injected via blueprint
     public void setBlogEntryManager(BlogEntryManager blogPostManager) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-149
+//IC see: https://issues.apache.org/jira/browse/ARIES-411
         this.blogEntryManager = blogPostManager;
     }
 

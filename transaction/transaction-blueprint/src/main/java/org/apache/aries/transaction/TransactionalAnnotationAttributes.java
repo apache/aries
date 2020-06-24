@@ -12,6 +12,7 @@ public class TransactionalAnnotationAttributes {
 	private List<Class> dontRollbackOn = new ArrayList<Class>();
 
 	public TransactionalAnnotationAttributes(TxType defaultType) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1690
 		this.txType = defaultType;
 	}
 

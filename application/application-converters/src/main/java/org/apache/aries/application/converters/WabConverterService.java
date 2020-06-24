@@ -42,6 +42,8 @@ public class WabConverterService implements BundleConverter {
     private WarToWabConverter wabConverter;
 
     public WarToWabConverter getWabConverter() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-114
+//IC see: https://issues.apache.org/jira/browse/ARIES-115
         return wabConverter;
     }
 
@@ -52,6 +54,7 @@ public class WabConverterService implements BundleConverter {
     public BundleConversion convert(IDirectory parentEba, final IFile toBeConverted) {
         if (toBeConverted.getName().endsWith(WAR_FILE_EXTENSION)) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-344
             	final WabConversion conversion = wabConverter.convert(new InputStreamProvider() {
                     public InputStream getInputStream() throws IOException {
                         return toBeConverted.open();
@@ -61,6 +64,7 @@ public class WabConverterService implements BundleConverter {
                 return new BundleConversion() {
 
 					public BundleInfo getBundleInfo() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-359
 						return new SimpleBundleInfo(BundleManifest.fromBundle(conversion.getWAB()), toBeConverted.toString());
 					}
 

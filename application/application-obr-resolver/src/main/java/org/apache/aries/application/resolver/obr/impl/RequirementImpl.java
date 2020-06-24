@@ -54,6 +54,7 @@ public class RequirementImpl implements Requirement
   public RequirementImpl(String name, Filter filter, boolean multiple, boolean optional, boolean extend, String comment)
   {
     this.name = name;
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     this.filter = filter.toString();
     this.multiple = multiple;
     this.optional = optional;
@@ -160,6 +161,7 @@ public class RequirementImpl implements Requirement
       try {
         Filter f = FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(filterToCreate));
         Hashtable<String, Object> hash = new Hashtable<String, Object>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
         Map<String, String> props = cap.getPropertiesAsMap();
         if ((props != null) && (!!!props.isEmpty())) {
           for (Map.Entry<String, String> propertyPair : props.entrySet()) {

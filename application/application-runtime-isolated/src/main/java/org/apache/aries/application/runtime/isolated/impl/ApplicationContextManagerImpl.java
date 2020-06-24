@@ -59,6 +59,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   {
     LOGGER.debug(LOG_ENTRY, "ApplicationContextImpl");
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
     _appToContextMap = new ConcurrentHashMap<AriesApplication, AriesApplicationContext>();
     
     // When doing isolated runtime support provisioning against the local repo is a really bad idea
@@ -66,6 +67,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     // this doesn't work because we don't know how to install them into the shared framework and
     // we can't just use them because they are in the local framework, so if this class is constructed
     // we disable local provisioning.
+//IC see: https://issues.apache.org/jira/browse/ARIES-586
     System.setProperty(AppConstants.PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP, "true");
     
     LOGGER.debug(LOG_EXIT, "ApplicationContextImpl", this);
@@ -97,6 +99,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   {
     LOGGER.debug(LOG_ENTRY, "getApplicationContext", app);
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
     AriesApplicationContext result;
     if (_appToContextMap.containsKey(app)) {
       result = _appToContextMap.get(app);
@@ -118,6 +121,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
     LOGGER.debug(LOG_ENTRY, "getApplicationContexts");
     
     Set<AriesApplicationContext> result = new HashSet<AriesApplicationContext>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
     for (Map.Entry<AriesApplication, AriesApplicationContext> entry : _appToContextMap.entrySet()) {
       result.add(entry.getValue());
     }
@@ -131,6 +135,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   {
     LOGGER.debug(LOG_ENTRY, "remove", app);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1016
     ApplicationContextImpl appToRemove = null;
     synchronized (_appToContextMap) { 
     	Iterator<Map.Entry<AriesApplication, AriesApplicationContext>> it = _appToContextMap.entrySet().iterator();
@@ -188,8 +193,10 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
   }
 
   public AriesApplicationContext update(AriesApplication app, DeploymentMetadata oldMetadata) throws UpdateException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
     ApplicationContextImpl ctx = (ApplicationContextImpl)_appToContextMap.get(app);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-399
     if (ctx == null) {
       throw new IllegalArgumentException("AriesApplication "+
           app.getApplicationMetadata().getApplicationSymbolicName() + "/" + app.getApplicationMetadata().getApplicationVersion() + 
@@ -203,8 +210,10 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
 
   public void bindBundleFrameworkManager(BundleFrameworkManager bfm)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-768
     LOGGER.debug(LOG_ENTRY, "bindBundleFrameworkManager", bfm);
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-1016
     List<AriesApplicationContext> contexts = new ArrayList<AriesApplicationContext>();
     synchronized (_appToContextMap) { 
     	contexts.addAll (_appToContextMap.values());
@@ -217,6 +226,7 @@ public class ApplicationContextManagerImpl implements AriesApplicationContextMan
         LOGGER.debug(LOG_EXCEPTION,e);
       }
     }
+//IC see: https://issues.apache.org/jira/browse/ARIES-768
     LOGGER.debug(LOG_EXIT, "bindBundleFrameworkManager");
   }
 

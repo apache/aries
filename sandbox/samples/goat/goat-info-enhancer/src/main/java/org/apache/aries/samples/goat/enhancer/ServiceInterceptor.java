@@ -53,6 +53,7 @@ public class ServiceInterceptor implements ServiceListener {
 
 			ctx.addServiceListener(this, "(objectclass='"
 						+ ModelInfoService.class.getName() + "')");
+//IC see: https://issues.apache.org/jira/browse/ARIES-348
 
 			//If we found any service references...
 			if(references != null && references.length != 0) {

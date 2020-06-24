@@ -52,6 +52,7 @@ public class FinalModifierException extends UnableToProxyException
   public String getMessage()
   {
     if (isFinalClass()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1656
       return String.format("The class %s is final.", getClassName());
     } else {
       return String.format("The methods %s in class %s are final.", finalMethods, getClassName());

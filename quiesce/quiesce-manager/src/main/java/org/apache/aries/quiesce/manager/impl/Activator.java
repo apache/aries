@@ -32,6 +32,7 @@ public class Activator implements BundleActivator {
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-567
       AriesFrameworkUtil.safeUnregisterService(serviceReg);
     }
 

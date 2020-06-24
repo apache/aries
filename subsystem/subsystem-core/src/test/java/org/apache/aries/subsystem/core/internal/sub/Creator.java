@@ -17,6 +17,7 @@ import org.osgi.service.repository.Repository;
 
 public class Creator {
     public static Repository create() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1339
         return new SubTestRepository();
     }
 }

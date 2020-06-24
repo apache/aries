@@ -29,6 +29,7 @@ public class JPASingleton {
   private EntityManager em;
   
   public void editEntity(String serial) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-718
     Laptop l = em.find(Laptop.class, serial);
     
     l.setHardDiskSize(Integer.MAX_VALUE);

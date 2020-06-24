@@ -23,6 +23,7 @@ public class TestA extends TestC implements TestB {
     protected static int c = 2;
 
     public String getFoo() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         return String.valueOf(bar);
     }
 

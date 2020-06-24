@@ -28,6 +28,8 @@ public class MoveBundleTest extends AbstractTest {
 	@Ignore
 	public void test1() throws Exception {
 		Bundle tb2 = installBundle("tb-2.jar");
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Scope root = getScope();
 		ScopeUpdate rootUpdate = root.newScopeUpdate();
 		ScopeUpdate s1Update = rootUpdate.newChild("S1");
@@ -79,6 +81,8 @@ public class MoveBundleTest extends AbstractTest {
 	@Test
 	public void test2() throws Exception {
 		Bundle tb2 = installBundle("tb-2.jar");
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		Scope root = getScope();
 		ScopeUpdate rootUpdate = root.newScopeUpdate();
 		ScopeUpdate sUpdate = rootUpdate.newChild("S");

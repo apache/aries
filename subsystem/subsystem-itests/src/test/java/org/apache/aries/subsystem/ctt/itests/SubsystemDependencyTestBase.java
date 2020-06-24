@@ -184,6 +184,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	 */
 	protected void verifyRequireBundleWiring (Subsystem s, String wiredBundleName, String expectedProvidingBundleName)
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		Bundle wiredBundle = context(s).getBundleByName(BUNDLE_D);
 		assertNotNull ("Target bundle " + wiredBundleName + " not found", wiredBundle);
 	
@@ -210,6 +211,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	protected void verifyCapabilityWiring (Subsystem s, String wiredBundleName, 
 			String namespace, String expectedProvidingBundleName)
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		Bundle wiredBundle = context(s).getBundleByName(wiredBundleName);
 		assertNotNull ("Targt bundle " + wiredBundleName + " not found", wiredBundleName);
 		
@@ -235,6 +237,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	 */
 	protected void verifyBundlesInstalled (BundleContext bc, String subsystemName, String ... bundleNames)
 	{
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
 		for (String bundleName: bundleNames) {
 			boolean bundleFound = false;
 			inner: for (Bundle b: bc.getBundles()) { 
@@ -243,6 +246,7 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 					break inner;
 				}
 			}
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
 			assertTrue ("Bundle " + bundleName + " not found in subsystem " + subsystemName, bundleFound);
 		}
 	}
@@ -254,6 +258,8 @@ public abstract class SubsystemDependencyTestBase extends SubsystemTest
 	 * @param rootBundlesAfter Bundles after [x]
 	 */
 	protected void checkNoNewBundles(String failText, Bundle[] rootBundlesBefore, Bundle[] rootBundlesAfter) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-893
+//IC see: https://issues.apache.org/jira/browse/ARIES-893
 		Set<String> bundlesBefore = new HashSet<String>();
 		for (Bundle b : rootBundlesBefore) { 
 			bundlesBefore.add(b.getSymbolicName() + "_" + b.getVersion().toString());

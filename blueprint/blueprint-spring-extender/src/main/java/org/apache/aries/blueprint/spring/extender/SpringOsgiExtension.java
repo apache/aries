@@ -66,6 +66,8 @@ public class SpringOsgiExtension implements Extension {
     public void start() throws Exception {
         List<Object> bpPaths = new ArrayList<Object>();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         Set<URI> namespaces = new LinkedHashSet<URI>();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
@@ -80,6 +82,8 @@ public class SpringOsgiExtension implements Extension {
                     List<String> locs = new ArrayList<String>(Arrays.asList(schemaLoc.getValue().split("\\s+")));
                     locs.remove("");
                     for (int i = 0; i < locs.size() / 2; i++) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
                         String ns = locs.get(i * 2);
                         namespaces.add(URI.create(ns));
                         if (ns.startsWith("http://www.springframework.org/schema/osgi-compendium")) {
@@ -99,6 +103,7 @@ public class SpringOsgiExtension implements Extension {
             writer.write("<blueprint xmlns=\"http://www.osgi.org/xmlns/blueprint/v1.0.0\"\n");
             writer.write("\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
             writer.write("\txmlns:bean=\"http://www.springframework.org/schema/beans\"\n");
+//IC see: https://issues.apache.org/jira/browse/ARIES-1717
             writer.write("\txsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-" + SpringXsdVersionResolver.resolve() + ".xsd\">\n");
             for (URL url : paths) {
                 writer.write("\t<bean:import resource=\"" + url.toString() + "\"/>\n");
@@ -109,6 +114,8 @@ public class SpringOsgiExtension implements Extension {
         }
         LOGGER.info("Generated blueprint for bundle {}/{} at {}", bundle.getSymbolicName(), bundle.getVersion(), file);
         bpPaths.add(file.toURI().toURL());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1480
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
         container = blueprintExtenderService.createContainer(bundle, bpPaths, namespaces);
     }
 

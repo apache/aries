@@ -184,6 +184,7 @@ public class Parser {
     private static final NamespaceHandler missingNamespace = new NamespaceHandler() {
         @Override
         public Metadata parse(Element element, ParserContext context) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1227
             return null;
         }
         @Override
@@ -215,6 +216,7 @@ public class Parser {
     private Map<String, String> locations;
 
     public Parser() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1227
       this(null);
     }
 
@@ -233,10 +235,12 @@ public class Parser {
      * @throws Exception on parse error
      */
     public void parse(InputStream inputStream) throws Exception { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
       parse(null, inputStream);
     }
 
     public void parse(String location, InputStream inputStream) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-74
         InputSource inputSource = new InputSource(inputStream);
         inputSource.setSystemId(location);
         DocumentBuilder builder = getDocumentBuilderFactory().newDocumentBuilder();
@@ -255,6 +259,7 @@ public class Parser {
         for (URL url : urls) {
             InputStream inputStream = url.openStream();
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
                 parse (url.toString(), inputStream);
             } finally {
                 inputStream.close();
@@ -265,6 +270,7 @@ public class Parser {
     public Set<URI> getNamespaces() {
         if (this.namespaces == null) {
             Set<URI> namespaces = new LinkedHashSet<URI>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
             Map<String, String> locations = new HashMap<String, String>();
             for (Document doc : documents) {
                 findNamespaces(namespaces, locations, doc);
@@ -295,6 +301,7 @@ public class Parser {
             } else if (ns != null && !isBlueprintNamespace(ns) && !isIgnorableAttributeNamespace(ns)) {
                 namespaces.add(URI.create(ns));
             } else if (ns == null && //attributes from blueprint are unqualified as per schema.
+//IC see: https://issues.apache.org/jira/browse/ARIES-46
                        node instanceof Attr &&
                        SCOPE_ATTRIBUTE.equals(node.getNodeName()) &&
                        ((Attr)node).getOwnerElement() != null && //should never occur from parsed doc.
@@ -311,6 +318,7 @@ public class Parser {
         NamedNodeMap nnm = node.getAttributes();
         if(nnm!=null){
             for(int i = 0; i< nnm.getLength() ; i++){
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
                 findNamespaces(namespaces, locations, nnm.item(i));
             }
         }
@@ -334,6 +342,7 @@ public class Parser {
     }
 
     public void validate(Schema schema) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1395
         validate(schema, null);
     }
 
@@ -352,6 +361,7 @@ public class Parser {
     }
 
     public void validatePsvi(Schema schema) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1456
         try {
             // In order to support validation with the built-in xml parser
             // from the JDK, we can't use Validator.validate(source, result)
@@ -402,6 +412,7 @@ public class Parser {
         
         // Parse custom attributes
         handleCustomAttributes(root.getAttributes(), null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-242
 
         // Parse elements
         // Break into 2 loops to ensure we scan the blueprint elements before
@@ -419,6 +430,7 @@ public class Parser {
             }
         }
         
+//IC see: https://issues.apache.org/jira/browse/ARIES-370
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
             if (node instanceof Element) {
@@ -447,6 +459,7 @@ public class Parser {
         } else if (MapMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseMap(element, enclosingComponent));
         } else if (BeanMetadata.class.isAssignableFrom(type)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-365
             return type.cast(parseBeanMetadata(element, enclosingComponent == null));
         } else if (NullMetadata.class.isAssignableFrom(type)) {
             return type.cast(NullMetadata.NULL);
@@ -458,6 +471,7 @@ public class Parser {
             return type.cast(parseReference(element, enclosingComponent == null));
         } else if (ReferenceListMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseRefList(element, enclosingComponent == null));
+//IC see: https://issues.apache.org/jira/browse/ARIES-365
         } else if (ServiceMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseService(element, enclosingComponent == null));
         } else if (IdRefMetadata.class.isAssignableFrom(type)) {
@@ -466,8 +480,10 @@ public class Parser {
             return type.cast(parseRef(element));
         } else if (ValueMetadata.class.isAssignableFrom(type)) {
             return type.cast(parseValue(element, null));
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         } else if (ReferenceListener.class.isAssignableFrom(type)) {
             return type.cast(parseServiceListener(element, enclosingComponent));
+//IC see: https://issues.apache.org/jira/browse/ARIES-111
         } else if (Metadata.class.isAssignableFrom(type)) {
             return type.cast(parseValueGroup(element, enclosingComponent, null, true));
         } else {
@@ -532,6 +548,7 @@ public class Parser {
      * @throws ComponentDefinitionException if the namespace prefix in the attribute value cannot be resolved.
      */
     private URI getNamespaceForAttributeValue(Node attrNode) throws ComponentDefinitionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-46
         URI uri = null;
         if(attrNode!=null && (attrNode instanceof Attr)){
             Attr attr = (Attr)attrNode;
@@ -558,6 +575,7 @@ public class Parser {
      * @throws ComponentDefinitionException if the namespace prefix in the attribute value cannot be resolved.
      */
     private String getScope(Node attrNode) throws ComponentDefinitionException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
         String scope = null;
         if(attrNode!=null && (attrNode instanceof Attr)){
             Attr attr = (Attr)attrNode;
@@ -614,6 +632,7 @@ public class Parser {
         if (topElement) {
             metadata.setId(getId(element));
             if (element.hasAttribute(SCOPE_ATTRIBUTE)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-657
                 metadata.setScope(getScope(element.getAttributeNode(SCOPE_ATTRIBUTE)));
                 if (!metadata.getScope().equals(BeanMetadata.SCOPE_SINGLETON)) {
                     if (element.hasAttribute(ACTIVATION_ATTRIBUTE)) {
@@ -683,6 +702,7 @@ public class Parser {
         ComponentMetadata m = metadata;
         
         // Parse custom scopes
+//IC see: https://issues.apache.org/jira/browse/ARIES-46
         m = handleCustomScope(element.getAttributeNode(SCOPE_ATTRIBUTE), element, m);
         
         // Parse custom attributes
@@ -1044,6 +1064,7 @@ public class Parser {
     }
 
     public String getDefaultTimeout() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         return defaultTimeout;
     }
 
@@ -1337,6 +1358,7 @@ public class Parser {
                 if (node instanceof Attr && 
                     node.getNamespaceURI() != null && 
                     !isBlueprintNamespace(node.getNamespaceURI()) &&
+//IC see: https://issues.apache.org/jira/browse/ARIES-46
                     !isIgnorableAttributeNamespace(node.getNamespaceURI()) ) {
                     enclosingComponent = decorateCustomNode(node, enclosingComponent);
                 }
@@ -1381,6 +1403,7 @@ public class Parser {
         }
         NamespaceHandler handler = this.handlers.getNamespaceHandler(uri);
         if (handler == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1227
             if (ignoreUnknownNamespaces) {
                 return missingNamespace;
             }
@@ -1390,6 +1413,7 @@ public class Parser {
     }
 
     public String generateId() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-68
         String id;
         do {
             id = "." + idPrefix + ++idCounter;

@@ -18,6 +18,7 @@ import org.osgi.service.subsystem.SubsystemPermission;
 
 public class SecurityManager {
 	public static void checkContextPermission(Subsystem subsystem) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		checkPermission(new SubsystemPermission(subsystem, SubsystemPermission.CONTEXT));
 	}
 	

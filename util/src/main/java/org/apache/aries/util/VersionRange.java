@@ -67,6 +67,7 @@ public final class VersionRange {
         
         if (exactVersion) {
             // Do not store this string as it might be just a version, or a range!
+//IC see: https://issues.apache.org/jira/browse/ARIES-464
             processExactVersionAttribute(version);
         } else {
             this.version = version;
@@ -209,6 +210,7 @@ public final class VersionRange {
     private boolean processExactVersionAttribute(String version) throws IllegalArgumentException {
         boolean success = processVersionAttribute(version);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-464
         if (maximumVersion == null) {
             maximumVersion = minimumVersion;
         }

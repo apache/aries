@@ -33,12 +33,14 @@ public class GetSubsystemHeadersAction implements PrivilegedAction<Map<String, S
 	private final BasicSubsystem subsystem;
 	
 	public GetSubsystemHeadersAction(BasicSubsystem subsystem, Locale locale) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this.subsystem = subsystem;
 		this.locale = locale;
 	}
 	
 	@Override
 	public Map<String, String> run() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Map<String, Header<?>> headers = subsystem.getSubsystemManifest().getHeaders();
 		Map<String, String> result = new HashMap<String, String>(headers.size());
 		for (Entry<String, Header<?>> entry: headers.entrySet()) {

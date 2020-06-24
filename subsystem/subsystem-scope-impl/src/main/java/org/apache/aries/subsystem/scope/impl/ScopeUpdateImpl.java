@@ -18,6 +18,8 @@ import org.osgi.framework.BundleException;
 
 public class ScopeUpdateImpl implements ScopeUpdate {
 	public static ScopeUpdateImpl newInstance(ScopeImpl scope) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		ScopeUpdateImpl scopeUpdate = new ScopeUpdateImpl(scope, null);
 		for (Scope child : scopeUpdate.scope.getChildren()) {
 			scopeUpdate.children.add(new ScopeUpdateImpl((ScopeImpl)child, scopeUpdate));
@@ -81,6 +83,8 @@ public class ScopeUpdateImpl implements ScopeUpdate {
 	}
 
 	public Map<String, List<SharePolicy>> getSharePolicies(String type) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		return sharePolicies.getSharePolicies(type);
 	}
 
@@ -89,6 +93,8 @@ public class ScopeUpdateImpl implements ScopeUpdate {
 	}
 
 	public ScopeUpdate newChild(String name, String location) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 		return new ScopeUpdateImpl(name, location, this);
 	}
 		
@@ -98,6 +104,8 @@ public class ScopeUpdateImpl implements ScopeUpdate {
 				if (contains(b, this)) {
 					throw new IllegalStateException("Bundle " + b.getSymbolicName() + " being added to scope " + getName() + " but already exists in another scope");
 				}
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 				scope.getScopes().addBundle(b, scope);
 			}
 		}
@@ -150,6 +158,8 @@ public class ScopeUpdateImpl implements ScopeUpdate {
 	private void installBundles() throws BundleException {
 		for (InstallInfo installInfo : getBundlesToInstall()) {
 			ScopeManager.installingBundleToScope.put(installInfo.getLocation(), scope);
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 			Activator.getBundleContext().installBundle(installInfo.getLocation(), installInfo.getContent());
 		}
 	}
@@ -162,6 +172,8 @@ public class ScopeUpdateImpl implements ScopeUpdate {
 					b.uninstall();
 				}
 				else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 					scope.getScopes().removeBundle(b);
 				}
 			}
@@ -194,6 +206,8 @@ public class ScopeUpdateImpl implements ScopeUpdate {
 				}
 			}
 			if (!found) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-644
+//IC see: https://issues.apache.org/jira/browse/ARIES-645
 				uninstall((ScopeImpl)child);
 			}
 		}

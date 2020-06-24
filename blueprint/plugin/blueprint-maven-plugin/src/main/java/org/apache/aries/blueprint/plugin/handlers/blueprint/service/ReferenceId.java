@@ -31,6 +31,7 @@ class ReferenceId {
     static String generateReferenceId(Class clazz, Reference reference, ContextEnricher contextEnricher) {
         StringBuilder sb = new StringBuilder();
         writeBeanNameFromSimpleName(sb, clazz.getSimpleName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1740
         appendFilter(sb, reference.filter());
         appendComponentName(sb, reference.componentName());
         appendAvailability(sb, reference.availability(), contextEnricher);

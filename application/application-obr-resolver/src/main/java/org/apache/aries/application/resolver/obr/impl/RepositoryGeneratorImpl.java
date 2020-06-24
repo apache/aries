@@ -76,6 +76,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
 
 
   public void setModelledResourceManager( ModelledResourceManager modelledResourceManager) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-618
     this.modelledResourceManager = modelledResourceManager;
   }
 
@@ -84,6 +85,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
   }
 
   public void setBundleResourceTransformers (List<BundleResourceTransformer> brts) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     bundleResourceTransformers = brts;
   }
 
@@ -158,6 +160,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
       String objectAttrs = entry.getValue();
 
       String type = (entry.getType() == null) ? getType(name) : entry.getType();
+//IC see: https://issues.apache.org/jira/browse/ARIES-799
 
       // remove the beginning " and tailing "
       if (objectAttrs.startsWith("\"") && objectAttrs.endsWith("\""))
@@ -197,6 +200,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
   throws ResolverException, IOException
   {
     logger.debug(LOG_ENTRY, "generateRepository", new Object[]{repositoryName, byValueBundles, os});
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     generateRepository(repositoryAdmin, repositoryName, byValueBundles, os);
     logger.debug(LOG_EXIT, "generateRepository");
   }
@@ -204,6 +208,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
   public static void generateRepository (RepositoryAdmin repositoryAdmin, String repositoryName,
       Collection<? extends ModelledResource> byValueBundles, OutputStream os)
   throws ResolverException, IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-618
     logger.debug(LOG_ENTRY, "generateRepository", new Object[]{repositoryAdmin, repositoryName, byValueBundles, os});
     Document doc;
     try {
@@ -217,6 +222,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
     root.setAttribute("name", repositoryName);
     doc.appendChild(root);
     for (ModelledResource mr : byValueBundles) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
       BundleResource bundleResource = new BundleResource(mr, repositoryAdmin);
       if (bundleResourceTransformers.size() > 0) { 
         for (BundleResourceTransformer brt : bundleResourceTransformers) { 
@@ -241,6 +247,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
     String type = null;
     if (Constants.VERSION_ATTRIBUTE.equals(name) || (Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name))) {
       type =  "version";
+//IC see: https://issues.apache.org/jira/browse/ARIES-491
     } else if (Constants.OBJECTCLASS.equals(name) || MANDATORY_DIRECTIVE.equals(name))
       type = "set";
     logger.debug(LOG_EXIT, "getType", new Object[]{type});
@@ -249,6 +256,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
 
   public void generateRepository(String[] source, OutputStream fout) throws IOException{
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-618
     logger.debug(LOG_ENTRY, "generateRepository", new Object[]{source, fout});
     List<URI> jarFiles = new ArrayList<URI>();
     InputStream in = null;

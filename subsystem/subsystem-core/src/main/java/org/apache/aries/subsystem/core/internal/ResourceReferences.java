@@ -40,6 +40,7 @@ public class ResourceReferences {
 	}
 	
 	public synchronized Collection<BasicSubsystem> getSubsystems(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		Collection<BasicSubsystem> result = resourceToSubsystems.get(resource);
 		if (result == null)
 			result = Collections.emptyList();
@@ -70,6 +71,7 @@ public class ResourceReferences {
 	}
 	
 	private void removeResourceToSubsystem(BasicSubsystem subsystem, Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		Set<BasicSubsystem> subsystems = resourceToSubsystems.get(resource);
 		if (subsystems == null)
 			return;

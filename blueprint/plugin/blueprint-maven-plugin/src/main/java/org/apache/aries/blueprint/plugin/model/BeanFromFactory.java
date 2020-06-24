@@ -35,6 +35,7 @@ class BeanFromFactory extends Bean {
         if (forcedId != null) {
             this.id = forcedId;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1745
         if (forcedId == null && shouldGetBeanNameFromMethodName(contextEnricher)) {
             this.id = factoryMethod.getName();
         }
@@ -46,6 +47,7 @@ class BeanFromFactory extends Bean {
     }
 
     private boolean shouldGetBeanNameFromMethodName(ContextEnricher contextEnricher) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1745
         String value = contextEnricher.getBlueprintConfiguration().getCustomParameters().get(BLUEPRINT_BEAN_FROM_FACTORY_NAME_PROPERTY);
         return Boolean.parseBoolean(value);
     }
@@ -60,6 +62,7 @@ class BeanFromFactory extends Bean {
         for (BeanAnnotationHandler beanAnnotationHandler : Handlers.BEAN_ANNOTATION_HANDLERS) {
             Object annotation = AnnotationHelper.findAnnotation(producingMethod.getAnnotations(), beanAnnotationHandler.getAnnotation());
             if (annotation != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1602
                 beanAnnotationHandler.handleBeanAnnotation(producingMethod, id, contextEnricher, this);
             }
         }
@@ -71,6 +74,7 @@ class BeanFromFactory extends Bean {
     }
 
     @Override
+//IC see: https://issues.apache.org/jira/browse/ARIES-1681
     BeanRef toBeanRef() {
         return new BeanRef(clazz, id, producingMethod.getAnnotations());
     }

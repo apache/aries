@@ -52,6 +52,7 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
 
     @Before
     public void createApplications() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
         if (createdApplications) {
             return;
         }
@@ -64,6 +65,7 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
                 .binary("org/apache/aries/sample/impl/HelloWorldImpl.class",
                         BasicAppManagerTest.class.getClassLoader().getResourceAsStream("org/apache/aries/sample/impl/HelloWorldImpl.class"))
                 .binary("OSGI-INF/blueprint/sample-blueprint.xml",
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
                         BasicAppManagerTest.class.getClassLoader().getResourceAsStream("basic/sample-blueprint.xml"))
                 .end();
 
@@ -72,6 +74,7 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
         fout.close();
 
         ZipFixture testEba2 = testEba.binary("META-INF/APPLICATION.MF",
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
                 BasicAppManagerTest.class.getClassLoader().getResourceAsStream("basic/APPLICATION.MF"))
                 .end();
         fout = new FileOutputStream("test2.eba");
@@ -83,10 +86,12 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
     @Test
     public void testAppWithoutApplicationManifest() throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
 
         // application name should be equal to eba name since application.mf is not provided
+//IC see: https://issues.apache.org/jira/browse/ARIES-352
         assertEquals("test.eba", app.getApplicationMetadata().getApplicationName());
         AriesApplicationContext ctx = manager.install(app);
         ctx.start();
@@ -120,7 +125,10 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
 
     @Test
     public void testAppStore() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-661
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test2.eba")));
         app = manager.resolve(app);
 
@@ -130,10 +138,16 @@ public class BasicAppManagerTest extends AbstractIntegrationTest {
 
         // application name should equal to whatever Application name provided in the application.mf
         assertEquals("test application 2", app.getApplicationMetadata().getApplicationName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-352
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
+//IC see: https://issues.apache.org/jira/browse/ARIES-238
         AriesApplicationContext ctx = manager.install(app);
         ctx.start();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         HelloWorld hw = context().getService(HelloWorld.class);
         String result = hw.getMessage();
         assertEquals(result, "hello world");

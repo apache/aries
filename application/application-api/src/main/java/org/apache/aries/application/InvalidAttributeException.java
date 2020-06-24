@@ -37,6 +37,7 @@ public class InvalidAttributeException extends Exception
   }
   
   public InvalidAttributeException (String s, Throwable t) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-810
 	  super(s, t);
   }
 }

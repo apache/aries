@@ -54,6 +54,7 @@ public class BundleStartLevelTest extends SubsystemTest {
 		createBundleB();
 		createBundleC();
 		createApplicationA();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		registerRepositoryService(BUNDLE_A, BUNDLE_B);
 	}
 	
@@ -107,6 +108,7 @@ public class BundleStartLevelTest extends SubsystemTest {
     		startSubsystem(a);
     		try {
     			// Test managed bundles.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
     			assertStartLevel(context(a).getBundleByName(BUNDLE_B), 1);
     			assertStartLevel(getRegionContextBundle(a), 1);
     			assertStartLevel(context(getRootSubsystem()).getBundleByName(BUNDLE_A), 1);

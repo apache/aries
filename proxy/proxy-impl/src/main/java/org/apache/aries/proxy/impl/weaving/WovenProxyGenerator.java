@@ -44,6 +44,7 @@ public final class WovenProxyGenerator
     //maxs are fine (and faster)
     int computeVal = AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6 ? 
         ClassWriter.COMPUTE_FRAMES : ClassWriter.COMPUTE_MAXS;
+//IC see: https://issues.apache.org/jira/browse/ARIES-819
     ClassWriter cWriter = new OSGiFriendlyClassWriter(cReader, computeVal, loader);
     ClassVisitor cv = new OSGiFriendlyClassVisitor(cWriter, computeVal );
     //Wrap our outer layer to add the original SerialVersionUID if it was previously being defaulted
@@ -51,6 +52,7 @@ public final class WovenProxyGenerator
                                new WovenProxyAdapter(cv, cReader.getClassName(), loader));
     
     // If we are Java 1.6 + then we need to skip frames as they will be recomputed
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     cReader.accept(weavingAdapter, AbstractWovenProxyAdapter.IS_AT_LEAST_JAVA_6 ? ClassReader.SKIP_FRAMES : 0);
     
     return cWriter.toByteArray();

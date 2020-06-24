@@ -126,9 +126,11 @@ class BlueprintEventDispatcher implements BlueprintListener {
 
     public void blueprintEvent(final BlueprintEvent event) {
         if (LOGGER.isDebugEnabled()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
             LOGGER.debug("Sending blueprint container event {} for bundle {}/{}", toString(event), event.getBundle().getSymbolicName(), event.getBundle().getVersion());
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-12
         synchronized (listeners) {
             callListeners(event);
             states.put(event.getBundle(), event);
@@ -173,6 +175,7 @@ class BlueprintEventDispatcher implements BlueprintListener {
     }
 
     private void callListeners(BlueprintEvent event) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-12
         for (final BlueprintListener listener : listeners) {
             try {
                 callListener(listener, event);
@@ -219,6 +222,7 @@ class BlueprintEventDispatcher implements BlueprintListener {
     }
 
     public void removeBlueprintBundle(Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-372
         states.remove(bundle);
     }
 
@@ -245,6 +249,7 @@ class BlueprintEventDispatcher implements BlueprintListener {
             props.put(EventConstants.BUNDLE, event.getBundle());
             props.put(EventConstants.BUNDLE_SYMBOLICNAME, event.getBundle().getSymbolicName());
             props.put(EventConstants.BUNDLE_ID, event.getBundle().getBundleId());
+//IC see: https://issues.apache.org/jira/browse/ARIES-10
             props.put(EventConstants.BUNDLE_VERSION, JavaUtils.getBundleVersion(event.getBundle()));
             props.put(EventConstants.EXTENDER_BUNDLE, event.getExtenderBundle());
             props.put(EventConstants.EXTENDER_BUNDLE_ID, event.getExtenderBundle().getBundleId());
@@ -290,6 +295,7 @@ class BlueprintEventDispatcher implements BlueprintListener {
          * Perform cleanup at Blueprint extender shutdown.
          */
         public void destroy() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-13
             tracker.close();
         }
 

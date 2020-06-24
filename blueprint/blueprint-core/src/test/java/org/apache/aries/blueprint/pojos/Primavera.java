@@ -19,6 +19,7 @@
 package org.apache.aries.blueprint.pojos;
 
 interface Product<T> {
+//IC see: https://issues.apache.org/jira/browse/ARIES-82
     void setProperty(T value);
 }
 

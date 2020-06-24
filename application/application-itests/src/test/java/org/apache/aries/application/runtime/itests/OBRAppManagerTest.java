@@ -59,6 +59,7 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
 
     @Before
     public void createApplications() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-386
         if (createdApplications) {
             return;
         }
@@ -93,6 +94,7 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
         fout.close();
 
         StringBuilder repositoryXML = new StringBuilder();
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(OBRAppManagerTest.class.getResourceAsStream("/obr/repository.xml")));
         String line;
@@ -117,6 +119,7 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
     public void testAppWithApplicationManifest() throws Exception {
 
         RepositoryAdmin repositoryAdmin = context().getService(RepositoryAdmin.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
 
         repositoryAdmin.addRepository(new File("repository.xml").toURI().toURL());
 
@@ -134,8 +137,11 @@ public class OBRAppManagerTest extends AbstractIntegrationTest {
             }
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-707
         AriesApplicationManager manager = context().getService(AriesApplicationManager.class);
         AriesApplication app = manager.createApplication(FileSystem.getFSRoot(new File("test.eba")));
+//IC see: https://issues.apache.org/jira/browse/ARIES-174
+//IC see: https://issues.apache.org/jira/browse/ARIES-182
         app = manager.resolve(app);
         //installing requires a valid url for the bundle in repository.xml.
         AriesApplicationContext ctx = manager.install(app);

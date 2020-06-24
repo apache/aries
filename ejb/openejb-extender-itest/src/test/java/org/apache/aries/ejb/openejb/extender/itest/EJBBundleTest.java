@@ -40,6 +40,7 @@ import beans.xml.RemoteIface;
 public class EJBBundleTest extends AbstractOpenEJBTest {
 
     private void assertXML(Bundle test, boolean exists) throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1207
         ServiceReference[] local = context().getAllServiceReferences(LocalIface.class.getName(),
                 "(&(ejb.name=XML)(ejb.type=Singleton))");
         if (exists) {

@@ -79,6 +79,7 @@ public class ConsumerTest {
             Assert.assertEquals("2.0", expectedMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
             Assert.assertEquals("testbundle", expectedMF.getMainAttributes().getValue("Bundle-SymbolicName"));
             Assert.assertEquals("Bar Bar", expectedMF.getMainAttributes().getValue("Foo"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
             Assert.assertEquals("org.apache.aries.spifly;version=\"[1.1.0,1.2.0)\"", expectedMF.getMainAttributes().getValue("Import-Package"));
             Assert.assertNull(expectedMF.getMainAttributes().get(SpiFlyConstants.SPI_CONSUMER_HEADER));
 

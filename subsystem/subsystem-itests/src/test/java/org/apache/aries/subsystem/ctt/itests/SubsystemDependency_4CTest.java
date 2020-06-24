@@ -125,6 +125,7 @@ public class SubsystemDependency_4CTest extends SubsystemDependencyTestBase
 		
 		attributes.put(Constants.IMPORT_PACKAGE, "x");
 		attributes.put(Constants.REQUIRE_BUNDLE, BUNDLE_A);
+//IC see: https://issues.apache.org/jira/browse/ARIES-865
 		attributes.put(Constants.REQUIRE_CAPABILITY, "y"); 
 		
 		createManifest(SUBSYSTEM_S2 + ".mf", attributes);

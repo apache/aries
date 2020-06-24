@@ -23,10 +23,12 @@ public class SubsystemManifestVersionHeader extends VersionHeader {
 	public static final SubsystemManifestVersionHeader DEFAULT = new SubsystemManifestVersionHeader();
 	
 	public SubsystemManifestVersionHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-728
 		this(DEFAULT_VALUE);
 	}
 
 	public SubsystemManifestVersionHeader(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(Version.parseVersion(value));
 	}
 	

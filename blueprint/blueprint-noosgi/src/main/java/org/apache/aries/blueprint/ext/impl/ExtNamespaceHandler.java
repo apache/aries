@@ -471,6 +471,7 @@ public class ExtNamespaceHandler implements org.apache.aries.blueprint.Namespace
     }
 
     private boolean validatePlaceholder(MutableBeanMetadata metadata, ComponentDefinitionRegistry registry) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1038
         for (String id : registry.getComponentDefinitionNames()) {
             ComponentMetadata component = registry.getComponentDefinition(id);
             if (component instanceof ExtendedBeanMetadata) {

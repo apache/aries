@@ -226,6 +226,7 @@ public class ConfigurationAdmin implements ConfigurationAdminMBean {
         Dictionary<String, Object> configurationProperties = new Hashtable<String, Object>();
         Collection<CompositeData> compositeData = (Collection<CompositeData>) configurationTable.values();
         for (CompositeData row: compositeData) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
             PropertyData<? extends Class<?>> propertyData = PropertyData.from(row);
             configurationProperties.put(propertyData.getKey(), propertyData.getValue());
         }

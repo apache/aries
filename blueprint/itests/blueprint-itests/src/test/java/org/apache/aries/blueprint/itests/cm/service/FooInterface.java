@@ -23,10 +23,13 @@ import java.util.Properties;
 public interface FooInterface {
 
     String getB();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1732
 
     Long getC();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1668
 
     Object getD();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
 
     Properties getProps();
 

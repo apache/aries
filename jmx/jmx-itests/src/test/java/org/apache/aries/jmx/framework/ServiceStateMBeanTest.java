@@ -74,6 +74,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
 
     @Configuration
     public Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 		return options(
 		        // new VMOption( "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000" ),
 		        // new TimeoutOption( 0 ),
@@ -198,6 +199,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     }
 
 	private void assertBundleStarted(Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
 		Assert.assertEquals("Bundle " + bundle.getSymbolicName() + " should be started but is in state " + bundle.getState(),
 				Bundle.ACTIVE, bundle.getState());
 	}
@@ -229,6 +231,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         waitForListToReachSize(attributeChanges, 1);
         AttributeChangeNotification ac = attributeChanges.get(0);
         assertEquals("ServiceIds", ac.getAttributeName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         long seq1 = ac.getSequenceNumber();
         assertTrue(Arrays.equals(idsWithout, (long []) ac.getOldValue()));
         assertTrue(Arrays.equals(idsWith, (long []) ac.getNewValue()));
@@ -247,6 +250,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         waitForListToReachSize(attributeChanges, 2);
         AttributeChangeNotification ac2 = attributeChanges.get(1);
         assertEquals("ServiceIds", ac2.getAttributeName());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         assertEquals(seq1 +1, ac2.getSequenceNumber());
         assertTrue(Arrays.equals(idsWith, (long []) ac2.getOldValue()));
         assertTrue(Arrays.equals(idsWithout, (long []) ac2.getNewValue()));
@@ -270,6 +274,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     	
         ServiceReference sref = bundleContext.getServiceReference(InterfaceA.class);
         // Get service to increase service references
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         context().getService(sref);
         Long serviceID = (Long) sref.getProperty(Constants.SERVICE_ID);
 
@@ -299,6 +304,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
         assertTrue(ocData.get("Value").equals(form1) ||
                    ocData.get("Value").equals(form2));
         assertEquals("Array of String", ocData.get("Type"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1194
         context().ungetService(sref);
     }
 

@@ -81,7 +81,9 @@ public abstract class BaseActivator implements BundleActivator {
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
         bundleContext = context;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1984
             autoConsumerInstructions = Optional.ofNullable(
                 bundleContext.getProperty("org.apache.aries.spifly.auto.consumers")
             ).map(Parameters::new);
@@ -115,7 +117,9 @@ public abstract class BaseActivator implements BundleActivator {
             return;
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         Map<String, List<String>> allHeaders = new HashMap<String, List<String>>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         Set<String> addedHeaders = new HashSet<String>();
         List<String> added = allHeaders.put(consumerHeaderName, getAllHeaders(consumerHeaderName, bundle));
         if (added != null) {
@@ -156,6 +160,7 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     private List<String> getAllHeaders(String headerName, Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
         List<Bundle> bundlesFragments = new ArrayList<Bundle>();
         bundlesFragments.add(bundle);
 
@@ -171,6 +176,7 @@ public abstract class BaseActivator implements BundleActivator {
 
         List<String> l = new ArrayList<String>();
         for (Bundle bf : bundlesFragments) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1461
             String header = bf.getHeaders().get(headerName);
             if (header != null) {
                 l.add(header);
@@ -193,6 +199,7 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public boolean isLogEnabled(Level level) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1855
         return logger.isLoggable(level);
     }
 
@@ -255,6 +262,7 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public void registerProviderBundle(String registrationClassName, Bundle bundle, Map<String, Object> customAttributes) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.computeIfAbsent(registrationClassName,
             k -> Collections.synchronizedSortedMap(new TreeMap<Long, Pair<Bundle, Map<String, Object>>>()));
 
@@ -335,6 +343,7 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public Optional<Parameters> getAutoConsumerInstructions() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1933
         if (autoConsumerInstructions == null) return Optional.empty();
         return autoConsumerInstructions;
     }

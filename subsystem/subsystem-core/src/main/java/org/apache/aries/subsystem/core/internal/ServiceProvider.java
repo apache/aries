@@ -16,6 +16,7 @@ package org.apache.aries.subsystem.core.internal;
 import java.util.Collection;
 
 public interface ServiceProvider {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 	<C> C getService(Class<C> clazz);
 	
 	<C> Collection<C> getServices(Class<C> clazz);

@@ -57,6 +57,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
 
     public BundleStateMBeanHandler(JMXAgentContext agentContext, StateConfig stateConfig) {
         this.agentContext = agentContext;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         this.stateConfig = stateConfig;
         this.bundleContext = agentContext.getBundleContext();
         this.logger = agentContext.getLogger();
@@ -71,12 +72,14 @@ public class BundleStateMBeanHandler implements MBeanHandler {
         PackageAdmin packageAdmin = (PackageAdmin) bundleContext.getService(packageAdminRef);
         startLevelRef = bundleContext.getServiceReference(StartLevel.class.getName());
         StartLevel startLevel = (StartLevel) bundleContext.getService(startLevelRef);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         bundleStateMBean = new BundleState(bundleContext, packageAdmin, startLevel, stateConfig, logger);
         try {
             mbean = new RegistrableStandardEmitterMBean(bundleStateMBean, BundleStateMBean.class);
         } catch (NotCompliantMBeanException e) {
             logger.log(LogService.LOG_ERROR, "Failed to instantiate MBean for " + BundleStateMBean.class.getName(), e);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         agentContext.registerMBean(this);
     }
 
@@ -99,6 +102,7 @@ public class BundleStateMBeanHandler implements MBeanHandler {
      * @see org.apache.aries.jmx.MBeanHandler#close()
      */
     public void close() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1169
         agentContext.unregisterMBean(this);
         if (packageAdminRef != null) {
             try {

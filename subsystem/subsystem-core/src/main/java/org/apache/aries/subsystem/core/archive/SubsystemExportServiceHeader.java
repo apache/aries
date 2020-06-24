@@ -30,6 +30,7 @@ public class SubsystemExportServiceHeader extends AbstractClauseBasedHeader<Subs
 		public static final String DIRECTIVE_FILTER = Constants.FILTER_DIRECTIVE;
 
 		public Clause(String clause) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			super(
 	        		parsePath(clause, Patterns.OBJECTCLASS_OR_STAR, false), 
 	        		parseParameters(clause, false), 
@@ -37,10 +38,12 @@ public class SubsystemExportServiceHeader extends AbstractClauseBasedHeader<Subs
 		}
 
 		public String getObjectClass() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return path;
 		}
 
 		public List<Capability> toCapabilities(Resource resource) throws InvalidSyntaxException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 			List<Capability> capabilities = resource.getCapabilities(ServiceNamespace.SERVICE_NAMESPACE);
 			if (capabilities.isEmpty())
 				return capabilities;
@@ -54,6 +57,7 @@ public class SubsystemExportServiceHeader extends AbstractClauseBasedHeader<Subs
 		}
 
 		private Filter computeFilter() throws InvalidSyntaxException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 			return FrameworkUtil.createFilter(computeFilterString());
 		}
 
@@ -74,6 +78,7 @@ public class SubsystemExportServiceHeader extends AbstractClauseBasedHeader<Subs
 	public static final String NAME = SubsystemConstants.SUBSYSTEM_EXPORTSERVICE;
 
 	public SubsystemExportServiceHeader(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		super(
 				value, 
 				new ClauseFactory<Clause>() {
@@ -95,6 +100,7 @@ public class SubsystemExportServiceHeader extends AbstractClauseBasedHeader<Subs
 	}
 
 	public List<Capability> toCapabilities(Resource resource) throws InvalidSyntaxException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-869
 		List<Capability> result = new ArrayList<Capability>();
 		for (Clause clause : clauses)
 			result.addAll(clause.toCapabilities(resource));

@@ -52,6 +52,7 @@ public class ManagedServiceFactoryUseSystemBundleTest extends ManagedServiceFact
     public Option[] config() {
         return new Option[] {
             baseOptions(),
+//IC see: https://issues.apache.org/jira/browse/ARIES-1215
             systemProperty("org.apache.aries.blueprint.use.system.context").value("true"),
             Helper.blueprintBundles(), //
             keepCaches(), //
@@ -59,6 +60,7 @@ public class ManagedServiceFactoryUseSystemBundleTest extends ManagedServiceFact
         };
     }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1215
     ServiceRegistration eventHook;
     ServiceRegistration findHook;
 

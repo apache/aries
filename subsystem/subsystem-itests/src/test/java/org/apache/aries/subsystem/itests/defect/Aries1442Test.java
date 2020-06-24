@@ -45,6 +45,7 @@ import org.osgi.service.subsystem.SubsystemConstants;
 public class Aries1442Test extends SubsystemTest {
 	@Test
 	public void testNewlyInstalledFeature() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1442
 		assertFeature(createFeature());
 	}
 	
@@ -75,6 +76,7 @@ public class Aries1442Test extends SubsystemTest {
 				true
 		);
 		uninstallableSubsystems.add(feature);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1442
 		startSubsystem(feature, true);
 		stoppableSubsystems.add(feature);
 		return feature;

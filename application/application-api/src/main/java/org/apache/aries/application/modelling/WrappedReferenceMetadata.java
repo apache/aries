@@ -29,6 +29,7 @@ public interface WrappedReferenceMetadata
    * Get the properties of the associated blueprint service
    * @return The filter, or null for no filter
    */
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
   String getFilter();
   
   /**

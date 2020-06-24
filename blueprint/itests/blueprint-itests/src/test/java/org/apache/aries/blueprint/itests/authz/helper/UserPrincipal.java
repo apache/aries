@@ -20,6 +20,7 @@ package org.apache.aries.blueprint.itests.authz.helper;
 
 public class UserPrincipal extends NamedPrincipal {
     public UserPrincipal(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1226
         super(name);
     }
 }

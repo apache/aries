@@ -19,6 +19,7 @@ public class BundleSymbolicNameHeader extends SymbolicNameHeader {
 	public static final String NAME = Constants.BUNDLE_SYMBOLICNAME;
 	
 	public BundleSymbolicNameHeader(String value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		super(NAME, value);
 	}
 }

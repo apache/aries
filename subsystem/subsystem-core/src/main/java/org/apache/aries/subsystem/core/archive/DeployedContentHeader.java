@@ -25,6 +25,7 @@ import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.SubsystemConstants;
 
 public class DeployedContentHeader
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
         extends AbstractClauseBasedHeader<DeployedContentHeader.Clause>
         implements RequirementHeader<DeployedContentHeader.Clause> {
 
@@ -45,6 +46,7 @@ public class DeployedContentHeader
         }
 
         public Clause(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
             this(resource, true);
         }
 
@@ -86,6 +88,7 @@ public class DeployedContentHeader
         }
 
         public DeployedContentRequirement toRequirement(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
             return new DeployedContentRequirement(this, resource);
         }
     }
@@ -96,6 +99,7 @@ public class DeployedContentHeader
             Collection<Resource> resources) {
         StringBuilder builder = new StringBuilder();
         for (Resource resource : resources) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
             appendResource(resource, builder, true);
             builder.append(',');
         }
@@ -168,6 +172,7 @@ public class DeployedContentHeader
     }
 
     public boolean isReferenced(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
         DeployedContentHeader.Clause clause = getClause(resource);
         if (clause == null)
             return false;

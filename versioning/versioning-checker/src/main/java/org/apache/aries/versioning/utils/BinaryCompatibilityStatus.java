@@ -27,6 +27,7 @@ public class BinaryCompatibilityStatus extends ArrayList<String> {
     }
 
     public boolean isCompatible() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         return isEmpty();
     }
 

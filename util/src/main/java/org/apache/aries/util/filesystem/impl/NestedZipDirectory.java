@@ -39,6 +39,7 @@ import org.apache.aries.util.io.IOUtils;
 
 public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 	public NestedZipDirectory(IFile archive, ZipEntry entry, NestedZipDirectory parent, NestedCloseableDirectory cache) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 		super(archive, entry, parent, cache);
 	}
 
@@ -72,6 +73,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 
 	private List<IFile> listFiles(boolean includeFilesInNestedSubdirs) {
 			Map<String, ZipEntry> entriesByName = new LinkedHashMap<String, ZipEntry>();
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 			for (ZipEntry entry : getAllEntries()) {
 				if (ZipDirectory.isInDir(getNameInZip(), entry, includeFilesInNestedSubdirs)) {
 					entriesByName.put(entry.getName(), entry);
@@ -126,6 +128,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 				ZipEntry ze = entries.get(entryPath.toString());
 
 				if (ze != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 					result = new NestedZipDirectory(archive, ze, result, cache);
 				} else {
 					result = new NestedZipDirectory(archive, entryPath.toString(), result, cache);
@@ -137,6 +140,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 	}
 
 	public IFile getFile(String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-652
 		Map<String,ZipEntry> entries = new HashMap<String, ZipEntry>();
 		ZipEntry ze;
 

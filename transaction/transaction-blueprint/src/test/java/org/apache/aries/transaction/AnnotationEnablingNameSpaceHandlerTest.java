@@ -34,6 +34,7 @@ public class AnnotationEnablingNameSpaceHandlerTest extends BaseNameSpaceHandler
     public void testAnnotationEnabled() throws Exception
     {
       ComponentDefinitionRegistry cdr = parseCDR("enable-annotations.xml");
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
       checkCompTop(cdr);
       BeanMetadata pmd = (BeanMetadata) cdr.getComponentDefinition(TxNamespaceHandler.ANNOTATION_PARSER_BEAN_NAME);
       assertNotNull(pmd);
@@ -46,7 +47,9 @@ public class AnnotationEnablingNameSpaceHandlerTest extends BaseNameSpaceHandler
     public void testAnnotationDisabled() throws Exception
     {
         ComponentDefinitionRegistry cdr = parseCDR("enable-annotations2.xml");
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         checkCompTop(cdr);
+//IC see: https://issues.apache.org/jira/browse/ARIES-628
         BeanMetadata pmd = (BeanMetadata) cdr.getComponentDefinition(TxNamespaceHandler.ANNOTATION_PARSER_BEAN_NAME);
         assertNull(pmd);
     }

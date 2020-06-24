@@ -63,6 +63,7 @@ public class RootSubsystemTest extends SubsystemTest {
 	}
 	
 	private void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_A), importPackage("org.osgi.framework"));
 	}
 	
@@ -73,7 +74,10 @@ public class RootSubsystemTest extends SubsystemTest {
 		bundleContext.installBundle(new File(BUNDLE_A).toURI().toURL().toString());
 		getSubsystemCoreBundle().stop();
 		getSubsystemCoreBundle().start();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		Bundle bundleA = context().getBundleByName(BUNDLE_A);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1392
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 		assertTrue("Extraneous root region bundle should not be started", (bundleA.getState() & (Bundle.INSTALLED | Bundle.RESOLVED)) != 0);
 	}
 	
@@ -89,6 +93,7 @@ public class RootSubsystemTest extends SubsystemTest {
 	
 	@Test
 	public void testRegionContextBundle() throws BundleException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		assertRegionContextBundle(getRootSubsystem());
 		getSubsystemCoreBundle().stop();
 		getSubsystemCoreBundle().start();
@@ -119,6 +124,7 @@ public class RootSubsystemTest extends SubsystemTest {
 		core.start();
 		// There should be no install events or RESOLVING event since there
 		// should be a persisted root subsystem already in the RESOLVED state.
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 		assertServiceEventResolved(root, ServiceEvent.REGISTERED);
 		assertServiceEventsStart(root);
 	}
@@ -132,6 +138,7 @@ public class RootSubsystemTest extends SubsystemTest {
 	public void testUninstallRootRegionBundleWithNoBundleEventHook() throws Exception {
 		// Install an extraneous bundle into the root region. The bundle will
 		// be recorded in the root subsystem's persistent memory.
+//IC see: https://issues.apache.org/jira/browse/ARIES-922
 		Bundle bundleA = bundleContext.installBundle(new File(BUNDLE_A).toURI().toURL().toString());
 		try {
 			Bundle core = getSubsystemCoreBundle();
@@ -167,7 +174,10 @@ public class RootSubsystemTest extends SubsystemTest {
 	 */
 	@Test
 	public void testRegion() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		RegionDigraph digraph = context().getService(RegionDigraph.class);
+//IC see: https://issues.apache.org/jira/browse/ARIES-941
+//IC see: https://issues.apache.org/jira/browse/ARIES-943
 		Bundle core = getSubsystemCoreBundle();
 		Region kernel = digraph.getRegion(core);
 		Subsystem root = getRootSubsystem();

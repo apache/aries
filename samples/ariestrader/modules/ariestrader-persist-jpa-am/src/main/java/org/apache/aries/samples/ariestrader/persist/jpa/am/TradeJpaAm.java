@@ -71,6 +71,7 @@ public class TradeJpaAm implements TradeServices {
     }
 
     public void setEmf (EntityManagerFactory emf) { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-143
         this.emf = emf;
     }
 
@@ -511,6 +512,7 @@ public class TradeJpaAm implements TradeServices {
                                                         + "a.OPENBALANCE, "
                                                         + "a.PROFILE_USERID "
                                                         + "from accountejb a where a.profile_userid = ?",
+//IC see: https://issues.apache.org/jira/browse/ARIES-185
                                                         org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl.class);
                 findaccountid.setParameter(1, userID);
                 AccountDataBeanImpl account = (AccountDataBeanImpl) findaccountid.getSingleResult();
@@ -643,6 +645,7 @@ public class TradeJpaAm implements TradeServices {
             quote.setPrice(newPrice);
             quote.setVolume(quote.getVolume() + sharesTraded);
             quote.setChange((newPrice.subtract(quote.getOpen()).doubleValue()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-275
             if (newPrice.compareTo(quote.getHigh()) == 1) quote.setHigh(newPrice);
             else if (newPrice.compareTo(quote.getLow()) == -1) quote.setLow(newPrice);
 
@@ -971,6 +974,7 @@ public class TradeJpaAm implements TradeServices {
      * @return TradeConfig.ModeType
      */
     public TradeConfig.ModeType getMode() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
         return TradeConfig.ModeType.JPA_AM;
     }
 

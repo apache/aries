@@ -47,10 +47,12 @@ public class ObjectFactoryHelper implements ObjectFactory {
     }
 
     public Object getObjectInstance(Object obj,
+//IC see: https://issues.apache.org/jira/browse/ARIES-647
                                     Name name,
                                     Context nameCtx,
                                     Hashtable<?, ?> environment) throws Exception {
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         return getObjectInstance(obj, name, nameCtx, environment, null);
     }
 
@@ -117,6 +119,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                          Hashtable<?, ?> environment,
                                                          Attributes attrs) throws Exception {
         for (ServiceReference<ObjectFactory> ref : Activator.getReferences(callerContext, ObjectFactory.class)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-823
             if (canCallObjectFactory(obj, ref)) {
                 ObjectFactory factory = Activator.getService(callerContext, ref);
                 if (factory != null) {
@@ -189,6 +192,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
      * Attempt to obtain an Object instance via the java.naming.factory.object property
      */
     private Object getObjectInstanceViaContextDotObjectFactories(Object obj,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
                                                                  Name name,
                                                                  Context nameCtx,
                                                                  Hashtable<?, ?> environment,
@@ -223,6 +227,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
                                                     Object obj,
                                                     Name name,
                                                     Context nameCtx,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
                                                     Hashtable<?, ?> environment,
                                                     Attributes attrs)
             throws Exception {
@@ -232,6 +237,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
                 String urlScheme = getUrlScheme((String) address.getContent());
 
                 ServicePair<ObjectFactory> factoryService = ContextHelper.getURLObjectFactory(callerContext, urlScheme, environment);
+//IC see: https://issues.apache.org/jira/browse/ARIES-417
 
                 if (factoryService != null) {
                     ObjectFactory factory = factoryService.get();
@@ -255,6 +261,7 @@ public class ObjectFactoryHelper implements ObjectFactory {
     private Object getObjectFromFactory(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment, Attributes attrs, ObjectFactory factory) throws Exception {
         Object result;
         if (factory instanceof DirObjectFactory) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
             result = ((DirObjectFactory) factory).getObjectInstance(obj, name, nameCtx, environment, attrs);
         } else {
             result = factory.getObjectInstance(obj, name, nameCtx, environment);

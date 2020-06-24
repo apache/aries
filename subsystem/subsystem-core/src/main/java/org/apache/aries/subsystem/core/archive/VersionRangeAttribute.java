@@ -22,6 +22,7 @@ public class VersionRangeAttribute extends AbstractAttribute {
 	public static final String NAME_VERSION = Constants.VERSION_ATTRIBUTE;
 	
 	public static final VersionRangeAttribute DEFAULT_BUNDLEVERSION = new VersionRangeAttribute(
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 			NAME_BUNDLEVERSION, new VersionRange(Version.emptyVersion.toString()));
 	public static final VersionRangeAttribute DEFAULT_VERSION = new VersionRangeAttribute();
 	
@@ -36,6 +37,7 @@ public class VersionRangeAttribute extends AbstractAttribute {
 	}
 	
 	public VersionRangeAttribute(VersionRange range) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		this(Constants.VERSION_ATTRIBUTE, range);
 	}
 	
@@ -51,6 +53,7 @@ public class VersionRangeAttribute extends AbstractAttribute {
 	
 	@Override
 	public Object getValue() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return new StringBuilder().append('"').append(range.toString()).append('"').toString();
 	}
 

@@ -29,6 +29,7 @@ public class ProvisionResourceRequirement extends AbstractRequirement {
 	private final Resource resource;
 	
 	public ProvisionResourceRequirement(
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			ProvisionResourceHeader.Clause clause, Resource resource) {
 		StringBuilder builder = new StringBuilder("(&(")
 				.append(NAMESPACE).append('=')

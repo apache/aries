@@ -33,6 +33,7 @@ public class R43Worker implements FrameworkUtilWorker {
     }
 
     public ClassLoader getClassLoader(Bundle b) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
         return b.adapt(BundleWiring.class).getClassLoader();
     }
 

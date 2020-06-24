@@ -36,7 +36,10 @@ public final class OSGiFriendlyClassVisitor extends ClassVisitor {
   public OSGiFriendlyClassVisitor(ClassVisitor cv, int arg1) {
    
     super(Opcodes.ASM8, cv);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
     inlineJSR = arg1 == ClassWriter.COMPUTE_FRAMES;
   }
   

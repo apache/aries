@@ -22,6 +22,7 @@ package org.apache.aries.blueprint.plugin.spi;
  * Activation mode for bean
  */
 public enum Activation {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1566
     EAGER,
     LAZY;
 

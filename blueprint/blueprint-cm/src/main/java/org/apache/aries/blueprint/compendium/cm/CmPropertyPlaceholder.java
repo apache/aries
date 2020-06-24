@@ -73,6 +73,7 @@ public class CmPropertyPlaceholder extends PropertyPlaceholderExt implements Man
     }
 
     public String getUpdateStrategy() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-429
         return updateStrategy;
     }
 
@@ -117,14 +118,17 @@ public class CmPropertyPlaceholder extends PropertyPlaceholderExt implements Man
         if (v == null) {
             v = super.getProperty(val);
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1298
         return v;
     }
 
     public Bundle getBundle() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-429
         return blueprintContainer.getBundleContext().getBundle();
     }
 
     public void updated(Dictionary props) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
         if (!initialized) {
             properties = props;
             initialized = true;

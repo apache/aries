@@ -393,8 +393,10 @@ public class BundleMock
   // This is good enough for Mocks' needs in unit test, but isn't how it works in the real world!
   public ServiceReference[] getRegisteredServices() 
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-512
     ServiceReference[] result = null;
     try { 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1006
       result = bc.getServiceReferences((String) null, null);
     } catch (InvalidSyntaxException isx) { 
       // no-op: Swallow exception

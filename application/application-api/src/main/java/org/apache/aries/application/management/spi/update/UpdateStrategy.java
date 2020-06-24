@@ -56,6 +56,7 @@ public interface UpdateStrategy {
      */
     public Map<DeploymentContent, BundleRepository.BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles)
       throws BundleException;
+//IC see: https://issues.apache.org/jira/browse/ARIES-489
 
     /**
      * Register a new bundle with the application (i.e. a new bundle was installed)

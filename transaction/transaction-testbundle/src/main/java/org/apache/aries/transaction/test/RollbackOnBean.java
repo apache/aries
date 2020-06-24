@@ -5,6 +5,7 @@ import java.sql.SQLException;
 public interface RollbackOnBean {
 
 	void throwException(String name, int value) throws Exception;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1690
 
 	void throwExceptionRollbackOnException(String name, int value) throws Exception;
 

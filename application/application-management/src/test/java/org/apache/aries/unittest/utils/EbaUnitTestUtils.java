@@ -43,6 +43,7 @@ private static final String TEMP_DIR = "unittest/tmpEbaContent";
   
   private static void createEbaRecursive(File folder, File tempDir, String prefix) throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-188
     File[] files = folder.listFiles();
     
     if (files != null) {

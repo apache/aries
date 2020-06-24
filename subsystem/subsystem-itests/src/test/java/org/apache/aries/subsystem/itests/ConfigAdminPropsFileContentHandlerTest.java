@@ -81,6 +81,7 @@ public class ConfigAdminPropsFileContentHandlerTest extends SubsystemTest {
             blahTracker.close();
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1352
         stopAndUninstallSubsystemSilently(subsystem);
     }
 

@@ -119,6 +119,7 @@ public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
 
     @Test
     public void testPlaceholder() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
         Configuration cf = ca.getConfiguration("blueprint-sample-placeholder", null);
         cf.update(getConfig3());
         startTestBundle();
@@ -140,6 +141,7 @@ public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
     }
 
     private Hashtable<String, String> getConfig3() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1578
         Hashtable<String, String> props;
         props = new Hashtable<String,String>();
         props.put("key.b", "10");
@@ -164,6 +166,7 @@ public class TestConfigAdmin extends AbstractBlueprintIntegrationTest {
 
     @org.ops4j.pax.exam.Configuration
     public static Option[] configuration() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         return new Option[] {
             junitBundles(),
             Helper.blueprintBundles(),

@@ -448,6 +448,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                 if (isCompatible(bundle)) {
                     return pathList;
                 } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
                     LOGGER.info("Bundle {}/{} is not compatible with this blueprint extender", bundle.getSymbolicName(), bundle.getVersion());
                 }
             } else {
@@ -472,6 +473,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                     usage += getServiceUsage(reference);
                 }
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
             LOGGER.debug("Usage for bundle {}/{} is {}", bundle.getSymbolicName(), bundle.getVersion(), usage);
             if (usage == 0) {
                 bundlesToDestroy.add(bundle);
@@ -483,6 +485,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                     return (int) (b2.getLastModified() - b1.getLastModified());
                 }
             });
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Selected bundles {} for destroy (no services in use)", toString(bundlesToDestroy));
             }
@@ -495,14 +498,17 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                         continue;
                     }
                     if (ref == null || reference.compareTo(ref) < 0) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
                         LOGGER.debug("Currently selecting bundle {}/{} for destroy (with reference {})", bundle.getSymbolicName(), bundle.getVersion(), reference);
                         ref = reference;
                     }
                 }
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
             if (ref != null) {
                 bundlesToDestroy.add(ref.getBundle());
             }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1292
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Selected bundles {} for destroy (lowest ranking service)", toString(bundlesToDestroy));
             }
@@ -527,6 +533,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
 
     private static int getServiceUsage(ServiceReference ref) {
         Bundle[] usingBundles = ref.getUsingBundles();
+//IC see: https://issues.apache.org/jira/browse/ARIES-986
         return (usingBundles != null) ? usingBundles.length : 0;
     }
 
@@ -549,6 +556,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         boolean compatible;
         if (bundle.getState() == Bundle.ACTIVE) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
                 Class<?> clazz = bundle.getBundleContext().getBundle().loadClass(BlueprintContainer.class.getName());
                 compatible = (clazz == BlueprintContainer.class);
             } catch (ClassNotFoundException e) {
@@ -568,6 +576,8 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     }
     
     private String cachePath(Bundle bundle, String filePath) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-346
+//IC see: https://issues.apache.org/jira/browse/ARIES-1726
         return Integer.toHexString(bundle.hashCode()) + "/" + filePath;
     }    
     
@@ -577,6 +587,8 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         if (privateDataVersion != null
                 && privateDataVersion.exists()) {
             try {
+//IC see: https://issues.apache.org/jira/browse/ARIES-436
+//IC see: https://issues.apache.org/jira/browse/ARIES-438
                 override = privateDataVersion.toURI().toURL();
             } catch (MalformedURLException e) {
                 LOGGER.error("Unexpected URL Conversion Issue", e);
@@ -591,6 +603,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     }    
     
     private void addEntries(Bundle bundle, String path, String filePattern, List<URL> pathList) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-468
         Enumeration<?> e = bundle.findEntries(path, filePattern, false);
         while (e != null && e.hasMoreElements()) {
             URL u = (URL) e.nextElement();
@@ -604,12 +617,16 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     }
 
     protected BlueprintContainerImpl getBlueprintContainerImpl(Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-436
+//IC see: https://issues.apache.org/jira/browse/ARIES-438
+//IC see: https://issues.apache.org/jira/browse/ARIES-696
         return containers.get(bundle);
     }
 
     private class BlueprintContainerServiceImpl implements BlueprintExtenderService {
 
         public BlueprintContainer createContainer(Bundle bundle) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1121
             if (BlueprintExtender.this.createContainer(bundle)) {
                 return getContainer(bundle);
             } else {
@@ -618,6 +635,7 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
 
         public BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1726
             if (BlueprintExtender.this.createContainer(bundle, resolvePaths(bundle, blueprintPaths))) {
                 return getContainer(bundle);
             } else {
@@ -626,7 +644,9 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
         }
 
         public BlueprintContainer createContainer(Bundle bundle, List<Object> blueprintPaths, Collection<URI> namespaces) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1726
             if (BlueprintExtender.this.createContainer(bundle, resolvePaths(bundle, blueprintPaths), namespaces)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1482
                 return getContainer(bundle);
             } else {
                 return null;

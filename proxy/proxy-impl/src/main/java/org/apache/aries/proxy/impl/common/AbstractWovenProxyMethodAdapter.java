@@ -176,17 +176,22 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
    * @param proxyType - the type being woven that contains this method
    */
   public AbstractWovenProxyMethodAdapter(MethodVisitor mv, int access, String name, String desc,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1280
+//IC see: https://issues.apache.org/jira/browse/ARIES-1923
       String methodStaticFieldName, Method currentTransformMethod, Type typeBeingWoven,
       Type methodDeclaringType, boolean isMethodDeclaringTypeInterface, boolean isDefaultMethod)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1981
     super(ASM8, mv, access, name, desc);
     this.methodStaticFieldName = methodStaticFieldName;
     this.currentTransformMethod = currentTransformMethod;
     returnType = currentTransformMethod.getReturnType();
     isVoid = returnType.getSort() == Type.VOID;
     this.typeBeingWoven = typeBeingWoven;
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     this.methodDeclaringType = methodDeclaringType;
     this.isMethodDeclaringTypeInterface = isMethodDeclaringTypeInterface;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1186
     this.isDefaultMethod = isDefaultMethod;
   }
 
@@ -223,8 +228,10 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     
     //Dispatch the method and store the result (null for void)
     loadLocal(dispatchTarget);
+//IC see: https://issues.apache.org/jira/browse/ARIES-821
     checkCast(methodDeclaringType);
     loadArgs();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1849
     if(isMethodDeclaringTypeInterface) {
       invokeInterface(methodDeclaringType, currentTransformMethod);
     } else {
@@ -257,6 +264,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
    */
   private final void setupLocals() {
     if (isVoid){
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
       normalResult = newLocal(OBJECT_TYPE);
     } else{
       normalResult = newLocal(returnType);
@@ -305,6 +313,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     loadArgArray();
     
     //invoke it and store the token returned
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     invokeInterface(LISTENER_TYPE, PRE_INVOKE_METHOD);
     storeLocal(preInvokeReturnedToken);
     
@@ -323,6 +332,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     
     loadLocal(preInvokeReturnedToken);
     loadLocal(dispatchTarget);
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     getStatic(typeBeingWoven, methodStaticFieldName, METHOD_TYPE);
     loadLocal(normalResult);
     
@@ -332,6 +342,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     }
     
     //invoke the listener
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     invokeInterface(LISTENER_TYPE, POST_INVOKE_METHOD);
     
     mark(nullListener);
@@ -391,6 +402,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     loadLocal(dispatchTarget);
     getStatic(typeBeingWoven, methodStaticFieldName, METHOD_TYPE);
     loadLocal(originalException);
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     invokeInterface(LISTENER_TYPE, POST_INVOKE_EXCEPTIONAL_METHOD);
     goTo(throwSelectedException);
     
@@ -426,6 +438,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     mark(startUnwrap);
     //Load arg and check if it is a WovenProxy instances
     loadArg(0);
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     instanceOf(WOVEN_PROXY_IFACE_TYPE);
     Label unwrapFinished = newLabel();
     //Jump if zero (false)
@@ -441,6 +454,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
     //So arg is a WovenProxy, but not the same as last time, cast it and store 
     //the result of unwrap.call in the arg
     loadArg(0);
+//IC see: https://issues.apache.org/jira/browse/ARIES-671
     checkCast(WOVEN_PROXY_IFACE_TYPE);
     //Now unwrap
     invokeInterface(WOVEN_PROXY_IFACE_TYPE, new Method("org_apache_aries_proxy_weaving_WovenProxy_unwrap",
@@ -476,6 +490,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
       ilMethod = clazz.getMethod(name, argTypes);
     } catch (Exception e) {
       //Should be impossible!
+//IC see: https://issues.apache.org/jira/browse/ARIES-1657
       throw new RuntimeException(format("Error finding InvocationListener method %s with argument types %s.", 
                                         name, Arrays.toString(argTypes)), e);
     }

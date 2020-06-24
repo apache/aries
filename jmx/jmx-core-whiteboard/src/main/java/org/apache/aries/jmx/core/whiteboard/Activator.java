@@ -153,6 +153,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
     tracker.open();
 
     stateConfig = StateConfig.register(context);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
 
     registerMBean(ServiceStateMBean.class.getName(), new Factory<ServiceStateMBean>() {
       public ServiceStateMBean create()
@@ -180,6 +181,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
 
   public void stop(BundleContext context) throws Exception
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
     stateConfig = null;
     tracker.close();
   }
@@ -344,6 +346,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
           @Override
           public BundleStateMBean create(PackageAdmin pa, StartLevel sl)
           {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
             return new BundleState(ctx, pa, sl, stateConfig, logger);
           }
         }, BundleStateMBean.OBJECTNAME, _bundleState);

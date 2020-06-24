@@ -183,6 +183,7 @@ public class DynamicImportTest extends SubsystemTest
 	}
 	
 	protected static final byte[] EMPTY_CLASS = new byte[] {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1258
 	     (byte)0xca, (byte)0xfe, (byte)0xba, (byte)0xbe, 
 	     (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x32, 
 	     (byte)0x00, (byte)0x12, (byte)0x07, (byte)0x00, 

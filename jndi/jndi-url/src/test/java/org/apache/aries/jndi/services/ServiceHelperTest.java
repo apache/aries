@@ -35,6 +35,7 @@ public class ServiceHelperTest {
 	@Test
 	public void testGetAllInterfaces() throws Exception {
 		
+//IC see: https://issues.apache.org/jira/browse/ARIES-1095
 		Class<?>[] classes = { B.class, D.class };
 		Collection<Class<?>> cx = ServiceHelper.getAllInterfaces(classes);
 		

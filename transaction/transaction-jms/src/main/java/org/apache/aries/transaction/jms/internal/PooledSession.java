@@ -47,6 +47,7 @@ public class PooledSession implements Session, TopicSession, QueueSession, XASes
     private boolean useAnonymousProducers = true;
 
     public PooledSession(SessionKey key, Session session, KeyedObjectPool<SessionKey, PooledSession> sessionPool, boolean transactional, boolean anonymous) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         this.key = key;
         this.session = session;
         this.sessionPool = sessionPool;
@@ -102,6 +103,7 @@ public class PooledSession implements Session, TopicSession, QueueSession, XASes
             } finally {
                 consumers.clear();
                 browsers.clear();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
                 for (PooledSessionEventListener listener : this.sessionEventListeners) {
                     listener.onSessionClosed(this);
                 }
@@ -119,6 +121,7 @@ public class PooledSession implements Session, TopicSession, QueueSession, XASes
                     }
                     session = null;
                 }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
                 try {
                     sessionPool.invalidateObject(key, this);
                 } catch (Exception e) {
@@ -335,6 +338,7 @@ public class PooledSession implements Session, TopicSession, QueueSession, XASes
     // -------------------------------------------------------------------------
     @Override
     public MessageProducer createProducer(Destination destination) throws JMSException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         return new PooledProducer(getMessageProducer(destination), destination);
     }
 
@@ -473,6 +477,7 @@ public class PooledSession implements Session, TopicSession, QueueSession, XASes
      *            the consumer which is being closed
      */
     protected void onConsumerClose(MessageConsumer consumer) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1158
         consumers.remove(consumer);
     }
 }

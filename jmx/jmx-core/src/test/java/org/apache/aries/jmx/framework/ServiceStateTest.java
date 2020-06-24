@@ -65,6 +65,7 @@ public class ServiceStateTest {
 
 
     private void createService(StateConfig stateConfig, final List<Notification> received,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
                                final List<AttributeChangeNotification> attributeChanges) throws Exception {
         BundleContext context = mock(BundleContext.class);
         Logger logger = mock(Logger.class);
@@ -133,6 +134,7 @@ public class ServiceStateTest {
     @Test
     public void testNotificationsForServiceEvents() throws Exception {
         StateConfig stateConfig = new StateConfig();
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
 
         //holders for Notifications captured
         List<Notification> received = new LinkedList<Notification>();
@@ -171,6 +173,7 @@ public class ServiceStateTest {
 
     @Test
     public void testNotificationsForServiceEventsDisabled() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
         StateConfig stateConfig = new StateConfig();
         stateConfig.setServiceChangeNotificationEnabled(false);
 
@@ -190,6 +193,7 @@ public class ServiceStateTest {
         Logger logger = mock(Logger.class);
 
         ServiceState serviceState = new ServiceState(context, new StateConfig(), logger);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
 
         MBeanServer server1 = mock(MBeanServer.class);
         MBeanServer server2 = mock(MBeanServer.class);
@@ -236,10 +240,12 @@ public class ServiceStateTest {
 
     @Test
     public void testAttributeNotificationDisabled() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1627
         StateConfig stateConfig = new StateConfig();
         stateConfig.setAttributeChangeNotificationEnabled(false);
 
         //holders for Notifications captured
+//IC see: https://issues.apache.org/jira/browse/ARIES-1365
         List<AttributeChangeNotification> attributeChanges = new LinkedList<AttributeChangeNotification>();
         createService(stateConfig, new LinkedList<Notification>(), attributeChanges);
 

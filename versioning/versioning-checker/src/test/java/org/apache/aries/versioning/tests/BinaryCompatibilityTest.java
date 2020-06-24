@@ -63,6 +63,7 @@ public class BinaryCompatibilityTest {
 
     @BeforeClass
     public static void setup() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         Collection<URL> urls = new HashSet<URL>();
         urls.add(new File("unitest/").toURI().toURL());
         loader = new URLClassLoader(urls.toArray(new URL[0]));
@@ -91,6 +92,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertTrue(
                 "When a class is changed from non abstract to abstract, this should break binary compatibility.",
                 bcs.size() == 1);
@@ -152,6 +154,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertTrue(
                 "When a class is changed from non final to final, this should break binary compatibility.",
                 bcs.size() == 1);
@@ -254,6 +257,7 @@ public class BinaryCompatibilityTest {
 
         cw = new ClassWriter(0);
         cw.visit(V1_5, ACC_PUBLIC, "pkg/Test", null, "versioning/java/files/TestBChild", null);
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
 
         cw.visitEnd();
         byte[] newBytes = cw.toByteArray();
@@ -275,6 +279,7 @@ public class BinaryCompatibilityTest {
      */
     @Test
     public void test_jdk_chap13_4_7_4() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         ClassWriter cw = new ClassWriter(0);
         cw.visit(V1_5, ACC_PUBLIC, "pkg/Test", null, "java/lang/Object", new String[]{"versioning/java/files/TestB"});
         cw.visitEnd();
@@ -293,6 +298,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertTrue(
                 "Changing the direct superclass or the set of direct superinterfaces of a class type results fields changes. This should breake binary compatibility if not losing any members.",
                 bcs.size() == 2);
@@ -324,6 +330,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-979
         assertEquals(new HashSet<String>(Arrays.asList(new String[] {
                 "The public field more becomes less accessible."})), new HashSet<String>(bcs));
         assertTrue(
@@ -357,6 +364,7 @@ public class BinaryCompatibilityTest {
         assertFalse(
                 "If a change to the direct superclass or the set of direct superinterfaces results in any class or interface no longer being a superclass or superinterface, respectively, it will break binary compatibility.",
                 bcs.isCompatible());
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals(new HashSet<String>(Arrays.asList(new String[] {"The method int getFooLen(java.lang.String) has been deleted or its return type or parameter list has changed.",
                 "The method java.lang.String getFoo() has changed from non abstract to abstract.",
                 "The method int getBarLen(java.lang.String) has been deleted or its return type or parameter list has changed.",
@@ -392,6 +400,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int convert(java.lang.Object) has been deleted or its return type or parameter list has changed.", bcs.get(0));
         assertTrue(
                 "deleting a class member or constructor that is not declared private breaks binary compatibility.",
@@ -480,6 +489,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int convert(java.lang.Object) is less accessible.", bcs.get(0));
         assertTrue(
                 "Changing the declared access of a member or contructor to permit less access  , this should break binary compatibility.",
@@ -507,6 +517,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The public field lESS becomes less accessible.", bcs.get(0));
         assertTrue(
                 "Changing the declared access of a field to permit less access  , this should break binary compatibility.",
@@ -565,6 +576,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The public field bar becomes less accessible.", bcs.get(0));
         assertTrue(
                 "The new field conflicts with a field in the super class. Check chapter 13.4.7 java spec for more info.",
@@ -596,6 +608,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The public field aa was not final but has been changed to be final.", bcs.get(0));
         assertTrue(
                 "Change that a public or protected field was final but is changed to be not final will break binary compatibility.",
@@ -656,6 +669,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The public field aa was static but is changed to be non static or vice versa.", bcs.get(0));
         assertTrue(
                 "If a field was static is changed to be non-static, then it will break compatibility.",
@@ -687,6 +701,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The public field aa was static but is changed to be non static or vice versa.", bcs.get(0));
         assertTrue(
                 "If a field was non-static is changed to be static, then it will break compatibility.",
@@ -780,6 +795,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getFooLen(java.lang.STring) has been deleted or its return type or parameter list has changed.", bcs.get(0));
         assertTrue(
                 "Deleting a public/protected method when there is no such a method in the superclass breaks binary compatibility.",
@@ -841,6 +857,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getFooLen(java.lang.String) is less accessible.", bcs.get(0));
         assertTrue(
                 "If a change to the direct superclass or the set of direct superinterfaces results in any class or interface no longer being a superclass or superinterface, respectively, it will break binary compatibility.",
@@ -873,6 +890,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getCooLen(java.lang.String) has been deleted or its return type or parameter list has changed.", bcs.get(0));
         assertTrue(
                 "Changing a parameter list will break binary compatibility.",
@@ -895,6 +913,7 @@ public class BinaryCompatibilityTest {
         cw = new ClassWriter(0);
         cw.visit(V1_5, ACC_PUBLIC, "pkg/Test", null, "versioning/java/files/TestA", null);
         cw.visitField(ACC_PUBLIC + ACC_TRANSIENT, "aa", "Ljava/lang/String;", null, new String("newBar")).visitEnd();
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         cw.visitMethod(ACC_PUBLIC, "getCooLen", "(Ljava/lang/Object;)I", null, null).visitEnd();
         cw.visitEnd();
         byte[] newBytes = cw.toByteArray();
@@ -906,6 +925,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getCooLen(java.lang.String) has been deleted or its return type or parameter list has changed.", bcs.get(0));
         assertTrue(
                 "Changing a method paramether type will break binary compatibility.",
@@ -917,6 +937,7 @@ public class BinaryCompatibilityTest {
      */
     @Test
     public void test_jdk_chap13_4_12_3() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         ClassWriter cw = new ClassWriter(0);
         cw.visit(V1_5, ACC_PUBLIC, "pkg/Test", null, "versioning/java/files/TestA", null);
         cw.visitMethod(ACC_PUBLIC, "getCooLen", "(Ljava/util/List;)I", "Ljava/lang/String;", null).visitEnd();
@@ -969,6 +990,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getCooLen(java.lang.String) has been deleted or its return type or parameter list has changed.", bcs.get(0));
         assertTrue(
                 "Changing a method return type will break binary compatibility.",
@@ -1001,6 +1023,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getCooLen(java.lang.String) has changed from non abstract to abstract.", bcs.get(0));
         assertTrue(
                 "Changing a method to be abstract will break binary compatibility.",
@@ -1064,6 +1087,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getCooLen(java.lang.String) was not final but has been changed to be final.", bcs.get(0));
         assertTrue(
                 "Changing an instance method from non-final to final will break binary compatibility.",
@@ -1216,6 +1240,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getCooLen(java.lang.String) has changed from static to non-static or vice versa.", bcs.get(0));
         assertTrue(
                 "If a method is not private was not declared static and is changed to be decalared static, this should break compatibility.",
@@ -1248,6 +1273,7 @@ public class BinaryCompatibilityTest {
         newCR.accept(newCV, 0);
         oldCR.accept(oldCV, 0);
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getCooLen(java.lang.String) has changed from static to non-static or vice versa.", bcs.get(0));
         assertTrue(
                 "If a method is not private was declared static and is changed to not be decalared static, this should break compatibility.",
@@ -1429,6 +1455,7 @@ public class BinaryCompatibilityTest {
         oldCR.accept(oldCV, 0);
 
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals(new HashSet<String>(Arrays.asList(new String[] {"The public field bar has been deleted.",
                 "The superclasses or superinterfaces have stopped being super: [versioning/java/files/TestB].",
                 "The method java.lang.String getFoo() has been deleted or its return type or parameter list has changed."})), new HashSet<String>(bcs));
@@ -1463,6 +1490,7 @@ public class BinaryCompatibilityTest {
         oldCR.accept(oldCV, 0);
 
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getFoo() has been deleted or its return type or parameter list has changed.", bcs.get(0));
         assertTrue(
                 "Deleting a method in an interface should break compatibility.",
@@ -1527,6 +1555,7 @@ public class BinaryCompatibilityTest {
         oldCR.accept(oldCV, 0);
 
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getFoo() has been deleted or its return type or parameter list has changed.", bcs.get(0));
         assertTrue(
                 "Changing a method return type in an interface should  break compatibility.",
@@ -1560,6 +1589,7 @@ public class BinaryCompatibilityTest {
         oldCR.accept(oldCV, 0);
 
         BinaryCompatibilityStatus bcs = newCV.getClassDeclaration().getBinaryCompatibleStatus((oldCV.getClassDeclaration()));
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         assertEquals("The method int getFoo(int) has been deleted or its return type or parameter list has changed.", bcs.get(0));
         assertTrue(
                 "Changing a method parameter in an interface should  break compatibility.",
@@ -1596,6 +1626,7 @@ public class BinaryCompatibilityTest {
                 "Adding an abstract methods should not break compatibility.",
                 newCV.getClassDeclaration().getBinaryCompatibleStatus(oldCV.getClassDeclaration()).isCompatible());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
         Collection<MethodDeclaration> extraMethods = newCV.getClassDeclaration().getExtraMethods(oldCV.getClassDeclaration());
         assertEquals(1, extraMethods.size());
         for (MethodDeclaration md : extraMethods) {

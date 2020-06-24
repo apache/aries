@@ -28,10 +28,12 @@ public class SerialVersionClassVisitor extends SerialVersionUIDAdder {
 
     public SerialVersionClassVisitor(ClassVisitor cv) {
         super(Opcodes.ASM5, cv);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1205
 
     }
 
     public long getComputeSerialVersionUID() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-757
             try {
                 return computeSVUID();
             } catch (IOException ioe) {

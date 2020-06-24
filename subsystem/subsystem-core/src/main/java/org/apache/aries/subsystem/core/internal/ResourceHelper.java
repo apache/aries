@@ -42,6 +42,7 @@ public class ResourceHelper {
 	private static final Logger logger = LoggerFactory.getLogger(ResourceHelper.class);
 	
 	public static boolean areEqual(Resource resource1, Resource resource2) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (getTypeAttribute(resource1).equals(getTypeAttribute(resource2))) {
 			if (getSymbolicNameAttribute(resource1).equals(getSymbolicNameAttribute(resource2))) {
 				if (getVersionAttribute(resource1).equals(getVersionAttribute(resource2))) {
@@ -65,6 +66,7 @@ public class ResourceHelper {
 	}
 	
 	public static Object getIdentityAttribute(Resource resource, String name) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		List<Capability> capabilities = resource.getCapabilities(IdentityNamespace.IDENTITY_NAMESPACE);
 		Capability capability = capabilities.get(0);
 		return capability.getAttributes().get(name);
@@ -75,6 +77,7 @@ public class ResourceHelper {
 			return ((BundleResource)resource).getLocation();
 		if (resource instanceof BundleRevision)
 			return ((BundleRevision)resource).getBundle().getLocation();
+//IC see: https://issues.apache.org/jira/browse/ARIES-956
 		if (resource instanceof BasicSubsystem)
 			return ((BasicSubsystem)resource).getLocation();
 		if (resource instanceof SubsystemResource)
@@ -85,12 +88,14 @@ public class ResourceHelper {
 	}
 	
 	public static Resource getResource(Requirement requirement, org.apache.aries.subsystem.core.repository.Repository repository) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Map<Requirement, Collection<Capability>> map = repository.findProviders(Arrays.asList(requirement));
 		Collection<Capability> capabilities = map.get(requirement);
 		return capabilities == null ? null : capabilities.size() == 0 ? null : capabilities.iterator().next().getResource();
 	}
 	
 	public static String getSymbolicNameAttribute(Resource resource) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (String)getIdentityAttribute(resource, IdentityNamespace.IDENTITY_NAMESPACE);
 	}
 	
@@ -110,12 +115,15 @@ public class ResourceHelper {
 	
 	public static boolean matches(Requirement requirement, Capability capability) {
 		if (requirement == null && capability == null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1022
 			return true;
 		else if (requirement == null || capability == null) 
 			return false;
 		else if (!capability.getNamespace().equals(requirement.getNamespace())) 
 			return false;
 		else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1388
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 		    Filter filter = null;
 		    try {
     		    if (requirement instanceof AbstractRequirement) {

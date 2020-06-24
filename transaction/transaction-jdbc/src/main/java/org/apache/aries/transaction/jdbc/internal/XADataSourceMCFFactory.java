@@ -36,6 +36,7 @@ import org.tranql.connector.jdbc.ManagedXAConnection;
 public class XADataSourceMCFFactory extends AbstractMCFFactory {
 
     public void init() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1150
         if (getDataSource() == null) {
             throw new IllegalArgumentException("dataSource must be set");
         }
@@ -48,6 +49,7 @@ public class XADataSourceMCFFactory extends AbstractMCFFactory {
     public class XADataSourceMCF extends AbstractXADataSourceMCF<XADataSource> implements TransactionSupport {
 
         public XADataSourceMCF() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1150
             super((XADataSource) XADataSourceMCFFactory.this.getDataSource(), XADataSourceMCFFactory.this.getExceptionSorter());
         }
 
@@ -63,6 +65,7 @@ public class XADataSourceMCFFactory extends AbstractMCFFactory {
         @Override
         public ManagedConnection createManagedConnection(Subject subject, ConnectionRequestInfo connectionRequestInfo) throws ResourceException {
             CredentialExtractor credentialExtractor = new CredentialExtractor(subject, connectionRequestInfo, this);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1287
 
             XAConnection sqlConnection = getPhysicalConnection(credentialExtractor);
             try {
@@ -82,6 +85,7 @@ public class XADataSourceMCFFactory extends AbstractMCFFactory {
 
         @Override
         protected XAConnection getPhysicalConnection(CredentialExtractor credentialExtractor) throws ResourceException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1171
             try {
                 String userName = credentialExtractor.getUserName();
                 String password = credentialExtractor.getPassword();
@@ -97,6 +101,7 @@ public class XADataSourceMCFFactory extends AbstractMCFFactory {
 
         @Override
         public TransactionSupportLevel getTransactionSupport() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1150
             return TransactionSupportLevel.XATransaction;
         }
     }

@@ -110,6 +110,7 @@ public class EsaMavenProjectStub
     
     public Set getArtifacts()
     {   
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
         Set artifacts = new LinkedHashSet();
  
         artifacts.add( createArtifact( "org.apache.maven.test", "maven-artifact01", "1.0-SNAPSHOT", false ) );
@@ -134,6 +135,7 @@ public class EsaMavenProjectStub
     
     protected Artifact createArtifact( String groupId, String artifactId, String version, boolean optional )
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
         return createArtifact(groupId, artifactId, version, "jar", optional);
     }
     
@@ -151,6 +153,7 @@ public class EsaMavenProjectStub
         
         artifact.setFile( new File ( getBasedir() + "/src/test/remote-repo/" + artifact.getGroupId().replace( '.', '/' ) + 
                           "/" + artifact.getArtifactId() + "/" + artifact.getVersion() + 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
                           "/" + artifact.getArtifactId() + "-" + artifact.getVersion() + "." + type ) ) ;
         
         return artifact;

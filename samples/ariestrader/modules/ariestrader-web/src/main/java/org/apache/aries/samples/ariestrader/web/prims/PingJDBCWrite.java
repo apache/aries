@@ -63,6 +63,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse res)
 
 		//TradeJdbc via TradeServices makes use of prepared statements so I am going to reuse the existing code.
                 TradeServices tradeServices = TradeServiceUtilities.getTradeServices("(mode=JDBC)");
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
 
 		//update the price of our symbol
 		QuoteDataBean quoteData = null;

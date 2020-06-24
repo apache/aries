@@ -52,6 +52,7 @@ public class LocationTest {
 
     @Test
     public void testAnyURIScheme() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1253
         Location l = new Location("foo://bar");
         assertEquals("foo://bar", l.getValue());
     }
@@ -59,6 +60,7 @@ public class LocationTest {
     @Test
     public void testSubsystemLocation() throws Exception {
         String locationString = "subsystem://?Subsystem-SymbolicName=org.osgi.service.subsystem.root&Subsystem-Version=1.2.3";
+//IC see: https://issues.apache.org/jira/browse/ARIES-1147
 
         Location location = new Location(locationString);
         assertEquals(locationString, location.getValue());
@@ -73,6 +75,7 @@ public class LocationTest {
 
         Location location = new Location(locationString);
         assertEquals(locationString, location.getValue());
+//IC see: https://issues.apache.org/jira/browse/ARIES-1147
         try {
         	String sn = location.getSymbolicName();
         	fail("Expecting an error: " + sn);

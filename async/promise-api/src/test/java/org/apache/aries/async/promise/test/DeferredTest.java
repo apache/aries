@@ -30,6 +30,7 @@ public class DeferredTest {
 
     @Test
     public void testResolve() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1317
         Deferred<String> def = new Deferred<String>();
         Promise<String> promise = def.getPromise();
         assertFalse("Initial Promise not resolved", promise.isDone());

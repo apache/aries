@@ -41,6 +41,7 @@ public class MultiInterfacesTest extends AbstractBlueprintIntegrationTest {
     @Test
     public void testMultiInterfaceReferences() throws Exception {
         //bundlea provides the ns handlers, bean processors, interceptors etc for this test.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1184
         startBundleBlueprint("org.apache.aries.blueprint.testbundlea");
         
         //bundleb makes use of the extensions provided by bundlea

@@ -29,6 +29,7 @@ public class TestCapability implements Capability {
 		private Resource resource;
 		
 		public Builder attribute(String name, Object value) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			attributes.put(name,  value);
 			return this;
 		}

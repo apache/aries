@@ -60,8 +60,11 @@ public interface MutableBeanMetadata extends ExtendedBeanMetadata, MutableCompon
     void setProcessor(boolean processor);
     
     void setFieldInjection(boolean allowFieldInjection);
+//IC see: https://issues.apache.org/jira/browse/ARIES-88
 
     void setRawConversion(boolean rawConversion);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1607
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1106
     void setNonStandardSetters(boolean nonStandardSetters);
 }

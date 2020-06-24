@@ -46,6 +46,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	private void addChild(final BasicSubsystem child) {
 		// provisionTo will be null if the resource is an already installed
 		// dependency.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		if (provisionTo == null)
 			return;
 		// Don't let a resource become a child of itself.
@@ -88,10 +89,13 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 		}
 		// ...followed by content.
 		// Simulate installation of shared content so that necessary relationships are established.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1416
+//IC see: https://issues.apache.org/jira/browse/ARIES-1357
 		for (Resource content : subsystem.getResource().getSharedContent()) {
 			ResourceInstaller.newInstance(coordination, content, subsystem).install();
 		}
 		// Now take care of the installable content.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1187
 		if (State.INSTALLING.equals(subsystem.getState())) {
 			List<Resource> installableContent = new ArrayList<Resource>(subsystem.getResource().getInstallableContent());
 			Collections.sort(installableContent, comparator);
@@ -119,6 +123,7 @@ public class SubsystemResourceInstaller extends ResourceInstaller {
 	private void installRegionContextBundle(final BasicSubsystem subsystem) throws Exception {
 		if (!subsystem.isScoped())
 			return;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1050
 		RegionContextBundleHelper.installRegionContextBundle(subsystem, coordination);
 	}
 

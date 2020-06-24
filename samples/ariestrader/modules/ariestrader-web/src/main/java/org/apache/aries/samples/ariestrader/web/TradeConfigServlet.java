@@ -118,6 +118,7 @@ public class TradeConfigServlet extends HttpServlet {
 				int i = Integer.parseInt(runTimeModeStr);
 				if ((i >= 0) && (i < TradeConfig.runTimeModeNames.length)) //Input validation
                                 {
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
                                     TradeConfig.setRunTimeMode(TradeConfig.ModeType.values()[i]);
                                 }
 			}
@@ -131,6 +132,7 @@ public class TradeConfigServlet extends HttpServlet {
 
 			} // If the value is bad, simply revert to current
 		}
+//IC see: https://issues.apache.org/jira/browse/ARIES-284
 		currentConfigStr += "\t\tRunTimeMode:\t\t" + TradeConfig.runTimeModeNames[TradeConfig.getRunTimeMode().ordinal()] + "\n";
 		
 		/* Add JPA layer choice to avoid some ugly Hibernate bugs */
@@ -393,6 +395,7 @@ public class TradeConfigServlet extends HttpServlet {
 			action = req.getParameter("action");
 			if (action == null)
 			{
+//IC see: https://issues.apache.org/jira/browse/ARIES-117
 				doConfigDisplay(req, resp, result + "<b><br>Current AriesTrader Configuration:</br></b>");
 				return;
 			}
@@ -409,7 +412,9 @@ public class TradeConfigServlet extends HttpServlet {
 			else if (action.equals("buildDB"))
 			{
 				resp.setContentType("text/html");
+//IC see: https://issues.apache.org/jira/browse/ARIES-402
                 new TradeBuildDB(resp.getWriter(), false);
+//IC see: https://issues.apache.org/jira/browse/ARIES-117
 				result = "AriesTrader Database Built - " + TradeConfig.getMAX_USERS() + "users created";
 			}
             else if (action.equals("buildDBTables"))

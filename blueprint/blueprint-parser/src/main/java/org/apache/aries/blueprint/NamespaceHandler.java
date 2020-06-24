@@ -79,6 +79,7 @@ public interface NamespaceHandler  {
      * @return a <code>Set</code> of classes that must be compatible with any blueprint bundle for which this namespace 
      * handler is to apply or <code>null</code> if no compatibility checks are to be performed
      */
+//IC see: https://issues.apache.org/jira/browse/ARIES-5
     Set<Class> getManagedClasses();
     
     /**

@@ -39,6 +39,7 @@ public enum TransactionAttribute {
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_NO_TRANSACTION) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1379
           throw new IllegalStateException("No transaction present when calling method that mandates a transaction.");
         }
 
@@ -51,12 +52,14 @@ public enum TransactionAttribute {
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_ACTIVE) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1379
           throw new IllegalStateException("Transaction present when calling method that forbids a transaction.");
         }
 
         return new TransactionToken(null, null, NEVER);
       }
     },
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
     NOT_SUPPORTED
     {
       @Override
@@ -66,6 +69,7 @@ public enum TransactionAttribute {
           return new TransactionToken(null, man.suspend(), this);
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         return new TransactionToken(null, null, NOT_SUPPORTED);
       }
 
@@ -86,6 +90,7 @@ public enum TransactionAttribute {
       {
         if (man.getStatus() == Status.STATUS_NO_TRANSACTION) {
           man.begin();
+//IC see: https://issues.apache.org/jira/browse/ARIES-153
           return new TransactionToken(man.getTransaction(), null, REQUIRED, true);
         }
 
@@ -106,10 +111,13 @@ public enum TransactionAttribute {
         }
       }
     },
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
     REQUIRES_NEW
     {
       @Override
       public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
           InvalidTransactionException
       {
          Transaction suspendedTransaction = (man.getStatus() == Status.STATUS_ACTIVE) ? man.suspend() : null;
@@ -123,11 +131,14 @@ public enum TransactionAttribute {
           man.resume(suspendedTransaction);
           throw e;
         }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
         return new TransactionToken(man.getTransaction(), suspendedTransaction, REQUIRES_NEW, true);
       }
 
       @Override
       public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
           InvalidTransactionException, RollbackException,
           HeuristicMixedException, HeuristicRollbackException
       {
@@ -149,6 +160,7 @@ public enum TransactionAttribute {
     {
       @Override
       public TransactionToken begin(TransactionManager man) throws SystemException, NotSupportedException,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
           InvalidTransactionException
       {
           if (man.getStatus() == Status.STATUS_ACTIVE) {
@@ -161,6 +173,7 @@ public enum TransactionAttribute {
 
     public static TransactionAttribute fromValue(TxType type)
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1382
       return valueOf(type.name());
     }
     
@@ -170,6 +183,7 @@ public enum TransactionAttribute {
     }
 
     public void finish(TransactionManager man, TransactionToken tranToken) throws SystemException, // NOSONAR
+//IC see: https://issues.apache.org/jira/browse/ARIES-1450
         InvalidTransactionException, RollbackException,
         HeuristicMixedException, HeuristicRollbackException
     {

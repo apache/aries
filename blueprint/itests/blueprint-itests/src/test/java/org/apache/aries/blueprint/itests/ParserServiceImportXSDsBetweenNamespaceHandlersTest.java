@@ -100,6 +100,7 @@ public class ParserServiceImportXSDsBetweenNamespaceHandlersTest extends Abstrac
 
     @Test
     public void testXSDImports() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1580
         waitForConfig();
         ParserService parserService = context().getService(ParserService.class);
         URL blueprintXML = context().getBundleByName(TEST_BUNDLE).getEntry("OSGI-INF/blueprint/ImportNamespacesTest.xml");

@@ -36,9 +36,11 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
     }
 
     public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1068
         Activator.getAugmenterInvoker().augmentEnvironment(environment);
         BundleContext context = Utils.getBundleContext(environment, InitialContext.class);
         if (context == null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1786
             throw new NoInitialContextException("The calling code's BundleContext could not be determined.");
         }
         Activator.getAugmenterInvoker().unaugmentEnvironment(environment);

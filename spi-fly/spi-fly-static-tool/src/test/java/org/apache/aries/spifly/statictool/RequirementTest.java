@@ -39,6 +39,7 @@ import org.junit.Test;
 public class RequirementTest {
 	@Test
 	public void testConsumerBundle() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
 		String testClassFileName = TestClass.class.getName().replace('.', '/') + ".class";
 		URL testClassURL = getClass().getResource("/" + testClassFileName);
 		String test2ClassFileName = Test2Class.class.getName().replace('.', '/') + ".class";
@@ -58,6 +59,7 @@ public class RequirementTest {
 			mainAttributes.putValue("Foo", "Bar Bar");
 			mainAttributes.putValue("Import-Package", "org.foo.bar");
 			mainAttributes.putValue(SpiFlyConstants.REQUIRE_CAPABILITY,
+//IC see: https://issues.apache.org/jira/browse/ARIES-1156
 					"osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple, " +
 					"osgi.extender; filter:=\"(osgi.extender=osgi.serviceloader.processor)\"");
 
@@ -76,11 +78,13 @@ public class RequirementTest {
 			Assert.assertTrue("A processed separate bundle should have been created", expectedFile.exists());
 			// Check manifest in generated bundle.
 			JarFile transformedJarFile = new JarFile(expectedFile);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1156
 			Manifest actualMF = transformedJarFile.getManifest();
 			Assert.assertEquals("1.0", actualMF.getMainAttributes().getValue("Manifest-Version"));
 			Assert.assertEquals("2.0", actualMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
 			Assert.assertEquals("testbundle", actualMF.getMainAttributes().getValue("Bundle-SymbolicName"));
 			Assert.assertEquals("Bar Bar", actualMF.getMainAttributes().getValue("Foo"));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1156
 			Assert.assertEquals("osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple",
 					actualMF.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY));
 			Assert.assertNull("Should not generate this header when processing Require-Capability",

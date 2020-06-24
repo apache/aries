@@ -43,6 +43,7 @@ public class DeploymentManifest {
 		private Map<String, Header<?>> headers = new HashMap<String, Header<?>>();
 		
 		public DeploymentManifest build() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			return new DeploymentManifest(headers);
 		}
 		
@@ -74,6 +75,7 @@ public class DeploymentManifest {
 					i.remove();
 					break;
 				}
+//IC see: https://issues.apache.org/jira/browse/ARIES-907
 			clauses.add(new DeployedContentHeader.Clause(resource, referenced));
 			header(new DeployedContentHeader(clauses));
 			return this;
@@ -97,6 +99,7 @@ public class DeploymentManifest {
 		
 		public Builder location(String value) {
 			if (value != null)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 				header(new AriesSubsystemLocationHeader(value));
 			return this;
 		}
@@ -116,6 +119,7 @@ public class DeploymentManifest {
 		}
 		
 		public Builder parent(BasicSubsystem value, boolean referenceCount) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			AriesSubsystemParentsHeader.Clause clause = new AriesSubsystemParentsHeader.Clause(value, referenceCount);
 			AriesSubsystemParentsHeader header = (AriesSubsystemParentsHeader)headers.get(ARIESSUBSYSTEM_PARENTS);
 			if (header == null)
@@ -172,6 +176,7 @@ public class DeploymentManifest {
 	private final Map<String, Header<?>> headers;
 	
 	public DeploymentManifest(java.util.jar.Manifest manifest) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		headers = new HashMap<String, Header<?>>();
 		for (Entry<Object, Object> entry : manifest.getMainAttributes().entrySet()) {
 			String key = String.valueOf(entry.getKey());
@@ -182,6 +187,7 @@ public class DeploymentManifest {
 	}
 	
 	public DeploymentManifest(File file) throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		this(new FileInputStream(file));
 	}
 	
@@ -208,6 +214,7 @@ public class DeploymentManifest {
 		Map<String, Header<?>> headers;
 		if (deploymentManifest == null // We're generating a new deployment manifest.
 				|| (deploymentManifest != null && overwrite)) { // A deployment manifest already exists but overwriting it with subsystem manifest content is desired.
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 			headers = computeHeaders(subsystemManifest);
 		}
 		else {
@@ -216,12 +223,14 @@ public class DeploymentManifest {
 		// TODO DEPLOYMENT_MANIFESTVERSION
 		headers.put(ARIESSUBSYSTEM_AUTOSTART, new GenericHeader(ARIESSUBSYSTEM_AUTOSTART, Boolean.toString(autostart)));
 		headers.put(ARIESSUBSYSTEM_ID, new GenericHeader(ARIESSUBSYSTEM_ID, Long.toString(id)));
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
 		headers.put(ARIESSUBSYSTEM_LOCATION, new AriesSubsystemLocationHeader(location));
 		headers.put(ARIESSUBSYSTEM_LASTID, new GenericHeader(ARIESSUBSYSTEM_LASTID, Long.toString(lastId)));
 		this.headers = Collections.unmodifiableMap(headers);
 	}
 	
 	private DeploymentManifest(Map<String, Header<?>> headers) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		Map<String, Header<?>> map = new HashMap<String, Header<?>>(headers);
 		this.headers = Collections.unmodifiableMap(map);
 	}
@@ -231,6 +240,7 @@ public class DeploymentManifest {
 	}
 	
 	public ExportPackageHeader getExportPackageHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (ExportPackageHeader)getHeaders().get(EXPORT_PACKAGE);
 	}
 	
@@ -239,14 +249,17 @@ public class DeploymentManifest {
 	}
 	
 	public AriesSubsystemParentsHeader getAriesSubsystemParentsHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (AriesSubsystemParentsHeader)getHeaders().get(ARIESSUBSYSTEM_PARENTS);
 	}
 	
 	public ImportPackageHeader getImportPackageHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (ImportPackageHeader)getHeaders().get(IMPORT_PACKAGE);
 	}
 	
 	public ProvideCapabilityHeader getProvideCapabilityHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (ProvideCapabilityHeader)getHeaders().get(PROVIDE_CAPABILITY);
 	}
 	
@@ -255,18 +268,22 @@ public class DeploymentManifest {
 	}
 	
 	public RequireBundleHeader getRequireBundleHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (RequireBundleHeader)getHeaders().get(REQUIRE_BUNDLE);
 	}
 	
 	public RequireCapabilityHeader getRequireCapabilityHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (RequireCapabilityHeader)getHeaders().get(REQUIRE_CAPABILITY);
 	}
 	
 	public SubsystemExportServiceHeader getSubsystemExportServiceHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (SubsystemExportServiceHeader)getHeaders().get(SUBSYSTEM_EXPORTSERVICE);
 	}
 	
 	public SubsystemImportServiceHeader getSubsystemImportServiceHeader() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return (SubsystemImportServiceHeader)getHeaders().get(SUBSYSTEM_IMPORTSERVICE);
 	}
 	
@@ -282,11 +299,13 @@ public class DeploymentManifest {
 	}
 	
 	private Map<String, Header<?>> computeHeaders(SubsystemManifest manifest) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-825
 		return new HashMap<String, Header<?>>(manifest.getHeaders());
 	}
 
     @Override
     public int hashCode() {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1387
     	return 31 * 17 + headers.hashCode();
     }
 

@@ -28,6 +28,7 @@ public class JdbcBlogSampleWithEbaTest extends AbstractBlogIntegrationTest {
 
     @Test
     public void test() throws Exception {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1210
         MavenArtifactUrlReference eba = maven()
         		.groupId("org.apache.aries.samples.blog")
         		.artifactId("org.apache.aries.samples.blog.jdbc.eba")

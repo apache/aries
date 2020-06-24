@@ -51,6 +51,7 @@ public class OptionalDependenciesTest extends SubsystemTest {
 	}
 	
 	private void createBundleA() throws IOException {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1199
 		createBundle(name(BUNDLE_A), importPackage("x;resolution:=optional"), 
 				requireBundle("x;resolution:=optional"),
 				new Header(Constants.REQUIRE_CAPABILITY, "x;resolution:=optional"));

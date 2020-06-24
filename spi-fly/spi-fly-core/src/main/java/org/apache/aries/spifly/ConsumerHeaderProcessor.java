@@ -131,6 +131,7 @@ public class ConsumerHeaderProcessor {
                 }
             } else {
                 if ("*".equalsIgnoreCase(name)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
                     serviceLoader = true;
                     className = ServiceLoader.class.getName();
                     methodName = "load";
@@ -177,6 +178,7 @@ public class ConsumerHeaderProcessor {
 
             weavingData.add(createWeavingData(className, methodName, methodRestriction, allowedBundles));
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
             if (serviceLoader) {
                 className = ServiceLoader.class.getName();
                 methodName = "load";
@@ -194,6 +196,7 @@ public class ConsumerHeaderProcessor {
         Set<WeavingData> weavingData = new HashSet<WeavingData>();
 
         Parameters requirements = OSGiHeader.parseHeader(consumerHeader);
+//IC see: https://issues.apache.org/jira/browse/ARIES-1863
         Entry<String, ? extends Map<String, String>> extenderRequirement = findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.PROCESSOR_EXTENDER_NAME);
         Collection<Entry<String, ? extends Map<String, String>>> serviceLoaderRequirements = findAllMetadata(requirements, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
 
@@ -209,6 +212,7 @@ public class ConsumerHeaderProcessor {
 
             // ServiceLoader.load(Class)
             {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1854
                 ArgRestrictions ar = new ArgRestrictions();
                 ar.addRestriction(0, Class.class.getName());
                 MethodRestriction mr = new MethodRestriction("load", ar);
@@ -244,7 +248,9 @@ public class ConsumerHeaderProcessor {
     }
 
     static Entry<String, ? extends Map<String, String>> findCapability(Parameters capabilities, String namespace, String spiName) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1863
         for (Entry<String, ? extends Map<String, String>> cap : capabilities.entrySet()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
             String key = removeDuplicateMarker(cap.getKey());
             if (namespace.equals(key)) {
                 if (spiName.equals(cap.getValue().get(namespace))) {
@@ -260,6 +266,7 @@ public class ConsumerHeaderProcessor {
         nsAttr.put(namespace, type);
         nsAttr.put("version", SpiFlyConstants.SPECIFICATION_VERSION);
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1863
         for (Entry<String, ? extends Map<String, String>> req : requirements.entrySet()) {
             String key = removeDuplicateMarker(req.getKey());
             if (namespace.equals(key)) {
@@ -276,8 +283,10 @@ public class ConsumerHeaderProcessor {
     }
 
     static Collection<Entry<String, ? extends Map<String, String>>> findAllMetadata(Parameters requirementsOrCapabilities, String namespace) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1863
         List<Entry<String, ? extends Map<String, String>>> reqsCaps = new ArrayList<>();
         for (Entry<String, ? extends Map<String, String>> reqCap : requirementsOrCapabilities.entrySet()) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1739
             String key = removeDuplicateMarker(reqCap.getKey());
             if (namespace.equals(key)) {
                 reqsCaps.add(reqCap);

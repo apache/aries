@@ -63,6 +63,7 @@ public class GenericTypeTest extends TestCase {
         assertEquals(1, type.size());
         assertEquals(Integer.class, type.getActualTypeArgument(0).getActualTypeArgument(0).getRawClass());
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1500
         type = parse("java.util.List<? extends java.lang.Number>");
         assertEquals(List.class, type.getRawClass());
         assertEquals(1, type.size());

@@ -75,8 +75,10 @@ public class ManifestProcessor
    */
   public static Manifest mapToManifest (Map<String,String> attributes)
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-361
     Manifest man = new Manifest();
     Attributes att = man.getMainAttributes();
+//IC see: https://issues.apache.org/jira/browse/ARIES-582
     att.putValue(Attributes.Name.MANIFEST_VERSION.toString(), Constants.MANIFEST_VERSION);
     for (Map.Entry<String, String> entry : attributes.entrySet()) {
       att.putValue(entry.getKey(),  entry.getValue());
@@ -95,8 +97,10 @@ public class ManifestProcessor
    */
   public static Manifest parseManifest(InputStream in) throws IOException
   {
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
     Manifest man = new Manifest();
     
+//IC see: https://issues.apache.org/jira/browse/ARIES-622
     try
     {
       // I'm assuming that we use UTF-8 here, but the jar spec doesn't say.
@@ -107,6 +111,7 @@ public class ManifestProcessor
       
       String namedAttribute = null;
       
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
       do {
         line = reader.readLine();
   
@@ -129,6 +134,7 @@ public class ManifestProcessor
             man.getEntries().put(attributeValue, new Attributes());
             namedAttribute = attributeValue;
           } else {
+//IC see: https://issues.apache.org/jira/browse/ARIES-958
         	Attributes.Name nameToAdd = new Attributes.Name(attributeName);
             if (namedAttribute == null || !man.getMainAttributes().containsKey(nameToAdd)) {
               man.getMainAttributes().put(nameToAdd, attributeValue);
@@ -156,9 +162,11 @@ public class ManifestProcessor
    * @throws IOException
    */
   public static Manifest obtainManifestFromAppDir(IDirectory appDir, String manifestName) throws IOException{
+//IC see: https://issues.apache.org/jira/browse/ARIES-89
     IFile manifestFile = appDir.getFile(manifestName);
     Manifest man = null;
     if (manifestFile != null) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-477
       man = parseManifest(manifestFile.open());
     }
     return man;
@@ -191,6 +199,7 @@ public class ManifestProcessor
         // if there is a odd number of " in a string, we need to append
         while (count(tmp, "\"") % 2 == 1) {
           // check to see if we need to append the next package[i++]
+//IC see: https://issues.apache.org/jira/browse/ARIES-52
           tmp = tmp + delimiter + packages[i++].trim();
         }
         

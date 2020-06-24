@@ -64,6 +64,7 @@ public class EsaMojo
     private static final Set<String> SKIP_INSTRUCTIONS = new HashSet<String>();
 
     static {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
         SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_MANIFESTVERSION);
         SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_SYMBOLICNAME);
         SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_VERSION);
@@ -218,6 +219,7 @@ public class EsaMojo
             Set<Artifact> artifacts = null;
             switch (EsaContent.valueOf(archiveContent)) {
             case none:
+//IC see: https://issues.apache.org/jira/browse/ARIES-1165
                 getLog().info("archiveContent=none: subsystem archive will not contain any bundles.");                  
                 break;
             case content:
@@ -236,16 +238,19 @@ public class EsaMojo
                 // Explicitly add self to bundle set (used when pom packaging
                 // type != "esa" AND a file is present (no point to add to
                 // zip archive without file)
+//IC see: https://issues.apache.org/jira/browse/ARIES-1165
                 final Artifact selfArtifact = project.getArtifact();
                 if (!"esa".equals(selfArtifact.getType()) && selfArtifact.getFile() != null) {
                     getLog().info("Explicitly adding artifact[" + selfArtifact.getGroupId() + ", " + selfArtifact.getId() + ", " + selfArtifact.getScope() + "]");
                     artifacts.add(project.getArtifact());
                 }
                 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1650
                 artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
                 artifacts = selectNonJarArtifactsAndBundles(artifacts);
 
                 int cnt = 0;
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
                 for (Artifact artifact : artifacts) {                    
                     if (!artifact.isOptional() /*&& filter.include(artifact)*/) {
                         getLog().info("Copying artifact[" + artifact.getGroupId() + ", " + artifact.getId() + ", " +
@@ -396,6 +401,7 @@ public class EsaMojo
             archiveContent = new String("content");
         }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1490
         getLog().debug( "archiveContent[" + archiveContent + "]" );
         getLog().info( "archiveContent[" + archiveContent + "]" );
 
@@ -417,6 +423,7 @@ public class EsaMojo
         try {
             // TODO: add support for dependency version ranges. Need to pick
             // them up from the pom and convert them to OSGi version ranges.
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
             FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_MANIFESTVERSION + ": " + "1" + "\n");
             FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_SYMBOLICNAME + ": "
                     + getSubsystemSymbolicName(project.getArtifact()) + "\n");
@@ -431,6 +438,7 @@ public class EsaMojo
             // Write the SUBSYSTEM-CONTENT
             Set<Artifact> artifacts = null;
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1490
             switch (EsaManifestContent.valueOf(manifestContent)) {
                 case content:
                     // only include the direct dependencies in the content
@@ -444,11 +452,13 @@ public class EsaMojo
                     throw new MojoExecutionException("Invalid configuration for <manifestContent/>.  Valid values are content and all." );
             }
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1650
             artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
             artifacts = selectNonJarArtifactsAndBundles(artifacts);
 
             Iterator<Artifact> iter = artifacts.iterator();
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
             FileUtils.fileAppend(fileName, Constants.SUBSYSTEM_CONTENT + ": ");
             int order = 0;
             int nbInSubsystemContent = 0;
@@ -461,11 +471,13 @@ public class EsaMojo
                 }
                 String entry = info.getContentLine();
                 if ("dependencies".equals(startOrder)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1230
                     entry += ";start-order:=\"" + order + "\"";                  
                 }
                 if (iter.hasNext()) {
                     entry += ",\n ";
                 }
+//IC see: https://issues.apache.org/jira/browse/ARIES-1490
                 nbInSubsystemContent++;
                 FileUtils.fileAppend(fileName, entry);
             }
@@ -473,6 +485,7 @@ public class EsaMojo
 
             FileUtils.fileAppend(fileName, "\n");
 
+//IC see: https://issues.apache.org/jira/browse/ARIES-1175
             Iterator<Map.Entry<?, ?>> instructionIter = instructions.entrySet().iterator();
             while(instructionIter.hasNext()) {
                 Map.Entry<?, ?> entry = instructionIter.next();
@@ -494,6 +507,7 @@ public class EsaMojo
     // The maven2OsgiConverter assumes the artifact is a jar so we need our own
     // This uses the same fallback scheme as the converter
     private String getSubsystemSymbolicName(Artifact artifact) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1103
         if (instructions.containsKey(Constants.SUBSYSTEM_SYMBOLICNAME)) {
             return instructions.get(Constants.SUBSYSTEM_SYMBOLICNAME).toString();
         }
@@ -565,6 +579,7 @@ public class EsaMojo
             if (scope == null 
                 || Artifact.SCOPE_COMPILE.equals(scope)
                 || Artifact.SCOPE_RUNTIME.equals(scope)) {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1490
                 if (artifact.getType() == null || !artifact.getType().equals("pom")) {
                     selected.add(artifact);
                 }
@@ -578,6 +593,7 @@ public class EsaMojo
      */
     private Set<Artifact> selectNonJarArtifactsAndBundles(Set<Artifact> artifacts)
     {
+//IC see: https://issues.apache.org/jira/browse/ARIES-1650
         Set<Artifact> selected = new LinkedHashSet<Artifact>();
         for (Artifact artifact : artifacts) {
             if (isNonJarOrOSGiBundle(artifact)) {
