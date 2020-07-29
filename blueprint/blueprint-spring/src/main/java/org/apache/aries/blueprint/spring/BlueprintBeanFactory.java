@@ -18,7 +18,9 @@ package org.apache.aries.blueprint.spring;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
@@ -37,11 +39,14 @@ import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.Nullable;
 
 public class BlueprintBeanFactory extends DefaultListableBeanFactory implements ResourceLoader {
 
@@ -123,7 +128,7 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory implements 
 
         @Override
         public String getClassName() {
-            return null;
+            return getDefinition().getBeanClassName();
         }
 
         @Override
@@ -218,7 +223,30 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory implements 
 
         @Override
         public <T> T getBean(Class<T> requiredType) throws BeansException {
-            throw new UnsupportedOperationException();
+            T beanToReturn = null;
+            Set<String> beanNames = new HashSet<String>();
+            for (String name : container.getComponentIds()) {
+                ComponentMetadata cmeta = container.getComponentMetadata(name);
+                try {
+                    if (requiredType != null && cmeta != null && cmeta instanceof BeanMetadata
+                            && ((BeanMetadata) cmeta).getClassName() != null
+                            && !requiredType.isAssignableFrom(Class.forName(((BeanMetadata) cmeta).getClassName()))) {
+                        try {
+                            Object bean = getBean(name);
+                            bean = container.getConverter().convert(bean, new ReifiedType(requiredType));
+                            beanToReturn = (T) bean;
+                            beanNames.add(name);
+                        } catch (Exception ex) {
+                        }
+                    }
+                } catch (ClassNotFoundException cfne) {
+
+                }
+            }
+            if (beanNames.size() > 1) {
+                throw new NoUniqueBeanDefinitionException(requiredType, beanNames);
+            }
+            return beanToReturn;
         }
 
         @Override
@@ -264,6 +292,53 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory implements 
         @Override
         public String[] getAliases(String name) {
             throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public <T> ObjectProvider<T> getBeanProvider(final Class<T> requiredType) {
+            return new ObjectProvider<T>() {
+                @Override
+                public T getObject() throws BeansException {
+                    return getBean(requiredType);
+                }
+
+                @Override
+                public T getObject(Object... args) throws BeansException {
+                    return getBean(requiredType, args);
+                }
+
+                @Override
+                @Nullable
+                public T getIfAvailable() throws BeansException {
+                    try {
+                        return getBean(requiredType);
+                    } catch (NoUniqueBeanDefinitionException ex) {
+                        throw ex;
+                    } catch (NoSuchBeanDefinitionException ex) {
+                        return null;
+                    }
+                }
+
+                @Override
+                @Nullable
+                public T getIfUnique() throws BeansException {
+                    try {
+                        return getBean(requiredType);
+                    } catch (NoSuchBeanDefinitionException ex) {
+                        return null;
+                    }
+                }
+            };
+        }
+
+        @Override
+        public <T> ObjectProvider<T> getBeanProvider(ResolvableType requiredType) {
+            return (ObjectProvider<T>) getBeanProvider(requiredType.resolve());
+        }
+
+        @Override
+        public Class<?> getType(String name, boolean allowFactoryBeanInit) throws NoSuchBeanDefinitionException {
+            return getBean(name).getClass();
         }
     }
 }
