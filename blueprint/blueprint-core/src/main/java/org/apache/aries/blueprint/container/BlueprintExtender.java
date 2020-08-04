@@ -27,9 +27,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.aries.blueprint.BlueprintConstants;
 import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
@@ -68,6 +75,7 @@ import org.slf4j.LoggerFactory;
 public class BlueprintExtender implements BundleActivator, BundleTrackerCustomizer, SynchronousBundleListener {
 
     /** The QuiesceParticipant implementation class name */
+    private static final String CONTAINER_ADDITIONAL_NAMESPACES = "org.apache.aries.blueprint.extender.additional.namespaces";
     private static final String QUIESCE_PARTICIPANT_CLASS = "org.apache.aries.quiesce.participant.QuiesceParticipant";
     private static final String EXTENDER_THREADS_PROPERTY = "org.apache.aries.blueprint.extender.threads";
     private static final int DEFAULT_NUMBER_OF_THREADS = 3;
@@ -277,7 +285,23 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
     }
 
     private boolean createContainer(Bundle bundle, List<URL> paths) {
-        return createContainer(bundle, paths, null);
+        return createContainer(bundle, paths, getAdditionalNamespaces(bundle));
+    }
+    
+    private Collection<URI> getAdditionalNamespaces(Bundle bundle) {
+        String additionalNamespacesProperty = bundle.getBundleContext().getProperty(CONTAINER_ADDITIONAL_NAMESPACES);
+        Set<URI> uris = null;
+        if(additionalNamespacesProperty != null) {
+            uris = new HashSet<URI>();
+            String[] strings = additionalNamespacesProperty.split(",");
+            for (String str : strings) {
+                str = str.trim();
+                if (str.length() != 0) {
+                    uris.add(URI.create(str));
+                }
+            }
+        }
+        return uris;
     }
 
     private boolean createContainer(Bundle bundle, List<URL> paths, Collection<URI> namespaces) {
