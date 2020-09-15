@@ -27,12 +27,12 @@ import javax.naming.directory.Attributes;
 import javax.naming.spi.DirObjectFactory;
 import javax.naming.spi.ObjectFactory;
 import javax.naming.spi.ObjectFactoryBuilder;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static org.osgi.service.jndi.JNDIConstants.JNDI_URLSCHEME;
 
 public class ObjectFactoryHelper implements ObjectFactory {
 
@@ -120,13 +120,15 @@ public class ObjectFactoryHelper implements ObjectFactory {
             if (canCallObjectFactory(obj, ref)) {
                 ObjectFactory factory = Activator.getService(callerContext, ref);
                 if (factory != null) {
-                    Object result = getObjectFromFactory(obj, name, nameCtx, environment, attrs, factory);
-                    // if the result comes back and is not null and not the reference
-                    // object then we should return the result, so break out of the
-                    // loop we are in.
-                    if (result != null && result != obj) {
-                        return result;
-                    }
+                    try {
+                        Object result = getObjectFromFactory(obj, name, nameCtx, environment, attrs, factory);
+                        // if the result comes back and is not null and not the reference
+                        // object then we should return the result, so break out of the
+                        // loop we are in.
+                        if (result != null && result != obj) {
+                            return result;
+                        }
+                    } catch (Exception ignored) {} // only care about factories that CAN transform this object
                 }
             }
         }
@@ -136,7 +138,13 @@ public class ObjectFactoryHelper implements ObjectFactory {
     private boolean canCallObjectFactory(Object obj, ServiceReference ref) {
         if (obj instanceof Reference) return true;
         Object prop = ref.getProperty("aries.object.factory.requires.reference");
-        return (prop == null) || !(prop instanceof Boolean) || !(Boolean) prop;
+        // if the ObjectFactory needs a reference, then give up straight away
+        if (Boolean.TRUE.equals(prop)) return false;
+        // ObjectFactory services with an osgi.jndi.url.scheme property are only for converting URLs
+        if (ref.getProperty(JNDI_URLSCHEME) != null) return false;
+        // TODO: ObjectFactory services registered with their implementation class names are for References that specify the ObjectFactory class
+        // We've eliminated all other possibilities, so this factory IS callable.
+        return true;
     }
 
     private Object getObjectInstanceUsingClassName(Object reference,

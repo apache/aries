@@ -198,6 +198,19 @@ public class ObjectFactoryTest {
         env.remove(Context.OBJECT_FACTORIES);
     }
 
+    @Test
+    public void testObjectFactoryThatThrowsIsIgnored() throws Exception {
+        final ObjectFactory factory = Skeleton.newMock(ObjectFactory.class);
+        bc.registerService(ObjectFactory.class.getName(), factory, null);
+        final Skeleton skeleton = Skeleton.getSkeleton(factory);
+        final MethodCall getObjectInstance = new MethodCall(ObjectFactory.class, "getObjectInstance", Object.class, Name.class, Context.class, Hashtable.class);
+        skeleton.setThrows(getObjectInstance, new Exception());
+        Object original = new Object(){};
+        Object processed = NamingManager.getObjectInstance(original, null, null, env);
+        skeleton.assertCalled(getObjectInstance);
+        assertEquals("The original object should be returned despite the object factory throwing an exception", original, processed);
+    }
+
     public static class DummyObjectFactory implements ObjectFactory {
 
         public Object getObjectInstance(Object obj, Name name, Context nameCtx,
@@ -206,5 +219,4 @@ public class ObjectFactoryTest {
             return new String("pass");
         }
     }
-
 }
