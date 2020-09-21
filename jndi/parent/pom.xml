@@ -47,7 +47,7 @@
     <properties>
         <jndi-api.dev-version>1.1.1-SNAPSHOT</jndi-api.dev-version>
         <jndi-core.dev-version>1.1.0-SNAPSHOT</jndi-core.dev-version>
-        <jndi-bundle.dev-version>1.0.1-SNAPSHOT</jndi-bundle.dev-version>
+        <jndi-bundle.dev-version>1.1.0-SNAPSHOT</jndi-bundle.dev-version>
         <jndi-url.dev-version>1.1.1-SNAPSHOT</jndi-url.dev-version>
         <jndi-rmi.dev-version>1.0.1-SNAPSHOT</jndi-rmi.dev-version>
         <jndi-url-itest-web.dev-version>1.0.1-SNAPSHOT</jndi-url-itest-web.dev-version>
