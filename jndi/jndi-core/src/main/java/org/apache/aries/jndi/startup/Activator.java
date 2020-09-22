@@ -148,14 +148,14 @@ public class Activator implements BundleActivator {
         icfBuilders = new CachingServiceTracker<>(trackerBundleContext, InitialContextFactoryBuilder.class);
         urlObjectFactoryFinders = new CachingServiceTracker<>(trackerBundleContext, URLObjectFactoryFinder.class);
 
-        if (!disableBuilder(context)) {
+        if (!isPropertyEnabled(context, DISABLE_BUILDER)) {
             try {
                 OSGiInitialContextFactoryBuilder builder = new OSGiInitialContextFactoryBuilder();
                 try {
                     NamingManager.setInitialContextFactoryBuilder(builder);
                 } catch (IllegalStateException e) {
                     // use reflection to force the builder to be used
-                    if (forceBuilder(context)) {
+                    if (isPropertyEnabled(context, FORCE_BUILDER)) {
                         originalICFBuilder = swapStaticField(InitialContextFactoryBuilder.class, builder);
                     }
                 }
@@ -178,7 +178,7 @@ public class Activator implements BundleActivator {
                     NamingManager.setObjectFactoryBuilder(builder);
                 } catch (IllegalStateException e) {
                     // use reflection to force the builder to be used
-                    if (forceBuilder(context)) {
+                    if (isPropertyEnabled(context, FORCE_BUILDER)) {
                         originalOFBuilder = swapStaticField(ObjectFactoryBuilder.class, builder);
                     }
                 }
@@ -196,21 +196,10 @@ public class Activator implements BundleActivator {
             }
         }
 
-        context.registerService(JNDIProviderAdmin.class.getName(),
-                new ProviderAdminServiceFactory(context),
-                null);
-
-        context.registerService(InitialContextFactoryBuilder.class.getName(),
-                new JREInitialContextFactoryBuilder(),
-                null);
-
-        context.registerService(JNDIContextManager.class.getName(),
-                new ContextManagerServiceFactory(),
-                null);
-
-        context.registerService(AugmenterInvoker.class.getName(),
-                augmenterInvoker = new AugmenterInvokerImpl(context),
-                null);
+        context.registerService(JNDIProviderAdmin.class.getName(), new ProviderAdminServiceFactory(context), null);
+        context.registerService(InitialContextFactoryBuilder.class.getName(), new JREInitialContextFactoryBuilder(), null);
+        context.registerService(JNDIContextManager.class.getName(), new ContextManagerServiceFactory(), null);
+        context.registerService(AugmenterInvoker.class.getName(), augmenterInvoker = new AugmenterInvokerImpl(context), null);
     }
 
     public void stop(BundleContext context) {
@@ -235,22 +224,16 @@ public class Activator implements BundleActivator {
         instance = null;
     }
 
-    private boolean forceBuilder(BundleContext context) {
-        String forceBuilderProp = context.getProperty(FORCE_BUILDER);
-        if (forceBuilderProp != null) {
-            return !"false".equals(forceBuilderProp) && !"no".equals(forceBuilderProp);
-        }
-        BundleRevision revision = context.getBundle().adapt(BundleRevision.class);
-        return !(revision.getDeclaredCapabilities(FORCE_BUILDER).isEmpty());
-    }
-
-    private boolean disableBuilder(BundleContext context) {
-        String disableBuilder = context.getProperty(DISABLE_BUILDER);
-        if (disableBuilder != null) {
-            return !"false".equals(disableBuilder) && !"no".equals(disableBuilder);
-        }
-        BundleRevision revision = context.getBundle().adapt(BundleRevision.class);
-        return !(revision.getDeclaredCapabilities(DISABLE_BUILDER).isEmpty());
+    private boolean isPropertyEnabled(BundleContext context, String key) {
+        String value = context.getProperty(key);
+        if ("false".equals(value)) return false;
+        if ("no".equals(value)) return false;
+        if (null != value) return true;
+        Object revision = context.getBundle().adapt(BundleRevision.class);
+        // in a unit test adapt() may return an incompatible object
+        if (!!! (revision instanceof BundleRevision)) return false;
+        final BundleRevision bundleRevision = (BundleRevision) revision;
+        return bundleRevision.getDeclaredCapabilities(key).size() > 0;
     }
 
     private String getClassName(Class<?> expectedType) {
