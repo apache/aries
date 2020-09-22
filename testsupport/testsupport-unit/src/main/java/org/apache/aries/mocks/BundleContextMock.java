@@ -724,11 +724,7 @@ public class BundleContextMock
      * This allows tests to emulate different properties being set on the
      * context, helpful for the feature pack launcher/kernel relationship
      */
-    else if (System.getProperty(name) != null){
-      return System.getProperty(name);
-    }
-    
-    return "";
+    return System.getProperty(name);
   }
   
   /**
