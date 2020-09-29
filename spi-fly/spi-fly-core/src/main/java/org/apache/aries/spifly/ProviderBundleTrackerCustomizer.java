@@ -441,8 +441,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
-        removedBundle(bundle, event, registrations);
-        addingBundle(bundle, event);
+        // implementation is unnecessary for this use case
     }
 
     @Override
@@ -454,8 +453,16 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             return;
 
         for (ServiceRegistration reg : (List<ServiceRegistration>) registrations) {
-            reg.unregister();
-            log(Level.INFO, "Unregistered: " + reg);
+            try {
+                reg.unregister();
+                log(Level.INFO, "Unregistered: " + reg);
+            } catch (IllegalStateException ise) {
+                // Ignore the exception but do not remove the try/catch.
+                // There are some bundle context races on cleanup which
+                // are safe to ignore but unsafe not to perform our own
+                // cleanup. In an ideal world ServiceRegistration.unregister()
+                // would have been idempotent and never throw an exception.
+            }
         }
     }
 
