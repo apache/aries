@@ -47,9 +47,9 @@
     </scm>
 
     <properties>
-        <asm.version>8.0.1</asm.version>
-        <maven.bundle.plugin.version>4.2.0</maven.bundle.plugin.version>
-        <bnd.version>5.0.1</bnd.version>
+        <asm.version>9.0</asm.version>
+        <maven.bundle.plugin.version>5.1.1</maven.bundle.plugin.version>
+        <bnd.version>5.1.2</bnd.version>
     </properties>
 
     <dependencies>
@@ -211,6 +211,10 @@
                     <bndruns>
                         <bndrun>resolve.bndrun</bndrun>
                     </bndruns>
+                    <bundles>
+                        <bundle>target/${project.build.finalName}.jar</bundle>
+                    </bundles>
+                    <writeOnChanges>false</writeOnChanges>
                 </configuration>
                 <executions>
                     <execution>
