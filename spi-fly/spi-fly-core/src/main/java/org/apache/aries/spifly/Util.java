@@ -87,7 +87,7 @@ public class Util {
         );
 
         if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            BaseActivator.activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return ServiceLoader.load(service);
         }
 
@@ -140,7 +140,7 @@ public class Util {
         );
 
         if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            BaseActivator.activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return ServiceLoader.load(service, specifiedClassLoader);
         }
 
@@ -165,7 +165,7 @@ public class Util {
 
         final ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
         if (cl != null) {
-            BaseActivator.activator.log(Level.INFO, "Temporarily setting Thread Context Classloader to: " + cl);
+            BaseActivator.activator.log(Level.FINE, "Temporarily setting Thread Context Classloader to: " + cl);
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
                 @Override
                 public Void run() {
@@ -174,7 +174,7 @@ public class Util {
                 }
             });
         } else {
-            BaseActivator.activator.log(Level.WARNING, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
+            BaseActivator.activator.log(Level.FINE, "No classloader found for " + cls + ":" + method + "(" + clsArg + ")");
         }
     }
 
@@ -194,7 +194,7 @@ public class Util {
                     sm.checkPermission(new ServicePermission(requestedClass, ServicePermission.GET));
                 } catch (AccessControlException ace) {
                     // access denied
-                    activator.log(Level.INFO, "No permission to obtain service of type: " + requestedClass);
+                    activator.log(Level.FINE, "No permission to obtain service of type: " + requestedClass);
                     return null;
                 }
             }
@@ -320,7 +320,7 @@ public class Util {
         }
 
         if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(Level.WARNING, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+            BaseActivator.activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
             return null;
         }
 
@@ -347,7 +347,7 @@ public class Util {
                     jis.close();
             }
         } catch (IOException e) {
-            BaseActivator.activator.log(Level.SEVERE, "Problem loading class from embedded jar file: " + url +
+            BaseActivator.activator.log(Level.FINE, "Problem loading class from embedded jar file: " + url +
                 " in bundle " + b.getSymbolicName(), e);
         }
         return null;

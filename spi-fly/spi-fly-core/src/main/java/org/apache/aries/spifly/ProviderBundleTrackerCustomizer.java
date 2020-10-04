@@ -92,7 +92,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             try {
                 providedServices = readServiceLoaderMediatorCapabilityMetadata(bundle, customAttributes);
             } catch (InvalidSyntaxException e) {
-                log(Level.SEVERE, "Unable to read capabilities from bundle " + bundle, e);
+                log(Level.FINE, "Unable to read capabilities from bundle " + bundle, e);
             }
         }
 
@@ -121,7 +121,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     + bundle.getSymbolicName());
             return null;
         } else {
-            log(Level.INFO, "Examining bundle for SPI provider: "
+            log(Level.FINE, "Examining bundle for SPI provider: "
                     + bundle.getSymbolicName());
         }
 
@@ -141,7 +141,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
             try {
                 final Class<?> cls = bundle.loadClass(details.instanceType);
-                log(Level.INFO, "Loaded SPI provider: " + cls);
+                log(Level.FINE, "Loaded SPI provider: " + cls);
 
                 if (details.properties != null) {
                     ServiceRegistration reg = null;
@@ -157,7 +157,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                             reg = bundle.getBundleContext().registerService(
                                     details.serviceType, instance, details.properties);
                         } else {
-                            log(Level.INFO, "Bundle " + bundle + " does not have the permission to register services of type: " + details.serviceType);
+                            log(Level.FINE, "Bundle " + bundle + " does not have the permission to register services of type: " + details.serviceType);
                         }
                     } else {
                         reg = bundle.getBundleContext().registerService(
@@ -166,14 +166,14 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                     if (reg != null) {
                         registrations.add(reg);
-                        log(Level.INFO, "Registered service: " + reg);
+                        log(Level.FINE, "Registered service: " + reg);
                     }
                 }
 
                 activator.registerProviderBundle(details.serviceType, bundle, details.properties);
                 log(Level.INFO, "Registered provider " + details.instanceType + " of service " + details.serviceType + " in bundle " + bundle.getSymbolicName());
             } catch (Exception e) {
-                log(Level.WARNING,
+                log(Level.FINE,
                     "Could not load provider " + details.instanceType + " of service " + details.serviceType, e);
             }
         }
@@ -185,7 +185,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         List<ServiceDetails> serviceDetails = new ArrayList<>();
 
         for (URL serviceFileURL : serviceFileURLs) {
-            log(Level.INFO, "Found SPI resource: " + serviceFileURL);
+            log(Level.FINE, "Found SPI resource: " + serviceFileURL);
 
             try {
                 BufferedReader reader = new BufferedReader(
@@ -233,12 +233,12 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                         serviceDetails.add(new ServiceDetails(registrationClassName, className, properties));
                     } catch (Exception e) {
-                        log(Level.WARNING,
+                        log(Level.FINE,
                                 "Could not load SPI implementation referred from " + serviceFileURL, e);
                     }
                 }
             } catch (IOException e) {
-                log(Level.WARNING, "Could not read SPI metadata from " + serviceFileURL, e);
+                log(Level.FINE, "Could not read SPI metadata from " + serviceFileURL, e);
             }
         }
 
@@ -434,7 +434,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 }
             }
         } catch (IOException e) {
-            log(Level.SEVERE, "Problem opening embedded jar file: " + url, e);
+            log(Level.FINE, "Problem opening embedded jar file: " + url, e);
         }
         return urls;
     }
@@ -455,7 +455,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         for (ServiceRegistration reg : (List<ServiceRegistration>) registrations) {
             try {
                 reg.unregister();
-                log(Level.INFO, "Unregistered: " + reg);
+                log(Level.FINE, "Unregistered: " + reg);
             } catch (IllegalStateException ise) {
                 // Ignore the exception but do not remove the try/catch.
                 // There are some bundle context races on cleanup which

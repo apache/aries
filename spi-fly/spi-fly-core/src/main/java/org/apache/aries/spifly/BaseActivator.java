@@ -91,7 +91,7 @@ public abstract class BaseActivator implements BundleActivator {
             ).map(Parameters::new);
         }
         catch (Throwable t) {
-            logger.log(Level.SEVERE, t.getMessage(), t);
+            log(Level.FINE, t.getMessage(), t);
         }
 
         providerBundleTracker = new BundleTracker(context,
@@ -239,7 +239,9 @@ public abstract class BaseActivator implements BundleActivator {
     }
 
     public void log(Level level, String message, Throwable th) {
-        logger.log(level, message, th);
+        if (logger.isLoggable(level)) {
+            logger.log(level, message, th);
+        }
     }
 
     public Set<WeavingData> getWeavingData(Bundle b) {
