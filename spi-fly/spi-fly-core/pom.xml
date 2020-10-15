@@ -47,7 +47,6 @@
     </scm>
 
     <properties>
-        <maven.bundle.plugin.version>5.1.1</maven.bundle.plugin.version>
         <bnd.version>5.1.2</bnd.version>
     </properties>
 
