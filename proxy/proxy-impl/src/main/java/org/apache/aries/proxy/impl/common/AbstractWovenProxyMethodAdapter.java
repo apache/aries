@@ -179,7 +179,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
       String methodStaticFieldName, Method currentTransformMethod, Type typeBeingWoven,
       Type methodDeclaringType, boolean isMethodDeclaringTypeInterface, boolean isDefaultMethod)
   {
-    super(ASM8, mv, access, name, desc);
+    super(ASM9, mv, access, name, desc);
     this.methodStaticFieldName = methodStaticFieldName;
     this.currentTransformMethod = currentTransformMethod;
     returnType = currentTransformMethod.getReturnType();

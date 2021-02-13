@@ -48,7 +48,7 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
 
   public InterfaceProxyGenerator()
   {
-    super(Opcodes.ASM8);
+    super(Opcodes.ASM9);
     
   }
 

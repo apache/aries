@@ -35,7 +35,7 @@ public final class OSGiFriendlyClassVisitor extends ClassVisitor {
   
   public OSGiFriendlyClassVisitor(ClassVisitor cv, int arg1) {
    
-    super(Opcodes.ASM8, cv);
+    super(Opcodes.ASM9, cv);
 
     inlineJSR = arg1 == ClassWriter.COMPUTE_FRAMES;
   }
