@@ -59,7 +59,7 @@ public class ReflectionUtilsTest {
     public static void before() throws ClassNotFoundException
     {
         mockBlueprint = EasyMock.createNiceMock(ExtendedBlueprintContainer.class);
-        final Capture<String> nameCapture = new Capture<String>();
+        final Capture<String> nameCapture = Capture.newInstance();
         EasyMock.expect(mockBlueprint.loadClass(EasyMock.capture(nameCapture))).andAnswer(new IAnswer<Class<?>>() {
             public Class<?> answer() throws Throwable {
                 return Thread.currentThread().getContextClassLoader().loadClass(nameCapture.getValue());
