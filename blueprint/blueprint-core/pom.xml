@@ -97,7 +97,7 @@
         <blueprint.api.version>1.0.1</blueprint.api.version>
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
         <proxy.api.version>1.1.1</proxy.api.version>
-        <proxy.impl.version>1.1.9-SNAPSHOT</proxy.impl.version>
+        <proxy.impl.version>1.1.9</proxy.impl.version>
         <quiesce.api.version>1.0.0</quiesce.api.version>
         <util.version>1.1.3</util.version>
         <lastReleaseVersion>1.6.0</lastReleaseVersion>
