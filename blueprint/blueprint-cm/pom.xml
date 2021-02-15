@@ -55,8 +55,8 @@
             org.apache.aries.blueprint.compendium.cm
         </aries.osgi.private.pkg>
 
-        <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.core.version>1.10.1</blueprint.core.version>
+        <blueprint.api.version>1.0.1</blueprint.api.version>
+        <blueprint.core.version>1.10.3</blueprint.core.version>
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
         <lastReleaseVersion>1.1.0</lastReleaseVersion>
     </properties>
