@@ -185,12 +185,19 @@ class BlueprintEventDispatcher implements BlueprintListener {
 
     private void callListener(final BlueprintListener listener, final BlueprintEvent event) throws RejectedExecutionException {
         try {
+            long executorTimeout = 60L;
+            if (System.getenv("BLUEPRINT_EXECUTOR_TIMEOUT") != null) {
+                executorTimeout = Long.parseLong(System.getenv("BLUEPRINT_EXECUTOR_TIMEOUT"));
+            }
+            if (System.getProperty("blueprint.executor.timeout") != null) {
+                executorTimeout = Long.parseLong(System.getProperty("blueprint.executor.timeout"));
+            }
             executor.invokeAny(Collections.<Callable<Void>>singleton(new Callable<Void>() {
                 public Void call() throws Exception {
                     listener.blueprintEvent(event);
                     return null;
                 }
-            }), 60L, TimeUnit.SECONDS);
+            }), executorTimeout, TimeUnit.SECONDS);
         } catch (InterruptedException ie) {
             LOGGER.warn("Thread interrupted", ie);
             Thread.currentThread().interrupt();
@@ -207,7 +214,14 @@ class BlueprintEventDispatcher implements BlueprintListener {
         executor.shutdown();
         // wait for the queued tasks to execute
         try {
-            executor.awaitTermination(60, TimeUnit.SECONDS);
+            long executorTimeout = 60L;
+            if (System.getenv("BLUEPRINT_EXECUTOR_TIMEOUT") != null) {
+                executorTimeout = Long.parseLong(System.getenv("BLUEPRINT_EXECUTOR_TIMEOUT"));
+            }
+            if (System.getProperty("blueprint.executor.timeout") != null) {
+                executorTimeout = Long.parseLong(System.getProperty("blueprint.executor.timeout"));
+            }
+            executor.awaitTermination(executorTimeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             // ignore
         }
