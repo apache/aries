@@ -111,7 +111,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Assert.assertEquals(Collections.singleton("olleh"), result);
     }
 
@@ -187,7 +187,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("testService2", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Assert.assertEquals(Collections.singleton("olleh"), result);
     }
 
@@ -223,7 +223,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Assert.assertEquals(Collections.singleton("olleh"), result);
     }
 
@@ -263,7 +263,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        method.invoke(cls.newInstance(), "hi there");
+        method.invoke(cls.getDeclaredConstructor().newInstance(), "hi there");
 
         Assert.assertSame(cl, Thread.currentThread().getContextClassLoader());
     }
@@ -301,7 +301,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Assert.assertEquals("impl4", result);
     }
 
@@ -332,7 +332,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI files from impl1 and impl2 are visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "HELLO", "5"));
         Assert.assertEquals("All three services should be invoked", expected, result);
     }
@@ -362,7 +362,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("HELLO", "5"));
         Assert.assertEquals("Only the services from bundle impl2 should be selected", expected, result);
     }
@@ -393,7 +393,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Assert.assertEquals("Only the services from bundle impl2 should be selected", Collections.singleton("Updated!hello!Updated"), result);
     }
 
@@ -426,7 +426,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4"));
         Assert.assertEquals("All providers should be selected for this one", expected, result);
     }
@@ -460,7 +460,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4"));
         Assert.assertEquals("All providers should be selected for this one", expected, result);
     }
@@ -496,7 +496,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4", "HELLO", "5"));
         Assert.assertEquals("All providers should be selected for this one", expected, result);
 
@@ -508,7 +508,7 @@ public class ClientWeavingHookTest {
         // Invoke the AltTestClient
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {long.class});
-        Object result2 = method2.invoke(cls2.newInstance(), 4096);
+        Object result2 = method2.invoke(cls2.getDeclaredConstructor().newInstance(), 4096);
         Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L, result2);
     }
 
@@ -567,7 +567,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Assert.assertEquals(testClientResult, result);
 
         URL clsUrl2 = getClass().getResource("JaxpClient.class");
@@ -576,7 +576,7 @@ public class ClientWeavingHookTest {
 
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {});
-        Class<?> result2 = (Class<?>) method2.invoke(cls2.newInstance());
+        Class<?> result2 = (Class<?>) method2.invoke(cls2.getDeclaredConstructor().newInstance());
         Assert.assertEquals(jaxpClientResult, result2.getName());
     }
 
@@ -590,7 +590,7 @@ public class ClientWeavingHookTest {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl2 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("testService", new Class [] {String.class, Class.class});
-        Object result = method.invoke(cls.newInstance(), "hello", MySPI.class);
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello", MySPI.class);
         Assert.assertEquals(testClientResult, result);
     }
 
@@ -611,7 +611,7 @@ public class ClientWeavingHookTest {
 
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
-        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+        Class<?> result = (Class<?>) method.invoke(cls.getDeclaredConstructor().newInstance());
         Assert.assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
     }
 
@@ -636,7 +636,7 @@ public class ClientWeavingHookTest {
 
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
-        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+        Class<?> result = (Class<?>) method.invoke(cls.getDeclaredConstructor().newInstance());
         Assert.assertEquals("JAXP implementation from JRE", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
     }
 
@@ -660,7 +660,7 @@ public class ClientWeavingHookTest {
 
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
-        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+        Class<?> result = (Class<?>) method.invoke(cls.getDeclaredConstructor().newInstance());
         Assert.assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
     }
 
@@ -684,7 +684,7 @@ public class ClientWeavingHookTest {
 
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
-        Class<?> result = (Class<?>) method.invoke(cls.newInstance());
+        Class<?> result = (Class<?>) method.invoke(cls.getDeclaredConstructor().newInstance());
         Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
     }
 

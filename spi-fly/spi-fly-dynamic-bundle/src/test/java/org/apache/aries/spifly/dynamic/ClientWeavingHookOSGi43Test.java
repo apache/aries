@@ -104,7 +104,7 @@ public class ClientWeavingHookOSGi43Test  {
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
-        Object result = method.invoke(cls.newInstance(), "hello");
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Assert.assertEquals(Collections.singleton("olleh"), result);
     }
 

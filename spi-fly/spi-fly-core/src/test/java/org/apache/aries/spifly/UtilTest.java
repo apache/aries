@@ -18,7 +18,7 @@
  */
 package org.apache.aries.spifly;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 import java.net.URL;

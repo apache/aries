@@ -32,7 +32,7 @@ public class ProviderServiceFactory implements ServiceFactory {
     @Override
     public Object getService(Bundle bundle, ServiceRegistration registration) {
         try {
-            return providerClass.newInstance();
+            return providerClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException("Unable to instantiate class " + providerClass +
                 " Does it have a public no-arg constructor?", e);
