@@ -31,34 +31,28 @@
     <packaging>bundle</packaging>
     <name>Apache Aries Example SPI Client Bundle 1</name>
     <description>
-        A Bundle that uses the java.util.ServiceLoader() API through an embedded library. 
+        A Bundle that uses the java.util.ServiceLoader() API through an embedded library.
     </description>
 
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
-        </dependency>        
+        </dependency>
 
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>        
-        
         <dependency>
             <groupId>org.apache.aries.spifly.examples</groupId>
             <artifactId>org.apache.aries.spifly.examples.spi.bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>        
+        </dependency>
 
         <dependency>
             <groupId>org.apache.aries.spifly.examples</groupId>
             <artifactId>org.apache.aries.spifly.examples.client1.jar</artifactId>
             <version>${project.version}</version>
-        </dependency>        
+        </dependency>
     </dependencies>
 
     <properties>

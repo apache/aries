@@ -40,31 +40,31 @@
             <artifactId>org.apache.aries.spifly.examples.spi.bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
-        </dependency>        
-        
+        </dependency>
+
         <dependency>
             <groupId>org.apache.aries.spifly.examples</groupId>
             <artifactId>org.apache.aries.spifly.examples.client1.jar</artifactId>
             <version>${project.version}</version>
-        </dependency>        
+        </dependency>
 
         <dependency>
             <groupId>org.apache.aries.spifly.examples</groupId>
             <artifactId>org.apache.aries.spifly.examples.provider1.jar</artifactId>
             <version>${project.version}</version>
-        </dependency>                
+        </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
-        </dependency>        
+        </dependency>
     </dependencies>
 
     <properties>
         <aries.osgi.export.pkg />
         <aries.osgi.private.pkg />
-        
+
         <!-- this bundle has never been released, we should skip -->
         <aries.skip.version.check>true</aries.skip.version.check>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>

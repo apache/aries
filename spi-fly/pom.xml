@@ -49,6 +49,8 @@
         <asm.version>9.1</asm.version>
         <bnd.version>5.3.0</bnd.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <osgi.core.version>5.0.0</osgi.core.version>
+
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
@@ -62,13 +64,16 @@
         <module>spi-fly-dynamic-framework-extension</module>
         <module>spi-fly-static-tool</module>
         <module>spi-fly-static-bundle</module>
-        <!--
         <module>spi-fly-examples</module>
-        -->
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi.core</artifactId>
+                <version>${osgi.core.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
@@ -242,8 +247,8 @@
                                 <exclude>**/Readme.md</exclude>
                                 <exclude>**/NOTICE.vm</exclude>
                                 <exclude>**/dependency-reduced-pom.xml</exclude>
-                                <exclude>spi-fly-examples/**/src/main/resources/META-INF/services/*</exclude>
-                                <exclude>spi-fly-examples/spi-fly-example-resource-provider-bundle/src/main/resources/org/apache/aries/spifly/test/blah.txt</exclude>
+                                <exclude>**/src/main/resources/META-INF/services/*</exclude>
+                                <exclude>**/src/main/resources/org/apache/aries/spifly/test/blah.txt</exclude>
                                 <exclude>tck/apply-to-tck.sh</exclude>
                             </excludes>
                         </configuration>
