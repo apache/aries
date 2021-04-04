@@ -235,6 +235,7 @@
                                 <!--RAT doesn't seem to recognize W3C license -->
                                 <exclude>**/xml.xsd</exclude>
                                 <exclude>.gitignore</exclude>
+                                <exclude>changelog.md</exclude>
                                 <exclude>README.md</exclude>
                                 <exclude>*.cfg</exclude>
                                 <exclude>**/README.md</exclude>
