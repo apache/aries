@@ -1,0 +1,67 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#-runjdb: 8000
+
+-tester: biz.aQute.tester.junit-platform
+-runvm: ${def;argLine}
+-resolve.effective: active
+-runfw: org.apache.felix.framework
+# We put logging on the runpath to simplify the system and avoid any
+# need or complications with log buffering
+-runpath: \
+    ch.qos.logback.classic,\
+    ch.qos.logback.core,\
+    org.apache.felix.log,\
+    org.apache.felix.logback,\
+    slf4j.api
+-runsystempackages: \
+    org.slf4j;version=${slf4j.version},\
+    org.slf4j.event;version=${slf4j.version},\
+    org.slf4j.helpers;version=${slf4j.version},\
+    org.slf4j.spi;version=${slf4j.version}
+# This will help us keep -runbundles sorted
+-runstartlevel: \
+    order=sortbynameversion,\
+    begin=-1
+
+-runproperties: \
+    logback.configurationFile=${fileuri;${.}/logback.xml},\
+    org.apache.felix.http.host=localhost,\
+    org.osgi.service.http.port=*,\
+    org.osgi.framework.bootdelegation=sun.reflect,\
+    osgi.console=,\
+    test.base=${fileuri;${.}}
+
+-runrequires: \
+    bnd.identity;id='org.apache.aries.spifly.dynamic.framework.extension',\
+    bnd.identity;id='org.apache.aries.spifly.examples.spi.bundle',\
+    bnd.identity;id='org.apache.felix.log.extension',\
+    bnd.identity;id='${project.artifactId}',\
+    bnd.identity;id='junit-jupiter-engine',\
+    bnd.identity;id='junit-platform-launcher'
+
+-runbundles: \
+	assertj-core;version='[3.19.0,3.19.1)',\
+	junit-jupiter-api;version='[5.7.1,5.7.2)',\
+	junit-jupiter-engine;version='[5.7.1,5.7.2)',\
+	junit-platform-commons;version='[1.7.1,1.7.2)',\
+	junit-platform-engine;version='[1.7.1,1.7.2)',\
+	junit-platform-launcher;version='[1.7.1,1.7.2)',\
+	org.apache.aries.spifly.dynamic.framework.extension;version='[1.3.3,1.3.4)',\
+	org.apache.aries.spifly.examples.spi.bundle;version='[1.0.1,1.0.2)',\
+	org.apache.aries.spifly.itests;version='[1.3.3,1.3.4)',\
+	org.apache.felix.log.extension;version='[1.0.0,1.0.1)',\
+	org.opentest4j;version='[1.2.0,1.2.1)',\
+	org.osgi.test.assertj.framework;version='[0.10.0,0.10.1)',\
+	org.osgi.test.common;version='[0.10.0,0.10.1)',\
+	org.osgi.test.junit5;version='[0.10.0,0.10.1)'
