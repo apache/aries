@@ -44,6 +44,8 @@ jobs:
     - name: Set up Java
       uses: actions/setup-java@v2
       with:
+        distribution: 'zulu'
+        check-latest: ${{ endsWith(matrix.java, '-ea') }}
         java-version: ${{ matrix.java }}
     - name: Build
       continue-on-error: ${{contains(matrix.java, '-ea')}}
