@@ -41,10 +41,12 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
+        <project.scm.id>apache.releases.https</project.scm.id>
+
         <apache-rat-plugin.version>0.13</apache-rat-plugin.version>
         <asm.version>9.1</asm.version>
         <bnd.version>5.3.0</bnd.version>
