@@ -181,7 +181,10 @@ public class InitialTest {
         assertThat(bundle1TargetDirPath).exists();
 
         return Files.list(bundle1TargetDirPath).filter(
-            p -> p.getFileName().toString().endsWith(".jar")
+            p -> {
+                String name = p.getFileName().toString();
+                return name.endsWith(".jar") && !name.endsWith("-javadoc.jar") && !name.endsWith("-sources.jar");
+            }
         ).findFirst().orElseThrow(
             () -> new FileNotFoundException("Could not find jar for " + mavenModuleName)
         );
