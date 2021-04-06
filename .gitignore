@@ -7,3 +7,4 @@ velocity.log
 *.iml
 .factorypath
 .vscode
+.flattened-pom.xml
