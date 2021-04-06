@@ -10,7 +10,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-name: Spi Fly CI Build
+name: SPI Fly - CI Build
 
 on:
   push:

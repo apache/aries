@@ -5,6 +5,8 @@ model.
 
 See [Apache Aries Website](http://aries.apache.org/).
 
+[![SPI Fly - CI Build](https://github.com/apache/aries/actions/workflows/spi-fly.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/spi-fly.yml)
+
 ## Source Code
 
 The sources are now directly availble in [aries github](https://github.com/apache/aries).
@@ -28,4 +30,4 @@ Most projects can be built using
     mvn clean install
 
 As the Aries svn hosts a lot of different subprojects it makes sense to only
-build the specific subproject. 
+build the specific subproject.
