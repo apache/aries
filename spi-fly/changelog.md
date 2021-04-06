@@ -1,15 +1,34 @@
+## spifly-1.3.3
+Raymond Augé (16):
+  - update to support java 16 [413c991cf5]
+  - Bump asm.version from 9.0 to 9.1 in /spi-fly [2b6f1d0e82]
+  - cleanup build files [1b718885d3]
+  - generate a changelog [b6ef5dd118]
+  - Bump maven-enforcer-plugin from 3.0.0-M2 to 3.0.0-M3 in /spi-fly [fcd785b486]
+  - Bump build-helper-maven-plugin from 3.0.0 to 3.2.0 in /spi-fly [1a6a6b8667]
+  - Bump maven-dependency-plugin from 3.1.1 to 3.1.2 in /spi-fly [18b40c0c8e]
+  - Bump org.apache.felix.framework from 6.0.1 to 7.0.0 in /spi-fly [4e62c96b05]
+  - Bump easymock from 3.2 to 4.2 in /spi-fly [a951757767]
+  - build examples so that we can use them for integration testing [af64e9bc98]
+  - clean various IDE warnings [28091f518f]
+  - flatten poms [746b760644]
+  - run examples as integration tests to assure they continue to provide accurate information [893b66b5ea]
+  - reformat with spaces [156b3c7754]
+  - assure tests succeed when javadoc and source are built [66d053f38d]
+  - fix release plugin commit to gitbox repo with correct credentials [dbe933b265]
+
 ## spifly-1.3.2
-Raymond Augé <rotty3000@apache.org> (1):
+Raymond Augé (1):
   - ARIES-2013 The Provide-Capability header is broken in 1.3.1 due to FELIX-6337 [d73a389ef2]
 
 ## spifly-1.3.1
-Raymond Augé <rotty3000@apache.org> (3):
+Raymond Augé (3):
   - ARIES-2008 Update to ASM 9.0 (and other minor build cleanup [d11043689b]
   - ARIES-1998 IllegalStateException on service unregistration in ProviderBundleTrackerCustomizer.removedBundle [a19c140d14]
   - ARIES-2009 Lower or remap the level of some log events to reduce noise [54ea07ad1f]
 
 ## spifly-1.3.0
-Raymond Augé <rotty3000@apache.org> (5):
+Raymond Augé (5):
   - ARIES-1933 manual opt-in [9fbf63c4c7]
   - ARIES-1984 Process lazy activation provider bundles [8a7d311e2a]
   - ARIES-1985 Don't process fragments directly [76f39f22d9]
@@ -17,16 +36,16 @@ Raymond Augé <rotty3000@apache.org> (5):
   - ARIES-1978 Do not embed ASM in SPIFly [6ae6c1a4ce]
 
 ## spifly-1.2.4
-Raymond Augé <rotty3000@apache.org> (3):
+Raymond Augé (3):
   - [ARIES-1976] aries.spi-fly: upgrade to ASM 7.3.1 to support JDK 14 and 15 [6c66891f2c]
   - cleanup build warnings [2512fb9dc4]
   - bnd 5.0.1 [626155919e]
 
-Colm O hEigeartaigh <coheigea@apache.org> (1):
+Colm O hEigeartaigh (1):
   - ARIES-1934 - Make sure jar/zip files are jailed to the destination directory [e8477faa3f]
 
 ## spifly-1.2.3
-A. J. David Bosschaert <davidb@apache.org> (194):
+A. J. David Bosschaert (194):
   - Initial code & tests for the SPI Fly component. [1dcb8aa6d1]
   - Added Apache source code license. [8c351d8732]
   - Require an opt-in Manifest header in order for bundles to be considered as SPI providers. The header is:   SPI-Provider: <value not used at the moment> [b1d84c2ac8]
@@ -222,7 +241,7 @@ A. J. David Bosschaert <davidb@apache.org> (194):
   - ARIES-1801 SPI Fly does not work with a dynamic class object [43e908ebc1]
   - Fix up javadoc in preparation for release. [3b4a9edf42]
 
-Raymond Augé <rotty3000@apache.org> (28):
+Raymond Augé (28):
   - ARIES-1814 Solve the start order limitations with SPI Fly by first creating a framework extension [e030c88a8d]
   - ARIES-1814 Solve the start order limitations with SPI Fly by then eliminating unused dependency on Log Service [2f4f69f851]
   - ARIES-1814 Solve the start order limitations with SPI Fly by changing the verification approach to rely on uses constraints instead of package attributes [fc8eb1d7d9]
@@ -252,7 +271,7 @@ Raymond Augé <rotty3000@apache.org> (28):
   - ARIES-1917 Sources for dynamic.framework.extension are not complete [bb85b57246]
   - ARIES-1918 Move felix framework dependency from runtime to test [85ba548171]
 
-Daniel Kulp <dkulp@apache.org> (10):
+Daniel Kulp (10):
   - Update all parents to 0.5 version and reset relativePath elements [4dbdcd7c40]
   - Use the released parent poms so aries can actually build with a somewhat clean .m2/repository. [26a58856ce]
   - [ARIES-947] Warning cleanups for spi-fly Patch from Jean-Baptiste Onofré applied [bce6c84cd8]
@@ -264,7 +283,7 @@ Daniel Kulp <dkulp@apache.org> (10):
   - spy fly build with java6, maven 3.2.1 [9e7c564c2c]
   - Define the versioning plugin as an execution in the parent pom.  It can thus be removed from ALL the other poms. [a9acc74396]
 
-Jean-Baptiste Onofré <jbonofre@apache.org> (9):
+Jean-Baptiste Onofré (9):
   - [ARIES-1006] Upgrade to the "new" parent pom and OSGi 4.3.1 [e3f35439e4]
   - Change parent version to 2.0.0-SNAPSHOT [fa71042e41]
   - Update scm section [a5a813f4ed]
@@ -275,7 +294,7 @@ Jean-Baptiste Onofré <jbonofre@apache.org> (9):
   - Upgrade to spifly core 1.2.2 [367782181c]
   - Upgrade to spifly core and weaver 1.2.2 [5cc279fc9a]
 
-Guillaume Nodet <gnodet@apache.org> (7):
+Guillaume Nodet (7):
   - Remove the incubating tag in the version [6c64df9c24]
   - Fix spi-fly tests [092137c426]
   - [ARIES-1185] SPI Fly does not work with Java 8 [1d78abfbc3]
@@ -284,7 +303,7 @@ Guillaume Nodet <gnodet@apache.org> (7):
   - Upgrade to being released spy-fly-core [771888b90f]
   - [ARIES-1646] [spi-fly] Improve upward compatibility of SPI Fly to ASM Version 6.x [bcea0ebed7]
 
-David Jencks <djencks@apache.org> (6):
+David Jencks (6):
   - ARIES-173 beginnings of pom cleanup.  This adds scm info to all top-level subprojects and does a little bit of dependency cleanup.  No shared dependencies in project parent pom yet. [bd9b32246f]
   - ARIES-173 upgrade a few versions and put some in parent dependency management.  More to go. [d9a36a9273]
   - ARIES-173 cleanup use of dependencies mananged in the default-parent pom [df35bc17b4]
@@ -292,32 +311,32 @@ David Jencks <djencks@apache.org> (6):
   - ARIES-173 change version to 0.1-incubating-SNAPSHOT, filter config.ini files, set up properties to use in filtering, don't use release versions in blog sample [df3581d577]
   - ARIES-680 try to make all use of slf4j-api, osgi core and osgi compendium provided dependencies [5fcc1bd991]
 
-Freeman Fang <freeman.fang@gmail.com> (3):
+Freeman Fang (3):
   - [ARIES-1908]aries.spi-fly:upgrade to asm 7.1 so that can work with JDK12|JDK13 [c3d2a9a1b4]
   - Revert "[ARIES-1908]aries.spi-fly:upgrade to asm 7.1 so that can work with JDK12|JDK13" [0999a10c95]
   - [ARIES-1908]aries.spi-fly:upgrade to asm 7.1 so that can work with JDK12|JDK13 [7ddd679ca9]
 
-Holly Cummins <cumminsh@apache.org> (3):
+Holly Cummins (3):
   - Checkpoint: moving parent to 1.0.0-SNAPSHOT, and also util (but not util's dependers' [8b5a5a4e44]
   - Moving packageinfo files to version 1.0.0 [62773bc3c3]
   - [ARIES-862] Moving to released versions of blueprint.api and util [02f02e5a02]
 
-Jeremy Hughes <hughesj@apache.org> (3):
+Jeremy Hughes (3):
   - Move everything to using 0.2-incubating-SNAPSHOT while 0.1-incubting is voted on [84d8829ea7]
   - ARIES-494 use <relativePath> to indicate where the parent pom resides. This enables use of maven 3 [6e161dcd7e]
   - ARIES-936 Make this test JVM agnostic [c39a71d041]
 
-Christian Schneider <cschneider@apache.org> (2):
+Christian Schneider (2):
   - Remove unused LogService ref [2f7f2ae131]
   - [ARIES-1584] Do not spam messages for each considered and skipped bundle [fb196e93a3]
 
-Zoe Slattery <zoe@apache.org> (2):
+Zoe Slattery (2):
   - ARIES-548 Fix references to incubator in trunk [83b28ac372]
   - ARIES-562. Move up to 0.4-SNAP and fix ordering issue with proxy [941b7456cb]
 
-Jarek Gawor <gawor@apache.org> (1):
+Jarek Gawor (1):
   - switch trunk to 0.3-incubating-SNAPSHOT [ba4283c926]
 
-Joseph Alan Bohn <jbohn@apache.org> (1):
+Joseph Alan Bohn (1):
   - increase default timeouts for tests in hopes that there will be fewer service timeouts on slower machines [0f6806575d]
 

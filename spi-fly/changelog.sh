@@ -16,13 +16,29 @@
 #  specific language governing permissions and limitations
 #  under the License.
 
+###############################################################################
+# In most cases just execute ./changelog.sh should suffice.
+#
+# To tune commiter names/remove dups, adjust the .mailmap file
+# (see https://git-scm.com/docs/gitmailmap)
+###############################################################################
+
 TAG_SEARCH=spifly*
 WORK_DIR=.
 CHANGELOG=${WORK_DIR}/changelog.md
 
-##########################################################################################
-############# Do not edit below ##########################################################
-##########################################################################################
+###############################################################################
+############# Do not edit below ###############################################
+###############################################################################
+
+# collect all the tags that match our pattern and reverse the order
+ALL_TAGS=( $(git tag -l $TAG_SEARCH | xargs -n 1 | tac) )
+PREVIOUS_TAG="${ALL_TAGS[0]}"
+TAGS=${ALL_TAGS[@]:1}
+
+if [ -f $CHANGELOG ]; then
+    UPDATE=$PREVIOUS_TAG
+fi
 
 while (( "$#" )); do
 	case "$1" in
@@ -45,12 +61,7 @@ while (( "$#" )); do
 	esac
 done
 
-# collect all the tags that match our pattern and reverse the order
-ALL_TAGS=( $(git tag -l $TAG_SEARCH | xargs -n 1 | tac) )
-PREVIOUS_TAG="${ALL_TAGS[0]}"
-TAGS=${ALL_TAGS[@]:1}
-
-if [ "$UPDATEx" != "x" ]; then
+if [ -v UPDATE ]; then
 	printf "Updating $CHANGELOG\n"
 	# update the file if asked (appends to head of file)
 
@@ -65,6 +76,8 @@ if [ "$UPDATEx" != "x" ]; then
 	# swap the changelog for a temp file
 	ORIGINAL_FILE=$CHANGELOG
 	CHANGELOG="$CHANGELOG.tmp"
+else
+	printf "Creating $CHANGELOG\n"
 fi
 
 # create the file if it doesn't exist
@@ -72,7 +85,7 @@ printf "" > $CHANGELOG
 
 # write the changelog
 for tag in $TAGS; do
-	RESULT=$(git --no-pager shortlog --no-merges --grep 'maven-release-plugin' --invert-grep --format="- %s [%h]" -w0,2 -nec $tag..$PREVIOUS_TAG $WORK_DIR)
+	RESULT=$(git --no-pager shortlog --no-merges --grep 'maven-release-plugin' --invert-grep --format="- %s [%h]" -w0,2 -nc $tag..$PREVIOUS_TAG $WORK_DIR)
 
 	if [[ ! -z "${RESULT// }" ]]; then
 			echo "## $PREVIOUS_TAG" >> $CHANGELOG
@@ -83,7 +96,7 @@ for tag in $TAGS; do
 	PREVIOUS_TAG=$tag
 done
 
-if [ "$UPDATEx" != "x" ]; then
+if [ -v UPDATE ]; then
 	# append the changelog to the end of temp
 	cat $ORIGINAL_FILE >> $CHANGELOG
 
