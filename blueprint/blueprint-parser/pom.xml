@@ -32,7 +32,7 @@
     <artifactId>blueprint-parser</artifactId>
     <packaging>jar</packaging>
     <name>Apache Aries Blueprint Parser</name>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.1</version>
     <description>
         This bundle contains the blueprint parser in a plain jar.
     </description>
@@ -41,7 +41,8 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
-    </scm>
+      <tag>blueprint-parser-1.6.1</tag>
+  </scm>
 
     <properties>
         <blueprint.api.version>1.0.0</blueprint.api.version>
