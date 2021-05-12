@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
@@ -48,6 +49,10 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
 
         BeanCItf beanC = (BeanCItf) list.get(4);
         assertEquals(1, beanC.getInitialized());
+
+        BlueprintContainer testBleuprintContainer = context().getService(BlueprintContainer.class, "(osgi.blueprint.container.symbolicname=org.apache.aries.blueprint.testbundles)");
+        String testClassName = ((BeanMetadata) testBleuprintContainer.getComponentMetadata("org.springframework.transaction.config.internalTransactionalEventListenerFactory")).getClassName();
+        assertEquals("ARIES-2045", "org.springframework.transaction.event.TransactionalEventListenerFactory", testClassName);
 
         try {
             beanC.doSomething();
