@@ -18,9 +18,10 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.aries.blueprint.testbundles.BeanC;
+import org.apache.aries.blueprint.spring.Activator;
 import org.apache.aries.blueprint.testbundles.BeanCItf;
 import org.junit.Test;
 import org.ops4j.pax.exam.Option;
@@ -29,10 +30,9 @@ import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.cm.ConfigurationAdminOptions.newConfiguration;
 
 public class SpringTest extends AbstractBlueprintIntegrationTest {
 
@@ -49,6 +49,10 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
         BeanCItf beanC = (BeanCItf) list.get(4);
         assertEquals(1, beanC.getInitialized());
 
+        //Asserting NS blacklisting
+        assertEquals(1, Arrays.stream(bundles.getRegisteredServices()).filter(sr -> sr.getProperty("osgi.service.blueprint.namespace") != null).count());
+        assertTrue(Arrays.stream(bundles.getRegisteredServices()).anyMatch(sr -> sr.getProperty("osgi.service.blueprint.namespace").equals("http://www.springframework.org/schema/good")));
+
         try {
             beanC.doSomething();
             fail("Should have thrown an exception because the transaction manager is not defined");
@@ -62,6 +66,7 @@ public class SpringTest extends AbstractBlueprintIntegrationTest {
         return new Option[] {
             baseOptions(),
             Helper.blueprintBundles(),
+            newConfiguration(Activator.SPRING_NAMESPACE_BLACKLIST_PID).put("http://www.springframework.org/schema/bad", "org.apache.aries.blueprint.testbundles.TestNamespaceHandler").asOption(),
             // Blueprint spring
             mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.spring"),
             // Spring
