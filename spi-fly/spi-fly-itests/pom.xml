@@ -35,7 +35,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.install.skip>true</maven.install.skip>
         <junit-jupiter.version>5.7.1</junit-jupiter.version>
-        <junit-platform.version>1.7.1</junit-platform.version>
+        <junit-platform.version>1.7.2</junit-platform.version>
         <assertj.version>3.19.0</assertj.version>
         <felix.framework.version>7.0.0</felix.framework.version>
         <mockito.core.version>3.9.0</mockito.core.version>
