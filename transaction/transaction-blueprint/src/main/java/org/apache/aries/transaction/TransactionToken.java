@@ -28,6 +28,7 @@ public class TransactionToken
    private Transaction suspendedTransaction;
    private TransactionAttribute transactionAttribute;
    private boolean isCompletionAllowed;
+   private boolean requiresNewCoordination;
    private Coordination coordination;
    
    public TransactionToken(Transaction activeTransaction, Transaction suspendedTransaction,
@@ -39,10 +40,18 @@ public class TransactionToken
    TransactionToken(Transaction activeTransaction, Transaction suspendedTransaction,
            TransactionAttribute transactionAttribute, boolean isCompletionAllowed)
    {
+       this(activeTransaction, suspendedTransaction, transactionAttribute, isCompletionAllowed, true);
+   }
+
+   TransactionToken(Transaction activeTransaction, Transaction suspendedTransaction,
+           TransactionAttribute transactionAttribute, boolean isCompletionAllowed,
+            boolean requiresNewCoordination)
+   {
        this.activeTransaction = activeTransaction;
        this.suspendedTransaction = suspendedTransaction;
        this.transactionAttribute = transactionAttribute;
        this.isCompletionAllowed = isCompletionAllowed;
+       this.requiresNewCoordination = requiresNewCoordination;
    }
 
    public Transaction getActiveTransaction() {
@@ -68,7 +77,11 @@ public class TransactionToken
    public boolean isCompletionAllowed() {
        return isCompletionAllowed;
    }
-   
+
+   public boolean requiresNewCoordination() {
+       return requiresNewCoordination;
+   }
+
    public Coordination getCoordination() {
     return coordination;
    }

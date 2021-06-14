@@ -42,7 +42,7 @@ public enum TransactionAttribute {
           throw new IllegalStateException("No transaction present when calling method that mandates a transaction.");
         }
 
-        return new TransactionToken(man.getTransaction(), null, MANDATORY);
+        return new TransactionToken(man.getTransaction(), null, MANDATORY, false, false);
       }
     },
     NEVER
@@ -54,7 +54,7 @@ public enum TransactionAttribute {
           throw new IllegalStateException("Transaction present when calling method that forbids a transaction.");
         }
 
-        return new TransactionToken(null, null, NEVER);
+        return new TransactionToken(null, null, NEVER, false, false);
       }
     },
     NOT_SUPPORTED
@@ -63,10 +63,10 @@ public enum TransactionAttribute {
       public TransactionToken begin(TransactionManager man) throws SystemException
       {
         if (man.getStatus() == Status.STATUS_ACTIVE) {
-          return new TransactionToken(null, man.suspend(), this);
+          return new TransactionToken(null, man.suspend(), NOT_SUPPORTED, false, true);
         }
 
-        return new TransactionToken(null, null, NOT_SUPPORTED);
+        return new TransactionToken(null, null, NOT_SUPPORTED, false, false);
       }
 
       @Override
@@ -86,10 +86,10 @@ public enum TransactionAttribute {
       {
         if (man.getStatus() == Status.STATUS_NO_TRANSACTION) {
           man.begin();
-          return new TransactionToken(man.getTransaction(), null, REQUIRED, true);
+          return new TransactionToken(man.getTransaction(), null, REQUIRED, true, true);
         }
 
-        return new TransactionToken(man.getTransaction(), null, REQUIRED);
+        return new TransactionToken(man.getTransaction(), null, REQUIRED, false, false);
       }
 
       @Override
@@ -123,7 +123,7 @@ public enum TransactionAttribute {
           man.resume(suspendedTransaction);
           throw e;
         }
-        return new TransactionToken(man.getTransaction(), suspendedTransaction, REQUIRES_NEW, true);
+        return new TransactionToken(man.getTransaction(), suspendedTransaction, REQUIRES_NEW, true, true);
       }
 
       @Override

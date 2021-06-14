@@ -41,7 +41,7 @@
 
     <properties>
         <exam.version>3.4.0</exam.version>
-        <url.version>1.6.0</url.version>
+        <url.version>2.6.7</url.version>
     </properties>
 
     <dependencyManagement>
