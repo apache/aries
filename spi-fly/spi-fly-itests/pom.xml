@@ -39,7 +39,7 @@
         <assertj.version>3.19.0</assertj.version>
         <felix.framework.version>7.0.1</felix.framework.version>
         <mockito.core.version>3.11.2</mockito.core.version>
-        <osgi.test.version>0.10.0</osgi.test.version>
+        <osgi.test.version>1.0.0</osgi.test.version>
     </properties>
 
     <scm>
