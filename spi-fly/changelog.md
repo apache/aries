@@ -1,3 +1,18 @@
+## spifly-1.3.4
+Raymond Augé (12):
+  - simplify changelog generation (remove emails), just execute `./changelog.sh` and you're done [628c9fc41c]
+  - Bump mockito-core from 3.8.0 to 3.9.0 in /spi-fly [1db45ff4ec]
+  - Bump easymock from 4.2 to 4.3 in /spi-fly [e8670e0734]
+  - Bump junit-jupiter.version from 5.7.1 to 5.7.2 in /spi-fly [3ad9907e2c]
+  - Bump junit-platform.version from 1.7.1 to 1.7.2 in /spi-fly [57b5ebefe6]
+  - Bump maven-dependency-plugin from 3.1.2 to 3.2.0 in /spi-fly [da44eb7c68]
+  - Bump org.apache.felix.framework from 7.0.0 to 7.0.1 in /spi-fly [5ffa384dbf]
+  - Bump mockito-core from 3.8.0 to 3.11.2 in /spi-fly [6b36317f53]
+  - Bump asm.version from 9.1 to 9.2 in /spi-fly [896c8cccbd]
+  - Bump osgi.test.version from 0.10.0 to 1.0.0 in /spi-fly [9cc3046d69]
+  - Bump assertj-core from 3.19.0 to 3.20.2 in /spi-fly [6c5dfb2591]
+  - persist resolve result [1f17e9b47d]
+
 ## spifly-1.3.3
 Raymond Augé (16):
   - update to support java 16 [413c991cf5]
