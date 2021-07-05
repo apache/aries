@@ -61,9 +61,14 @@ public class TxInterceptorImpl implements Interceptor {
 
         LOGGER.debug("PreCall for bean {}, method {} with tx strategy {}.", getCmId(cm), m.getName(), txAttribute);
         TransactionToken token = txAttribute.begin(tm);
-        String coordName = "txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName();
-        Coordination coord = coordinator.begin(coordName , 0);
-        token.setCoordination(coord);
+        if (token.requiresNewCoordination()) {
+            String coordName = "txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName();
+            Coordination coord = coordinator.begin(coordName , 0);
+            // @javax.transaction.Transactional is only part of 1.2 and even if it's about time that all previous
+            // JTA versions should be forgotten, we can't rely on it...
+            coord.getVariables().put(Transaction.class, txAttribute.name());
+            token.setCoordination(coord);
+        }
         return token;
     }
 
