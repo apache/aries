@@ -18,11 +18,12 @@ package org.apache.aries.blueprint.spring;
 
 import java.net.URL;
 
-import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.felix.utils.extender.AbstractExtender;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,16 +34,23 @@ import org.slf4j.LoggerFactory;
  * @see SpringExtension
  */
 public class Activator extends AbstractExtender {
-
+    public static final String SPRING_NAMESPACE_BLACKLIST_PID = "org.apache.karaf.blueprint.spring.namespace.handler.blacklist";
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
-    ServiceRegistration<NamespaceHandler> registration;
+    private Configuration blacklistedNamespaces;
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+        ConfigurationAdmin configAdmin = context.getService(context.getServiceReference(ConfigurationAdmin.class));
+        blacklistedNamespaces = configAdmin.getConfiguration(SPRING_NAMESPACE_BLACKLIST_PID);
+        super.start(context);
+    }
 
     @Override
     protected Extension doCreateExtension(Bundle bundle) throws Exception {
         URL handlers = bundle.getResource(SpringExtension.SPRING_HANDLERS);
         if (handlers != null) {
-            return new SpringExtension(bundle);
+            return new SpringExtension(bundle, blacklistedNamespaces);
         }
         return null;
     }
