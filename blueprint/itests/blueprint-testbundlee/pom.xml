@@ -36,6 +36,22 @@
 
     <properties>
         <aries.osgi.private.pkg />
+        <aries.osgi.import.pkg>
+            org.osgi.service.blueprint.container,
+            org.springframework.core,
+            org.springframework.context.event,
+            org.springframework.context.annotation,
+            org.springframework.beans,
+            org.springframework.beans.factory.annotation,
+            org.springframework.beans.factory.config,
+            org.springframework.transaction,
+            org.springframework.transaction.event,
+            org.springframework.transaction.interceptor,
+            org.springframework.transaction.annotation,
+            org.springframework.aop.framework.autoproxy,
+            org.springframework.aop.config,
+            *
+        </aries.osgi.import.pkg>
         <aries.osgi.export.pkg>${project.artifactId}*</aries.osgi.export.pkg>
     </properties>
 
