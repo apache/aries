@@ -210,7 +210,7 @@ public abstract class AbstractWovenProxyAdapter extends ClassVisitor implements 
    */
   public AbstractWovenProxyAdapter(ClassVisitor writer, String className,
       ClassLoader loader) {
-    super(Opcodes.ASM5, writer);
+    super(Opcodes.ASM9, writer);
     typeBeingWoven = Type.getType("L" + className.replace('.', '/') + ";");
     //By default we expect to see methods from a concrete class
     currentMethodDeclaringType = typeBeingWoven;
