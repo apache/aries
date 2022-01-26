@@ -276,7 +276,11 @@ public class IOUtils
       if(isZip){
         do {
           File outFile = new File(outputDir, zipEntry.getName());
-          if (!outFile.getCanonicalPath().startsWith(outputDir.getCanonicalPath())) {
+          String canonicalizedDir = outputDir.getCanonicalPath();
+          if (!canonicalizedDir.endsWith(File.separator)) {
+               canonicalizedDir += File.separator;
+          }
+          if (!outFile.getCanonicalPath().startsWith(canonicalizedDir)) {
             throw new IOException("The output file is not contained in the destination directory");
           }
 
