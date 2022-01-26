@@ -244,7 +244,11 @@ public class Main {
         JarEntry je = null;
         while((je = jis.getNextJarEntry()) != null) {
             File outFile = new File(tempDir, je.getName());
-            if (!outFile.getCanonicalPath().startsWith(tempDir.getCanonicalPath())) {
+            String canonicalizedTargetDir = tempDir.getCanonicalPath();
+            if (!canonicalizedTargetDir.endsWith(File.separator)) {
+                canonicalizedTargetDir += File.separator;
+            }
+            if (!outFile.getCanonicalPath().startsWith(canonicalizedTargetDir)) {
                 throw new IOException("The output file is not contained in the destination directory");
             }
 
