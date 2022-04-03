@@ -1,0 +1,391 @@
+////
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+////
+= SPI Fly
+
+image:https://github.com/apache/aries/actions/workflows/spi-fly.yml/badge.svg[SPI Fly - CI Build,link=https://github.com/apache/aries/actions/workflows/spi-fly.yml]
+image:https://img.shields.io/maven-central/v/org.apache.aries.spifly/spifly?label=Maven%20Central[Maven Central,link=https://search.maven.org/search?q=g:org.apache.aries.spifly]
+
+This page describes the SPI Fly component.
+The SPI Fly component is aimed at providing OSGi support for JRE SPI mechanisms, including the usage of `java.util.ServiceLoader`,  `META-INF/services` and similar methods.
+
+SPI Fly is the Reference Implementation of the OSGi ServiceLoader Mediator specification, chapter 133 in the https://docs.osgi.org/specification/osgi.enterprise/7.0.0/service.loader.html[OSGi  Enterprise Specification], available from version 5.
+
+== The Problem
+
+Java's `java.util.ServiceLoader.load()`, other similar methods such as  `sun.misc.Service.providers()` and also other static finder methods such as the  `FactoryFinder.find()` methods try to locate 'service' implementations by looking for  resources in the `META-INF/services` directory of all the jars visible to the  *_Thread Context ClassLoader_* (TCCL).
+
+There are a number of issues with the above mechanisms when used in OSGi:
+
+. The Thread Context ClassLoader is not defined in general in an OSGi context.
+It can and has to be set by the caller and OSGi cannot generally enforce that.
+. A bundle can't `Import-Package` `META-INF/services` as potentially many bundles will contain this pseudo-package and the OSGi framework will only bind a single exporter to an importer for a given package.
+. Instantiating an SPI provider generally requires access to internal implementation classes, by exporting these classes an implementing bundle would break its encapsulation.
+. Even if an implementation class was exported, importing this class in a consumer bundle would bind it to the specific implementation package provided, which violates the principle of loose coupling.
+. Bundles have a dynamic life-cycle which means that provided services could disappear when a bundle is updated or uninstalled.
+The java.util.ServiceLoader API does not provide a mechanism to inform service consumers of such an event.
+
+The SPI Fly project makes it possible to use existing code that uses  `ServiceLoader.load()` and similar mechanisms under OSGi.
+
+== Making it Work
+
+In order to make ServiceLoader (and other similar SPI or plugin mechanisms) work under OSGi, calling code can be woven to set the TCCL to the appropriate providers very briefly, only for the duration of the call.
+The SPI Fly component does precisely this.
+
+SPI Fly supports two modes of operation:
+
+* OSGi Specification compliant configuration.
+This is based on OSGi generic requirements and capabilities and  provides portability across implementations of this specification.
+However, it only covers `java.util.ServiceLoader`.
+<<specconf,Find it here>>.
+* If you need to handle cases other than `java.util.ServiceLoader`, such as the various FactoryFinders,  `javax.imageio.spi.ServiceRegistry`, `javax.sound.sampled.AudioSystem` or others that use the TCCL to find an implementation, you can use the <<specificconf,SPI Fly-specific configuration>>.
+
+Additionally, services found in the `META-INF/services` location in opted-in bundles will be registered in the OSGi Service  Registry so that OSGi-aware consumers can simply find them there. This is supported in both the spec-compliant as  well as the proprietary configuration modes. Each such service is registered in the OSGi Service Registry with  the _serviceloader.mediator_ service registration property set.
+
+== Getting SPI Fly
+
+The latest release of the SPI-Fly components https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.apache.aries.spifly%22[can be found on Maven Central].
+
+To use SPI Fly you need to decide whether to use the dynamic weaving bundle, dynamic weaving framework extension or static weaving version.
+More information about this can be found in the <<usage,usage section>>.
+
+[[dynamicweavingbundledependencies]]
+.To use the dynamic weaving bundle
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.aries.spifly</groupId>
+    <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
+    <version>${spifly.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.ow2.asm</groupId>
+    <artifactId>asm</artifactId>
+    <version>${asm.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.ow2.asm</groupId>
+    <artifactId>asm-commons</artifactId>
+    <version>${asm.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.ow2.asm</groupId>
+    <artifactId>asm-util</artifactId>
+    <version>${asm.version}</version>
+</dependency>
+----
+
+[[dynamicweavingfedependencies]]
+.To use the dynamic weaving framework extension
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.aries.spifly</groupId>
+    <artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
+    <version>${spifly.version}</version>
+</dependency>
+----
+
+[[staticweavingbundledependencies]]
+.To use the static weaving bundle
+[source,xml]
+----
+<dependency>
+    <groupId>org.apache.aries.spifly</groupId>
+    <artifactId>org.apache.aries.spifly.static.bundle</artifactId>
+    <version>${spifly.version}</version>
+</dependency>
+----
+
+=== Building the code
+The code can be found in https://github.com/apache/aries/tree/trunk/spi-fly.
+
+To build, use Maven 3.x and run `mvn install`
+
+[[specconf]]
+=== Configuration: OSGi Spec-compliant
+
+All the details surrounding this type of configuration are covered in the  https://docs.osgi.org/specification/osgi.enterprise/7.0.0/service.loader.html[OSGi Enterprise Specification], chapter 133.
+This section provides a short overview.
+
+==== Providers
+
+SPI provider bundles opt in to being registered by specifying a requirement on the  `osgi.serviceloader.registrar` extender.
+This is done by adding the following Bundle Manifest header.
+Without this they will not be considered by SPI Fly:
+[source,properties]
+----
+Require-Capability: \
+  osgi.extender; \
+    filter:="(osgi.extender=osgi.serviceloader.registrar)"
+----
+
+Additionally, they need to provide capabilities for all the APIs that are exposed through this mechanism, for example:
+[source,properties]
+----
+Provide-Capability: \
+  osgi.serviceloader; \
+    osgi.serviceloader=org.apache.aries.spifly.mysvc.MySPIProvider
+----
+
+While this example omits it, it is advisable to specify `uses` constraints on the `Provide-Capability` header, to  ensure consistent class spaces.
+
+See the <<examples,`spi-fly-example-provider2-bundle`>> for an example of a spec-compliant provider.
+
+==== Consumers
+
+An SPI consumer (i.e. a bundle using the `java.util.ServiceLoader.load()` API) needs to specify required capabilities in the `Required-Capability` header. Two different types of requirements must be specified:
+
+* A requirement on the SPI Fly processing mechanism. This is stated as follows:
++
+[source,properties]
+----
+  osgi.extender; \
+    filter:="(osgi.extender=osgi.serviceloader.processor)"
+----
++
+Without this requirement the bundle will not be considered for processing.
+
+* A requirement on the SPI that needs to be provided through this mechanism, for example:
++
+[source,properties]
+----
+  osgi.serviceloader; \
+    filter:="(osgi.serviceloader=org.apache.aries.spifly.mysvc.MySPIProvider)";cardinality:=multiple
+----
++
+Note that the `cardinality` directive is specified to allow multiple bundles to provide the requested capability, allowing provided services to come from more than one provider bundle.
+
+All requirements are combined into a single Require-Capability header:
+[source,properties]
+----
+Require-Capability: \
+  osgi.serviceloader; \
+    filter:="(osgi.serviceloader=org.apache.aries.spifly.mysvc.MySPIProvider)"; \
+    cardinality:=multiple, \
+  osgi.extender; \
+    filter:="(osgi.extender=osgi.serviceloader.processor)"
+----
+
+See the <<examples,`spi-fly-example-client2-bundle`>> for an example of a spec-compliant consumer.
+
+[[specificconf]]
+=== Configuration: SPI Fly-specific
+
+This section describes how to use SPI Fly's proprietary configuration mechanism. It provides more features, but doesn't provide the portability that spec-compliance configuration gives. If you are only using SPI Fly with `java.util.ServiceLoader` or you are only using the provided services through the OSGi Service Registry, then consider using the <<specconf,spec-compliant>> configuration for portability.
+
+==== Providers
+
+First for all, SPI Fly needs to be made aware of any bundles that provide the services. These bundles are made visible through the TCCL for the duration of the `ServiceLoader.load()` (or similar) call.
+
+To mark a bundle as a Provider, set the *`SPI-Provider`* manifest header:
+
+* `SPI-Provider: *` will consider all providers found in the `META-INF/services` directory and register them.
+* `SPI-Provider: org.acme.MySvc1, org.acme.MySvc2` will only consider `MySvc1` and `MySvc2`.
+
+Additionally services found in `META-INF/services` are registered in the OSGi Service  Registry.
+
+The `SPI-Provider` header can either be set in the providing bundle itself or in a wrapper bundle that holds the original unmodified jar containing the provider internally as a on the `Bundle-ClassPath`.
+
+See the <<examples,`spi-fly-example-provider1-bundle`>> for an example of a provider using this type of configuration.
+
+==== Consumers
+
+Service consumers also need to opt in to the process.
+
+To specify a consumer, add the `SPI-Consumer` manifest header to the client bundle.
+This header will opt-in the bundle to the weaving process where for the duration of the specified call the TCCL will be set to the matching provider bundle(s).
+
+Some example SPI-Consumer headers are:
+
+* `SPI-Consumer: *` is a shorthand for `java.util.ServiceLoader#load(java.lang.Class)` and will automatically weave all `ServiceLoader.load(Class)` calls.
+* `SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[org.apache.aries.mytest.MySPI])` Only process calls to `ServiceLoader.load(Class)` when it is called with  `MySPI.class` as argument.
+* `SPI-Consumer: javax.xml.parsers.DocumentBuilderFactory#newInstance()` weave clients that call `DocumentBuilderFactory.newInstance()`.
+* `SPI-Consumer: org.foo.Foo#someMthd(),org.bar.Bar#myMethod()` weave calls to `Foo.someMthd()` and `Bar.myMethod()`.
+
+See the <<examples,`spi-fly-example-client1-bundle`>> for an example of a consumer using this type of configuration.
+
+=== Service Properties
+When a provider is published as an OSGi service it will gain some automatic service properties.
+
+.Default Service Properties
+|===
+|Property|Value
+|`serviceloader.mediator`
+|The bundle Id of the SPI bundle (SPI Fly)
+
+|`.org.apache.aries.spifly.provider.implclass`
+|The implementation class of the registered service
+
+|`.org.apache.aries.spifly.provider.discovery.mode`
+|The mode which was used to discover the service; `SPI_PROVIDER_HEADER` `AUTO_PROVIDERS_PROPERTY` or `SERVICELOADER_CAPABILITIES`
+
+|===
+Any additional attributes found on the `SPI-Provider` header, or the capability will be used as service properties allowing great flexibility for identifying registered services.
+
+==== Prototype Scope Service
+
+By default services provided are registered using an `org.osgi.framework.ServiceFactory`. This means that by default services are `bundle` scoped. However, it is possible to provide `prototype` scoped services by adding a service property `service.scope=prototype` which will cause SPI Fly to register the service using a `org.osgi.framework.PrototypeServiceFactory`.
+
+=== Special Cases
+
+SPI Fly can be used for most SPI provider/lookup systems that use the TCCL pattern to obtain implementations. However, in some cases _special treatment_ is needed. This special treatment is often needed when the API itself does not match the name of the resources in `META-INF/services`, `java.util.ServiceLoader` is such a case, however SPI-Fly has built-in knowledge of ServiceLoader. Known APIs that require special treatment are listed below:
+
+* `javax.imageio.spi.ServiceRegistry`: This class is very much like `java.util.ServiceLoader` in that it can load any kind of API implementation. While SPI Fly knows about ServiceLoader and treats it specially, the ServiceRegistry class currently does not have special treatment.
+It can still be made to work but this requires the following header in the provider bundle:
++
+----
+SPI-Provider: javax.imageio.spi.ServiceRegistry
+----
++
+on the client side you can use
++
+----
+SPI-Consumer: javax.imageio.spi.ServiceRegistry#lookupProviders(java.lang.Class)
+----
++
+or
++
+----
+SPI-Consumer: javax.imageio.spi.ServiceRegistry#lookupProviders
+----
+
+* `javax.sound.sampled.AudioSystem`: This class uses `sun.misc.Service` under the covers (via `com.sun.media.sound.JDK13Services`) which is a predecessor to `java.util.ServiceLoader`.
+There is no special treatment for `sun.misc.Service` in SPI Fly (yet), but the `AudioSystem.getAudioInputStream()` API can be made to work by explicitly listing it in the provider bundle (the one that contains the relevant `META-INF/services` resources):
++
+----
+SPI-Provider: javax.sound.sampled.AudioSystem
+----
++
+on the consumer side you can use
++
+----
+SPI-Consumer: javax.sound.sampled.AudioSystem#getAudioInputStream
+----
+
+=== Usage: There are currently two ways to use the SPI Fly component.
+
+. If you have an OSGi 4.3 (or higher) compliant framework that supports WeavingHooks you can use the dynamic weaving approach for which you have 3 options:
+.. dynamic weaving bundle
+.. dynamic weaving framework extension
+.. dynamic weaving auto properties
+. If you have an pre-4.3 OSGi framework or don't want to use bytecode weaving at runtime you  can use the static weaving approach.
+
+=== Dynamic Weaving Bundle
+
+Install and start the <<releases,`org.apache.aries.spifly.dynamic.bundle`>> into the system (see <<dynamicweavingbundledependencies,dependencies>>).
+
+ g! lb
+ START LEVEL 1
+    ID|State      |Level|Name
+     0|Active     |    0|System Bundle
+     ...
+     5|Active     |    1|ASM all classes
+     7|Active     |    1|Apache Aries SPI Fly Dynamic Weaving Bundle
+
+Note that, as with any OSGi Bundle that uses the OSGi 4.3 WeavingHooks, the weaver bundle (`org.apache.aries.spifly.dynamic.bundle` in the SPI Fly case) needs to  be active before any bundles that need to be dynamically woven. OSGi Start Levels can provide a mechanism to control this.
+
+=== Dynamic Weaving Framework Extension
+
+Install and start the <<releases,`org.apache.aries.spifly.dynamic.framework.extension`>> into the system (see <<dynamicweavingfedependencies,dependencies>>).
+
+ g! lb
+ START LEVEL 1
+    ID|State      |Level|Name
+     0|Active     |    0|System Bundle
+     ...
+     7|Active     |    1|Apache Aries SPI Fly Dynamic Framework Extension
+
+Note that, the framework extension bundle (`org.apache.aries.spifly.dynamic.framework.extension` in the SPI Fly case) attaches to and extends the `system.bundle`. As such it will always be active before any consumer or provider bundles that have a requirement on it (via the `osgi.serviceloader.processor` or `osgi.serviceloader.registrar` requirements.)
+
+=== Dynamic Weaving by auto properties
+
+Install and start either the `bundle` or `framework.extension` as described above, then provide the following framework properties:
+
+* `org.apache.aries.spifly.auto.consumers` - Provide a comma delimited list of `Bundle-SymbolicName` globs (ant style) which should be woven as consumers. Only ServiceLoader is supported by this mechanism.
++
+For example, the following tells SPI Fly that all bundles with `Bundle-SymbolicName` matching `jakarta.*` should have their ServiceLoader calls be woven:
++
+[source,properties]
+----
+org.apache.aries.spifly.auto.consumers=jakarta.*
+----
+
+* `org.apache.aries.spifly.auto.providers` - Provide a comma delimited list of `Bundle-SymbolicName` globs (ant style) which should be registered as providers. Any `META-INF/services` located in matching bundles will have those made available as providers and published as services. Any additional attributes found associated with a given entry will be added as service properties.
++
+For example, the following tells SPI Fly that all bundles with `Bundle-SymbolicName` matching `com.sun.*` should have their services registered as providers. At the same time the service property `vendor=Oracle` will be added to registred services. Meanwhile a bundle matching `my.provider` will have its services registered as providers with the service property `vendor=Me` and as `prototype` scoped in the service registry:
++
+[source,properties]
+----
+org.apache.aries.spifly.auto.providers=" \
+    com.sun.*;vendor=Oracle, \
+    my.provider;vendor=Me;service.scope=prototype"
+----
+
+*Note:* The syntax for these two properties matches the https://osgi.github.io/osgi/core/framework.module.html#framework.common.header.syntax[Common Header Syntax] defined by the OSGi Core specification.
+
+=== Use with Static Weaving
+
+For static use, you need to weave the client bundle before installing it into the system. The modification changes the byte code around `java.util.ServiceLoader.load()` or other calls in the bundle and inserts calls to set the correct ThreadContextClassLoader around it. Provider bundles are still handled dynamically.
+
+==== To statically weave a bundle
+
+The easiest way to invoke the static weaver is to take the <<releases,`org.apache.aries.spifly.static.tool`>> jar with dependencies. Then run the static tool on any bundle that needs processing:
+
+[source,shell]
+----
+java -jar org.apache.aries.spifly.static.tool-1.0.2-jar-with-dependencies.jar mybundle.jar
+----
+
+This will produce a second bundle with the same name with the `_spifly` suffix appended, so in this case the generated bundle will be called mybundle_spifly.jar.
+
+At runtime, install the <<releases,`org.apache.aries.spifly.static.bundle`>> into the system:
+
+ g! lb
+ START LEVEL 1
+    ID|State      |Level|Name
+     0|Active     |    0|System Bundle
+     ...
+     6|Active     |    1|Apache Aries SPI Fly Static Weaving Bundle
+
+Then install and start the statically woven bundle into the system.
+
+[[examples]]
+== Examples
+
+The `spi-fly-examples` directory contains a number of example bundles that can be  used for testing or experimenting.
+
+The following modules can be found in this directory:
+
+* *spi-fly-example-spi-bundle* - a bundle providing an SPI interface used by the other example bundles. https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-spi-bundle/[source]
+* *spi-fly-example-provider1-jar* - a plain jar file providing an implementation of the SPI (via `META-INF/services`). https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-provider1-jar/[source]
+* *spi-fly-example-provider1-bundle* - a bundle that wraps the jar file from the previous bullet and specifies it in its `Bundle-ClassPath`. This example represents the common case where an existing SPI provider is wrapped as-is in an OSGi bundle. This example uses the SPI Fly proprietary configuration. https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-provider1-bundle/[source]
+* *spi-fly-example-provider2-bundle* - a bundle that directly provides an SPI service (via `META-INF/services`). This example uses OSGi  specification compliant configuration. https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-provider2-bundle/[source]
+* *spi-fly-example-client1-jar* - a plain jar using `java.util.ServiceLoader.load()` to obtain and invoke all services provided of a certain SPI. https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-client1-jar/[source]
+* *spi-fly-example-client1-bundle* - a bundle that wraps the jar file from the previous bullet and lists it in its `Bundle-ClassPath`. This example represents the common case where an existing SPI consumer is wrapped as-is in an OSGi bundle. This example uses SPI Fly proprietary configuration. https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-client1-bundle/[source]
+* *spi-fly-example-client2-bundle* - a bundle that has code that invokes `java.util.ServiceLoader.load()` directly. This example uses OSGi specification compliant configuration. https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-client2-bundle/[source]
+* *spi-fly-example-provider-consumer-bundle* - a bundle that is both a provider and a consumer at the same time. https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-provider-consumer-bundle/[source]
+* *spi-fly-example-resource-provider-bundle* and *spi-fly-example-resource-client-bundle* - these bundles show that SPI Fly can be used to control the TCCL in OSGi for any situation, in this case applied to resource loading via the TCCL. The provider bundle provides a resource used by the `Foo.doit()` API. The client bundle contains `Foo.doit()` and in there calls `Thread.getContextClassLoader().getResource()` to obtain the resource. The TCCL has visibility of the provider bundle because both bundles have the appropriate values set in the `SPI-Provider` and `SPI-Consumer` headers. https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-resource-provider-bundle/[source] and https://github.com/apache/aries/tree/trunk/spi-fly/spi-fly-examples/spi-fly-example-resource-client-bundle/[source].
+
+== More Information
+
+More information can be found at the following resources:
+
+* OSGi Service Loader Mediator specification.
+https://docs.osgi.org/specification/osgi.enterprise/7.0.0/service.loader.html[OSGi Enterprise specification], Chapter 133.
+* OSGi Blog article: https://blog.osgi.org/2013/02/javautilserviceloader-in-osgi.html[java.util.ServiceLoader in OSGi]
