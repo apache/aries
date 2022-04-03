@@ -120,13 +120,13 @@
                         org.apache.aries.spifly.dynamic,\
                         org.apache.aries.spifly.weaver
                     -conditionalpackage: \
+                        aQute.bnd.exceptions,\
                         aQute.bnd.header,\
                         aQute.bnd.stream,\
                         aQute.bnd.version,\
                         aQute.bnd.version.maven,\
                         aQute.lib.collections,\
                         aQute.lib.date,\
-                        aQute.lib.exceptions,\
                         aQute.lib.io,\
                         aQute.lib.stringrover,\
                         aQute.lib.strings,\

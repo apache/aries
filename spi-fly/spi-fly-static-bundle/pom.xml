@@ -88,13 +88,13 @@
                     Export-Package: \
                         org.apache.aries.spifly.*;version=${project.version}
                     -conditionalpackage: \
+                        aQute.bnd.exceptions,\
                         aQute.bnd.header,\
                         aQute.bnd.stream,\
                         aQute.bnd.version,\
                         aQute.bnd.version.maven,\
                         aQute.lib.collections,\
                         aQute.lib.date,\
-                        aQute.lib.exceptions,\
                         aQute.lib.hex,\
                         aQute.lib.io,\
                         aQute.lib.stringrover,\
