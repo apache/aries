@@ -152,10 +152,10 @@ public enum TransactionAttribute {
           InvalidTransactionException
       {
           if (man.getStatus() == Status.STATUS_ACTIVE) {
-              return new TransactionToken(man.getTransaction(), null, SUPPORTS);
+              return new TransactionToken(man.getTransaction(), null, SUPPORTS, false, false);
           }
 
-          return new TransactionToken(null, null, SUPPORTS);
+          return new TransactionToken(null, null, SUPPORTS, false, false);
       }
     };
 
