@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
@@ -61,7 +62,18 @@ public class TxInterceptorImpl implements Interceptor {
 
         LOGGER.debug("PreCall for bean {}, method {} with tx strategy {}.", getCmId(cm), m.getName(), txAttribute);
         TransactionToken token = txAttribute.begin(tm);
-        if (token.requiresNewCoordination()) {
+        boolean requiresNewCoordination = token.requiresNewCoordination();
+        if (!requiresNewCoordination && !transactionExists(coordinator)) {
+            // in case the txAttribute doesn't require new coordination AND there's active transaction, like in:
+            //  - REQUIRED, when there was TX active before the method
+            //  - SUPPORTS, when there was TX active before the method
+            //  - MANDATORY, when there was TX active before the method
+            // we still have to create coordination
+            if (token.getActiveTransaction() != null && tm.getStatus() == Status.STATUS_ACTIVE) {
+                requiresNewCoordination = true;
+            }
+        }
+        if (requiresNewCoordination) {
             String coordName = "txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName();
             Coordination coord = coordinator.begin(coordName , 0);
             // @javax.transaction.Transactional is only part of 1.2 and even if it's about time that all previous
@@ -70,6 +82,23 @@ public class TxInterceptorImpl implements Interceptor {
             token.setCoordination(coord);
         }
         return token;
+    }
+
+    /**
+     * Checks whether there's already a {@link Coordination} with {@link Transaction} variable
+     * @param coordinator
+     * @return
+     */
+    private boolean transactionExists(Coordinator coordinator) {
+        boolean exists = false;
+        Coordination coord = coordinator.peek();
+        while (coord != null) {
+            if (coord.getVariables().containsKey(Transaction.class)) {
+                return true;
+            }
+            coord = coord.getEnclosingCoordination();
+        }
+        return exists;
     }
 
     @Override
