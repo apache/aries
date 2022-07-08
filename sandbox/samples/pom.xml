@@ -49,7 +49,7 @@
         <ariesTransactionVersion>0.4-SNAPSHOT</ariesTransactionVersion>
         <ariesUtilVersion>0.4-SNAPSHOT</ariesUtilVersion>
         <ariesWebVersion>0.4-SNAPSHOT</ariesWebVersion>
-        <openjpaVersion>2.0.0</openjpaVersion>
+        <openjpaVersion>2.2.2</openjpaVersion>
         <geronimoServletVersion>1.2</geronimoServletVersion>
     </properties>
     
