@@ -61,7 +61,7 @@
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <mockito.core.version>4.9.0</mockito.core.version>
         <osgi.core.version>5.0.0</osgi.core.version>
-        <osgi.test.version>1.1.0</osgi.test.version>
+        <osgi.test.version>1.2.1</osgi.test.version>
         <slf4j.version>1.7.36</slf4j.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
