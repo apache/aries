@@ -131,7 +131,7 @@
         <paxLoggingApiVersion>1.5.0</paxLoggingApiVersion>
         <paxLoggingServiceVersion>1.5.0</paxLoggingServiceVersion>
         <derbyVersion>10.5.3.0_1</derbyVersion>
-        <commonsCollectionsVersion>3.2.1</commonsCollectionsVersion>
+        <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
         <commonsLangVersion>2.5</commonsLangVersion>
         <commonsPoolVersion>1.5.4</commonsPoolVersion>
         <servicemixBundlesSerpVersion>1.13.1_2</servicemixBundlesSerpVersion>
