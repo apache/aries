@@ -50,7 +50,7 @@
         <apache-rat-plugin.version>0.13</apache-rat-plugin.version>
         <asm.version>9.3</asm.version>
         <assertj.version>3.22.0</assertj.version>
-        <bnd.version>6.2.0</bnd.version>
+        <bnd.version>6.4.0</bnd.version>
         <easymock.version>4.3</easymock.version>
         <felix.framework.version>7.0.5</felix.framework.version>
         <felix.log.extension.version>1.0.0</felix.log.extension.version>
