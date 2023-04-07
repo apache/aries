@@ -25,12 +25,14 @@ import java.util.Set;
 
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.commons.Method;
 
 import aQute.bnd.annotation.baseline.BaselineIgnore;
@@ -77,7 +79,10 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
     public MethodVisitor visitMethod(int access, String name, String desc,
             String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
-        return new TCCLSetterMethodVisitor(mv, access, name, desc);
+        mv = new TCCLSetterMethodVisitor(mv, access, name, desc);
+        mv = new JSRInlinerAdapter(mv, access, name, desc, signature, exceptions);
+
+        return mv;
     }
 
     @Override
