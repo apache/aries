@@ -172,7 +172,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                 activator.registerProviderBundle(details.serviceType, bundle, details.properties);
                 log(Level.INFO, "Registered provider " + details.instanceType + " of service " + details.serviceType + " in bundle " + bundle.getSymbolicName());
-            } catch (Exception e) {
+            } catch (Exception | NoClassDefFoundError e) {
                 log(Level.FINE,
                     "Could not load provider " + details.instanceType + " of service " + details.serviceType, e);
             }
