@@ -76,7 +76,7 @@ public interface Grammar {
 	public static final String DIGIT = "[0-9]";
 	public static final String ALPHA = "[A-Za-z]";
 	public static final String ALPHANUM = DIGIT + '|' + ALPHA;
-	public static final String TOKEN = "(?:" + ALPHANUM + "|_|-)+";
+	public static final String TOKEN = "(?:" + ALPHANUM + "|_|-)+?";
 	public static final String EXTENDED = "(?:" + ALPHANUM + "|_|-|\\.)+";
 	public static final String QUOTED_STRING = "\"(?:[^\\\\\"\r\n\u0000]|\\\\\"|\\\\\\\\)*\"";
 	public static final String ARGUMENT = EXTENDED + '|' + QUOTED_STRING;

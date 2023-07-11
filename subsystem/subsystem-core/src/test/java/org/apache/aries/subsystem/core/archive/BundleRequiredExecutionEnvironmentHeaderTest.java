@@ -114,7 +114,8 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 	public void testParser4() {
 		doTestParser("JavaSE-1.6", "JavaSE", "1.6");
 	}
-	
+
+
 	@Test
 	public void testParser5() {
 		doTestParser("AA/BB-1.7", "AA/BB", "1.7");
@@ -129,6 +130,22 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 	public void testParser7() {
 		doTestParser("MyEE-badVersion", "MyEE-badVersion", (Version)null);
 	}
+
+	@Test
+	public void testParser8() {
+		doTestParser("JavaSE-9", "JavaSE", "9");
+	}
+
+	@Test
+	public void testParser9() {
+		doTestParser("JavaSE-10", "JavaSE", "10");
+	}
+
+	@Test
+	public void testParser10() {
+		doTestParser("JavaSE-17", "JavaSE", "17");
+	}
+	
 	
 	private void assertClause(BundleRequiredExecutionEnvironmentHeader.Clause clause, String clauseStr, String name, String version, String filter) {
 		assertClause(clause, clauseStr, name, Version.parseVersion(version), filter);
