@@ -253,7 +253,7 @@
         <repository>
             <id>ops4j</id>
             <name>ops4j</name>
-            <url>http://repository.ops4j.org/maven2</url>
+            <url>https://repository.ops4j.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>

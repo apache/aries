@@ -143,7 +143,7 @@
 		<repository>
 			<id>dwr-snapshots</id>
 			<name>DWR SNAPSHOT Repository</name>
-			<url>http://download.directwebremoting.org/maven2-snapshot/</url>
+			<url>https://download.directwebremoting.org/maven2-snapshot/</url>
 		</repository>
 	</repositories>
 </project>
