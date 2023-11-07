@@ -77,7 +77,7 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <optional>true</optional>
-            <version>9.5</version>
+            <version>9.6</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
