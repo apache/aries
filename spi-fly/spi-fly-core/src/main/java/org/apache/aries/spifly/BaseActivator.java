@@ -182,6 +182,7 @@ public abstract class BaseActivator implements BundleActivator {
 
     public void removeWeavingData(Bundle bundle) {
         bundleWeavingData.remove(bundle);
+        consumerRestrictions.remove(bundle);
     }
 
     @Override
