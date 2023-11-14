@@ -87,8 +87,7 @@ public class ZipFileImpl implements IFile
    * This is called to construct the root directory of the zip.
    *
    * @param zip1 the zip file this represents.
-   * @param fs   the file on the fs.
-   * @param rootName the name of this zipfile relative to the IFile filesystem root
+   * @param parent
    * @throws MalformedURLException
    */
   protected ZipFileImpl(File zip1, IDirectory parent) throws MalformedURLException

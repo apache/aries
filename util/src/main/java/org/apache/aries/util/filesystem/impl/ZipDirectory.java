@@ -60,7 +60,6 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 
   /**
    * This constructor creates the root of the zip.
-   * @param file
    * @param fs
    * @param parent
    * @throws MalformedURLException
@@ -174,8 +173,9 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
    * This method works out if the provided entry is inside this directory. It
    * returns false if it is not, or if it is in a sub-directory.
    *
+   * @param parentDir
    * @param possibleEntry
-   * @param whether files in subdirectories are to be included
+   * @param allowSubDirs
    * @return true if it is in this directory.
    */
   protected static boolean isInDir(String parentDir, ZipEntry possibleEntry, boolean allowSubDirs)
