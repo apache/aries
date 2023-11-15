@@ -45,9 +45,9 @@
 
     <properties>
         <blueprint.api.dev.version>1.0.2-SNAPSHOT</blueprint.api.dev.version>
-        <blueprint.core.dev.version>1.10.2-SNAPSHOT</blueprint.core.dev.version>
-        <blueprint.cm.dev.version>1.3.2-SNAPSHOT</blueprint.cm.dev.version>
-        <blueprint.parser.dev.version>1.6.1-SNAPSHOT</blueprint.parser.dev.version>
+        <blueprint.core.dev.version>1.10.4-SNAPSHOT</blueprint.core.dev.version>
+        <blueprint.cm.dev.version>1.3.3-SNAPSHOT</blueprint.cm.dev.version>
+        <blueprint.parser.dev.version>1.6.2-SNAPSHOT</blueprint.parser.dev.version>
         <blueprint.authz.dev.version>1.0.1-SNAPSHOT</blueprint.authz.dev.version>
         <blueprint.spring.dev.version>1.0.0-SNAPSHOT</blueprint.spring.dev.version>
         <blueprint.spring.extender.dev.version>1.0.0-SNAPSHOT</blueprint.spring.extender.dev.version>

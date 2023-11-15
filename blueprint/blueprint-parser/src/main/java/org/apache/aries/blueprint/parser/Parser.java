@@ -428,7 +428,8 @@ public class Parser {
                     Metadata component = parseCustomElement(element, null);
                     if (component != null) {
                         if (!(component instanceof ComponentMetadata)) {
-                            throw new ComponentDefinitionException("Expected a ComponentMetadata to be returned when parsing element " + element.getNodeName());
+                            throw new ComponentDefinitionElementException(element,
+                                    "Expected a ComponentMetadata to be returned when parsing element " + element.getNodeName());
                         }
                         registry.registerComponentDefinition((ComponentMetadata) component);
                     }
@@ -471,7 +472,8 @@ public class Parser {
         } else if (Metadata.class.isAssignableFrom(type)) {
             return type.cast(parseValueGroup(element, enclosingComponent, null, true));
         } else {
-            throw new ComponentDefinitionException("Unknown type to parse element: " + type.getName());
+            throw new ComponentDefinitionElementException(element,
+                    "Unknown type to parse element: " + type.getName());
         }
     }
 
@@ -493,7 +495,8 @@ public class Parser {
             ComponentMetadata references = parseRefList(element, true);
             registry.registerComponentDefinition(references);
         } else {
-            throw new ComponentDefinitionException("Unknown element " + element.getNodeName() + " in namespace " + BLUEPRINT_NAMESPACE);
+            throw new ComponentDefinitionElementException(element,
+                    "Unknown element " + element.getNodeName() + " in namespace " + BLUEPRINT_NAMESPACE);
         }
     }
 
@@ -517,7 +520,8 @@ public class Parser {
                     target = parseCustomElement(e, null);
                 }
                 if (!(target instanceof Target)) {
-                    throw new ComponentDefinitionException("Metadata parsed for element " + e.getNodeName() + " can not be used as a type converter");
+                    throw new ComponentDefinitionElementException(e,
+                            "Metadata parsed for element " + e.getNodeName() + " can not be used as a type converter");
                 }
                 registry.registerTypeConverter((Target) target);
             }
@@ -542,7 +546,8 @@ public class Parser {
                 if(uriStr!=null){
                     uri = URI.create(uriStr);
                 }else{
-                    throw new ComponentDefinitionException("Unsupported attribute namespace prefix "+parts[0]+" "+attr);
+                    throw new ComponentDefinitionElementException(attrNode,
+                            "Unsupported attribute namespace prefix " + parts[0] + " " + attr);
                 }
             }
         }
@@ -570,10 +575,10 @@ public class Parser {
                 if(namespaceURI!=null){
                     scope = new QName(namespaceURI, localName).toString();
                 }else{
-                    throw new ComponentDefinitionException("Unable to determine namespace binding for prefix, " + prefix);
+                    throw new ComponentDefinitionElementException(attrNode,
+                            "Unable to determine namespace binding for prefix, " + prefix);
                 }
-            }
-            else {
+            }else{
                 scope = attrValue;
             }
         }
@@ -604,7 +609,8 @@ public class Parser {
             ParserContextImpl context = new ParserContextImpl(this, registry, metadata, scope);
             metadata = nsHandler.decorate(scope, metadata, context);
         }else if(scopeNS!=null){
-            throw new ComponentDefinitionException("Custom scopes cannot use the blueprint namespace "+scope);
+            throw new ComponentDefinitionElementException(bean,
+                    "Custom scopes cannot use the blueprint namespace " + scope);
         }
         return metadata;
     }
@@ -618,7 +624,8 @@ public class Parser {
                 if (!metadata.getScope().equals(BeanMetadata.SCOPE_SINGLETON)) {
                     if (element.hasAttribute(ACTIVATION_ATTRIBUTE)) {
                         if (element.getAttribute(ACTIVATION_ATTRIBUTE).equals(ACTIVATION_EAGER)) {
-                            throw new ComponentDefinitionException("A <bean> with a prototype or custom scope can not have an eager activation");
+                            throw new ComponentDefinitionElementException(element,
+                                    "A <bean> with a prototype or custom scope can not have an eager activation");
                         }
                     }
                     metadata.setActivation(ComponentMetadata.ACTIVATION_LAZY);
@@ -653,13 +660,16 @@ public class Parser {
 
         // Do some validation
         if (metadata.getClassName() == null && metadata.getFactoryComponent() == null) {
-            throw new ComponentDefinitionException("Bean class or factory-ref must be specified");
+            throw new ComponentDefinitionElementException(element,
+                    "Bean class or factory-ref must be specified");
         }
         if (metadata.getFactoryComponent() != null && metadata.getFactoryMethod() == null) {
-            throw new ComponentDefinitionException("factory-method is required when factory-component is set");
+            throw new ComponentDefinitionElementException(element,
+                    "factory-method is required when factory-component is set");
         }
         if (MetadataUtil.isPrototypeScope(metadata) && metadata.getDestroyMethod() != null) {
-            throw new ComponentDefinitionException("destroy-method must not be set for a <bean> with a prototype scope");
+            throw new ComponentDefinitionElementException(element,
+                    "destroy-method must not be set for a <bean> with a prototype scope");
         }
 
         // Parse elements
@@ -736,13 +746,15 @@ public class Parser {
         } else if (AUTO_EXPORT_ALL.equals(autoExport)) {
             service.setAutoExport(ServiceMetadata.AUTO_EXPORT_ALL_CLASSES);
         } else {
-            throw new ComponentDefinitionException("Illegal value (" + autoExport + ") for " + AUTO_EXPORT_ATTRIBUTE + " attribute");
+            throw new ComponentDefinitionElementException(element,
+                    "Illegal value (" + autoExport + ") for " + AUTO_EXPORT_ATTRIBUTE + " attribute");
         }
         String ranking = element.hasAttribute(RANKING_ATTRIBUTE) ? element.getAttribute(RANKING_ATTRIBUTE) : RANKING_DEFAULT;
         try {
             service.setRanking(Integer.parseInt(ranking));
         } catch (NumberFormatException e) {
-            throw new ComponentDefinitionException("Attribute " + RANKING_ATTRIBUTE + " must be a valid integer (was: " + ranking + ")");
+            throw new ComponentDefinitionElementException(element,
+                    "Attribute " + RANKING_ATTRIBUTE + " must be a valid integer (was: " + ranking + ")");
         }
         // Parse elements
         NodeList nl = element.getChildNodes();
@@ -753,7 +765,8 @@ public class Parser {
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, INTERFACES_ELEMENT)) {
                         if (hasInterfaceNameAttribute) {
-                            throw new ComponentDefinitionException("Only one of " + INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be used");
                         }
                         service.setInterfaceNames(parseInterfaceNames(e));
                     } else if (nodeNameEquals(e, SERVICE_PROPERTIES_ELEMENT)) {
@@ -763,21 +776,25 @@ public class Parser {
                         service.addRegistrationListener(parseRegistrationListener(e, service));
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
                         if (service.getServiceComponent() != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
                         }
                         service.setServiceComponent((Target) parseBeanMetadata(e, false));
                     } else if (nodeNameEquals(e, REF_ELEMENT)) {
                         if (service.getServiceComponent() != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
                         }
                         String component = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         if (component == null || component.length() == 0) {
-                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
                         }
                         service.setServiceComponent(new RefMetadataImpl(component));                   
                     } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
                         if (service.getServiceComponent() != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element can be set");
                         }
                         service.setServiceComponent((Target) parseReference(e, false));
                     }
@@ -786,15 +803,18 @@ public class Parser {
         }
         // Check service
         if (service.getServiceComponent() == null) {
-            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element must be set");
+            throw new ComponentDefinitionElementException(element,
+                    "One of " + REF_ATTRIBUTE + " attribute, " + BEAN_ELEMENT + " element, " + REFERENCE_ELEMENT + " element or " + REF_ELEMENT + " element must be set");
         }
         // Check interface
         if (service.getAutoExport() == ServiceMetadata.AUTO_EXPORT_DISABLED && service.getInterfaces().isEmpty()) {
-            throw new ComponentDefinitionException(INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be set when " + AUTO_EXPORT_ATTRIBUTE + " is set to " + AUTO_EXPORT_DISABLED);
+            throw new ComponentDefinitionElementException(element,
+                    INTERFACE_ATTRIBUTE + " attribute or " + INTERFACES_ELEMENT + " element must be set when " + AUTO_EXPORT_ATTRIBUTE + " is set to " + AUTO_EXPORT_DISABLED);
         }
         // Check for non-disabled auto-exports and interfaces
         if (service.getAutoExport() != ServiceMetadata.AUTO_EXPORT_DISABLED && !service.getInterfaces().isEmpty()) {
-            throw new ComponentDefinitionException(INTERFACE_ATTRIBUTE + " attribute or  " + INTERFACES_ELEMENT + " element must not be set when " + AUTO_EXPORT_ATTRIBUTE + " is set to anything else than " + AUTO_EXPORT_DISABLED);
+            throw new ComponentDefinitionElementException(element,
+                    INTERFACE_ATTRIBUTE + " attribute or  " + INTERFACES_ELEMENT + " element must not be set when " + AUTO_EXPORT_ATTRIBUTE + " is set to anything else than " + AUTO_EXPORT_DISABLED);
         }
         ComponentMetadata s = service;
         
@@ -854,7 +874,8 @@ public class Parser {
     private MapEntry parseProperty(Element element) {
         // Parse attributes
         if (!element.hasAttribute(KEY_ATTRIBUTE)) {
-            throw new ComponentDefinitionException(KEY_ATTRIBUTE + " attribute is required");
+            throw new ComponentDefinitionElementException(element,
+                    KEY_ATTRIBUTE + " attribute is required");
         }
         String value;
         if (element.hasAttribute(VALUE_ATTRIBUTE)) {
@@ -908,7 +929,8 @@ public class Parser {
         }
         // Check key
         if (keyValue != null && (key != null || keyRef != null) || (keyValue == null && key == null && keyRef == null)) {
-            throw new ComponentDefinitionException("Only and only one of " + KEY_ATTRIBUTE + " attribute, " + KEY_REF_ATTRIBUTE + " attribute or " + KEY_ELEMENT + " element must be set");
+            throw new ComponentDefinitionElementException(element,
+                    "Only and only one of " + KEY_ATTRIBUTE + " attribute, " + KEY_REF_ATTRIBUTE + " attribute or " + KEY_ELEMENT + " element must be set");
         } else if (keyValue == null && key != null) {
             keyValue = new ValueMetadataImpl(key, keyType);
         } else if (keyValue == null /*&& keyRef != null*/) {
@@ -916,7 +938,8 @@ public class Parser {
         }
         // Check value
         if (valValue != null && (value != null || valueRef != null) || (valValue == null && value == null && valueRef == null)) {
-            throw new ComponentDefinitionException("Only and only one of " + VALUE_ATTRIBUTE + " attribute, " + VALUE_REF_ATTRIBUTE + " attribute or sub element must be set");
+            throw new ComponentDefinitionElementException(element,
+                    "Only and only one of " + VALUE_ATTRIBUTE + " attribute, " + VALUE_REF_ATTRIBUTE + " attribute or sub element must be set");
         } else if (valValue == null && value != null) {
             valValue = new ValueMetadataImpl(value, valueType);
         } else if (valValue == null /*&& valueRef != null*/) {
@@ -970,7 +993,8 @@ public class Parser {
             listener.setUnregistrationMethod(unregistrationMethod);
         }
         if (registrationMethod == null && unregistrationMethod == null) {
-            throw new ComponentDefinitionException("One of " + REGISTRATION_METHOD_ATTRIBUTE + " or " + UNREGISTRATION_METHOD_ATTRIBUTE + " must be set");
+            throw new ComponentDefinitionElementException(element,
+                    "One of " + REGISTRATION_METHOD_ATTRIBUTE + " or " + UNREGISTRATION_METHOD_ATTRIBUTE + " must be set");
         }
         // Parse elements
         NodeList nl = element.getChildNodes();
@@ -981,39 +1005,46 @@ public class Parser {
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, REF_ELEMENT)) {
                         if (listenerComponent != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
                         String component = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         if (component == null || component.length() == 0) {
-                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
                         }
                         listenerComponent = new RefMetadataImpl(component);
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
                         if (listenerComponent != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
                         listenerComponent = parseBeanMetadata(e, false);
                     } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
                         if (listenerComponent != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
                         listenerComponent = parseReference(e, false);
                     } else if (nodeNameEquals(e, SERVICE_ELEMENT)) {
                         if (listenerComponent != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
                         listenerComponent = parseService(e, false);
                     }
                 } else {
                     if (listenerComponent != null) {
-                        throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                        throw new ComponentDefinitionElementException(e,
+                                "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                     }
                     listenerComponent = parseCustomElement(e, enclosingComponent);
                 }
             }
         }
         if (listenerComponent == null) {
-            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element must be set");
+            throw new ComponentDefinitionElementException(element,
+                    "One of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BEAN_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element must be set");
         }
         listener.setListenerComponent((Target) listenerComponent);
         return listener;
@@ -1029,7 +1060,8 @@ public class Parser {
         try {
             reference.setTimeout(Long.parseLong(timeout));
         } catch (NumberFormatException e) {
-            throw new ComponentDefinitionException("Attribute " + TIMEOUT_ATTRIBUTE + " must be a valid long (was: " + timeout + ")");
+            throw new ComponentDefinitionElementException(element,
+                    "Attribute " + TIMEOUT_ATTRIBUTE + " must be a valid long (was: " + timeout + ")");
         }
         
         ComponentMetadata r = reference;
@@ -1108,7 +1140,8 @@ public class Parser {
         } else if (AVAILABILITY_OPTIONAL.equals(availability)) {
             reference.setAvailability(ServiceReferenceMetadata.AVAILABILITY_OPTIONAL);
         } else {
-            throw new ComponentDefinitionException("Illegal value for " + AVAILABILITY_ATTRIBUTE + " attribute: " + availability);
+            throw new ComponentDefinitionElementException(element,
+                    "Illegal value for " + AVAILABILITY_ATTRIBUTE + " attribute: " + availability);
         }
         // Parse elements
         NodeList nl = element.getChildNodes();
@@ -1143,7 +1176,8 @@ public class Parser {
             listener.setUnbindMethod(unbindMethodName);
         }
         if (bindMethodName == null && unbindMethodName == null) {
-            throw new ComponentDefinitionException("One of " + BIND_METHOD_ATTRIBUTE + " or " + UNBIND_METHOD_ATTRIBUTE + " must be set");
+            throw new ComponentDefinitionElementException(element,
+                    "One of " + BIND_METHOD_ATTRIBUTE + " or " + UNBIND_METHOD_ATTRIBUTE + " must be set");
         }
         // Parse elements
         NodeList nl = element.getChildNodes();
@@ -1154,39 +1188,46 @@ public class Parser {
                 if (isBlueprintNamespace(e.getNamespaceURI())) {
                     if (nodeNameEquals(e, REF_ELEMENT)) {
                         if (listenerComponent != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
                         String component = e.getAttribute(COMPONENT_ID_ATTRIBUTE);
                         if (component == null || component.length() == 0) {
-                            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
                         }
                         listenerComponent = new RefMetadataImpl(component);
                     } else if (nodeNameEquals(e, BEAN_ELEMENT)) {
                         if (listenerComponent != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
                         listenerComponent = parseBeanMetadata(e, false);
                     } else if (nodeNameEquals(e, REFERENCE_ELEMENT)) {
                         if (listenerComponent != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
                         listenerComponent = parseReference(e, false);
                     } else if (nodeNameEquals(e, SERVICE_ELEMENT)) {
                         if (listenerComponent != null) {
-                            throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                            throw new ComponentDefinitionElementException(e,
+                                    "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                         }
                         listenerComponent = parseService(e, false);
                     }
                 } else {
                     if (listenerComponent != null) {
-                        throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
+                        throw new ComponentDefinitionElementException(e,
+                                "Only one of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element can be set");
                     }
                     listenerComponent = parseCustomElement(e, enclosingComponent);
                 }
             }
         }
         if (listenerComponent == null) {
-            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element must be set");
+            throw new ComponentDefinitionElementException(element,
+                    "One of " + REF_ATTRIBUTE + " attribute, " + REF_ELEMENT + ", " + BLUEPRINT_ELEMENT + ", " + REFERENCE_ELEMENT + ", " + SERVICE_ELEMENT + " or custom element must be set");
         }
         listener.setListenerComponent((Target) listenerComponent);
         return listener;
@@ -1202,11 +1243,13 @@ public class Parser {
                 if (nodeNameEquals(e, VALUE_ELEMENT)) {
                     String v = getTextValue(e).trim();
                     if (interfaceNames.contains(v)) {
-                        throw new ComponentDefinitionException("The element " + INTERFACES_ELEMENT + " should not contain the same interface twice");
+                        throw new ComponentDefinitionElementException(element,
+                                "The element " + INTERFACES_ELEMENT + " should not contain the same interface twice");
                     }
                     interfaceNames.add(getTextValue(e));
                 } else {
-                    throw new ComponentDefinitionException("Unsupported element " + e.getNodeName() + " inside an " + INTERFACES_ELEMENT + " element");
+                    throw new ComponentDefinitionElementException(element,
+                            "Unsupported element " + e.getNodeName() + " inside an " + INTERFACES_ELEMENT + " element");
                 }
             }
         }
@@ -1244,15 +1287,17 @@ public class Parser {
                 if (value == null) {
                     value = v;
                 } else {
-                    throw new ComponentDefinitionException("Only one of " + REF_ATTRIBUTE + " attribute, " + VALUE_ATTRIBUTE + " attribute or sub element must be set");
+                    throw new ComponentDefinitionElementException(element,
+                            "Only one of " + REF_ATTRIBUTE + " attribute, " + VALUE_ATTRIBUTE + " attribute or sub element must be set");
                 }
             }
         }
 
         if (value == null) {
-            throw new ComponentDefinitionException("One of " + REF_ATTRIBUTE + " attribute, " + VALUE_ATTRIBUTE + " attribute or sub element must be set");
+            throw new ComponentDefinitionElementException(element,
+                    "One of " + REF_ATTRIBUTE + " attribute, " + VALUE_ATTRIBUTE + " attribute or sub element must be set");
         }
-        
+
         return value;
     }
 
@@ -1285,7 +1330,8 @@ public class Parser {
             } else if (nodeNameEquals(element, ARRAY_ELEMENT)) {
                 return parseArray(element, enclosingComponent);
             } else {
-                throw new ComponentDefinitionException("Unknown blueprint element " + element.getNodeName());
+                throw new ComponentDefinitionElementException(element,
+                        "Unknown blueprint element " + element.getNodeName());
             }
         } else {
             return parseCustomElement(element, enclosingComponent);
@@ -1305,14 +1351,16 @@ public class Parser {
     private RefMetadata parseRef(Element element) {
         String component = element.getAttribute(COMPONENT_ID_ATTRIBUTE);
         if (component == null || component.length() == 0) {
-            throw new ComponentDefinitionException("Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
+            throw new ComponentDefinitionElementException(element,
+                    "Element " + REF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
         }
         return new RefMetadataImpl(component);
     }
     private Metadata parseIdRef(Element element) {
         String component = element.getAttribute(COMPONENT_ID_ATTRIBUTE);
         if (component == null || component.length() == 0) {
-            throw new ComponentDefinitionException("Element " + IDREF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
+            throw new ComponentDefinitionElementException(element,
+                    "Element " + IDREF_ELEMENT + " must have a valid " + COMPONENT_ID_ATTRIBUTE + " attribute");
         }
         return new IdRefMetadataImpl(component);
     }
@@ -1324,7 +1372,8 @@ public class Parser {
         } else if (ACTIVATION_LAZY.equals(initialization)) {
             return ComponentMetadata.ACTIVATION_LAZY;
         } else {
-            throw new ComponentDefinitionException("Attribute " + ACTIVATION_ATTRIBUTE + " must be equal to " + ACTIVATION_EAGER + " or " + ACTIVATION_LAZY);
+            throw new ComponentDefinitionElementException(element,
+                    "Attribute " + ACTIVATION_ATTRIBUTE + " must be equal to " + ACTIVATION_EAGER + " or " + ACTIVATION_LAZY);
         }
     }
     

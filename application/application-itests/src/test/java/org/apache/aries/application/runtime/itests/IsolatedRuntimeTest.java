@@ -319,7 +319,7 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-service").versionAsInProject(),
 
                 // Repository
-                repository("http://repository.ops4j.org/maven2"),
+                repository("https://repository.ops4j.org/maven2"),
 
                 // Logging
                 systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),

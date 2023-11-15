@@ -89,7 +89,7 @@
     <repositories>
         <repository>
             <id>EclipseLink Repo</id>
-            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
+            <url>https://download.eclipse.org/rt/eclipselink/maven.repo/</url>
         </repository>
         <repository>
             <id>ops4j.sonatype.snapshots.deploy</id>

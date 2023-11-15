@@ -35,7 +35,7 @@
     </description>
     
     <properties>
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.13.5</exam.version>
         <url.version>1.6.0</url.version>
     </properties>
 	
