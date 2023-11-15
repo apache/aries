@@ -51,7 +51,7 @@
         <asm.version>9.6</asm.version>
         <assertj.version>3.23.1</assertj.version>
         <bnd.version>6.4.0</bnd.version>
-        <easymock.version>4.3</easymock.version>
+        <easymock.version>5.2.0</easymock.version>
         <felix.framework.version>7.0.5</felix.framework.version>
         <felix.log.extension.version>1.0.0</felix.log.extension.version>
         <felix.log.version>1.2.6</felix.log.version>
