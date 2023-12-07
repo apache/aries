@@ -123,7 +123,7 @@ public class BlueprintBeanFactory extends DefaultListableBeanFactory implements 
 
         @Override
         public String getClassName() {
-            return null;
+            return getBeanDefinition(beanName).getBeanClassName();
         }
 
         @Override
