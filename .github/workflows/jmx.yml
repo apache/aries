@@ -46,4 +46,5 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        mvn -U -e -B -ntp -am -pl jmx/jmx-itests clean install
+        mvn -U -e -B -ntp clean install -f testsupport/pom.xml
+        mvn -U -e -B -ntp clean install -f jmx/pom.xml
