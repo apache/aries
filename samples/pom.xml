@@ -95,7 +95,7 @@
 
         <!-- Aries Jpa Versions -->
         <ariesJpaApiVersion>1.0.0</ariesJpaApiVersion>
-        <ariesJpaBlueprintAriesVersion>1.0.4</ariesJpaBlueprintAriesVersion>
+        <ariesJpaBlueprintAriesVersion>1.0.0</ariesJpaBlueprintAriesVersion>
         <ariesJpaContainerVersion>1.0.0</ariesJpaContainerVersion>
         <ariesJpaContainerContextVersion>1.0.0</ariesJpaContainerContextVersion>
 
