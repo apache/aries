@@ -53,7 +53,7 @@
         </aries.osgi.import.service>
         <lastReleaseVersion>1.1.0</lastReleaseVersion>
 
-        <jmock.version>2.5.1</jmock.version>
+        <jmock.version>2.13.1</jmock.version>
         <org.apache.aries.jmx.blueprint.api.version>1.2.0</org.apache.aries.jmx.blueprint.api.version>
         <org.apache.aries.util.version>1.1.1</org.apache.aries.util.version>
     </properties>
