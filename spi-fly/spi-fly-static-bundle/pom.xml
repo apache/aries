@@ -44,7 +44,7 @@
     </scm>
 
     <properties>
-        <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
     </properties>
 
     <dependencies>
