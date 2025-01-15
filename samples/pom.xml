@@ -130,7 +130,7 @@
         <asmVersion>3.2</asmVersion>
         <paxLoggingApiVersion>1.5.0</paxLoggingApiVersion>
         <paxLoggingServiceVersion>1.5.0</paxLoggingServiceVersion>
-        <derbyVersion>10.5.3.0_1</derbyVersion>
+        <derbyVersion>10.14.2.0</derbyVersion>
         <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
         <commonsLangVersion>2.5</commonsLangVersion>
         <commonsPoolVersion>1.5.4</commonsPoolVersion>
