@@ -61,7 +61,7 @@
         <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
         <org.apache.aries.blueprint.version>1.0.0</org.apache.aries.blueprint.version>
         <org.apache.aries.jpa.api.version>1.0.0</org.apache.aries.jpa.api.version>
-        <org.apache.aries.jpa.blueprint.aries.version>1.0.0</org.apache.aries.jpa.blueprint.aries.version>
+        <org.apache.aries.jpa.blueprint.aries.version>1.0.4</org.apache.aries.jpa.blueprint.aries.version>
         <org.apache.aries.proxy.version>1.0.2-SNAPSHOT</org.apache.aries.proxy.version>
         <org.apache.aries.transaction.blueprint.version>1.0.0</org.apache.aries.transaction.blueprint.version>
         <org.apache.aries.transaction.manager.version>1.0.0</org.apache.aries.transaction.manager.version>

@@ -58,7 +58,7 @@
         <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.cm.version>1.0.9</org.apache.aries.blueprint.cm.version>
         <org.apache.aries.blueprint.core.version>1.7.1</org.apache.aries.blueprint.core.version>
-        <org.apache.aries.jpa.blueprint.aries.version>1.0.2</org.apache.aries.jpa.blueprint.aries.version>
+        <org.apache.aries.jpa.blueprint.aries.version>1.0.4</org.apache.aries.jpa.blueprint.aries.version>
         <org.apache.aries.transaction.blueprint.version>1.1.1</org.apache.aries.transaction.blueprint.version>
         <osgi.cmpn.version>6.0.0</osgi.cmpn.version>
         <persistence-api.version>1.0.2</persistence-api.version>
