@@ -59,7 +59,7 @@
         <pax-exam.version>4.11.0</pax-exam.version>
         <pax-url.version>2.6.0</pax-url.version>
         <pax-web-extender-war.version>1.1.18</pax-web-extender-war.version>
-        <pax-web-jetty-bundle.version>1.1.18</pax-web-jetty-bundle.version>
+        <pax-web-jetty-bundle.version>9.0.18</pax-web-jetty-bundle.version>
         <services.version>3.1.200-v20070605</services.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
         <tinybundles.version>2.0.0</tinybundles.version>

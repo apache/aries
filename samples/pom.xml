@@ -145,7 +145,7 @@
         <geronimoJ2eeConnector15SpecVersion>2.0.0</geronimoJ2eeConnector15SpecVersion>
         <geronimoJsp21SpecVersion>1.0.1</geronimoJsp21SpecVersion>
 
-        <paxWebJettyBundleVersion>0.8.1</paxWebJettyBundleVersion>
+        <paxWebJettyBundleVersion>9.0.18</paxWebJettyBundleVersion>
         <paxWebExtenderWarVersion>0.8.1</paxWebExtenderWarVersion>
         <paxWebJspVersion>0.8.1</paxWebJspVersion>
 
