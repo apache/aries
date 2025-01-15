@@ -33,6 +33,7 @@ jobs:
   JDKxx_Matrix:
     timeout-minutes: 10
     strategy:
+      fail-fast: false
       matrix:
         java: [ 8, 11, 17, 21 ]
         os: [ ubuntu-latest ]
