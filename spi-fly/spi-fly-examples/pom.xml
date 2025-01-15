@@ -41,7 +41,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.install.skip>true</maven.install.skip>
         <obrRepository>none</obrRepository>
-        <maven-bundle-plugin.version>5.1.8</maven-bundle-plugin.version>
+        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
     </properties>
 
     <scm>
