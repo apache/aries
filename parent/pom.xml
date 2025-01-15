@@ -214,7 +214,7 @@
         <lastReleaseVersion>RELEASE</lastReleaseVersion>
 
         <!--Dependencies-->
-        <junit.version>4.8.1</junit.version>
+        <junit.version>4.13.2</junit.version>
         <pax-logging.version>1.7.2</pax-logging.version>
         <org.version>4.3.1</org.version>
         <slf4j.version>1.7.5</slf4j.version>

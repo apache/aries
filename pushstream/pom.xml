@@ -47,7 +47,7 @@
         <java.target.version>1.8</java.target.version>
 
         <bnd-maven-plugin.version>3.2.0</bnd-maven-plugin.version>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.2</junit.version>
         <mockito-all.version>1.9.5</mockito-all.version>
         <org.apache.aries.async.promise.api.version>1.0.1</org.apache.aries.async.promise.api.version>
         <osgi.annotation.version>6.0.1</osgi.annotation.version>
