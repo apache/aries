@@ -41,7 +41,7 @@
 
     <properties>
         <commons-collections.version>3.2.2</commons-collections.version>
-        <commons-lang.version>2.4</commons-lang.version>
+        <commons-lang.version>2.6</commons-lang.version>
         <commons-pool.version>1.5.3</commons-pool.version>
         <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
         <org.apache.aries.quiesce.api.version>1.0.0</org.apache.aries.quiesce.api.version>
