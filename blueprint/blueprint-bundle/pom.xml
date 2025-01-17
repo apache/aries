@@ -114,7 +114,7 @@
         <blueprint.spring.extender.version>${blueprint.spring.extender.dev.version}</blueprint.spring.extender.version>
         <blueprint.spring.version>${blueprint.spring.dev.version}</blueprint.spring.version>
         <org.apache.aries.proxy.api.version>1.0.0</org.apache.aries.proxy.api.version>
-        <org.apache.aries.proxy.impl.version>1.0.3</org.apache.aries.proxy.impl.version>
+        <org.apache.aries.proxy.impl.version>1.0.6</org.apache.aries.proxy.impl.version>
         <org.apache.aries.quiesce.api.version>1.0.0</org.apache.aries.quiesce.api.version>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
     </properties>
