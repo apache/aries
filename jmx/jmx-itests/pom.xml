@@ -38,7 +38,7 @@
 
     <properties>
         <asm-debug-all.version>5.0.3</asm-debug-all.version>
-        <commons-jexl.version>2.0</commons-jexl.version>
+        <commons-jexl.version>2.1.1</commons-jexl.version>
         <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
         <org.apache.aries.blueprint.jexl.evaluator.version>1.0.0</org.apache.aries.blueprint.jexl.evaluator.version>
         <org.apache.aries.blueprint.sample.version>1.0.0</org.apache.aries.blueprint.sample.version>

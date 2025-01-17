@@ -58,7 +58,7 @@
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
         <blueprint.core.version>1.10.0</blueprint.core.version>
-        <commons-jexl.version>2.0</commons-jexl.version>
+        <commons-jexl.version>2.1.1</commons-jexl.version>
     </properties>
 
     <profiles>
