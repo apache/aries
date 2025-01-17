@@ -53,7 +53,7 @@
         <geronimo-atinject_1.0_spec.version>1.0</geronimo-atinject_1.0_spec.version>
         <geronimo-connector.version>3.0</geronimo-connector.version>
         <geronimo-ejb_3.1_spec.version>1.0.2</geronimo-ejb_3.1_spec.version>
-        <geronimo-el_2.2_spec.version>1.0.2</geronimo-el_2.2_spec.version>
+        <geronimo-el_2.2_spec.version>1.1</geronimo-el_2.2_spec.version>
         <geronimo-interceptor_1.1_spec.version>1.0</geronimo-interceptor_1.1_spec.version>
         <geronimo-j2ee-connector_1.6_spec.version>1.0</geronimo-j2ee-connector_1.6_spec.version>
         <geronimo-j2ee-management_1.1_spec.version>1.0.1</geronimo-j2ee-management_1.1_spec.version>
