@@ -76,7 +76,7 @@
         <junit.version>4.13.2</junit.version>
         <maven-bundle-plugin.version>2.5.3</maven-bundle-plugin.version>
         <maven-shade-plugin.version>1.1</maven-shade-plugin.version>
-        <spring-tx.version>2.5.6</spring-tx.version>
+        <spring.version>2.5.6</spring.version>
     </properties>
 
     <dependencies>
@@ -106,7 +106,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
             <optional>true</optional>
-            <version>${spring-tx.version}</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

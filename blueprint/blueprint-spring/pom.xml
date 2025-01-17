@@ -71,10 +71,7 @@
         <org.apache.felix.utils.version>1.11.6</org.apache.felix.utils.version>
         <pax-swissbox-tinybundles.version>1.3.1</pax-swissbox-tinybundles.version>
         <slf4j.version>1.7.5</slf4j.version>
-        <spring-aop.version>4.2.2.RELEASE</spring-aop.version>
-        <spring-beans.version>4.2.2.RELEASE</spring-beans.version>
-        <spring-context.version>4.2.2.RELEASE</spring-context.version>
-        <spring-tx.version>4.2.2.RELEASE</spring-tx.version>
+        <spring.version>4.2.2.RELEASE</spring.version>
     </properties>
 
     <profiles>
@@ -130,13 +127,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>${spring-context.version}</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>${spring-beans.version}</version>
+            <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -189,13 +186,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>${spring-tx.version}</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>${spring-aop.version}</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
