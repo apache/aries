@@ -102,7 +102,7 @@
         <!-- Aries Proxy Versions -->
         <ariesProxyApiVersion>1.0.0</ariesProxyApiVersion>
         <ariesProxyVersion>1.0.0</ariesProxyVersion>
-        <ariesProxyImplVersion>1.0.6</ariesProxyImplVersion>
+        <ariesProxyImplVersion>1.0.0</ariesProxyImplVersion>
 
         <!-- Aries Quiesce Versions -->
         <ariesQuiesceApiVersion>1.0.0</ariesQuiesceApiVersion>
