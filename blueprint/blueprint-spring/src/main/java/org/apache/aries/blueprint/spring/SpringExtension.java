@@ -19,18 +19,16 @@ package org.apache.aries.blueprint.spring;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.felix.utils.extender.Extension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.BeanDefinitionParserDelegate;
 
@@ -44,21 +42,30 @@ public class SpringExtension implements Extension {
 
     public static final String SPRING_HANDLERS = "META-INF/spring.handlers";
     public static final String SPRING_SCHEMAS = "META-INF/spring.schemas";
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpringExtension.class);
 
     private final Bundle bundle;
     private final List<ServiceRegistration<NamespaceHandler>> registrations;
+    private final Configuration blacklistedNamespaces;
 
-    public SpringExtension(Bundle bundle) {
+    public SpringExtension(Bundle bundle, Configuration blacklistedNamespaces) {
         this.bundle = bundle;
+        this.blacklistedNamespaces = blacklistedNamespaces;
         this.registrations = new ArrayList<ServiceRegistration<NamespaceHandler>>();
     }
 
     @Override
     public void start() throws Exception {
+        Dictionary<String, Object> nsHandlerBlacklist = blacklistedNamespaces.getProperties();
         Map<String, NamespaceHandler> handlers = new HashMap<String, NamespaceHandler>();
         Properties props = loadSpringHandlers();
         Properties schemas = loadSpringSchemas();
         for (String key : props.stringPropertyNames()) {
+            if (nsHandlerBlacklist != null && nsHandlerBlacklist.get(key) != null && props.get(key).equals(nsHandlerBlacklist.get(key))) {
+                LOGGER.info("Ignoring namespace handler for namespace: {}={}, bundle: {}:{}", key, props.get(key), bundle.getSymbolicName(), bundle.getBundleId());
+                continue;
+            }
+
             String clazzName = props.getProperty(key);
             org.springframework.beans.factory.xml.NamespaceHandler springHandler
                     = (org.springframework.beans.factory.xml.NamespaceHandler) bundle.loadClass(clazzName).newInstance();
