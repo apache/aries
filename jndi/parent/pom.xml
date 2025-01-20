@@ -58,7 +58,7 @@
         <org.apache.aries.blueprint.api.version>1.0.0</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
         <osgi.core.version>6.0.0</osgi.core.version>
-        <osgi.cmpn.version>6.0.0</osgi.cmpn.version>
+        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <osgi.enterprise.version>6.0.0</osgi.enterprise.version>
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <java.source.version>1.8</java.source.version>

@@ -60,7 +60,7 @@
         <org.eclipse.equinox.event.version>1.2.200.v20120522-2049</org.eclipse.equinox.event.version>
         <org.eclipse.osgi.version>3.10.0.v20140606-1445</org.eclipse.osgi.version>
         <org.osgi.service.obr.version>1.0.2</org.osgi.service.obr.version>
-        <osgi.cmpn.version>6.0.0</osgi.cmpn.version>
+        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <osgi.core.version>6.0.0</osgi.core.version>
         <osgi.enterprise.version>6.0.0</osgi.enterprise.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
