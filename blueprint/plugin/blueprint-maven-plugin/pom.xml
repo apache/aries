@@ -38,8 +38,8 @@
     </description>
 
     <properties>
-        <java.source.version>1.7</java.source.version>
-        <java.target.version>1.7</java.target.version>
+        <java.source.version>8</java.source.version>
+        <java.target.version>8</java.target.version>
 
         <aether.version>1.13.1</aether.version>
         <blueprint-maven-plugin-annotation.version>1.3.0</blueprint-maven-plugin-annotation.version>
@@ -66,7 +66,7 @@
         <plexus-utils.version>3.0</plexus-utils.version>
         <slf4j-jdk14.version>1.7.7</slf4j-jdk14.version>
         <wagon-http-lightweight.version>2.6</wagon-http-lightweight.version>
-        <xbean-finder-shaded.version>4.9</xbean-finder-shaded.version>
+        <xbean-finder-shaded.version>4.26</xbean-finder-shaded.version>
     </properties>
 
     <profiles>
