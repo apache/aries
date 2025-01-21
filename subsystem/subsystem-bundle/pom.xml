@@ -72,7 +72,7 @@
         <org.apache.felix.resolver.version>1.0.0</org.apache.felix.resolver.version>
         <org.eclipse.equinox.coordinator.version>1.1.0.v20120522-1841</org.eclipse.equinox.coordinator.version>
         <org.eclipse.equinox.region.version>1.2.101.v20150831-1342</org.eclipse.equinox.region.version>
-        <org.eclipse.osgi.version>3.10.0.v20140606-1445</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.11.3</org.eclipse.osgi.version>
     </properties>
 
     <dependencies>
@@ -132,7 +132,7 @@
             <version>${org.eclipse.equinox.region.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.tycho</groupId>
+            <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
             <version>${org.eclipse.osgi.version}</version>
         </dependency>

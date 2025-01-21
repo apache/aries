@@ -41,7 +41,7 @@
         <asm.version>5.0.3</asm.version>
         <build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
         <easymock.version>3.0</easymock.version>
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.13.5</exam.version>
         <logback.version>1.5.16</logback.version>
         <maven-jar-plugin.version>2.3</maven-jar-plugin.version>
         <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
@@ -58,7 +58,7 @@
         <org.apache.felix.bundlerepository.version>1.6.6</org.apache.felix.bundlerepository.version>
         <org.apache.felix.configadmin.version>1.8.0</org.apache.felix.configadmin.version>
         <org.eclipse.equinox.event.version>1.2.200.v20120522-2049</org.eclipse.equinox.event.version>
-        <org.eclipse.osgi.version>3.10.0.v20140606-1445</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.11.3</org.eclipse.osgi.version>
         <org.osgi.service.obr.version>1.0.2</org.osgi.service.obr.version>
         <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <osgi.core.version>6.0.0</osgi.core.version>
@@ -335,7 +335,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.tycho</groupId>
+            <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
             <version>${org.eclipse.osgi.version}</version>
         </dependency>
