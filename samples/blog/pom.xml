@@ -30,7 +30,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <org.eclipse.osgi.version>3.7.0.v20110613</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.13.0.v20180226-1711</org.eclipse.osgi.version>
     </properties>
 
     <dependencyManagement>
