@@ -73,7 +73,7 @@
         <geronimo.version>3.0</geronimo.version>
         <hsqldb.version>2.2.4</hsqldb.version>
         <!-- Have to use beta as release has broken Manifest regarding commons lang -->
-        <openejb.version>4.0.0-beta-1</openejb.version>
+        <openejb.version>4.7.5</openejb.version>
         <openWebBeansVersion>1.1.1</openWebBeansVersion>
         <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
         <org.apache.aries.application.modeller.version>1.0.1-SNAPSHOT</org.apache.aries.application.modeller.version>
