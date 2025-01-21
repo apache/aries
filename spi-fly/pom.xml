@@ -52,7 +52,7 @@
 
         <apache-rat-plugin.version>0.16.1</apache-rat-plugin.version>
         <asm.version>9.7.1</asm.version>
-        <assertj.version>3.27.2</assertj.version>
+        <assertj.version>3.27.3</assertj.version>
         <bnd.version>6.4.0</bnd.version>
         <easymock.version>5.5.0</easymock.version>
         <felix.framework.version>7.0.5</felix.framework.version>
