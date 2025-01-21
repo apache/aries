@@ -135,7 +135,7 @@
         <commonsLangVersion>2.5</commonsLangVersion>
         <commonsPoolVersion>1.5.4</commonsPoolVersion>
         <servicemixBundlesSerpVersion>1.13.1_2</servicemixBundlesSerpVersion>
-        <servicemixBundlesCglibVersion>2.1_3_4</servicemixBundlesCglibVersion>
+        <servicemixBundlesCglibVersion>3.3.0_1</servicemixBundlesCglibVersion>
 
         <openjpaVersion>2.2.2</openjpaVersion>
         <geronimoJpaSpecVersion>1.1</geronimoJpaSpecVersion>
