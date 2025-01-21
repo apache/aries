@@ -46,7 +46,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-lang.version>2.6</commons-lang.version>
         <commons-pool.version>1.5.3</commons-pool.version>
-        <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
+        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <derby.version>10.14.2.0</derby.version>
         <geronimo-activation_1.1_spec.version>1.1</geronimo-activation_1.1_spec.version>
         <geronimo-annotation_1.1_spec.version>1.0.1</geronimo-annotation_1.1_spec.version>

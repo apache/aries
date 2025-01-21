@@ -42,7 +42,7 @@
     <properties>
         <asm.version>5.0.3</asm.version>
         <cdi-api.version>1.2</cdi-api.version>
-        <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
+        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <exam.version>3.4.0</exam.version>
         <geronimo-connector.version>3.1.1</geronimo-connector.version>
         <geronimo-j2ee-connector_1.6_spec.version>1.0</geronimo-j2ee-connector_1.6_spec.version>

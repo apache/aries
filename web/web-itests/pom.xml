@@ -42,7 +42,7 @@
 
     <properties>
         <asm.version>5.0.3</asm.version>
-        <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
+        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <exam.version>3.4.0</exam.version>
         <logback.version>1.5.16</logback.version>
         <org.apache.aries.blueprint.sample.version>1.0.0</org.apache.aries.blueprint.sample.version>

@@ -43,7 +43,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-lang.version>2.6</commons-lang.version>
         <commons-pool.version>1.5.3</commons-pool.version>
-        <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
+        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <org.apache.aries.quiesce.api.version>1.0.0</org.apache.aries.quiesce.api.version>
         <org.apache.aries.quiesce.manager.version>1.0.0</org.apache.aries.quiesce.manager.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>

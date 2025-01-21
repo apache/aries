@@ -49,7 +49,7 @@
         </aries.osgi.private.pkg>
 
         <asm-all.version>5.0.3</asm-all.version>
-        <depends-maven-plugin.version>1.3</depends-maven-plugin.version>
+        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
         <org.apache.aries.application.resolve.transform.cm.version>1.0.0</org.apache.aries.application.resolve.transform.cm.version>
         <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
