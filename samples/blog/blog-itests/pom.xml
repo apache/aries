@@ -33,7 +33,7 @@
     <properties>
         <asm.version>4.0</asm.version>
         <cm.version>3.2.0-v20070116</cm.version>
-        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
+        <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
         <exam.version>3.4.0</exam.version>
         <logback.version>0.9.29</logback.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
