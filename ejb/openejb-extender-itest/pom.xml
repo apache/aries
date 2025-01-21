@@ -77,7 +77,7 @@
         <hsqldb.version>2.2.4</hsqldb.version>
         <openWebBeansVersion>1.1.1</openWebBeansVersion>
         <openejb.version>4.0.0-beta-1</openejb.version>
-        <openjpa.version>2.2.2</openjpa.version>
+        <openjpa.version>4.0.1</openjpa.version>
         <org.apache.aries.blueprint.version>1.0.0</org.apache.aries.blueprint.version>
         <org.apache.aries.ejb.openejb.extender.version>1.0.0</org.apache.aries.ejb.openejb.extender.version>
         <org.apache.aries.jpa.api.version>1.0.0</org.apache.aries.jpa.api.version>
