@@ -45,7 +45,7 @@
         <commons-beanutils.version>1.8.3</commons-beanutils.version>
         <commons-cli.version>1.2</commons-cli.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <commons-lang3.version>3.3.2</commons-lang3.version>
+        <commons-lang3.version>3.17.0</commons-lang3.version>
         <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
         <exam.version>3.4.0</exam.version>
         <geronimo-activation_1.1_spec.version>1.1</geronimo-activation_1.1_spec.version>
