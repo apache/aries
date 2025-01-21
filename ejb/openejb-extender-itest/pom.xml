@@ -50,7 +50,7 @@
         <derby.version>10.14.2.0</derby.version>
         <geronimo-activation_1.1_spec.version>1.1</geronimo-activation_1.1_spec.version>
         <geronimo-annotation_1.1_spec.version>1.0.1</geronimo-annotation_1.1_spec.version>
-        <geronimo-atinject_1.0_spec.version>1.0</geronimo-atinject_1.0_spec.version>
+        <geronimo-atinject_1.0_spec.version>1.2</geronimo-atinject_1.0_spec.version>
         <geronimo-connector.version>3.0</geronimo-connector.version>
         <geronimo-ejb_3.1_spec.version>1.0.2</geronimo-ejb_3.1_spec.version>
         <geronimo-el_2.2_spec.version>1.0.2</geronimo-el_2.2_spec.version>
