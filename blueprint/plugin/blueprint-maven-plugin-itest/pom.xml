@@ -39,7 +39,7 @@
         <java.source.version>1.7</java.source.version>
 
         <blueprint-maven-plugin.version>1.9.1-SNAPSHOT</blueprint-maven-plugin.version>
-        <maven-invoker-plugin.version>1.10</maven-invoker-plugin.version>
+        <maven-invoker-plugin.version>3.9.0</maven-invoker-plugin.version>
     </properties>
 
     <scm>
