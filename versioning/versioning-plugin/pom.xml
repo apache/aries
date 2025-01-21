@@ -48,7 +48,7 @@
         <maven-core.version>3.0.3</maven-core.version>
         <maven-plugin-annotations.version>3.2</maven-plugin-annotations.version>
         <maven-plugin-api.version>3.0.3</maven-plugin-api.version>
-        <maven-plugin-plugin.version>3.3</maven-plugin-plugin.version>
+        <maven-plugin-plugin.version>3.15.1</maven-plugin-plugin.version>
         <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
         <org.apache.aries.versioning.checker.version>0.3.2-SNAPSHOT</org.apache.aries.versioning.checker.version>
     </properties>
