@@ -77,7 +77,7 @@
         </aries.osgi.import.service>
         <lastReleaseVersion>1.1.1</lastReleaseVersion>
 
-        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <mockito-all.version>1.8.2</mockito-all.version>
         <org.apache.aries.jmx.api.version>1.1.5</org.apache.aries.jmx.api.version>
         <org.apache.aries.util.version>1.1.1</org.apache.aries.util.version>

@@ -231,7 +231,7 @@
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
         <maven-pmd-plugin.version>2.4</maven-pmd-plugin.version>
         <maven-paxexam-plugin.version>1.2.4</maven-paxexam-plugin.version>
-        <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <org.apache.aries.versioning.plugin.version>0.3.0</org.apache.aries.versioning.plugin.version>
         <ianal-maven-plugin.version>1.0-alpha-1</ianal-maven-plugin.version>
         <animal-sniffer-enforcer-rule.version>1.6</animal-sniffer-enforcer-rule.version>
