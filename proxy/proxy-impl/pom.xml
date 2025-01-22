@@ -65,7 +65,7 @@
         </aries.osgi.private.pkg>
         <lastReleaseVersion>1.1.14</lastReleaseVersion>
 
-        <asm.version>9.6</asm.version>
+        <asm.version>9.7.1</asm.version>
         <commons-io.version>2.15.0</commons-io.version>
         <geronimo-j2ee-connector_1.6_spec.version>1.0</geronimo-j2ee-connector_1.6_spec.version>
         <javax.transaction-api.version>1.3</javax.transaction-api.version>

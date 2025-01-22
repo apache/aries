@@ -43,7 +43,7 @@
     </scm>
 
     <properties>
-        <asm.version>9.6</asm.version>
+        <asm.version>9.7.1</asm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <exam.version>4.13.3</exam.version>
         <javax.inject.version>1</javax.inject.version>

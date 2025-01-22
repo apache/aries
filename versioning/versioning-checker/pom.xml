@@ -60,7 +60,7 @@
         <lastReleaseVersion>0.2.0</lastReleaseVersion>
         <aries.skip.version.check>true</aries.skip.version.check>
 
-        <asm.version>9.6</asm.version>
+        <asm.version>9.7.1</asm.version>
         <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
         <org.apache.aries.testsupport.unit.version>1.0.0</org.apache.aries.testsupport.unit.version>
         <org.apache.aries.util.version>1.1.0</org.apache.aries.util.version>
