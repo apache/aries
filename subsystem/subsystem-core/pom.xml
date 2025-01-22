@@ -76,7 +76,7 @@
         <org.eclipse.equinox.coordinator.version>1.1.0.v20120522-1841</org.eclipse.equinox.coordinator.version>
         <org.eclipse.equinox.region.version>1.2.101.v20150831-1342</org.eclipse.equinox.region.version>
         <easymock.version>3.0</easymock.version>
-        <maven-bundle-plugin.version>2.5.0</maven-bundle-plugin.version>
+        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
     </properties>
 
     <dependencies>
