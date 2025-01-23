@@ -51,7 +51,7 @@
     bnd.identity;id='junit-platform-launcher'
 
 -runbundles: \
-	assertj-core;version='[3.27.2,3.27.3)',\
+	assertj-core;version='[3.27.3,3.27.4)',\
 	junit-jupiter-api;version='[5.11.4,5.11.5)',\
 	junit-jupiter-engine;version='[5.11.4,5.11.5)',\
 	junit-jupiter-params;version='[5.11.4,5.11.5)',\

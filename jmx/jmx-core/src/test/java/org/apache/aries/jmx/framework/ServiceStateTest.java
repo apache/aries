@@ -49,6 +49,7 @@ import javax.management.openmbean.CompositeData;
 import org.apache.aries.jmx.Logger;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.osgi.framework.AllServiceListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -204,6 +205,7 @@ public class ServiceStateTest {
 
         AllServiceListener serviceListener = argument.getValue();
         assertNotNull(serviceListener);
+        Mockito.reset(context);
 
         ExecutorService dispatcher = serviceState.getEventDispatcher();
 
@@ -212,9 +214,7 @@ public class ServiceStateTest {
         serviceState.postRegister(true);
 
         // check no more actions on BundleContext
-        argument = ArgumentCaptor.forClass(AllServiceListener.class);
-        verify(context, atMost(1)).addServiceListener(argument.capture());
-        assertEquals(1, argument.getAllValues().size());
+        verify(context, never()).addServiceListener(argument.capture());
 
         //do one unregister
         serviceState.postDeregister();

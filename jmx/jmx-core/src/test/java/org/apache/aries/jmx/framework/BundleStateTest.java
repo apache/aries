@@ -43,6 +43,7 @@ import org.apache.aries.jmx.Logger;
 import org.apache.aries.jmx.codec.BundleEventData;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -189,6 +190,7 @@ public class BundleStateTest {
 
         BundleListener listener = argument.getValue();
         assertNotNull(listener);
+        Mockito.reset(context);
 
         ExecutorService dispatcher = bundleState.getEventDispatcher();
 
@@ -197,9 +199,7 @@ public class BundleStateTest {
         bundleState.postRegister(true);
 
         // check no more actions on BundleContext
-        argument = ArgumentCaptor.forClass(BundleListener.class);
-        verify(context, atMost(1)).addBundleListener(argument.capture());
-        assertEquals(1, argument.getAllValues().size());
+        verify(context, never()).addBundleListener(argument.capture());
 
         //do one unregister
         bundleState.postDeregister();

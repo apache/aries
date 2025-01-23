@@ -31,7 +31,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +40,7 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -79,7 +79,7 @@ public class FrameworkUtilsTest {
         
         BundleContext context = mock(BundleContext.class);
         ServiceReference reference = mock(ServiceReference.class);
-        when(context.getAllServiceReferences(anyString(), anyString())).thenReturn(new ServiceReference[] { reference });        
+        when(context.getAllServiceReferences(ArgumentMatchers.<String>any(), ArgumentMatchers.<String>any())).thenReturn(new ServiceReference[] { reference });
         ServiceReference result = resolveService(context, 998);
         assertNotNull(result);
         

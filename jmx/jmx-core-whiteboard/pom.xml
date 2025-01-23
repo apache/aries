@@ -68,7 +68,7 @@
         </aries.osgi.dynamic>
         <lastReleaseVersion>1.1.1</lastReleaseVersion>
 
-        <mockito-core.version>1.8.2</mockito-core.version>
+        <mockito-core.version>4.11.0</mockito-core.version>
         <org.apache.aries.jmx.api.version>1.1.5</org.apache.aries.jmx.api.version>
         <org.apache.aries.jmx.core.version>1.1.8</org.apache.aries.jmx.core.version>
         <org.apache.aries.util.version>1.1.1</org.apache.aries.util.version>

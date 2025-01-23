@@ -19,8 +19,8 @@ package org.apache.aries.jmx.cm;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -36,6 +36,7 @@ import javax.management.openmbean.TabularDataSupport;
 import org.apache.aries.jmx.codec.PropertyData;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;
 
@@ -156,7 +157,7 @@ public class ConfigurationAdminTest {
         String factoryPid = "org.apache.aries.jmx.factory.mock";
         
         Configuration config = mock(Configuration.class);
-        when(admin.getConfiguration(eq(factoryPid  + "-1260133982371-0"), anyString())).thenReturn(config);
+        when(admin.getConfiguration(eq(factoryPid  + "-1260133982371-0"), ArgumentMatchers.<String>any())).thenReturn(config);
         when(config.getFactoryPid()).thenReturn(factoryPid);
         
         ConfigurationAdmin mbean = new ConfigurationAdmin(admin);
@@ -176,7 +177,7 @@ public class ConfigurationAdminTest {
         Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put("one", "value");
         props.put("two", 2);
-        when(admin.getConfiguration(eq(pid), anyString())).thenReturn(config);
+        when(admin.getConfiguration(eq(pid), ArgumentMatchers.<String>any())).thenReturn(config);
         when(config.getProperties()).thenReturn(props);
         
         ConfigurationAdmin mbean = new ConfigurationAdmin(admin);
