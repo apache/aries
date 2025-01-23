@@ -60,7 +60,7 @@
         <lastReleaseVersion>1.0.1</lastReleaseVersion>
 
         <cglib-nodep.version>3.2.4</cglib-nodep.version>
-        <mockito-all.version>1.9.5</mockito-all.version>
+        <mockito-core.version>1.9.5</mockito-core.version>
         <org.apache.aries.async.api.version>1.0.2-SNAPSHOT</org.apache.aries.async.api.version>
         <org.apache.aries.async.promise.api.version>1.1.0-SNAPSHOT</org.apache.aries.async.promise.api.version>
         <org.osgi.service.log.version>1.5.0</org.osgi.service.log.version>
@@ -113,8 +113,8 @@
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>${mockito-all.version}</version>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito-core.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
