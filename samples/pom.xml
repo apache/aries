@@ -70,7 +70,7 @@
 
         <!-- Aries Blueprint Versions -->
         <ariesBlueprintAnnotationApiVersion>1.0.0</ariesBlueprintAnnotationApiVersion>
-        <ariesBlueprintAnnotationImplVersion>1.0.0</ariesBlueprintAnnotationImplVersion>
+        <ariesBlueprintAnnotationImplVersion>1.0.1</ariesBlueprintAnnotationImplVersion>
         <ariesBlueprintApiVersion>1.0.0</ariesBlueprintApiVersion>
         <ariesBlueprintVersion>1.0.0</ariesBlueprintVersion>
         <ariesBlueprintCmVersion>1.0.0</ariesBlueprintCmVersion>
