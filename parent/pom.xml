@@ -224,7 +224,7 @@
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <maven-shade-plugin.version>1.2.2</maven-shade-plugin.version>
         <versions-maven-plugin.version>1.1</versions-maven-plugin.version>
-        <findbugs-maven-plugin.version>2.3.1</findbugs-maven-plugin.version>
+        <findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
         <maven-bundle-plugin.version>2.5.0</maven-bundle-plugin.version>
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <maven-license-plugin.version>1.4.0</maven-license-plugin.version>
