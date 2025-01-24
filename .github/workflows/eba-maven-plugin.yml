@@ -46,4 +46,4 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        mvn -U -e -B -ntp clean install -f eba-maven-plugin/pom.xml
+        mvn -U -e -B -ntp clean install -f eba-maven-plugin/pom.xml -P run-its
