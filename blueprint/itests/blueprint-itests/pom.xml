@@ -62,7 +62,7 @@
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.apache.felix.configadmin.version>1.8.0</org.apache.felix.configadmin.version>
         <org.apache.servicemix.bundles.aopalliance.version>1.0_6</org.apache.servicemix.bundles.aopalliance.version>
-        <org.apache.servicemix.bundles.spring.version>4.2.2.RELEASE_1</org.apache.servicemix.bundles.spring.version>
+        <org.apache.servicemix.bundles.spring.version>5.3.39_1</org.apache.servicemix.bundles.spring.version>
         <org.eclipse.osgi.version>3.11.3</org.eclipse.osgi.version>
         <slf4j.version>1.7.7</slf4j.version>
         <tinybundles.version>2.0.0</tinybundles.version>
