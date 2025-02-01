@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.apache.aries.proxy.impl.ProxyUtils;
 import org.apache.aries.proxy.impl.SystemModuleClassLoader;
 import org.objectweb.asm.AnnotationVisitor;
@@ -66,7 +67,7 @@ public class ProxySubclassAdapter extends ClassVisitor implements Opcodes
   public ProxySubclassAdapter(ClassVisitor writer, String newClassName, ClassLoader loader)
   {
     // call the superclass constructor
-    super(Opcodes.ASM9, writer);
+    super(AsmApiVersion.apiVersion, writer);
     // the writer is now the cv in the superclass of ClassAdapter
 
     LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassAdapter", new Object[] { this, writer,

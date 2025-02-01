@@ -65,6 +65,7 @@ public class Helper {
                 mvnBundle("org.apache.felix", "org.apache.felix.configadmin"),
                 mvnBundle("org.ops4j.pax.url", "pax-url-aether"),
                 mvnBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
+                mvnBundle("org.objenesis", "objenesis"),
                 mvnBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mvnBundle("org.apache.commons", "commons-jexl"),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator"),

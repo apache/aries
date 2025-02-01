@@ -20,9 +20,9 @@ package org.apache.aries.proxy.impl.common;
 
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
 
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 public class ConstructorFinder extends ClassVisitor
@@ -35,9 +35,8 @@ public class ConstructorFinder extends ClassVisitor
     return hasNoArgsConstructor;
   }
 
-  public ConstructorFinder()
-  {
-    super(Opcodes.ASM9);
+  public ConstructorFinder() {
+    super(AsmApiVersion.apiVersion);
   }
 
   @Override

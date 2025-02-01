@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassReader;
@@ -64,7 +65,7 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
   public MethodCopyingClassAdapter(AbstractWovenProxyAdapter awpa, ClassLoader definingLoader,
       Class<?> superToCopy, Type overridingClassType, Set<Method> knownMethods, 
       Map<String, TypeMethod> transformedMethods) {
-    super(Opcodes.ASM9);
+    super(AsmApiVersion.apiVersion);
     this.wovenProxyAdapter = awpa;
     this.superToCopy = superToCopy;
     this.overridingClassType = overridingClassType;
@@ -178,7 +179,7 @@ private void methodHiddenException(String name) {
     
     public CopyingMethodAdapter(GeneratorAdapter mv, Type superType, 
         Method currentTransformMethod) {
-      super(Opcodes.ASM9);
+      super(AsmApiVersion.apiVersion);
       this.mv = mv;
       this.superType = superType;
       this.currentTransformMethod = currentTransformMethod;

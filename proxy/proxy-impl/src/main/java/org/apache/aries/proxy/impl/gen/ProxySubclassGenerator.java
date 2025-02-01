@@ -40,10 +40,12 @@ import org.apache.aries.proxy.UnableToProxyException;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objenesis.Objenesis;
+import org.objenesis.ObjenesisStd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.reflect.ReflectionFactory;
+//import sun.reflect.ReflectionFactory;
 
 @SuppressWarnings("restriction")
 public class ProxySubclassGenerator
@@ -170,31 +172,16 @@ public class ProxySubclassGenerator
     try {
       Class<?> generatedProxySubclass = getProxySubclass(classToProxy, loader);
       LOGGER.debug("Getting the proxy subclass constructor");
-      // Because the newer JVMs throw a VerifyError if a class attempts to in a constructor other than their superclasses constructor,
-      // and because we can't know what objects/values we need to pass into the class being proxied constructor, 
-      // we instantiate the proxy class using the ReflectionFactory.newConstructorForSerialization() method which allows us to instantiate the 
-      // proxy class without calling the proxy class' constructor. It is in fact using the java.lang.Object constructor so is in effect 
-      // doing what we were doing before.
-      ReflectionFactory factory = ReflectionFactory.getReflectionFactory();
-      Constructor<?> constr = Object.class.getConstructor();
-      Constructor<?> subclassConstructor = factory.newConstructorForSerialization(generatedProxySubclass, constr);
-      proxySubclassInstance = subclassConstructor.newInstance();
-      
+      // Simple newInstance or constructor call cannot be used since constructor may be private
+      // or we may not know constructor parameters
+      Objenesis objenesis = new ObjenesisStd();
+      proxySubclassInstance = objenesis.newInstance(generatedProxySubclass);;
       Method setIHMethod = proxySubclassInstance.getClass().getMethod("setInvocationHandler", InvocationHandler.class);
       setIHMethod.invoke(proxySubclassInstance, ih);
       LOGGER.debug("Invoked proxy subclass constructor");
-    } catch (NoSuchMethodException nsme) {
-      LOGGER.debug(Constants.LOG_EXCEPTION, nsme);
-      throw new ProxyClassInstantiationException(classToProxy, nsme);
-    } catch (InvocationTargetException ite) {
-      LOGGER.debug(Constants.LOG_EXCEPTION, ite);
-      throw new ProxyClassInstantiationException(classToProxy, ite);
-    } catch (InstantiationException ie) {
-      LOGGER.debug(Constants.LOG_EXCEPTION, ie);
-      throw new ProxyClassInstantiationException(classToProxy, ie);
-    } catch (IllegalAccessException iae) {
-      LOGGER.debug(Constants.LOG_EXCEPTION, iae);
-      throw new ProxyClassInstantiationException(classToProxy, iae);
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      LOGGER.debug(Constants.LOG_EXCEPTION, e);
+      throw new ProxyClassInstantiationException(classToProxy, e);
     } catch (VerifyError ve) {
         LOGGER.info(String.format("The no-argument constructor of class %s is private and therefore it may not be possible to generate a valid proxy.", 
                                   classToProxy));
