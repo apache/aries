@@ -18,9 +18,12 @@
  */
 package org.apache.aries.web.url;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -69,8 +72,14 @@ public class WAR_URLServiceHandler extends AbstractURLStreamHandlerService imple
         firstProperty = false;
       }
     }
-        
-    return new WARConnection(new URL(url.getPath()), properties);
+      WARConnection warConnection = new WARConnection(new URL(url.getPath()), properties);
+      // in new version of org.eclipse.osgi > 3.17.0 we cannot return war connection
+      // since when its protocol is file then generated input stream is ignored
+      // and framework reads file again
+      // https://github.com/eclipse-equinox/equinox/blob/e35221a86afd24ee21b7b9d02db298a90ace1bc0/bundles/org.eclipse.osgi/container/src/org/eclipse/osgi/storage/Storage.java#L1158-L1181
+      File webbundle = File.createTempFile("webbundle", ".wab");
+      Files.copy(warConnection.getInputStream(), webbundle.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      return webbundle.getAbsoluteFile().toURI().toURL().openConnection();
   }
 
   @Override
