@@ -20,6 +20,7 @@ package org.apache.aries.proxy.impl.gen;
 
 import java.util.Collection;
 
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
@@ -47,7 +48,7 @@ public class ProxySubclassHierarchyAdapter extends ClassVisitor implements Opcod
 
   ProxySubclassHierarchyAdapter(ProxySubclassAdapter adapter, Collection<String> methodsToImplement)
   {
-    super(Opcodes.ASM9);
+    super(AsmApiVersion.apiVersion);
     LOGGER.debug(Constants.LOG_ENTRY, "ProxySubclassHeirarchyAdapter", new Object[] {
         this, adapter, methodsToImplement });
 

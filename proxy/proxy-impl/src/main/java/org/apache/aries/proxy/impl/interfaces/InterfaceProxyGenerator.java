@@ -33,6 +33,7 @@ import java.util.concurrent.Callable;
 import org.apache.aries.proxy.FinalModifierException;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 import org.osgi.framework.Bundle;
@@ -48,7 +49,7 @@ public final class InterfaceProxyGenerator extends ClassVisitor implements Opcod
 
   public InterfaceProxyGenerator()
   {
-    super(Opcodes.ASM9);
+    super(AsmApiVersion.apiVersion);
     
   }
 

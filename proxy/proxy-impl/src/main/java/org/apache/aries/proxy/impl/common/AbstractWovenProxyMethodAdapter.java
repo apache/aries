@@ -35,6 +35,7 @@ import static org.objectweb.asm.Opcodes.IFNE;
 import java.util.Arrays;
 
 import org.apache.aries.proxy.InvocationListener;
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -181,7 +182,7 @@ public abstract class AbstractWovenProxyMethodAdapter extends GeneratorAdapter
       String methodStaticFieldName, Method currentTransformMethod, Type typeBeingWoven,
       Type methodDeclaringType, boolean isMethodDeclaringTypeInterface, boolean isDefaultMethod)
   {
-    super(ASM9, mv, access, name, desc);
+    super(AsmApiVersion.apiVersion, mv, access, name, desc);
     this.methodStaticFieldName = methodStaticFieldName;
     this.currentTransformMethod = currentTransformMethod;
     returnType = currentTransformMethod.getReturnType();

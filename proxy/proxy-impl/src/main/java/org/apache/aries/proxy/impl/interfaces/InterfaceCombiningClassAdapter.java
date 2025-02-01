@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.aries.proxy.UnableToProxyException;
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.apache.aries.proxy.impl.ProxyUtils;
 import org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter;
 import org.apache.aries.proxy.impl.common.OSGiFriendlyClassVisitor;
@@ -61,7 +62,7 @@ final class InterfaceCombiningClassAdapter extends ClassVisitor implements Opcod
    */
   InterfaceCombiningClassAdapter(String className,
       ClassLoader loader, Class<?> superclass, Collection<Class<?>> interfaces) {
-    super(Opcodes.ASM9);
+    super(AsmApiVersion.apiVersion);
     writer = new OSGiFriendlyClassWriter(ClassWriter.COMPUTE_FRAMES, loader);
     ClassVisitor cv = new OSGiFriendlyClassVisitor(writer, ClassWriter.COMPUTE_FRAMES);
     adapter = new InterfaceUsingWovenProxyAdapter(cv, className, loader);

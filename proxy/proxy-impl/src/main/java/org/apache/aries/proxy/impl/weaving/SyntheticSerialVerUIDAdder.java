@@ -22,6 +22,7 @@ import static org.objectweb.asm.Opcodes.ASM9;
 
 import java.lang.reflect.Modifier;
 
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -43,7 +44,7 @@ class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
   private boolean hasSVUID;
 
   public SyntheticSerialVerUIDAdder(WovenProxyAdapter cv) {
-    super(ASM9, cv);
+    super(AsmApiVersion.apiVersion, cv);
     wpa = cv;
   }
 

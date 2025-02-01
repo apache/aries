@@ -294,6 +294,7 @@ public abstract class AbstractProxyTest extends AbstractIntegrationTest {
               configurePaxUrlLocalMavenRepoIfNeeded(),
               failOnUnresolvableBundles(),
               addAsmBundles(),
+              mavenBundle("org.objenesis", "objenesis").versionAsInProject(),
               mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
               mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
               mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject()

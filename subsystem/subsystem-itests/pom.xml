@@ -43,6 +43,7 @@
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
         <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
         <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <objenesis.version>3.4</objenesis.version>
         <org.apache.aries.subsystem.modeller.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.modeller.version>
         <org.apache.aries.blueprint.version>1.10.4-SNAPSHOT</org.apache.aries.blueprint.version>
         <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
@@ -133,6 +134,12 @@
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
             <version>${org.apache.aries.proxy.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
+            <version>${objenesis.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

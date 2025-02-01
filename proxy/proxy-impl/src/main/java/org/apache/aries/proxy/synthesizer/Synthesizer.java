@@ -22,6 +22,7 @@ package org.apache.aries.proxy.synthesizer;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+import org.apache.aries.proxy.impl.AsmApiVersion;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -82,7 +83,7 @@ public class Synthesizer
 
     public CustomClassVisitor( ClassVisitor cv)
     {
-      super(Opcodes.ASM8, cv);
+      super(AsmApiVersion.apiVersion, cv);
       
     }
     @Override

@@ -169,7 +169,8 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
         return CoreOptions.composite(
                 mavenBundle("org.apache.aries.subsystem", "org.apache.aries.subsystem.modeller").versionAsInProject(),
         		mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint.core").versionAsInProject(),
-        		mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").versionAsInProject());
+        		mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").versionAsInProject(),
+				mavenBundle("org.objenesis", "objenesis").versionAsInProject());
     }
 
     /**
