@@ -42,7 +42,7 @@
 
     <properties>
         <aries.osgi.export.pkg>
-            org.apache.aries.transaction.jdbc;-noimport:=true;version="2.1"
+            org.apache.aries.transaction.jdbc;version="2.1"
         </aries.osgi.export.pkg>
         <aries.osgi.import>
             org.osgi.service.blueprint.*;resolution:=optional,
