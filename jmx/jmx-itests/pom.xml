@@ -55,7 +55,6 @@
         <slf4j-api.version>1.7.7</slf4j-api.version>
         <tinybundles.version>2.0.0</tinybundles.version>
         <exam.version>3.4.0</exam.version>
-        <logback.version>1.2.13</logback.version>
         <url.version>2.5.3</url.version>
     </properties>
 
@@ -210,18 +209,6 @@
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
             <version>${url.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
