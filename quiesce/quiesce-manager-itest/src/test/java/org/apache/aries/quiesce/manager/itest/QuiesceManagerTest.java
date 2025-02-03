@@ -83,7 +83,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
     @Test
     public void testNullSafe() throws Exception {
         //Check we're null safe
-        manager.quiesce(null);  
+        manager.quiesce(null);
     }
 
     @Test
@@ -106,9 +106,9 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleContext.registerService(QuiesceParticipant.class.getName(), participant1, null);
         //Try quiescing the bundle with immediate return
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
-        
+
         manager.quiesceWithFuture(1000,bundleList).get(5000, TimeUnit.MILLISECONDS);
-        
+
         assertEquals("Participant should have finished once", 1, participant1.getFinishedCount());
         assertTrue("Bundle "+b1.getSymbolicName()+" should not be in active state", b1.getState() != Bundle.ACTIVE);
     }
@@ -128,7 +128,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         while (System.currentTimeMillis() < timeoutTime && b1.getState() == Bundle.ACTIVE){
             Thread.sleep(500);
         }
-        
+
         assertEquals("Participant should have started once", 1, participant2.getStartedCount());
         assertEquals("Participant should not have finished", 0, participant2.getFinishedCount());
         assertTrue("Bundle "+b1.getSymbolicName()+" should not be in active state", b1.getState() != Bundle.ACTIVE);
@@ -143,7 +143,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleList.add(b1);
 
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
-        
+
         // we should be finishing in about 5000 millis not 10000
         manager.quiesceWithFuture(10000,bundleList).get(7000, TimeUnit.MILLISECONDS);
 
@@ -162,9 +162,9 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         bundleList = new ArrayList<Bundle>();
         bundleList.add(b1);
         assertEquals("Bundle "+b1.getSymbolicName()+" should be in active state", Bundle.ACTIVE, b1.getState());
-        
+
         manager.quiesceWithFuture(10000,bundleList).get(15000, TimeUnit.MILLISECONDS);
-        
+
         assertEquals("Participant 1 should have started once", 1, participant1.getStartedCount());
         assertEquals("Participant 1 should finished once", 1, participant1.getFinishedCount());
         assertEquals("Participant 2 should have started once", 1, participant2.getStartedCount());
@@ -192,7 +192,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         assertEquals("Participant 3 has started", 1, participant3.getStartedCount());
         assertEquals("Participant 3 has finished", 1, participant3.getFinishedCount());
     }
-    
+
     @Test
     public void testFutureWithWait() throws Exception {
         bundleContext.registerService(QuiesceParticipant.class.getName(), participant2, null);
@@ -295,10 +295,6 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
                 // Bundles
                 mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
                 mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
-                mavenBundle("commons-lang", "commons-lang").versionAsInProject(),
-                mavenBundle("commons-collections", "commons-collections").versionAsInProject(),
-                mavenBundle("commons-pool", "commons-pool").versionAsInProject(),
-                mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp").versionAsInProject(),
                 mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api").versionAsInProject(),
                 mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.manager").versionAsInProject(),
                 mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
