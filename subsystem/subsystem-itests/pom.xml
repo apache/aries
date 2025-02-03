@@ -39,7 +39,7 @@
 
     <properties>
         <asm.version>5.0.3</asm.version>
-        <build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <easymock.version>3.0</easymock.version>
         <exam.version>4.13.5</exam.version>
