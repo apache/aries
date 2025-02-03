@@ -65,7 +65,7 @@
         <blueprint.api.version>1.0.0</blueprint.api.version>
         <blueprint.core.version>1.9.0</blueprint.core.version>
         <blueprint.parser.version>1.5.0</blueprint.parser.version>
-        <de.kalpatec.pojosr.framework.version>0.1.6</de.kalpatec.pojosr.framework.version>
+        <de.kalpatec.pojosr.framework.version>0.2.1</de.kalpatec.pojosr.framework.version>
         <org.apache.aries.proxy.impl.version>1.0.6</org.apache.aries.proxy.impl.version>
         <org.apache.felix.configadmin.version>1.2.8</org.apache.felix.configadmin.version>
         <org.apache.felix.utils.version>1.11.6</org.apache.felix.utils.version>

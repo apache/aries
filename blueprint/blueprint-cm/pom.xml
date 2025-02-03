@@ -60,7 +60,7 @@
         <blueprint.api.version>1.0.1</blueprint.api.version>
         <blueprint.core.version>1.10.3</blueprint.core.version>
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
-        <de.kalpatec.pojosr.framework.version>0.1.6</de.kalpatec.pojosr.framework.version>
+        <de.kalpatec.pojosr.framework.version>0.2.1</de.kalpatec.pojosr.framework.version>
         <jcl-over-slf4j.version>1.7.5</jcl-over-slf4j.version>
         <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
         <org.apache.aries.blueprint.core.version>1.10.0</org.apache.aries.blueprint.core.version>
