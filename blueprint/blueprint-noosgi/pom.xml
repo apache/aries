@@ -50,7 +50,7 @@
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
         <org.apache.felix.utils.version>1.11.6</org.apache.felix.utils.version>
         <proxy.impl.version>1.0.3</proxy.impl.version>
-        <slf4j.version>1.7.5</slf4j.version>
+        <slf4j.version>1.7.33</slf4j.version>
     </properties>
 
     <profiles>
