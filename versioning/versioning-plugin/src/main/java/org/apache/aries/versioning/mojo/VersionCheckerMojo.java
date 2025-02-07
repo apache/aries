@@ -92,9 +92,11 @@ public class VersionCheckerMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
         if (skip) {
+            getLog().info("Version check is skipped");
             return;
         }
         if ("pom".equals(project.getPackaging())) {
+            getLog().info("Skipping version check for pom");
             return;
         }
         if (newFile == null) {

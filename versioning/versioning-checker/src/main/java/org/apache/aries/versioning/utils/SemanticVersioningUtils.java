@@ -45,6 +45,7 @@ public class SemanticVersioningUtils {
     public static final String SERIALIZABLE_CLASS_IDENTIFIER = "java/io/Serializable";
     public static final String SERIAL_VERSION_UTD = "serialVersionUID";
     public static final String ENUM_CLASS = "java/lang/Enum";
+    @Deprecated
     public static final int ASM4 = Opcodes.ASM4;
 
     public static boolean isLessAccessible(GenericDeclaration before, GenericDeclaration after) {

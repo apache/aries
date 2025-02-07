@@ -35,14 +35,13 @@ public class SemanticVersioningClassVisitor extends ClassVisitor {
     private SerialVersionClassVisitor cv = null;
 
     public SemanticVersioningClassVisitor(URLClassLoader newJarLoader, SerialVersionClassVisitor cv) {
-      super(SemanticVersioningUtils.ASM4);
+      super(AsmApiVersion.apiVersion);
       this.loader = newJarLoader;
       this.cv = cv;
     }
 
     public SemanticVersioningClassVisitor(URLClassLoader newJarLoader) {
-      super(SemanticVersioningUtils.ASM4);
-      this.loader = newJarLoader;
+      this(newJarLoader, null);
     }
 
     public ClassDeclaration getClassDeclaration() {

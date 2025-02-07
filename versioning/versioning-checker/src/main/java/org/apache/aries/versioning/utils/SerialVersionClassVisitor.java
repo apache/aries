@@ -21,14 +21,12 @@ package org.apache.aries.versioning.utils;
 import java.io.IOException;
 
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
 
 public class SerialVersionClassVisitor extends SerialVersionUIDAdder {
 
     public SerialVersionClassVisitor(ClassVisitor cv) {
-        super(Opcodes.ASM5, cv);
-
+        super(AsmApiVersion.apiVersion, cv);
     }
 
     public long getComputeSerialVersionUID() {

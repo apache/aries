@@ -18,6 +18,7 @@ on:
       - parent/**
       - testsupport/**
       - proxy/**
+      - versioning/**
       - util/**
       - quiesce/**
       - blueprint/**
@@ -57,6 +58,9 @@ jobs:
     - name: Build proxy
       shell: bash
       run: mvn -U -e -B -ntp clean install -f proxy
+    - name: Build versioning
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f versioning
     - name: Build util
       shell: bash
       run: mvn -U -e -B -ntp clean install -f util
