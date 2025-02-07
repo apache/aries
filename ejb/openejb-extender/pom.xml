@@ -62,7 +62,7 @@
         <geronimo-jpa_2.0_spec.version>1.1</geronimo-jpa_2.0_spec.version>
         <geronimo-jta_1.1_spec.version>1.1.1</geronimo-jta_1.1_spec.version>
         <openejb-core.version>4.0.0-beta-1</openejb-core.version>
-        <org.apache.aries.jpa.api.version>2.7.3</org.apache.aries.jpa.api.version>
+        <org.apache.aries.jpa.api.version>1.0.2</org.apache.aries.jpa.api.version>
         <org.apache.aries.proxy.api.version>1.0.0</org.apache.aries.proxy.api.version>
         <org.apache.aries.testsupport.unit.version>1.0.0</org.apache.aries.testsupport.unit.version>
         <org.apache.aries.util.version>1.0.0</org.apache.aries.util.version>
