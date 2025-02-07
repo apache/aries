@@ -43,7 +43,6 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
-    - name: Build
+    - name: Build util
       shell: bash
-      run: |
-        mvn -U -e -B -ntp clean install -f util/pom.xml
+      run: mvn -U -e -B -ntp clean install -f util

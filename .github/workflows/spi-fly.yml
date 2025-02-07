@@ -15,16 +15,11 @@ name: SPI Fly - CI Build
 on:
   pull_request:
     paths:
-      - parent/**
       - spi-fly/**
       - .github/workflows/spi-fly.yml
   push:
     branches:
       - 'trunk'
-
-defaults:
-  run:
-    working-directory: spi-fly
 
 env:
   LC_ALL: en_US.UTF-8
@@ -50,11 +45,8 @@ jobs:
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
-        check-latest: ${{ endsWith(matrix.java, '-ea') }}
+        distribution: 'temurin'
         java-version: ${{ matrix.java }}
-    - name: Build
-      continue-on-error: ${{contains(matrix.java, '-ea')}}
+    - name: Build spi-fly
       shell: bash
-      run: |
-        mvn -U -e -B -ntp install
+      run: mvn -U -e -B -ntp clean install -f spi-fly

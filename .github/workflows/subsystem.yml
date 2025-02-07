@@ -44,9 +44,12 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
-    - name: Build
+    - name: Build parent
       shell: bash
-      run: |
-        mvn -U -e -B -ntp clean install -f parent/pom.xml
-        mvn -U -e -B -ntp clean install -f testsupport/pom.xml
-        mvn -U -e -B -ntp clean install -f subsystem/pom.xml
+      run: mvn -U -e -B -ntp clean install -f parent
+    - name: Build testsupport
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f testsupport
+    - name: Build subsystem
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f subsystem

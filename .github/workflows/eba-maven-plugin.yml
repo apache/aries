@@ -43,7 +43,6 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
-    - name: Build
+    - name: Build eba-maven-plugin
       shell: bash
-      run: |
-        mvn -U -e -B -ntp clean install -f eba-maven-plugin/pom.xml -P run-its
+      run: mvn -U -e -B -ntp clean install -f eba-maven-plugin -P run-its
