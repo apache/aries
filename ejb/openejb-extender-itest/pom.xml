@@ -80,7 +80,7 @@
         <openjpa.version>2.2.2</openjpa.version>
         <org.apache.aries.blueprint.version>1.0.0</org.apache.aries.blueprint.version>
         <org.apache.aries.ejb.openejb.extender.version>1.0.0</org.apache.aries.ejb.openejb.extender.version>
-        <org.apache.aries.jpa.api.version>1.0.0</org.apache.aries.jpa.api.version>
+        <org.apache.aries.jpa.api.version>2.7.3</org.apache.aries.jpa.api.version>
         <org.apache.aries.jpa.container.context.version>1.0.0</org.apache.aries.jpa.container.context.version>
         <org.apache.aries.jpa.container.version>1.0.0</org.apache.aries.jpa.container.version>
         <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>

@@ -60,7 +60,7 @@
         <org.apache.aries.application.resolver.obr.version>1.0.0</org.apache.aries.application.resolver.obr.version>
         <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
         <org.apache.aries.blueprint.version>1.0.0</org.apache.aries.blueprint.version>
-        <org.apache.aries.jpa.api.version>1.0.0</org.apache.aries.jpa.api.version>
+        <org.apache.aries.jpa.api.version>2.7.3</org.apache.aries.jpa.api.version>
         <org.apache.aries.jpa.blueprint.aries.version>1.0.0</org.apache.aries.jpa.blueprint.aries.version>
         <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
         <org.apache.aries.transaction.blueprint.version>1.0.0</org.apache.aries.transaction.blueprint.version>
