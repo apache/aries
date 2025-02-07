@@ -54,6 +54,7 @@
         <aries.osgi.export.service>
             org.apache.aries.quiesce.manager.QuiesceManager
         </aries.osgi.export.service>
+        <org.apache.aries.versioning.plugin.version>0.3.2-SNAPSHOT</org.apache.aries.versioning.plugin.version>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
         <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
@@ -98,7 +99,6 @@
             <plugin>
                 <groupId>org.apache.aries.versioning</groupId>
                 <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <configuration><skip>true</skip></configuration>
             </plugin>
         </plugins>
     </build>

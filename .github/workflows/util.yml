@@ -16,6 +16,7 @@ on:
   pull_request:
     paths:
       - parent/**
+      - versioning/**
       - util/**
       - .github/workflows/util.yml
   push:
@@ -43,6 +44,12 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
+    - name: Build parent
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f parent
+    - name: Build versioning
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f versioning
     - name: Build util
       shell: bash
       run: mvn -U -e -B -ntp clean install -f util

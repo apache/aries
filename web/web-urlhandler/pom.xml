@@ -55,6 +55,7 @@
         </aries.osgi.import>
         <aries.osgi.activator>org.apache.aries.web.converter.impl.Activator</aries.osgi.activator>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
+        <org.apache.aries.versioning.plugin.version>0.3.2-SNAPSHOT</org.apache.aries.versioning.plugin.version>
 
         <asm.version>9.7.1</asm.version>
     </properties>

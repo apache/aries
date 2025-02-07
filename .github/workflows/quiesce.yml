@@ -17,6 +17,7 @@ on:
     paths:
       - parent/**
       - testsupport/**
+      - versioning/**
       - util/**
       - quiesce/**
       - .github/workflows/quiesce.yml
@@ -51,6 +52,9 @@ jobs:
     - name: Build testsupport
       shell: bash
       run: mvn -U -e -B -ntp clean install -f testsupport
+    - name: Build versioning
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f versioning
     - name: Build util
       shell: bash
       run: mvn -U -e -B -ntp clean install -f util

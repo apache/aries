@@ -40,6 +40,7 @@
     </scm>
 
     <properties>
+        <aries.skip.version.check>true</aries.skip.version.check>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
         <org.apache.aries.quiesce.manager.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.manager.version>
