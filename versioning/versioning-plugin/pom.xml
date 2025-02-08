@@ -42,14 +42,9 @@
 
     <properties>
         <maven-artifact-resolver.version>1.0</maven-artifact-resolver.version>
-        <maven-artifact.version>3.0.3</maven-artifact.version>
-        <maven-common-artifact-filters.version>1.4</maven-common-artifact-filters.version>
-        <maven-compat.version>3.0.3</maven-compat.version>
-        <maven-core.version>3.0.3</maven-core.version>
-        <maven-plugin-annotations.version>3.2</maven-plugin-annotations.version>
-        <maven-plugin-api.version>3.0.3</maven-plugin-api.version>
+        <maven-common-artifact-filters.version>3.4.0</maven-common-artifact-filters.version>
+        <maven.version>3.9.9</maven.version>
         <maven-plugin-plugin.version>3.15.1</maven-plugin-plugin.version>
-        <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
         <org.apache.aries.versioning.checker.version>0.3.2-SNAPSHOT</org.apache.aries.versioning.checker.version>
     </properties>
 
@@ -74,22 +69,26 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>${maven-plugin-api.version}</version>
+            <version>${maven.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-            <version>${maven-artifact.version}</version>
+            <version>${maven.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-core</artifactId>
-            <version>${maven-core.version}</version>
+            <version>${maven.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-compat</artifactId>
-            <version>${maven-compat.version}</version>
+            <version>${maven.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -100,7 +99,7 @@
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>${maven-plugin-annotations.version}</version>
+            <version>${maven-plugin-plugin.version}</version>
             <scope>provided</scope>
         </dependency>
         <!-- maven shared -->
@@ -133,10 +132,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>${maven-release-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
