@@ -18,6 +18,7 @@
  */
 package org.apache.aries.blueprint.plugin;
 
+import javax.inject.Inject;
 import org.apache.aries.blueprint.plugin.model.Blueprint;
 import org.apache.aries.blueprint.plugin.model.ConflictDetected;
 import org.apache.aries.blueprint.plugin.spi.Activation;
@@ -26,7 +27,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -66,7 +66,7 @@ public class GenerateMojo extends AbstractMojo {
     @Parameter
     protected Set<String> namespaces;
 
-    @Component
+    @Inject
     private BuildContext buildContext;
 
     /**

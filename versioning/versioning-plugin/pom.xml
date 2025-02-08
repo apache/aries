@@ -41,6 +41,7 @@
     </scm>
 
     <properties>
+        <javax.inject.version>1</javax.inject.version>
         <maven-artifact-resolver.version>1.0</maven-artifact-resolver.version>
         <maven-common-artifact-filters.version>3.4.0</maven-common-artifact-filters.version>
         <maven.version>3.9.9</maven.version>
@@ -53,6 +54,11 @@
             <groupId>org.apache.aries.versioning</groupId>
             <artifactId>org.apache.aries.versioning.checker</artifactId>
             <version>${org.apache.aries.versioning.checker.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

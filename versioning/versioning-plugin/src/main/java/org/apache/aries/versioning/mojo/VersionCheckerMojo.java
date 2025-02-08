@@ -25,6 +25,7 @@ import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import org.apache.aries.util.manifest.BundleManifest;
 import org.apache.aries.versioning.check.BundleCompatibility;
 import org.apache.aries.versioning.check.BundleInfo;
@@ -34,7 +35,6 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -81,13 +81,13 @@ public class VersionCheckerMojo extends AbstractMojo {
     @Parameter
     private List<String> excludes;
     
-    @Component
+    @Inject
     private RepositorySystem repository;
     
-    @Component
+    @Inject
     protected MavenProject project;
     
-    @Component
+    @Inject
     private MavenSession session;
     
     public void execute() throws MojoExecutionException {
