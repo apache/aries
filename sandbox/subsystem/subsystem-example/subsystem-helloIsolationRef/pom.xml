@@ -23,15 +23,15 @@
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
         <version>1.0.1-SNAPSHOT</version>
-        <relativePath>../../../parent/pom.xml</relativePath>
+        <relativePath>../../../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.subsystem</groupId>
-    <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
+    <artifactId>org.apache.aries.subsystem.example.helloIsolationRef</artifactId>
     <packaging>bundle</packaging>
     <version>0.1-SNAPSHOT</version>
-    <name>Apache Aries Subsystem hello Isolation Example</name>
-    <description>Subsystems Hello Isolation example</description>
+    <name>Apache Aries Subsystem hello IsolationRef Example</name>
+    <description>Subsystems Hello IsolationRef example</description>
 
     <scm>
         <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
@@ -41,10 +41,14 @@
 
     <properties>
         <aries.osgi.activator>
-            org.apache.aries.subsystem.example.helloIsolation.Activator
+            org.apache.aries.subsystem.example.helloIsolationRef.Activator
         </aries.osgi.activator>
+        <aries.osgi.import>
+            org.apache.aries.subsystem.example.helloIsolation,
+            *
+        </aries.osgi.import>
         <aries.osgi.private.pkg>
-            org.apache.aries.subsystem.example.helloIsolation
+            org.apache.aries.subsystem.example.helloIsolationRef
         </aries.osgi.private.pkg>
         <aries.skip.version.check>true</aries.skip.version.check>
     </properties>
@@ -56,8 +60,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -22,16 +22,16 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>2.0.0</version>
         <relativePath>../../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.subsystem</groupId>
-    <artifactId>org.apache.aries.subsystem.example.helloIsolationRef</artifactId>
+    <artifactId>org.apache.aries.subsystem.install</artifactId>
     <packaging>bundle</packaging>
+    <name>Apache Aries Subsystem OBR</name>
     <version>0.1-SNAPSHOT</version>
-    <name>Apache Aries Subsystem hello IsolationRef Example</name>
-    <description>Subsystems Hello IsolationRef example</description>
+    <description>Subsystems OBR support</description>
 
     <scm>
         <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
@@ -40,30 +40,29 @@
     </scm>
 
     <properties>
-        <aries.osgi.activator>
-            org.apache.aries.subsystem.example.helloIsolationRef.Activator
-        </aries.osgi.activator>
-        <aries.osgi.import>
-            org.apache.aries.subsystem.example.helloIsolation,
-            *
-        </aries.osgi.import>
         <aries.osgi.private.pkg>
-            org.apache.aries.subsystem.example.helloIsolationRef
+            org.apache.aries.subsystem.install.internal
         </aries.osgi.private.pkg>
-        <aries.skip.version.check>true</aries.skip.version.check>
+
+        <org.apache.aries.subsystem.api.version>1.2.0-SNAPSHOT</org.apache.aries.subsystem.api.version>
+        <org.apache.felix.fileinstall.version>2.0.8</org.apache.felix.fileinstall.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.api</artifactId>
+            <version>${org.apache.aries.subsystem.api.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.subsystem</groupId>
-            <artifactId>org.apache.aries.subsystem.example.helloIsolation</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.fileinstall</artifactId>
+            <version>${org.apache.felix.fileinstall.version}</version>
         </dependency>
     </dependencies>
 
