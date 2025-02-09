@@ -32,15 +32,16 @@ The sources are now directly availble in [aries github](https://github.com/apach
 
 Some of the subprojects have their own git repos:
 
-| Subproject |
-| ---------- |
-| [Aries CDI](https://github.com/apache/aries-cdi) |
-| [Aries Component DSL](https://github.com/apache/aries-component-dsl) |
-| [Aries Containers](https://github.com/apache/aries-containers) |
+| Subproject                                                                  |
+|-----------------------------------------------------------------------------|
+| [Aries CDI](https://github.com/apache/aries-cdi)                            |
+| [Aries Component DSL](https://github.com/apache/aries-component-dsl)        |
+| [Aries Containers](https://github.com/apache/aries-containers)              |
 | [Aries JAX-RS whiteboard](https://github.com/apache/aries-jax-rs-whiteboard) |
-| [Aries JPA](https://github.com/apache/aries-jpa) |
-| [Aries RSA](https://github.com/apache/aries-rsa) |
-| [Aries Transaction Control](https://github.com/apache/aries-tx-control) |
+| [Aries JPA](https://github.com/apache/aries-jpa)                            |
+| [Aries RSA](https://github.com/apache/aries-rsa)                            |
+| [Aries Transaction Control](https://github.com/apache/aries-tx-control)     |
+| [Aries Typed Event](https://github.com/apache/aries-typedevent)           |
 
 ## Build
 
@@ -48,5 +49,11 @@ Most projects can be built using
 
     mvn clean install
 
-As the Aries svn hosts a lot of different subprojects it makes sense to only
+As the Aries main repository hosts a lot of different subprojects it makes sense to only
 build the specific subproject.
+
+## Submodule dependencies visualization
+
+1. Install graphviz (`dot` program is necessary)
+2. Run script `./createDependencyGraph.sh SUBMODULE`
+3. Graph of dependencies will be generated in `target` directory

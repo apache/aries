@@ -211,6 +211,7 @@
         <maven-paxexam-plugin.version>1.2.4</maven-paxexam-plugin.version>
         <org.apache.aries.versioning.plugin.version>0.3.0</org.apache.aries.versioning.plugin.version>
         <animal-sniffer-enforcer-rule.version>1.6</animal-sniffer-enforcer-rule.version>
+        <depgraph-maven-plugin.version>4.0.3</depgraph-maven-plugin.version>
 
         <!--Other-->
         <java.source.version>8</java.source.version>
@@ -430,6 +431,22 @@
                     <version>${org.apache.aries.versioning.plugin.version}</version>
                     <configuration>
                         <oldArtifact>${project.groupId}:${project.artifactId}:${lastReleaseVersion}</oldArtifact>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.ferstl</groupId>
+                    <artifactId>depgraph-maven-plugin</artifactId>
+                    <version>${depgraph-maven-plugin.version}</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>*:*test*</exclude>
+                        </excludes>
+                        <showGroupIds>true</showGroupIds>
+                        <scopes>
+                            <scope>compile</scope>
+                            <scope>provided</scope>
+                            <scope>sources</scope>
+                        </scopes>
                     </configuration>
                 </plugin>
             </plugins>
