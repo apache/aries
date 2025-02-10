@@ -150,16 +150,22 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
 
                 // Bundles
                 mavenBundle("org.eclipse.equinox", "cm").versionAsInProject(),
-                mavenBundle("org.eclipse.osgi", "services").versionAsInProject(),
-                mavenBundle("org.apache.geronimo.specs", "geronimo-servlet_2.5_spec").versionAsInProject(),
+                mavenBundle("org.eclipse.osgi", "org.eclipse.osgi.services").versionAsInProject(),
+                mavenBundle("org.apache.geronimo.specs", "geronimo-servlet_3.0_spec").versionAsInProject(),
 
                 mavenBundle("org.ops4j.pax.web", "pax-web-extender-war").versionAsInProject(),
                 mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.web", "pax-web-api").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.web", "pax-web-spi").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.web", "pax-web-descriptor").versionAsInProject(),
+                mavenBundle("org.apache.xbean", "xbean-finder-shaded").versionAsInProject(),
+                mavenBundle("org.apache.xbean", "xbean-asm9-shaded").versionAsInProject(),
+                mavenBundle("org.apache.xbean", "xbean-bundleutils").versionAsInProject(),
 
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api").versionAsInProject(),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core").versionAsInProject(),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.api").versionAsInProject(),
-                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl").versionAsInProject(),
+                mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
                 mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
                 mavenBundle("org.apache.aries.jndi", "org.apache.aries.jndi").versionAsInProject(),
 

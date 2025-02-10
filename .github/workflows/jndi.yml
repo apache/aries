@@ -50,6 +50,9 @@ jobs:
     - name: Build testsupport
       shell: bash
       run: mvn -U -e -B -ntp clean install -f testsupport
+    - name: Build util
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f util
     - name: Build jndi
       shell: bash
       run: mvn -U -e -B -ntp clean install -f jndi
