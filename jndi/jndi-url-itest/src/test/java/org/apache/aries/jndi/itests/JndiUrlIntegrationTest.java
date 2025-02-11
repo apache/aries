@@ -151,13 +151,13 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
                 // Bundles
                 mavenBundle("org.eclipse.equinox", "cm").versionAsInProject(),
                 mavenBundle("org.eclipse.osgi", "org.eclipse.osgi.services").versionAsInProject(),
-                mavenBundle("org.apache.geronimo.specs", "geronimo-servlet_3.0_spec").versionAsInProject(),
+                mavenBundle("javax.servlet", "javax.servlet-api").versionAsInProject(),
+                mavenBundle("javax.annotation", "javax.annotation-api").versionAsInProject(),
 
                 mavenBundle("org.ops4j.pax.web", "pax-web-extender-war").versionAsInProject(),
-                mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.web", "pax-web-tomcat-bundle").versionAsInProject(),
                 mavenBundle("org.ops4j.pax.web", "pax-web-api").versionAsInProject(),
                 mavenBundle("org.ops4j.pax.web", "pax-web-spi").versionAsInProject(),
-                mavenBundle("org.ops4j.pax.web", "pax-web-descriptor").versionAsInProject(),
                 mavenBundle("org.apache.xbean", "xbean-finder-shaded").versionAsInProject(),
                 mavenBundle("org.apache.xbean", "xbean-asm9-shaded").versionAsInProject(),
                 mavenBundle("org.apache.xbean", "xbean-bundleutils").versionAsInProject(),
