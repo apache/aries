@@ -57,7 +57,7 @@
         <org.apache.felix.fileinstall.version>3.4.0</org.apache.felix.fileinstall.version>
         <org.apache.servicemix.bundles.cglib.version>3.3.0_1</org.apache.servicemix.bundles.cglib.version>
         <org.eclipse.osgi.version>3.11.3</org.eclipse.osgi.version>
-        <pax-exam.version>4.11.0</pax-exam.version>
+        <pax-exam.version>4.13.5</pax-exam.version>
         <pax-url.version>2.6.0</pax-url.version>
         <pax-web.version>1.1.18</pax-web.version>
         <services.version>3.1.200-v20070605</services.version>
