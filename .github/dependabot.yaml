@@ -31,9 +31,6 @@ updates:
       - dependency-name: "org.springframework:spring-*"
         versions:
           - ">=6.0.0" # does not support java 8
-      - dependency-name: "org.springframework:spring-context" # rule above should catch the case but it didn't
-        versions:
-          - ">=6.0.0" # does not support java 8
       - dependency-name: "org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-*"
         versions:
           - ">=6.0.0" # does not support java 8
@@ -49,4 +46,7 @@ updates:
       - dependency-name: "org.ops4j.pax.exam:pax-exam*"
         versions:
           - ">=4.14.0" # does not support java 8
+      - dependency-name: "org.ops4j.pax.web:pax-web*"
+        versions:
+          - ">=9.0.0" # does not support java 8
 
