@@ -35,7 +35,7 @@
 
     <properties>
         <blueprint-maven-plugin-spi.version>1.0.0</blueprint-maven-plugin-spi.version>
-        <guava.version>19.0</guava.version>
+        <guava.version>33.4.0-jre</guava.version>
         <pax-cdi-api.version>0.8.0</pax-cdi-api.version>
     </properties>
 
