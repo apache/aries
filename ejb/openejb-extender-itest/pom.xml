@@ -87,7 +87,7 @@
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.apache.aries.transaction.manager.version>1.0.0</org.apache.aries.transaction.manager.version>
         <org.apache.aries.util.version>1.0.0</org.apache.aries.util.version>
-        <org.apache.servicemix.bundles.javassist.version>3.12.1.ga_1</org.apache.servicemix.bundles.javassist.version>
+        <org.apache.servicemix.bundles.javassist.version>3.12.1.GA_3</org.apache.servicemix.bundles.javassist.version>
         <org.apache.servicemix.bundles.jaxb-impl.version>2.2.1.1_2</org.apache.servicemix.bundles.jaxb-impl.version>
         <org.apache.servicemix.bundles.serp.version>1.13.1_2</org.apache.servicemix.bundles.serp.version>
         <org.apache.servicemix.bundles.wsdl4j-1.6.1.version>4.0-m1</org.apache.servicemix.bundles.wsdl4j-1.6.1.version>
