@@ -70,7 +70,7 @@
         <aries.skip.version.check>false</aries.skip.version.check>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 
-        <commons-io.version>2.14.0</commons-io.version>
+        <commons-io.version>2.18.0</commons-io.version>
         <geronimo-transaction.version>3.1.4</geronimo-transaction.version>
         <howl.version>1.0.1-1</howl.version>
         <junit.version>4.13.2</junit.version>
