@@ -64,7 +64,7 @@
         <org.apache.aries.async.api.version>1.0.2-SNAPSHOT</org.apache.aries.async.api.version>
         <org.apache.aries.async.promise.api.version>1.1.0-SNAPSHOT</org.apache.aries.async.promise.api.version>
         <org.osgi.service.log.version>1.5.0</org.osgi.service.log.version>
-        <org.osgi.util.tracker.version>1.5.1</org.osgi.util.tracker.version>
+        <org.osgi.util.tracker.version>1.5.4</org.osgi.util.tracker.version>
         <osgi.annotation.version>6.0.1</osgi.annotation.version>
     </properties>
 
