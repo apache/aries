@@ -47,7 +47,7 @@
         <cm.version>3.2.0-v20070116</cm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
-        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+        <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
         <jndi-api.version>${jndi-api.dev-version}</jndi-api.version>
         <jndi-bundle.version>${jndi-bundle.dev-version}</jndi-bundle.version>
         <jndi-url-itest-biz.version>${jndi-url-itest-biz.dev-version}</jndi-url-itest-biz.version>
@@ -281,9 +281,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>${jakarta.servlet-api.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
