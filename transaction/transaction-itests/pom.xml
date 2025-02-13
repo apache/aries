@@ -60,7 +60,7 @@
         <org.apache.aries.transaction.testds.version>1.0.1-SNAPSHOT</org.apache.aries.transaction.testds.version>
         <org.apache.aries.util.version>1.1.3</org.apache.aries.util.version>
         <org.apache.felix.configadmin.version>1.8.4</org.apache.felix.configadmin.version>
-        <org.apache.felix.coordinator.version>1.0.0</org.apache.felix.coordinator.version>
+        <org.apache.felix.coordinator.version>1.0.2</org.apache.felix.coordinator.version>
         <org.apache.servicemix.bundles.javax-inject.version>1_2</org.apache.servicemix.bundles.javax-inject.version>
         <org.eclipse.osgi.version>3.8.0.v20120529-1548</org.eclipse.osgi.version>
         <org.osgi.core.version>6.0.0</org.osgi.core.version>
