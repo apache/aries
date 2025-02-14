@@ -1,67 +1,67 @@
 application:
 - changed-files:
-  - any-glob-to-any-file: 'application/*'
+  - any-glob-to-any-file: 'application/**/*'
 async:
 - changed-files:
-  - any-glob-to-any-file: 'async/*'
+  - any-glob-to-any-file: 'async/**/*'
 blueprint:
 - changed-files:
-  - any-glob-to-any-file: 'blueprint/*'
+  - any-glob-to-any-file: 'blueprint/**/*'
 eba-maven-plugin:
 - changed-files:
-  - any-glob-to-any-file: 'eba-maven-plugin/*'
+  - any-glob-to-any-file: 'eba-maven-plugin/**/*'
 ejb:
 - changed-files:
-  - any-glob-to-any-file: 'ejb/*'
+  - any-glob-to-any-file: 'ejb/**/*'
 esa-ant-task:
 - changed-files:
-  - any-glob-to-any-file: 'esa-ant-task/*'
+  - any-glob-to-any-file: 'esa-ant-task/**/*'
 esa-maven-plugin:
 - changed-files:
-  - any-glob-to-any-file: 'esa-maven-plugin/*'
+  - any-glob-to-any-file: 'esa-maven-plugin/**/*'
 jmx:
 - changed-files:
-  - any-glob-to-any-file: 'jmx/*'
+  - any-glob-to-any-file: 'jmx/**/*'
 jndi:
 - changed-files:
-  - any-glob-to-any-file: 'jndi/*'
+  - any-glob-to-any-file: 'jndi/**/*'
 parent:
 - changed-files:
-  - any-glob-to-any-file: 'parent/*'
+  - any-glob-to-any-file: 'parent/**/*'
 proxy:
 - changed-files:
-  - any-glob-to-any-file: 'proxy/*'
+  - any-glob-to-any-file: 'proxy/**/*'
 pushstream:
 - changed-files:
-  - any-glob-to-any-file: 'pushstream/*'
+  - any-glob-to-any-file: 'pushstream/**/*'
 samples:
 - changed-files:
-  - any-glob-to-any-file: 'samples/*'
+  - any-glob-to-any-file: 'samples/**/*'
 sandbox:
 - changed-files:
-  - any-glob-to-any-file: 'sandbox/*'
+  - any-glob-to-any-file: 'sandbox/**/*'
 spi-fly:
 - changed-files:
-  - any-glob-to-any-file: 'spi-fly/*'
+  - any-glob-to-any-file: 'spi-fly/**/*'
 subsystem:
 - changed-files:
-  - any-glob-to-any-file: 'subsystem/*'
+  - any-glob-to-any-file: 'subsystem/**/*'
 testsupport:
 - changed-files:
-  - any-glob-to-any-file: 'testsupport/*'
+  - any-glob-to-any-file: 'testsupport/**/*'
 transaction:
 - changed-files:
-  - any-glob-to-any-file: 'transaction/*'
+  - any-glob-to-any-file: 'transaction/**/*'
 tutorials:
 - changed-files:
-  - any-glob-to-any-file: 'tutorials/*'
+  - any-glob-to-any-file: 'tutorials/**/*'
 util:
 - changed-files:
-  - any-glob-to-any-file: 'util/*'
+  - any-glob-to-any-file: 'util/**/*'
 versioning:
 - changed-files:
-  - any-glob-to-any-file: 'versioning/*'
+  - any-glob-to-any-file: 'versioning/**/*'
 web:
 - changed-files:
-  - any-glob-to-any-file: 'web/*'
+  - any-glob-to-any-file: 'web/**/*'
 
