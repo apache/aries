@@ -96,7 +96,7 @@
         <pax-exam.version>3.4.0</pax-exam.version>
         <pax-logging-api.version>1.7.2</pax-logging-api.version>
         <pax-logging-service.version>1.7.2</pax-logging-service.version>
-        <pax-url-aether.version>2.5.3</pax-url-aether.version>
+        <pax-url-aether.version>2.6.16</pax-url-aether.version>
         <scannotation.version>1.0.2_1</scannotation.version>
         <xbeansVersion>3.8</xbeansVersion>
     </properties>

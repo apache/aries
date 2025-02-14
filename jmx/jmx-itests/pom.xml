@@ -55,7 +55,7 @@
         <slf4j-api.version>1.7.7</slf4j-api.version>
         <tinybundles.version>2.0.0</tinybundles.version>
         <exam.version>3.4.0</exam.version>
-        <url.version>2.5.3</url.version>
+        <url.version>2.6.16</url.version>
     </properties>
 
     <dependencies>
