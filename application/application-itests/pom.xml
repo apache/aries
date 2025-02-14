@@ -69,7 +69,7 @@
         <org.apache.felix.bundlerepository.version>1.6.6</org.apache.felix.bundlerepository.version>
         <org.apache.felix.configadmin.version>1.2.4</org.apache.felix.configadmin.version>
         <org.eclipse.osgi.version>3.8.0.v20120529-1548</org.eclipse.osgi.version>
-        <url.version>2.5.3</url.version>
+        <url.version>2.6.16</url.version>
     </properties>
 
     <dependencies>

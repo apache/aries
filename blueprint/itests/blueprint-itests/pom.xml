@@ -66,7 +66,7 @@
         <org.eclipse.osgi.version>3.11.3</org.eclipse.osgi.version>
         <slf4j.version>1.7.7</slf4j.version>
         <tinybundles.version>2.0.0</tinybundles.version>
-        <url.version>2.5.3</url.version>
+        <url.version>2.6.16</url.version>
         <xbean.version>4.5</xbean.version>
     </properties>
 
