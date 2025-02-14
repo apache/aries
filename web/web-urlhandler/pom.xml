@@ -49,10 +49,14 @@
             org.apache.aries.web.converter.impl,
             org.apache.aries.web.url
         </aries.osgi.private.pkg>
+        <aries.osgi.import>
+            org.objectweb.asm*;version="[9,10)",
+            *
+        </aries.osgi.import>
         <aries.osgi.activator>org.apache.aries.web.converter.impl.Activator</aries.osgi.activator>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
-        <asm.version>5.0.3</asm.version>
+        <asm.version>9.7.1</asm.version>
     </properties>
 
     <dependencies>
@@ -62,14 +66,29 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>provided</scope>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
+            <artifactId>asm-commons</artifactId>
             <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
