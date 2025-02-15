@@ -51,10 +51,10 @@
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.apache.aries.util.version>1.0.0</org.apache.aries.util.version>
         <org.apache.felix.configadmin.version>1.8.0</org.apache.felix.configadmin.version>
-        <org.eclipse.osgi.version>3.8.0.v20120529-1548</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.22.0</org.eclipse.osgi.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
         <tinybundles.version>2.0.0</tinybundles.version>
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.13.5</exam.version>
         <url.version>2.6.16</url.version>
     </properties>
 
@@ -189,7 +189,7 @@
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-forked</artifactId>
+            <artifactId>pax-exam-container-native</artifactId>
             <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
@@ -228,7 +228,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse</groupId>
+            <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
             <version>${org.eclipse.osgi.version}</version>
         </dependency>
