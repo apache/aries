@@ -45,13 +45,13 @@
     <properties>
         <asm.version>9.7.1</asm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <exam.version>4.13.3</exam.version>
+        <exam.version>4.13.5</exam.version>
         <javax.inject.version>1</javax.inject.version>
         <logback.version>1.5.16</logback.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <org.apache.aries.proxy.api.version>1.1.2-SNAPSHOT</org.apache.aries.proxy.api.version>
         <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
-        <org.eclipse.osgi.version>3.11.3</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.22.0</org.eclipse.osgi.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
         <tinybundles.version>2.0.0</tinybundles.version>
         <url.version>2.6.16</url.version>
@@ -96,7 +96,7 @@
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-forked</artifactId>
+            <artifactId>pax-exam-container-native</artifactId>
             <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>
