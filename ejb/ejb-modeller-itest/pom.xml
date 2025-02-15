@@ -47,7 +47,7 @@
         <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.13.5</exam.version>
         <geronimo-activation_1.1_spec.version>1.1</geronimo-activation_1.1_spec.version>
         <geronimo-annotation_1.1_spec.version>1.0.1</geronimo-annotation_1.1_spec.version>
         <geronimo-ejb_3.1_spec.version>1.0.2</geronimo-ejb_3.1_spec.version>
@@ -87,7 +87,7 @@
         <org.apache.servicemix.bundles.javassist.version>3.12.1.GA_3</org.apache.servicemix.bundles.javassist.version>
         <org.apache.servicemix.bundles.jaxb-impl.version>2.2.1.1_2</org.apache.servicemix.bundles.jaxb-impl.version>
         <org.apache.servicemix.bundles.wsdl4j-1.6.1.version>4.0-m1</org.apache.servicemix.bundles.wsdl4j-1.6.1.version>
-        <org.eclipse.osgi.version>3.11.3</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.22.0</org.eclipse.osgi.version>
         <scannotation.version>1.0.2_1</scannotation.version>
         <tinybundles.version>2.0.0</tinybundles.version>
         <url.version>2.6.16</url.version>
@@ -480,7 +480,7 @@
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-forked</artifactId>
+            <artifactId>pax-exam-container-native</artifactId>
             <version>${exam.version}</version>
             <scope>test</scope>
         </dependency>

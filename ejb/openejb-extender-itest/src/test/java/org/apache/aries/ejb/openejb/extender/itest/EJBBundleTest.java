@@ -18,6 +18,7 @@ package org.apache.aries.ejb.openejb.extender.itest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.ops4j.pax.exam.CoreOptions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,6 +26,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -38,6 +41,13 @@ import beans.xml.RemoteIface;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class EJBBundleTest extends AbstractOpenEJBTest {
+
+    @Configuration
+    public Option[] configuration() {
+        return options(
+                baseConfiguration()
+        );
+    }
 
     private void assertXML(Bundle test, boolean exists) throws Exception {
         ServiceReference[] local = context().getAllServiceReferences(LocalIface.class.getName(),

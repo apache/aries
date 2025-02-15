@@ -55,8 +55,9 @@ import beans.jpa.Laptop;
 public class AdvancedEJBBundleTest extends AbstractOpenEJBTest {
 
     @Configuration
-    public static Option[] jpaConfig() {
+    public Option[] jpaConfig() {
         return options(
+                baseConfiguration(),
                 mavenBundle("org.apache.derby", "derby").versionAsInProject(),
                 mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.api").versionAsInProject(),
                 mavenBundle("org.apache.aries.jpa", "org.apache.aries.jpa.container").versionAsInProject(),
