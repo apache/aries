@@ -13,3 +13,6 @@ jobs:
         with:
           repository: "apache/aries"
       - uses: actions/labeler@v5
+        with:
+          sync-labels: true
+
