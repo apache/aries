@@ -43,7 +43,7 @@
         <asm.version>5.0.3</asm.version>
         <cdi-api.version>1.2</cdi-api.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.13.3</exam.version>
         <geronimo-connector.version>3.1.1</geronimo-connector.version>
         <geronimo-j2ee-connector_1.6_spec.version>1.0</geronimo-j2ee-connector_1.6_spec.version>
         <geronimo-validation_1.0_spec.version>1.1</geronimo-validation_1.0_spec.version>
@@ -62,7 +62,7 @@
         <org.apache.felix.configadmin.version>1.8.4</org.apache.felix.configadmin.version>
         <org.apache.felix.coordinator.version>1.0.2</org.apache.felix.coordinator.version>
         <org.apache.servicemix.bundles.javax-inject.version>1_2</org.apache.servicemix.bundles.javax-inject.version>
-        <org.eclipse.osgi.version>3.8.0.v20120529-1548</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.22.0</org.eclipse.osgi.version>
         <org.osgi.core.version>6.0.0</org.osgi.core.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
         <tinybundles.version>2.0.0</tinybundles.version>
@@ -80,6 +80,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>${org.eclipse.osgi.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -189,11 +194,6 @@
             <version>${org.apache.aries.transaction.testbundle.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>${org.eclipse.osgi.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
