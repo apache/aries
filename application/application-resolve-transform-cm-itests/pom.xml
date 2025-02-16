@@ -59,7 +59,8 @@
 <!--        <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>-->
         <org.apache.aries.util.version>1.0.0</org.apache.aries.util.version>
         <org.eclipse.osgi.version>3.8.0.v20120529-1548</org.eclipse.osgi.version>
-        <pax-exam.version>3.4.0</pax-exam.version>
+        <pax-exam.version>4.13.5</pax-exam.version>
+        <pax-swissbox.version>1.8.3</pax-swissbox.version>
         <pax-url.version>2.6.16</pax-url.version>
     </properties>
 
@@ -158,6 +159,19 @@
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-mvn</artifactId>
             <version>${pax-exam.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Explicit dependency for swissbox to fix https://github.com/ops4j/org.ops4j.pax.exam/issues/1124 -->
+        <dependency>
+            <groupId>org.ops4j.pax.swissbox</groupId>
+            <artifactId>pax-swissbox-framework</artifactId>
+            <version>${pax-swissbox.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.swissbox</groupId>
+            <artifactId>pax-swissbox-tracker</artifactId>
+            <version>${pax-swissbox.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
