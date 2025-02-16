@@ -62,16 +62,15 @@ public class Helper {
     
     public static Option blueprintBundles(boolean startBlueprint) {
         return composite(
-                mvnBundle("org.ow2.asm", "asm-debug-all"),
                 mvnBundle("org.apache.felix", "org.apache.felix.configadmin"),
                 mvnBundle("org.ops4j.pax.url", "pax-url-aether"),
                 mvnBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit"),
                 mvnBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mvnBundle("org.apache.commons", "commons-jexl"),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.jexl.evaluator"),
-                mvnBundle("org.apache.xbean", "xbean-asm5-shaded"),
+                mvnBundle("org.apache.xbean", "xbean-asm9-shaded"),
                 mvnBundle("org.apache.xbean", "xbean-bundleutils"),
-                mvnBundle("org.apache.xbean", "xbean-finder"),
+                mvnBundle("org.apache.xbean", "xbean-finder-shaded"),
                 mvnBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api", startBlueprint),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.api", startBlueprint),
                 mvnBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core", startBlueprint),

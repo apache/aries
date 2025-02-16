@@ -65,8 +65,8 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
         return composite(
                 junitBundles(),
                 setPaxExamLogLevel("INFO"),
-                mvnBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                mvnBundle("org.ops4j.pax.logging", "pax-logging-service"),
+                addPaxLoggingBundles(),
+                addAsmBundles(),
                 configurePaxUrlLocalMavenRepoIfNeeded(),
                 systemProperty("pax.exam.osgi.unresolved.fail").value("true")
         );

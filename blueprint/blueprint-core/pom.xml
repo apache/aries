@@ -95,7 +95,7 @@
         </aries.osgi.include.resource>
         <lastReleaseVersion>1.6.0</lastReleaseVersion>
 
-        <asm-debug-all.version>5.0.3</asm-debug-all.version>
+        <asm.version>9.7.1</asm.version>
         <blueprint.annotation.api.version>1.0.1</blueprint.annotation.api.version>
         <blueprint.api.version>1.0.1</blueprint.api.version>
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
@@ -179,9 +179,27 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
             <optional>true</optional>
-            <version>${asm-debug-all.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>

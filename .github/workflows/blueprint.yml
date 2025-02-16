@@ -17,6 +17,9 @@ on:
     paths:
       - parent/**
       - testsupport/**
+      - proxy/**
+      - util/**
+      - quiesce/**
       - blueprint/**
       - .github/workflows/blueprint.yml
   push:
@@ -50,6 +53,15 @@ jobs:
     - name: Build testsupport
       shell: bash
       run: mvn -U -e -B -ntp clean install -f testsupport
+    - name: Build proxy
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f proxy
+    - name: Build util
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f util
+    - name: Build quiesce
+      shell: bash
+      run: mvn -U -e -B -ntp clean install -f quiesce
     - name: Build blueprint
       shell: bash
       run: mvn -U -e -B -ntp clean install -f blueprint

@@ -42,7 +42,7 @@
     </scm>
     
     <properties>
-        <asm-debug-all.version>5.0.3</asm-debug-all.version>
+        <asm.version>9.7.1</asm.version>
         <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
         <blueprint.authz.version>${blueprint.authz.dev.version}</blueprint.authz.version>
         <blueprint.cm.version>${blueprint.cm.dev.version}</blueprint.cm.version>
@@ -56,8 +56,8 @@
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
-        <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
-        <org.apache.aries.quiesce.api.version>1.0.0</org.apache.aries.quiesce.api.version>
+        <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
+        <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.apache.felix.configadmin.version>1.8.0</org.apache.felix.configadmin.version>
         <org.apache.servicemix.bundles.aopalliance.version>1.0_6</org.apache.servicemix.bundles.aopalliance.version>
@@ -67,7 +67,7 @@
         <pax-tinybundles.version>2.0.0</pax-tinybundles.version>
         <pax-url.version>2.6.16</pax-url.version>
         <slf4j.version>1.7.7</slf4j.version>
-        <xbean.version>4.5</xbean.version>
+        <xbean.version>4.26</xbean.version>
     </properties>
 
     <dependencies>
@@ -276,13 +276,31 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
             <scope>test</scope>
-            <version>${asm-debug-all.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-asm5-shaded</artifactId>
+            <artifactId>xbean-asm9-shaded</artifactId>
             <version>${xbean.version}</version>
         </dependency>
         <dependency>
@@ -292,7 +310,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-finder</artifactId>
+            <artifactId>xbean-finder-shaded</artifactId>
             <version>${xbean.version}</version>
         </dependency>
         <dependency>

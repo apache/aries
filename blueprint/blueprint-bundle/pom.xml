@@ -104,7 +104,7 @@
         </aries.osgi.failok>
         <lastReleaseVersion>1.1.0</lastReleaseVersion>
 
-        <asm-debug-all.version>5.0.3</asm-debug-all.version>
+        <asm.version>9.7.1</asm.version>
         <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
         <blueprint.authz.version>${blueprint.authz.dev.version}</blueprint.authz.version>
         <blueprint.cm.version>${blueprint.cm.dev.version}</blueprint.cm.version>
@@ -152,10 +152,27 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
-            <version>${asm-debug-all.version}</version>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
             <scope>test</scope>
-            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
