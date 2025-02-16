@@ -42,7 +42,6 @@
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <easymock.version>3.0</easymock.version>
-        <exam.version>4.13.5</exam.version>
         <logback.version>1.5.16</logback.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
@@ -66,9 +65,10 @@
         <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <osgi.core.version>8.0.0</osgi.core.version>
         <osgi.enterprise.version>6.0.0</osgi.enterprise.version>
+        <pax-exam.version>4.13.5</pax-exam.version>
+        <pax-tinybundles.version>2.0.0</pax-tinybundles.version>
+        <pax-url.version>2.6.16</pax-url.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
-        <tinybundles.version>2.0.0</tinybundles.version>
-        <url.version>2.6.16</url.version>
     </properties>
 
     <dependencies>
@@ -287,31 +287,31 @@
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-native</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-mvn</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
-            <version>${url.version}</version>
+            <version>${pax-url.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -329,7 +329,7 @@
         <dependency>
             <groupId>org.ops4j.pax.tinybundles</groupId>
             <artifactId>tinybundles</artifactId>
-            <version>${tinybundles.version}</version>
+            <version>${pax-tinybundles.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>org.osgi.core</artifactId>

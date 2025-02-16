@@ -36,7 +36,7 @@
     <properties>
         <blueprint-maven-plugin-spi.version>1.0.0</blueprint-maven-plugin-spi.version>
         <guava.version>33.4.0-jre</guava.version>
-        <pax-cdi-api.version>0.8.0</pax-cdi-api.version>
+        <pax-cdi.version>0.8.0</pax-cdi.version>
     </properties>
 
     <scm>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.ops4j.pax.cdi</groupId>
             <artifactId>pax-cdi-api</artifactId>
-            <version>${pax-cdi-api.version}</version>
+            <version>${pax-cdi.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

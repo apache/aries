@@ -38,8 +38,13 @@
         <aries.skip.version.check>true</aries.skip.version.check>
 
         <blueprint-maven-plugin.version>1.10.1-SNAPSHOT</blueprint-maven-plugin.version>
-        <maven-invoker-plugin.version>3.9.0</maven-invoker-plugin.version>
         <groovy.version>4.0.24</groovy.version>
+        <javax.enterprise.cdi-api.version>1.2</javax.enterprise.cdi-api.version>
+        <javax.inject.version>1</javax.inject.version>
+        <javax.transaction-api.version>1.2</javax.transaction-api.version>
+        <maven-invoker-plugin.version>3.9.0</maven-invoker-plugin.version>
+        <pax-cdi.version>0.8.0</pax-cdi.version>
+        <spring.version>3.1.4.RELEASE</spring.version>
     </properties>
 
     <scm>
@@ -47,6 +52,64 @@
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
     </scm>
+
+    <!-- adding dependencies used in tested subproject to have automatic dependency updates -->
+    <dependencies>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>${javax.enterprise.cdi-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>${javax.transaction-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.cdi</groupId>
+            <artifactId>pax-cdi-api</artifactId>
+            <version>${pax-cdi.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-aop</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-expression</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-asm</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

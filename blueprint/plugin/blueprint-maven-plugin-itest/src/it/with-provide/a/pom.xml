@@ -30,12 +30,12 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>1</version>
+            <version>@javax.inject.version@</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint.plugin.itest</groupId>
             <artifactId>b</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -63,7 +63,7 @@
                     <dependency>
                         <groupId>org.apache.aries.blueprint.plugin.itest</groupId>
                         <artifactId>c</artifactId>
-                        <version>1.0.0-SNAPSHOT</version>
+                        <version>${project.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

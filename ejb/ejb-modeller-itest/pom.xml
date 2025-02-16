@@ -47,7 +47,6 @@
         <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <exam.version>4.13.5</exam.version>
         <geronimo-activation_1.1_spec.version>1.1</geronimo-activation_1.1_spec.version>
         <geronimo-annotation_1.1_spec.version>1.0.1</geronimo-annotation_1.1_spec.version>
         <geronimo-ejb_3.1_spec.version>1.0.2</geronimo-ejb_3.1_spec.version>
@@ -89,8 +88,9 @@
         <org.apache.servicemix.bundles.wsdl4j-1.6.1.version>4.0-m1</org.apache.servicemix.bundles.wsdl4j-1.6.1.version>
         <org.eclipse.osgi.version>3.22.0</org.eclipse.osgi.version>
         <scannotation.version>1.0.2_1</scannotation.version>
-        <tinybundles.version>2.0.0</tinybundles.version>
-        <url.version>2.6.16</url.version>
+        <pax-exam.version>4.13.5</pax-exam.version>
+        <pax-tinybundles.version>2.0.0</pax-tinybundles.version>
+        <pax-url.version>2.6.16</pax-url.version>
         <xbeans.version>4.25</xbeans.version>
     </properties>
 
@@ -475,31 +475,31 @@
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-native</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-mvn</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
-            <version>${url.version}</version>
+            <version>${pax-url.version}</version>
             <scope>test</scope>
         </dependency>
         <!--         <dependency> -->
@@ -517,7 +517,7 @@
         <dependency>
             <groupId>org.ops4j.pax.tinybundles</groupId>
             <artifactId>tinybundles</artifactId>
-            <version>${tinybundles.version}</version>
+            <version>${pax-tinybundles.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>org.osgi.core</artifactId>

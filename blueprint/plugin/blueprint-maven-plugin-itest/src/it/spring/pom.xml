@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>3.1.4.RELEASE</version>
+            <version>@spring.version@</version>
             <exclusions>
                 <exclusion>
                     <artifactId>spring-aop</artifactId>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>3.1.4.RELEASE</version>
+            <version>@spring.version@</version>
         </dependency>
     </dependencies>
 

@@ -52,10 +52,10 @@
         <org.apache.aries.util.version>1.0.0</org.apache.aries.util.version>
         <org.apache.felix.configadmin.version>1.8.0</org.apache.felix.configadmin.version>
         <org.eclipse.osgi.version>3.22.0</org.eclipse.osgi.version>
+        <pax-exam.version>4.13.5</pax-exam.version>
+        <pax-tinybundles.version>2.0.0</pax-tinybundles.version>
+        <pax-url.version>2.6.16</pax-url.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
-        <tinybundles.version>2.0.0</tinybundles.version>
-        <exam.version>4.13.5</exam.version>
-        <url.version>2.6.16</url.version>
     </properties>
 
     <dependencies>
@@ -176,37 +176,37 @@
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-native</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-mvn</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
-            <version>${url.version}</version>
+            <version>${pax-url.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.tinybundles</groupId>
             <artifactId>tinybundles</artifactId>
-            <version>${tinybundles.version}</version>
+            <version>${pax-tinybundles.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>org.osgi.core</artifactId>

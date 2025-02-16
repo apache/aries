@@ -43,14 +43,14 @@
     <properties>
         <asm.version>9.7.1</asm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <exam.version>4.13.5</exam.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.aries.web.urlhandler.version>1.0.1-SNAPSHOT</org.apache.aries.web.urlhandler.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.eclipse.osgi.version>3.22.0</org.eclipse.osgi.version>
-        <tinybundles.version>2.1.1</tinybundles.version>
-        <url.version>2.6.16</url.version>
+        <pax-exam.version>4.13.5</pax-exam.version>
+        <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
+        <pax-url.version>2.6.16</pax-url.version>
     </properties>
 
     <dependencies>
@@ -132,37 +132,37 @@
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-container-native</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.tinybundles</groupId>
             <artifactId>tinybundles</artifactId>
-            <version>${tinybundles.version}</version>
+            <version>${pax-tinybundles.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-link-mvn</artifactId>
-            <version>${exam.version}</version>
+            <version>${pax-exam.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
-            <version>${url.version}</version>
+            <version>${pax-url.version}</version>
             <scope>test</scope>
         </dependency>
 
