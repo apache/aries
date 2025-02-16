@@ -43,7 +43,7 @@
         <asm.version>5.0.3</asm.version>
         <cdi-api.version>1.2</cdi-api.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <exam.version>4.13.3</exam.version>
+        <exam.version>4.13.5</exam.version>
         <geronimo-connector.version>3.1.1</geronimo-connector.version>
         <geronimo-j2ee-connector_1.6_spec.version>1.0</geronimo-j2ee-connector_1.6_spec.version>
         <geronimo-validation_1.0_spec.version>1.1</geronimo-validation_1.0_spec.version>
@@ -65,6 +65,7 @@
         <org.apache.servicemix.bundles.javax-inject.version>1_2</org.apache.servicemix.bundles.javax-inject.version>
         <org.eclipse.osgi.version>3.22.0</org.eclipse.osgi.version>
         <org.osgi.core.version>6.0.0</org.osgi.core.version>
+        <pax-swissbox.version>1.8.3</pax-swissbox.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
         <tinybundles.version>2.0.0</tinybundles.version>
         <url.version>2.6.16</url.version>
@@ -254,6 +255,19 @@
             <groupId>org.ops4j.pax.tinybundles</groupId>
             <artifactId>tinybundles</artifactId>
             <version>${tinybundles.version}</version>
+        </dependency>
+        <!-- Explicit dependency for swissbox to fix https://github.com/ops4j/org.ops4j.pax.exam/issues/1124 -->
+        <dependency>
+            <groupId>org.ops4j.pax.swissbox</groupId>
+            <artifactId>pax-swissbox-framework</artifactId>
+            <version>${pax-swissbox.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.swissbox</groupId>
+            <artifactId>pax-swissbox-tracker</artifactId>
+            <version>${pax-swissbox.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

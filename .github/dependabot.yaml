@@ -49,4 +49,6 @@ updates:
       - dependency-name: "org.ops4j.pax.web:pax-web*"
         versions:
           - ">=9.0.0" # does not support java 8
-
+      - dependency-name: "org.ops4j.pax.swissbox:pax-swissbox*"
+        versions:
+          - ">1.8.3" # 1.9.0 does not support java 8, but 1.8.4 has SLF4j dependency which cannot be met https://github.com/ops4j/org.ops4j.pax.exam/issues/1056
