@@ -11,7 +11,6 @@
 #    limitations under the License.
 
 name: Blueprint Plugin - CI Build
-# TODO ARIES-2165 remove the workflow when whole blueprint supports java 11, 17 and 21
 
 on:
   pull_request:

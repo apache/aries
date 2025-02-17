@@ -22,6 +22,7 @@ on:
       - quiesce/**
       - blueprint/**
       - .github/workflows/blueprint.yml
+      - '!blueprint/plugin/**'
   push:
     branches:
       - 'trunk'
