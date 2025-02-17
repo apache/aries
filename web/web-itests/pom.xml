@@ -126,7 +126,7 @@
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
+            <artifactId>pax-logging-log4j2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
