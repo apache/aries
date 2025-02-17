@@ -100,6 +100,13 @@ public abstract class AbstractIntegrationTest {
         );
     }
 
+    protected static Option addPaxLoggingV2Bundles() {
+        return composite(
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-log4j2").versionAsInProject()
+        );
+    }
+
     protected static Option addAsmBundles() {
         return composite(
                 mavenBundle("org.ow2.asm", "asm").versionAsInProject(),

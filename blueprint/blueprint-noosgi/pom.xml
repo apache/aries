@@ -50,7 +50,7 @@
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
         <org.apache.felix.utils.version>1.11.6</org.apache.felix.utils.version>
         <proxy.impl.version>1.0.3</proxy.impl.version>
-        <slf4j.version>1.7.33</slf4j.version>
+        <slf4j.version>2.0.16</slf4j.version>
     </properties>
 
     <profiles>
@@ -120,6 +120,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -129,13 +130,7 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
+            <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>

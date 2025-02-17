@@ -53,7 +53,6 @@
         <jndi-url-itest-biz.version>${jndi-url-itest-biz.dev-version}</jndi-url-itest-biz.version>
         <jndi-url-itest-web.version>${jndi-url-itest-web.dev-version}</jndi-url-itest-web.version>
         <jndi-url.version>${jndi-url.dev-version}</jndi-url.version>
-        <logback.version>1.5.16</logback.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.apache.felix.fileinstall.version>3.7.4</org.apache.felix.fileinstall.version>
         <org.apache.servicemix.bundles.cglib.version>3.3.0_1</org.apache.servicemix.bundles.cglib.version>
@@ -64,7 +63,6 @@
         <pax-url.version>2.6.16</pax-url.version>
         <pax-web.version>8.0.30</pax-web.version>
         <services.version>3.2.100.v20100503</services.version>
-        <slf4j-api.version>1.7.7</slf4j-api.version>
         <xbean.version>4.26</xbean.version>
     </properties>
 
@@ -143,11 +141,6 @@
 
         <!-- pax exam -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-api.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam</artifactId>
             <version>${pax-exam.version}</version>
@@ -188,18 +181,6 @@
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
             <version>${pax-url.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -321,7 +302,7 @@
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
+            <artifactId>pax-logging-log4j2</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

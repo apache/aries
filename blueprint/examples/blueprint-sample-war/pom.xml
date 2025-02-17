@@ -76,10 +76,6 @@
             <artifactId>org.apache.aries.blueprint.web</artifactId>
             <version>${blueprint.web.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
