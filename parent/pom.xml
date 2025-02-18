@@ -191,7 +191,7 @@
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <!-- TODO do not override javadoc plugin version when apache parent v34 is released-->
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
-        <maven-pmd-plugin.version>2.4</maven-pmd-plugin.version>
+        <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
         <maven-paxexam-plugin.version>1.2.4</maven-paxexam-plugin.version>
         <org.apache.aries.versioning.plugin.version>0.3.0</org.apache.aries.versioning.plugin.version>
         <animal-sniffer-enforcer-rule.version>1.6</animal-sniffer-enforcer-rule.version>
