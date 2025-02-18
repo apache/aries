@@ -41,10 +41,9 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: 8
-    - name: Run PMD
-      shell: bash
-      run: mvn -U -e -B -ntp clean compile test-compile -DskipTests pmd:pmd
-    - name: Publish PMD results
-      uses: jwgmeligmeyling/pmd-github-action@master
+    - name: PMD
+      uses: 'pmd/pmd-github-action@967a81f8b657c87f7c3e96b62301cb1a48efef29'
+      # explicit version is enabled via https://issues.apache.org/jira/browse/INFRA-22883
       with:
-        path: '**/pmd.xml'
+        rulesets: 'pmd-ruleset.xml'
+        analyzeModifiedFilesOnly: 'false'
