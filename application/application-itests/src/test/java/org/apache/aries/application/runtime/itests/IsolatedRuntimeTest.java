@@ -317,9 +317,6 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
                 mavenBundle("org.osgi", "org.osgi.core").versionAsInProject(),
                 mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
 
-                // Repository
-                repository("http://repository.ops4j.org/maven2"),
-
                 // Logging
                 addPaxLoggingBundles(),
                 setPaxExamLogLevel("INFO"),
