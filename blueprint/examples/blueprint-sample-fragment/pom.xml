@@ -53,7 +53,7 @@
         </aries.osgi.import>
         <aries.osgi.private.pkg/>
 
-        <org.apache.aries.blueprint.annotation.api.version>1.0.0</org.apache.aries.blueprint.annotation.api.version>
+        <org.apache.aries.blueprint.annotation.api.version>1.0.1</org.apache.aries.blueprint.annotation.api.version>
     </properties>
 
     <profiles>
