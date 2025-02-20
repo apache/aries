@@ -26,7 +26,7 @@
 
     <groupId>org.apache.aries.samples.blueprint.helloworld</groupId>
     <artifactId>org.apache.aries.samples.blueprint.helloworld.itests</artifactId>
-    <name>Apache Aries Blueprint sample iTests</name>
+    <name>Apache Aries Blueprint HelloWorld iTests</name>
     <description>
         Integration test for the blueprint hello world sample
     </description>

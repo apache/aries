@@ -51,6 +51,7 @@
         <module>proxy</module>
         <module>pushstream</module>
         <module>quiesce</module>
+        <module>samples</module>
         <module>spi-fly</module>
         <module>subsystem</module>
         <module>testsupport</module>
@@ -61,7 +62,6 @@
 
         <!-- excluded as not having CI build-->
         <!--
-        <module>samples</module>
         <module>sandbox</module>
         <module>tutorials</module>
         -->

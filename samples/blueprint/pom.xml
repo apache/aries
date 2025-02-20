@@ -44,7 +44,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>helloworld</module>
+<!--        <module>helloworld</module>-->
         <module>idverifier</module>
     </modules>
 </project>
