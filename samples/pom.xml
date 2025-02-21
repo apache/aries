@@ -128,8 +128,6 @@
         <cmVersion>3.2.0-v20070116</cmVersion>
         <servicesVersion>3.1.200-v20070605</servicesVersion>
         <asmVersion>3.2</asmVersion>
-        <paxLoggingApiVersion>1.5.0</paxLoggingApiVersion>
-        <paxLoggingServiceVersion>1.5.0</paxLoggingServiceVersion>
         <derbyVersion>10.14.2.0</derbyVersion>
         <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
         <commonsLangVersion>2.5</commonsLangVersion>
@@ -151,7 +149,6 @@
 
         <felixFileinstallVersion>3.1.4</felixFileinstallVersion>
         <felixBundleRepositoryVersion>1.6.4</felixBundleRepositoryVersion>
-        <felixMainVersion>2.0.4</felixMainVersion>
         <felixShellVersion>1.4.2</felixShellVersion>
         <felixShellTuiVersion>1.4.1</felixShellTuiVersion>
         <felixEventadminVersion>1.2.2</felixEventadminVersion>
@@ -163,6 +160,11 @@
         <twitter4jVersion>2.0.10</twitter4jVersion>
 
         <aries.javadoc.exclude.packages>*</aries.javadoc.exclude.packages>
+
+        <!-- Updated dependencies -->
+        <org.apache.felix.main.version>7.0.5</org.apache.felix.main.version>
+
+        <pax-logging.version>1.7.2</pax-logging.version>
     </properties>
 
     <dependencyManagement>
@@ -177,7 +179,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.main</artifactId>
-                <version>${felixMainVersion}</version>
+                <version>${org.apache.felix.main.version}</version>
             </dependency>
 
             <dependency>
@@ -202,6 +204,16 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.eventadmin</artifactId>
                 <version>${felixEventadminVersion}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>${pax-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-service</artifactId>
+                <version>${pax-logging.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.web</groupId>
