@@ -37,15 +37,29 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.shell</artifactId>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.shell.tui</artifactId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.command</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.jline</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.runtime</artifactId>
         </dependency>
 
         <dependency>

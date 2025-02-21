@@ -162,6 +162,12 @@
         <aries.javadoc.exclude.packages>*</aries.javadoc.exclude.packages>
 
         <!-- Updated dependencies -->
+        <jansi.version>1.18</jansi.version>
+        <jline.version>3.13.2</jline.version>
+        <org.apache.felix.bundlerepository.version>2.0.10</org.apache.felix.bundlerepository.version>
+        <org.apache.felix.gogo.command.version>1.1.2</org.apache.felix.gogo.command.version>
+        <org.apache.felix.gogo.jline.version>1.1.8</org.apache.felix.gogo.jline.version>
+        <org.apache.felix.gogo.runtime.version>1.1.4</org.apache.felix.gogo.runtime.version>
         <org.apache.felix.main.version>7.0.5</org.apache.felix.main.version>
 
         <pax-logging.version>1.7.2</pax-logging.version>
@@ -171,15 +177,45 @@
         <dependencies>
             <!-- External project dependencies -->
             <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm-all</artifactId>
-                <version>${asmVersion}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.main</artifactId>
                 <version>${org.apache.felix.main.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>${jansi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>${jline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.bundlerepository</artifactId>
+                <version>${org.apache.felix.bundlerepository.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.command</artifactId>
+                <version>${org.apache.felix.gogo.command.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.jline</artifactId>
+                <version>${org.apache.felix.gogo.jline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.runtime</artifactId>
+                <version>${org.apache.felix.gogo.runtime.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>asm</groupId>
+                <artifactId>asm-all</artifactId>
+                <version>${asmVersion}</version>
             </dependency>
 
             <dependency>
@@ -315,11 +351,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.fileinstall</artifactId>
                 <version>${felixFileinstallVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.bundlerepository</artifactId>
-                <version>${felixBundlerepositoryVersion}</version>
             </dependency>
 
             <dependency>
