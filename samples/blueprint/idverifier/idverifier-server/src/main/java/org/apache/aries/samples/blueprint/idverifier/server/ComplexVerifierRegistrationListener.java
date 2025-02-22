@@ -18,6 +18,9 @@
  */
 package org.apache.aries.samples.blueprint.idverifier.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -27,22 +30,23 @@ import java.util.Set;
  *
  */
 public class ComplexVerifierRegistrationListener {
+    private static final Logger log = LoggerFactory.getLogger(ComplexVerifierRegistrationListener.class);
 	
 	public void reg(PersonIDVerifierComplexImpl svcobject, Map props){
 		//svcobject.doAfterReg();
-		System.out.println("********Registered bean "+svcobject.getClass().getName()+" as a service**********");
-		System.out.println("********Print service properties**************");
+		log.info("********Registered bean "+svcobject.getClass().getName()+" as a service**********");
+		log.info("********Print service properties**************");
 		Set keyset = props.keySet();
 		Iterator iter = keyset.iterator();
 		while(iter.hasNext()){
 			Object keyobj = iter.next();
 			Object valueobj = props.get(keyobj);
-			System.out.println(keyobj + "=" + valueobj);			
+			log.info(keyobj + "=" + valueobj);
 		}
 		
 	}
 	public void unreg(PersonIDVerifierComplexImpl svcobject, Map props){
-		System.out.println("********Unregistering service bean "+svcobject.getClass().getName()+"**********");
+		log.info("********Unregistering service bean "+svcobject.getClass().getName()+"**********");
 	}
 
 }

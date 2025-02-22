@@ -28,14 +28,18 @@ import org.apache.aries.samples.blueprint.idverifier.server.PersonIDVerifierComp
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author forrestxm
  *
  */
 public class VerifierServiceReferenceListener {
+    private static final Logger log = LoggerFactory.getLogger(VerifierServiceReferenceListener.class);
+
 	public void bind(ServiceReference svcref) {
-		System.out.println("**********" + this.getClass().getSimpleName() + " bind method via ServiceReference!*********");
+		log.info("**********" + this.getClass().getSimpleName() + " bind method via ServiceReference!*********");
 		// Get specific PersonIDVerifier implementation class
 		Bundle svcproviderbundle = svcref.getBundle();
 		BundleContext svcproviderbundlectx = svcproviderbundle.getBundleContext();
@@ -46,29 +50,29 @@ public class VerifierServiceReferenceListener {
 		} else if (svcbean instanceof PersonIDVerifierComplexImpl){
 			svcbeanname = ((PersonIDVerifierComplexImpl)svcbean).getClass().getCanonicalName();
 		}
-		System.out.println("Bundle " + svcproviderbundle.getSymbolicName() + " provides this service implemented by " + svcbeanname);
+		log.info("Bundle " + svcproviderbundle.getSymbolicName() + " provides this service implemented by " + svcbeanname);
 		// Print service users information
-		System.out.println("**********Start of printing service's users**********");
+		log.info("**********Start of printing service's users**********");
 		Bundle[] usingbundles = svcref.getUsingBundles();
 		if (usingbundles != null) {
 			int len = usingbundles.length;
-			System.out.println("The service has " + len + " users!");
-			System.out.println("They are:");
+			log.info("The service has " + len + " users!");
+			log.info("They are:");
 			for (int i = 0; i < len; i++) {
-				System.out.println(usingbundles[i].getSymbolicName());
+				log.info(usingbundles[i].getSymbolicName());
 			}
-			System.out.println("All users are printed out!");
+			log.info("All users are printed out!");
 		}
-		System.out.println("**********End of printing service's users**********");
+		log.info("**********End of printing service's users**********");
 		
 	}
 
 	public void bind(PersonIDVerifier svc) {
-		System.out.println("**********This is service object proxy bind method!***********");
+		log.info("**********This is service object proxy bind method!***********");
 	}
 	
 	public void unbind(ServiceReference svcref) {
-		System.out.println("**********" + this.getClass().getSimpleName() + " unbind method via ServiceReference!*********");
+		log.info("**********" + this.getClass().getSimpleName() + " unbind method via ServiceReference!*********");
 		// Get specific PersonIDVerifier implementation class
 		Bundle svcproviderbundle = svcref.getBundle();
 		BundleContext svcproviderbundlectx = svcproviderbundle.getBundleContext();
@@ -79,33 +83,33 @@ public class VerifierServiceReferenceListener {
 		} else if (svcbean instanceof PersonIDVerifierComplexImpl){
 			svcbeanname = ((PersonIDVerifierComplexImpl)svcbean).getClass().getCanonicalName();
 		}
-		System.out.println("Bundle " + svcproviderbundle.getSymbolicName() + " provides this service implemented by " + svcbeanname);
+		log.info("Bundle " + svcproviderbundle.getSymbolicName() + " provides this service implemented by " + svcbeanname);
 		// Print service users information
-		System.out.println("**********Start of printing service's users**********");
+		log.info("**********Start of printing service's users**********");
 		Bundle[] usingbundles = svcref.getUsingBundles();
 		if (usingbundles != null) {
 			int len = usingbundles.length;
-			System.out.println("The service has " + len + " users!");
-			System.out.println("They are:");
+			log.info("The service has " + len + " users!");
+			log.info("They are:");
 			for (int i = 0; i < len; i++) {
-				System.out.println(usingbundles[i].getSymbolicName());
+				log.info(usingbundles[i].getSymbolicName());
 			}
-			System.out.println("All users are printed out!");
+			log.info("All users are printed out!");
 		}
-		System.out.println("**********End of printing service's users**********");
+		log.info("**********End of printing service's users**********");
 		
 	}
 
 	public void unbind(PersonIDVerifier svc, Map props) {
-		System.out.println("**********This is service object proxy unbind method!***********");
-		System.out.println("**********Start of printing service properties***********");
-		System.out.println("Service properties are:");
+		log.info("**********This is service object proxy unbind method!***********");
+		log.info("**********Start of printing service properties***********");
+		log.info("Service properties are:");
 		Set keys = props.keySet();
 		for (Object obj : keys) {
 			Object valueobj = props.get(obj);
-			System.out.println(obj + "=" + valueobj);
+			log.info(obj + "=" + valueobj);
 		}
-		System.out.println("**********End of printing service properties***********");
+		log.info("**********End of printing service properties***********");
 	}
 
 }

@@ -33,8 +33,12 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PersonBankBean {
+    private static final Logger log = LoggerFactory.getLogger(PersonBankBean.class);
+
 	private PersonalInfo personinfo;
 	private BankInfo bankinfo;
 	private String bankinfobeanid;	
@@ -133,7 +137,7 @@ public class PersonBankBean {
 	}
 
 	public void startUp() {
-		System.out.println("*******Start of Printing Personal Bank/Credit Information************");		
+		log.info("*******Start of Printing Personal Bank/Credit Information************");
 		this.personinfo.toString();
 		
 		// get component instance of BankInfo at runtime
@@ -146,14 +150,14 @@ public class PersonBankBean {
 		
 		Set<String> allcreditrecords = cro.query(this.personinfo.getPersonid());
 		if (allcreditrecords.isEmpty()){
-			System.out.println("No credit records for id " + this.personinfo.getPersonid());
+			log.info("No credit records for id " + this.personinfo.getPersonid());
 		} else {
-			System.out.println("The credit records for id " + this.personinfo.getPersonid() + " are as follows:");
+			log.info("The credit records for id " + this.personinfo.getPersonid() + " are as follows:");
 			for (String arecord : allcreditrecords){
-				System.out.println(arecord);
+				log.info(arecord);
 			}
 		}		
-		System.out.println("*******End of Printing Personal Bank/Credit Information**************");
+		log.info("*******End of Printing Personal Bank/Credit Information**************");
 	}
 
 }
