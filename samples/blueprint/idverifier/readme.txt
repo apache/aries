@@ -39,4 +39,4 @@ RUN
 
 MEMO
 ----
-After the sample is running, you can connect to it via JConsole to check the sample bundles via blueprint MBeans.
+You can change configuration file to include gogo bundles and enable shell
