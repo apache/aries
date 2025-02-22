@@ -37,25 +37,55 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.main</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.shell</artifactId>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.shell.tui</artifactId>
+            <artifactId>org.apache.felix.bundlerepository</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.command</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.jline</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.gogo.runtime</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.configadmin</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.eventadmin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
         </dependency>
 
         <dependency>
@@ -75,20 +105,20 @@
 
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint</artifactId>
+            <artifactId>org.apache.aries.blueprint.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.cm</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.jmx</groupId>
-            <artifactId>org.apache.aries.jmx.blueprint</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm-all</artifactId>
         </dependency>
 
         <dependency>

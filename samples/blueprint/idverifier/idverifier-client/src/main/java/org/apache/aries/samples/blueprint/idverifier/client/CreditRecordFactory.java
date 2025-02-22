@@ -18,11 +18,16 @@
  */
 package org.apache.aries.samples.blueprint.idverifier.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author forrestxm
  * 
  */
 public class CreditRecordFactory {
+    private static final Logger log = LoggerFactory.getLogger(CreditRecordFactory.class);
+
 	public static CreditRecord staticCreateBean(String record) {
 		staticcount++;
 		return new CreditRecord(record);
@@ -42,10 +47,10 @@ public class CreditRecordFactory {
 	}
 
 	public void creationStatistics() {
-		System.out.println("**********Bean factory "
+		log.info("**********Bean factory "
 				+ this.getClass().getSimpleName()
 				+ " says goodbye!************");
-		System.out.println("**********I created " + staticcount + " "
+		log.info("**********I created " + staticcount + " "
 				+ targetbeanname + " with static factory, " + dynamiccount
 				+ " " + targetbeanname + " with dynamic factory.***********");
 	}

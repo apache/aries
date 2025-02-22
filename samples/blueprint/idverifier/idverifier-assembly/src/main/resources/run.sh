@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ################################################################################
 # Copyright 2010 
 # 
@@ -17,5 +17,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 ################################################################################
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+cd $SCRIPT_DIR
 JAVA_OPTS="-Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
-java $JAVA_OPTS -jar bundles/org.apache.felix.main-2.0.4.jar
+java $JAVA_OPTS -jar bundles/org.apache.felix.main-7.0.5.jar

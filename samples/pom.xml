@@ -128,8 +128,6 @@
         <cmVersion>3.2.0-v20070116</cmVersion>
         <servicesVersion>3.1.200-v20070605</servicesVersion>
         <asmVersion>3.2</asmVersion>
-        <paxLoggingApiVersion>1.5.0</paxLoggingApiVersion>
-        <paxLoggingServiceVersion>1.5.0</paxLoggingServiceVersion>
         <derbyVersion>10.14.2.0</derbyVersion>
         <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
         <commonsLangVersion>2.5</commonsLangVersion>
@@ -150,24 +148,115 @@
         <paxWebJspVersion>0.8.1</paxWebJspVersion>
 
         <felixFileinstallVersion>3.1.4</felixFileinstallVersion>
-        <felixBundleRepositoryVersion>1.6.4</felixBundleRepositoryVersion>
-        <felixMainVersion>2.0.4</felixMainVersion>
-        <felixShellVersion>1.4.2</felixShellVersion>
-        <felixShellTuiVersion>1.4.1</felixShellTuiVersion>
-        <felixEventadminVersion>1.2.2</felixEventadminVersion>
-        <felixBundlerepositoryVersion>2.0.10</felixBundlerepositoryVersion>
-        <felixConfigadminVersion>1.2.4</felixConfigadminVersion>
         <serpVersion>1.13.1</serpVersion>
         <javaxServletVersion>1.2</javaxServletVersion>
 
         <twitter4jVersion>2.0.10</twitter4jVersion>
 
         <aries.javadoc.exclude.packages>*</aries.javadoc.exclude.packages>
+
+        <!-- Felix dependencies -->
+        <jansi.version>1.18</jansi.version>
+        <jline.version>3.13.2</jline.version>
+        <org.apache.felix.bundlerepository.version>2.0.10</org.apache.felix.bundlerepository.version>
+        <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
+        <org.apache.felix.eventadmin.version>1.6.4</org.apache.felix.eventadmin.version>
+        <org.apache.felix.gogo.command.version>1.1.2</org.apache.felix.gogo.command.version>
+        <org.apache.felix.gogo.jline.version>1.1.8</org.apache.felix.gogo.jline.version>
+        <org.apache.felix.gogo.runtime.version>1.1.4</org.apache.felix.gogo.runtime.version>
+        <org.apache.felix.main.version>7.0.5</org.apache.felix.main.version>
+
+        <!-- Aries bundle dependencies-->
+        <asm.version>9.7.1</asm.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <pax-logging.version>1.11.17</pax-logging.version>
+
+        <!-- Aries dependencies -->
+        <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
+        <org.apache.aries.blueprint.cm.version>1.3.2</org.apache.aries.blueprint.cm.version>
+        <org.apache.aries.blueprint.core.version>1.10.3</org.apache.aries.blueprint.core.version>
+        <org.apache.aries.proxy.version>1.1.14</org.apache.aries.proxy.version>
+        <org.apache.aries.util.version>1.1.3</org.apache.aries.util.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <!-- External project dependencies -->
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi.core</artifactId>
+                <version>${osgi.core.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.main</artifactId>
+                <version>${org.apache.felix.main.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>${jansi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>${jline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.bundlerepository</artifactId>
+                <version>${org.apache.felix.bundlerepository.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.command</artifactId>
+                <version>${org.apache.felix.gogo.command.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.jline</artifactId>
+                <version>${org.apache.felix.gogo.jline.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.runtime</artifactId>
+                <version>${org.apache.felix.gogo.runtime.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-commons</artifactId>
+                <version>${asm.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-tree</artifactId>
+                <version>${asm.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-analysis</artifactId>
+                <version>${asm.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
             <dependency>
                 <groupId>asm</groupId>
                 <artifactId>asm-all</artifactId>
@@ -176,32 +265,25 @@
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.main</artifactId>
-                <version>${felixMainVersion}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.configadmin</artifactId>
-                <version>${felixConfigadminVersion}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.shell</artifactId>
-                <version>${felixShellVersion}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.shell.tui</artifactId>
-                <version>${felixShellTuiVersion}</version>
+                <version>${org.apache.felix.configadmin.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.eventadmin</artifactId>
-                <version>${felixEventadminVersion}</version>
+                <version>${org.apache.felix.eventadmin.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>${pax-logging.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-service</artifactId>
+                <version>${pax-logging.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.web</groupId>
@@ -303,11 +385,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.fileinstall</artifactId>
                 <version>${felixFileinstallVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.bundlerepository</artifactId>
-                <version>${felixBundlerepositoryVersion}</version>
             </dependency>
 
             <dependency>
@@ -417,7 +494,7 @@
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.api</artifactId>
-                <version>${ariesBlueprintApiVersion}</version>
+                <version>${org.apache.aries.blueprint.api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
@@ -427,12 +504,12 @@
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.cm</artifactId>
-                <version>${ariesBlueprintCmVersion}</version>
+                <version>${org.apache.aries.blueprint.cm.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint.core</artifactId>
-                <version>${ariesBlueprintCoreVersion}</version>
+                <version>${org.apache.aries.blueprint.core.version}</version>
             </dependency>
             <!-- jmx -->
             <dependency>
@@ -531,7 +608,7 @@
             <dependency>
                 <groupId>org.apache.aries.proxy</groupId>
                 <artifactId>org.apache.aries.proxy</artifactId>
-                <version>${ariesProxyVersion}</version>
+                <version>${org.apache.aries.proxy.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.proxy</groupId>
@@ -580,7 +657,7 @@
             <dependency>
                 <groupId>org.apache.aries</groupId>
                 <artifactId>org.apache.aries.util</artifactId>
-                <version>${ariesUtilVersion}</version>
+                <version>${org.apache.aries.util.version}</version>
             </dependency>
             <!-- web-->
             <dependency>

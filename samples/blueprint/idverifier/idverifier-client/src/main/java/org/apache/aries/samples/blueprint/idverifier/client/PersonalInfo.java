@@ -19,11 +19,16 @@
 package org.apache.aries.samples.blueprint.idverifier.client;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author forrestxm
  *
  */
 public class PersonalInfo {
+    private static final Logger log = LoggerFactory.getLogger(PersonalInfo.class);
+
 	private String personid;
 	private String area;
 	private String birthday;
@@ -93,11 +98,11 @@ public class PersonalInfo {
 	}
 	@Override
 	public String toString(){
-		System.out.println("********Start of Printing Personal Info**********");
-		System.out.println("Area: " + this.getArea());
-		System.out.println("Birthday: " + this.getBirthday());
-		System.out.println("Gender: "+ this.getGender());
-		System.out.println("********End of Printing Personal Info************");
+		log.info("********Start of Printing Personal Info**********");
+		log.info("Area: " + this.getArea());
+		log.info("Birthday: " + this.getBirthday());
+		log.info("Gender: "+ this.getGender());
+		log.info("********End of Printing Personal Info************");
 		String delimiter = ",";
 		StringBuffer sb = new StringBuffer();
 		sb.append("PersonInfo [");

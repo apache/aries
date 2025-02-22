@@ -18,11 +18,16 @@
  */
 package org.apache.aries.samples.blueprint.idverifier.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author forrestxm
  *
  */
 public class BankInfo {
+    private static final Logger log = LoggerFactory.getLogger(BankInfo.class);
+
 	private String bankname;
 	private String bankaddress;
 	private String banklegalpersonname;
@@ -47,7 +52,7 @@ public class BankInfo {
 		return bankaddress;
 	}
 	/**
-	 * @param bandaddress the bandaddress to set
+	 * @param bankaddress the bandaddress to set
 	 */
 	public void setBankaddress(String bankaddress) {
 		this.bankaddress = bankaddress;
@@ -78,12 +83,12 @@ public class BankInfo {
 	}
 	@Override
 	public String toString(){
-		System.out.println("********Start of Printing Bank Info**********");
-		System.out.println("Bank Name: " + this.getBankname());
-		System.out.println("Bank Address: " + this.getBankaddress());
-		System.out.println("Bank Legal Person: "+ this.getBanklegalpersonname());
-		System.out.println("Bank Reg. Number: "+ this.getBankregistrationnumber());
-		System.out.println("********End of Printing Bank Info**********");
+		log.info("********Start of Printing Bank Info**********");
+		log.info("Bank Name: " + this.getBankname());
+		log.info("Bank Address: " + this.getBankaddress());
+		log.info("Bank Legal Person: "+ this.getBanklegalpersonname());
+		log.info("Bank Reg. Number: "+ this.getBankregistrationnumber());
+		log.info("********End of Printing Bank Info**********");
 		String delimiter = ",";
 		StringBuffer sb = new StringBuffer();
 		sb.append("[");
