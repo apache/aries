@@ -47,7 +47,7 @@ public class BankInfo {
 		return bankaddress;
 	}
 	/**
-	 * @param bandaddress the bandaddress to set
+	 * @param bankaddress the bandaddress to set
 	 */
 	public void setBankaddress(String bankaddress) {
 		this.bankaddress = bankaddress;

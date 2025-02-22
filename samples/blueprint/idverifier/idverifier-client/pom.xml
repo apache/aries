@@ -29,16 +29,10 @@
         Example blueprint application to demo inlined managers definitions.
     </description>
 
-    <properties>
-        <osgi.version>3.5.0.v20090520</osgi.version>
-    </properties>
-
     <dependencies>
         <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>${osgi.version}</version>
-            <scope>provided</scope>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>

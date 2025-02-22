@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.apache.aries.samples.blueprint.idverifier.api.*;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
@@ -131,17 +132,17 @@ public class PersonBankBean {
 		this.bpbundlecontext = bpbundlecontext;
 	}
 
-	public void startUp(){
+	public void startUp() {
 		System.out.println("*******Start of Printing Personal Bank/Credit Information************");		
 		this.personinfo.toString();
 		
 		// get component instance of BankInfo at runtime
 		this.setBankinfo((BankInfo)bpcontainer.getComponentInstance(this.getBankinfobeanid()));
 		this.bankinfo.toString();
-		
+
 		// get inlined service object from service registration object
-		ServiceReference svcref = this.svcreg4cro.getReference();
-		this.setCro((CreditRecordOperation)this.bpbundlecontext.getService(svcref));
+//		ServiceReference svcref = this.svcreg4cro.getReference();
+//		this.setCro((CreditRecordOperation)this.bpbundlecontext.getService(svcref));
 		
 		Set<String> allcreditrecords = cro.query(this.personinfo.getPersonid());
 		if (allcreditrecords.isEmpty()){

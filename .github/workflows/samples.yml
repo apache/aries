@@ -49,3 +49,7 @@ jobs:
     - name: Build samples
       shell: bash
       run: mvn -U -e -B -ntp clean install -f samples
+    - name: Run idverifier
+      shell: bash
+      run: | 
+        timeout 10 bash ./samples/blueprint/idverifier/idverifier-assembly/target/run.sh
