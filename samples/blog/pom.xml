@@ -30,7 +30,10 @@
     <packaging>pom</packaging>
 
     <properties>
+        <!-- used eclipse version needs java 6-->
         <java.source.version>1.6</java.source.version>
+        <!-- newer version generates osgi.extender capability for jpa bundle -->
+        <maven-bundle-plugin.version>2.5.0</maven-bundle-plugin.version>
         <org.eclipse.osgi.version>3.7.0.v20110613</org.eclipse.osgi.version>
     </properties>
 
