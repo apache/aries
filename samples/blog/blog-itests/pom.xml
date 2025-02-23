@@ -33,18 +33,22 @@
     <properties>
         <asm.version>4.0</asm.version>
         <cm.version>3.2.0-v20070116</cm.version>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
         <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
-        <exam.version>3.4.0</exam.version>
+        <exam.version>4.13.5</exam.version>
+        <java.source.version>8</java.source.version>
+        <javax.inject.version>1</javax.inject.version>
         <logback.version>0.9.29</logback.version>
-        <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
+<!--        <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>-->
         <org.eclipse.osgi.version>3.8.0.v20120529-1548</org.eclipse.osgi.version>
+        <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
+        <org.apache.felix.bundlerepository.version>1.6.6</org.apache.felix.bundlerepository.version>
         <pax-web-extender-war.version>3.0.0</pax-web-extender-war.version>
         <pax-web-jetty-bundle.version>3.1.0</pax-web-jetty-bundle.version>
         <services.version>3.1.200-v20070605</services.version>
-        <slf4j-api.version>1.7.7</slf4j-api.version>
         <swissbox.version>1.7.0</swissbox.version>
         <tinybundles.version>2.0.0</tinybundles.version>
-        <url.version>1.6.0</url.version>
+        <url.version>2.6.16</url.version>
         <xbean.version>3.16</xbean.version>
     </properties>
 
@@ -78,11 +82,17 @@
             <scope>test</scope>
         </dependency>
 
+<!--        TODO ARIES-2165 Use testsupport dependency when application runs on newer eclipse -->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.aries.testsupport</groupId>-->
+<!--            <artifactId>org.apache.aries.testsupport.unit</artifactId>-->
+<!--            <version>${org.apache.aries.testsupport.unit.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <version>${org.apache.aries.testsupport.unit.version}</version>
-            <scope>test</scope>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
         </dependency>
 
         <dependency>
@@ -381,7 +391,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
@@ -440,6 +449,12 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>${commons-dbcp.version}</version>
         </dependency>
     </dependencies>
 
