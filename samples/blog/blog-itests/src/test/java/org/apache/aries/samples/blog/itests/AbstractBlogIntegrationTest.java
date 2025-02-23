@@ -159,7 +159,7 @@ public abstract class AbstractBlogIntegrationTest extends org.apache.aries.itest
 				junitBundles(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service", "1.7.2"),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+//				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				// this is how you set the default log level when using pax
 				// logging (logProfile)
 				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
@@ -199,6 +199,7 @@ public abstract class AbstractBlogIntegrationTest extends org.apache.aries.itest
 				mavenBundle("commons-lang", "commons-lang").versionAsInProject(),
 				mavenBundle("commons-collections", "commons-collections").versionAsInProject(),
 				mavenBundle("commons-pool", "commons-pool").versionAsInProject(),
+				mavenBundle("commons-dbcp", "commons-dbcp").versionAsInProject(),
 				mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.serp").versionAsInProject(),
 				mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api").versionAsInProject(),
 	            mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.manager").versionAsInProject(),
