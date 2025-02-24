@@ -17,7 +17,7 @@ See [Apache Aries Website](http://aries.apache.org/).
 - [![Proxy - CI Build](https://github.com/apache/aries/actions/workflows/proxy.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/proxy.yml)
 - [![Pushstream - CI Build](https://github.com/apache/aries/actions/workflows/pushstream.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/pushstream.yml)
 - [![Quiesce - CI Build](https://github.com/apache/aries/actions/workflows/quiesce.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/quiesce.yml)
-- Samples - Missing
+- [![Samples - CI Build](https://github.com/apache/aries/actions/workflows/samples.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/samples.yml)
 - [![SPI Fly - CI Build](https://github.com/apache/aries/actions/workflows/spi-fly.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/spi-fly.yml)
 - [![Subsystem - CI Build](https://github.com/apache/aries/actions/workflows/subsystem.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/subsystem.yml)
 - [![Transaction - CI Build](https://github.com/apache/aries/actions/workflows/transaction.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/transaction.yml)

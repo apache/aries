@@ -37,7 +37,6 @@ import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.Inject;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.ops4j.pax.url.mvn.Handler;
@@ -50,6 +49,8 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+
+import javax.inject.Inject;
 
 
 public abstract class AbstractIntegrationTest {
@@ -272,7 +273,7 @@ public abstract class AbstractIntegrationTest {
   public static URL getUrlToEba(String groupId, String artifactId) throws MalformedURLException {
     String artifactVersion = getArtifactVersion(groupId, artifactId);
 
-    // Need to use handler from org.ops4j.pax.url.mvn
+    // Need to use handler from org.ops4j.pax.url.aether
     URL urlToEba = new URL(null,
         ServiceConstants.PROTOCOL + ":" + groupId + "/" +artifactId + "/"
             + artifactVersion + "/eba", new Handler());
