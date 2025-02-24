@@ -168,7 +168,7 @@ public class TwitterTest extends AbstractIntegrationTest
 				junitBundles(),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),
 				mavenBundle("org.ops4j.pax.logging", "pax-logging-service", "1.7.2"),
-				mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
+				//mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				// this is how you set the default log level when using pax
 				// logging (logProfile)
 				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
