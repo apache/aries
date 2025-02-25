@@ -31,9 +31,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <cm.version>3.2.0-v20070116</cm.version>
         <osgi.version>3.5.0.v20090520</osgi.version>
-        <services.version>3.1.200-v20070605</services.version>
     </properties>
 
     <dependencies>
