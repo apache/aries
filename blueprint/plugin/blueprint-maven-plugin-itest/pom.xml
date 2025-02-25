@@ -43,7 +43,7 @@
         <javax.inject.version>1</javax.inject.version>
         <javax.transaction-api.version>1.2</javax.transaction-api.version>
         <maven-invoker-plugin.version>3.9.0</maven-invoker-plugin.version>
-        <pax-cdi.version>0.8.0</pax-cdi.version>
+        <pax-cdi.version>1.1.4</pax-cdi.version>
         <spring.version>5.3.39</spring.version>
     </properties>
 
