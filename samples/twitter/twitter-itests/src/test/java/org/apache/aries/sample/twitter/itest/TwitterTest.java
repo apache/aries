@@ -196,9 +196,6 @@ public class TwitterTest extends AbstractIntegrationTest
 				mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
 				mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
 				mavenBundle("org.apache.aries.samples.twitter", "org.apache.aries.samples.twitter.twitter4j").versionAsInProject()
-
-				// For debugging
-				//vmOption ("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5010"),
 				);
 	}
 }

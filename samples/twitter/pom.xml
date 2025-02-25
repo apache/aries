@@ -54,7 +54,6 @@
         </dependencies>
     </dependencyManagement>
 
-
     <modules>
         <module>twitter-twitter4j</module>
         <module>twitter-bundle</module>
