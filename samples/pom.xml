@@ -99,7 +99,7 @@
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-lang.version>2.5</commons-lang.version>
         <commons-pool.version>1.5.4</commons-pool.version>
-        <org.apache.servicemix.bundles.serp.version>1.13.1_2</org.apache.servicemix.bundles.serp.version>
+        <org.apache.servicemix.bundles.serp.version>1.15.1_1</org.apache.servicemix.bundles.serp.version>
         <org.apache.servicemix.bundles.cglib.version>2.1_3_4</org.apache.servicemix.bundles.cglib.version>
 
         <openjpa.version>2.2.2</openjpa.version>
