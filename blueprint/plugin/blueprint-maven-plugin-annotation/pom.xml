@@ -43,7 +43,7 @@
 
     <properties>
         <bnd-maven-plugin.version>6.4.0</bnd-maven-plugin.version>
-        <osgi.annotation.version>7.0.0</osgi.annotation.version>
+        <osgi.annotation.version>8.1.0</osgi.annotation.version>
     </properties>
 
     <dependencies>
