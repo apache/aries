@@ -81,8 +81,17 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         long[] exportingBundles2 = packagaState.getExportingBundles("test", "1.0.0");
         assertNull("Shouldn't find a bundle exporting test package", exportingBundles2);
 
+        // jmx-api and jmx are exporting the package - other bundles wires to jmx as the providing one
+        long bundleIdExportingJmxFramework = -1;
+        for (long exportingBundle : exportingBundles) {
+            if (context().getBundle(exportingBundle).getSymbolicName().equals("org.apache.aries.jmx")) {
+                bundleIdExportingJmxFramework = exportingBundle;
+            }
+        }
+        assertTrue("Should find the Aries JMX bundle as exporting org.osgi.jmx.framework", bundleIdExportingJmxFramework > 0);
+
         long[] importingBundlesId = packagaState
-                .getImportingBundles("org.osgi.jmx.framework", "1.7.0", exportingBundles[0]);
+                .getImportingBundles("org.osgi.jmx.framework", "1.7.0", bundleIdExportingJmxFramework);
         assertTrue("Should find bundles importing org.osgi.jmx.framework", importingBundlesId.length > 0);
 
         TabularData table = packagaState.listPackages();
@@ -92,7 +101,7 @@ public class PackageStateMBeanTest extends AbstractIntegrationTest {
         assertNotNull("Collection of CompositeData shouldn't be null", colData);
         assertFalse("Collection of CompositeData should contain elements", colData.isEmpty());
 
-        boolean isRemovalPending = packagaState.isRemovalPending("org.osgi.jmx.framework", "1.7.0", exportingBundles[0]);
+        boolean isRemovalPending = packagaState.isRemovalPending("org.osgi.jmx.framework", "1.7.0", bundleIdExportingJmxFramework);
         assertFalse("Should removal pending on org.osgi.jmx.framework be false", isRemovalPending);
     }
 
