@@ -64,7 +64,7 @@
         <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
         <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
         <org.apache.aries.testsupport.unit.version>1.0.0</org.apache.aries.testsupport.unit.version>
-        <org.apache.felix.bundlerepository.version>1.6.6</org.apache.felix.bundlerepository.version>
+        <org.apache.felix.bundlerepository.version>2.0.10</org.apache.felix.bundlerepository.version>
     </properties>
 
     <dependencies>
