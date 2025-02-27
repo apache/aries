@@ -69,7 +69,7 @@
         <additionalparam>-Xdoclint:none</additionalparam>
 
         <animal-sniffer-annotations.version>1.7</animal-sniffer-annotations.version>
-        <geronimo-connector.version>3.1.1</geronimo-connector.version>
+        <geronimo-connector.version>3.1.5</geronimo-connector.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <maven-xbean-plugin.version>3.18</maven-xbean-plugin.version>
