@@ -42,7 +42,6 @@
         <module>blueprint</module>
         <module>blueprint/plugin</module>
         <module>eba-maven-plugin</module>
-        <module>ejb</module>
         <module>esa-ant-task</module>
         <module>esa-maven-plugin</module>
         <module>jmx</module>

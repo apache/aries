@@ -1,4 +1,0 @@
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: foo
-Web-ContextPath: test
-

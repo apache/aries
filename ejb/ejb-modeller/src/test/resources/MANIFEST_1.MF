@@ -1,3 +1,0 @@
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: foo
-
