@@ -95,7 +95,7 @@
         <cm.version>3.2.0-v20070116</cm.version>
         <services.version>3.1.200-v20070605</services.version>
         <asm-all.version>3.3.1</asm-all.version>
-        <derby.version>10.14.2.0</derby.version>
+        <derby.version>10.17.1.0</derby.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-lang.version>2.5</commons-lang.version>
         <commons-pool.version>1.5.4</commons-pool.version>
