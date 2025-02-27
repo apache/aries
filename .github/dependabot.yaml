@@ -31,6 +31,9 @@ updates:
       - dependency-name: "org.springframework:spring-*"
         versions:
           - ">=6.0.0" # does not support java 8
+      - dependency-name: "org.apache.geronimo.components:geronimo-connector"
+        versions:
+          - ">=4.0.0" # does not support java 8
       - dependency-name: "org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-*"
         versions:
           - ">=6.0.0" # does not support java 8
