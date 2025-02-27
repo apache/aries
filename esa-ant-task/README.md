@@ -7,7 +7,6 @@ Clone the project and then run `mvn clean install`, grab the jar and drop it you
 # Sample build file
 
 ```xml
-
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ====================================================================== 
                                                     
