@@ -99,7 +99,7 @@
         <blueprint.annotation.api.version>1.0.1</blueprint.annotation.api.version>
         <blueprint.api.version>1.0.1</blueprint.api.version>
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
-        <easymock.version>4.2</easymock.version>
+        <easymock.version>5.5.0</easymock.version>
         <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
         <org.apache.felix.utils.version>1.11.8</org.apache.felix.utils.version>

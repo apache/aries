@@ -59,7 +59,7 @@ public class ResolveContextTest {
                     throw new UnsupportedOperationException();
                 }
             };
-            caps.add(0, EasyMock.createNiceMock(HostedCapability.class));
+            caps.add(0, (Capability) EasyMock.createNiceMock(HostedCapability.class));
 
             assertEquals(1, rc.insertHostedCapability(caps, hc));
             assertSame(hc, caps.get(1));
