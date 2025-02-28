@@ -27,7 +27,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import aQute.lib.osgi.Analyzer;
+import aQute.bnd.osgi.Analyzer;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.versioning.VersionRange;

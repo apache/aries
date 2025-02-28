@@ -34,7 +34,7 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.archiver.zip.ZipEntry;
 import org.codehaus.plexus.archiver.zip.ZipFile;
 
-import aQute.lib.osgi.Analyzer;
+import aQute.bnd.osgi.Analyzer;
 
 /**
  * @author <a href="mailto:aramirez@apache.org">Allan Ramirez</a>
@@ -227,7 +227,7 @@ public class EsaMojoTest
         Attributes attributes = mf.getMainAttributes();
         String value = attributes.getValue(header);
         assertNotNull("Header " + header + " not found", value);
-        return Analyzer.parseHeader(value, null);
+        return Analyzer.parseHeader(value, null).toBasic();
     }
 
     private void testForHeader(ZipFile esa, String header, String exactEntry) throws Exception {

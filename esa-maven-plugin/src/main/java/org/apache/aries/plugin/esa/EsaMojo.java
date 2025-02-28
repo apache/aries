@@ -30,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import aQute.bnd.osgi.Analyzer;
 import org.apache.aries.util.manifest.BundleManifest;
 import org.apache.maven.archiver.PomPropertiesUtil;
 import org.apache.maven.artifact.Artifact;
@@ -504,7 +505,7 @@ public class EsaMojo
         if (instructions.containsKey(Constants.SUBSYSTEM_VERSION)) {
             return instructions.get(Constants.SUBSYSTEM_VERSION).toString();
         }
-        return aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion());
+        return Analyzer.cleanupVersion(project.getVersion());
     }
     
     private String getSubsystemName() {

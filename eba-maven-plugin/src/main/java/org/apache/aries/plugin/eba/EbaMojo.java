@@ -31,7 +31,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.apache.maven.shared.osgi.DefaultMaven2OsgiConverter;
 import org.apache.maven.shared.osgi.Maven2OsgiConverter;
-import aQute.lib.osgi.Analyzer;
+import aQute.bnd.osgi.Analyzer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -52,7 +52,7 @@ public class EbaMojo
     extends AbstractMojo
 {
 
-    
+
 	public static final String APPLICATION_MF_URI = "META-INF/APPLICATION.MF";
 
     private static final String[] DEFAULT_INCLUDES = {"**/**"};
@@ -70,12 +70,12 @@ public class EbaMojo
     private static final String APPLICATION_EXPORTSERVICE = "Application-ExportService";
     private static final String APPLICATION_IMPORTSERVICE = "Application-ImportService";
     private static final String APPLICATION_USEBUNDLE = "Use-Bundle";
-    
+
     /**
      * Coverter for maven pom values to OSGi manifest values (pulled in from the maven-bundle-plugin)
      */
     private Maven2OsgiConverter maven2OsgiConverter = new DefaultMaven2OsgiConverter();
-    
+
     /**
      * Single directory for extra files to include in the eba.
      *
@@ -167,8 +167,8 @@ public class EbaMojo
      *
      * @parameter
      */
-    private Map instructions = new LinkedHashMap();;    
-    
+    private Map instructions = new LinkedHashMap();;
+
     /**
      * Adding pom.xml and pom.properties to the archive.
      *
@@ -199,9 +199,9 @@ public class EbaMojo
 
     /**
      * Define which bundles to include in the archive.
-     *   none - no bundles are included 
+     *   none - no bundles are included
      *   applicationContent - direct dependencies go into the content
-     *   all - direct and transitive dependencies go into the content 
+     *   all - direct and transitive dependencies go into the content
      *
      * @parameter expression="${archiveContent}" default-value="applicationContent"
      */
@@ -226,10 +226,10 @@ public class EbaMojo
         if (archiveContent == null) {
         	archiveContent = new String("applicationContent");
         }
-        
-        getLog().debug( "archiveContent[" + archiveContent + "]" );        
-        getLog().info( "archiveContent[" + archiveContent + "]" );        
-        
+
+        getLog().debug( "archiveContent[" + archiveContent + "]" );
+        getLog().info( "archiveContent[" + archiveContent + "]" );
+
         zipArchiver.setIncludeEmptyDirs( includeEmptyDirs );
         zipArchiver.setCompress( true );
         zipArchiver.setForced( forceCreation );
@@ -258,19 +258,19 @@ public class EbaMojo
                 // if use transitive is set (i.e. true) then we need to make sure archiveContent does not contradict (i.e. is set
                 // to the same compatible value or is the default).
             	if ("none".equals(archiveContent)) {
-                    throw new MojoExecutionException("<useTransitiveDependencies/> and <archiveContent/> incompatibly configured.  <useTransitiveDependencies/> is deprecated in favor of <archiveContent/>." );            		
+                    throw new MojoExecutionException("<useTransitiveDependencies/> and <archiveContent/> incompatibly configured.  <useTransitiveDependencies/> is deprecated in favor of <archiveContent/>." );
             	}
             	else {
-                    artifacts = project.getArtifacts();            		
+                    artifacts = project.getArtifacts();
             	}
             } else {
             	// check that archiveContent is compatible
             	if ("applicationContent".equals(archiveContent)) {
-                    artifacts = project.getDependencyArtifacts();            		
+                    artifacts = project.getDependencyArtifacts();
             	}
             	else {
                 	// the only remaining options should be applicationContent="none"
-                    getLog().info("archiveContent=none: application arvhive will not contain any bundles.");            		
+                    getLog().info("archiveContent=none: application arvhive will not contain any bundles.");
             	}
             }
             if (artifacts != null) {
@@ -282,7 +282,7 @@ public class EbaMojo
                                 artifact.getScope() + "]");
                         zipArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null ? "jar" : artifact.getType()));
                     }
-                }            	
+                }
             }
         }
         catch ( ArchiverException e )
@@ -362,7 +362,7 @@ public class EbaMojo
 						"Error generating APPLICATION.MF file: " + fileName, e);
 			}
 		}
-        
+
         // Check if connector deployment descriptor is there
         File ddFile = new File( getBuildDir(), APPLICATION_MF_URI);
         if ( !ddFile.exists() )
@@ -480,7 +480,7 @@ public class EbaMojo
 		}
 
 	}
-    
+
     // The maven2OsgiConverter assumes the artifact is a jar so we need our own
 	// This uses the same fallback scheme as the converter
     private String getApplicationSymbolicName(Artifact artifact) {
@@ -489,14 +489,14 @@ public class EbaMojo
 		}
     	return artifact.getGroupId() + "." + artifact.getArtifactId();
     }
-    
+
     private String getApplicationVersion() {
         if (instructions.containsKey(APPLICATION_VERSION)) {
             return instructions.get(APPLICATION_VERSION).toString();
         }
-        return aQute.lib.osgi.Analyzer.cleanupVersion(project.getVersion());
+        return Analyzer.cleanupVersion(project.getVersion());
     }
-    
+
     protected File getBuildDir()
     {
         if ( buildDir == null )
@@ -519,16 +519,16 @@ public class EbaMojo
             FileUtils.copyFileToDirectory( appMfFile, metaInfDir);
         }
     }
-    
+
     /**
-     * Return artifacts in 'compile' or 'runtime' scope only.   
+     * Return artifacts in 'compile' or 'runtime' scope only.
      */
-    private Set<Artifact> selectArtifacts(Set<Artifact> artifacts) 
+    private Set<Artifact> selectArtifacts(Set<Artifact> artifacts)
     {
         Set<Artifact> selected = new LinkedHashSet<Artifact>();
         for (Artifact artifact : artifacts) {
             String scope = artifact.getScope();
-            if (scope == null 
+            if (scope == null
                 || Artifact.SCOPE_COMPILE.equals(scope)
                 || Artifact.SCOPE_RUNTIME.equals(scope)) {
                 selected.add(artifact);
