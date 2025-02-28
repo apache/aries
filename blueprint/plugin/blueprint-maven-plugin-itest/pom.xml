@@ -38,7 +38,7 @@
         <aries.skip.version.check>true</aries.skip.version.check>
 
         <blueprint-maven-plugin.version>1.10.1-SNAPSHOT</blueprint-maven-plugin.version>
-        <groovy.version>4.0.24</groovy.version>
+        <groovy.version>4.0.26</groovy.version>
         <javax.enterprise.cdi-api.version>2.0.SP1</javax.enterprise.cdi-api.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.transaction-api.version>1.2</javax.transaction-api.version>
