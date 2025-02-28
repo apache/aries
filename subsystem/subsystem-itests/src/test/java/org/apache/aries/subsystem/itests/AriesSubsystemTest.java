@@ -155,7 +155,7 @@ public class AriesSubsystemTest extends SubsystemTest {
 					.directive(
 							PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE, 
 							"(osgi.wiring.package=org.osgi.framework)")
-					.resource(EasyMock.createMock(Resource.class))
+					.resource(createResourceMock())
 					.build();
 			applicationB.addRequirements(Collections.singleton(requirement));
 			bRegion = getRegion(applicationB);
@@ -180,7 +180,7 @@ public class AriesSubsystemTest extends SubsystemTest {
 					.directive(
 							PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE, 
 							"(osgi.wiring.package=org.osgi.framework.wiring)")
-					.resource(EasyMock.createMock(Resource.class))
+					.resource(createResourceMock())
 					.build();
 			applicationB.addRequirements(Collections.singleton(requirement));
 			rootRegion = getRegion(getRootSubsystem());
@@ -195,8 +195,12 @@ public class AriesSubsystemTest extends SubsystemTest {
 			uninstallSubsystemSilently(compositeA);
 		}
 	}
-	
-	/*
+
+    private static Resource createResourceMock() {
+        return EasyMock.createMock(Resource.class);
+    }
+
+    /*
 	 * Test the AriesSubsystem.addRequirements(Collection<Requirement>) method.
 	 * 
 	 * There are several things to consider for this test.
@@ -231,7 +235,7 @@ public class AriesSubsystemTest extends SubsystemTest {
 				.directive(
 					PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE, 
 					"(osgi.wiring.package=org.osgi.framework)")
-					.resource(EasyMock.createMock(Resource.class))
+					.resource(createResourceMock())
 					.build();
 			compositeA.addRequirements(Collections.singleton(requirement));
 			// Test that the bundles were copied over to the newly created region.
@@ -266,7 +270,7 @@ public class AriesSubsystemTest extends SubsystemTest {
 		Requirement requirement = new BasicRequirement.Builder()
 				.namespace(RegionFilter.VISIBLE_BUNDLE_NAMESPACE)
 				.directive(Namespace.REQUIREMENT_FILTER_DIRECTIVE, "(id=0)")
-				.resource(EasyMock.createMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		AriesSubsystem compositeA = (AriesSubsystem) installSubsystemFromFile(COMPOSITE_A);
 		try {
 			startSubsystem(compositeA);

@@ -32,16 +32,20 @@ public class ResourceHelperTest {
 				.attribute("a", "b")
 				.attribute("b", "c")
 				.attribute("c", "d")
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		Requirement req = new BasicRequirement.Builder()
 				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
 				.directive(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE,
 						"(&(osgi.wiring.package=com.foo)(a=b)(b=c))")
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		assertTrue("Capability should match requirement", ResourceHelper.matches(req, cap));
 	}
-	
-	@Test
+
+    private static Resource createResourceMock() {
+        return EasyMock.createNiceMock(Resource.class);
+    }
+
+    @Test
 	public void testMandatoryDirectiveAndNullFilterDirective() {
 		Capability cap = new BasicCapability.Builder()
 				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
@@ -50,10 +54,10 @@ public class ResourceHelperTest {
 				.attribute("b", "c")
 				.attribute("c", "d")
 				.directive(PackageNamespace.CAPABILITY_MANDATORY_DIRECTIVE, "b")
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		Requirement req = new BasicRequirement.Builder()
 				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		assertFalse("Capability should not match requirement", ResourceHelper.matches(req, cap));
 	}
 	
@@ -66,12 +70,12 @@ public class ResourceHelperTest {
 				.attribute("bAr", "c")
 				.attribute("c", "d")
 				.directive(PackageNamespace.CAPABILITY_MANDATORY_DIRECTIVE, "bAr")
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		Requirement req = new BasicRequirement.Builder()
 				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
 				.directive(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE,
 						"(&(osgi.wiring.package=com.foo)(a=b)(baR=c)(c=d))")
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		assertFalse("Capability should not match requirement", ResourceHelper.matches(req, cap));
 	}
 	
@@ -84,13 +88,13 @@ public class ResourceHelperTest {
 				.attribute("b", "c")
 				.attribute("c", "d")
 				.directive(PackageNamespace.CAPABILITY_MANDATORY_DIRECTIVE, "a,c")
-				.resource(EasyMock.createNiceMock(Resource.class))
+				.resource(createResourceMock())
 				.build();
 		Requirement req = new BasicRequirement.Builder()
 				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
 				.directive(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE,
 						"(&(osgi.wiring.package=com.foo)(a=b)(b=c))")
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		assertFalse("Capability should not match requirement", ResourceHelper.matches(req, cap));
 	}
 	
@@ -103,13 +107,13 @@ public class ResourceHelperTest {
 				.attribute("b", "c")
 				.attribute("c", "d")
 				.directive(PackageNamespace.CAPABILITY_MANDATORY_DIRECTIVE, "a,c")
-				.resource(EasyMock.createNiceMock(Resource.class))
+				.resource(createResourceMock())
 				.build();
 		Requirement req = new BasicRequirement.Builder()
 				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
 				.directive(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE,
 						"(&(osgi.wiring.package=com.foo)(a=b)(c=d))")
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		assertTrue("Capability should match requirement", ResourceHelper.matches(req, cap));
 	}
 	
@@ -122,13 +126,13 @@ public class ResourceHelperTest {
 				.attribute("b", "c")
 				.attribute("c", "d")
 				.directive(PackageNamespace.CAPABILITY_MANDATORY_DIRECTIVE, "\ra\n, c	")
-				.resource(EasyMock.createNiceMock(Resource.class))
+				.resource(createResourceMock())
 				.build();
 		Requirement req = new BasicRequirement.Builder()
 				.namespace(PackageNamespace.PACKAGE_NAMESPACE)
 				.directive(PackageNamespace.REQUIREMENT_FILTER_DIRECTIVE,
 						"(&(osgi.wiring.package=com.foo)(a=b)(c=d))")
-				.resource(EasyMock.createNiceMock(Resource.class)).build();
+				.resource(createResourceMock()).build();
 		assertTrue("Capability should match requirement", ResourceHelper.matches(req, cap));
 	}
 }
