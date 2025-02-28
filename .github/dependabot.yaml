@@ -16,6 +16,12 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 10
     ignore:
+      - dependency-name: "org.ow2.asm:asm-all"
+        versions:
+          - ">=6" # artifact moved to org.ow2.asm:asm
+      - dependency-name: "org.ow2.asm:asm-debug-all"
+        versions:
+          - ">=6" # artifact moved to org.ow2.asm:asm
       - dependency-name: "org.apache.felix:maven-bundle-plugin"
         versions:
           - ">=6.0.0" # does not support java 8
