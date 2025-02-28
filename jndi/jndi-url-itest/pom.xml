@@ -43,7 +43,7 @@
     </scm>
 
     <properties>
-        <asm-debug-all.version>5.0.3</asm-debug-all.version>
+        <asm-debug-all.version>6.0_BETA</asm-debug-all.version>
         <cm.version>3.2.0-v20070116</cm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
