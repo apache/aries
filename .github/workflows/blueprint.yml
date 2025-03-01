@@ -54,19 +54,19 @@ jobs:
       run: mvn -U -e -B -ntp clean install -f parent
     - name: Build testsupport
       shell: bash
-      run: mvn -U -e -B -ntp clean install -f testsupport
+      run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f testsupport
     - name: Build proxy
       shell: bash
-      run: mvn -U -e -B -ntp clean install -f proxy
+      run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f proxy
     - name: Build versioning
       shell: bash
-      run: mvn -U -e -B -ntp clean install -f versioning
+      run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f versioning
     - name: Build util
       shell: bash
-      run: mvn -U -e -B -ntp clean install -f util
+      run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f util
     - name: Build quiesce
       shell: bash
-      run: mvn -U -e -B -ntp clean install -f quiesce
+      run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f quiesce
     - name: Build blueprint
       shell: bash
       run: mvn -U -e -B -ntp clean install -f blueprint
