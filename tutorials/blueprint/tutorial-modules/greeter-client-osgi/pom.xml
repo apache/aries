@@ -17,14 +17,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+    <parent>
+        <groupId>org.apache.aries.tutorials.blueprint</groupId>
+        <artifactId>blueprint</artifactId>
+        <version>0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 	<modelVersion>4.0.0</modelVersion>
 
 
-        <groupId>org.apache.aries.tutorials.blueprint</groupId>
 	<artifactId>org.apache.aries.tutorials.blueprint.greeter.client.osgi</artifactId>
 	<packaging>bundle</packaging>
 	<name>Greeter OSGi Client</name>
-	<version>0.4-SNAPSHOT</version>
 
         <description>
         This is the initial client for the greeter service. Students working through the tutorial
@@ -55,15 +59,14 @@
 		<dependency>
 			<groupId>org.apache.aries.tutorials.blueprint</groupId>
 			<artifactId>org.apache.aries.tutorials.blueprint.greeter.api</artifactId>
-			<version>0.4-SNAPSHOT</version>
-			<scope>compile</scope>
+            <version>${project.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi</artifactId>
 			<version>3.0.0</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
