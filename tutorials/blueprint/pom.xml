@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>org.apache.aries.tutorials</groupId>
 		<artifactId>tutorials</artifactId>
-		<version>0.4-SNAPSHOT</version>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -31,6 +31,11 @@
 
         
 	<modules>
-		<module>tutorial-modules</module>
+        <module>tutorial-modules/greeter-api</module>
+        <module>tutorial-modules/greeter-client-osgi</module>
+        <module>tutorial-modules/greeter-server-osgi</module>
+        <module>tutorial-modules/greeter-client-blueprint</module>
+        <module>tutorial-modules/greeter-server-blueprint</module>
+        <module>tutorial-assembly</module>
 	</modules>
 </project>

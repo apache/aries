@@ -27,22 +27,6 @@
 	</formats>
 	<includeBaseDirectory>false</includeBaseDirectory>
 
- 	<moduleSets>
-		<moduleSet>
-			<sources>
-				<fileSets>
-					<fileSet>
-                                        	<excludes>
-							<exclude>target/**</exclude>
-							<exclude>.*/**</exclude>
-						</excludes>
-					</fileSet> 
-				</fileSets> 
-				<outputDirectoryMapping>source/${module.artifactId}</outputDirectoryMapping>
-			</sources>
-		</moduleSet>
-	</moduleSets>
-
 	<dependencySets> 
 		<dependencySet>
 			<excludes>
@@ -64,10 +48,6 @@
 			<outputDirectory>/platform/configuration</outputDirectory>
 		</fileSet>
 		<fileSet>
-			<directory>src/main/dropins</directory>
-			<outputDirectory>/dropins</outputDirectory>
-		</fileSet>
-		<fileSet>
 			<directory>src/main/docs</directory>
 			<outputDirectory>/docs</outputDirectory>
 		</fileSet>
@@ -87,12 +67,6 @@
 			<fileMode>0777</fileMode>
 		</file>
 		<file>
-			<source>src/main/scripts/build.sh</source>
-			<outputDirectory>scripts</outputDirectory>
-			<destName>build.sh</destName>
-			<fileMode>0777</fileMode>
-		</file>
-		<file>
 			<source>src/main/scripts/start_platform.bat</source>
 			<outputDirectory>scripts</outputDirectory>
 			<destName>start_platform.bat</destName>
@@ -101,11 +75,6 @@
 			<source>src/main/scripts/run.bat</source>
 			<outputDirectory>scripts</outputDirectory>
 			<destName>run.bat</destName>
-		</file>
-		<file>
-			<source>src/main/scripts/build.bat</source>
-			<outputDirectory>scripts</outputDirectory>
-			<destName>build.bat</destName>
 		</file>
 	</files>
 

@@ -25,6 +25,7 @@ See [Apache Aries Website](http://aries.apache.org/).
 - [![Web - CI Build](https://github.com/apache/aries/actions/workflows/web.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/web.yml)
 - [![Util - CI Build](https://github.com/apache/aries/actions/workflows/util.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/util.yml)
 - [![Testsupport - CI Build](https://github.com/apache/aries/actions/workflows/testsupport.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/testsupport.yml)
+- [![Tutorials - CI Build](https://github.com/apache/aries/actions/workflows/tutorials.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/tutorials.yml)
 
 ## Source Code
 

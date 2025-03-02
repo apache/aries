@@ -55,6 +55,7 @@
         <module>subsystem</module>
         <module>testsupport</module>
         <module>transaction</module>
+        <module>tutorials</module>
         <module>util</module>
         <module>versioning</module>
         <module>web</module>
@@ -62,7 +63,6 @@
         <!-- excluded as not having CI build-->
         <!--
         <module>sandbox</module>
-        <module>tutorials</module>
         -->
     </modules>
 
