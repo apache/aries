@@ -65,7 +65,7 @@
         <commons-pool.version>1.6</commons-pool.version>
         <geronimo-jms_1.1_spec.version>1.1.1</geronimo-jms_1.1_spec.version>
         <geronimo-jta_1.1_spec.version>1.1.1</geronimo-jta_1.1_spec.version>
-        <geronimo-transaction.version>3.1.4</geronimo-transaction.version>
+        <geronimo-transaction.version>4.0.0</geronimo-transaction.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <maven-xbean-plugin.version>3.18</maven-xbean-plugin.version>
         <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
