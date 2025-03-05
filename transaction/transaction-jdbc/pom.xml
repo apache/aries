@@ -68,7 +68,6 @@
 
         <additionalparam>-Xdoclint:none</additionalparam>
 
-        <animal-sniffer-annotations.version>1.7</animal-sniffer-annotations.version>
         <geronimo-connector.version>3.1.5</geronimo-connector.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
@@ -143,12 +142,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>animal-sniffer-annotations</artifactId>
-            <version>${animal-sniffer-annotations.version}</version>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 

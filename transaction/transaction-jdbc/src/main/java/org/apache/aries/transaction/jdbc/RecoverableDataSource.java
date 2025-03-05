@@ -24,7 +24,6 @@ import org.apache.aries.transaction.jdbc.internal.ConnectionManagerFactory;
 import org.apache.aries.transaction.jdbc.internal.DataSourceMCFFactory;
 import org.apache.aries.transaction.jdbc.internal.Recovery;
 import org.apache.aries.transaction.jdbc.internal.XADataSourceMCFFactory;
-import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 import javax.sql.CommonDataSource;
 import javax.sql.DataSource;
@@ -357,7 +356,6 @@ public class RecoverableDataSource implements DataSource, RecoverableDataSourceM
         return delegate.getLoginTimeout();
     }
 
-    @IgnoreJRERequirement
     public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }
