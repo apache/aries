@@ -7,6 +7,9 @@ async:
 blueprint:
 - changed-files:
   - any-glob-to-any-file: 'blueprint/**/*'
+blueprint-maven-plugin:
+- changed-files:
+  - any-glob-to-any-file: 'blueprint-maven-plugin/**/*'
 eba-maven-plugin:
 - changed-files:
   - any-glob-to-any-file: 'eba-maven-plugin/**/*'

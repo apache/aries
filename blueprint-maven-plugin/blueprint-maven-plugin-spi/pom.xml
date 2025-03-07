@@ -17,7 +17,7 @@
  specific language governing permissions and limitations
  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,19 +29,13 @@
     </parent>
 
     <groupId>org.apache.aries.blueprint</groupId>
-    <artifactId>plugin-parent</artifactId>
-    <name>Apache Aries Blueprint Maven Plugin Parent</name>
-    <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>blueprint-maven-plugin-spi</artifactId>
+    <version>1.1.1-SNAPSHOT</version>
+    <name>Apache Aries Blueprint Maven Plugin SPI</name>
 
-    <modules>
-        <module>blueprint-maven-plugin-spi</module>
-        <module>blueprint-maven-plugin-annotation</module>
-        <module>blueprint-maven-plugin-spring-handlers</module>
-        <module>blueprint-maven-plugin-pax-cdi-handlers</module>
-        <module>blueprint-maven-plugin</module>
-        <module>blueprint-maven-plugin-itest</module>
-    </modules>
-
+    <scm>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
+    </scm>
 </project>
-

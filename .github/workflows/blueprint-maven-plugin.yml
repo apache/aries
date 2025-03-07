@@ -10,14 +10,14 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-name: Blueprint Plugin - CI Build
+name: Blueprint Maven Plugin - CI Build
 
 on:
   pull_request:
     paths:
       - parent/**
-      - blueprint/plugin/**
-      - .github/workflows/blueprint-plugin.yml
+      - blueprint-maven-plugin/**
+      - .github/workflows/blueprint-maven-plugin.yml
   push:
     branches:
       - 'trunk'
@@ -48,4 +48,4 @@ jobs:
       run: mvn -U -e -B -ntp clean install -f parent
     - name: Build blueprint plugin
       shell: bash
-      run: mvn -U -e -B -ntp clean install -f blueprint/plugin
+      run: mvn -U -e -B -ntp clean install -f blueprint-maven-plugin
