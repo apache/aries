@@ -43,7 +43,7 @@
     <properties>
         <aries.skip.version.check>true</aries.skip.version.check>
 
-        <jansi.version>1.18</jansi.version>
+        <jansi.version>2.4.1</jansi.version>
         <jline.version>3.13.2</jline.version>
         <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.core.version>1.10.3</org.apache.aries.blueprint.core.version>
