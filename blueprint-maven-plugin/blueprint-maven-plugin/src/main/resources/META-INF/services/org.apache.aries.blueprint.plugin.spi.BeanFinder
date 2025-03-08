@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
-org.apache.aries.blueprint.plugin.handlers.javax.SingletonBeanFinder
-org.apache.aries.blueprint.plugin.handlers.javax.NamedBeanFinder
 org.apache.aries.blueprint.plugin.handlers.blueprint.bean.BeanHandler
+org.apache.aries.blueprint.plugin.handlers.jakarta.NamedBeanFinder
+org.apache.aries.blueprint.plugin.handlers.jakarta.SingletonBeanFinder
+org.apache.aries.blueprint.plugin.handlers.javax.NamedBeanFinder
+org.apache.aries.blueprint.plugin.handlers.javax.SingletonBeanFinder

@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
+org.apache.aries.blueprint.plugin.handlers.jakarta.QualifierHandler
 org.apache.aries.blueprint.plugin.handlers.javax.QualifierHandler

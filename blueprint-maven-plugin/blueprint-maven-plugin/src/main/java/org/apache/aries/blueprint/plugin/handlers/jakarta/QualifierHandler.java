@@ -16,33 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test.qualifiers;
+package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import org.apache.aries.blueprint.annotation.bean.Bean;
+import jakarta.inject.Qualifier;
+import org.apache.aries.blueprint.plugin.spi.QualifingAnnotationFinder;
 
-import javax.inject.Named;
-
-@Bean
-public class MyFactory {
-
-    @Bean
-    @Named("testBean1")
-    @A1
-    public TestBean create1() {
-        return null;
-    }
-
-    @Bean
-    @Named("testBean2")
-    @A2
-    public TestBean create2() {
-        return null;
-    }
-
-    @Bean
-    @jakarta.inject.Named("testBean3")
-    @A3
-    public TestBean create3() {
-        return null;
+public class QualifierHandler implements QualifingAnnotationFinder<Qualifier> {
+    @Override
+    public Class<Qualifier> getAnnotation() {
+        return Qualifier.class;
     }
 }

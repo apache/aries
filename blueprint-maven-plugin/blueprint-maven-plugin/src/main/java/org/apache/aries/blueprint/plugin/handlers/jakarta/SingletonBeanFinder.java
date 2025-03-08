@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -16,33 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test.qualifiers;
+package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.plugin.spi.BeanFinder;
 
-import javax.inject.Named;
+import jakarta.inject.Singleton;
 
-@Bean
-public class MyFactory {
-
-    @Bean
-    @Named("testBean1")
-    @A1
-    public TestBean create1() {
-        return null;
+public class SingletonBeanFinder implements BeanFinder<Singleton> {
+    @Override
+    public Class<Singleton> getAnnotation() {
+        return Singleton.class;
     }
 
-    @Bean
-    @Named("testBean2")
-    @A2
-    public TestBean create2() {
-        return null;
-    }
-
-    @Bean
-    @jakarta.inject.Named("testBean3")
-    @A3
-    public TestBean create3() {
-        return null;
+    @Override
+    public boolean isSingleton() {
+        return true;
     }
 }

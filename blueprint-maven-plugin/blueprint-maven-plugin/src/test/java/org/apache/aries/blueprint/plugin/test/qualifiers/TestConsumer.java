@@ -22,7 +22,7 @@ import org.apache.aries.blueprint.annotation.bean.Bean;
 
 @Bean
 public class TestConsumer {
-    public TestConsumer(@A1 TestBean t1, @A2 TestBean t2) {
+    public TestConsumer(@A1 TestBean t1, @A2 TestBean t2, @A3 TestBean t3) {
 
     }
 }

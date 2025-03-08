@@ -18,31 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.test.qualifiers;
 
-import org.apache.aries.blueprint.annotation.bean.Bean;
+import jakarta.inject.Qualifier;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Named;
-
-@Bean
-public class MyFactory {
-
-    @Bean
-    @Named("testBean1")
-    @A1
-    public TestBean create1() {
-        return null;
-    }
-
-    @Bean
-    @Named("testBean2")
-    @A2
-    public TestBean create2() {
-        return null;
-    }
-
-    @Bean
-    @jakarta.inject.Named("testBean3")
-    @A3
-    public TestBean create3() {
-        return null;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface A3 {
 }
