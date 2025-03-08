@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.javax;
+package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
 
+import jakarta.inject.Named;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 
 public class NamedHandler implements NamedLikeHandler<Named> {

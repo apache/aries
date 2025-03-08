@@ -16,33 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.test.qualifiers;
+package org.apache.aries.blueprint.plugin.jakarta;
 
-import org.apache.aries.blueprint.annotation.bean.Bean;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
-import javax.inject.Named;
+@Singleton
+public class SimpleJakartaBeanUsage {
 
-@Bean
-public class MyFactory {
+    private SimpleJakartaBean a;
+    private UnnamedJakartaBean b;
+    private NamedJakartaBean c;
 
-    @Bean
-    @Named("testBean1")
-    @A1
-    public TestBean create1() {
-        return null;
+    public SimpleJakartaBeanUsage() {
     }
 
-    @Bean
-    @Named("testBean2")
-    @A2
-    public TestBean create2() {
-        return null;
+    @Inject
+    public SimpleJakartaBeanUsage(SimpleJakartaBean a) {
+        this.a = a;
     }
 
-    @Bean
-    @jakarta.inject.Named("testBean3")
-    @A3
-    public TestBean create3() {
-        return null;
+    @Inject
+    public void setB(UnnamedJakartaBean b) {
+        this.b = b;
+    }
+
+    @Inject
+    public void setC(NamedJakartaBean c) {
+        this.c = c;
     }
 }

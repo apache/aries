@@ -18,36 +18,6 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import com.google.common.collect.Sets;
-import org.apache.aries.blueprint.plugin.model.Blueprint;
-import org.apache.aries.blueprint.plugin.model.TransactionalDef;
-import org.apache.aries.blueprint.plugin.test.MyBean1;
-import org.apache.aries.blueprint.plugin.test.MyBean5;
-import org.apache.aries.blueprint.plugin.test.MyProduced;
-import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
-import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
-import org.apache.aries.blueprint.plugin.test.interfaces.ServiceD;
-import org.apache.aries.blueprint.plugin.test.bean.BasicBean;
-import org.apache.aries.blueprint.plugin.test.bean.BeanWithCallbackMethods;
-import org.apache.aries.blueprint.plugin.test.bean.NamedBean;
-import org.apache.aries.blueprint.plugin.test.bean.SimpleProducedBean;
-import org.apache.aries.blueprint.plugin.test.reference.BeanWithReferences;
-import org.apache.aries.blueprint.plugin.test.reference.Ref1;
-import org.apache.aries.blueprint.plugin.test.reference.Ref2;
-import org.apache.aries.blueprint.plugin.test.reference.Ref3;
-import org.apache.aries.blueprint.plugin.test.reference.Ref4;
-import org.apache.aries.blueprint.plugin.test.referencelistener.ReferenceListenerToProduceWithoutAnnotation;
-import org.apache.aries.blueprint.plugin.test.service.Service1;
-import org.apache.aries.blueprint.plugin.test.service.Service2;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.xbean.finder.ClassFinder;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -65,13 +35,52 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import com.google.common.collect.Sets;
+import org.apache.aries.blueprint.plugin.jakarta.NamedJakartaBean;
+import org.apache.aries.blueprint.plugin.jakarta.SimpleJakartaBean;
+import org.apache.aries.blueprint.plugin.jakarta.SimpleJakartaBeanUsage;
+import org.apache.aries.blueprint.plugin.jakarta.SimpleJakartaBeanUsageViaField;
+import org.apache.aries.blueprint.plugin.jakarta.UnnamedJakartaBean;
+import org.apache.aries.blueprint.plugin.model.Blueprint;
+import org.apache.aries.blueprint.plugin.model.TransactionalDef;
+import org.apache.aries.blueprint.plugin.test.MyBean1;
+import org.apache.aries.blueprint.plugin.test.MyBean5;
+import org.apache.aries.blueprint.plugin.test.MyProduced;
+import org.apache.aries.blueprint.plugin.test.bean.BasicBean;
+import org.apache.aries.blueprint.plugin.test.bean.BeanWithCallbackMethods;
+import org.apache.aries.blueprint.plugin.test.bean.NamedBean;
+import org.apache.aries.blueprint.plugin.test.bean.SimpleProducedBean;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceD;
+import org.apache.aries.blueprint.plugin.test.reference.BeanWithReferences;
+import org.apache.aries.blueprint.plugin.test.reference.Ref1;
+import org.apache.aries.blueprint.plugin.test.reference.Ref2;
+import org.apache.aries.blueprint.plugin.test.reference.Ref3;
+import org.apache.aries.blueprint.plugin.test.reference.Ref4;
+import org.apache.aries.blueprint.plugin.test.referencelistener.ReferenceListenerToProduceWithoutAnnotation;
+import org.apache.aries.blueprint.plugin.test.service.Service1;
+import org.apache.aries.blueprint.plugin.test.service.Service2;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.xbean.finder.ClassFinder;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class BlueprintFileWriterTest {
 
@@ -89,7 +98,8 @@ public class BlueprintFileWriterTest {
         Set<Class<?>> beanClasses = findClasses(classFinder, Arrays.asList(
                 MyBean1.class.getPackage().getName(),
                 ReferenceListenerToProduceWithoutAnnotation.class.getPackage().getName(),
-                BeanWithReferences.class.getPackage().getName()
+                BeanWithReferences.class.getPackage().getName(),
+                SimpleJakartaBean.class.getPackage().getName()
         ));
         Set<String> namespaces = new HashSet<>(Arrays.asList(NS_JPA, NS_TX1));
         Map<String, String> customParameters = new HashMap<>();
@@ -110,7 +120,7 @@ public class BlueprintFileWriterTest {
     }
 
     @Test
-    public void testGenerateBeanWithInitDestroyAndfieldInjection() throws Exception {
+    public void testGenerateBeanWithInitDestroyAndFieldInjection() throws Exception {
         Node bean1 = getBeanById("myBean1");
 
         assertXpathEquals(bean1, "@class", MyBean1.class.getName());
@@ -798,9 +808,13 @@ public class BlueprintFileWriterTest {
         Node bean2 = getBeanById("testBean2");
         assertXpathEquals(bean2, "@factory-method", "create2");
 
+        Node bean3 = getBeanById("testBean3");
+        assertXpathEquals(bean3, "@factory-method", "create3");
+
         Node consumer = getBeanById("testConsumer");
         assertXpathEquals(consumer, "argument[1]/@ref", "testBean1");
         assertXpathEquals(consumer, "argument[2]/@ref", "testBean2");
+        assertXpathEquals(consumer, "argument[3]/@ref", "testBean3");
     }
 
     @Test
@@ -1387,6 +1401,33 @@ public class BlueprintFileWriterTest {
         Node ref1ForCons = getReferenceListById("ref3ListForProduces");
         assertXpathEquals(ref1ForCons, "@interface", Ref3.class.getName());
     }
+
+    @Test
+    public void testGenerateBeanWithJakartaAnnotatedBeans() throws Exception {
+        Node simpleJakartaBean = getBeanById("simpleJakartaBean");
+        assertXpathEquals(simpleJakartaBean, "@class", SimpleJakartaBean.class.getName());
+
+        Node unnamedJakartaBean = getBeanById("unnamedJakartaBean");
+        assertXpathEquals(unnamedJakartaBean, "@class", UnnamedJakartaBean.class.getName());
+
+        Node namedJakartaBean = getBeanById("test-named-jakarta-bean");
+        assertXpathEquals(namedJakartaBean, "@class", NamedJakartaBean.class.getName());
+
+        Node injectingBean = getBeanById("simpleJakartaBeanUsage");
+        assertXpathEquals(injectingBean, "@class", SimpleJakartaBeanUsage.class.getName());
+        assertXpathDoesNotExist(injectingBean, "@field-injection");
+        assertXpathEquals(injectingBean, "argument[1]/@ref", "simpleJakartaBean");
+        assertXpathEquals(injectingBean, "property[@name='b']/@ref", "unnamedJakartaBean");
+        assertXpathEquals(injectingBean, "property[@name='c']/@ref", "test-named-jakarta-bean");
+
+        Node injectingBeanViaFields = getBeanById("simpleJakartaBeanUsageViaField");
+        assertXpathEquals(injectingBeanViaFields, "@class", SimpleJakartaBeanUsageViaField.class.getName());
+        assertXpathEquals(injectingBeanViaFields, "@field-injection", "true");
+        assertXpathEquals(injectingBeanViaFields, "property[@name='a']/@ref", "simpleJakartaBean");
+        assertXpathEquals(injectingBeanViaFields, "property[@name='b']/@ref", "unnamedJakartaBean");
+        assertXpathEquals(injectingBeanViaFields, "property[@name='c']/@ref", "test-named-jakarta-bean");
+    }
+
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
         assertXpathEquals(node, "count(" + xpathExpression + ")", "0");
     }
