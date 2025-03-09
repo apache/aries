@@ -77,7 +77,7 @@
         <org.apache.aries.jpa.api.version>1.0.0</org.apache.aries.jpa.api.version>
         <org.apache.aries.jpa.blueprint.aries.version>1.0.0</org.apache.aries.jpa.blueprint.aries.version>
         <org.apache.aries.jpa.container.version>1.0.0</org.apache.aries.jpa.container.version>
-        <org.apache.aries.jpa.container.context.version>1.0.0</org.apache.aries.jpa.container.context.version>
+        <org.apache.aries.jpa.container.context.version>1.0.4</org.apache.aries.jpa.container.context.version>
 
         <!-- Aries Quiesce Versions -->
         <org.apache.aries.quiesce.api.version>1.0.0</org.apache.aries.quiesce.api.version>
