@@ -37,7 +37,7 @@
     </description>
 
     <properties>
-        <asm-debug-all.version>5.0.3</asm-debug-all.version>
+        <asm-debug-all.version>5.2</asm-debug-all.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.inject.version>1</javax.inject.version>
