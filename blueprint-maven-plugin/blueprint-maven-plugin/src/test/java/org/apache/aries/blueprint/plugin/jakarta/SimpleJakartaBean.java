@@ -18,8 +18,17 @@
  */
 package org.apache.aries.blueprint.plugin.jakarta;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 
 @Singleton
 public class SimpleJakartaBean {
+    @PostConstruct
+    public void setup() {
+    }
+
+    @PreDestroy
+    public void cleanup() {
+    }
 }

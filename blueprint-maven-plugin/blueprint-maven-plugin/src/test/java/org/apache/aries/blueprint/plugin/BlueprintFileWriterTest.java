@@ -1406,6 +1406,8 @@ public class BlueprintFileWriterTest {
     public void testGenerateBeanWithJakartaAnnotatedBeans() throws Exception {
         Node simpleJakartaBean = getBeanById("simpleJakartaBean");
         assertXpathEquals(simpleJakartaBean, "@class", SimpleJakartaBean.class.getName());
+        assertXpathEquals(simpleJakartaBean, "@init-method", "setup");
+        assertXpathEquals(simpleJakartaBean, "@destroy-method", "cleanup");
 
         Node unnamedJakartaBean = getBeanById("unnamedJakartaBean");
         assertXpathEquals(unnamedJakartaBean, "@class", UnnamedJakartaBean.class.getName());
