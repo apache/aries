@@ -15,5 +15,6 @@
 # limitations under the License.
 #
 
+org.apache.aries.blueprint.plugin.handlers.jakarta.ProducesHandler
 org.apache.aries.blueprint.plugin.handlers.javax.ProducesHandler
 org.apache.aries.blueprint.plugin.handlers.blueprint.bean.BeanHandler

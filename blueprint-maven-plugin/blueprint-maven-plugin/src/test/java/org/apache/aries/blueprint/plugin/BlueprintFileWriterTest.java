@@ -48,7 +48,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.google.common.collect.Sets;
+import org.apache.aries.blueprint.plugin.jakarta.JakartaFactoryBean;
 import org.apache.aries.blueprint.plugin.jakarta.NamedJakartaBean;
+import org.apache.aries.blueprint.plugin.jakarta.ProducedBean;
 import org.apache.aries.blueprint.plugin.jakarta.SimpleJakartaBean;
 import org.apache.aries.blueprint.plugin.jakarta.SimpleJakartaBeanUsage;
 import org.apache.aries.blueprint.plugin.jakarta.SimpleJakartaBeanUsageViaField;
@@ -1428,6 +1430,25 @@ public class BlueprintFileWriterTest {
         assertXpathEquals(injectingBeanViaFields, "property[@name='a']/@ref", "simpleJakartaBean");
         assertXpathEquals(injectingBeanViaFields, "property[@name='b']/@ref", "unnamedJakartaBean");
         assertXpathEquals(injectingBeanViaFields, "property[@name='c']/@ref", "test-named-jakarta-bean");
+    }
+
+    @Test
+    public void testJakartaProducesNamedBeans() throws Exception {
+        Node producer = getBeanById("jakartaFactoryBean");
+        assertXpathEquals(producer, "@class", JakartaFactoryBean.class.getName());
+
+        Node bean1 = getBeanById("producedBean");
+        assertXpathEquals(bean1, "@class", ProducedBean.class.getName());
+        assertXpathEquals(bean1, "@factory-ref", "jakartaFactoryBean");
+        assertXpathEquals(bean1, "@factory-method", "create");
+
+        Node bean2 = getBeanById("namedProducedBean");
+        assertXpathEquals(bean2, "@class", ProducedBean.class.getName());
+        assertXpathEquals(bean2, "@factory-ref", "jakartaFactoryBean");
+        assertXpathEquals(bean2, "@factory-method", "createBeanWithParameters");
+        assertXpathEquals(bean2, "argument[1]/@ref", "myBean1");
+        assertXpathEquals(bean2, "argument[2]/@value", "100");
+        assertXpathEquals(bean2, "argument[3]/@ref", "refServiceC");
     }
 
     private void assertXpathDoesNotExist(Node node, String xpathExpression) throws XPathExpressionException {
