@@ -44,7 +44,7 @@
         <blueprint-maven-plugin-spring-handlers.version>1.0.0</blueprint-maven-plugin-spring-handlers.version>
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <jakarta.enterprise.cdi-api.version>3.0.1</jakarta.enterprise.cdi-api.version>
-        <jakarta.inject.version>2.0.1</jakarta.inject.version>
+        <jakarta.inject.version>2.0.1.MR</jakarta.inject.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <javax.enterprise.cdi-api.version>2.0.SP1</javax.enterprise.cdi-api.version>
         <javax.inject.version>1</javax.inject.version>
