@@ -16,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.javax;
+package org.apache.aries.blueprint.plugin.handlers.common;
 
 import java.util.Set;
 
-class Namespaces {
-    static final String PATTERN_NS_JPA1 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/jpa\\/v1\\.(.)\\.(.)";
-    static final String PATTERN_NS_JPA2 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/jpa\\/v2\\.(.)\\.(.)";
-    static final String PATTERN_NS_TX1 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v1\\.(.)\\.(.)";
-    static final String PATTERN_NS_TX2 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v2\\.(.)\\.(.)";
+public class Namespaces {
+    public static final String PATTERN_NS_JPA1 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/jpa\\/v1\\.(.)\\.(.)";
+    public static final String PATTERN_NS_JPA2 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/jpa\\/v2\\.(.)\\.(.)";
+    public static final String PATTERN_NS_TX1 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v1\\.(.)\\.(.)";
+    public static final String PATTERN_NS_TX2 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v2\\.(.)\\.(.)";
     private static final String NS_TX_1_2_0 = "http://aries.apache.org/xmlns/transactions/v1.2.0";
 
-    static String getNamespaceByPattern(Set<String> namespaces, String pattern) {
+    public static String getNamespaceByPattern(Set<String> namespaces, String pattern) {
         for (String namespace : namespaces) {
             if (namespace.matches(pattern)) {
                 return namespace;
@@ -35,8 +35,8 @@ class Namespaces {
         }
         return null;
     }
-    
-    static boolean isTX12(String namespace) {
+
+    public static boolean isTX12(String namespace) {
         return NS_TX_1_2_0.equals(namespace);
     }
 }

@@ -18,37 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import com.google.common.collect.Sets;
 import org.apache.aries.blueprint.plugin.jakarta.JakartaFactoryBean;
+import org.apache.aries.blueprint.plugin.jakarta.JakartaTransactionalBean;
 import org.apache.aries.blueprint.plugin.jakarta.NamedJakartaBean;
 import org.apache.aries.blueprint.plugin.jakarta.ProducedBean;
 import org.apache.aries.blueprint.plugin.jakarta.SimpleJakartaBean;
@@ -83,6 +55,35 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class BlueprintFileWriterTest {
 
@@ -150,6 +151,37 @@ public class BlueprintFileWriterTest {
                 new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
                 new TransactionalDef("txSupports", "Supports"));
         assertEquals(expectedDefs, defs);
+    }
+
+    @Test
+    public void testGenerateJakartaTransactionalAndPersistence() throws Exception {
+        Node bean = getBeanById("jakartaTransactionalBean");
+
+        assertXpathEquals(bean, "@class", JakartaTransactionalBean.class.getName());
+        assertXpathEquals(bean, "@init-method", "init");
+        assertXpathEquals(bean, "@destroy-method", "destroy");
+        assertXpathDoesNotExist(bean, "@scope");
+
+        NodeList txs = (NodeList) xpath.evaluate("transaction", bean, XPathConstants.NODESET);
+        Set<TransactionalDef> defs = new HashSet<TransactionalDef>();
+        for (int i = 0; i < txs.getLength(); ++i) {
+            Node tx = txs.item(i);
+            defs.add(new TransactionalDef(xpath.evaluate("@method", tx), xpath.evaluate("@value", tx)));
+        }
+        Set<TransactionalDef> expectedDefs = Sets.newHashSet(new TransactionalDef("*", "RequiresNew"),
+                new TransactionalDef("txNotSupported", "NotSupported"),
+                new TransactionalDef("txMandatory", "Mandatory"),
+                new TransactionalDef("txNever", "Never"),
+                new TransactionalDef("txRequired", "Required"),
+                new TransactionalDef("txOverridenWithRequiresNew", "RequiresNew"),
+                new TransactionalDef("txSupports", "Supports"));
+        assertEquals(expectedDefs, defs);
+
+        assertXpathEquals(bean, "context/@unitname", "person");
+        assertXpathEquals(bean, "context/@property", "em");
+
+        assertXpathEquals(bean, "unit/@unitname", "person");
+        assertXpathEquals(bean, "unit/@property", "emf");
     }
 
     @Test

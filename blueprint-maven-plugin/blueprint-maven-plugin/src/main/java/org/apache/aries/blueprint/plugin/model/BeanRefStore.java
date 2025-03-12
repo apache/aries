@@ -19,7 +19,6 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
