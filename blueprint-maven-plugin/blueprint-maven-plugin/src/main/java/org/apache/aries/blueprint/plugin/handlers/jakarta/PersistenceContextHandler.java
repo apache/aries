@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.javax;
+package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
+import jakarta.persistence.PersistenceContext;
 import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceContextHandler;
 
-import javax.persistence.PersistenceContext;
 import java.lang.reflect.Field;
 
 public class PersistenceContextHandler extends AbstractPersistenceContextHandler<PersistenceContext> {

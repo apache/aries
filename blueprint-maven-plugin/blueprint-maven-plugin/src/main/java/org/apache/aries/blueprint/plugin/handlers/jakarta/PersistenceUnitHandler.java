@@ -16,22 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.javax;
+package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceContextHandler;
+import jakarta.persistence.PersistenceUnit;
+import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceUnitHandler;
 
-import javax.persistence.PersistenceContext;
 import java.lang.reflect.Field;
 
-public class PersistenceContextHandler extends AbstractPersistenceContextHandler<PersistenceContext> {
+public class PersistenceUnitHandler extends AbstractPersistenceUnitHandler<PersistenceUnit> {
 
     @Override
-    public Class<PersistenceContext> getAnnotation() {
-        return PersistenceContext.class;
+    public Class<PersistenceUnit> getAnnotation() {
+        return PersistenceUnit.class;
     }
 
     @Override
     protected String getUnitName(Field field) {
-        return field.getAnnotation(PersistenceContext.class).unitName();
+        return field.getAnnotation(PersistenceUnit.class).unitName();
     }
 }

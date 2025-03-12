@@ -19,25 +19,14 @@
 package org.apache.aries.blueprint.plugin.handlers.javax;
 
 import com.google.common.base.CaseFormat;
-
-import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
-import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
+import org.apache.aries.blueprint.plugin.handlers.common.AbstractTransactionFactory;
 
 import javax.transaction.Transactional;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.List;
 
 public class JavaxTransactionFactory extends AbstractTransactionFactory<Transactional> {
 
-    String getTransactionTypeName(AnnotatedElement annotatedElement) {
+    protected String getTransactionTypeName(AnnotatedElement annotatedElement) {
         Transactional transactional = annotatedElement.getAnnotation(Transactional.class);
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, transactional.value().name());
     }

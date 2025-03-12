@@ -18,22 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.javax;
 
-import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
+import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceUnitHandler;
 
 import javax.persistence.PersistenceUnit;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.lang.reflect.Field;
-import java.util.List;
 
-import static org.apache.aries.blueprint.plugin.handlers.javax.Namespaces.PATTERN_NS_JPA1;
-import static org.apache.aries.blueprint.plugin.handlers.javax.Namespaces.PATTERN_NS_JPA2;
-import static org.apache.aries.blueprint.plugin.handlers.javax.Namespaces.getNamespaceByPattern;
-
-public class PersistenceUnitHandler implements FieldAnnotationHandler<PersistenceUnit> {
+public class PersistenceUnitHandler extends AbstractPersistenceUnitHandler<PersistenceUnit> {
 
     @Override
     public Class<PersistenceUnit> getAnnotation() {
@@ -41,32 +31,7 @@ public class PersistenceUnitHandler implements FieldAnnotationHandler<Persistenc
     }
 
     @Override
-    public void handleFieldAnnotation(Class<?> clazz, List<Field> fields, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
-        final String nsJpa1 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_JPA1);
-        if (nsJpa1 != null) {
-            for (final Field field : fields) {
-                final String name = field.getName();
-                final PersistenceUnit persistenceUnit = field.getAnnotation(PersistenceUnit.class);
-                beanEnricher.addBeanContentWriter("javax.persistence.field.unit/" + name, new XmlWriter() {
-                    @Override
-                    public void write(XMLStreamWriter writer) throws XMLStreamException {
-                        writer.writeEmptyElement("unit");
-                        writer.writeDefaultNamespace(nsJpa1);
-                        writer.writeAttribute("unitname", persistenceUnit.unitName());
-                        writer.writeAttribute("property", name);
-                    }
-                });
-            }
-        }
-        final String nsJpa2 = getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), PATTERN_NS_JPA2);
-        if (nsJpa2 != null) {
-            contextEnricher.addBlueprintContentWriter("javax.persistence.enableJpa2", new XmlWriter() {
-                @Override
-                public void write(XMLStreamWriter writer) throws XMLStreamException {
-                    writer.writeEmptyElement("enable");
-                    writer.writeDefaultNamespace(nsJpa2);
-                }
-            });
-        }
+    protected String getUnitName(Field field) {
+        return field.getAnnotation(PersistenceUnit.class).unitName();
     }
 }

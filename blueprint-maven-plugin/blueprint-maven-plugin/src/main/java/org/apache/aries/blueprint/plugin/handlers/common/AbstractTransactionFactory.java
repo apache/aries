@@ -16,11 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.blueprint.plugin.handlers.javax;
+package org.apache.aries.blueprint.plugin.handlers.common;
 
-import org.apache.aries.blueprint.plugin.spi.*;
+import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
+import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
+import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
-import javax.transaction.Transactional;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.lang.annotation.Annotation;
@@ -28,10 +32,11 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.List;
 
-abstract class AbstractTransactionFactory<T extends Annotation> implements BeanAnnotationHandler<T>, MethodAnnotationHandler<T> {
-    abstract String getTransactionTypeName(AnnotatedElement annotatedElement);
+public abstract class AbstractTransactionFactory<T extends Annotation> implements BeanAnnotationHandler<T>, MethodAnnotationHandler<T> {
+    protected abstract String getTransactionTypeName(AnnotatedElement annotatedElement);
 
     private static final String ENABLE_ANNOTATION = "transaction.enableAnnotation";
+
     @Override
     public void handleMethodAnnotation(Class<?> clazz, List<Method> methods, ContextEnricher contextEnricher, BeanEnricher beanEnricher) {
         final String nsTx1 = Namespaces.getNamespaceByPattern(contextEnricher.getBlueprintConfiguration().getNamespaces(), Namespaces.PATTERN_NS_TX1);

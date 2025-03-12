@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+org.apache.aries.blueprint.plugin.handlers.jakarta.JakartaTransactionFactory
 org.apache.aries.blueprint.plugin.handlers.jakarta.PostConstructHandler
 org.apache.aries.blueprint.plugin.handlers.jakarta.PreDestroyHandler
 org.apache.aries.blueprint.plugin.handlers.javax.PostConstructHandler
