@@ -194,7 +194,7 @@
         <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
         <maven-paxexam-plugin.version>1.2.4</maven-paxexam-plugin.version>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
-        <animal-sniffer-enforcer-rule.version>1.6</animal-sniffer-enforcer-rule.version>
+        <animal-sniffer-enforcer-rule.version>1.24</animal-sniffer-enforcer-rule.version>
         <depgraph-maven-plugin.version>4.0.3</depgraph-maven-plugin.version>
 
         <!--Other-->
