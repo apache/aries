@@ -46,7 +46,7 @@
     <properties>
         <local.url.policy>REQUIRED</local.url.policy>
 
-        <bnd-indexer-maven-plugin.version>3.1.0</bnd-indexer-maven-plugin.version>
+        <bnd-indexer-maven-plugin.version>6.4.0</bnd-indexer-maven-plugin.version>
         <org.apache.aries.async.impl.version>1.1.0-SNAPSHOT</org.apache.aries.async.impl.version>
     </properties>
 
