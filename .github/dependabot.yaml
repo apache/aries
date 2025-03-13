@@ -28,6 +28,9 @@ updates:
       - dependency-name: "biz.aQute.bnd:biz.aQute.bndlib"
         versions:
           - ">=7.0.0" # does not support java 8
+      - dependency-name: "biz.aQute.bnd:bnd-indexer-maven-plugin"
+        versions:
+          - ">=7.0.0" # does not support java 8
       - dependency-name: "biz.aQute.bnd:bnd-maven-plugin"
         versions:
           - ">=7.0.0" # does not support java 8
