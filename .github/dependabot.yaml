@@ -73,6 +73,11 @@ updates:
       - dependency-name: "org.ops4j.pax.exam:pax-exam*"
         versions:
           - ">=4.14.0" # does not support java 8
+      - dependency-name: "org.ops4j.pax.tinybundles:pax-tinybundles*"
+        versions:
+          # 4.x changes in incompatible way, needs pax-exam >= 4.14.x
+          # 3.x cannot be used by pax-exam 4.13.5
+          - ">=3.0.0"
       - dependency-name: "org.ops4j.pax.web:pax-web*"
         versions:
           - ">=9.0.0" # does not support java 8
