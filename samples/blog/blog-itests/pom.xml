@@ -47,7 +47,7 @@
         <pax-web-jetty-bundle.version>3.1.0</pax-web-jetty-bundle.version>
         <services.version>3.1.200-v20070605</services.version>
         <swissbox.version>1.7.0</swissbox.version>
-        <tinybundles.version>2.0.0</tinybundles.version>
+        <tinybundles.version>4.0.1</tinybundles.version>
         <url.version>2.6.16</url.version>
         <xbean.version>3.16</xbean.version>
     </properties>
