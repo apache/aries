@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -27,52 +27,54 @@ import org.osgi.util.tracker.ServiceTracker;
  * Example of various approaches to using an osgi service.
  */
 public class GreeterTestClient {
-    String clientID = "<unset>";
-    ServiceTracker tracker = null;
-    GreeterMessageService cachedService = null;
-    BundleContext owningContext;
-    
-    GreeterMessageService proxy = null;
-    
+    private final String clientID;
+    private final BundleContext owningContext;
+    private final ServiceTracker tracker;
+    private GreeterMessageService cachedService = null;
+
+    private final GreeterMessageService proxy;
+
     /**
      * A simple class to hide if a service is available to invoke.
      */
-    class GreeterMessageServiceProxy implements GreeterMessageService{
-        ServiceTracker greetingServiceTracker = null;
-        public GreeterMessageServiceProxy(BundleContext ctx){
+    static class GreeterMessageServiceProxy implements GreeterMessageService {
+        private final ServiceTracker greetingServiceTracker;
+
+        public GreeterMessageServiceProxy(BundleContext ctx) {
             greetingServiceTracker = new ServiceTracker(ctx, GreeterMessageService.class.getName(), null);
             greetingServiceTracker.open();
         }
-        public String getGreetingMessage(){
-            if(greetingServiceTracker.getTrackingCount()>0){
-                return ((GreeterMessageService)greetingServiceTracker.getService()).getGreetingMessage();
-            }else{
+
+        public String getGreetingMessage() {
+            if (greetingServiceTracker.getTrackingCount() > 0) {
+                return ((GreeterMessageService) greetingServiceTracker.getService()).getGreetingMessage();
+            } else {
                 return "<No Service Available>";
             }
-            
+
         }
     }
-    
-    public GreeterTestClient(BundleContext ctx, String clientID){
-     this.clientID = clientID;
-     owningContext = ctx;
-     
-     //setup for proxied service usage.
-     proxy = new GreeterMessageServiceProxy(ctx);
-     
-     //setup for tracker usage.
-     tracker = new ServiceTracker(ctx, GreeterMessageService.class.getName(), null);
-     tracker.open();
-     
-     //setup for super optimistic osgi service usage ;-)
-     try{
-         cachedService  = (GreeterMessageService)ctx.getService(ctx.getServiceReference(GreeterMessageService.class.getName()));
-     }catch(RuntimeException e){
-         System.err.println("Unable to cache service at bundle start!");
-     }
+
+    public GreeterTestClient(BundleContext ctx, String clientID) {
+        this.clientID = clientID;
+        owningContext = ctx;
+
+        //setup for proxied service usage.
+        proxy = new GreeterMessageServiceProxy(ctx);
+
+        //setup for tracker usage.
+        tracker = new ServiceTracker(ctx, GreeterMessageService.class.getName(), null);
+        tracker.open();
+
+        //setup for super optimistic osgi service usage ;-)
+        try {
+            cachedService = (GreeterMessageService) ctx.getService(ctx.getServiceReference(GreeterMessageService.class.getName()));
+        } catch (RuntimeException e) {
+            System.err.println("Unable to cache service at bundle start!");
+        }
     }
-    
-    public void doRequests(){
+
+    public void doRequests() {
         System.out.println("Proxy based...");
         doRequestUsingProxy();
         System.out.println("Tracker based...");
@@ -82,54 +84,54 @@ public class GreeterTestClient {
         System.out.println("Extremely hopeful...");
         doRequestUsingCachedService();
     }
-    
-    private void doRequestUsingImmediateLookup(BundleContext ctx){
+
+    private void doRequestUsingImmediateLookup(BundleContext ctx) {
         ServiceReference ref = ctx.getServiceReference(GreeterMessageService.class.getName());
-        if(ref!=null){
-            GreeterMessageService greetingService = (GreeterMessageService)ctx.getService(ref);
-            if(greetingService!=null){
+        if (ref != null) {
+            GreeterMessageService greetingService = (GreeterMessageService) ctx.getService(ref);
+            if (greetingService != null) {
                 String response = greetingService.getGreetingMessage();
                 printResult(response);
-            }else{
+            } else {
                 System.err.println("Immediate lookup gave null for getService");
             }
             ctx.ungetService(ref); // dont forget this!!
-        }else{
+        } else {
             System.err.println("Immediate lookup gave null service reference");
         }
     }
-    
-    private void doRequestUsingTracker(){
-        System.out.println("Tracker is tracking.. "+tracker.getTrackingCount()+" services");
-        GreeterMessageService greetingService = (GreeterMessageService)tracker.getService();
-        if(greetingService!=null){
+
+    private void doRequestUsingTracker() {
+        System.out.println("Tracker is tracking.. " + tracker.getTrackingCount() + " services");
+        GreeterMessageService greetingService = (GreeterMessageService) tracker.getService();
+        if (greetingService != null) {
             String response = greetingService.getGreetingMessage();
             printResult(response);
-        }else{
+        } else {
             System.err.println("Tracker gave null for service..");
         }
     }
-    
-    private void doRequestUsingCachedService(){
-        try{
+
+    private void doRequestUsingCachedService() {
+        try {
             printResult(cachedService.getGreetingMessage());
-        }catch(RuntimeException e){
-            System.err.println("Unable to use cached service. "+e);
+        } catch (RuntimeException e) {
+            System.err.println("Unable to use cached service. " + e);
         }
     }
-    
-    private void doRequestUsingProxy(){
-        try{
+
+    private void doRequestUsingProxy() {
+        try {
             printResult(proxy.getGreetingMessage());
-        }catch(RuntimeException e){
-            System.err.println("Unable to use proxied service. "+e);
+        } catch (RuntimeException e) {
+            System.err.println("Unable to use proxied service. " + e);
         }
     }
-    
-    private void printResult(String response){
+
+    private void printResult(String response) {
         System.out.println("**********************************");
-        System.out.println("*"+clientID);
-        System.out.println("*"+response);
+        System.out.println("*" + clientID);
+        System.out.println("*" + response);
         System.out.println("**********************************");
     }
 

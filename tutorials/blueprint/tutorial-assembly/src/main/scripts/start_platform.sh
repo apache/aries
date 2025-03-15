@@ -18,4 +18,4 @@
 ################################################################################
 scriptDir=`pwd`/`dirname $0`
 cd "${scriptDir}/../platform"
-java -jar org.eclipse.osgi-3.22.0.jar -console -clean
+java -jar org.eclipse.osgi-3.23.0.jar -console -clean
