@@ -133,11 +133,17 @@
 
         <!-- Aries bundle dependencies-->
         <asm.version>9.7.1</asm.version>
+        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
+        <javax.inject.version>1</javax.inject.version>
+        <javax.persistence-api.version>2.2</javax.persistence-api.version>
+        <javax.transaction-api.version>1.2</javax.transaction-api.version>
         <osgi.core.version>8.0.0</osgi.core.version>
         <slf4j.version>1.7.36</slf4j.version>
         <pax-logging.version>1.11.17</pax-logging.version>
 
         <!-- Aries dependencies -->
+        <blueprint-maven-plugin-annotation.version>1.3.0</blueprint-maven-plugin-annotation.version>
+        <blueprint-maven-plugin.version>1.10.0</blueprint-maven-plugin.version>
         <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.cm.version>1.3.2</org.apache.aries.blueprint.cm.version>
         <org.apache.aries.blueprint.core.version>1.10.3</org.apache.aries.blueprint.core.version>
@@ -518,8 +524,60 @@
                 <artifactId>org.apache.aries.util</artifactId>
                 <version>${org.apache.aries.util.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>blueprint-maven-plugin-annotation</artifactId>
+                <version>${blueprint-maven-plugin-annotation.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.transaction</groupId>
+                <artifactId>javax.transaction-api</artifactId>
+                <version>${javax.transaction-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>javax.persistence-api</artifactId>
+                <version>${javax.persistence-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.aries.blueprint</groupId>
+                    <artifactId>blueprint-maven-plugin</artifactId>
+                    <version>${blueprint-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>add-resource-dir</goal>
+                                <goal>blueprint-generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <modules>
         <module>ariestrader</module>

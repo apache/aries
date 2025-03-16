@@ -1,45 +1,49 @@
 /**
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.aries.samples.ariestrader.persist.jpa.cm;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Service;
+import org.apache.aries.blueprint.annotation.service.ServiceProperty;
 import org.apache.aries.samples.ariestrader.api.TradeServices;
-import org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl;
-import org.apache.aries.samples.ariestrader.entities.AccountProfileDataBeanImpl;
-import org.apache.aries.samples.ariestrader.entities.HoldingDataBeanImpl;
-import org.apache.aries.samples.ariestrader.entities.OrderDataBeanImpl;
-import org.apache.aries.samples.ariestrader.entities.QuoteDataBeanImpl;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountProfileDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.HoldingDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.OrderDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.AccountProfileDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.HoldingDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.OrderDataBeanImpl;
+import org.apache.aries.samples.ariestrader.entities.QuoteDataBeanImpl;
 import org.apache.aries.samples.ariestrader.util.FinancialUtils;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * TradeJpaCm uses JPA via Container Managed (CM) Entity
@@ -48,23 +52,22 @@ import org.apache.aries.samples.ariestrader.util.TradeConfig;
  * the features and operations that can be performed by
  * customers of the brokerage such as login, logout, get a stock
  * quote, buy or sell a stock, etc. and are specified in the
- * {@link org.apache.aries.samples.ariestrader.TradeServices}
+ * {@link org.apache.aries.samples.ariestrader.api.TradeServices}
  * interface
- * 
- * @see org.apache.aries.samples.ariestrader.TradeServices
- * 
+ *
+ * @see org.apache.aries.samples.ariestrader.api.TradeServices
  */
-
+@Service(properties = {
+        @ServiceProperty(name = "mode", values = "JPA_CM")
+})
+@Bean(initMethod = "init", destroyMethod = "destroy")
+@Transactional(Transactional.TxType.REQUIRED)
 public class TradeJpaCm implements TradeServices {
 
-    private EntityManager entityManager;
+    @PersistenceContext(unitName = "ariestrader-cm")
+    EntityManager entityManager;
 
     private static boolean initialized = false;
-
-//    @PersistenceContext(unitName="ariestrader-cm")
-    public void setEntityManager (EntityManager em) { 
-        entityManager = em;
-    }
 
     /**
      * Zero arg constructor for TradeJpaCm
@@ -89,8 +92,7 @@ public class TradeJpaCm implements TradeServices {
             if (!initialized)
                 return;
             Log.trace("TradeJpaCm:destroy");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("TradeJpaCm:destroy", e);
         }
 
@@ -112,7 +114,7 @@ public class TradeJpaCm implements TradeServices {
 
             QuoteDataBean[] quoteArray = (QuoteDataBean[]) quotes.toArray(new QuoteDataBean[quotes.size()]);
             ArrayList<QuoteDataBean> topGainers = new ArrayList<QuoteDataBean>(
-                                                                              5);
+                    5);
             ArrayList<QuoteDataBean> topLosers = new ArrayList<QuoteDataBean>(5);
             BigDecimal TSIA = FinancialUtils.ZERO;
             BigDecimal openTSIA = FinancialUtils.ZERO;
@@ -133,15 +135,14 @@ public class TradeJpaCm implements TradeServices {
                     totalVolume += volume;
                 }
                 TSIA = TSIA.divide(new BigDecimal(quoteArray.length),
-                                   FinancialUtils.ROUND);
+                        FinancialUtils.ROUND);
                 openTSIA = openTSIA.divide(new BigDecimal(quoteArray.length),
-                                           FinancialUtils.ROUND);
+                        FinancialUtils.ROUND);
             }
 
             marketSummaryData = new MarketSummaryDataBean(TSIA, openTSIA,
-                                                          totalVolume, topGainers, topLosers);
-        }
-        catch (Exception e) {
+                    totalVolume, topGainers, topLosers);
+        } catch (Exception e) {
             Log.error("TradeJpaCm:getMarketSummary", e);
             throw new RuntimeException("TradeJpaCm:getMarketSummary -- error ", e);
         }
@@ -164,7 +165,7 @@ public class TradeJpaCm implements TradeServices {
 
             HoldingDataBeanImpl holding = null; // The holding will be created by this buy order
 
-            order = createOrder( account, (QuoteDataBean) quote, (HoldingDataBean) holding, "buy", quantity);
+            order = createOrder(account, (QuoteDataBean) quote, (HoldingDataBean) holding, "buy", quantity);
 
             // order = createOrder(account, quote, holding, "buy", quantity);
             // UPDATE - account should be credited during completeOrder
@@ -179,8 +180,7 @@ public class TradeJpaCm implements TradeServices {
                 completeOrder(order.getOrderID(), false);
             else if (orderProcessingMode == TradeConfig.ASYNCH_2PHASE)
                 queueOrder(order.getOrderID(), true);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("TradeJpaCm:buy(" + userID + "," + symbol + "," + quantity + ") --> failed", e);
             /* On exception - cancel the order */
             // TODO figure out how to do this with JPA
@@ -212,8 +212,8 @@ public class TradeJpaCm implements TradeServices {
 
             if (holding == null) {
                 Log.error("TradeJpaCm:sell User " + userID
-                          + " attempted to sell holding " + holdingID
-                          + " which has already been sold");
+                        + " attempted to sell holding " + holdingID
+                        + " which has already been sold");
 
                 OrderDataBean orderData = new OrderDataBeanImpl();
                 orderData.setOrderStatus("cancelled");
@@ -245,8 +245,7 @@ public class TradeJpaCm implements TradeServices {
             else if (orderProcessingMode == TradeConfig.ASYNCH_2PHASE)
                 queueOrder(order.getOrderID(), true);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("TradeJpaCm:sell(" + userID + "," + holdingID + ") --> failed", e);
             // TODO figure out JPA cancel
             if (order != null)
@@ -264,9 +263,9 @@ public class TradeJpaCm implements TradeServices {
 
     public void queueOrder(Integer orderID, boolean twoPhase) {
         Log
-        .error("TradeJpaCm:queueOrder() not implemented for this runtime mode");
+                .error("TradeJpaCm:queueOrder() not implemented for this runtime mode");
         throw new UnsupportedOperationException(
-                                               "TradeJpaCm:queueOrder() not implemented for this runtime mode");
+                "TradeJpaCm:queueOrder() not implemented for this runtime mode");
     }
 
     public OrderDataBean completeOrder(Integer orderID, boolean twoPhase) throws Exception {
@@ -296,9 +295,9 @@ public class TradeJpaCm implements TradeServices {
 
         if (Log.doTrace())
             Log.trace("TradeJpaCm:completeOrder--> Completing Order "
-                      + order.getOrderID() + "\n\t Order info: " + order
-                      + "\n\t Account info: " + account + "\n\t Quote info: "
-                      + quote + "\n\t Holding info: " + holding);
+                    + order.getOrderID() + "\n\t Order info: " + order
+                    + "\n\t Account info: " + account + "\n\t Quote info: "
+                    + quote + "\n\t Holding info: " + holding);
 
         HoldingDataBean newHolding = null;
         if (order.isBuy()) {
@@ -325,8 +324,7 @@ public class TradeJpaCm implements TradeServices {
                     Log.error("TradeJpaCm:completeOrder -- Unable to sell order " + order.getOrderID() + " holding already sold");
                     order.cancel();
                     return order;
-                }
-                else {
+                } else {
                     entityManager.remove(holding);
                     order.setHolding(null);
                 }
@@ -338,12 +336,11 @@ public class TradeJpaCm implements TradeServices {
 
             if (Log.doTrace())
                 Log.trace("TradeJpaCm:completeOrder--> Completed Order "
-                          + order.getOrderID() + "\n\t Order info: " + order
-                          + "\n\t Account info: " + account + "\n\t Quote info: "
-                          + quote + "\n\t Holding info: " + holding);
+                        + order.getOrderID() + "\n\t Order info: " + order
+                        + "\n\t Account info: " + account + "\n\t Quote info: "
+                        + quote + "\n\t Holding info: " + holding);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -398,8 +395,7 @@ public class TradeJpaCm implements TradeServices {
                 Query updateStatus = entityManager.createNamedQuery("orderejb.completeClosedOrders");
                 updateStatus.setParameter("userID", userID);
                 updateStatus.executeUpdate();
-            }
-            else if (TradeConfig.jpaLayer == TradeConfig.HIBERNATE) {
+            } else if (TradeConfig.jpaLayer == TradeConfig.HIBERNATE) {
                 /*
                  * Add logic to do update orders operation, because JBoss5'
                  * Hibernate 3.3.1GA DB2Dialect and MySQL5Dialect do not work
@@ -407,31 +403,30 @@ public class TradeJpaCm implements TradeServices {
                  * in OrderDatabean
                  */
                 Query findaccountid = entityManager.createNativeQuery(
-                                                        "select "
-                                                        + "a.ACCOUNTID, "
-                                                        + "a.LOGINCOUNT, "
-                                                        + "a.LOGOUTCOUNT, "
-                                                        + "a.LASTLOGIN, "
-                                                        + "a.CREATIONDATE, "
-                                                        + "a.BALANCE, "
-                                                        + "a.OPENBALANCE, "
-                                                        + "a.PROFILE_USERID "
-                                                        + "from accountejb a where a.profile_userid = ?",
-                                                        org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl.class);
+                        "select "
+                                + "a.ACCOUNTID, "
+                                + "a.LOGINCOUNT, "
+                                + "a.LOGOUTCOUNT, "
+                                + "a.LASTLOGIN, "
+                                + "a.CREATIONDATE, "
+                                + "a.BALANCE, "
+                                + "a.OPENBALANCE, "
+                                + "a.PROFILE_USERID "
+                                + "from accountejb a where a.profile_userid = ?",
+                        org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl.class);
                 findaccountid.setParameter(1, userID);
                 AccountDataBeanImpl account = (AccountDataBeanImpl) findaccountid.getSingleResult();
                 Integer accountid = account.getAccountID();
                 Query updateStatus = entityManager.createNativeQuery("UPDATE orderejb o SET o.orderStatus = 'completed' WHERE "
-                                                                     + "o.orderStatus = 'closed' AND o.ACCOUNT_ACCOUNTID  = ?");
+                        + "o.orderStatus = 'closed' AND o.ACCOUNT_ACCOUNTID  = ?");
                 updateStatus.setParameter(1, accountid.intValue());
                 updateStatus.executeUpdate();
             }
             return results;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("TradeJpaCm.getClosedOrders", e);
             throw new RuntimeException(
-                                      "TradeJpaCm.getClosedOrders - error", e);
+                    "TradeJpaCm.getClosedOrders - error", e);
 
         }
 
@@ -447,8 +442,7 @@ public class TradeJpaCm implements TradeServices {
                 Log.trace("TradeJpaCm:createQuote-->" + quote);
 
             return quote;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Log.error("TradeJpaCm:createQuote -- exception creating Quote", e);
             throw new RuntimeException(e);
         }
@@ -489,10 +483,10 @@ public class TradeJpaCm implements TradeServices {
         if (TradeConfig.jpaLayer == TradeConfig.HIBERNATE) {
             quote = entityManager.find(QuoteDataBeanImpl.class, symbol);
         } else if (TradeConfig.jpaLayer == TradeConfig.OPENJPA) {
-  
+
             Query q = entityManager.createNamedQuery("quoteejb.quoteForUpdate");
             q.setParameter(1, symbol);
-  
+
             quote = (QuoteDataBeanImpl) q.getSingleResult();
         }
 
@@ -569,12 +563,12 @@ public class TradeJpaCm implements TradeServices {
         return apb;
     }
 
-    public AccountProfileDataBean updateAccountProfile( String userID, 
-                                                        String password, 
-                                                        String fullName, 
-                                                        String address, 
-                                                        String email, 
-                                                        String creditcard) throws Exception {
+    public AccountProfileDataBean updateAccountProfile(String userID,
+                                                       String password,
+                                                       String fullName,
+                                                       String address,
+                                                       String email,
+                                                       String creditcard) throws Exception {
 
 
         if (Log.doTrace())
@@ -586,9 +580,9 @@ public class TradeJpaCm implements TradeServices {
          * profileData.getUserID()); // In order for the object to merge
          * correctly, the account has to be hooked into the temp object... // -
          * may need to reverse this and obtain the full object first
-         * 
+         *
          * profileData.setAccount(temp.getAccount());
-         * 
+         *
          * //TODO this might not be correct temp =
          * entityManager.merge(profileData); //System.out.println(temp);
          */
@@ -605,7 +599,7 @@ public class TradeJpaCm implements TradeServices {
     }
 
     public AccountDataBean login(String userID, String password)
-    throws Exception {
+            throws Exception {
 
         AccountProfileDataBeanImpl profile = entityManager.find(AccountProfileDataBeanImpl.class, userID);
 
@@ -639,11 +633,11 @@ public class TradeJpaCm implements TradeServices {
             Log.trace("TradeJpaCm:logout(" + userID + ") success");
     }
 
-    public AccountDataBean register(String userID, 
-                                    String password, 
-                                    String fullname, 
-                                    String address, 
-                                    String email, 
+    public AccountDataBean register(String userID,
+                                    String password,
+                                    String fullname,
+                                    String address,
+                                    String email,
                                     String creditcard,
                                     BigDecimal openBalance) throws Exception {
         AccountDataBeanImpl account = null;
@@ -659,13 +653,12 @@ public class TradeJpaCm implements TradeServices {
         if (profile != null) {
             Log.error("Failed to register new Account - AccountProfile with userID(" + userID + ") already exists");
             return null;
-        }
-        else {
+        } else {
             profile = new AccountProfileDataBeanImpl(userID, password, fullname,
-                                                 address, email, creditcard);
+                    address, email, creditcard);
             account = new AccountDataBeanImpl(0, 0, null, new Timestamp(System.currentTimeMillis()), openBalance, openBalance, userID);
-            profile.setAccount((AccountDataBean)account);
-            account.setProfile((AccountProfileDataBean)profile);
+            profile.setAccount((AccountDataBean) account);
+            account.setProfile((AccountProfileDataBean) profile);
             entityManager.persist(profile);
             entityManager.persist(account);
             // Uncomment this line to verify that datasources has been enlisted.  After rebuild attempt to register a user with
@@ -695,23 +688,22 @@ public class TradeJpaCm implements TradeServices {
         OrderDataBeanImpl order;
         if (Log.doTrace())
             Log.trace("TradeJpaCm:createOrder(orderID=" + " account="
-                      + ((account == null) ? null : account.getAccountID())
-                      + " quote=" + ((quote == null) ? null : quote.getSymbol())
-                      + " orderType=" + orderType + " quantity=" + quantity);
+                    + ((account == null) ? null : account.getAccountID())
+                    + " quote=" + ((quote == null) ? null : quote.getSymbol())
+                    + " orderType=" + orderType + " quantity=" + quantity);
         try {
-            order = new OrderDataBeanImpl(orderType, 
-                                      "open", 
-                                      new Timestamp(System.currentTimeMillis()), 
-                                      null, 
-                                      quantity, 
-                                      quote.getPrice().setScale(FinancialUtils.SCALE, FinancialUtils.ROUND),
-                                      TradeConfig.getOrderFee(orderType), 
-                                      account, 
-                                      quote, 
-                                      holding);
-                entityManager.persist(order);
-        }
-        catch (Exception e) {
+            order = new OrderDataBeanImpl(orderType,
+                    "open",
+                    new Timestamp(System.currentTimeMillis()),
+                    null,
+                    quantity,
+                    quote.getPrice().setScale(FinancialUtils.SCALE, FinancialUtils.ROUND),
+                    TradeConfig.getOrderFee(orderType),
+                    account,
+                    quote,
+                    holding);
+            entityManager.persist(order);
+        } catch (Exception e) {
             Log.error("TradeJpaCm:createOrder -- failed to create Order", e);
             throw new RuntimeException("TradeJpaCm:createOrder -- failed to create Order", e);
         }
@@ -719,18 +711,18 @@ public class TradeJpaCm implements TradeServices {
     }
 
     private HoldingDataBean createHolding(AccountDataBean account,
-                                          QuoteDataBean quote, 
-                                          double quantity, 
+                                          QuoteDataBean quote,
+                                          double quantity,
                                           BigDecimal purchasePrice) throws Exception {
         HoldingDataBeanImpl newHolding = new HoldingDataBeanImpl(quantity,
-                                                         purchasePrice, new Timestamp(System.currentTimeMillis()),
-                                                         account, quote);
+                purchasePrice, new Timestamp(System.currentTimeMillis()),
+                account, quote);
         entityManager.persist(newHolding);
         return newHolding;
     }
 
     public double investmentReturn(double investment, double NetValue)
-    throws Exception {
+            throws Exception {
         if (Log.doTrace())
             Log.trace("TradeJpaCm:investmentReturn");
 
@@ -754,7 +746,7 @@ public class TradeJpaCm implements TradeServices {
 
     /**
      * Get mode - returns the persistence mode (TradeConfig.JPA)
-     * 
+     *
      * @return TradeConfig.ModeType
      */
     public TradeConfig.ModeType getMode() {

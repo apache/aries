@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,26 +18,33 @@
  */
 package org.apache.aries.samples.blueprint.helloworld.client;
 
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.samples.blueprint.helloworld.api.HelloWorldService;
 
+import javax.inject.Inject;
+
+@Bean(initMethod = "startUp")
 public class HelloWorldClient {
 
-        HelloWorldService helloWorldService = null;
+    HelloWorldService helloWorldService = null;
 
-        public void startUp() {
-                System.out.println("========>>>>Client HelloWorld: About to execute a method from the Hello World service");
-                helloWorldService.hello();
-                System.out.println("========>>>>Client HelloWorld: ... if you didn't just see a Hello World message something went wrong");
-        }
+    public void startUp() {
+        System.out.println("========>>>>Client HelloWorld: About to execute a method from the Hello World service");
+        helloWorldService.hello();
+        System.out.println("========>>>>Client HelloWorld: ... if you didn't just see a Hello World message something went wrong");
+    }
 
-        public HelloWorldService getHelloWorldService() {
-                return helloWorldService;
-        }
+    public HelloWorldService getHelloWorldService() {
+        return helloWorldService;
+    }
 
-        public void setHelloWorldService(HelloWorldService helloWorldService) {
-                this.helloWorldService = helloWorldService;
+    @Inject
+    @Reference
+    public void setHelloWorldService(HelloWorldService helloWorldService) {
+        this.helloWorldService = helloWorldService;
 
-        }
+    }
 
 }
 

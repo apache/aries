@@ -23,18 +23,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.blueprint.annotation.referencelistener.ReferenceListener;
+import org.apache.aries.blueprint.annotation.service.Availability;
+import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.samples.blog.api.BlogComment;
 import org.apache.aries.samples.blog.api.BlogCommentManager;
 import org.apache.aries.samples.blog.api.comment.persistence.BlogCommentService;
 import org.apache.aries.samples.blog.api.comment.persistence.Comment;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@ReferenceListener(referenceInterface = BlogCommentService.class, bindMethod = "blogServiceBound", unbindMethod = "blogServiceUnbound")
+@Singleton
 public class BlogCommentManagerImpl implements BlogCommentManager {
 	
 	private BlogCommentService commentService;
 	private boolean commentServiceValid;
 	
-	// Injected via blueprint
+	@Inject
+    @Reference(availability = Availability.OPTIONAL)
 	public void setCommentService(BlogCommentService bcs) {
 		commentService = bcs;
 	}

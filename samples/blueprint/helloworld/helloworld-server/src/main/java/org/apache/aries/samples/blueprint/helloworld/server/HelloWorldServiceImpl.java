@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,17 +17,22 @@
  * under the License.
  */
 package org.apache.aries.samples.blueprint.helloworld.server;
-import org.apache.aries.samples.blueprint.helloworld.api.*;
 
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Service;
+import org.apache.aries.samples.blueprint.helloworld.api.HelloWorldService;
+
+@Service
+@Bean(initMethod = "startUp")
 public class HelloWorldServiceImpl implements HelloWorldService {
 
-        public void hello() {
-                System.out.println("======>>> A message from the server: Hello World!");
-        }
+    public void hello() {
+        System.out.println("======>>> A message from the server: Hello World!");
+    }
 
-        public void startUp() {
-                System.out.println("======>>> Starting HelloWorld Server");
-        }
+    public void startUp() {
+        System.out.println("======>>> Starting HelloWorld Server");
+    }
 }
 
  

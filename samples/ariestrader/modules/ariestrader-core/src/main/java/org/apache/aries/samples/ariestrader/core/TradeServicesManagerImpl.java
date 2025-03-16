@@ -1,26 +1,27 @@
 /**
- *  Licensed to the Apache Software Foundation (ASF) under one or more
- *  contributor license agreements.  See the NOTICE file distributed with
- *  this work for additional information regarding copyright ownership.
- *  The ASF licenses this file to You under the Apache License, Version 2.0
- *  (the "License"); you may not use this file except in compliance with
- *  the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.aries.samples.ariestrader.core;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.referencelistener.ReferenceListener;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
@@ -32,32 +33,33 @@ import org.apache.aries.samples.ariestrader.api.TradeServices;
  * TradeServicesManagerImpl coordinates access to the currently
  * selected TradeServices implementation and manages the list of
  * currently available TradeServices implementations.
- * 
- * @see
- *      org.apache.geronimo.samples.daytrader.api.TradeServicesManager
- * 
+ *
+ * @see org.apache.aries.samples.ariestrader.api.TradeServicesManager
+ *
  */
-
+@Service
+@ReferenceListener(referenceInterface = TradeServices.class, bindMethod = "bindService", unbindMethod = "unbindService")
+@Bean(initMethod = "init")
 public class TradeServicesManagerImpl implements TradeServicesManager {
 
-    private static TradeServices[] tradeServicesList = new TradeServices[TradeConfig.runTimeModeNames.length] ;
+    private static TradeServices[] tradeServicesList = new TradeServices[TradeConfig.runTimeModeNames.length];
 
     // This lock is used to serialize market summary operations.
     private static final Integer marketSummaryLock = new Integer(0);
     private static long nextMarketSummary = System.currentTimeMillis();
-    private static MarketSummaryDataBean cachedMSDB = null; 
-    
+    private static MarketSummaryDataBean cachedMSDB = null;
+
     /**
-      * TradeServicesManagerImpl null constructor
-      */
+     * TradeServicesManagerImpl null constructor
+     */
     public TradeServicesManagerImpl() {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl()");
     }
 
     /**
-      * init
-      */
+     * init
+     */
     public void init() {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:init()");
@@ -65,13 +67,13 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
 
 
     /**
-      * Get CurrentModes that are registered
-      */
+     * Get CurrentModes that are registered
+     */
     public ArrayList<Integer> getCurrentModes() {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:getCurrentModes()");
         ArrayList<Integer> modes = new ArrayList<Integer>();
-        for (int i=0; i<tradeServicesList.length; i++) {
+        for (int i = 0; i < tradeServicesList.length; i++) {
             TradeServices tradeServicesRef = tradeServicesList[i];
             if (tradeServicesRef != null) {
                 modes.add(i);
@@ -81,17 +83,17 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
     }
 
     /**
-      * Get TradeServices reference
-      */
+     * Get TradeServices reference
+     */
     public TradeServices getTradeServices() {
-        if (Log.doTrace()) 
+        if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:getTradeServices()");
         return tradeServicesList[TradeConfig.getRunTimeMode().ordinal()];
     }
 
     /**
-      * Bind a new TradeServices implementation
-      */
+     * Bind a new TradeServices implementation
+     */
     public void bindService(TradeServices tradeServices, Map props) {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:bindService()", tradeServices, props);
@@ -102,8 +104,8 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
     }
 
     /**
-      * Unbind a TradeServices implementation
-      */
+     * Unbind a TradeServices implementation
+     */
     public void unbindService(TradeServices tradeServices, Map props) {
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:unbindService()", tradeServices, props);
@@ -123,47 +125,47 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
      * @return An instance of the market summary
      */
     public MarketSummaryDataBean getMarketSummary() throws Exception {
-    
+
         if (Log.doActionTrace()) {
             Log.trace("TradeAction:getMarketSummary()");
         }
-    
+
         if (Log.doTrace())
             Log.trace("TradeServicesManagerImpl:getMarketSummary()");
 
         if (TradeConfig.getMarketSummaryInterval() == 0) return getMarketSummaryInternal();
         if (TradeConfig.getMarketSummaryInterval() < 0) return cachedMSDB;
-    
+
         /**
          * This is a little funky.  If its time to fetch a new Market summary then we'll synchronize
          * access to make sure only one requester does it.  Others will merely return the old copy until
          * the new MarketSummary has been executed.
          */
-         long currentTime = System.currentTimeMillis();
-         
-         if (currentTime > nextMarketSummary) {
-             long oldNextMarketSummary = nextMarketSummary;
-             boolean fetch = false;
+        long currentTime = System.currentTimeMillis();
 
-             synchronized (marketSummaryLock) {
-                 /**
-                  * Is it still ahead or did we miss lose the race?  If we lost then let's get out
-                  * of here as the work has already been done.
-                  */
-                 if (oldNextMarketSummary == nextMarketSummary) {
-                     fetch = true;
-                     nextMarketSummary += TradeConfig.getMarketSummaryInterval()*1000;
-                     
-                     /** 
-                      * If the server has been idle for a while then its possible that nextMarketSummary
-                      * could be way off.  Rather than try and play catch up we'll simply get in sync with the 
-                      * current time + the interval.
-                      */ 
-                     if (nextMarketSummary < currentTime) {
-                         nextMarketSummary = currentTime + TradeConfig.getMarketSummaryInterval()*1000;
-                     }
-                 }
-             }
+        if (currentTime > nextMarketSummary) {
+            long oldNextMarketSummary = nextMarketSummary;
+            boolean fetch = false;
+
+            synchronized (marketSummaryLock) {
+                /**
+                 * Is it still ahead or did we miss lose the race?  If we lost then let's get out
+                 * of here as the work has already been done.
+                 */
+                if (oldNextMarketSummary == nextMarketSummary) {
+                    fetch = true;
+                    nextMarketSummary += TradeConfig.getMarketSummaryInterval() * 1000;
+
+                    /**
+                     * If the server has been idle for a while then its possible that nextMarketSummary
+                     * could be way off.  Rather than try and play catch up we'll simply get in sync with the
+                     * current time + the interval.
+                     */
+                    if (nextMarketSummary < currentTime) {
+                        nextMarketSummary = currentTime + TradeConfig.getMarketSummaryInterval() * 1000;
+                    }
+                }
+            }
 
             /**
              * If we're the lucky one then let's update the MarketSummary
@@ -172,7 +174,7 @@ public class TradeServicesManagerImpl implements TradeServicesManager {
                 cachedMSDB = getMarketSummaryInternal();
             }
         }
-         
+
         return cachedMSDB;
     }
 

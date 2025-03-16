@@ -19,8 +19,12 @@ package org.apache.aries.samples.ariestrader.persist.jdbc;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.ArrayList;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Service;
+import org.apache.aries.blueprint.annotation.service.ServiceProperty;
 import org.apache.aries.samples.ariestrader.api.TradeServices;
 import org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl;
 import org.apache.aries.samples.ariestrader.beans.AccountProfileDataBeanImpl;
@@ -50,17 +54,20 @@ import java.sql.Timestamp;
  * Trade online broker application. These business methods represent the
  * features and operations that can be performed by customers of the brokerage
  * such as login, logout, get a stock quote, buy or sell a stock, etc. and are
- * specified in the {@link org.apache.aries.samples.ariestrader.TradeServices}
+ * specified in the {@link org.apache.aries.samples.ariestrader.api.TradeServices}
  * interface
- * 
+ *
  * Note: In order for this class to be thread-safe, a new TradeJDBC must be
  * created for each call to a method from the TradeInterface interface.
  * Otherwise, pooled connections may not be released.
- * 
- * @see org.apache.aries.samples.ariestrader.TradeServices
- * 
+ *
+ * @see org.apache.aries.samples.ariestrader.api.TradeServices
+ *
  */
-
+@Service(properties = {
+        @ServiceProperty(name = "mode", values = "JDBC")
+})
+@Bean(initMethod = "init")
 public class TradeJdbc implements TradeServices {
 
     private DataSource dataSource= null;
@@ -80,6 +87,7 @@ public class TradeJdbc implements TradeServices {
     /**
      * Zero arg constructor for TradeJdbc
      */
+    @Inject
     public TradeJdbc() {
     }
 
@@ -1004,7 +1012,7 @@ public class TradeJdbc implements TradeServices {
     /**
      * @see TradeServices#updateAccountProfile(AccountProfileDataBean)
      */
-    public AccountProfileDataBean updateAccountProfile(String userID, String password, String fullName, String address, String email, String creditcard) throws Exception {                              
+    public AccountProfileDataBean updateAccountProfile(String userID, String password, String fullName, String address, String email, String creditcard) throws Exception {
 
         AccountProfileDataBean accountProfileData = null;
         Connection conn = null;
@@ -1094,7 +1102,7 @@ public class TradeJdbc implements TradeServices {
 
     /**
      * Update a quote's price and volume
-     * 
+     *
      * @param symbol
      *            The PK of the quote
      * @param changeFactor
@@ -1581,7 +1589,7 @@ public class TradeJdbc implements TradeServices {
 
     /**
      * Gets the inGlobalTxn
-     * 
+     *
      * @return Returns a boolean
      */
     private boolean getInGlobalTxn() {
@@ -1590,7 +1598,7 @@ public class TradeJdbc implements TradeServices {
 
     /**
      * Sets the inGlobalTxn
-     * 
+     *
      * @param inGlobalTxn
      *            The inGlobalTxn to set
      */
@@ -1600,7 +1608,7 @@ public class TradeJdbc implements TradeServices {
 
     /**
      * Get mode - returns the persistence mode (TradeConfig.JDBC)
-     * 
+     *
      * @return TradeConfig.ModeType
      */
     public TradeConfig.ModeType getMode() {

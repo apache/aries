@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogAuthorManager;
 import org.apache.aries.samples.blog.api.BlogComment;
@@ -31,27 +32,21 @@ import org.apache.aries.samples.blog.api.BlogEntry;
 import org.apache.aries.samples.blog.api.BlogEntryManager;
 import org.apache.aries.samples.blog.api.BloggingService;
 
+import javax.inject.Singleton;
+
 /** Implementation of the BloggingService */
+@Service(classes = BloggingService.class)
+@Singleton
 public class BloggingServiceImpl implements BloggingService {
     private BlogEntryManager blogEntryManager;
     private BlogAuthorManager blogAuthorManager;
     private BlogCommentManager blogCommentManager;
 
-    // Injected via blueprint
-    public void setBlogEntryManager(BlogEntryManager blogPostManager) {
-        this.blogEntryManager = blogPostManager;
+    public BloggingServiceImpl(BlogEntryManager blogEntryManager, BlogAuthorManager blogAuthorManager, BlogCommentManager blogCommentManager) {
+        this.blogEntryManager = blogEntryManager;
+        this.blogAuthorManager = blogAuthorManager;
+        this.blogCommentManager = blogCommentManager;
     }
-
-    // Injected via blueprint
-    public void setBlogAuthorManager(BlogAuthorManager authorManager) {
-        this.blogAuthorManager = authorManager;
-    }
-
-    // Injected via blueprint
-    public void setBlogCommentManager(BlogCommentManager commentManager) {
-        this.blogCommentManager = commentManager;
-    }
-
 
     public String getBlogTitle() {
         return new BlogImpl().getBlogTitle();

@@ -16,11 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.aries.samples.blog.persistence.jdbc;
 
-package org.apache.aries.samples.blueprint.helloworld.api;
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource;
 
-public interface HelloWorldService {
-    void hello();
+import javax.inject.Singleton;
 
-    void startUp();
+@Singleton
+public class DatasourceProducer {
+
+    @Bean
+    public EmbeddedConnectionPoolDataSource dataSource() {
+        EmbeddedConnectionPoolDataSource embeddedConnectionPoolDataSource = new EmbeddedConnectionPoolDataSource();
+        embeddedConnectionPoolDataSource.setDatabaseName("memory:blogDB");
+        embeddedConnectionPoolDataSource.setCreateDatabase("create");
+        return embeddedConnectionPoolDataSource;
+    }
 }

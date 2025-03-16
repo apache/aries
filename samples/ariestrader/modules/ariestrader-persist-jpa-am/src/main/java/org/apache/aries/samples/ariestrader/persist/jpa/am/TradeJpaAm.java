@@ -24,8 +24,12 @@ import java.util.Iterator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Service;
+import org.apache.aries.blueprint.annotation.service.ServiceProperty;
 import org.apache.aries.samples.ariestrader.api.TradeServices;
 import org.apache.aries.samples.ariestrader.entities.AccountDataBeanImpl;
 import org.apache.aries.samples.ariestrader.entities.AccountProfileDataBeanImpl;
@@ -50,17 +54,20 @@ import org.apache.aries.samples.ariestrader.util.TradeConfig;
  * by customers of the brokerage such as login, logout, get a
  * stock quote, buy or sell a stock, etc. and are specified in
  * the {@link
- * org.apache.aries.samples.ariestrader.TradeServices}
+ * org.apache.aries.samples.ariestrader.api.TradeServices}
  * interface
  * 
- * @see org.apache.aries.samples.ariestrader.TradeServices
+ * @see org.apache.aries.samples.ariestrader.api.TradeServices
  * 
  */
-
+@Service(properties = {
+        @ServiceProperty(name = "mode", values = "JPA_AM")
+})
+@Bean(initMethod = "init", destroyMethod = "destroy")
 public class TradeJpaAm implements TradeServices {
 
-//    @PersistenceUnit(unitName="ariestrader-am")
-    private static EntityManagerFactory emf;
+    @PersistenceUnit(unitName="ariestrader-am")
+    private EntityManagerFactory emf;
 
     private static boolean initialized = false;
 
@@ -68,10 +75,6 @@ public class TradeJpaAm implements TradeServices {
      * Zero arg constructor for TradeJpaAm
      */
     public TradeJpaAm() {
-    }
-
-    public void setEmf (EntityManagerFactory emf) { 
-        this.emf = emf;
     }
 
     public void init() {

@@ -28,8 +28,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.sql.DataSource;
 
+import org.apache.aries.blueprint.annotation.bean.Activation;
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
 import org.apache.aries.samples.blog.persistence.jdbc.entity.AuthorImpl;
 import org.apache.aries.samples.blog.persistence.jdbc.entity.EntryImpl;
@@ -37,9 +44,11 @@ import org.apache.aries.samples.blog.persistence.jdbc.entity.EntryImpl;
 /**
  * This class is the implementation of the blogPersistenceService
  */
+@Service(classes = BlogPersistenceService.class)
+@Bean(activation = Activation.LAZY)
 public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	private DataSource dataSource;
-	
+
     private Statements statements;
 
     public BlogPersistenceServiceImpl() {
@@ -49,10 +58,12 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	/**
 	 * set data source
 	 */
+    @Inject
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 
+    @PostConstruct
     public void init() {
         Statement s = null;
         Connection connection = null;
@@ -85,6 +96,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
         }
     }
 
+    @PreDestroy
     public void destroy() {
         Statement s = null;
         Connection connection = null;
@@ -115,10 +127,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
             }
         }
     }
-	
+
 	/**
 	 * Create an author record
-	 * 
+	 *
 	 * @param a
 	 *            The author object to be created
 	 * @throws ParseException
@@ -126,12 +138,12 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	 */
 	public void createAuthor(String email, Date dob, String name,
 			String displayName, String bio) {
-		
-		
+
+
 		try {
 			Connection connection = dataSource.getConnection();
 			String sql = "INSERT INTO AUTHOR VALUES (?,?,?,?,?)";
-			
+
 			PreparedStatement ppsm = connection.prepareStatement(sql);
 			ppsm.setString(1, email);
 			ppsm.setString(2, bio);
@@ -144,7 +156,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 			int insertRows = ppsm.executeUpdate();
 			ppsm.close();
 			connection.close();
-			
+
 			if (insertRows != 1)
 				throw new IllegalArgumentException("The Author " + email
 						+ " cannot be inserted.");
@@ -157,25 +169,25 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Create a blog entry record
-	 * 
-	 * @param a 
+	 *
+	 * @param a
 	 * 			The author
-	 * @param title 
+	 * @param title
 	 * 			The title of the post
-	 * @param blogText 
+	 * @param blogText
 	 * 			The text of the post
 	 * @param tags
-	 * 
+	 *
 	 */
 	public void createBlogPost(String authorEmail, String title, String blogText,
 			List<String> tags) {
-		
+
 		AuthorImpl a = getAuthor(authorEmail);
-		
+
 		if(title == null) title = "";
 		Date publishDate = new Date(System.currentTimeMillis());
 		if(tags == null) tags = new ArrayList<String>();
-		
+
 
 		try {
 			Connection connection = dataSource.getConnection();
@@ -188,10 +200,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 			long max_id = rs.getLong(1);
 			ppsm.close();
-			
+
 			long post_id = max_id + 1;
 			sql = "INSERT INTO BLOGENTRY VALUES (?,?,?,?,?,?)";
-			
+
 		    ppsm = connection.prepareStatement(sql);
 			ppsm.setLong(1, post_id);
 			ppsm.setString(2, blogText);
@@ -202,7 +214,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 			else
 				ppsm.setDate(3, null);
 			ppsm.setString(4, title);
-			
+
 		    ppsm.setDate(5, null);
 			ppsm.setString(6, a.getEmail());
 			int rows = ppsm.executeUpdate();
@@ -211,7 +223,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 						"The blog entry record cannot be inserted: "
 								+ blogText);
 			ppsm.close();
-			
+
 			// insert a row in the relationship table
 
 			sql = "INSERT INTO Author_BlogEntry VALUES (?,?)";
@@ -222,7 +234,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 			rows = ppsm.executeUpdate();
 			ppsm.close();
 			connection.close();
-			
+
 			if (rows != 1)
 				throw new IllegalArgumentException(
 						"The Author_BlogEntry record cannot be inserted: "
@@ -236,7 +248,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Find the blog entry record with the specified title
-	 * 
+	 *
 	 * @param The title to be searched
 	 * @return The blogEntry record
 	 */
@@ -248,7 +260,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 				+ "'";
 
 		List<EntryImpl> blogEntries = findBlogs(sql);
-		
+
 		// just return the first blog entry for the time being
 		if ((blogEntries != null) && (blogEntries.size() > 0))
 			be = blogEntries.get(0);
@@ -257,7 +269,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Return all author records in the Author table
-	 * 
+	 *
 	 * @return the list of Author records
 	 */
 	public List<AuthorImpl> getAllAuthors() {
@@ -271,7 +283,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	/**
 	 * Return all blog entry records from BlogEntry table with the most recent
 	 * published blog entries first
-	 * 
+	 *
 	 * @return a list of blogEntry object
 	 */
 	public List<EntryImpl> getAllBlogEntries() {
@@ -284,7 +296,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Return the number of the blog entry records
-	 * 
+	 *
 	 * @return the number of the blog Entry records
 	 */
 	public int getNoOfBlogEntries() {
@@ -310,7 +322,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Return the portion of blog Entries
-	 * 
+	 *
 	 * @param firstPostIndex
 	 *            The index of the first blog entry to be returned
 	 * @param noOfPosts
@@ -346,7 +358,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Return the author with the specified email address
-	 * 
+	 *
 	 * @param emailAddress
 	 *            The email address
 	 * @return The author record
@@ -367,7 +379,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Return the blog entries modified between the date range of [start, end]
-	 * 
+	 *
 	 * @param start
 	 *            The start date
 	 * @param end
@@ -396,7 +408,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	/**
 	 * Return a list of blog entries belonging to the author with the specified
 	 * email address
-	 * 
+	 *
 	 * @param emailAddress
 	 *            the author's email address
 	 * @return The list of blog entries
@@ -410,7 +422,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Update the author record
-	 * 
+	 *
 	 * @param email
 	 * 			The email associated with an author
 	 * @param dob
@@ -425,7 +437,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	public void updateAuthor(String email, Date dob, String name,
 			String displayName, String bio) {
 
-		
+
 		String sql = "UPDATE AUTHOR a SET bio = ?, displayName = ?, dob = ?, name =? WHERE email ='"
 				+ email + "'";
 		int updatedRows = 0;
@@ -440,10 +452,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 				ppsm.setDate(3, null);
 			ppsm.setString(4, name);
 			updatedRows = ppsm.executeUpdate();
-			
+
 			ppsm.close();
 			connection.close();
-			
+
 			if (updatedRows != 1)
 				throw new IllegalArgumentException("The Author " + email
 						+ " cannot be updated.");
@@ -454,11 +466,11 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Update the blog entry record
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public void updateBlogEntry(long id, String email, String title, String blogText, List<String> tags, Date updatedDate) {
-		
+
 		if (id == -1)
 			throw new IllegalArgumentException(
 					"Not a BlogEntry returned by this interface");
@@ -484,7 +496,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 		String sql = "UPDATE BLOGENTRY bp SET bp.blogText = ?, bp.publishDate = ?, bp.title = ?, bp.updatedDate = ?, bp.AUTHOR_EMAIL = ? where bp.id = "
 				+ id;
 		int updatedRows = 0;
-		
+
 		try {
 			Connection connection = dataSource.getConnection();
 			PreparedStatement ppsm = connection.prepareStatement(sql);
@@ -505,9 +517,9 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 			ppsm.setString(5, email);
 			updatedRows = ppsm.executeUpdate();
-			
+
 			ppsm.close();
-			
+
 			connection.close();
 
 			if (updatedRows != 1)
@@ -542,10 +554,10 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Delete the author record with the specified email address
-	 * 
+	 *
 	 * @param emailAddress
 	 *            The author's email address
-	 * 
+	 *
 	 */
 	public void removeAuthor(String emailAddress) {
 
@@ -558,7 +570,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 			PreparedStatement ppsm = connection.prepareStatement(sql);
 			ppsm.executeUpdate();
 			ppsm.close();
-			
+
 			// delete the records from Author_BlogEntry
 			sql = "DELETE FROM Author_BlogEntry ab WHERE ab.AUTHOR_EMAIL = '"
 					+ emailAddress + "'";
@@ -581,7 +593,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Delete the blog entry record specified by the blogEntry
-	 * 
+	 *
 	 * @param blogEntry
 	 *            the blog entry record to be deleted
 	 */
@@ -614,7 +626,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Return the blog entry record with the specified id
-	 * 
+	 *
 	 * @param postId
 	 *            The blogEntry record id
 	 */
@@ -630,7 +642,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Return a list of authors with the sql query
-	 * 
+	 *
 	 * @param sql
 	 *            The SQL query
 	 * @return A list of author records
@@ -684,7 +696,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	/**
 	 * Return a list of blog entries with the sql query
-	 * 
+	 *
 	 * @param sql
 	 *            The sql query to be executed
 	 * @return a list of blogEntry records
