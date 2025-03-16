@@ -33,9 +33,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.xbean.finder.ClassFinder;
+import org.codehaus.plexus.build.BuildContext;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
-import org.sonatype.plexus.build.incremental.BuildContext;
 
 import java.io.File;
 import java.io.OutputStream;
