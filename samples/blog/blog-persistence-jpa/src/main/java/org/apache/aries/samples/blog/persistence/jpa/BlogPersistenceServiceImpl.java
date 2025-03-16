@@ -25,8 +25,13 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
+import org.apache.aries.blueprint.annotation.bean.Activation;
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
 import org.apache.aries.samples.blog.api.persistence.Entry;
 import org.apache.aries.samples.blog.persistence.jpa.entity.AuthorImpl;
@@ -35,35 +40,34 @@ import org.apache.aries.samples.blog.persistence.jpa.entity.EntryImpl;
 /**
  * This class is the implementation of the blogPersistenceService
  */
+@Service(classes = BlogPersistenceService.class)
+@Transactional(Transactional.TxType.REQUIRED)
+@Bean(activation = Activation.LAZY)
 public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
-	private EntityManager em;
-	
-	public BlogPersistenceServiceImpl() {
-	}
+    @PersistenceContext(unitName = "blogExample")
+	EntityManager entityManager;
 
-	
-	public void setEntityManager(EntityManager e) {
-		em = e;
-	}
-	
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
-	public void createAuthor(String email, Date dob, String name,
-			String displayName, String bio) {
+    public void createAuthor(String email, Date dob, String name,
+                             String displayName, String bio) {
 		AuthorImpl a = new AuthorImpl();
 		a.setEmail(email);
 		a.setName(name);
 		a.setDisplayName(displayName);
 		a.setBio(bio);
 		a.setDob(dob);
-		em.persist(a);
+		entityManager.persist(a);
 		
 	}
 
 	public void createBlogPost(String authorEmail, String title,
 			String blogText, List<String> tags) {
 	
-		AuthorImpl a = em.find(AuthorImpl.class, authorEmail);
+		AuthorImpl a = entityManager.find(AuthorImpl.class, authorEmail);
 		EntryImpl b = new EntryImpl();
 
 		Date publishDate = new Date(System.currentTimeMillis());
@@ -75,12 +79,12 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 		b.setTags((tags == null) ? new ArrayList<String>() : tags);
 
 		a.updateEntries(b);
-		em.persist(b);		
-		em.merge(b.getAuthor());
+		entityManager.persist(b);
+		entityManager.merge(b.getAuthor());
 	}
 
 	public Entry findBlogEntryByTitle(String title) {
-		Query q = em
+		Query q = entityManager
 				.createQuery("SELECT e FROM BLOGENTRY e WHERE e.title = ?1");
 		q.setParameter(1, title);
 		Entry b = (Entry) q.getSingleResult();
@@ -89,7 +93,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	public List<AuthorImpl> getAllAuthors() {
 		@SuppressWarnings("unchecked")
-		List<AuthorImpl> list = em.createQuery("SELECT a FROM AUTHOR a")
+		List<AuthorImpl> list = entityManager.createQuery("SELECT a FROM AUTHOR a")
 				.getResultList();
 
 		return list;
@@ -97,7 +101,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	public List<EntryImpl> getAllBlogEntries() {
 		@SuppressWarnings("unchecked")
-		List<EntryImpl> list = em.createQuery(
+		List<EntryImpl> list = entityManager.createQuery(
 				"SELECT b FROM BLOGENTRY b ORDER BY b.publishDate DESC")
 				.getResultList();
 		return list;
@@ -105,13 +109,13 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	}
 
 	public int getNoOfBlogEntries() {
-		Number n = (Number) em.createQuery(
+		Number n = (Number) entityManager.createQuery(
 				"SELECT COUNT(b) FROM BLOGENTRY b").getSingleResult();
 		return n.intValue();
 	}
 
 	public List<EntryImpl> getBlogEntries(int firstPostIndex, int noOfPosts) {
-		Query q = em
+		Query q = entityManager
 				.createQuery("SELECT b FROM BLOGENTRY b ORDER BY b.publishDate DESC");
 		q.setFirstResult(firstPostIndex);
 		q.setMaxResults(noOfPosts);
@@ -123,12 +127,12 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	}
 
 	public AuthorImpl getAuthor(String emailAddress) {
-		AuthorImpl a = em.find(AuthorImpl.class, emailAddress);
+		AuthorImpl a = entityManager.find(AuthorImpl.class, emailAddress);
 		return a;
 	}
 
 	public List<EntryImpl> getBlogEntriesModifiedBetween(Date start, Date end) {
-		Query q = em
+		Query q = entityManager
 				.createQuery("SELECT b FROM BLOGENTRY b WHERE (b.updatedDate >= :start AND b.updatedDate <= :end) OR (b.publishDate >= :start AND b.publishDate <= :end) ORDER BY b.publishDate ASC");
 		q.setParameter("start", start);
 		q.setParameter("end", end);
@@ -141,7 +145,7 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 	
 	public List<EntryImpl> getBlogsForAuthor(String emailAddress) {
 
-		List<EntryImpl> list = em.find(AuthorImpl.class, emailAddress)
+		List<EntryImpl> list = entityManager.find(AuthorImpl.class, emailAddress)
 				.getEntries();
 		
 		return list;
@@ -150,56 +154,56 @@ public class BlogPersistenceServiceImpl implements BlogPersistenceService {
 
 	public void updateAuthor(String email, Date dob, String name,
 			String displayName, String bio) {
-		AuthorImpl a = em.find(AuthorImpl.class, email);
+		AuthorImpl a = entityManager.find(AuthorImpl.class, email);
 		a.setEmail(email);
 		a.setName(name);
 		a.setDisplayName(displayName);
 		a.setBio(bio);
 		a.setDob(dob);
-		em.merge(a);
+		entityManager.merge(a);
 	}
 	
 	public void updateBlogEntry(long id, String email, String title,
 			String blogText, List<String> tags, Date updatedDate) {
-		EntryImpl b = em.find(EntryImpl.class, id);
+		EntryImpl b = entityManager.find(EntryImpl.class, id);
 		b.setTitle(title);
 		b.setBlogText(blogText);
 		b.setTags(tags);
 		b.setUpdatedDate(updatedDate);
 
-		em.merge(b);
+		entityManager.merge(b);
 	}
 
 	public void removeAuthor(String emailAddress) {
-		em.remove(em.find(AuthorImpl.class, emailAddress));
+		entityManager.remove(entityManager.find(AuthorImpl.class, emailAddress));
 	}
 
 	public void removeBlogEntry(long id) {
-		EntryImpl b = em.find(EntryImpl.class, id);
-		b = em.merge(b);
+		EntryImpl b = entityManager.find(EntryImpl.class, id);
+		b = entityManager.merge(b);
 		b.getAuthor().getEntries().remove(b);
 
-		em.remove(em.merge(b));
-		em.merge(b.getAuthor());
+		entityManager.remove(entityManager.merge(b));
+		entityManager.merge(b.getAuthor());
 
 	}
 
 	public EntryImpl getBlogEntryById(long postId) {
-		EntryImpl b =  em.find(EntryImpl.class, postId);
+		EntryImpl b =  entityManager.find(EntryImpl.class, postId);
 		return b;
 	}
 
 	public void setPublishDate (long postId, Date date) {
 		//Added for testing
-		EntryImpl b = em.find(EntryImpl.class, postId);
+		EntryImpl b = entityManager.find(EntryImpl.class, postId);
 		b.setPublishDate(date);	
-		em.merge(b);
+		entityManager.merge(b);
 	}
 	
 	public void setUpdatedDate (long postId, Date date) {
 		//Added for testing
-		EntryImpl b = em.find(EntryImpl.class, postId);
+		EntryImpl b = entityManager.find(EntryImpl.class, postId);
 		b.setUpdatedDate(date);	
-		em.merge(b);
+		entityManager.merge(b);
 	}
 }

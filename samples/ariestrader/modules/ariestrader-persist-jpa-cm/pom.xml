@@ -55,6 +55,21 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>blueprint-maven-plugin-annotation</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -72,6 +87,19 @@
                             *
                         </Import-Package>
                     </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.aries.blueprint</groupId>
+                <artifactId>blueprint-maven-plugin</artifactId>
+                <configuration>
+                    <namespaces>
+                        <namespace>http://aries.apache.org/xmlns/jpa/v1.1.0</namespace>
+                        <namespace>http://aries.apache.org/xmlns/transactions/v1.2.0</namespace>
+                    </namespaces>
+                    <customParameters>
+                        <transaction.enableAnnotation>false</transaction.enableAnnotation>
+                    </customParameters>
                 </configuration>
             </plugin>
         </plugins>

@@ -18,6 +18,8 @@ package org.apache.aries.samples.ariestrader.core;
 
 import javax.sql.DataSource;
 
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.MDBStats;
@@ -42,6 +44,8 @@ import java.sql.Statement;
  *      org.apache.aries.samples.ariestrader.api.TradeDBManager
  */
 
+@Service
+@Bean(initMethod = "init", destroyMethod = "destroy")
 public class TradeDBManagerImpl implements TradeDBManager {
 
     private DataSource dataSource = null;

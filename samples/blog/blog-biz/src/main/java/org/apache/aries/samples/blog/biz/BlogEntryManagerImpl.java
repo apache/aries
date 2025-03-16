@@ -30,14 +30,17 @@ import org.apache.aries.samples.blog.api.BlogEntryManager;
 import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
 import org.apache.aries.samples.blog.api.persistence.Entry;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 
+@Singleton
 public class BlogEntryManagerImpl implements BlogEntryManager
 {
   private BlogPersistenceService persistenceService;
   
 
-  // Injected via blueprint
+  @Inject
   public void setPersistenceService(BlogPersistenceService persistenceService)
   {
     this.persistenceService = persistenceService;
