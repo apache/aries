@@ -100,7 +100,7 @@
         <commons-lang.version>2.6</commons-lang.version>
         <commons-pool.version>1.6</commons-pool.version>
         <org.apache.servicemix.bundles.serp.version>1.15.1_1</org.apache.servicemix.bundles.serp.version>
-        <org.apache.servicemix.bundles.cglib.version>2.1_3_4</org.apache.servicemix.bundles.cglib.version>
+        <org.apache.servicemix.bundles.cglib.version>3.3.0_1</org.apache.servicemix.bundles.cglib.version>
 
         <openjpa.version>2.2.2</openjpa.version>
         <geronimo-jpa_2.0_spec.version>1.1</geronimo-jpa_2.0_spec.version>
