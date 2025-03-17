@@ -19,15 +19,14 @@
 package org.apache.aries.blueprint.plugin.model;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -53,7 +52,7 @@ final class Introspector {
     @SafeVarargs
     final List<Field> fieldsWith(Class<? extends Annotation>... requiredAnnotations) {
         Multimap<String, Field> fieldsByName = HashMultimap.create();
-        Set<String> acceptedFieldNames = Sets.newHashSet();
+        Set<String> acceptedFieldNames = new HashSet<>();
         Class<?> clazz = originalClazz;
 
         // For each parent class of clazz...
@@ -71,7 +70,7 @@ final class Introspector {
         }
 
         // Add all accepted fields to acceptedFields
-        List<Field> acceptedFields = Lists.newArrayList();
+        List<Field> acceptedFields = new ArrayList<>();
         for (String fieldName : acceptedFieldNames) {
             Collection<Field> fields = fieldsByName.get(fieldName);
             validateOnlyOneFieldWithName(fieldName, fields);

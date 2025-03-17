@@ -38,6 +38,8 @@
         <aries.skip.version.check>true</aries.skip.version.check>
 
         <blueprint-maven-plugin.version>1.10.1-SNAPSHOT</blueprint-maven-plugin.version>
+        <blueprint-maven-plugin-pax-cdi-handlers.version>1.0.1-SNAPSHOT</blueprint-maven-plugin-pax-cdi-handlers.version>
+        <blueprint-maven-plugin-spring-handlers.version>1.0.1-SNAPSHOT</blueprint-maven-plugin-spring-handlers.version>
         <groovy.version>4.0.26</groovy.version>
         <javax.enterprise.cdi-api.version>2.0.SP1</javax.enterprise.cdi-api.version>
         <javax.inject.version>1</javax.inject.version>
@@ -108,6 +110,16 @@
             <artifactId>spring-tx</artifactId>
             <version>${spring.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>blueprint-maven-plugin-pax-cdi-handlers</artifactId>
+            <version>${blueprint-maven-plugin-pax-cdi-handlers.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>blueprint-maven-plugin-spring-handlers</artifactId>
+            <version>${blueprint-maven-plugin-spring-handlers.version}</version>
         </dependency>
     </dependencies>
 

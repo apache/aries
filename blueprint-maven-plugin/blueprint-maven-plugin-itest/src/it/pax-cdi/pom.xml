@@ -53,6 +53,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.aries.blueprint</groupId>
+                        <artifactId>blueprint-maven-plugin-pax-cdi-handlers</artifactId>
+                        <version>@blueprint-maven-plugin-pax-cdi-handlers.version@</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

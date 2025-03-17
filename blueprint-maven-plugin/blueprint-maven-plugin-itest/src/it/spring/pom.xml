@@ -75,6 +75,13 @@
                         </goals>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.aries.blueprint</groupId>
+                        <artifactId>blueprint-maven-plugin-spring-handlers</artifactId>
+                        <version>@blueprint-maven-plugin-spring-handlers.version@</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
