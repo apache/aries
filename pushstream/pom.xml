@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>17</version>
+        <version>34</version>
         <relativePath/>
     </parent>
 
@@ -43,8 +43,8 @@
     </modules>
 
     <properties>
-        <java.source.version>1.8</java.source.version>
-        <java.target.version>1.8</java.target.version>
+        <java.source.version>8</java.source.version>
+        <java.target.version>8</java.target.version>
 
         <bnd-maven-plugin.version>6.4.0</bnd-maven-plugin.version>
         <junit.version>4.13.2</junit.version>
@@ -95,13 +95,6 @@
                     <configuration>
                         <source>${java.source.version}</source>
                         <target>${java.target.version}</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <configuration>
-                        <useDefaultManifestFile>true</useDefaultManifestFile>
                     </configuration>
                 </plugin>
                 <plugin>

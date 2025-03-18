@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>33</version>
+        <version>34</version>
         <relativePath/>
     </parent>
 
@@ -185,17 +185,15 @@
         <slf4j.version>2.0.17</slf4j.version>
 
         <!--Plugin versions-->
-        <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
-        <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
-        <findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
-        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
-        <!-- TODO do not override javadoc plugin version when apache parent v34 is released-->
-        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
-        <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
-        <maven-paxexam-plugin.version>1.2.4</maven-paxexam-plugin.version>
-        <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
         <animal-sniffer-enforcer-rule.version>1.24</animal-sniffer-enforcer-rule.version>
         <depgraph-maven-plugin.version>4.0.3</depgraph-maven-plugin.version>
+        <findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
+        <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
+        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
+        <maven-paxexam-plugin.version>1.2.4</maven-paxexam-plugin.version>
+        <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
+        <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
+        <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
 
         <!--Other-->
         <java.source.version>8</java.source.version>
@@ -391,11 +389,6 @@
                     <groupId>org.ops4j.pax.exam</groupId>
                     <artifactId>maven-paxexam-plugin</artifactId>
                     <version>${maven-paxexam-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -627,7 +620,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven-javadoc-plugin.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
