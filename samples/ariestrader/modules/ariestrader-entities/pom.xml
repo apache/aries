@@ -88,7 +88,7 @@
                     <execution>
                         <phase>compile</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <path id="enhance.path.ref">
                                     <fileset dir="${project.build.outputDirectory}">
                                         <include name="*Bean*/*.class"/>
@@ -103,7 +103,7 @@
                                         <path refid="maven.compile.classpath"/>
                                     </classpath>
                                 </java>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>

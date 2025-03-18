@@ -48,7 +48,6 @@ import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.application.management.AriesApplicationManager;
 import org.apache.aries.application.utils.AppConstants;
-import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.felix.bundlerepository.Repository;
 import org.apache.felix.bundlerepository.RepositoryAdmin;
 import org.junit.Test;
@@ -60,8 +59,7 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.options.MavenArtifactUrlReference;
 
 @RunWith(PaxExam.class)
-public class TwitterTest extends AbstractIntegrationTest 
-{
+public class TwitterTest {
 	public static final String CORE_BUNDLE_BY_VALUE = "core.bundle.by.value";
 	public static final String CORE_BUNDLE_BY_REFERENCE = "core.bundle.by.reference";
 	public static final String TRANSITIVE_BUNDLE_BY_VALUE = "transitive.bundle.by.value";
