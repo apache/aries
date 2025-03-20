@@ -38,7 +38,7 @@
         <exam.version>4.13.5</exam.version>
         <java.source.version>8</java.source.version>
         <javax.inject.version>1</javax.inject.version>
-        <logback.version>0.9.29</logback.version>
+        <logback.version>1.5.18</logback.version>
 <!--        <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>-->
         <org.eclipse.osgi.version>3.8.0.v20120529-1548</org.eclipse.osgi.version>
         <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
