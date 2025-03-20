@@ -68,6 +68,7 @@
         <junit.version>4.13.2</junit.version>
         <org.apache.felix.utils.version>1.11.8</org.apache.felix.utils.version>
         <org.osgi.compendium.version>5.0.0</org.osgi.compendium.version>
+        <org.osgi.core.version>6.0.0</org.osgi.core.version>
         <slf4j.version>2.0.17</slf4j.version>
         <spring.version>5.3.39</spring.version>
     </properties>
@@ -110,6 +111,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <version>${org.osgi.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
