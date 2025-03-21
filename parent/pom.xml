@@ -190,7 +190,6 @@
         <findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
-        <maven-paxexam-plugin.version>1.2.4</maven-paxexam-plugin.version>
         <maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
 
@@ -312,27 +311,6 @@
                                         <ignore/>
                                     </action>
                                 </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            org.ops4j.pax.exam
-                                        </groupId>
-                                        <artifactId>
-                                            maven-paxexam-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [${maven-paxexam-plugin.version},)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>
-                                                generate-depends-file
-                                            </goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore/>
-                                    </action>
-                                </pluginExecution>
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
@@ -365,11 +343,6 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>${findbugs-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.ops4j.pax.exam</groupId>
-                    <artifactId>maven-paxexam-plugin</artifactId>
-                    <version>${maven-paxexam-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
