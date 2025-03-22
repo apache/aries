@@ -23,7 +23,7 @@ on:
       - .github/workflows/quiesce.yml
   push:
     branches:
-      - $default-branch
+      - 'trunk'
 
 env:
   LC_ALL: en_US.UTF-8
