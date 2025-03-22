@@ -199,6 +199,7 @@
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
+                <!-- TODO ARIES-2165: remove configuration when the newest parent pom is used -->
                 <version>${depends-maven-plugin.version}</version>
                 <executions>
                     <execution>
