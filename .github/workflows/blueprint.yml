@@ -25,7 +25,7 @@ on:
       - .github/workflows/blueprint.yml
   push:
     branches:
-      - $default-branch
+      - 'trunk'
 
 env:
   LC_ALL: en_US.UTF-8
