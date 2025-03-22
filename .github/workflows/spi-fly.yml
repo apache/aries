@@ -19,7 +19,7 @@ on:
       - .github/workflows/spi-fly.yml
   push:
     branches:
-      - 'trunk'
+      - $default-branch
 
 env:
   LC_ALL: en_US.UTF-8

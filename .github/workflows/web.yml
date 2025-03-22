@@ -23,7 +23,7 @@ on:
       - .github/workflows/web.yml
   push:
     branches:
-      - 'trunk'
+      - $default-branch
 
 env:
   LC_ALL: en_US.UTF-8
