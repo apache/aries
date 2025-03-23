@@ -159,7 +159,7 @@
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-maven-plugin</artifactId>
-                <version>${bnd.version}</version>
+                <version>${bnd-maven-plugins.version}</version>
                 <configuration>
                     <bnd><![CDATA[
                         Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE;PUBLIC}
@@ -176,7 +176,7 @@
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-resolver-maven-plugin</artifactId>
-                <version>${bnd.version}</version>
+                <version>${bnd-maven-plugins.version}</version>
                 <configuration>
                     <bndruns>
                         <bndrun>test.bndrun</bndrun>
@@ -202,7 +202,7 @@
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-testing-maven-plugin</artifactId>
-                <version>${bnd.version}</version>
+                <version>${bnd-maven-plugins.version}</version>
                 <configuration>
                     <bndruns>
                         <bndrun>test.bndrun</bndrun>

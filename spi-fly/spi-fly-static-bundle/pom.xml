@@ -85,7 +85,7 @@
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-maven-plugin</artifactId>
-                <version>${bnd.version}</version>
+                <version>${bnd-maven-plugins.version}</version>
                 <configuration>
                     <bnd><![CDATA[
                     Bundle-Activator: org.apache.aries.spifly.staticbundle.StaticWeavingActivator
@@ -128,7 +128,7 @@
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-baseline-maven-plugin</artifactId>
-                <version>${bnd.version}</version>
+                <version>${bnd-maven-plugins.version}</version>
                 <configuration>
                     <includeDistributionManagement>false</includeDistributionManagement>
                     <fullReport>true</fullReport>
@@ -145,7 +145,7 @@
             <plugin>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>bnd-resolver-maven-plugin</artifactId>
-                <version>${bnd.version}</version>
+                <version>${bnd-maven-plugins.version}</version>
                 <configuration>
                     <failOnChanges>false</failOnChanges>
                     <scopes>
