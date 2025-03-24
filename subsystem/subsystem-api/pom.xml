@@ -55,9 +55,9 @@
         </aries.osgi.import>
 
         <org.apache.aries.util.version>1.1.1</org.apache.aries.util.version>
-        <org.osgi.annotation.version>6.0.0</org.osgi.annotation.version>
-        <org.osgi.core.version>6.0.0</org.osgi.core.version>
-        <org.osgi.enterprise.version>5.0.0</org.osgi.enterprise.version>
+        <osgi.annotation.version>6.0.0</osgi.annotation.version>
+        <osgi.core.version>6.0.0</osgi.core.version>
+        <osgi.enterprise.version>5.0.0</osgi.enterprise.version>
     </properties>
 
     <dependencies>
@@ -68,19 +68,19 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>${org.osgi.core.version}</version>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgi.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.annotation</artifactId>
-            <version>${org.osgi.annotation.version}</version>
+            <artifactId>osgi.annotation</artifactId>
+            <version>${osgi.annotation.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
-            <version>${org.osgi.enterprise.version}</version>
+            <artifactId>osgi.enterprise</artifactId>
+            <version>${osgi.enterprise.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
