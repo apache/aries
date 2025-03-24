@@ -66,6 +66,8 @@
         <blueprint.core.version>1.9.0</blueprint.core.version>
         <blueprint.parser.version>1.5.0</blueprint.parser.version>
         <org.apache.felix.utils.version>1.11.8</org.apache.felix.utils.version>
+        <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
+        <osgi.core.version>4.3.1</osgi.core.version>
         <slf4j.version>2.0.17</slf4j.version>
         <spring.version>5.3.39</spring.version>
     </properties>
@@ -107,12 +109,14 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgi.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
+            <version>${osgi.cmpn.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
