@@ -68,7 +68,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
 	protected Option jmxRuntime() {
 		return composite(
 				baseOptions(),
-				mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+				mavenBundle("org.osgi", "osgi.cmpn").versionAsInProject(),
 				mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin").versionAsInProject(),
                 mavenBundle("org.apache.aries.jmx", "org.apache.aries.jmx").versionAsInProject(),
