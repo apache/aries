@@ -55,12 +55,14 @@
 
         <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
         <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
+        <osgi.core.version>4.3.1</osgi.core.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgi.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

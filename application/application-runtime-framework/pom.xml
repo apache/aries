@@ -62,6 +62,8 @@
         <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
         <org.apache.aries.testsupport.unit.version>1.0.0</org.apache.aries.testsupport.unit.version>
         <osgi.version>3.5.0.v20090520</osgi.version>
+        <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
+        <osgi.core.version>4.3.1</osgi.core.version>
     </properties>
 
     <dependencies>
@@ -88,12 +90,14 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgi.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
+            <version>${osgi.cmpn.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

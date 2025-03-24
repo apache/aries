@@ -78,6 +78,8 @@
         <org.apache.aries.async.promise.api.version>1.1.0-SNAPSHOT</org.apache.aries.async.promise.api.version>
         <org.osgi.service.log.version>1.5.0</org.osgi.service.log.version>
         <org.osgi.util.tracker.version>1.5.4</org.osgi.util.tracker.version>
+        <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
+        <osgi.core.version>4.3.1</osgi.core.version>
     </properties>
 
     <dependencies>
@@ -113,7 +115,8 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgi.core.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -124,7 +127,8 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
+            <version>${osgi.cmpn.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

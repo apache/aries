@@ -531,8 +531,8 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
         return options(
 
                 // framework / core bundles
-                mavenBundle("org.osgi", "org.osgi.core").versionAsInProject(),
-                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.osgi", "osgi.core").versionAsInProject(),
+                mavenBundle("org.osgi", "osgi.cmpn").versionAsInProject(),
 
                 // Logging
                 addPaxLoggingBundles(),

@@ -80,7 +80,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
+            <artifactId>osgi.cmpn</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -228,7 +228,7 @@
             <version>${pax-tinybundles.version}</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>org.osgi.core</artifactId>
+                    <artifactId>osgi.core</artifactId>
                     <groupId>org.osgi</groupId>
                 </exclusion>
             </exclusions>

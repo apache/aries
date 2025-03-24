@@ -292,7 +292,7 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
         return new Option[]{
                 baseOptions(),
                 // Bundles
-                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.osgi", "osgi.cmpn").versionAsInProject(),
                 mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
                 mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.api").versionAsInProject(),
                 mavenBundle("org.apache.aries.quiesce", "org.apache.aries.quiesce.manager").versionAsInProject(),

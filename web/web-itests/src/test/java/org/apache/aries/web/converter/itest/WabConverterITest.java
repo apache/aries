@@ -116,7 +116,7 @@ public class WabConverterITest extends AbstractIntegrationTest {
 		return options(
 				// bootDelegation(),
 				baseOptions(),
-				mavenBundle("org.osgi", "org.osgi.compendium"),
+				mavenBundle("org.osgi", "osgi.cmpn"),
 				mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
 
 				// Bundles

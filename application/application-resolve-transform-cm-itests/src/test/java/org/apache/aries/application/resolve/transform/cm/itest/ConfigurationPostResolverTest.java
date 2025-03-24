@@ -143,13 +143,13 @@ public class ConfigurationPostResolverTest extends AbstractIntegrationTest {
     public Option[] configuration() throws Exception {
         return options(
         		baseOptions(),
-                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.osgi", "osgi.cmpn").versionAsInProject(),
 //                mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
                 mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
                 mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),
-                mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+                mavenBundle("org.osgi", "osgi.cmpn").versionAsInProject(),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
                 mavenBundle("org.apache.aries.application", "org.apache.aries.application.resolve.transform.cm").versionAsInProject()
         );
