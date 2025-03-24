@@ -178,7 +178,7 @@ public class TwitterTest {
 	public Option[] configuration() {
 		return CoreOptions.options(
 				baseOptions(),
-				mavenBundle("org.osgi", "org.osgi.compendium").versionAsInProject(),
+				mavenBundle("org.osgi", "osgi.cmpn").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.management").versionAsInProject(),
