@@ -182,10 +182,13 @@ public abstract class AbstractBlogIntegrationTest extends org.apache.aries.itest
 				mavenBundle("org.eclipse.equinox", "cm").versionAsInProject(),
 				mavenBundle("org.eclipse.osgi", "services").versionAsInProject(),
 
-				mavenBundle("org.apache.xbean", "xbean-asm4-shaded").versionAsInProject(),
+				mavenBundle("org.apache.xbean", "xbean-asm5-shaded").versionAsInProject(),
 				mavenBundle("org.apache.xbean", "xbean-finder-shaded").versionAsInProject(),
+				mavenBundle("org.apache.xbean", "xbean-bundleutils").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.web", "pax-web-jetty-bundle").versionAsInProject(),
 				mavenBundle("org.ops4j.pax.web", "pax-web-extender-war").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.web", "pax-web-spi").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.web", "pax-web-api").versionAsInProject(),
 
 				//mavenBundle("org.ops4j.pax.web", "pax-web-jsp").versionAsInProject(),
 				mavenBundle("org.apache.derby", "derby").versionAsInProject(),
