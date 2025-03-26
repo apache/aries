@@ -98,14 +98,14 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
     MethodVisitor mv = null;
     //As in WovenProxyAdapter, we only care about "real" methods, but also not
     //abstract ones!.
-    if (!!!name.equals("<init>") && !!!name.equals("<clinit>")
+    if (!name.equals("<init>") && !name.equals("<clinit>")
         && (access & (ACC_STATIC | ACC_PRIVATE | ACC_SYNTHETIC | ACC_ABSTRACT
             | ACC_NATIVE | ACC_BRIDGE)) == 0) {
 
       // identify the target method parameters and return type
       Method currentTransformMethod = new Method(name, desc);
       // We don't want to duplicate a method we already overrode! 
-      if(!!!knownMethods.add(currentTransformMethod))
+      if(!knownMethods.add(currentTransformMethod))
         return null;
       
       // found a method we should weave
@@ -116,7 +116,7 @@ final class MethodCopyingClassAdapter extends ClassVisitor implements Opcodes {
       // We can't call up to a default access method if we aren't in the same
       // package
       if((access & (ACC_PUBLIC | ACC_PROTECTED | ACC_PRIVATE)) == 0) {
-        if(!!!samePackage) {
+        if(!samePackage) {
             methodHiddenException(name);
         }
       }

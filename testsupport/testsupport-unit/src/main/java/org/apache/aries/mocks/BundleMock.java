@@ -175,7 +175,7 @@ public class BundleMock
     public Object handle(MethodCall call, Skeleton parent)
     {
       File privateStorage = new File(location.getAbsolutePath(), "_private");
-      if (!!!privateStorage.exists())
+      if (!privateStorage.exists())
         privateStorage.mkdirs();
       
       return new File(privateStorage, (String) call.getArguments()[0]);

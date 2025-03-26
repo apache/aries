@@ -308,13 +308,13 @@ public class ClassDeclaration extends GenericDeclaration {
         // not final changed to final
         // public changed to non-public
         String prefix = " The class " + getName();
-        if (!!!originalClass.isAbstract() && isAbstract()) {
+        if (!originalClass.isAbstract() && isAbstract()) {
             reasons.add(prefix + " was not abstract but is changed to be abstract.");
         }
-        if (!!!originalClass.isFinal() && isFinal()) {
+        if (!originalClass.isFinal() && isFinal()) {
             reasons.add(prefix + " was not final but is changed to be final.");
         }
-        if (originalClass.isPublic() && !!!isPublic()) {
+        if (originalClass.isPublic() && !isPublic()) {
             reasons.add(prefix + " was public but is changed to be non-public.");
         }
     }
@@ -354,7 +354,7 @@ public class ClassDeclaration extends GenericDeclaration {
                 compatible = false;
             } else {
 
-                if ((!!!bef_fd.isFinal()) && (cur_fd.isFinal())) {
+                if ((!bef_fd.isFinal()) && (cur_fd.isFinal())) {
                     // make sure it has not been changed to final
                     reasons.add(prefix + " was not final but has been changed to be final.");
                     compatible = false;
@@ -475,7 +475,7 @@ public class ClassDeclaration extends GenericDeclaration {
                                 // If the old method is static but the new one is non static
                                 // If the old method is not abstract but the new is
 
-                                if (!!!Modifier.isFinal(md.getAccess()) && !!!Modifier.isStatic(md.getAccess()) && Modifier.isFinal(new_md.getAccess())) {
+                                if (!Modifier.isFinal(md.getAccess()) && !Modifier.isStatic(md.getAccess()) && Modifier.isFinal(new_md.getAccess())) {
                                     compatible = false;
                                     reasons.add(prefix + " was not final but has been changed to be final.");
                                 }
@@ -593,7 +593,7 @@ public class ClassDeclaration extends GenericDeclaration {
         if (overloaddingMethods != null) {
             for (MethodDeclaration value : overloaddingMethods) {
                 // method signature and name same and also the method should not be less accessible
-                if (md.equals(value) && (!!!SemanticVersioningUtils.isLessAccessible(md, value)) && (value.isStatic() == md.isStatic())) {
+                if (md.equals(value) && (!SemanticVersioningUtils.isLessAccessible(md, value)) && (value.isStatic() == md.isStatic())) {
                     return true;
                 }
             }
@@ -646,7 +646,7 @@ public class ClassDeclaration extends GenericDeclaration {
     private void getAllSuperPresentStatus(ClassDeclaration old, List<String> reasons) {
         Collection<String> oldSupers = old.getAllSupers();
         boolean containsAll = getAllSupers().containsAll(oldSupers);
-        if (!!!containsAll) {
+        if (!containsAll) {
             oldSupers.removeAll(getAllSupers());
             reasons.add("The superclasses or superinterfaces have stopped being super: " + oldSupers.toString() + ".");
         }

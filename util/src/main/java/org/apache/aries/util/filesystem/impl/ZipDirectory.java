@@ -86,7 +86,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     ZipEntry entryFile = getEntry(entryName);
 
     if (entryFile != null) {
-      if (!!!entryFile.isDirectory()) {
+      if (!entryFile.isDirectory()) {
         result = new ZipFileImpl(zip, entryFile, buildParent(entryFile), cache);
       } else {
         result = new ZipDirectory(zip, entryFile, buildParent(entryFile), cache);
@@ -112,7 +112,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
 
     StringBuilder baseBuilderCrapThingToGetRoundFindBugs = new StringBuilder(getNameInZip());
 
-    if (!!!isZipRoot()) baseBuilderCrapThingToGetRoundFindBugs.append('/');
+    if (!isZipRoot()) baseBuilderCrapThingToGetRoundFindBugs.append('/');
     // Build 'result' as a chain of ZipDirectories. This will only work if java.util.ZipFile recognises every
     // directory in the chain as being a ZipEntry in its own right.
     outer: if (paths != null && paths.length > 1) {
@@ -183,7 +183,7 @@ public class ZipDirectory extends ZipFileImpl implements IDirectory
     boolean result;
     String name = possibleEntry.getName();
     if (name.endsWith("/")) name = name.substring(0, name.length() - 1);
-    result = (name.startsWith(parentDir) && !!!name.equals(parentDir) && (allowSubDirs || name.substring(parentDir.length() + 1).indexOf('/') == -1));
+    result = (name.startsWith(parentDir) && !name.equals(parentDir) && (allowSubDirs || name.substring(parentDir.length() + 1).indexOf('/') == -1));
     return result;
   }
 

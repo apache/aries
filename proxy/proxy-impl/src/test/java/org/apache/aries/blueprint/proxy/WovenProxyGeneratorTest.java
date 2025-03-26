@@ -103,7 +103,7 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
     }
     public Class<?> loadClass(String className, boolean b) throws ClassNotFoundException
     {
-      if (!!!className.startsWith("org.apache.aries.blueprint.proxy.ProxyTest")){
+      if (!className.startsWith("org.apache.aries.blueprint.proxy.ProxyTest")){
         return Class.forName(className);
       }
       

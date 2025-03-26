@@ -66,7 +66,7 @@ final class WovenProxyAdapter extends AbstractWovenProxyAdapter {
     if(sVUIDGenerated && "serialVersionUID".equals(name)) {
       
       //If we aren't a serializable class then don't add a generated sVUID
-      if(!!!isSerializable) {
+      if(!isSerializable) {
         return null;
       }
       

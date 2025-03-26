@@ -123,7 +123,7 @@ public class InternalRecursiveBundleTracker extends BundleTracker
       // bundle is already active and there is no event associated
       // this can happen when bundle is first time added to the tracker 
       // or when the tracker is being closed.
-      if (event == null && !!!removing) {
+      if (event == null && !removing) {
         if (cb.getState() == Bundle.INSTALLED || cb.getState() == Bundle.RESOLVED || cb.getState() == Bundle.STARTING || cb.getState() == Bundle.ACTIVE) {
           openTracker(btc, cb, bundleScope, mask);
         }

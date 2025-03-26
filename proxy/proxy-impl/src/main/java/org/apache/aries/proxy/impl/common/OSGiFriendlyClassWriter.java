@@ -85,7 +85,7 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
                 return OBJECT_INTERNAL_NAME; //arg0 is an interface
               }
               aRunning = false; //old arg00 was java.lang.Object
-            } else if(!!!names.add(arg00)) {
+            } else if(!names.add(arg00)) {
               return arg00;
             }
           } else {
@@ -104,7 +104,7 @@ public final class OSGiFriendlyClassWriter extends ClassWriter {
                 return OBJECT_INTERNAL_NAME;  //arg1 is an interface
               }
               bRunning = false; //old arg11 was java.lang.Object
-            } else if(!!!names.add(arg11)) {
+            } else if(!names.add(arg11)) {
               return arg11;
             }
           } else {

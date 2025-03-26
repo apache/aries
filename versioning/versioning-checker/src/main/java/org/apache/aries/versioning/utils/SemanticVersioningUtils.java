@@ -55,15 +55,15 @@ public class SemanticVersioningUtils {
         }
         //When it reaches here, the two access are different. Let's make sure the whether the after field has less access than the before field.
         if (before.isPublic()) {
-            if (!!!after.isPublic()) {
+            if (!after.isPublic()) {
                 return true;
             }
         } else if (before.isProtected()) {
-            if (!!!(after.isPublic() || after.isProtected())) {
+            if (!(after.isPublic() || after.isProtected())) {
                 return true;
             }
         } else {
-            if (!!!before.isPrivate()) {
+            if (!before.isPrivate()) {
                 // the field is package level.
                 if (after.isPrivate()) {
                     return true;

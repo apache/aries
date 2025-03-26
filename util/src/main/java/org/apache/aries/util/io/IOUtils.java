@@ -105,7 +105,7 @@ public class IOUtils
 
       outputDirectory = new File(outputDir, dirName);
       
-      if (!!!outputDirectory.exists() && !!!outputDirectory.mkdirs())
+      if (!outputDirectory.exists() && !outputDirectory.mkdirs())
         throw new IOException(MessageUtil.getMessage("UTIL0015E", relativePath));
     }
     else
@@ -236,7 +236,7 @@ public class IOUtils
    */
   public static boolean deleteRecursive(File root)
   {
-    if (!!!root.exists())
+    if (!root.exists())
       return false;
     else if (root.isFile())
       return root.delete();

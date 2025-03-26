@@ -198,7 +198,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     protected Metadata processPropsMetadata(PropsMetadata metadata) {
 
         List<MapEntry> entries = new ArrayList<MapEntry>(metadata.getEntries());
-        if(!!! entries.isEmpty()) {
+        if(! entries.isEmpty()) {
 
             try {
                 if(metadata instanceof MutablePropsMetadata) {
@@ -225,7 +225,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
 
     protected Metadata processMapMetadata(MapMetadata metadata) {
         List<MapEntry> entries = new ArrayList<MapEntry>(metadata.getEntries());
-        if(!!! entries.isEmpty()) {
+        if(! entries.isEmpty()) {
 
             try {
                 if(metadata instanceof MutableMapMetadata) {
@@ -273,7 +273,7 @@ public abstract class AbstractPropertyPlaceholder implements ComponentDefinition
     protected Metadata processCollectionMetadata(CollectionMetadata metadata) {
 
         List<Metadata> values = new ArrayList<Metadata>(metadata.getValues());
-        if(!!! values.isEmpty()) {
+        if(! values.isEmpty()) {
 
             try {
                 if(metadata instanceof MutableCollectionMetadata) {

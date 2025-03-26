@@ -39,7 +39,7 @@ public final class AriesFrameworkUtil
       worker = new FelixWorker();
     } 
     
-    if (worker == null || !!!worker.isValid()) worker = new DefaultWorker();
+    if (worker == null || !worker.isValid()) worker = new DefaultWorker();
   }
   
   

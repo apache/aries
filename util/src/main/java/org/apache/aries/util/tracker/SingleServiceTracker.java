@@ -129,7 +129,7 @@ public final class SingleServiceTracker<T>
         clear = false;
         
         // We do the unget out of the lock so we don't exit this class while holding a lock.
-        if (!!!update(original, ref, service)) {
+        if (!update(original, ref, service)) {
           ctx.ungetService(ref);
         }
       }

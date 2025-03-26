@@ -153,7 +153,7 @@ public abstract class AbstractProxyManager implements ProxyManager
 
       classToProxy = classes.iterator().next();
 
-      if(!!!isProxyClass(classToProxy))
+      if(!isProxyClass(classToProxy))
         classToProxy = null;
     }
 

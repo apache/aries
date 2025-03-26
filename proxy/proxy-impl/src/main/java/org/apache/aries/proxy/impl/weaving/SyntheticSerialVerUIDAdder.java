@@ -83,7 +83,7 @@ class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
   @Override
   public void visitEnd() {
 
-    wpa.setSVUIDGenerated(!!!hasSVUID);
+    wpa.setSVUIDGenerated(!hasSVUID);
     super.visitEnd();
   }
 }

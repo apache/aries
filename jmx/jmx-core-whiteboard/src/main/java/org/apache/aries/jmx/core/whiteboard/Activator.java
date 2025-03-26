@@ -220,7 +220,7 @@ public class Activator implements BundleActivator, ServiceTrackerCustomizer
     synchronized (result) {
       ServiceRegistration reg = registerAnMbean(type, factory, objectName);
 
-      if (!!!result.compareAndSet(null, reg)) {
+      if (!result.compareAndSet(null, reg)) {
         reg.unregister();
       }
     }
