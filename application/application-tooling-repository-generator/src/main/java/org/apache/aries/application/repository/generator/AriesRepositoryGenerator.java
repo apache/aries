@@ -65,7 +65,7 @@ public class AriesRepositoryGenerator {
 
     Iterator<FrameworkFactory> factoryIterator = factoryLoader.iterator();
     //Map<String, String> osgiPropertyMap = new HashMap<String, String>();
-    if (!!!factoryIterator.hasNext()) {
+    if (!factoryIterator.hasNext()) {
       System.out.println( "Unable to locate the osgi jar");
     }
     
@@ -83,7 +83,7 @@ public class AriesRepositoryGenerator {
     File[] jars = bundleDir.listFiles();
     try {
       for (File jar : jars) {
-        if (jar.isFile() && (jar.getName().endsWith(".jar"))) {
+        if (jar.isFile() && jar.getName().endsWith(".jar")) {
           String location = URLDecoder.decode(jar.toURI().toURL().toExternalForm(), "UTF-8");
           if (shouldInstall(location, getIgnoreList())) {
             installedBundles.add(framework.getBundleContext().installBundle(
@@ -113,7 +113,7 @@ public class AriesRepositoryGenerator {
     for (Bundle bundle : installedBundles) {
       try {
         if (bundle.getHeaders().get(Constants.FRAGMENT_HOST) == null) {
-          //start the bundle using its activiation policy
+          //start the bundle using its activation policy
           bundle.start(Bundle.START_ACTIVATION_POLICY);
         } else {
           //nothing to start, we have got a fragment
@@ -198,7 +198,7 @@ public class AriesRepositoryGenerator {
            xmlFile = new File(args[0]);
           // get the directors
           File parentDir = xmlFile.getAbsoluteFile().getParentFile();
-          if (!!!parentDir.exists()) {
+          if (!parentDir.exists()) {
             parentDir.mkdirs();
           }
 
@@ -252,7 +252,7 @@ public class AriesRepositoryGenerator {
         break;
       }
     }
-    return !!!inIgnoreList;
+    return !inIgnoreList;
   }
 
   private List<String> getIgnoreList() {

@@ -31,6 +31,6 @@ public interface DeploymentContent extends Content {
    * this cannot be null
    * @return    the exact version
    */
-  public Version getExactVersion();
+  Version getExactVersion();
   
 }

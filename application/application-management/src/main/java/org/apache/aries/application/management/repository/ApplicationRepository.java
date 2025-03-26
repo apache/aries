@@ -53,7 +53,7 @@ public class ApplicationRepository implements BundleRepository
     BundleInfo bundleInfo = null;
     if ((app.getBundleInfo() != null) && (!app.getBundleInfo().isEmpty())) {
       for (BundleInfo bi : app.getBundleInfo()) {
-        if (bi.getSymbolicName().equals(content.getContentName()) && (bi.getVersion().equals(content.getVersion().getExactVersion()))) {
+        if (bi.getSymbolicName().equals(content.getContentName()) && bi.getVersion().equals(content.getVersion().getExactVersion())) {
           bundleInfo = bi;
           break;
         }

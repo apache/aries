@@ -425,8 +425,8 @@ public class AriesApplicationManagerImpl implements AriesApplicationManager {
   public AriesApplicationContext update(AriesApplication app, DeploymentMetadata depMf) throws UpdateException {
     if (!(app instanceof AriesApplicationImpl)) throw new IllegalArgumentException("Argument is not AriesApplication created by this manager");
     
-    if (!!!app.getApplicationMetadata().getApplicationSymbolicName().equals(depMf.getApplicationSymbolicName())
-        || !!!app.getApplicationMetadata().getApplicationVersion().equals(depMf.getApplicationVersion())) {
+    if (!app.getApplicationMetadata().getApplicationSymbolicName().equals(depMf.getApplicationSymbolicName())
+        || !app.getApplicationMetadata().getApplicationVersion().equals(depMf.getApplicationVersion())) {
       throw new IllegalArgumentException("The deployment metadata does not match the application.");
     }
     

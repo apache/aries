@@ -18,11 +18,10 @@
  */
 package org.apache.aries.application.modelling;
 
-public interface DeploymentMFElement
-{
+public interface DeploymentMFElement {
   /**
    *  @return String suitable for inclusion in DEPLOYMENT.MF
    */
-  public String toDeploymentString();
+  String toDeploymentString();
 
 }

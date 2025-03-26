@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.management;
 
 import org.apache.aries.util.VersionRange;
@@ -31,12 +30,12 @@ public interface ResolveConstraint {
    * The name of the newly required bundle
    * @return Bundle name
    */
-  public String getBundleName();
+  String getBundleName();
   
   /** 
    * The version range of the newly required bundle
    * @return allowed range
    */
-  public VersionRange getVersionRange();
+  VersionRange getVersionRange();
 
 }

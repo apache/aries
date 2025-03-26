@@ -22,8 +22,7 @@ package org.apache.aries.application.modelling;
  * Model an exported package.
  *
  */
-public interface ExportedPackage extends Provider, DeploymentMFElement
-{
+public interface ExportedPackage extends Provider, DeploymentMFElement {
 
   /**
    * The package name

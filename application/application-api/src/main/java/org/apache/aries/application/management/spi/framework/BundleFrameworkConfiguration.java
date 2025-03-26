@@ -16,16 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.management.spi.framework;
 
 import java.util.Properties;
 
 public interface BundleFrameworkConfiguration {
 
-	public String getFrameworkID();
+	String getFrameworkID();
 	
-	public Properties getFrameworkProperties();
+	Properties getFrameworkProperties();
 	
-	public Properties getFrameworkManifest();
+	Properties getFrameworkManifest();
 }

@@ -39,63 +39,63 @@ public interface UpdateStrategy {
   /**
    * Are the two deployments subject to update or do they require full reinstall
    */
-  public boolean allowsUpdate(DeploymentMetadata newMetadata, DeploymentMetadata oldMetadata);
+  boolean allowsUpdate(DeploymentMetadata newMetadata, DeploymentMetadata oldMetadata);
   
   /**
    * Update an application
    */
-  public void update(UpdateInfo paramUpdateInfo) throws UpdateException;
+  void update(UpdateInfo paramUpdateInfo) throws UpdateException;
 
   /**
    * Representation for an update request
    */
-  public static interface UpdateInfo
+  interface UpdateInfo
   {
     /**
      * Find {@link BundleSuggestion} objects for new bundle requests
      */
-    public Map<DeploymentContent, BundleRepository.BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles)
+    Map<DeploymentContent, BundleRepository.BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles)
       throws BundleException;
 
     /**
      * Register a new bundle with the application (i.e. a new bundle was installed)
      */
-    public void register(Bundle bundle);
+    void register(Bundle bundle);
 
     /**
      * Unregister a bundle from the application (i.e. the bundle was uninstalled)
      */
-    public void unregister(Bundle bundle);
+    void unregister(Bundle bundle);
 
     /**
      * Get a {@link BundleFramework} object for the shared framework
      */
-    public BundleFramework getSharedFramework();
+    BundleFramework getSharedFramework();
 
     /**
      * Get a {@link BundleFramework} object for the isolated framework corresponding 
      * to the application to be updated
      */
-    public BundleFramework getAppFramework();
+    BundleFramework getAppFramework();
 
     /**
      * Get the {@link DeploymentMetadata} that is currently active and to be phased out
      */
-    public DeploymentMetadata getOldMetadata();
+    DeploymentMetadata getOldMetadata();
 
     /**
      * Get the {@link DeploymentMetadata} that is to be activated
      */
-    public DeploymentMetadata getNewMetadata();
+    DeploymentMetadata getNewMetadata();
 
     /**
      * Get the {@link AriesApplication} object being updated
      */
-    public AriesApplication getApplication();
+    AriesApplication getApplication();
 
     /**
      * Whether to start any newly installed bundles
      */
-    public boolean startBundles();
+    boolean startBundles();
   }
 }

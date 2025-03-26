@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.resolver.obr.impl;
-
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
@@ -116,7 +114,7 @@ public class OBRCapability implements Capability
         {
           String name = entry.getKey();
           String type = null;
-          if (Constants.VERSION_ATTRIBUTE.equals(name) || (Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name))) {
+          if (Constants.VERSION_ATTRIBUTE.equals(name) || Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name)) {
             type =  "version";
           } else if (Constants.OBJECTCLASS.equals(name) || (Constants.MANDATORY_DIRECTIVE + ":").equals(name) ||
               entry.getValue() instanceof String[] || entry.getValue() instanceof Collection)

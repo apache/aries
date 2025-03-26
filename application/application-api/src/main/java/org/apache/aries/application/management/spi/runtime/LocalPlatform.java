@@ -33,12 +33,12 @@ public interface LocalPlatform {
    * @return Temporary directory
    * @throws IOException
    */
-  public File getTemporaryDirectory() throws IOException;
+  File getTemporaryDirectory() throws IOException;
 
   /**
    * Obtain a temporary file
    * @return Temporary directory
    * @throws IOException
    */
-  public File getTemporaryFile() throws IOException;
+  File getTemporaryFile() throws IOException;
 }

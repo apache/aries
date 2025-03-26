@@ -29,25 +29,25 @@ import org.osgi.framework.BundleException;
 
 public interface BundleFramework
 {  
-  public static final String SHARED_BUNDLE_FRAMEWORK = "shared.bundle.framework";
+  String SHARED_BUNDLE_FRAMEWORK = "shared.bundle.framework";
   
   /**
    * Initialises the framework (but does not start the framework bundle)
    * @throws BundleException
    */
-  public void init() throws BundleException;
+  void init() throws BundleException;
  
   /**
    * Starts the framework and the framework bundle
    * @throws BundleException
    */
-  public void start() throws BundleException;
+  void start() throws BundleException;
 
   /**
    * Closes the framework and any associated resource
    * @throws BundleException
    */
-  public void close() throws BundleException;
+  void close() throws BundleException;
   
   /**
    * Installs a bundle to this framework.
@@ -56,45 +56,45 @@ public interface BundleFramework
    * @return the bundle that was installed
    * @throws BundleException
    */
-  public Bundle install(BundleSuggestion suggestion, AriesApplication app) throws BundleException;
+  Bundle install(BundleSuggestion suggestion, AriesApplication app) throws BundleException;
   
   /**
    * Removes a bundle from this framework
    * @param b The bundle to remove
    * @throws BundleException
    */
-  public void uninstall(Bundle b) throws BundleException;
+  void uninstall(Bundle b) throws BundleException;
   
   /**
    * Start a previously installed bundle in this framework. 
    * @param b the bundle to start
    * @throws BundleException
    */
-  public void start(Bundle b) throws BundleException;
+  void start(Bundle b) throws BundleException;
 
   /**
    * Stop a previously installed bundle in this framework. 
    * @param b the bundle to stop
    * @throws BundleException
    */
-  public void stop(Bundle b) throws BundleException;
+  void stop(Bundle b) throws BundleException;
 
   /**
    * Returns the bundle context for the framework.
    * @return a bundle context representing the framework
    */
-  public BundleContext getIsolatedBundleContext();
+  BundleContext getIsolatedBundleContext();
 
   /**
    * Returns the OSGi bundle representing the framework
    * @return a bundle representing the framework
    */
-  public Bundle getFrameworkBundle();
+  Bundle getFrameworkBundle();
   
   /**
    * Returns a list of bundles currently installed in this framework
    * @return the bundles in the framework.
    */
-  public List<Bundle> getBundles();
+  List<Bundle> getBundles();
   
 }

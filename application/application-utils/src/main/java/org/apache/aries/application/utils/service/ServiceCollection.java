@@ -16,13 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.utils.service;
 
 import java.util.Collection;
 import org.osgi.framework.ServiceReference;
 
-public interface ServiceCollection<E> extends Collection<E>
-{
-  public void addService(ServiceReference ref);
+public interface ServiceCollection<E> extends Collection<E> {
+  void addService(ServiceReference ref);
 }

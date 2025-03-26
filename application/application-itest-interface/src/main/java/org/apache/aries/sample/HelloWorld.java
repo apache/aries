@@ -19,6 +19,5 @@
 package org.apache.aries.sample;
 
 public interface HelloWorld {
-
-  public String getMessage();
+    String getMessage();
 }

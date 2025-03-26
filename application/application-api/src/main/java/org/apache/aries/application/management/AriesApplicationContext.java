@@ -25,47 +25,45 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
 /**
- * Represents an Aries application in the runtime. See the application-runtime module for a 
- * sample implementation. 
+ * Represents an Aries application in the runtime. See the application-runtime module for a
+ * sample implementation.
  */
-public interface AriesApplicationContext
-{
-  /** 
-   * Get the state of a running application. An application is INSTALLED if all its bundles 
-   * are installed, RESOLVED if all its bundles are resolved, ACTIVE if all its bundles are 
-   * active, and so on. 
-   * @return ApplicationState. 
-   */
-  public ApplicationState getApplicationState();
-  
+public interface AriesApplicationContext {
   /**
-   * Obtain the associated AriesApplication metadata.  
+   * Get the state of a running application. An application is INSTALLED if all its bundles
+   * are installed, RESOLVED if all its bundles are resolved, ACTIVE if all its bundles are
+   * active, and so on.
+   * @return ApplicationState.
+   */
+  ApplicationState getApplicationState();
+
+  /**
+   * Obtain the associated AriesApplication metadata.
    * @return AriesApplication
    */
-  public AriesApplication getApplication();
-  
+  AriesApplication getApplication();
+
   /**
-   * Start the application by starting all its constituent bundles as per the DeploymentContent 
-   * in the associated AriesApplication's DeploymentMetadata. 
+   * Start the application by starting all its constituent bundles as per the DeploymentContent
+   * in the associated AriesApplication's DeploymentMetadata.
    * @throws BundleException
    */
-  public void start() throws BundleException, IllegalStateException;
-  
+  void start() throws BundleException, IllegalStateException;
+
   /**
-   * Stop the application by stopping all its constituent bundles. 
+   * Stop the application by stopping all its constituent bundles.
    * @throws BundleException
    */
-  public void stop() throws BundleException, IllegalStateException;
-  
+  void stop() throws BundleException, IllegalStateException;
+
   /**
    * Get the org.osgi.framework.Bundle objects representing the application's runtime
-   * constituents. 
-   * @return The application's runtime content. 
+   * constituents.
+   * @return The application's runtime content.
    */
-  public Set<Bundle> getApplicationContent();
-  
-  public enum ApplicationState
-  {
-  INSTALLED, RESOLVED, STARTING, STOPPING, ACTIVE, UNINSTALLED
+  Set<Bundle> getApplicationContent();
+
+  enum ApplicationState {
+    INSTALLED, RESOLVED, STARTING, STOPPING, ACTIVE, UNINSTALLED
   }
 }

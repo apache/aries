@@ -74,9 +74,9 @@ public class BundleBlueprintParser {
       boolean match = false;
       if (!directory.equals(dir)) { 
         match = false;
-      } else if (filename != null) { 
-        match = (filename.equals(fil));
-      } else { 
+      } else if (filename != null) {
+        match = filename.equals(fil);
+      } else {
         match = filenamePattern.matcher(fil).matches();
       }
       return match;

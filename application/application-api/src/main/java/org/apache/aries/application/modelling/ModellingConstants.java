@@ -20,15 +20,14 @@ package org.apache.aries.application.modelling;
 
 import org.osgi.framework.Constants;
 
-public class ModellingConstants
-{
-  public static final String OBR_SYMBOLIC_NAME = "symbolicname";
-  public static final String OBR_PRESENTATION_NAME = "presentationname";
-  public static final String OBR_MANIFEST_VERSION = "manifestversion";
-  public static final String OBR_BUNDLE = "bundle";
-  public static final String OBR_PACKAGE = "package";
-  public static final String OBR_SERVICE = "service";
-  public static final String OBR_COMPOSITE_BUNDLE = "composite-bundle";
-  public static final String OBR_UNKNOWN = "unknown";
-  public static final String OPTIONAL_KEY = Constants.RESOLUTION_DIRECTIVE + ":";
+public class ModellingConstants {
+    public static final String OBR_SYMBOLIC_NAME = "symbolicname";
+    public static final String OBR_PRESENTATION_NAME = "presentationname";
+    public static final String OBR_MANIFEST_VERSION = "manifestversion";
+    public static final String OBR_BUNDLE = "bundle";
+    public static final String OBR_PACKAGE = "package";
+    public static final String OBR_SERVICE = "service";
+    public static final String OBR_COMPOSITE_BUNDLE = "composite-bundle";
+    public static final String OBR_UNKNOWN = "unknown";
+    public static final String OPTIONAL_KEY = Constants.RESOLUTION_DIRECTIVE + ":";
 }

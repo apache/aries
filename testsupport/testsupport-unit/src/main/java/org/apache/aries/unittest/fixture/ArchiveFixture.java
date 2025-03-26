@@ -419,7 +419,7 @@ public class ArchiveFixture
       String dirName = "";
       for (int i=0;i<parts.length-1;i++) {
         dirName += parts[i] + "/";
-        if (!!!existingDirs.contains(dirName)) {
+        if (!existingDirs.contains(dirName)) {
           ZipEntry ze = new ZipEntry(dirName);
           zout.putNextEntry(ze);
           zout.closeEntry();

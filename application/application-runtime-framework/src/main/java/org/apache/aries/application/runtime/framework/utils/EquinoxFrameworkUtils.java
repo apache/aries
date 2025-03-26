@@ -202,9 +202,9 @@ public class EquinoxFrameworkUtils
           Version maxV = vri.getMaximumVersion();
           if (minV.compareTo(new Version(ve)) < 0 && maxV.compareTo(new Version(ve)) > 0) {
             value = true;
-          } else if (minV.compareTo(new Version(ve)) == 0 && !!!vri.isMinimumExclusive()) {
+          } else if (minV.compareTo(new Version(ve)) == 0 && !vri.isMinimumExclusive()) {
             value = true;
-          } else if (maxV.compareTo(new Version(ve)) == 0 && !!!vri.isMaximumExclusive()) {
+          } else if (maxV.compareTo(new Version(ve)) == 0 && !vri.isMaximumExclusive()) {
             value = true;
           }
         }

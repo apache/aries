@@ -345,7 +345,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
         }
   
         int buffLen = buff.length();
-        String pkgString = (buffLen > 0 ? buff.substring(0, buffLen - 2) : "");
+        String pkgString = buffLen > 0 ? buff.substring(0, buffLen - 2) : "";
   
         ResolverException re = new ResolverException(MessageUtil.getMessage(
             "INCOMPATIBLE_PACKAGE_VERSION_REQUIREMENTS", new Object[] { assetName, pkgString }));
@@ -430,7 +430,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
     }
     
     int length = builder.length();
-    String result = (length > 0 ? builder.substring(0, length - 1) : "");
+    String result = length > 0 ? builder.substring(0, length - 1) : "";
     logger.debug(LOG_EXIT, "createManifestString", new Object[]{result});
     return result;
   }

@@ -23,8 +23,7 @@ import java.io.InputStream;
 
 import org.apache.aries.util.filesystem.IDirectory;
 
-public interface ModelledResourceManager
-{
+public interface ModelledResourceManager {
   /**
    * Utility interface for re-presenting a source of InputStreams
    */

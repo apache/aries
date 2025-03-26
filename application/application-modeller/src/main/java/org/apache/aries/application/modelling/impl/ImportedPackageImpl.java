@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.aries.application.InvalidAttributeException;
-import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.Provider;
 import org.apache.aries.application.modelling.ResourceType;
@@ -70,7 +69,7 @@ public class ImportedPackageImpl implements ImportedPackage
     _package = pkg;
     String versionRange = null;
     if (attributes != null) {
-      _optional = (Constants.RESOLUTION_OPTIONAL.equals(attributes.get(OPTIONAL_KEY)));
+      _optional = Constants.RESOLUTION_OPTIONAL.equals(attributes.get(OPTIONAL_KEY));
       versionRange = attributes.get(Constants.VERSION_ATTRIBUTE);
       _attributes = new HashMap<String, String>(attributes);
     } else { 

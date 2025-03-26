@@ -101,7 +101,7 @@ public class AriesApplicationManagerImplTest {
       StringBuilder deployedContents = new StringBuilder();
       boolean beginning= true;
       for (BundleInfo bundle: byValueBundles) {
-        if (!!!beginning) {
+        if (!beginning) {
           deployedContents.append(",");
         }
         deployedContents.append(bundle.getSymbolicName()+";" + AppConstants.DEPLOYMENT_BUNDLE_VERSION + "=" +  bundle.getVersion());

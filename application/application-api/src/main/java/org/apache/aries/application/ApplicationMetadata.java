@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application; 
+package org.apache.aries.application;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,71 +27,70 @@ import java.util.List;
 import org.osgi.framework.Version;
 
 /**
- * A representation of an APPLICATION.MF file. 
+ * A representation of an APPLICATION.MF file.
  *
  */
-public interface ApplicationMetadata
-{
+public interface ApplicationMetadata {
   /**
    * get the value of the Application-SymbolicName header
    * @return the value of the Application-SymbolicName header
    */
-  public String getApplicationSymbolicName();
-  
+  String getApplicationSymbolicName();
+
   /**
    * get the value of the Application-Version header
    * @return the value of the Application-Version header
    */
-  public Version getApplicationVersion();
-  
+  Version getApplicationVersion();
+
   /**
    * get the name of the application
    * @return the name of the application
    */
-  public String getApplicationName();
+  String getApplicationName();
   /**
-   * get the list of Application contents includes bundle name, 
+   * get the list of Application contents includes bundle name,
    * version, directives and attributes
-   * @return the list of the Application contents 
+   * @return the list of the Application contents
    */
-  public List<Content> getApplicationContents();
-  
+  List<Content> getApplicationContents();
+
   /**
    * get the value of the Export-Service header
    * @return the list of ServiceDeclaration
    */
-  public List<ServiceDeclaration> getApplicationExportServices();
-  
+  List<ServiceDeclaration> getApplicationExportServices();
+
   /**
    * get the value of the Import-Service header
    * @return the list of ServiceDeclaration
    */
-  public List<ServiceDeclaration> getApplicationImportServices();  
-  
+  List<ServiceDeclaration> getApplicationImportServices();
+
   /**
-   * get the value of the Application-Scope, which is 
+   * get the value of the Application-Scope, which is
    * calculated from Application-SymbolicName and Application-Version
    * @return    the value of the AppScope
    */
-  public String getApplicationScope();
-  
+  String getApplicationScope();
+
   /**
    * get the list of use-bundle content including bundle symbolic name and version range
    * @return the collection of use bundles.
    */
-  public Collection<Content> getUseBundles();
-  
-  /** 
-   * Persist this metadata. 
+  Collection<Content> getUseBundles();
+
+  /**
+   * Persist this metadata.
    * @param f The file to store this metadata to
    * @throws IOException
    */
-  public void store(File f) throws IOException;
-  
-  /** 
-   * Persist this metadata. 
+  void store(File f) throws IOException;
+
+  /**
+   * Persist this metadata.
    * @param out The output stream to store this metadata to
    * @throws IOException
    */
-  public void store(OutputStream out) throws IOException;
+  void store(OutputStream out) throws IOException;
 }

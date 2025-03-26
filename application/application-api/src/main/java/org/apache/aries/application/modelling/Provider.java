@@ -25,8 +25,7 @@ import java.util.Map;
 
 /** Base interface to model a bundle, package or service
  */
-public interface Provider
-{
+public interface Provider {
   /**
    * Get resource type.
    * @return The resource type.

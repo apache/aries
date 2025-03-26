@@ -74,8 +74,7 @@ import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeploymentManifestManagerImpl implements DeploymentManifestManager
-{
+public class DeploymentManifestManagerImpl implements DeploymentManifestManager {
 
   private final Logger _logger = LoggerFactory.getLogger(DeploymentManifestManagerImpl.class);
   private AriesApplicationResolver resolver;
@@ -300,7 +299,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
       for (ModelledResource mr : resolvedSharedBundles) {
         String mrName = mr.getSymbolicName() + "_" + mr.getExportedBundle().getVersion();
         // if current resource isn't an isolated bundle check it's requirements
-        if (!!! suspects.contains(mrName)) {
+        if (! suspects.contains(mrName)) {
           // Iterate through the imported packages of the current shared bundle.
           for (ImportedPackage ip : mr.getImportedPackages()) {
             String packageName = ip.getPackageName();
@@ -316,7 +315,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
             }
             // If we have found at least one matching entry, we construct the sub message for the
             // exception.
-            if (!!! bundlesExportingPackage.isEmpty()) {
+            if (! bundlesExportingPackage.isEmpty()) {
               String newMsg;
               if (bundlesExportingPackage.size() > 1) {
                 newMsg = MessageUtil.getMessage("SHARED_BUNDLE_IMPORTING_FROM_ISOLATED_BUNDLES", 
@@ -341,7 +340,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
         ResolverException rx = new ResolverException (message);
         rx.setUnsatisfiedRequirements(unsatisfiedRequirements);
         _logger.debug(LOG_EXIT, "generateDeploymentManifest", new Object[] {rx});
-        throw (rx);
+        throw rx;
       }
     }
     
@@ -538,7 +537,7 @@ public class DeploymentManifestManagerImpl implements DeploymentManifestManager
     for (ModelledResource mr : resolvedSharedBundles) {
       String thisBundle = mr.getExportedBundle().getSymbolicName() + "_" + 
       mr.getExportedBundle().getVersion();
-      if (!expectedBundles.contains(thisBundle) && (isolatedBundles.contains(thisBundle))) { 
+      if (!expectedBundles.contains(thisBundle) && isolatedBundles.contains(thisBundle)) {
         suspects.add(thisBundle);   
       }
     }

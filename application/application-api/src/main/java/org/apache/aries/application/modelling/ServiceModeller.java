@@ -30,7 +30,6 @@ public interface ServiceModeller {
    * @param bundle
    * @return
    */
-  public ParsedServiceElements modelServices(BundleManifest manifest, IDirectory bundle)
-    throws ModellerException;
+  ParsedServiceElements modelServices(BundleManifest manifest, IDirectory bundle) throws ModellerException;
   
 }

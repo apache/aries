@@ -25,7 +25,6 @@ import java.util.jar.Manifest;
 import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.util.manifest.ManifestProcessor;
-import org.osgi.framework.Version;
 
 public class ApplicationMetadataFactoryImpl implements ApplicationMetadataFactory
 {  

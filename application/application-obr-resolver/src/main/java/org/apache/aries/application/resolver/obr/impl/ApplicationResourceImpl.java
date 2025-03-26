@@ -67,7 +67,7 @@ public class ApplicationResourceImpl implements Resource
       return delgate.matchCase(dictionary);
     }
 
-    public boolean matches(Map<java.lang.String,?> map) {
+    public boolean matches(Map<String,?> map) {
         return delgate.matches(map);
     }
     
@@ -86,13 +86,13 @@ public class ApplicationResourceImpl implements Resource
     for (int i = 0; i < appContent.size(); i++) {
       Content c = appContent.get(i);
       
-      String comment = "Requires " + Resource.SYMBOLIC_NAME + " " + c.getContentName() + " with attributes " + c.getAttributes();
+      String comment = "Requires " + SYMBOLIC_NAME + " " + c.getContentName() + " with attributes " + c.getAttributes();
       
       String resolution = c.getDirective("resolution");
 
       boolean optional = Boolean.valueOf(resolution);
       
-      String f = ManifestHeaderProcessor.generateFilter(Resource.SYMBOLIC_NAME, c.getContentName(), c.getAttributes());
+      String f = ManifestHeaderProcessor.generateFilter(SYMBOLIC_NAME, c.getContentName(), c.getAttributes());
       Filter filter;
       try {
         filter = FrameworkUtil.createFilter(f);

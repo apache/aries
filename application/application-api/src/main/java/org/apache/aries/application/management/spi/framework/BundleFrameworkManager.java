@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.management.spi.framework;
 
 import java.util.Collection;
@@ -45,14 +44,14 @@ public interface BundleFrameworkManager
    * @param frameworkBundle - The bundle representing the bundle framework
    * @return the bundle framework
    */
-  public BundleFramework getBundleFramework(Bundle frameworkBundle);
+  BundleFramework getBundleFramework(Bundle frameworkBundle);
   
   /**
    * Gets a reference to the single shared bundle framework. The Shared Bundle 
    * Framework contains bundle shared between applications
    * @return the shared bundle framework
    */
-  public BundleFramework getSharedBundleFramework();
+  BundleFramework getSharedBundleFramework();
   
   /**
    * Creates a new framework inside the shared bundle framework and installs a 
@@ -62,7 +61,7 @@ public interface BundleFrameworkManager
    * @return the bundle of the framework
    * @throws BundleException
    */
-  public Bundle installIsolatedBundles(
+  Bundle installIsolatedBundles(
       Collection<BundleSuggestion> bundlesToInstall, 
       AriesApplication app)
     throws BundleException;
@@ -74,18 +73,18 @@ public interface BundleFrameworkManager
    * @return the collection of installed bundles.
    * @throws BundleException
    */
-  public Collection<Bundle> installSharedBundles(
+  Collection<Bundle> installSharedBundles(
       Collection<BundleSuggestion> bundlesToInstall, 
       AriesApplication app)
     throws BundleException;
   
-  public boolean allowsUpdate(DeploymentMetadata newMetadata, DeploymentMetadata oldMetadata);
+  boolean allowsUpdate(DeploymentMetadata newMetadata, DeploymentMetadata oldMetadata);
   
-  public interface BundleLocator {
-    public Map<DeploymentContent, BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles) throws BundleException;    
+  interface BundleLocator {
+    Map<DeploymentContent, BundleSuggestion> suggestBundle(Collection<DeploymentContent> bundles) throws BundleException;
   }
   
-  public void updateBundles(
+  void updateBundles(
       DeploymentMetadata newMetadata, 
       DeploymentMetadata oldMetadata, 
       AriesApplication app, 
@@ -98,20 +97,20 @@ public interface BundleFrameworkManager
    * @param b
    * @throws BundleException
    */
-  public void startBundle(Bundle b) throws BundleException;
+  void startBundle(Bundle b) throws BundleException;
   
   /**
    * Stops a previously installed bundle   
    * @param b
    * @throws BundleException
    */
-  public void stopBundle(Bundle b) throws BundleException;
+  void stopBundle(Bundle b) throws BundleException;
   
   /**
    * Removes a bundle from the runtime
    * @param b
    * @throws BundleException
    */
-  public void uninstallBundle(Bundle b) throws BundleException;
+  void uninstallBundle(Bundle b) throws BundleException;
   
 }

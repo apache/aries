@@ -153,7 +153,7 @@ public class BundleFrameworkImpl implements BundleFramework
           
           // step 3
           try {
-            if (!!!waitForStartLevelChangedEventToOccur.tryAcquire(60, TimeUnit.SECONDS)) {
+            if (!waitForStartLevelChangedEventToOccur.tryAcquire(60, TimeUnit.SECONDS)) {
               LOGGER.debug("Starting CBA child bundles took longer than 60 seconds");
             }
           } catch (InterruptedException e) {

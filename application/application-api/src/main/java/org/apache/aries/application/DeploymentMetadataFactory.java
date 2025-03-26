@@ -43,7 +43,7 @@ public interface DeploymentMetadataFactory {
    * @return DeploymentMetadata instance
    */
   @Deprecated
-  public DeploymentMetadata createDeploymentMetadata (AriesApplication app, Set<BundleInfo> bundleInfo)
+   DeploymentMetadata createDeploymentMetadata (AriesApplication app, Set<BundleInfo> bundleInfo)
     throws ResolverException;
   
   /**
@@ -54,7 +54,7 @@ public interface DeploymentMetadataFactory {
    * @return DeploymentMetadata instance
    */
   @Deprecated
-  public DeploymentMetadata createDeploymentMetadata (IFile src) throws IOException;
+   DeploymentMetadata createDeploymentMetadata (IFile src) throws IOException;
 
   
   /**
@@ -64,7 +64,7 @@ public interface DeploymentMetadataFactory {
    * @throws IOException
    * @return DeploymentMetadata instance
    */
-  public DeploymentMetadata parseDeploymentMetadata (IFile src) throws IOException;
+   DeploymentMetadata parseDeploymentMetadata (IFile src) throws IOException;
   
   /**
    * Deprecated. Use parseDeploymentMetadata.
@@ -74,7 +74,7 @@ public interface DeploymentMetadataFactory {
    * @return DeploymentMetadata instance
    */
   @Deprecated
-  public DeploymentMetadata createDeploymentMetadata (InputStream in) throws IOException;
+   DeploymentMetadata createDeploymentMetadata (InputStream in) throws IOException;
 
   /**
    * Extract a DeploymentMetadata instance from InputStream.
@@ -83,7 +83,7 @@ public interface DeploymentMetadataFactory {
    * @throws IOException
    * @return DeploymentMetadata instance
    */
-  public DeploymentMetadata parseDeploymentMetadata (InputStream in) throws IOException;
+   DeploymentMetadata parseDeploymentMetadata (InputStream in) throws IOException;
   
   /**
    * Extract a DeploymentMetadata instance from Manifest.
@@ -92,6 +92,6 @@ public interface DeploymentMetadataFactory {
    * @throws IOException
    * @return DeploymentMetadata instance
    */
-  public DeploymentMetadata createDeploymentMetadata (Manifest manifest) throws IOException;
+   DeploymentMetadata createDeploymentMetadata (Manifest manifest) throws IOException;
 
 }

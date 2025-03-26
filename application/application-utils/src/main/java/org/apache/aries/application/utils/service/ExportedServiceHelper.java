@@ -1,8 +1,5 @@
 package org.apache.aries.application.utils.service;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;

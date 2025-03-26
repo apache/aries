@@ -22,8 +22,7 @@ package org.apache.aries.application.modelling;
  * Model a required bundle.
  * 
  */
-public interface ImportedBundle extends Consumer
-{
+public interface ImportedBundle extends Consumer {
 
   /**
    * The imported bundle symbolic name

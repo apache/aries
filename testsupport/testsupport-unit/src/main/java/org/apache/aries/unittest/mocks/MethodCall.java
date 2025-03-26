@@ -369,7 +369,7 @@ public final class MethodCall
           
           if (result == 0) continue;
           else if (result == 1) return false;
-          else if (!!!this._arguments[i].equals(other._arguments[i])) return false;
+          else if (!this._arguments[i].equals(other._arguments[i])) return false;
         }
       }
     }
@@ -405,7 +405,7 @@ public final class MethodCall
           ((AtomicInteger)arr1[k]).intValue() == ((AtomicInteger)arr2[k]).intValue()) 
         continue;
 
-      if (!!!arr1[k].equals(arr2[k])) return false;
+      if (!arr1[k].equals(arr2[k])) return false;
 
     }
     

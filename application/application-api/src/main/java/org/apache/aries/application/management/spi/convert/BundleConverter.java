@@ -36,6 +36,6 @@ public interface BundleConverter {
    * @return valid input stream or null if this converter does not support conversion of
    *         this artifact type.  
    */
-  public BundleConversion convert (IDirectory parentEba, IFile fileInEba) throws ConversionException;
+  BundleConversion convert (IDirectory parentEba, IFile fileInEba) throws ConversionException;
 
 }

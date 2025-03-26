@@ -503,7 +503,7 @@ public class OBRResolverAdvancedTest extends AbstractIntegrationTest {
             File bundleFile = new File(fileName);
             IDirectory jarDir = FileSystem.getFSRoot(bundleFile);
             String uri = "";
-            if (!!!nullURI) {
+            if (!nullURI) {
                 uri = bundleFile.toURI().toString();
             }
             if ("delete.jar".equals(fileName)) {

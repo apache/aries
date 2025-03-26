@@ -36,14 +36,14 @@ public interface ParserProxy {
    * @param blueprintsToParse URLs to blueprint xml files
    * @return List of (wrapped) ServiceMetadata objects
    */
-  public List<? extends WrappedServiceMetadata> parse (List<URL> blueprintsToParse) throws Exception;
+  List<? extends WrappedServiceMetadata> parse (List<URL> blueprintsToParse) throws Exception;
   
   /**
    * Parse a blueprint xml files and extract the parsed ServiceMetadata objects
    * @param blueprintToParse URL to blueprint xml file
    * @return List of (wrapped) ServiceMetadata objects
    */
-  public List<? extends WrappedServiceMetadata> parse (URL blueprintToParse) throws Exception;
+  List<? extends WrappedServiceMetadata> parse (URL blueprintToParse) throws Exception;
   
   /**
    * Parse an InputStream containing blueprint xml and extract the parsed ServiceMetadata objects
@@ -51,13 +51,13 @@ public interface ParserProxy {
    * for closing the stream afterwards. 
    * @return List of (wrapped) ServiceMetadata objects
    */
-  public List<? extends WrappedServiceMetadata> parse (InputStream blueprintToParse) throws Exception;
+  List<? extends WrappedServiceMetadata> parse (InputStream blueprintToParse) throws Exception;
   
   /**
    * Parse an InputStream containing blueprint xml and extract Service, Reference and RefList
    * elements.
    * @return All parsed Service, Reference and RefList elements 
    */
-  public ParsedServiceElements parseAllServiceElements (InputStream blueprintToParse) throws Exception;
+  ParsedServiceElements parseAllServiceElements (InputStream blueprintToParse) throws Exception;
   
 }

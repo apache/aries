@@ -43,24 +43,24 @@ public interface AriesApplicationContextManager {
    * @throws BundleException 
    * @throws ManagementException 
    */
-  public AriesApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException;
+  AriesApplicationContext getApplicationContext(AriesApplication app) throws BundleException, ManagementException;
 
   /**
    * @return The set of all AriesApplicationContexts.
    */
-  public Set<AriesApplicationContext> getApplicationContexts();
+  Set<AriesApplicationContext> getApplicationContexts();
 
   /**
    * Update the AriesApplication and return an updated application context.
    * @throws UpdateException if the update failed
    * @throws IllegalArgumentException if the app is not currently installed
    */
-  public AriesApplicationContext update(AriesApplication app, DeploymentMetadata oldMetadata) throws UpdateException;
+  AriesApplicationContext update(AriesApplication app, DeploymentMetadata oldMetadata) throws UpdateException;
   
   /**
    * Remove the provided AriesApplicationContext from the running system.
    * 
    * @param app the application to remove.
    */
-  public void remove(AriesApplicationContext app) throws BundleException;
+  void remove(AriesApplicationContext app) throws BundleException;
 }

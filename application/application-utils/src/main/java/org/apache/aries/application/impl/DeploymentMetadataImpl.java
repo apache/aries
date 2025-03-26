@@ -155,10 +155,10 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     
     Collection<String> customKeys = new HashSet<String>();
     Collection<Attributes.Name> standardKeys = getDeploymentStandardHeaders();
-    if ((attrs != null) && (!!!attrs.isEmpty())) {
+    if ((attrs != null) && (!attrs.isEmpty())) {
      Set<Object> keys = attrs.keySet();
      
-     if ((keys != null) && (!!!keys.isEmpty())) {
+     if ((keys != null) && (!keys.isEmpty())) {
        for (Object eachKey : keys) {
          String key = eachKey.toString();
          customKeys.add(key);
@@ -175,7 +175,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     StringBuilder builder = new StringBuilder();
     boolean beginning = true;
     for (Content c : contents) {
-      if (!!!beginning) {
+      if (!beginning) {
         builder.append(",");
       }
       builder.append(c);
@@ -231,11 +231,11 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
     if ((_deploymentImportPackage != null) && (!_deploymentImportPackage.isEmpty())) {
       attributes.putValue(AppConstants.DEPLOYMENT_IMPORT_PACKAGES, getContentsAsString(_deploymentImportPackage));
     }
-    if ((_deployedImportService != null) && (!!!_deployedImportService.isEmpty())) {
+    if ((_deployedImportService != null) && (!_deployedImportService.isEmpty())) {
       attributes.putValue(AppConstants.DEPLOYMENTSERVICE_IMPORT, convertFiltersToString(_deployedImportService, ",") );
     }
     // let's write out the custom headers
-    if ((_deploymentCustomEntries != null) && (_deploymentCustomEntries.isEmpty())) {
+    if (_deploymentCustomEntries != null && _deploymentCustomEntries.isEmpty()) {
       for (Map.Entry<String, String> customEntry : _deploymentCustomEntries.entrySet()) {
         attributes.putValue(customEntry.getKey(), customEntry.getValue());
       }
@@ -311,7 +311,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
   private Map<String, String> getCustomEntries(Attributes attrs) {
     Map<String, String> customEntry = new HashMap<String, String> ();
     Collection<String> customHeaders = getCustomHeaders(attrs);
-    if ((customHeaders != null) && (customHeaders.isEmpty())) {
+    if (customHeaders != null && customHeaders.isEmpty()) {
       for (String customHeader : customHeaders)
         customEntry.put(customHeader, attrs.getValue(customHeader));
       
@@ -323,7 +323,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
    private Collection<Filter> getFilters(String filterString) throws InvalidAttributeException{
      Collection<Filter> filters = new ArrayList<Filter>();
      List<String> fs = ManifestProcessor.split(filterString, ",");
-     if ((fs != null) && (!!!fs.isEmpty())) {
+     if ((fs != null) && (!fs.isEmpty())) {
        for (String filter : fs) {
          try {
          filters.add(FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(filter)));
@@ -338,7 +338,7 @@ public class DeploymentMetadataImpl implements DeploymentMetadata {
   
    private  String convertFiltersToString(Collection<Filter> contents, String separator) {
      StringBuilder newContent = new StringBuilder();
-     if ((contents != null) && (!!!contents.isEmpty())) {
+     if ((contents != null) && (!contents.isEmpty())) {
        boolean beginning = true;
        for (Filter content: contents) {
          if (beginning)

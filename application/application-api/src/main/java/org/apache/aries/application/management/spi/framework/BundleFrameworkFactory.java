@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.management.spi.framework;
 
 import org.osgi.framework.BundleContext;
@@ -31,6 +30,6 @@ public interface BundleFrameworkFactory
    * @return the bundle framework
    * @throws BundleException
    */
-  public BundleFramework createBundleFramework(BundleContext bc, BundleFrameworkConfiguration config)
+  BundleFramework createBundleFramework(BundleContext bc, BundleFrameworkConfiguration config)
       throws BundleException;
 }

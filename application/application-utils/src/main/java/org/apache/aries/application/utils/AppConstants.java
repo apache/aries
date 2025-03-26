@@ -18,73 +18,71 @@
  */
 package org.apache.aries.application.utils;
 
-
 /**
  * Widely used constants in parsing Aries applications
  */
-public interface AppConstants
-{
+public interface AppConstants {
   /** Trace group for this bundle */
-  public String TRACE_GROUP = "Aries.app.utils";
+  String TRACE_GROUP = "Aries.app.utils";
 
 
   /** The Manifest version */
-  public static final String APPLICATION_MANIFEST_VERSION="Manifest-Version";
+  String APPLICATION_MANIFEST_VERSION="Manifest-Version";
   
   /** The application scope (used to find the applications bundle repository */
-  public static final String APPLICATION_SCOPE = "Application-Scope";
+  String APPLICATION_SCOPE = "Application-Scope";
   /** The application content directive for the application manifest */
-  public static final String APPLICATION_CONTENT = "Application-Content";
+  String APPLICATION_CONTENT = "Application-Content";
   /** The application version directive for the application manifest */
-  public static final String APPLICATION_VERSION = "Application-Version";
+  String APPLICATION_VERSION = "Application-Version";
   /** The application name directive for the application manifest */
-  public static final String APPLICATION_NAME = "Application-Name";
+  String APPLICATION_NAME = "Application-Name";
   /** The application symbolic name directive for the application manifest */
-  public static final String APPLICATION_SYMBOLIC_NAME = "Application-SymbolicName";
+  String APPLICATION_SYMBOLIC_NAME = "Application-SymbolicName";
   /** The default version for applications that do not have one */
-  public static final String DEFAULT_VERSION = "0.0.0";
+  String DEFAULT_VERSION = "0.0.0";
   /** The name of the application manifest in the application */
-  public static final String APPLICATION_MF = "META-INF/APPLICATION.MF";
+  String APPLICATION_MF = "META-INF/APPLICATION.MF";
   /** The name of the deployment manifest in the application */
-  public static final String DEPLOYMENT_MF = "META-INF/DEPLOYMENT.MF";
+  String DEPLOYMENT_MF = "META-INF/DEPLOYMENT.MF";
   /** The name of the META-INF directory   */
-  public static final String META_INF = "META-INF";
+  String META_INF = "META-INF";
   /** The name of an application.xml file which will be used in processing legacy .war files */
-  public static final String APPLICATION_XML = "META-INF/application.xml";
+  String APPLICATION_XML = "META-INF/application.xml";
   /** The expected lower case suffix of a jar file */
-  public static final String LOWER_CASE_JAR_SUFFIX = ".jar";
+  String LOWER_CASE_JAR_SUFFIX = ".jar";
   /** The expected lower case suffix of a war file */
-  public static final String LOWER_CASE_WAR_SUFFIX = ".war";
+  String LOWER_CASE_WAR_SUFFIX = ".war";
   /** The attribute used to record the deployed version of a bundle */
-  public static final String DEPLOYMENT_BUNDLE_VERSION = "deployed-version";
+  String DEPLOYMENT_BUNDLE_VERSION = "deployed-version";
   /** The name of the bundle manifest */
-  public static final String MANIFEST_MF = "META-INF/MANIFEST.MF";
+  String MANIFEST_MF = "META-INF/MANIFEST.MF";
   
-  public static final String MANIFEST_VERSION="1.0";
+  String MANIFEST_VERSION="1.0";
   /** The application import service directive for the application manifest */
-  public static final String APPLICATION_IMPORT_SERVICE = "Application-ImportService";
+  String APPLICATION_IMPORT_SERVICE = "Application-ImportService";
   /** The application export service directive for the application manifest */
-  public static final String APPLICATION_EXPORT_SERVICE = "Application-ExportService"; 
+  String APPLICATION_EXPORT_SERVICE = "Application-ExportService";
   /** The use-bundle entry for the application manifest. */
-  public static final String APPLICATION_USE_BUNDLE = "Use-Bundle";
+  String APPLICATION_USE_BUNDLE = "Use-Bundle";
   /* The Deployed-Content header in DEPLOYMENT.MF records all the bundles
    * to be deployed for a particular application. 
    */
-  public static final String DEPLOYMENT_CONTENT = "Deployed-Content";
+  String DEPLOYMENT_CONTENT = "Deployed-Content";
   /** deployment.mf entry corresponding to application.mf Use-Bundle. */
-  public static final String DEPLOYMENT_USE_BUNDLE = "Deployed-Use-Bundle";
+  String DEPLOYMENT_USE_BUNDLE = "Deployed-Use-Bundle";
   /** deployment.mf entry 'Import-Package' */
-  public static final String DEPLOYMENT_IMPORT_PACKAGES="Import-Package";
+  String DEPLOYMENT_IMPORT_PACKAGES="Import-Package";
   /** Bundle dependencies required by bundles listed in Deployed-Content or Deployed-Use-Bundle. */
-  public static final String DEPLOYMENT_PROVISION_BUNDLE = "Provision-Bundle";  
+  String DEPLOYMENT_PROVISION_BUNDLE = "Provision-Bundle";
   /** Blueprint managed services imported by the isolated bundles */ 
-  public static final String DEPLOYMENTSERVICE_IMPORT = "DeployedService-Import";
+  String DEPLOYMENTSERVICE_IMPORT = "DeployedService-Import";
   
-  public static final String PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP="provision.exclude.local.repository";
+  String PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP="provision.exclude.local.repository";
   /**
    * Logging insert strings
    */
-  public final static String LOG_ENTRY = "Method entry: {}, args {}";
-  public final static String LOG_EXIT = "Method exit: {}, returning {}";
-  public final static String LOG_EXCEPTION = "Caught exception";
+  String LOG_ENTRY = "Method entry: {}, args {}";
+  String LOG_EXIT = "Method exit: {}, returning {}";
+  String LOG_EXCEPTION = "Caught exception";
 }

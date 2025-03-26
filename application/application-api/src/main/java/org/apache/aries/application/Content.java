@@ -27,49 +27,48 @@ import org.apache.aries.util.VersionRange;
  * A representation of content metadata such as Application-Content, Import-Package, etc
  *
  */
-public interface Content
-{
+public interface Content {
   /**
    * get the content name of the content
    * @return    the content name of the content
    */
-  public String getContentName();
+  String getContentName();
   
   /**
    * get the attributes of the content
    * @return    the attributes of the content
    */
-  public Map<String, String> getAttributes();
+  Map<String, String> getAttributes();
   
   /**
    * get the directives of the content
    * @return the directives of the content
    */
-  public Map<String, String> getDirectives();
+  Map<String, String> getDirectives();
   
   /**
    * get the value of the attribute with the specified key
    * @param key  
    * @return   value of the attribute specified by the key
    */
-  public String getAttribute(String key);
+  String getAttribute(String key);
   
   /**
    * get the value of the directive with the specified key
    * @param key
    * @return    the value of the directive specified by the key
    */
-  public String getDirective(String key);
+  String getDirective(String key);
   
   /**
    * get the version info for the version attribute
    * @return null if there is no version associated with this content
    */
-  public VersionRange getVersion();
+  VersionRange getVersion();
   
   /**
    * get the attribute and directive info in NameValueMap
    * @return namevalueMap that contains attribute and directive info
    */
-  public Map<String, String> getNameValueMap();
+  Map<String, String> getNameValueMap();
 }

@@ -59,8 +59,8 @@ public class ImportedServiceImpl implements ImportedService
   private final Map<String, String> _attributes;
   private String _toString;
   private String _attribFilterString;   // The manner in which we set means it can't be final
-  private final static Pattern SERVICE_EQUALS_SERVICE = Pattern.compile("\\(" + ResourceType.SERVICE.toString()
-      + "=" + ResourceType.SERVICE.toString() + "\\)");
+  private final static Pattern SERVICE_EQUALS_SERVICE = Pattern.compile("\\(" + SERVICE
+      + "=" + SERVICE + "\\)");
   private final Logger logger = LoggerFactory.getLogger(ImportedServiceImpl.class);
   /**
    * Build an ImportedServiceImpl from its elements
@@ -140,7 +140,7 @@ public class ImportedServiceImpl implements ImportedService
   @Deprecated
   public ImportedServiceImpl (String ifaceName, Map<String, String> attributes) throws InvalidAttributeException {
     
-    _optional = ("optional".equals(attributes.get("availability:")));
+    _optional = "optional".equals(attributes.get("availability:"));
     _iface = ifaceName;
     _isMultiple = false;
     _componentName = null;
@@ -164,8 +164,8 @@ public class ImportedServiceImpl implements ImportedService
 
   public ResourceType getType() {
     logger.debug(LOG_ENTRY, "getType");
-    logger.debug(LOG_EXIT, "getType",  ResourceType.SERVICE);
-    return ResourceType.SERVICE;
+    logger.debug(LOG_EXIT, "getType",  SERVICE);
+    return SERVICE;
   }
 
 
