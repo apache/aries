@@ -614,6 +614,9 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>${maven-pmd-plugin.version}</version>
                 <configuration>
+                    <failOnViolation>false</failOnViolation>
+                    <includeTests>true</includeTests>
+                    <skipEmptyReport>false</skipEmptyReport>
                     <targetJdk>${java.source.version}</targetJdk>
                 </configuration>
             </plugin>
