@@ -43,17 +43,15 @@
 
     <properties>
         <biz.aQute.bndlib.version>6.4.1</biz.aQute.bndlib.version>
-        <maven-archiver.version>2.3</maven-archiver.version>
-        <maven-artifact.version>2.0.4</maven-artifact.version>
+        <maven.version>2.2.1</maven.version>
+        <maven-archiver.version>2.6</maven-archiver.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
-        <maven-model.version>3.9.9</maven-model.version>
-        <maven-plugin-api.version>2.0</maven-plugin-api.version>
-        <maven-plugin-testing-harness.version>1.1</maven-plugin-testing-harness.version>
-        <maven-project.version>2.2.1</maven-project.version>
+        <maven-invoker-plugin.version>3.9.0</maven-invoker-plugin.version>
+        <maven-plugin-testing-harness.version>1.3</maven-plugin-testing-harness.version>
         <org.apache.aries.util.version>1.1.3</org.apache.aries.util.version>
-        <plexus-archiver.version>1.0-alpha-7</plexus-archiver.version>
-        <plexus-container-default.version>1.0-alpha-9-stable-1</plexus-container-default.version>
-        <plexus-utils.version>3.6.0</plexus-utils.version>
+        <plexus-archiver.version>3.7.0</plexus-archiver.version>
+        <plexus-utils.version>4.0.2</plexus-utils.version>
+        <plexus-xml.version>4.0.4</plexus-xml.version>
     </properties>
 
     <dependencies>
@@ -75,17 +73,17 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
-            <version>${maven-plugin-api.version}</version>
+            <version>${maven.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
-            <version>${maven-project.version}</version>
+            <version>${maven.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-            <version>${maven-artifact.version}</version>
+            <version>${maven.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -95,7 +93,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
-            <version>${maven-model.version}</version>
+            <version>${maven.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
@@ -109,11 +107,11 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-            <version>${plexus-container-default.version}</version>
+            <artifactId>plexus-xml</artifactId>
+            <version>${plexus-xml.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven.shared</groupId>
+            <groupId>org.apache.maven.plugin-testing</groupId>
             <artifactId>maven-plugin-testing-harness</artifactId>
             <version>${maven-plugin-testing-harness.version}</version>
             <scope>test</scope>
@@ -127,7 +125,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-invoker-plugin</artifactId>
-                        <version>3.9.0</version>
+                        <version>${maven-invoker-plugin.version}</version>
                         <configuration>
                             <debug>true</debug>
                             <projectsDirectory>src/it</projectsDirectory>

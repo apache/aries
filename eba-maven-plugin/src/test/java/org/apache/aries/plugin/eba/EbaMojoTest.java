@@ -25,11 +25,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.codehaus.plexus.archiver.zip.ZipEntry;
-import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -97,7 +96,7 @@ public class EbaMojoTest
 
         ZipFile eba = new ZipFile( ebaFile );
 
-        Enumeration entries = eba.getEntries();
+        Enumeration entries = eba.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -146,7 +145,7 @@ public class EbaMojoTest
 
         ZipFile eba = new ZipFile( ebaFile );
 
-        Enumeration entries = eba.getEntries();
+        Enumeration entries = eba.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -196,7 +195,7 @@ public class EbaMojoTest
 
         ZipFile eba = new ZipFile( ebaFile );
 
-        Enumeration entries = eba.getEntries();
+        Enumeration entries = eba.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -243,7 +242,7 @@ public class EbaMojoTest
 
         ZipFile eba = new ZipFile( ebaFile );
 
-        Enumeration entries = eba.getEntries();
+        Enumeration entries = eba.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -319,7 +318,7 @@ public class EbaMojoTest
 
         ZipFile eba = new ZipFile( ebaFile );
 
-        Enumeration entries = eba.getEntries();
+        Enumeration entries = eba.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -367,7 +366,7 @@ public class EbaMojoTest
 
         ZipFile eba = new ZipFile( ebaFile );
 
-        Enumeration entries = eba.getEntries();
+        Enumeration entries = eba.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -416,7 +415,7 @@ public class EbaMojoTest
 
         ZipFile eba = new ZipFile( ebaFile );
 
-        Enumeration entries = eba.getEntries();
+        Enumeration entries = eba.entries();
 
         assertTrue( entries.hasMoreElements() );
 

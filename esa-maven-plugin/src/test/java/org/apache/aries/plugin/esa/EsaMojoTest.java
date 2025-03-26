@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.codehaus.plexus.archiver.zip.ZipEntry;
-import org.codehaus.plexus.archiver.zip.ZipFile;
 
 import aQute.bnd.osgi.Analyzer;
 
@@ -106,7 +106,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -155,7 +155,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -206,7 +206,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -232,7 +232,7 @@ public class EsaMojoTest
 
     private void testForHeader(ZipFile esa, String header, String exactEntry) throws Exception {
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
 
         // Test Use-Bundle & Subsytem-Type inclusion
@@ -292,7 +292,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -340,7 +340,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -405,7 +405,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -452,7 +452,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -500,7 +500,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -550,7 +550,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -686,7 +686,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile( esaFile );
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue( entries.hasMoreElements() );
 
@@ -737,7 +737,7 @@ public class EsaMojoTest
 
         ZipFile esa = new ZipFile(esaFile);
 
-        Enumeration entries = esa.getEntries();
+        Enumeration entries = esa.entries();
 
         assertTrue(entries.hasMoreElements());
 
