@@ -39,7 +39,7 @@ public final class JdkProxyManager extends AbstractProxyManager implements Proxy
   private static final Class<?>[] getInterfaces(Collection<Class<?>> classes) throws UnableToProxyException
   {
     for (Class<?> clazz : classes) {
-        if (!!!clazz.isInterface()) {
+        if (!clazz.isInterface()) {
           throw new UnableToProxyException(clazz, String.format("The class %s is not an interface and therefore a proxy cannot be generated.", clazz.getName()));
         } 
     }

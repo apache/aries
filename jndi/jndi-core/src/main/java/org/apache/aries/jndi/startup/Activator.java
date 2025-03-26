@@ -231,7 +231,7 @@ public class Activator implements BundleActivator {
         if (null != value) return true;
         Object revision = context.getBundle().adapt(BundleRevision.class);
         // in a unit test adapt() may return an incompatible object
-        if (!!! (revision instanceof BundleRevision)) return false;
+        if (! (revision instanceof BundleRevision)) return false;
         final BundleRevision bundleRevision = (BundleRevision) revision;
         return bundleRevision.getDeclaredCapabilities(key).size() > 0;
     }

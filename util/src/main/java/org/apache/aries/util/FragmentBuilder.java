@@ -56,7 +56,7 @@ public class FragmentBuilder {
         bundleNameExtension = bundleNameSuffix;
 
         // make sure we have an initial '.'
-        if (!!!nameExtension.startsWith(".")) {
+        if (!nameExtension.startsWith(".")) {
             nameExtension = "." + nameExtension;
         }
     }
@@ -108,7 +108,7 @@ public class FragmentBuilder {
             // and checks whether this is part of ':='
             // in this way we will not be fooled by attributes like
             // a="something:=strange"
-            if (!!!(pos > 0 && fragment.charAt(pos - 1) == ':')) {
+            if (!(pos > 0 && fragment.charAt(pos - 1) == ':')) {
                 result.append(fragment);
                 result.append(';');
             }
@@ -194,11 +194,11 @@ public class FragmentBuilder {
     }
 
     private void addImportsAndExports(Attributes attrs) {
-        if (!!!importPackages.isEmpty()) {
+        if (!importPackages.isEmpty()) {
             attrs.putValue(Constants.IMPORT_PACKAGE, joinStrings(importPackages, ','));
         }
 
-        if (!!!exportPackages.isEmpty()) {
+        if (!exportPackages.isEmpty()) {
             attrs.putValue(Constants.EXPORT_PACKAGE, joinStrings(exportPackages, ','));
         }
     }

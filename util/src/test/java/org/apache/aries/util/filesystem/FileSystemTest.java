@@ -346,7 +346,7 @@ public class FileSystemTest
 
     out.close();
 
-    if (!!!zipFile.renameTo(new File("fileSystemTest/outer.zip"))) throw new IOException("Rename failed");
+    if (!zipFile.renameTo(new File("fileSystemTest/outer.zip"))) throw new IOException("Rename failed");
   }
 
   private static File getTestResourceDir() {

@@ -241,7 +241,7 @@ public class ZipFileImpl implements IFile
   ZipFile openZipFile(){
     ZipFile z = null;
 
-    if (cache != null && !!!cache.isClosed()) {
+    if (cache != null && !cache.isClosed()) {
     	z = cache.getZipFile();
     } else {
 	    try {

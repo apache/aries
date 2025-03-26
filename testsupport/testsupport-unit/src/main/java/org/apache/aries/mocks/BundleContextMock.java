@@ -404,7 +404,7 @@ public class BundleContextMock
     try {
       Class<?> clazz = Class.forName(interFace, false, service.getClass().getClassLoader());
       
-      if (!!!clazz.isInstance(service) && !!!(service instanceof ServiceFactory)) {
+      if (!clazz.isInstance(service) && !(service instanceof ServiceFactory)) {
         throw new AssertionFailedError("The service " + service + " does not implement " + interFace);
       }
     } catch (ClassNotFoundException e) {

@@ -292,7 +292,7 @@ public class ReflectionUtils {
             if (allowFieldInjection) {
                 for (Class cl = clazz; cl != null && cl != Object.class; cl = cl.getSuperclass()) {
                     for (Field field : cl.getDeclaredFields()) {
-                        if (!!!Modifier.isStatic(field.getModifiers())) {
+                        if (!Modifier.isStatic(field.getModifiers())) {
                             String name = decapitalize(field.getName());
                             PropertyDescriptor desc = props.get(name);
                             if (desc == null) {
@@ -311,7 +311,7 @@ public class ReflectionUtils {
             
             List<PropertyDescriptor> result = new ArrayList<PropertyDescriptor>();
             for (PropertyDescriptor prop : props.values()) {
-                if (!!!illegalProperties.contains(prop.getName())) result.add(prop);
+                if (!illegalProperties.contains(prop.getName())) result.add(prop);
             }
             
             properties[index] = result.toArray(new PropertyDescriptor[result.size()]); 
@@ -536,7 +536,7 @@ public class ReflectionUtils {
                       return Boolean.FALSE;
                     }                        
                 });
-                if(!!!wasSet) {
+                if(!wasSet) {
                   doInternalSet(container, instance, value);
                 }
             } catch (PrivilegedActionException pae) {

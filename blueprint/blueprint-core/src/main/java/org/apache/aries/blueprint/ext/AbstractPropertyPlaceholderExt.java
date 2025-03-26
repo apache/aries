@@ -204,7 +204,7 @@ public abstract class AbstractPropertyPlaceholderExt extends PropertyPlaceholder
         }
         
         List<MapEntry> entries = new ArrayList<MapEntry>(component.getServiceProperties());
-        if(!!! entries.isEmpty()) {
+        if(! entries.isEmpty()) {
           
             try {
                 if(component instanceof MutableServiceMetadata) {
@@ -284,7 +284,7 @@ public abstract class AbstractPropertyPlaceholderExt extends PropertyPlaceholder
     protected Metadata processPropsMetadata(PropsMetadata metadata) {
       
         List<MapEntry> entries = new ArrayList<MapEntry>(metadata.getEntries());
-        if(!!! entries.isEmpty()) {
+        if(! entries.isEmpty()) {
           
             try {
                 if(metadata instanceof MutablePropsMetadata) {
@@ -311,7 +311,7 @@ public abstract class AbstractPropertyPlaceholderExt extends PropertyPlaceholder
 
     protected Metadata processMapMetadata(MapMetadata metadata) {
         List<MapEntry> entries = new ArrayList<MapEntry>(metadata.getEntries());
-        if(!!! entries.isEmpty()) {
+        if(! entries.isEmpty()) {
           
             try {
                 if(metadata instanceof MutableMapMetadata) {
@@ -359,7 +359,7 @@ public abstract class AbstractPropertyPlaceholderExt extends PropertyPlaceholder
     protected Metadata processCollectionMetadata(CollectionMetadata metadata) {
       
         List<Metadata> values = new ArrayList<Metadata>(metadata.getValues());
-        if(!!! values.isEmpty()) {
+        if(! values.isEmpty()) {
         
             try {
                 if(metadata instanceof MutableCollectionMetadata) {

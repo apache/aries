@@ -89,7 +89,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 	}
 
 	private List<? extends ZipEntry> getAllEntries() {
-		if (cache != null && !!!cache.isClosed()) {
+		if (cache != null && !cache.isClosed()) {
 			return Collections.list(cache.getZipFile().entries());
 		} else {
 			ZipInputStream zis = null;
@@ -140,7 +140,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 		Map<String,ZipEntry> entries = new HashMap<String, ZipEntry>();
 		ZipEntry ze;
 
-		if (cache != null && !!!cache.isClosed()) {
+		if (cache != null && !cache.isClosed()) {
 			ZipFile zip = cache.getZipFile();
 
 			String[] segments = name.split("/");
@@ -161,7 +161,7 @@ public class NestedZipDirectory extends NestedZipFile implements IDirectory {
 
 				ze = zis.getNextEntry();
 
-				while (ze != null && !!!ze.getName().equals(name)) {
+				while (ze != null && !ze.getName().equals(name)) {
 					if (name.startsWith(ze.getName())) entries.put(ze.getName(), ze);
 
 					ze = zis.getNextEntry();

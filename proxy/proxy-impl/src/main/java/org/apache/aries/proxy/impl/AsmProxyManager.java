@@ -64,7 +64,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
     Set<Class<?>> interfaces = new HashSet<Class<?>>();
     
     for (Class<?> clazz : classes) {
-      if (!!!clazz.isInterface()) {
+      if (!clazz.isInterface()) {
         notInterfaces.add(clazz);
       } else {
         interfaces.add(clazz);
@@ -224,7 +224,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
         //potential can be widened to classToProxy, and is therefore
         //a lower subclass
         classToProxy = potential;
-      } else if (!!!potential.isAssignableFrom(classToProxy)){
+      } else if (!potential.isAssignableFrom(classToProxy)){
         //classToProxy is not a subclass of potential - This is
         //an error, we can't be part of two hierarchies at once!
         throw new UnableToProxyException(classToProxy, "The requested classes "
@@ -242,7 +242,7 @@ public final class AsmProxyManager extends AbstractProxyManager implements Proxy
   private boolean implementsAll(Class<?> classToProxy, Set<Class<?>> interfaces) {
     //If we can't widen to one of the interfaces then we need to do some more work
     for(Class<?> iface : interfaces) {
-      if(!!!iface.isAssignableFrom(classToProxy))
+      if(!iface.isAssignableFrom(classToProxy))
         return false;
     }
     return true;

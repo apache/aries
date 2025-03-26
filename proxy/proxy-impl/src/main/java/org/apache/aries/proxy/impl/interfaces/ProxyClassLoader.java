@@ -114,7 +114,7 @@ final class ProxyClassLoader extends ClassLoader {
       for (Class<?> iface : createSet) {
           try {
               Class<?> newIFace = Class.forName(iface.getName(), false, this);
-              if (!!!newIFace.equals(iface)) return true;
+              if (!newIFace.equals(iface)) return true;
           } catch (ClassNotFoundException cnfe) {
               return true;
           }

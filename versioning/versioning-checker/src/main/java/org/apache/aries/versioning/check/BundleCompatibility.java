@@ -134,7 +134,7 @@ public class BundleCompatibility {
     boolean pkg_major_change = false;
     boolean pkg_minor_change = false;
     String fatal_package = null;
-    if (!!!currBundleExpPkgContents.isEmpty()) {
+    if (!currBundleExpPkgContents.isEmpty()) {
       baseBundleExpPkgContents = getAllExportedPkgContents(baseBundle);
       // compare each class right now
       for (Map.Entry<String, PackageContent> pkg : baseBundleExpPkgContents.entrySet()) {
@@ -157,12 +157,12 @@ public class BundleCompatibility {
           // check all classes to see whether there are minor or major changes
           visitPackage(pkgName, baseClazz, curClazz, majorChange, minorChange);
           // If there is no binary compatibility changes, check whether xsd files have been added, changed or deleted
-          if (!!!majorChange.isChange()) {
+          if (!majorChange.isChange()) {
             checkXsdChangesInPkg(pkgName, baseXsds, curXsds, majorChange);
             // If everything is ok with the existing classes. Need to find out whether there are more API (abstract classes) in the current bundle.
             // loop through curClazz and visit it and find out whether one of them is abstract.
             // check whether there are more xsd or abstract classes added
-            if (!!!(majorChange.isChange() || minorChange.isChange())) {
+            if (!(majorChange.isChange() || minorChange.isChange())) {
               checkAdditionalClassOrXsds(pkgName, curClazz, curXsds, minorChange);
             }
           }
@@ -170,18 +170,18 @@ public class BundleCompatibility {
           //                    if (majorChange.isChange() || minorChange.isChange()) {
           String oldVersion = pkg.getValue().getPackageVersion();
           String newVersion = currPkgContents.getPackageVersion();
-          if (majorChange.isChange() && !!!ignoreChange(majorChange.getReason())) {
+          if (majorChange.isChange() && !ignoreChange(majorChange.getReason())) {
             packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion));
             pkg_major_change = true;
             fatal_package = pkgName;
-            if (!!!isVersionCorrect(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion)) {
+            if (!isVersionCorrect(VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion)) {
               pkgElementsList.add(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MAJOR_CHANGE, oldVersion, newVersion, majorChange.getReason(), majorChange.getChangeClass()));
             }
-          } else if (minorChange.isChange() && !!!ignoreChange(minorChange.getReason())) {
+          } else if (minorChange.isChange() && !ignoreChange(minorChange.getReason())) {
             packageChanges.put(pkgName, new VersionChange(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion));
             pkg_minor_change = true;
             if (fatal_package == null) fatal_package = pkgName;
-            if (!!!isVersionCorrect(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion)) {
+            if (!isVersionCorrect(VERSION_CHANGE_TYPE.MINOR_CHANGE, oldVersion, newVersion)) {
               pkgElementsList.add(getPkgStatusText(pkgName, VERSION_CHANGE_TYPE.MINOR_CHANGE, pkg.getValue().getPackageVersion(), currPkgContents.getPackageVersion(), minorChange.getReason(), minorChange.getChangeClass()));
             }
           }  else {
@@ -228,7 +228,7 @@ public class BundleCompatibility {
     List<ManifestHeaderProcessor.NameValuePair> exportPackageLists = ManifestHeaderProcessor.parseExportString(packageExports);
     // only perform validation if there are some packages exported. Otherwise, not interested.
     Map<String, PackageContent> exportedPackages = new HashMap<String, PackageContent>();
-    if (!!!exportPackageLists.isEmpty()) {
+    if (!exportPackageLists.isEmpty()) {
       File bundleFile = currentBundle.getBundle();
       IDirectory bundleDir = FileSystem.getFSRoot(bundleFile);
       for (ManifestHeaderProcessor.NameValuePair exportedPackage : exportPackageLists) {
@@ -437,7 +437,7 @@ public class BundleCompatibility {
         curXsds.remove(file.getKey());
         String curFileContent = readXsdFile(curXsd.open());
         String oldFileContent = readXsdFile(file.getValue().open());
-        if (!!!(curFileContent.equals(oldFileContent))) {
+        if (!(curFileContent.equals(oldFileContent))) {
 
           reason = "In the package " + pkgName + ", The schema file has been updated: " + file.getKey() + ".";
           majorChange.update(reason, changeClass, false);
@@ -474,7 +474,7 @@ public class BundleCompatibility {
         }
       }
     }
-    if (!!!(minorChange.isChange() || curXsds.isEmpty())) {
+    if (!(minorChange.isChange() || curXsds.isEmpty())) {
       /// a new xsd file was added, it is a minor change
       IFile firstXsd = null;
       Iterator<IFile> xsdIterator = curXsds.values().iterator();

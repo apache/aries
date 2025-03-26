@@ -116,7 +116,7 @@ public class SemanticVersioningChecker {
                     pkgElements = bundleCompatibility.getPkgElements();
                 }
                 // Need to write bundle element and then package elements
-                if ((!!!bundleVersionCorrect) || ((pkgElements.length() > 0))) {
+                if ((!bundleVersionCorrect) || ((pkgElements.length() > 0))) {
                     writeRecordToWriter(versionStatusFileWriter, bundleElement);
                     writeRecordToWriter(versionStatusFileWriter, pkgElements.toString());
                     writeRecordToWriter(versionStatusFileWriter, "</bundle>");

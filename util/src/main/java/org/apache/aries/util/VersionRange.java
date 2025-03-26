@@ -217,7 +217,7 @@ public final class VersionRange {
             throw new IllegalArgumentException(MessageUtil.getMessage("UTIL0011E", version));
         }
 
-        if (!!!isExactVersion()) {
+        if (!isExactVersion()) {
             throw new IllegalArgumentException(MessageUtil.getMessage("UTIL0009E", version));
         }
 
@@ -366,7 +366,7 @@ public final class VersionRange {
      */
     public boolean isExactVersion() {
         return minimumVersion.equals(maximumVersion) && minimumExclusive == maximumExclusive
-               && !!!minimumExclusive;
+               && !minimumExclusive;
     }
 
     /**

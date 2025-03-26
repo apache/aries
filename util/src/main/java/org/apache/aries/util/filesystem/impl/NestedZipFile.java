@@ -128,7 +128,7 @@ public class NestedZipFile implements IFile {
 	}
 
 	public InputStream open() throws IOException, UnsupportedOperationException {
-		if (cache != null && !!!cache.isClosed()) {
+		if (cache != null && !cache.isClosed()) {
 			ZipFile zip = cache.getZipFile();
 			ZipEntry ze = zip.getEntry(nameInZip);
 			
@@ -138,7 +138,7 @@ public class NestedZipFile implements IFile {
 			final ZipInputStream zis = new ZipInputStream(archive.open());
 			
 			ZipEntry entry = zis.getNextEntry();
-			while (entry != null && !!!entry.getName().equals(nameInZip)) {
+			while (entry != null && !entry.getName().equals(nameInZip)) {
 				entry = zis.getNextEntry();
 			}
 			

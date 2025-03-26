@@ -66,7 +66,7 @@ public class WeavingProxyTest extends AbstractProxyTest
     @SuppressWarnings("unchecked")
 	Callable<Object> o = (Callable<Object>) mgr.createDelegatingProxy(b, classes, 
         dispatcher, template);
-    if(!!!(o instanceof WovenProxy))
+    if(!(o instanceof WovenProxy))
       fail("Proxy should be woven!");
 
     Object inner = new Integer(3);
@@ -91,7 +91,7 @@ public class WeavingProxyTest extends AbstractProxyTest
     };
     classes.add(r.getClass());
     Object o = mgr.createDelegatingProxy(b, classes, c, r);
-    if(!!!(o instanceof WovenProxy))
+    if(!(o instanceof WovenProxy))
       fail("Proxy should be woven!");
   }
 

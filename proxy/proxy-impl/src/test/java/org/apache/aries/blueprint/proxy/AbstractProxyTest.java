@@ -327,7 +327,7 @@ public abstract class AbstractProxyTest {
       m.invoke(obj);
       fail("Should throw an exception");
     } catch (InvocationTargetException re) {
-      if(!!!re.getTargetException().getClass().equals(RuntimeException.class))
+      if(!re.getTargetException().getClass().equals(RuntimeException.class))
         throw re.getTargetException();
       assertCalled(tl, true, false, true);
     }

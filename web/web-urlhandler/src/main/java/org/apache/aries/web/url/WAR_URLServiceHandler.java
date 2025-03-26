@@ -65,7 +65,7 @@ public class WAR_URLServiceHandler extends AbstractURLStreamHandlerService imple
         // set. Property pairs are seperated by the '&' symbol. The tokenizer
         // will include this symbol in the token so we need to return it from
         // all property names except the first.
-        if (!!!firstProperty)
+        if (!firstProperty)
           name = name.substring(1);
         String value = tok.nextToken("&").substring(1);
         properties.put(name, value);

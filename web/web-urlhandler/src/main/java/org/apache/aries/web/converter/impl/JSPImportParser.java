@@ -83,7 +83,7 @@ public class JSPImportParser {
         for (String p : imports) { 
           String thisPackage = p.substring(0,p.lastIndexOf('.')).trim();
           
-          if (!!!thisPackage.startsWith("java."))
+          if (!thisPackage.startsWith("java."))
             packagesFound.add(thisPackage);
         }
       }

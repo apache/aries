@@ -243,13 +243,13 @@ public class ManifestHeaderProcessor
 
       for (String part : tailParts) {
         // if it is not a parameter and no parameter appears in front of it, it must a package
-        if (!!!(part.contains("=")))  {
+        if (!(part.contains("=")))  {
           // Need to make sure no parameter appears before the package, otherwise ignore this string
           // as this syntax is invalid
-          if (!!!(firstParameter))
+          if (!(firstParameter))
             pkgs.add(part);
         } else {
-          if (!!!(firstParameter))
+          if (!(firstParameter))
             firstParameter = true;
 
           parameters.append(part + ";");
@@ -584,7 +584,7 @@ public class ManifestHeaderProcessor
 				// store all attributes in order to build up the mandatory
 				// filter and separate them with ", "
 				// skip bundle-symbolic-name in the mandatory directive query
-				if (!!!Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE
+				if (!Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE
 						.equals(attribName)) {
 					realAttribs.append(attribName);
 					realAttribs.append(", ");
