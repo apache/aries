@@ -161,7 +161,7 @@ public class RequirementImpl implements Requirement
         Filter f = FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(filterToCreate));
         Hashtable<String, Object> hash = new Hashtable<String, Object>();
         Map<String, String> props = cap.getPropertiesAsMap();
-        if ((props != null) && (!!!props.isEmpty())) {
+        if ((props != null) && (!props.isEmpty())) {
           for (Map.Entry<String, String> propertyPair : props.entrySet()) {
             hash.put(propertyPair.getKey(), propertyPair.getValue());
           }

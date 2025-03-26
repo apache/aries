@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.management.spi.convert;
 
 import java.io.IOException;
@@ -34,10 +33,10 @@ public interface BundleConversion {
 	/**
 	 * @return The InputStream to the converted bundle.
 	 */
-	public InputStream getInputStream() throws IOException;
+	InputStream getInputStream() throws IOException;
 	
 	/** 
 	 * @return The bundle information for the converted bundle.
 	 */
-	public BundleInfo getBundleInfo() throws IOException;
+	BundleInfo getBundleInfo() throws IOException;
 }

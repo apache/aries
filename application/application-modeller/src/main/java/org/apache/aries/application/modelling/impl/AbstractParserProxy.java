@@ -242,7 +242,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	        String compName = referenceMetadata.getComponentName();
 	        String blueprintFilter = referenceMetadata.getFilter();
 	        String id = referenceMetadata.getId();
-	        boolean isMultiple = (referenceMetadata instanceof ReferenceListMetadata);
+	        boolean isMultiple = referenceMetadata instanceof ReferenceListMetadata;
 	        
 	        //The blueprint parser teams up with JPA and blueprint resource ref
 	        // namespace handlers to give us service imports of the form, 
@@ -308,7 +308,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	   * @param output
 	   */
 	  private void traverseComponent(ComponentMetadata component, Set<ComponentMetadata> output) {
-	      if (!!!output.add(component)) return;
+	      if (!output.add(component)) return;
 	      
 	      if (component instanceof BeanMetadata) {
 	          BeanMetadata bean = (BeanMetadata) component;

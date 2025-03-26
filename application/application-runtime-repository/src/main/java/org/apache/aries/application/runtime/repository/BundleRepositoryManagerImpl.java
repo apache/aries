@@ -144,7 +144,7 @@ public class BundleRepositoryManagerImpl implements BundleRepositoryManager
 
       BundleSuggestion suggestion = null;
 
-      if (!!!bundlesuggestions.isEmpty()) {
+      if (!bundlesuggestions.isEmpty()) {
 
         List<BundleSuggestion> thoughts = bundlesuggestions.get(bundleToFind.getExactVersion());
 

@@ -26,8 +26,7 @@ import java.util.jar.Manifest;
  * Provides various means of generating {@link org.apache.aries.application.ApplicationMetadata  
  * ApplicationMetadata} instances.  
  */
-public interface ApplicationMetadataFactory
-{
+public interface ApplicationMetadataFactory {
 
   /**
    * Parse from the input stream the application manifest. This method is more
@@ -38,7 +37,7 @@ public interface ApplicationMetadataFactory
    * @return   the parsed application metadata.
    * 
    */
-  public ApplicationMetadata parseApplicationMetadata(InputStream in) throws IOException;
+  ApplicationMetadata parseApplicationMetadata(InputStream in) throws IOException;
     
   /**
    * Create the application metadata from the provided Manifest. This is provided
@@ -48,6 +47,6 @@ public interface ApplicationMetadataFactory
    * @param man the manifest to read from
    * @return    the parsed application metadata.
    */
-  public ApplicationMetadata createApplicationMetadata(Manifest man);
+  ApplicationMetadata createApplicationMetadata(Manifest man);
 
 }

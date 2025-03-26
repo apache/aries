@@ -30,8 +30,7 @@ import org.osgi.framework.BundleException;
  * An AriesApplicationManager service is used to create, install and uninstall Aries
  * applications. 
  */
-public interface AriesApplicationManager
-{
+public interface AriesApplicationManager {
   /**
    * Create an AriesApplication from a local resource.
    * The application won't be automatically resolved if the
@@ -41,7 +40,7 @@ public interface AriesApplicationManager
    * @return AriesApplication
    * @throws ManagementException
    */
-  public AriesApplication createApplication(IDirectory source) throws ManagementException;
+  AriesApplication createApplication(IDirectory source) throws ManagementException;
   
   /**
    * Create an AriesApplication from a remote resource.
@@ -52,7 +51,7 @@ public interface AriesApplicationManager
    * @return the application.
    * @throws ManagementException
    */
-  public AriesApplication createApplication(URL url) throws ManagementException;
+  AriesApplication createApplication(URL url) throws ManagementException;
   
   /**
    * Install an AriesApplication - i.e. load its bundles into the runtime, but do 
@@ -67,26 +66,26 @@ public interface AriesApplicationManager
    * @throws BundleException
    * @throws ManagementException 
    */
-  public AriesApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException;
+  AriesApplicationContext install(AriesApplication app) throws BundleException, ManagementException, ResolverException;
   
   /**
    * Uninstall an AriesApplication - i.e. unload its bundles from the runtime. 
    * @param app The installed application to uninstall
    * @throws BundleException
    */
-  public void uninstall(AriesApplicationContext app) throws BundleException;
+  void uninstall(AriesApplicationContext app) throws BundleException;
   
   /**
    * Add an AriesApplicationListener
    * @param l
    */
-  public void addApplicationListener(AriesApplicationListener l);
+  void addApplicationListener(AriesApplicationListener l);
   
   /**
    * Remove an AriesApplicationListener
    * @param l
    */
-  public void removeApplicationListener(AriesApplicationListener l);
+  void removeApplicationListener(AriesApplicationListener l);
   
   /**
    * Update an application's deployment and apply the changes to the runtime if the application is deployed
@@ -99,7 +98,7 @@ public interface AriesApplicationManager
    * @throws IllegalArgumentException if the deployment metadata does not correspond to the same application
    * (same symbolic name and same version)
    */
-  public AriesApplicationContext update(AriesApplication app, DeploymentMetadata depMf) throws UpdateException;
+  AriesApplicationContext update(AriesApplication app, DeploymentMetadata depMf) throws UpdateException;
   
   /**
    * Resolve an AriesApplication against a set of constraints. Each ResolveConstraint

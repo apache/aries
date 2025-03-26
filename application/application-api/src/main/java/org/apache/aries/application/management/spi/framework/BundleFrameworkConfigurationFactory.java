@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.management.spi.framework;
 
 import org.apache.aries.application.management.AriesApplication;
@@ -29,7 +28,7 @@ public interface BundleFrameworkConfigurationFactory
    * @param parentCtx
    * @return the framework config
    */
-  public BundleFrameworkConfiguration createBundleFrameworkConfig(String frameworkId,
+  BundleFrameworkConfiguration createBundleFrameworkConfig(String frameworkId,
       BundleContext parentCtx);
 
   /**
@@ -39,7 +38,7 @@ public interface BundleFrameworkConfigurationFactory
    * @param app
    * @return the framework config
    */
-  public BundleFrameworkConfiguration createBundleFrameworkConfig(String frameworkId,
+  BundleFrameworkConfiguration createBundleFrameworkConfig(String frameworkId,
       BundleContext parentCtx, AriesApplication app);
 
 }

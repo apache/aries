@@ -149,7 +149,7 @@ public final class ContentImpl implements Content
     
     builder.append(this.contentName);
     
-    if (!!!nameValueMap.isEmpty()) {
+    if (!nameValueMap.isEmpty()) {
       for (Map.Entry<String, String> entry : nameValueMap.entrySet()) {
         builder.append(';');
         builder.append(entry.getKey());

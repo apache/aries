@@ -22,8 +22,7 @@ import java.util.Map;
 /**
  * Model an imported package.
  */
-public interface ImportedPackage extends Consumer, DeploymentMFElement
-{
+public interface ImportedPackage extends Consumer, DeploymentMFElement {
 
   /**
    * The imported package name

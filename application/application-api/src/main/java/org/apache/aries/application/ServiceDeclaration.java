@@ -29,12 +29,12 @@ public interface ServiceDeclaration {
 	 * get the interface name for the service
 	 * @return The name of the service's interface class. 
 	 */
-	public abstract String getInterfaceName();
+	 String getInterfaceName();
 
 	/**
 	 * get the filter for the service
 	 * @return the filter for the service or null if there is no filter defined
 	 */
-	public abstract Filter getFilter();
+	 Filter getFilter();
 
 }

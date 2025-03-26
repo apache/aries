@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  * */
-
 package org.apache.aries.application.modelling.impl;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
@@ -26,8 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -60,8 +57,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ModelledResourceManagerImpl implements ModelledResourceManager
-{
+public class ModelledResourceManagerImpl implements ModelledResourceManager {
   private final Logger _logger = LoggerFactory.getLogger(ModelledResourceManagerImpl.class);
   private ParserProxy _parserProxy;
   private ModellingManager _modellingManager;

@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.management;
 
 /**
@@ -27,5 +26,5 @@ public interface AriesApplicationListener {
   /**
    * Receives notification of an application lifecycle event
    */
-  public void applicationChanged (AriesApplicationEvent event);
+  void applicationChanged (AriesApplicationEvent event);
 }

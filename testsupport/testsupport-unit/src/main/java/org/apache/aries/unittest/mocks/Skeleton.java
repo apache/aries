@@ -491,7 +491,7 @@ public final class Skeleton implements InvocationHandler
       Method[] methods = clazz.getMethods();
       
       methods: for (Method m : methods) {
-        if(!!!m.getName().equals(call.getMethodName()))
+        if(!m.getName().equals(call.getMethodName()))
           continue methods;
         
         Object[] args = call.getArguments();
@@ -518,7 +518,7 @@ public final class Skeleton implements InvocationHandler
             else if (returnType == double.class) returnType = Double.class;
           }
           
-          if (value != null && !!!returnType.isInstance(value)) {
+          if (value != null && !returnType.isInstance(value)) {
             throw new IllegalArgumentException("The object cannot be returned by the requested method: " + call);
           } else break methods; 
         }

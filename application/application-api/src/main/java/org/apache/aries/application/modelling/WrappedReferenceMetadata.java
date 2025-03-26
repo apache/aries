@@ -16,15 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.modelling;
-
 
 /**
  * Information about a parsed blueprint reference
  */
-public interface WrappedReferenceMetadata
-{
+public interface WrappedReferenceMetadata {
   /**
    * Get the properties of the associated blueprint service
    * @return The filter, or null for no filter

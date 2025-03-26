@@ -26,7 +26,6 @@ import org.apache.aries.application.Content;
 import org.apache.aries.application.management.AriesApplication;
 import org.apache.aries.application.management.ResolveConstraint;
 import org.apache.aries.application.management.ResolverException;
-import org.apache.aries.application.management.spi.repository.PlatformRepository;
 import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ModelledResource;
 

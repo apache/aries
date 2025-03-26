@@ -65,8 +65,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-public final class RepositoryGeneratorImpl implements RepositoryGenerator
-{
+
+public final class RepositoryGeneratorImpl implements RepositoryGenerator {
   private RepositoryAdmin repositoryAdmin;
   private ModelledResourceManager modelledResourceManager;
   private LocalPlatform tempDir;
@@ -239,7 +239,7 @@ public final class RepositoryGeneratorImpl implements RepositoryGenerator
   private static String getType(String name) {
     logger.debug(LOG_ENTRY, "getType", new Object[]{name});
     String type = null;
-    if (Constants.VERSION_ATTRIBUTE.equals(name) || (Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name))) {
+    if (Constants.VERSION_ATTRIBUTE.equals(name) || Constants.BUNDLE_VERSION_ATTRIBUTE.equals(name)) {
       type =  "version";
     } else if (Constants.OBJECTCLASS.equals(name) || MANDATORY_DIRECTIVE.equals(name))
       type = "set";

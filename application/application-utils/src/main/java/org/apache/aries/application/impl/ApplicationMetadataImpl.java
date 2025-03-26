@@ -223,7 +223,7 @@ public int hashCode()
   public void store(OutputStream out) throws IOException {
     if (manifest != null) {
       Attributes att = manifest.getMainAttributes();
-      if ((att.getValue(Attributes.Name.MANIFEST_VERSION.toString())) == null) {
+      if (att.getValue(Attributes.Name.MANIFEST_VERSION.toString()) == null) {
         att.putValue(Attributes.Name.MANIFEST_VERSION.toString(), AppConstants.MANIFEST_VERSION);
       }
       manifest.write(out);

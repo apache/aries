@@ -137,8 +137,7 @@ public class OBRBundleInfo implements BundleInfo
         return false;
     }
     OBRBundleInfo other = (OBRBundleInfo) obj;
-    return (symbolicName.equals(other.symbolicName)
-            && version.equals(other.version));
+    return symbolicName.equals(other.symbolicName) && version.equals(other.version);
   }
   
   public Attributes getRawAttributes()

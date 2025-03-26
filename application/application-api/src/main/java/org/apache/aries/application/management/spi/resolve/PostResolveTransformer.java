@@ -22,8 +22,7 @@ import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.management.ResolverException;
 import org.apache.aries.application.modelling.DeployedBundles;
 
-public interface PostResolveTransformer
-{
+public interface PostResolveTransformer {
 /**
  *  This method is to perform any post process after the resolver returns back a collection of bundles. It returns the updated manifest map.
  * @param appMetaData The application that was resolved

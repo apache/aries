@@ -23,8 +23,7 @@ import java.util.Collection;
  * Model a bundle resource.
  *
  */
-public interface ModelledResource extends DeploymentMFElement
-{
+public interface ModelledResource extends DeploymentMFElement {
   
   /**
    * The resource's symbolic name
@@ -41,7 +40,7 @@ public interface ModelledResource extends DeploymentMFElement
   /** Returns a String which can be turned into a URL to the bundle binary 
    * @return the location of the bundle
    */
-  public String getLocation();
+  String getLocation();
 
   /**
    * Import-Package header modelled to be a collection of the imported packages objects.
@@ -97,6 +96,6 @@ public interface ModelledResource extends DeploymentMFElement
    * The fragment host.
    * @return The fragment host.
    */
-  public ImportedBundle getFragmentHost();
+  ImportedBundle getFragmentHost();
 
 }

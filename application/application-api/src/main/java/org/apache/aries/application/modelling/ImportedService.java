@@ -21,7 +21,6 @@ package org.apache.aries.application.modelling;
  * This interface represents the imported service. It has no other methods apart from the 
  * two super interfaces Consumer, DeploymentMFElement and WrappedReferenceMetadata.
  */
-public interface ImportedService extends Consumer, WrappedReferenceMetadata, DeploymentMFElement
-{
+public interface ImportedService extends Consumer, WrappedReferenceMetadata, DeploymentMFElement {
 
 }

@@ -22,7 +22,5 @@ package org.apache.aries.application.modelling;
  * This interface models the exported service. It has no other methods apart from the 
  * two super interfaces Provider and WrappedServiceMetadata.
  */
-public interface ExportedService extends Provider, WrappedServiceMetadata
-{
-
+public interface ExportedService extends Provider, WrappedServiceMetadata {
 }

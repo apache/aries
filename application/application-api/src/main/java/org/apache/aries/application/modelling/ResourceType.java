@@ -16,10 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.modelling;
-
-
 
 public enum ResourceType {BUNDLE, PACKAGE, SERVICE, COMPOSITE, OTHER;
   /**

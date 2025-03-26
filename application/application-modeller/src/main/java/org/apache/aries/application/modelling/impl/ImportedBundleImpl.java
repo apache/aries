@@ -18,8 +18,6 @@
  */
 package org.apache.aries.application.modelling.impl;
 
-
-
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
 import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
@@ -44,12 +42,10 @@ import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * A model of a Bundle imported, or required, by something. For example, an entry in an APPLICATION.MF. 
  */
-public class ImportedBundleImpl implements ImportedBundle
-{
+public class ImportedBundleImpl implements ImportedBundle {
  
   private final Map<String, String> _attributes;
   private final String _filterString;
@@ -134,8 +130,7 @@ public class ImportedBundleImpl implements ImportedBundle
     logger.debug(LOG_ENTRY, "isOptional");
     boolean optional = false;
     if (_attributes.containsKey(Constants.RESOLUTION_DIRECTIVE + ":")) {
-      if ((Constants.RESOLUTION_OPTIONAL).equals
-          (_attributes.get(Constants.RESOLUTION_DIRECTIVE + ":"))) { 
+      if (Constants.RESOLUTION_OPTIONAL.equals(_attributes.get(Constants.RESOLUTION_DIRECTIVE + ":"))) {
         optional = true;
       }
     }

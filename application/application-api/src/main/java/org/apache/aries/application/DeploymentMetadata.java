@@ -39,63 +39,63 @@ public interface DeploymentMetadata {
    * get the value of the Application-SymbolicName header
    * @return the value of the Application-SymbolicName header
    */
-  public String getApplicationSymbolicName();
+  String getApplicationSymbolicName();
   
   /**
    * get the value of the Application-Version header
    * @return the value of the Application-Version header
    */
-  public Version getApplicationVersion();
+  Version getApplicationVersion();
   
   /**
    * get the value of the Deployed-Content header 
    * @return the list of the deployed content 
    */
-  public List<DeploymentContent> getApplicationDeploymentContents();
+  List<DeploymentContent> getApplicationDeploymentContents();
   
   /**
    * get the value of the Provision-Bundle header
    * @return the list of non-app bundles to provision.
    */
-  public List<DeploymentContent> getApplicationProvisionBundles();
+  List<DeploymentContent> getApplicationProvisionBundles();
   
   /**
    * get the value of Deployed-UseBundle header
    * 
    * @return the list of bundles to use from the deployment.
    */
-  public Collection<DeploymentContent> getDeployedUseBundle();
+  Collection<DeploymentContent> getDeployedUseBundle();
   
   /**
    * get the value of Import-Package
    * @return all the packages to import from non-app content.
    */
-  public Collection<Content> getImportPackage();
+  Collection<Content> getImportPackage();
 
   /**
    * Get the list of DeployedService-Import
    * @return DeployedService-Import
    */
-  public Collection<Filter> getDeployedServiceImport();
+  Collection<Filter> getDeployedServiceImport();
   
   /**
    * get the contents of deployment manifest in a map
    * @return    the required feature map
    */
-  public Map<String, String> getHeaders();
+  Map<String, String> getHeaders();
   /**
    * Obtain the associated 
    * {@link org.apache.aries.application.ApplicationMetadata ApplicationMetadata}. 
    * @return The application metadata.
    */
-  public ApplicationMetadata getApplicationMetadata();
+  ApplicationMetadata getApplicationMetadata();
   
   /** 
    * Persist this metadata as Manifest-formatted text. 
    * @param f The file to store this metadata to
    * @throws IOException
    */
-  public void store(File f) throws IOException;
+  void store(File f) throws IOException;
   
   /** 
    * Persist this metadata.  
@@ -103,6 +103,6 @@ public interface DeploymentMetadata {
    * @throws IOException
    */
 
-  public void store(OutputStream out) throws IOException;
+  void store(OutputStream out) throws IOException;
 
 }

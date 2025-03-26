@@ -47,9 +47,7 @@ import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-public class ModellingHelperImpl implements ModellingHelper
-{
+public class ModellingHelperImpl implements ModellingHelper {
   private static final  Logger logger = LoggerFactory.getLogger(ModellingHelperImpl.class);
 
   
@@ -87,7 +85,7 @@ public class ModellingHelperImpl implements ModellingHelper
     boolean allPresent = true;
     String mandatory = (String) p.getAttributes().get(Constants.MANDATORY_DIRECTIVE + ":");
     
-    if(mandatory != null && !mandatory.equals("")) {
+    if(mandatory != null && !mandatory.isEmpty()) {
       List<String> attributeNames = ManifestHeaderProcessor.split(mandatory, ",");
       
       for(String name : attributeNames) {
@@ -140,15 +138,15 @@ public class ModellingHelperImpl implements ModellingHelper
       Map<String,String> att2 = new HashMap<String, String>(p2.getAttributes());
       
       // Get the versions, we remove them so that the remaining attributes can be matched.
-      String rangeStr1 = att1.remove(Constants.VERSION_ATTRIBUTE);
-      String rangeStr2 = att2.remove(Constants.VERSION_ATTRIBUTE);
+      String rangeStr1 = att1.remove(VERSION_ATTRIBUTE);
+      String rangeStr2 = att2.remove(VERSION_ATTRIBUTE);
 
       //Also remove the optional directive as we don't care about that either
       att1.remove(OPTIONAL_KEY);
       att2.remove(OPTIONAL_KEY);
       
       //If identical take either, otherwise null!
-      Map<String, String> mergedAttribs = (att1.equals(att2) ? att1 : null);
+      Map<String, String> mergedAttribs = att1.equals(att2) ? att1 : null;
       if (mergedAttribs == null)
       {
         // Cannot intersect requirements if attributes are not identical.
@@ -173,16 +171,16 @@ public class ModellingHelperImpl implements ModellingHelper
           else
           {
             // Use the intersected version range.
-            mergedAttribs.put(Constants.VERSION_ATTRIBUTE, intersectRange.toString());
+            mergedAttribs.put(VERSION_ATTRIBUTE, intersectRange.toString());
           }
         }
         else if (rangeStr1 != null)
         {
-          mergedAttribs.put(Constants.VERSION_ATTRIBUTE, rangeStr1);
+          mergedAttribs.put(VERSION_ATTRIBUTE, rangeStr1);
         }
         else if (rangeStr2 != null)
         {
-          mergedAttribs.put(Constants.VERSION_ATTRIBUTE, rangeStr2);
+          mergedAttribs.put(VERSION_ATTRIBUTE, rangeStr2);
         }
         
         //If both optional, we are optional, otherwise use the default

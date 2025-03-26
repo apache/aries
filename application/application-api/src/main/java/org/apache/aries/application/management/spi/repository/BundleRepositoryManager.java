@@ -19,7 +19,6 @@
 package org.apache.aries.application.management.spi.repository;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.aries.application.DeploymentContent;
@@ -34,14 +33,14 @@ public interface BundleRepositoryManager
    * @param applicationVersion
    * @return the collection of bundle repositories for an app.
    */
-  public Collection<BundleRepository> getBundleRepositoryCollection(
+  Collection<BundleRepository> getBundleRepositoryCollection(
       String applicationName, String applicationVersion);
   
   /**
    * Gets all known bundle repositories
    * @return all known bundle repositories.
    */
-  public Collection<BundleRepository> getAllBundleRepositories();
+  Collection<BundleRepository> getAllBundleRepositories();
   
   /**
    * Get a collection of bundle installation suggestions from repositories
@@ -52,7 +51,7 @@ public interface BundleRepositoryManager
    * @return the bundle suggestions
    * @throws ContextException
    */
-  public Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(
+  Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(
       String applicationName,
       String applicationVersion,
       Collection<DeploymentContent> content) throws ContextException;
@@ -64,7 +63,7 @@ public interface BundleRepositoryManager
    * @return the bundle suggestions
    * @throws ContextException
    */
-  public Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(
+  Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(
       Collection<DeploymentContent> content) throws ContextException;
   
   /**
@@ -75,7 +74,7 @@ public interface BundleRepositoryManager
    * @return the bundle suggestions
    * @throws ContextException
    */
-  public Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(
+  Map<DeploymentContent, BundleSuggestion> getBundleSuggestions(
       Collection<BundleRepository> brs,
       Collection<DeploymentContent> content) throws ContextException;
   

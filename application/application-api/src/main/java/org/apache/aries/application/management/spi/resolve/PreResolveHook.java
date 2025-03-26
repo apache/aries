@@ -41,5 +41,5 @@ public interface PreResolveHook
    * @param resources A mutable collection of ModelledResources that can have
    *                  more elements added or removed.
    */
-  public void collectFakeResources(Collection<ModelledResource> resources);
+  void collectFakeResources(Collection<ModelledResource> resources);
 }

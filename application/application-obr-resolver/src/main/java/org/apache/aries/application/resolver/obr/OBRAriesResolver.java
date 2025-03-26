@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.resolver.obr;
 
 import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
@@ -81,8 +80,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @version $Rev$ $Date$
  */
-public class OBRAriesResolver implements AriesApplicationResolver
-{
+public class OBRAriesResolver implements AriesApplicationResolver {
   private static Logger log = LoggerFactory.getLogger(OBRAriesResolver.class);
 
   private final RepositoryAdmin repositoryAdmin;  
@@ -248,9 +246,9 @@ public class OBRAriesResolver implements AriesApplicationResolver
     // add application repository
     resolveRepos.add(appRepo);
     
-    if (!!!noExtraRepositories) {
+    if (!noExtraRepositories) {
         // add local repository if configured
-        if (!(excludeLocalRuntime())) {
+        if (!excludeLocalRuntime()) {
           resolveRepos.add(getLocalRepository(repositoryAdmin));
         }
         // Need to refresh the repositories added to repository admin 
@@ -512,7 +510,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
         }
       }
       
-      if (!!!found && !!!r.isOptional()) {
+      if (!found && !r.isOptional()) {
         result = false;
         break outer;
       }
@@ -599,7 +597,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
             .get(Constants.VERSION_ATTRIBUTE));
         inserts.add(vr.getMinimumVersion());
 
-        if (!!!vr.isExactVersion()) {
+        if (!vr.isExactVersion()) {
           msgKey.append(vr.isMinimumExclusive() ? "_LOWEX" : "_LOW");
           if (vr.getMaximumVersion() != null) {
             msgKey.append(vr.isMaximumExclusive() ? "_UPEX" : "_UP");
@@ -702,7 +700,7 @@ public class OBRAriesResolver implements AriesApplicationResolver
 
      Collection<ModelledResource> result = new ArrayList<ModelledResource>();
     
-     if ((bundleInfos != null) && (!!!bundleInfos.isEmpty())) {
+     if ((bundleInfos != null) && (!bundleInfos.isEmpty())) {
        for (BundleInfo bi : bundleInfos) {
          try {
          result.add(modellingManager.getModelledResource(null, bi, null, null));

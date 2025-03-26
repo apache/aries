@@ -92,7 +92,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
   public void init()
   {
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized (SHARED_FRAMEWORK_LOCK) {
       try {
         _sharedBundleFramework = SharedBundleFramework.getSharedBundleFramework(_ctx,
             _bundleFrameworkConfigurationFactory,
@@ -106,7 +106,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   
   public void close()
   {
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       try {
         _sharedBundleFramework.close();
       } catch (BundleException e) {
@@ -119,7 +119,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   public BundleFramework getBundleFramework(Bundle frameworkBundle)
   {
     BundleFramework framework = null;
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       framework = _frameworks.get(frameworkBundle);
     }
     return framework;
@@ -130,7 +130,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   {
     Bundle frameworkBundle = null;
 
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       // We need to create a new isolated framework for this content and install
       // the bundles to it
       BundleFramework isolatedFramework = isolatedInstall(bundlesToInstall, _sharedBundleFramework
@@ -150,7 +150,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
   {
     Collection<Bundle> installedBundles = new ArrayList<Bundle>();
 
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       // Shared bundle : Install to the shared bundle framework
       for (BundleSuggestion suggestion : bundlesToInstall)
         installedBundles.add(_sharedBundleFramework.install(suggestion, app));
@@ -211,14 +211,14 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
   public BundleFramework getSharedBundleFramework()
   {
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       return _sharedBundleFramework;
     }
   }
 
   public void uninstallBundle(Bundle b) throws BundleException
   {
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       BundleFramework framework = getBundleFramework(b);
       if (framework != null) {        
         for (Bundle bundle : new ArrayList<Bundle>(framework.getBundles())) {
@@ -269,7 +269,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
   public void startBundle(Bundle b) throws BundleException
   {
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       BundleFramework framework = getBundleFramework(b);
             
       // Start all bundles inside the framework
@@ -287,7 +287,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
 
   public void stopBundle(Bundle b) throws BundleException
   {
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       BundleFramework framework = getBundleFramework(b);
       
       // Stop all bundles inside the framework
@@ -331,7 +331,7 @@ public class BundleFrameworkManagerImpl implements BundleFrameworkManager
       throw new IllegalArgumentException(
           "No UpdateStrategy supports the supplied DeploymentMetadata changes.");
 
-    synchronized (BundleFrameworkManager.SHARED_FRAMEWORK_LOCK) {
+    synchronized ( SHARED_FRAMEWORK_LOCK) {
       final BundleFramework appFwk = _frameworksByAppScope.get(app.getApplicationMetadata().getApplicationScope());
 
       strategy.update(new UpdateStrategy.UpdateInfo() {

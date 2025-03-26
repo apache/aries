@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.resolve.transform.cm;
 
 import java.util.Collection;
@@ -29,8 +28,7 @@ import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ModelledResource;
 
-public class ConfigurationPostResolveTransformerImpl implements PostResolveTransformer 
-{
+public class ConfigurationPostResolveTransformerImpl implements PostResolveTransformer {
     /*
      * (non-Javadoc)
      * @see org.apache.aries.application.management.spi.resolve.PostResolveTransformer#postResolveProcess(org.apache.aries.application.ApplicationMetadata, org.apache.aries.application.modelling.DeployedBundles)
@@ -86,7 +84,7 @@ public class ConfigurationPostResolveTransformerImpl implements PostResolveTrans
 
         public String getImportPackage() throws ResolverException {
             String currentImportPackage = deployedBundles.getImportPackage();
-            StringBuffer rawImportPackage = new StringBuffer((currentImportPackage != null ? currentImportPackage : ""));
+            StringBuffer rawImportPackage = new StringBuffer(currentImportPackage != null ? currentImportPackage : "");
             
             if (! rawImportPackage.toString().contains(CONFIG_PACKAGE)) {
                 Collection<ModelledResource> deployedContent = deployedBundles.getDeployedContent();
@@ -112,7 +110,7 @@ public class ConfigurationPostResolveTransformerImpl implements PostResolveTrans
                 }
             }
             
-            return (rawImportPackage.length() > 0 ? rawImportPackage.toString() : currentImportPackage);
+            return rawImportPackage.length() > 0 ? rawImportPackage.toString() : currentImportPackage;
         }
 
         public String getProvisionBundle() {

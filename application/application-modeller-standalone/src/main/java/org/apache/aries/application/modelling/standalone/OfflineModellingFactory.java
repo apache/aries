@@ -110,7 +110,7 @@ public class OfflineModellingFactory {
 			parser.populate(DUMMY_HANDLER_SET, cdr);
 			return cdr;			
 		}
-	};
+	}
 	
 	public static ParserProxy getOfflineParserProxy() {
 		ModellingManagerImpl modellingManager = new ModellingManagerImpl();

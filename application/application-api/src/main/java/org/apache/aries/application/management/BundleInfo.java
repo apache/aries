@@ -32,38 +32,38 @@ import org.apache.aries.application.Content;
 public interface BundleInfo
 {
   /** Bundle-SymbolicName */
-  public String getSymbolicName();
+  String getSymbolicName();
   
   /** Returns the directives specified on the symbolic name */
-  public Map<String, String> getBundleDirectives();
+  Map<String, String> getBundleDirectives();
   
   /** Returns the attributes specified on the symbolic name */
-  public Map<String, String> getBundleAttributes();
+  Map<String, String> getBundleAttributes();
   
   /** Bundle-Version: */
-  public Version getVersion();
+  Version getVersion();
   
   /** Returns a String which can be turned into a URL to the bundle binary */
-  public String getLocation();
+  String getLocation();
   
   /** Import-Package */
-  public Set<Content> getImportPackage();
+  Set<Content> getImportPackage();
   
   /** Require-Bundle */
-  public Set<Content> getRequireBundle();
+  Set<Content> getRequireBundle();
   
   /** Export-Package */
-  public Set<Content> getExportPackage();
+  Set<Content> getExportPackage();
 
   /** Import-Service */
-  public Set<Content> getImportService();
+  Set<Content> getImportService();
 
   /** Export-Service */
-  public Set<Content> getExportService();
+  Set<Content> getExportService();
   
   /** All the headers in the MANIFEST.MF file */
-  public Map<String, String> getHeaders();
+  Map<String, String> getHeaders();
   
   /** The Attribute object in the MANIFEST.MF file */
-  public Attributes getRawAttributes();
+  Attributes getRawAttributes();
 }

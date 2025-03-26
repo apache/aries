@@ -37,13 +37,13 @@ public interface BundleRepository {
    *  <li>&lt;app symbolic name&gt;_&lt;app version&gt;</li>
    * </ul>
    */
-  public static final String REPOSITORY_SCOPE = "repositoryScope";
-  public static final String GLOBAL_SCOPE = "global";
+  String REPOSITORY_SCOPE = "repositoryScope";
+  String GLOBAL_SCOPE = "global";
   
 	/**
 	   * A suggested bundle to use.
 	   */
-	  public interface BundleSuggestion
+	  interface BundleSuggestion
 	  {
 	    /**
 	     * Install the bundle represented by this suggestion via the given context
@@ -53,25 +53,25 @@ public interface BundleRepository {
 	     * @return the installed bundle
 	     * @throws BundleException
 	     */
-	    public Bundle install(BundleFramework framework, 
+	    Bundle install(BundleFramework framework,
 	                          AriesApplication app) throws BundleException;
 	    
 	    /**
 	     * Get the imports of the bundle 
 	     * @return the imported packages
 	     */
-	    public Set<Content> getImportPackage();
+	    Set<Content> getImportPackage();
 	    
 	    /**
 	     * Get the exports of the bundle
 	     * @return the packages to export
 	     */
-	    public Set<Content> getExportPackage();
+	    Set<Content> getExportPackage();
 	    
 	    /**
 	     * @return the version of the bundle.
 	     */
-	    public Version getVersion();
+	    Version getVersion();
 	    /**
 	     * This method can be queried to discover the cost of using this bundle 
 	     * repository. If two repositories define the same bundle with the same version
@@ -79,7 +79,7 @@ public interface BundleRepository {
 	     * 
 	     * @return the cost of using this repository.
 	     */
-	    public int getCost();
+	    int getCost();
 	  }
 
 	  /**
@@ -90,7 +90,7 @@ public interface BundleRepository {
 	   * @param content the content used to locate a bundle.
 	   * @return      the bundle suggestion, or null.
 	   */
-	  public BundleSuggestion suggestBundleToUse(DeploymentContent content);
+	  BundleSuggestion suggestBundleToUse(DeploymentContent content);
 	  
 	  /**
 	   * This method can be queried to discover the cost of using this bundle 
@@ -99,5 +99,5 @@ public interface BundleRepository {
 	   * 
 	   * @return the cost of using this repository.
 	   */
-	  public int getCost();
+	  int getCost();
 }

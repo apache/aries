@@ -55,17 +55,17 @@ public class MessageUtil
   public void processMessages()
   {
     
-      for (Message m : errors) {
+      // for (Message m : errors) {
         //Tr.error(tc, m.msgKey, m.inserts);
         // use logger
-      }
+      // }
     
 
     
-      for (Message m : warnings) {
+      // for (Message m : warnings) {
         //Tr.warning(tc, m.msgKey, m.inserts);
         // use logger
-      }        
+      // }
           
   }
   
@@ -98,7 +98,7 @@ public class MessageUtil
   
   public boolean hasErrors() 
   {
-    return !!!errors.isEmpty();
+    return !errors.isEmpty();
   }
   
   public void error(String msgKey, Object ... inserts) 

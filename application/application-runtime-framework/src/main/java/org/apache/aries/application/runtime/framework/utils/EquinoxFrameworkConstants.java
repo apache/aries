@@ -16,14 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.aries.application.runtime.framework.utils;
 
-public interface EquinoxFrameworkConstants
-{
-  public static final String TRANSACTION_BUNDLE = "javax.transaction";
-  public static final String TRANSACTION_BUNDLE_VERSION = "1.1.0";
-  public static final String TRANSACTION_REGISTRY_BUNDLE = "javax.transaction.TransactionSynchronizationRegistry";
-  public static final String COMPOSITE_SERVICE_FILTER_IMPORT = "CompositeServiceFilter-Import";
+public interface EquinoxFrameworkConstants {
+  String TRANSACTION_BUNDLE = "javax.transaction";
+  String TRANSACTION_BUNDLE_VERSION = "1.1.0";
+  String TRANSACTION_REGISTRY_BUNDLE = "javax.transaction.TransactionSynchronizationRegistry";
+  String COMPOSITE_SERVICE_FILTER_IMPORT = "CompositeServiceFilter-Import";
   
 }
