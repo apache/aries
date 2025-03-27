@@ -43,6 +43,9 @@ updates:
       - dependency-name: "jakarta.persistence:jakarta.persistence-api"
         versions:
           - ">3.0.0" # does not support java 8
+      - dependency-name: "jakarta.servlet:jakarta.servlet-api"
+        versions:
+          - ">=5.0.0" # does not provide javax.servlet package necessary for pax-web 8.x
       - dependency-name: "javax.enterprise:cdi-api"
         versions:
           - ">2.0.SP1" # 2.0-PFD2 is considered as newer, but is older
