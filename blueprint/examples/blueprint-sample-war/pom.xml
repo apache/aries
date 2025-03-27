@@ -52,7 +52,7 @@
         <jetty-maven-plugin.version>8.1.16.v20140903</jetty-maven-plugin.version>
         <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
         <tomcat6-maven-plugin.version>2.2</tomcat6-maven-plugin.version>
-        <tomcat7-maven-plugin.version>2.0</tomcat7-maven-plugin.version>
+        <tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
     </properties>
 
     <profiles>
