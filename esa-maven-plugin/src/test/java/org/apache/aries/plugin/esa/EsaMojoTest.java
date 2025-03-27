@@ -39,9 +39,7 @@ import aQute.bnd.osgi.Analyzer;
 /**
  * @author <a href="mailto:aramirez@apache.org">Allan Ramirez</a>
  */
-public class EsaMojoTest
-    extends AbstractMojoTestCase
-{
+public class EsaMojoTest extends AbstractMojoTestCase {
     public void testEsaTestEnvironment()
         throws Exception
     {

@@ -50,19 +50,17 @@ import org.codehaus.plexus.util.FileUtils;
  * @phase package
  * @requiresDependencyResolution test
  */
-public class EsaMojo
-    extends AbstractMojo
-{
+public class EsaMojo extends AbstractMojo {
 
-    public enum EsaContent {none, all, content};
+    public enum EsaContent {none, all, content}
 
-    public enum EsaManifestContent {all, content};
-    
+    public enum EsaManifestContent {all, content}
+
     public static final String SUBSYSTEM_MF_URI = "OSGI-INF/SUBSYSTEM.MF";
 
     private static final String[] DEFAULT_INCLUDES = {"**/**"};
 
-    private static final Set<String> SKIP_INSTRUCTIONS = new HashSet<String>();
+    private static final Set<String> SKIP_INSTRUCTIONS = new HashSet<>();
 
     static {
         SKIP_INSTRUCTIONS.add(Constants.SUBSYSTEM_MANIFESTVERSION);
@@ -158,7 +156,7 @@ public class EsaMojo
      * @parameter
      */
     private Map instructions = new LinkedHashMap();
-    
+
     /**
      * Adding pom.xml and pom.properties to the archive.
      *
@@ -182,9 +180,9 @@ public class EsaMojo
 
     /**
      * Define which bundles to include in the archive.
-     *   none - no bundles are included 
+     *   none - no bundles are included
      *   content - direct dependencies go into the content
-     *   all - direct and transitive dependencies go into the content 
+     *   all - direct and transitive dependencies go into the content
      *
      * @parameter expression="${archiveContent}" default-value="content"
      */
@@ -219,20 +217,20 @@ public class EsaMojo
             Set<Artifact> artifacts = null;
             switch (EsaContent.valueOf(archiveContent)) {
             case none:
-                getLog().info("archiveContent=none: subsystem archive will not contain any bundles.");                  
+                getLog().info("archiveContent=none: subsystem archive will not contain any bundles.");
                 break;
             case content:
                 // only include the direct dependencies in the archive
-                artifacts = project.getDependencyArtifacts();                   
+                artifacts = project.getDependencyArtifacts();
                 break;
             case all:
                 // include direct and transitive dependencies in the archive
-                artifacts = project.getArtifacts();                 
+                artifacts = project.getArtifacts();
                 break;
             default:
-                throw new MojoExecutionException("Invalid configuration for <archiveContent/>.  Valid values are none, content and all." );                    
+                throw new MojoExecutionException("Invalid configuration for <archiveContent/>.  Valid values are none, content and all." );
             }
-              
+
             if (artifacts != null) {
                 // Explicitly add self to bundle set (used when pom packaging
                 // type != "esa" AND a file is present (no point to add to
@@ -242,19 +240,19 @@ public class EsaMojo
                     getLog().info("Explicitly adding artifact[" + selfArtifact.getGroupId() + ", " + selfArtifact.getId() + ", " + selfArtifact.getScope() + "]");
                     artifacts.add(project.getArtifact());
                 }
-                
+
                 artifacts = selectArtifactsInCompileOrRuntimeScope(artifacts);
                 artifacts = selectNonJarArtifactsAndBundles(artifacts);
 
                 int cnt = 0;
-                for (Artifact artifact : artifacts) {                    
+                for (Artifact artifact : artifacts) {
                     if (!artifact.isOptional() /*&& filter.include(artifact)*/) {
                         getLog().info("Copying artifact[" + artifact.getGroupId() + ", " + artifact.getId() + ", " +
                                 artifact.getScope() + "]");
                         zipArchiver.addFile(artifact.getFile(), artifact.getArtifactId() + "-" + artifact.getVersion() + "." + (artifact.getType() == null ? "jar" : artifact.getType()));
                         cnt++;
                     }
-                }               
+                }
                 getLog().info(String.format("Added %s artifacts to subsystem subsystem archive.", cnt));
             }
         }
@@ -264,11 +262,11 @@ public class EsaMojo
         }
 
     }
-    
+
     /**
-     * 
+     *
      * Copies source files to the esa
-     * 
+     *
      * @throws MojoExecutionException
      */
     private void copyEsaSourceFiles() throws MojoExecutionException {
@@ -310,7 +308,7 @@ public class EsaMojo
             throw new MojoExecutionException( "Error copying esa resources", e );
         }
     }
-    
+
     private void includeCustomManifest() throws MojoExecutionException {
         try
         {
@@ -323,7 +321,7 @@ public class EsaMojo
             throw new MojoExecutionException( "Error copying SUBSYSTEM.MF file", e );
         }
     }
-    
+
     private void generateSubsystemManifest() throws MojoExecutionException {
         if (generateManifest) {
             String fileName = new String(getBuildDir() + "/"
@@ -345,7 +343,7 @@ public class EsaMojo
                         "Error generating SUBSYSTEM.MF file: " + fileName, e);
             }
         }
-        
+
         // Check the manifest exists
         File ddFile = new File( getBuildDir(), SUBSYSTEM_MF_URI);
         if ( !ddFile.exists() )
@@ -355,7 +353,7 @@ public class EsaMojo
         }
 
     }
-    
+
     private void addMavenDescriptor() throws MojoExecutionException {
         try {
 
@@ -374,15 +372,15 @@ public class EsaMojo
                 File dir = new File(project.getBuild().getDirectory(),
                         "maven-zip-plugin");
                 File pomPropertiesFile = new File(dir, "pom.properties");
-                pomPropertiesUtil.createPomProperties(project, zipArchiver,
+                pomPropertiesUtil.createPomProperties(project, zipArchiver, null,
                         pomPropertiesFile, forceCreation);
             }
         } catch (Exception e) {
             throw new MojoExecutionException("Error assembling esa", e);
         }
     }
-    
-    
+
+
     private void init() {
         getLog().debug( " ======= esaMojo settings =======" );
         getLog().debug( "esaSourceDirectory[" + esaSourceDirectory + "]" );
@@ -409,9 +407,9 @@ public class EsaMojo
 
         zipArchiver.setIncludeEmptyDirs( includeEmptyDirs );
         zipArchiver.setCompress( true );
-        zipArchiver.setForced( forceCreation );        
+        zipArchiver.setForced( forceCreation );
     }
-    
+
 
     private void writeSubsystemManifest(String fileName)
             throws MojoExecutionException {
@@ -462,7 +460,7 @@ public class EsaMojo
                 }
                 String entry = info.getContentLine();
                 if ("dependencies".equals(startOrder)) {
-                    entry += ";start-order:=\"" + order + "\"";                  
+                    entry += ";start-order:=\"" + order + "\"";
                 }
                 if (iter.hasNext()) {
                     entry += ",\n ";
@@ -500,35 +498,35 @@ public class EsaMojo
         }
         return artifact.getGroupId() + "." + artifact.getArtifactId();
     }
-    
+
     private String getSubsystemVersion() {
         if (instructions.containsKey(Constants.SUBSYSTEM_VERSION)) {
             return instructions.get(Constants.SUBSYSTEM_VERSION).toString();
         }
         return Analyzer.cleanupVersion(project.getVersion());
     }
-    
+
     private String getSubsystemName() {
         if (instructions.containsKey(Constants.SUBSYSTEM_NAME)) {
             return instructions.get(Constants.SUBSYSTEM_NAME).toString();
         }
         return project.getName();
     }
-    
+
     private String getSubsystemDescription() {
         if (instructions.containsKey(Constants.SUBSYSTEM_DESCRIPTION)) {
             return instructions.get(Constants.SUBSYSTEM_DESCRIPTION).toString();
         }
         return project.getDescription();
     }
-    
+
     private File getBuildDir() {
         if (buildDir == null) {
             buildDir = new File(workDirectory);
         }
         return buildDir;
     }
-    
+
     private void addBuildDir() throws MojoExecutionException {
         try {
             if (buildDir.isDirectory()) {
@@ -554,7 +552,7 @@ public class EsaMojo
             FileUtils.copyFileToDirectory( appMfFile, osgiInfDir);
         }
     }
-    
+
     /**
      * Return non-pom artifacts in 'compile' or 'runtime' scope only.
      */
@@ -563,7 +561,7 @@ public class EsaMojo
         Set<Artifact> selected = new LinkedHashSet<Artifact>();
         for (Artifact artifact : artifacts) {
             String scope = artifact.getScope();
-            if (scope == null 
+            if (scope == null
                 || Artifact.SCOPE_COMPILE.equals(scope)
                 || Artifact.SCOPE_RUNTIME.equals(scope)) {
                 if (artifact.getType() == null || !artifact.getType().equals("pom")) {
@@ -616,7 +614,7 @@ public class EsaMojo
 
     /**
      * Creates the final archive.
-     * 
+     *
      * @throws MojoExecutionException
      */
     private void createEsaFile() throws MojoExecutionException {
@@ -636,26 +634,26 @@ public class EsaMojo
         }
 
     }
-    
+
     public void execute()
         throws MojoExecutionException
     {
         init();
 
         addDependenciesToArchive();
-        
+
         copyEsaSourceFiles();
 
         includeCustomManifest();
-        
+
         generateSubsystemManifest();
 
         addMavenDescriptor();
-        
+
         addBuildDir();
-        
+
         includeSharedResources();
-        
+
         createEsaFile();
     }
 }

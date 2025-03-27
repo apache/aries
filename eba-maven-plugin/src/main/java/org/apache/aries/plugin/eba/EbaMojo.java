@@ -48,9 +48,7 @@ import java.util.Set;
  * @phase package
  * @requiresDependencyResolution test
  */
-public class EbaMojo
-    extends AbstractMojo
-{
+public class EbaMojo extends AbstractMojo {
 
 
 	public static final String APPLICATION_MF_URI = "META-INF/APPLICATION.MF";
@@ -167,7 +165,7 @@ public class EbaMojo
      *
      * @parameter
      */
-    private Map instructions = new LinkedHashMap();;
+    private Map<?,?> instructions = new LinkedHashMap<>();
 
     /**
      * Adding pom.xml and pom.properties to the archive.
@@ -386,7 +384,7 @@ public class EbaMojo
                 PomPropertiesUtil pomPropertiesUtil = new PomPropertiesUtil();
                 File dir = new File(project.getBuild().getDirectory(), "maven-zip-plugin");
                 File pomPropertiesFile = new File(dir, "pom.properties");
-                pomPropertiesUtil.createPomProperties(project, zipArchiver, pomPropertiesFile, forceCreation);
+                pomPropertiesUtil.createPomProperties(project, zipArchiver, null, pomPropertiesFile, forceCreation);
             }
             File ebaFile = new File( outputDirectory, finalName + ".eba" );
             zipArchiver.setDestFile(ebaFile);
@@ -525,7 +523,7 @@ public class EbaMojo
      */
     private Set<Artifact> selectArtifacts(Set<Artifact> artifacts)
     {
-        Set<Artifact> selected = new LinkedHashSet<Artifact>();
+        Set<Artifact> selected = new LinkedHashSet<>();
         for (Artifact artifact : artifacts) {
             String scope = artifact.getScope();
             if (scope == null
