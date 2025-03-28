@@ -74,7 +74,7 @@
         <org.apache.aries.jndi.version>1.0.0</org.apache.aries.jndi.version>
 
         <!-- Aries Jpa Versions -->
-        <org.apache.aries.jpa.api.version>1.0.2</org.apache.aries.jpa.api.version>
+        <org.apache.aries.jpa.api.version>2.7.3</org.apache.aries.jpa.api.version>
         <org.apache.aries.jpa.blueprint.aries.version>1.0.4</org.apache.aries.jpa.blueprint.aries.version>
         <org.apache.aries.jpa.container.version>1.0.4</org.apache.aries.jpa.container.version>
         <org.apache.aries.jpa.container.context.version>1.0.4</org.apache.aries.jpa.container.context.version>
