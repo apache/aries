@@ -53,7 +53,7 @@
         </aries.osgi.private.pkg>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
-        <asm-all.version>5.0.3</asm-all.version>
+        <asm-all.version>5.2</asm-all.version>
         <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
         <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
         <org.apache.aries.testsupport.unit.version>1.0.0</org.apache.aries.testsupport.unit.version>
