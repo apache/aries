@@ -41,7 +41,7 @@
     </scm>
 
     <properties>
-        <maven-assembly-plugin.version>2.2-beta-5</maven-assembly-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
         <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
         <org.apache.aries.application.default.local.platform.version>1.0.0</org.apache.aries.application.default.local.platform.version>
         <org.apache.aries.application.deployment.management.version>1.0.0</org.apache.aries.application.deployment.management.version>

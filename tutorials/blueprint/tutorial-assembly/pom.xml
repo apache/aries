@@ -29,6 +29,10 @@
     <name>Greeter Tutorial Assembly</name>
     <packaging>pom</packaging>
 
+    <properties>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+    </properties>
+
     <dependencies>
 
         <!-- External (platform) dependencies -->
@@ -66,7 +70,6 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.gogo.runtime</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
@@ -159,7 +162,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
+                <version>${maven-assembly-plugin.version}</version>
                 <configuration>
                     <descriptors>
                         <descriptor>src/main/assemblies/tutorial-assembly.xml</descriptor>
@@ -169,7 +172,7 @@
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>assembly</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>

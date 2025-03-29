@@ -30,13 +30,13 @@
 	<dependencySets> 
 		<dependencySet>
 			<excludes>
-				<exclude>greeter*</exclude>
+				<exclude>*:*greeter*</exclude>
 			</excludes>
 			<outputDirectory>/platform</outputDirectory>
 		</dependencySet> 
 		<dependencySet>
 			<includes>
-				<include>greeter*</include>
+				<include>*:*greeter*</include>
 			</includes>
 			<outputDirectory>/bin</outputDirectory>
 		</dependencySet>
