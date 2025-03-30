@@ -42,7 +42,7 @@
     </scm>
     
     <properties>
-        <asm.version>9.7.1</asm.version>
+        <asm.version>9.8</asm.version>
         <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
         <blueprint.authz.version>${blueprint.authz.dev.version}</blueprint.authz.version>
         <blueprint.cm.version>${blueprint.cm.dev.version}</blueprint.cm.version>

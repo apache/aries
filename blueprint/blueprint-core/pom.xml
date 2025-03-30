@@ -95,7 +95,7 @@
         </aries.osgi.include.resource>
         <lastReleaseVersion>1.6.0</lastReleaseVersion>
 
-        <asm.version>9.7.1</asm.version>
+        <asm.version>9.8</asm.version>
         <blueprint.annotation.api.version>1.0.1</blueprint.annotation.api.version>
         <blueprint.api.version>1.0.1</blueprint.api.version>
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
