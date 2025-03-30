@@ -48,7 +48,7 @@
             org.apache.aries.application.resolve.transform.cm.itests;
         </aries.osgi.private.pkg>
 
-        <asm-all.version>5.2</asm-all.version>
+        <asm.version>9.7.1</asm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.inject.version>1</javax.inject.version>
         <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
@@ -123,8 +123,26 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>${asm-all.version}</version>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
             <scope>test</scope>
         </dependency>
 

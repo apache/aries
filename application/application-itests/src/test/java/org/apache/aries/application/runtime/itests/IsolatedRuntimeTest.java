@@ -327,7 +327,10 @@ public class IsolatedRuntimeTest extends AbstractIntegrationTest {
 
                 // Bundles
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint").versionAsInProject(),
-                mavenBundle("org.ow2.asm", "asm-all").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-commons").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-tree").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-analysis").versionAsInProject(),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy").versionAsInProject(),
                 mavenBundle("org.apache.aries.transaction", "org.apache.aries.transaction.blueprint").versionAsInProject(),
                 mavenBundle("org.apache.aries", "org.apache.aries.util").versionAsInProject(),

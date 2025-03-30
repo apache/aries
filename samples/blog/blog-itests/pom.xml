@@ -31,7 +31,6 @@
     </description>
 
     <properties>
-        <asm.version>5.2</asm.version>
         <cm.version>3.2.0-v20070116</cm.version>
         <commons-dbcp.version>1.4</commons-dbcp.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
@@ -154,8 +153,22 @@
 
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>${asm.version}</version>
+            <artifactId>asm</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
             <scope>test</scope>
         </dependency>
 
