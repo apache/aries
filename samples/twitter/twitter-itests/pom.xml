@@ -33,7 +33,6 @@
     </description>
 
     <properties>
-        <asm.version>5.2</asm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.inject.version>1</javax.inject.version>
         <logback.version>1.5.18</logback.version>
@@ -69,8 +68,22 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>${asm.version}</version>
+            <artifactId>asm</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

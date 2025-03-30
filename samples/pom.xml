@@ -94,7 +94,6 @@
         <!-- External Dependencies -->
         <cm.version>3.2.0-v20070116</cm.version>
         <services.version>3.1.200-v20070605</services.version>
-        <asm-all.version>3.3.1</asm-all.version>
         <derby.version>10.14.2.0</derby.version>
         <commons-collections.version>3.2.2</commons-collections.version>
         <commons-lang.version>2.6</commons-lang.version>
@@ -226,12 +225,6 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
                 <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>asm</groupId>
-                <artifactId>asm-all</artifactId>
-                <version>${asm-all.version}</version>
             </dependency>
 
             <dependency>

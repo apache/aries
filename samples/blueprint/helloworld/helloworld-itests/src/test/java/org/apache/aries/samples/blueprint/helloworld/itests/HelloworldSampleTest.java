@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.ops4j.pax.exam.CoreOptions.bootDelegationPackages;
 import static org.ops4j.pax.exam.CoreOptions.*;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
@@ -179,7 +180,10 @@ public class HelloworldSampleTest extends AbstractIntegrationTest {
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint" ),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
                 mavenBundle("org.apache.aries", "org.apache.aries.util" ),
-                mavenBundle("org.ow2.asm", "asm-all" ),
+                mavenBundle("org.ow2.asm", "asm").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-commons").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-tree").versionAsInProject(),
+                mavenBundle("org.ow2.asm", "asm-analysis").versionAsInProject(),
                 mavenBundle("org.apache.aries.samples.blueprint.helloworld", "org.apache.aries.samples.blueprint.helloworld.api"),
                 mavenBundle("org.apache.aries.samples.blueprint.helloworld", "org.apache.aries.samples.blueprint.helloworld.server"),
                 mavenBundle("org.apache.aries.samples.blueprint.helloworld", "org.apache.aries.samples.blueprint.helloworld.client")
