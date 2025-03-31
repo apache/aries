@@ -164,8 +164,8 @@ public class TwitterTest {
 		}
 		return composite(
 				junitBundles(),
-				mavenBundle("org.ops4j.pax.logging", "pax-logging-api", "1.7.2"),
-				mavenBundle("org.ops4j.pax.logging", "pax-logging-service", "1.7.2"),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+				mavenBundle("org.ops4j.pax.logging", "pax-logging-log4j2").versionAsInProject(),
 				//mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject(),
 				// this is how you set the default log level when using pax
 				// logging (logProfile)

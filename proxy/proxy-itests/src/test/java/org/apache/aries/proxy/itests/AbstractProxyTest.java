@@ -290,7 +290,7 @@ public abstract class AbstractProxyTest extends AbstractIntegrationTest {
   protected Option proxyOptions() {
       return composite(
               junitBundles(),
-              addPaxLoggingV2Bundles(),
+              addPaxLoggingBundles(),
               setPaxExamLogLevel("INFO"),
               configurePaxUrlLocalMavenRepoIfNeeded(),
               addAsmBundles(),

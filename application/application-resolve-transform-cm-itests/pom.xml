@@ -62,6 +62,7 @@
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
         <pax-exam.version>4.13.5</pax-exam.version>
+        <pax-logging.version>1.12.12</pax-logging.version>
         <pax-swissbox.version>1.8.3</pax-swissbox.version>
         <pax-url.version>2.6.16</pax-url.version>
     </properties>
@@ -150,11 +151,13 @@
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
+            <version>${pax-logging.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
+            <artifactId>pax-logging-log4j2</artifactId>
+            <version>${pax-logging.version}</version>
             <scope>test</scope>
         </dependency>
 
