@@ -37,9 +37,6 @@ pushstream:
 samples:
 - changed-files:
   - any-glob-to-any-file: 'samples/**/*'
-sandbox:
-- changed-files:
-  - any-glob-to-any-file: 'sandbox/**/*'
 spi-fly:
 - changed-files:
   - any-glob-to-any-file: 'spi-fly/**/*'

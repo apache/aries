@@ -59,11 +59,6 @@
         <module>util</module>
         <module>versioning</module>
         <module>web</module>
-
-        <!-- excluded as not having CI build-->
-        <!--
-        <module>sandbox</module>
-        -->
     </modules>
 
     <build>
