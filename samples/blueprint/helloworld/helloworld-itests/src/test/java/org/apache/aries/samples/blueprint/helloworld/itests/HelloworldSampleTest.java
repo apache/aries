@@ -164,7 +164,7 @@ public class HelloworldSampleTest extends AbstractIntegrationTest {
                 
                 // Log
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-api"),
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-service"),
+                mavenBundle("org.ops4j.pax.logging", "pax-logging-log4j2"),
 
                 mavenBundle("org.ops4j.pax.url", "pax-url-aether"),
 

@@ -132,7 +132,7 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
     public Option baseOptions() {
         return composite(
                 junitBundles(),
-                addPaxLoggingV2Bundles(),
+                addPaxLoggingBundles(),
                 setPaxExamLogLevel("INFO"),
                 configurePaxUrlLocalMavenRepoIfNeeded()
         );
