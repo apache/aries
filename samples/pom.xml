@@ -137,7 +137,7 @@
         <javax.persistence-api.version>2.2</javax.persistence-api.version>
         <javax.transaction-api.version>1.2</javax.transaction-api.version>
         <osgi.core.version>8.0.0</osgi.core.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
         <pax-logging.version>1.12.12</pax-logging.version>
 
         <!-- Aries dependencies -->
