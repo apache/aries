@@ -26,13 +26,13 @@
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
         <version>34</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.apache.aries</groupId>
     <artifactId>parent</artifactId>
     <name>Aries :: Parent POM</name>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>3.0.0</version>
     <packaging>pom</packaging>
 
     <description>
@@ -52,7 +52,7 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</developerConnection>
         <url>https://gitbox.apache.org/repos/asf?p=aries.git;a=summary</url>
-        <tag>HEAD</tag>
+        <tag>parent-3.0.0</tag>
     </scm>
 
     <issueManagement>
@@ -150,9 +150,9 @@
 
     <properties>
         <!-- OSGi bundles properties -->
-        <aries.osgi.import.defaults/>
-        <aries.osgi.import.before.defaults/>
-        <aries.osgi.import.additional/>
+        <aries.osgi.import.defaults />
+        <aries.osgi.import.before.defaults />
+        <aries.osgi.import.additional />
         <aries.osgi.import.pkg>
             org.apache.aries.*,
             ${aries.osgi.import.before.defaults},
@@ -160,7 +160,7 @@
             ${aries.osgi.import.additional},
             *
         </aries.osgi.import.pkg>
-        <aries.osgi.activator/>
+        <aries.osgi.activator />
         <aries.osgi.failok>false</aries.osgi.failok>
         <!--This is the default (consumer policy) range - override in the pom if you need a provider range -->
         <aries.osgi.import.default.version>[$(version;==;$(@)),$(version;+;$(@)))</aries.osgi.import.default.version>
@@ -172,7 +172,7 @@
 
         <aries.osgi.split.pkg>-split-package:=first</aries.osgi.split.pkg>
         <aries.osgi.import>${aries.osgi.import.pkg}</aries.osgi.import>
-        <aries.osgi.dynamic/>
+        <aries.osgi.dynamic />
         <aries.osgi.symbolic.name>${project.artifactId}</aries.osgi.symbolic.name>
         <aries.osgi.exclude.dependencies>false</aries.osgi.exclude.dependencies>
         <aries.osgi.remove.headers>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</aries.osgi.remove.headers>
@@ -265,7 +265,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -278,7 +278,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
