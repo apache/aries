@@ -64,7 +64,7 @@
         <org.apache.aries.transaction.blueprint.version>1.1.1</org.apache.aries.transaction.blueprint.version>
         <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <plexus-build-api.version>1.2.0</plexus-build-api.version>
-        <plexus-classworlds.version>2.8.0</plexus-classworlds.version>
+        <plexus-classworlds.version>2.9.0</plexus-classworlds.version>
         <xbean-finder-shaded.version>4.26</xbean-finder-shaded.version>
     </properties>
 
