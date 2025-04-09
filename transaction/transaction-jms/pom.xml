@@ -70,7 +70,7 @@
         <maven-xbean-plugin.version>4.26</maven-xbean-plugin.version>
         <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
         <osgi.core.version>4.3.1</osgi.core.version>
-        <xbean-blueprint.version>4.26</xbean-blueprint.version>
+        <xbean-blueprint.version>4.27</xbean-blueprint.version>
     </properties>
 
     <dependencies>
