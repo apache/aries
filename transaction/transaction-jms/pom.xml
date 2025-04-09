@@ -67,10 +67,9 @@
         <geronimo-jta_1.1_spec.version>1.1.1</geronimo-jta_1.1_spec.version>
         <geronimo-transaction.version>3.1.4</geronimo-transaction.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
-        <maven-xbean-plugin.version>4.27</maven-xbean-plugin.version>
         <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
         <osgi.core.version>4.3.1</osgi.core.version>
-        <xbean-blueprint.version>4.27</xbean-blueprint.version>
+        <xbean.version>4.27</xbean.version>
     </properties>
 
     <dependencies>
@@ -108,7 +107,7 @@
         <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-blueprint</artifactId>
-            <version>${xbean-blueprint.version}</version>
+            <version>${xbean.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -129,7 +128,7 @@
             <plugin>
                 <groupId>org.apache.xbean</groupId>
                 <artifactId>maven-xbean-plugin</artifactId>
-                <version>${maven-xbean-plugin.version}</version>
+                <version>${xbean.version}</version>
                 <executions>
                     <execution>
                         <goals>
