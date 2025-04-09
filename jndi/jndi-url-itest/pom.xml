@@ -63,7 +63,7 @@
         <pax-url.version>2.6.16</pax-url.version>
         <pax-web.version>8.0.31</pax-web.version>
         <services.version>3.2.100.v20100503</services.version>
-        <xbean.version>4.26</xbean.version>
+        <xbean.version>4.27</xbean.version>
     </properties>
 
     <dependencies>
