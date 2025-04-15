@@ -33,6 +33,7 @@ jobs:
         os: [ ubuntu-latest ]
     name: PMD
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]' && (github.ref == 'refs/heads/trunk' || github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) 
     steps:
     - name: Git Checkout
       uses: actions/checkout@v4
