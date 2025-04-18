@@ -22,13 +22,9 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.wrappedBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,15 +35,12 @@ import org.junit.Before;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
-import org.ops4j.pax.url.mvn.Handler;
-import org.ops4j.pax.url.mvn.ServiceConstants;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 import javax.inject.Inject;
@@ -55,10 +48,7 @@ import javax.inject.Inject;
 
 public abstract class AbstractIntegrationTest {
 
-    private static final int CONNECTION_TIMEOUT = 30000;
-    public static final long DEFAULT_TIMEOUT = 60000;
-
-	@Inject
+    @Inject
   	protected BundleContext bundleContext;
 
     private List<ServiceTracker> srs;
@@ -145,45 +135,6 @@ public abstract class AbstractIntegrationTest {
         }
     }
 
-	protected void listBundleServices(Bundle b) {
-    	ServiceReference []srb = b.getRegisteredServices();
-		for(ServiceReference sr:srb){
-			System.out.println(b.getSymbolicName() + " SERVICE: "+sr);
-    	}	
-	}
-
-	protected Boolean isServiceRegistered(Bundle b) {
-		ServiceReference []srb = b.getRegisteredServices();
-		if(srb == null) {
-			return false;
-		}
-    	return true;
-	}
-
-    protected void waitForServices(Bundle b, String sclass) {
-		try {
-			BundleContext bc = b.getBundleContext();
-    		String bsn = b.getSymbolicName();
-			ServiceTracker st = new ServiceTracker(bc, sclass, null);
-    		st.open();
-    		Object bac = st.waitForService(DEFAULT_TIMEOUT);
-			/* Uncomment for debug */
-			/*
-			if(bac == null) {
-				System.out.println("SERVICE NOTFOUND " + bsn);
-			} else {
-				System.out.println("SERVICE FOUND " + bsn);
-			}
-			*/
-			st.close();
-			return;
-		} 
-		catch (Exception e) {
-			System.out.println("Failed to register services for " + b.getSymbolicName() + e.getMessage());	
-		}
-	}
-
-
 	protected static Option[] updateOptions(Option[] options) {
 	if ("IBM Corporation".equals(System.getProperty("java.vendor"))) {
             Option[] ibmOptions = options(
@@ -194,42 +145,7 @@ public abstract class AbstractIntegrationTest {
 
         return options;
     }
-
-  public static String getHTTPResponse(HttpURLConnection conn) throws IOException
-  {
-    StringBuilder response = new StringBuilder();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(),
-        "ISO-8859-1"));
-    try {
-      for (String s = reader.readLine(); s != null; s = reader.readLine()) {
-        response.append(s).append("\r\n");
-      }
-    } finally {
-      reader.close();
-    }
-
-    return response.toString();
-  }
-
-  public static HttpURLConnection makeConnection(String contextPath) throws IOException
-  {
-    URL url = new URL(contextPath);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-    conn.setConnectTimeout(CONNECTION_TIMEOUT);
-    conn.connect();
-
-    return conn;
-  }
   
-  protected <T> T getOsgiService(Class<T> type, long timeout) {
-      return getOsgiService(type, null, timeout);
-  }
-
-  protected <T> T getOsgiService(Class<T> type) {
-    return getOsgiService(type, null, DEFAULT_TIMEOUT);
-  }
-    
   protected <T> T getOsgiService(Class<T> type, String filter, long timeout) {
     return getOsgiService(null, type, filter, timeout);
   }
@@ -268,16 +184,6 @@ public abstract class AbstractIntegrationTest {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
-  }
-  
-  public static URL getUrlToEba(String groupId, String artifactId) throws MalformedURLException {
-    String artifactVersion = getArtifactVersion(groupId, artifactId);
-
-    // Need to use handler from org.ops4j.pax.url.aether
-    URL urlToEba = new URL(null,
-        ServiceConstants.PROTOCOL + ":" + groupId + "/" +artifactId + "/"
-            + artifactVersion + "/eba", new Handler());
-    return urlToEba;
   }
 
 }

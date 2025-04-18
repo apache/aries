@@ -18,42 +18,43 @@
  */
 package org.apache.aries.samples.blog.itests;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Collections;
 
 import javax.inject.Inject;
 
-import org.apache.aries.application.management.AriesApplicationContext;
 import org.apache.aries.quiesce.manager.QuiesceManager;
 import org.junit.Test;
-import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.options.MavenArtifactUrlReference;
 import org.osgi.framework.Bundle;
 
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
-public class QuiesceBlogSampleWithEbaTest extends AbstractBlogIntegrationTest {
+
+public class QuiesceBlogSampleTest extends AbstractBlogIntegrationTest {
 	@Inject
 	QuiesceManager quiesceMgr;
 
 	@Test
 	public void test() throws Exception {
 		resolveBundles();
-		MavenArtifactUrlReference eba = CoreOptions.maven()
-				.groupId("org.apache.aries.samples.blog")
-				.artifactId("org.apache.aries.samples.blog.jpa.eba")
-				.versionAsInProject()
-				.type("eba");
-		AriesApplicationContext ctx = installEba(eba);
+
+        Bundle bundleApi = context.installBundle(mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.api").versionAsInProject().getURL());
+        Bundle bundleWeb = context.installBundle(mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.web").versionAsInProject().getURL());
+        Bundle bundleBiz = context.installBundle(mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.biz").versionAsInProject().getURL());
+        Bundle bundlePersistenceJpa = context.installBundle(mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.persistence.jpa").versionAsInProject().getURL());
+
+        bundleApi.start();
+        bundlePersistenceJpa.start();
+        bundleBiz.start();
+        bundleWeb.start();
 
 		/* Find and check all the blog sample bundles */
 		Bundle bapi = assertBundleStarted("org.apache.aries.samples.blog.api");
 		Bundle bweb = assertBundleStarted("org.apache.aries.samples.blog.web");
 		Bundle bbiz = assertBundleStarted("org.apache.aries.samples.blog.biz");
 		Bundle bper = assertBundleStarted("org.apache.aries.samples.blog.persistence.jpa");
-		Bundle bds = assertBundleStarted("org.apache.aries.samples.blog.datasource");
-		Bundle txs = assertBundleStarted("org.apache.aries.transaction.manager");
+		assertBundleStarted("org.apache.aries.samples.blog.datasource");
+		assertBundleStarted("org.apache.aries.transaction.manager");
 
 		assertBlogServicesStarted();
 		checkBlogWebAccess();
@@ -89,9 +90,10 @@ public class QuiesceBlogSampleWithEbaTest extends AbstractBlogIntegrationTest {
 		System.out.println("Checking if blog works again after restart");
 		checkBlogWebAccess();
 
-		ctx.stop();
-		manager.uninstall(ctx);
-
+        bundleWeb.uninstall();
+        bundleBiz.uninstall();
+        bundlePersistenceJpa.uninstall();
+        bundleApi.uninstall();
 	}
 
 }

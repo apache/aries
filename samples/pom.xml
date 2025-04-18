@@ -46,26 +46,6 @@
      -->
 
     <properties>
-        <!-- Aries eba-maven-plugin Version -->
-        <eba-maven-plugin.version>1.0.0</eba-maven-plugin.version>
-
-        <!-- Aries Application Versions -->
-        <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
-        <org.apache.aries.application.default.local.platform.version>1.0.0</org.apache.aries.application.default.local.platform.version>
-        <org.apache.aries.application.deployment.management.version>1.0.0</org.apache.aries.application.deployment.management.version>
-        <org.apache.aries.application.install.version>1.0.0</org.apache.aries.application.install.version>
-        <org.apache.aries.application.runtime.itest.interfaces.version>1.0.0</org.apache.aries.application.runtime.itest.interfaces.version>
-        <org.apache.aries.application.management.version>1.0.0</org.apache.aries.application.management.version>
-        <org.apache.aries.application.modeller.version>1.0.0</org.apache.aries.application.modeller.version>
-        <org.apache.aries.application.resolver.noop.version>1.0.0</org.apache.aries.application.resolver.noop.version>
-        <org.apache.aries.application.resolver.obr.version>1.0.0</org.apache.aries.application.resolver.obr.version>
-        <org.apache.aries.application.runtime.version>1.0.0</org.apache.aries.application.runtime.version>
-        <org.apache.aries.application.runtime.framework.version>1.0.0</org.apache.aries.application.runtime.framework.version>
-        <org.apache.aries.application.runtime.framework.management.version>1.0.0</org.apache.aries.application.runtime.framework.management.version>
-        <org.apache.aries.application.runtime.isolated.version>1.0.0</org.apache.aries.application.runtime.isolated.version>
-        <org.apache.aries.application.runtime.repository.version>1.0.0</org.apache.aries.application.runtime.repository.version>
-        <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
-
         <!-- Aries Blueprint Versions -->
         <org.apache.aries.blueprint.annotation.api.version>1.0.0</org.apache.aries.blueprint.annotation.api.version>
         <org.apache.aries.blueprint.version>1.1.0</org.apache.aries.blueprint.version>
@@ -348,82 +328,6 @@
             </dependency>
 
             <!-- other aries subproject dependency management -->
-            <!--application-->
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.api</artifactId>
-                <version>${org.apache.aries.application.api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.default.local.platform</artifactId>
-                <version>${org.apache.aries.application.default.local.platform.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.deployment.management</artifactId>
-                <version>${org.apache.aries.application.deployment.management.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.install</artifactId>
-                <version>${org.apache.aries.application.install.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.management</artifactId>
-                <version>${org.apache.aries.application.management.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.modeller</artifactId>
-                <version>${org.apache.aries.application.modeller.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.resolver.noop</artifactId>
-                <version>${org.apache.aries.application.resolver.noop.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-                <version>${org.apache.aries.application.resolver.obr.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime</artifactId>
-                <version>${org.apache.aries.application.runtime.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.framework</artifactId>
-                <version>${org.apache.aries.application.runtime.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.framework.management</artifactId>
-                <version>${org.apache.aries.application.runtime.framework.management.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.isolated</artifactId>
-                <version>${org.apache.aries.application.runtime.isolated.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.itest.interfaces</artifactId>
-                <version>${org.apache.aries.application.runtime.itest.interfaces.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.runtime.repository</artifactId>
-                <version>${org.apache.aries.application.runtime.repository.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.application</groupId>
-                <artifactId>org.apache.aries.application.utils</artifactId>
-                <version>${org.apache.aries.application.utils.version}</version>
-            </dependency>
             <!-- blueprint -->
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
@@ -576,7 +480,6 @@
         <module>ariestrader</module>
         <module>blog</module>
         <module>blueprint</module>
-        <module>twitter</module>
     </modules>
 
 </project>

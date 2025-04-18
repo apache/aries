@@ -61,18 +61,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blog</groupId>
-                <artifactId>org.apache.aries.samples.blog.jdbc.eba</artifactId>
-                <version>${project.version}</version>
-                <type>eba</type>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.samples.blog</groupId>
-                <artifactId>org.apache.aries.samples.blog.jpa.eba</artifactId>
-                <version>${project.version}</version>
-                <type>eba</type>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.samples.blog</groupId>
                 <artifactId>org.apache.aries.samples.blog.persistence.jdbc</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -98,11 +86,8 @@
 
     <modules>
         <module>blog-api</module>
-        <module>blog-assembly</module>
         <module>blog-biz</module>
         <module>blog-datasource</module>
-        <module>blog-jdbc-eba</module>
-        <module>blog-jpa-eba</module>
         <module>blog-persistence-jdbc</module>
         <module>blog-persistence-jpa</module>
         <module>blog-web</module>

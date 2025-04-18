@@ -25,9 +25,8 @@
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.samples.ariestrader</groupId>
     <artifactId>equinox-test-harness</artifactId>
-    <name>Equinox test harness that can be used to install sample EBAs</name>
+    <name>Equinox test harness that can be used to install sample</name>
     <packaging>pom</packaging>
 
     <properties>
@@ -190,49 +189,6 @@
             <groupId>org.apache.aries.transaction</groupId>
             <artifactId>org.apache.aries.transaction.wrappers</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.install</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.management</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.runtime</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.modeller</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.deployment.management</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.default.local.platform</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.resolver.obr</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.resolver.noop</artifactId>
-        </dependency>
 
         <!--
             Aries Trader Dependencies
@@ -241,15 +197,42 @@
             <groupId>org.apache.aries.samples.ariestrader</groupId>
             <artifactId>org.apache.aries.samples.ariestrader.derby.ds</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.apache.aries.samples.ariestrader</groupId>
-            <artifactId>org.apache.aries.samples.ariestrader.all</artifactId>
-            <type>eba</type>
+            <artifactId>org.apache.aries.samples.ariestrader.util</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.samples.ariestrader</groupId>
-            <artifactId>org.apache.aries.samples.ariestrader.jdbc</artifactId>
-            <type>eba</type>
+            <artifactId>org.apache.aries.samples.ariestrader.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.persist.jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.entities</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.persist.jpa.am</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.samples.ariestrader</groupId>
+            <artifactId>org.apache.aries.samples.ariestrader.persist.jpa.cm</artifactId>
         </dependency>
     </dependencies>
 
