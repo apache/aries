@@ -25,7 +25,6 @@
         <version>1.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.aries.samples.ariestrader</groupId>
     <artifactId>assemblies</artifactId>
     <name>AriesTrader :: Assemblies</name>
     <packaging>pom</packaging>
@@ -39,25 +38,10 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <dependency>
-                <groupId>org.apache.aries.samples.ariestrader</groupId>
-                <artifactId>org.apache.aries.samples.ariestrader.all</artifactId>
-                <version>${project.version}</version>
-                <type>eba</type>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.samples.ariestrader</groupId>
-                <artifactId>org.apache.aries.samples.ariestrader.jdbc</artifactId>
-                <version>${project.version}</version>
-                <type>eba</type>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <modules>
-        <module>ariestrader-jdbc-eba</module>
-        <module>ariestrader-all-eba</module>
         <module>equinox-test-harness</module>
     </modules>
 
