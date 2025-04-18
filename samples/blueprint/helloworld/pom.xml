@@ -64,7 +64,6 @@
         <module>helloworld-server</module>
         <module>helloworld-client</module>
         <module>helloworld-assembly</module>
-        <module>helloworld-eba</module>
         <module>helloworld-itests</module>
     </modules>
 

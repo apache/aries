@@ -39,12 +39,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.aries.samples.blueprint.idverifier</groupId>
-                <artifactId>org.apache.aries.samples.blueprint.idverifier.assembly</artifactId>
-                <type>eba</type>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.samples.blueprint.idverifier</groupId>
                 <artifactId>org.apache.aries.samples.blueprint.idverifier.client</artifactId>
                 <version>${project.version}</version>
             </dependency>
