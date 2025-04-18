@@ -18,22 +18,24 @@
  */
 package org.apache.aries.samples.blog.itests;
 
-import static org.ops4j.pax.exam.CoreOptions.maven;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
-import org.apache.aries.application.management.AriesApplicationContext;
 import org.junit.Test;
-import org.ops4j.pax.exam.options.MavenArtifactUrlReference;
+import org.osgi.framework.Bundle;
 
-public class JpaBlogSampleWithEbaTest extends AbstractBlogIntegrationTest {
+public class JpaBlogSampleTest extends AbstractBlogIntegrationTest {
 
 	@Test
 	public void test() throws Exception {
-		MavenArtifactUrlReference eba = maven()
-				.groupId("org.apache.aries.samples.blog")
-				.artifactId("org.apache.aries.samples.blog.jpa.eba")
-				.versionAsInProject()
-				.type("eba");
-		AriesApplicationContext ctx = installEba(eba);
+        Bundle bundleApi = context.installBundle(mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.api").versionAsInProject().getURL());
+        Bundle bundleWeb = context.installBundle(mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.web").versionAsInProject().getURL());
+        Bundle bundleBiz = context.installBundle(mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.biz").versionAsInProject().getURL());
+        Bundle bundlePersistenceJpa = context.installBundle(mavenBundle("org.apache.aries.samples.blog", "org.apache.aries.samples.blog.persistence.jpa").versionAsInProject().getURL());
+
+        bundleApi.start();
+        bundlePersistenceJpa.start();
+        bundleBiz.start();
+        bundleWeb.start();
 
 		/* Find and check all the blog sample bundles */
 		assertBundleStarted("org.apache.aries.samples.blog.api");
@@ -45,9 +47,11 @@ public class JpaBlogSampleWithEbaTest extends AbstractBlogIntegrationTest {
 
 		assertBlogServicesStarted();
 		checkBlogWebAccess();
-		
-		ctx.stop();
-		manager.uninstall(ctx);
+
+        bundleWeb.uninstall();
+        bundleBiz.uninstall();
+        bundlePersistenceJpa.uninstall();
+        bundleApi.uninstall();
 	}
 
 }

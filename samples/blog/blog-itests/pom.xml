@@ -133,20 +133,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.aries.samples.blog</groupId>
-            <artifactId>org.apache.aries.samples.blog.jdbc.eba</artifactId>
-            <scope>test</scope>
-            <type>eba</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.samples.blog</groupId>
-            <artifactId>org.apache.aries.samples.blog.jpa.eba</artifactId>
-            <scope>test</scope>
-            <type>eba</type>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
             <scope>test</scope>
@@ -300,53 +286,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.install</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.api</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.deployment.management</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.management</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.modeller</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.runtime</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.utils</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.default.local.platform</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <scope>test</scope>
@@ -402,12 +341,6 @@
         <dependency>
             <groupId>org.apache.aries.quiesce</groupId>
             <artifactId>org.apache.aries.quiesce.manager</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.resolver.obr</artifactId>
             <scope>test</scope>
         </dependency>
 
