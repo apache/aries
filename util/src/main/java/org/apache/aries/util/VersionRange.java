@@ -98,11 +98,6 @@ public final class VersionRange {
         assertInvariants();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.aries.application.impl.VersionRange#toString()
-     */
     @Override
     public String toString() {
         // Some constructors don't take in a string that we can return directly, 
