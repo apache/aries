@@ -10,9 +10,6 @@ blueprint:
 blueprint-maven-plugin:
 - changed-files:
   - any-glob-to-any-file: 'blueprint-maven-plugin/**/*'
-eba-maven-plugin:
-- changed-files:
-  - any-glob-to-any-file: 'eba-maven-plugin/**/*'
 esa-ant-task:
 - changed-files:
   - any-glob-to-any-file: 'esa-ant-task/**/*'

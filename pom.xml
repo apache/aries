@@ -41,7 +41,6 @@
         <module>async</module>
         <module>blueprint</module>
         <module>blueprint-maven-plugin</module>
-        <module>eba-maven-plugin</module>
         <module>esa-ant-task</module>
         <module>esa-maven-plugin</module>
         <module>jmx</module>
