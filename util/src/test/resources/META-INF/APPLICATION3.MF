@@ -1,3 +1,0 @@
-Application-SymbolicName: org.apache.aries.applications.test.app
-Application-Version: 1.4.0
-Application-Content: org.apache.aries.applications.test.bundle

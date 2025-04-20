@@ -19,6 +19,11 @@
 
 package org.apache.aries.util.manifest;
 
+import org.apache.aries.util.ManifestHeaderUtils;
+import org.apache.aries.util.VersionRange;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,15 +33,15 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.aries.util.ManifestHeaderUtils;
-import org.apache.aries.util.VersionRange;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Version;
-
 
 public class ManifestHeaderProcessor
 {
+    /**
+     * @deprecated use {@link #NESTED_FILTER_ATTRIBUTE_TO_USE_WITHOUT_FORMATTING}
+     */
+    @Deprecated
   public static final String NESTED_FILTER_ATTRIBUTE = "org.apache.aries.application.filter.attribute";
+  public static final String NESTED_FILTER_ATTRIBUTE_TO_USE_WITHOUT_FORMATTING = "org.apache.aries.manifestheaderprocessor.filter.attribute";
   private static final Pattern FILTER_ATTR = Pattern.compile("(\\(!)?\\((.*?)([<>]?=)(.*?)\\)\\)?");
   private static final String LESS_EQ_OP = "<=";
   private static final String GREATER_EQ_OP = ">=";
@@ -564,7 +569,7 @@ public class ManifestHeaderProcessor
 				}
 				filter.append(")");
 
-			} else if (NESTED_FILTER_ATTRIBUTE.equals(attribName)) {
+			} else if (NESTED_FILTER_ATTRIBUTE.equals(attribName) || NESTED_FILTER_ATTRIBUTE_TO_USE_WITHOUT_FORMATTING.equals(attribName)) {
 				// Filters go in whole, no formatting needed
 				realAttrib = true;
 				filter.append(attrib.getValue());
