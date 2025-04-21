@@ -18,3 +18,5 @@
 github:
   autolink_jira:
     - ARIES
+  del_branch_on_merge: true
+
