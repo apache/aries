@@ -45,17 +45,17 @@
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-        <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
-        <org.apache.aries.application.modeller.version>1.0.0</org.apache.aries.application.modeller.version>
-        <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
-        <org.apache.aries.blueprint.version>1.0.0</org.apache.aries.blueprint.version>
-        <org.apache.aries.proxy.version>1.0.1</org.apache.aries.proxy.version>
+        <org.apache.aries.application.api.version>1.0.1-SNAPSHOT</org.apache.aries.application.api.version>
+        <org.apache.aries.application.modeller.version>1.0.1-SNAPSHOT</org.apache.aries.application.modeller.version>
+        <org.apache.aries.application.utils.version>1.0.1-SNAPSHOT</org.apache.aries.application.utils.version>
+        <org.apache.aries.blueprint.version>1.2.0</org.apache.aries.blueprint.version>
+        <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
         <org.apache.aries.subsystem.api.version>2.0.11-SNAPSHOT</org.apache.aries.subsystem.api.version>
         <org.apache.aries.subsystem.core.version>2.0.11-SNAPSHOT</org.apache.aries.subsystem.core.version>
         <org.apache.aries.subsystem.itest.interfaces.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.itest.interfaces.version>
         <org.apache.aries.subsystem.obr.version>1.0.5-SNAPSHOT</org.apache.aries.subsystem.obr.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
-        <org.apache.aries.util.version>1.1.0</org.apache.aries.util.version>
+        <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.felix.bundlerepository.version>2.0.10</org.apache.felix.bundlerepository.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.eclipse.equinox.event.version>1.2.200.v20120522-2049</org.eclipse.equinox.event.version>
@@ -161,7 +161,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint</artifactId>
+            <artifactId>org.apache.aries.blueprint.core</artifactId>
             <version>${org.apache.aries.blueprint.version}</version>
             <scope>test</scope>
         </dependency>
