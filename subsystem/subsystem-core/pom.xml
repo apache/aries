@@ -68,7 +68,7 @@
 
 
         <org.apache.aries.subsystem.api.version>2.0.10</org.apache.aries.subsystem.api.version>
-        <org.apache.aries.util.version>1.1.1</org.apache.aries.util.version>
+        <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.aries.application.api.version>1.0.1-SNAPSHOT</org.apache.aries.application.api.version>
         <org.apache.aries.application.utils.version>1.0.1-SNAPSHOT</org.apache.aries.application.utils.version>
         <osgi.core.version>6.0.0</osgi.core.version>
