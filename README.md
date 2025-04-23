@@ -5,11 +5,11 @@ model.
 
 See [Apache Aries Website](http://aries.apache.org/).
 
-- [![Application - CI Build](https://github.com/apache/aries/actions/workflows/application.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/application.yml) - the implementation is using `org.osgi.service.framework` from Eclipse Equinox that is [available only in versions 3.5..3.7](https://bugs.eclipse.org/bugs/show_bug.cgi?id=345790)
+- `application` is moving to the attic and can be found under [`application-goes-to-the-attic` tag](https://github.com/apache/aries/tree/application-goes-to-the-attic/application)
 - [![Async - CI Build](https://github.com/apache/aries/actions/workflows/async.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/async.yml)
 - [![Blueprint - CI Build](https://github.com/apache/aries/actions/workflows/blueprint.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/blueprint.yml)
-- eba-maven-plugin was moves to the attic and can be found under [`eba-maven-plugin-goes-to-the-attic` tag](https://github.com/apache/aries/tree/eba-maven-plugin-goes-to-the-attic/eba-maven-plugin)
-- EJB was moved to the attic and can be found under [`ejb-goes-to-the-attic` tag](https://github.com/apache/aries/tree/ejb-goes-to-the-attic/ejb)
+- `eba-maven-plugin` was moves to the attic and can be found under [`eba-maven-plugin-goes-to-the-attic` tag](https://github.com/apache/aries/tree/eba-maven-plugin-goes-to-the-attic/eba-maven-plugin)
+- `ejb` was moved to the attic and can be found under [`ejb-goes-to-the-attic` tag](https://github.com/apache/aries/tree/ejb-goes-to-the-attic/ejb)
 - [![esa-ant-task - CI Build](https://github.com/apache/aries/actions/workflows/esa-ant-task.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/esa-ant-task.yml)
 - [![esa-maven-plugin - CI Build](https://github.com/apache/aries/actions/workflows/esa-maven-plugin.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/esa-maven-plugin.yml)
 - [![JMX - CI Build](https://github.com/apache/aries/actions/workflows/jmx.yml/badge.svg)](https://github.com/apache/aries/actions/workflows/jmx.yml)
