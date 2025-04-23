@@ -37,7 +37,6 @@ import org.apache.aries.application.modelling.ModelledResourceManager;
 import org.apache.aries.application.modelling.impl.ModelledResourceManagerImpl;
 import org.apache.aries.application.modelling.impl.ModellingManagerImpl;
 import org.apache.aries.application.modelling.impl.ParserProxyTest;
-import org.apache.aries.application.modelling.standalone.OfflineModellingFactory;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.io.IOUtils;
@@ -60,7 +59,6 @@ public class ModellerTest {
         manager.setModellingPlugins(Collections.<ServiceModeller>emptyList());
 
         return Arrays.asList(new Object[][] {
-                {OfflineModellingFactory.getModelledResourceManager()},
                 {manager}
         });
     }
