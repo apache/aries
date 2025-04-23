@@ -90,7 +90,7 @@
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
         <pax-exam.version>4.13.5</pax-exam.version>
-        <pax-logging.version>1.12.12</pax-logging.version>
+        <pax-logging.version>2.2.9</pax-logging.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
         <pax-url.version>2.6.16</pax-url.version>
     </properties>
