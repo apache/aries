@@ -42,7 +42,6 @@ import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.WrappedReferenceMetadata;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
-import org.apache.aries.application.modelling.standalone.OfflineModellingFactory;
 import org.apache.aries.blueprint.container.NamespaceHandlerRegistry;
 import org.apache.aries.blueprint.container.ParserServiceImpl;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
@@ -62,8 +61,8 @@ public class ParserProxyTest {
   @Parameters
   public static List<Object[]> parserProxies() {
     return Arrays.asList(new Object[][] {
-            {getMockParserServiceProxy()}, 
-            {OfflineModellingFactory.getOfflineParserProxy()}});
+            {getMockParserServiceProxy()}
+    });
   }
   
   public static ParserProxy getMockParserServiceProxy() {

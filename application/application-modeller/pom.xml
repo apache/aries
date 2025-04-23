@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>3.0.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -56,13 +56,13 @@
             *
         </aries.osgi.import.pkg>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
+        <org.apache.aries.versioning.plugin.version>0.3.2-SNAPSHOT</org.apache.aries.versioning.plugin.version>
 
-        <org.apache.aries.application.api.version>1.0.0</org.apache.aries.application.api.version>
-        <org.apache.aries.application.utils.version>1.0.0</org.apache.aries.application.utils.version>
+        <org.apache.aries.application.api.version>1.0.1-SNAPSHOT</org.apache.aries.application.api.version>
+        <org.apache.aries.application.utils.version>1.0.1-SNAPSHOT</org.apache.aries.application.utils.version>
         <org.apache.aries.blueprint.core.version>1.2.0</org.apache.aries.blueprint.core.version>
         <org.apache.aries.jndi.api.version>1.0.0</org.apache.aries.jndi.api.version>
-        <org.apache.aries.testsupport.unit.version>1.0.0</org.apache.aries.testsupport.unit.version>
-        <org.apache.aries.util.version>1.0.0</org.apache.aries.util.version>
+        <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
     </properties>
@@ -77,17 +77,6 @@
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.api</artifactId>
             <version>${org.apache.aries.application.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries</groupId>
-            <artifactId>org.apache.aries.util</artifactId>
-            <version>${org.apache.aries.util.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.testsupport</groupId>
-            <artifactId>org.apache.aries.testsupport.unit</artifactId>
-            <scope>test</scope>
-            <version>${org.apache.aries.testsupport.unit.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>

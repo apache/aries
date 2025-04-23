@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>3.0.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -44,8 +44,8 @@
     </scm>
 
     <properties>
-        <application-modeller-standalone.version>1.0.0</application-modeller-standalone.version>
-        <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
+        <org.apache.aries.application.modeller.version>1.0.1-SNAPSHOT</org.apache.aries.application.modeller.version>
+        <org.apache.aries.blueprint.core.version>1.2.0</org.apache.aries.blueprint.core.version>
         <org.apache.aries.testsupport.unit.version>1.0.0</org.apache.aries.testsupport.unit.version>
         <osgi.cmpn.version>5.0.0</osgi.cmpn.version>
         <osgi.core.version>6.0.0</osgi.core.version>
@@ -54,8 +54,8 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.application</groupId>
-            <artifactId>application-modeller-standalone</artifactId>
-            <version>${application-modeller-standalone.version}</version>
+            <artifactId>org.apache.aries.application.modeller</artifactId>
+            <version>${org.apache.aries.application.modeller.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
