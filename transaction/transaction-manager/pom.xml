@@ -76,7 +76,7 @@
         <junit.version>4.13.2</junit.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
-        <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
+        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
         <spring.version>5.3.39</spring.version>
     </properties>
