@@ -41,7 +41,6 @@
       <module>application-api</module>
       <module>application-utils</module>
       <module>application-modeller</module>
-      <module>application-modeller-common-test</module>
     </modules>
 
 </project>
