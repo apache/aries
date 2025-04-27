@@ -18,8 +18,6 @@
  */
 package org.apache.aries.application.modelling.impl;
 import static org.apache.aries.application.modelling.ResourceType.PACKAGE;
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,7 +50,7 @@ public class ExportedPackageImpl implements ExportedPackage
    *                           
    */
   public ExportedPackageImpl (ModelledResource mr, String pkg, Map<String, Object> attributes) {
-    logger.debug(LOG_ENTRY, "ExportedPackageImpl", new Object[]{mr, pkg, attributes});
+    logger.debug("Method entry: {}, args {}", "ExportedPackageImpl", new Object[]{mr, pkg, attributes});
     _attributes = new HashMap<String, Object> (attributes);
     _packageName = pkg;
     _attributes.put (PACKAGE.toString(), _packageName);
@@ -66,20 +64,20 @@ public class ExportedPackageImpl implements ExportedPackage
     _attributes.put (Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, mr.getSymbolicName());
     _attributes.put (Constants.BUNDLE_VERSION_ATTRIBUTE, mr.getVersion());
     _bundle = mr;
-    logger.debug(LOG_EXIT, "ExportedPackageImpl");
+    logger.debug("Method exit: {}, returning {}", "ExportedPackageImpl");
   }
 
 
   public Map<String, Object> getAttributes() {
-    logger.debug(LOG_ENTRY, "getAttributes");
-    logger.debug(LOG_EXIT, "getAttributes", _attributes);
+    logger.debug("Method entry: {}, args {}", "getAttributes");
+    logger.debug("Method exit: {}, returning {}", "getAttributes", _attributes);
     return Collections.unmodifiableMap(_attributes);
   }
 
 
   public ResourceType getType() {
-    logger.debug(LOG_ENTRY, "getType");
-    logger.debug(LOG_EXIT, "getType", PACKAGE);
+    logger.debug("Method entry: {}, args {}", "getType");
+    logger.debug("Method exit: {}, returning {}", "getType", PACKAGE);
     return PACKAGE;
   }
 
@@ -88,8 +86,8 @@ public class ExportedPackageImpl implements ExportedPackage
    * @return package name
    */
   public String getPackageName() { 
-    logger.debug(LOG_ENTRY, "getPackageName");
-    logger.debug(LOG_EXIT, "getPackageName", _packageName);
+    logger.debug("Method entry: {}, args {}", "getPackageName");
+    logger.debug("Method exit: {}, returning {}", "getPackageName", _packageName);
     return _packageName;
   }
 
@@ -98,8 +96,8 @@ public class ExportedPackageImpl implements ExportedPackage
    * @return Version as String, or 0.0.0
    */
   public String getVersion() {
-    logger.debug(LOG_ENTRY, "getVersion");
-    logger.debug(LOG_EXIT, "getVersion", _version);
+    logger.debug("Method entry: {}, args {}", "getVersion");
+    logger.debug("Method exit: {}, returning {}", "getVersion", _version);
     return _version;
   }
   
@@ -108,7 +106,7 @@ public class ExportedPackageImpl implements ExportedPackage
    * Use-Bundle style package import. We do NOT lock down package versions, only bundle versions. 
    */
   public String toDeploymentString() {
-    logger.debug(LOG_ENTRY, "toDeploymentString");
+    logger.debug("Method entry: {}, args {}", "toDeploymentString");
     StringBuilder sb = new StringBuilder(_packageName);
     for (Map.Entry<String, Object> entry : _attributes.entrySet()) {
       String key = entry.getKey();
@@ -137,13 +135,13 @@ public class ExportedPackageImpl implements ExportedPackage
       }
     }
     String result = sb.toString();
-    logger.debug(LOG_EXIT, "toDeploymentString", result);
+    logger.debug("Method exit: {}, returning {}", "toDeploymentString", result);
     return result;
   }
 
   public ModelledResource getBundle() {
-    logger.debug(LOG_ENTRY, "getBundle");
-    logger.debug(LOG_EXIT, "getBundle", _bundle);
+    logger.debug("Method entry: {}, args {}", "getBundle");
+    logger.debug("Method exit: {}, returning {}", "getBundle", _bundle);
     return _bundle;
   }
   

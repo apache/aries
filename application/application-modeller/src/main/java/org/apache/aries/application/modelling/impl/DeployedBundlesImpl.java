@@ -18,9 +18,6 @@
  */
 package org.apache.aries.application.modelling.impl;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -88,7 +85,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
   public DeployedBundlesImpl(String assetName, Collection<ImportedBundle> appContentNames, 
       Collection<ImportedBundle> appUseBundleNames, Collection<ModelledResource> fakeServiceProvidingBundles)
   {
-    logger.debug(LOG_ENTRY, "DeployedBundles", new Object[]{appContentNames, appUseBundleNames, fakeServiceProvidingBundles});
+    logger.debug("Method entry: {}, args {}", "DeployedBundles", new Object[]{appContentNames, appUseBundleNames, fakeServiceProvidingBundles});
     
     this.assetName = assetName;
 
@@ -97,7 +94,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
     if (fakeServiceProvidingBundles != null) { 
       fakeDeployedBundles.addAll(fakeServiceProvidingBundles);
     }
-    logger.debug(LOG_EXIT, "DeployedBundles");
+    logger.debug("Method exit: {}, returning {}", "DeployedBundles");
   }
   
   /**
@@ -108,7 +105,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
    */
   public void addBundle(ModelledResource modelledBundle)
   {
-    logger.debug(LOG_ENTRY, "addBundle", new Object[]{modelledBundle});
+    logger.debug("Method entry: {}, args {}", "addBundle", new Object[]{modelledBundle});
     // Identify the deployment.mf entries the bundle should be added to by matching
     // both the bundle name and resolved version against the name and version range
     // defined in application.mf.
@@ -140,7 +137,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
     cachedDeployedImportService = null;
     cachedExternalRequirements = null;
     
-   logger.debug(LOG_EXIT, "addBundle");    
+   logger.debug("Method exit: {}, returning {}", "addBundle");
   }
 
   /**
@@ -200,7 +197,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
    */
   public String getImportPackage() throws ResolverException
   {
-    logger.debug(LOG_ENTRY, "getImportPackage");
+    logger.debug("Method entry: {}, args {}", "getImportPackage");
     
     String result = cachedImportPackage; 
     if (result == null)
@@ -242,7 +239,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
       cachedImportPackage = result;
     }
     
-    logger.debug(LOG_EXIT, "getImportPackage", result);
+    logger.debug("Method exit: {}, returning {}", "getImportPackage", result);
     return result;
   }
   
@@ -256,7 +253,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
    *   
    */
   public String getDeployedImportService() { 
-    logger.debug(LOG_ENTRY,"getDeployedImportService");
+    logger.debug("Method entry: {}, args {}","getDeployedImportService");
     
     String result = cachedDeployedImportService;
     if (result == null)
@@ -288,7 +285,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
       result = createManifestString(deployedBundleServiceImports);
       cachedDeployedImportService = result;
     }
-    logger.debug(LOG_EXIT,"getDeployedImportService", result);
+    logger.debug("Method exit: {}, returning {}","getDeployedImportService", result);
     
     return result;
   }
@@ -301,7 +298,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
   private Collection<ImportedPackage> getExternalPackageRequirements()
     throws ResolverException
   {
-    logger.debug(LOG_ENTRY,"getExternalPackageRequirements");
+    logger.debug("Method entry: {}, args {}","getExternalPackageRequirements");
     
     Collection<ImportedPackage> result = cachedExternalRequirements;
     if (result == null)
@@ -350,7 +347,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
         ResolverException re = new ResolverException(MessageUtil.getMessage(
             "INCOMPATIBLE_PACKAGE_VERSION_REQUIREMENTS", new Object[] { assetName, pkgString }));
         re.setUnsatisfiedRequirements(pkgNames);
-        logger.debug(LOG_EXIT,"getExternalPackageRequirements", re);
+        logger.debug("Method exit: {}, returning {}","getExternalPackageRequirements", re);
         
         throw re;
       }
@@ -358,7 +355,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
       result = merger.getMergedRequirements();
       cachedExternalRequirements = result;
     }
-    logger.debug(LOG_EXIT,"getExternalPackageRequirements", result);
+    logger.debug("Method exit: {}, returning {}","getExternalPackageRequirements", result);
     
     return result;
   }
@@ -373,7 +370,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
   private void validateOtherImports(Collection<ImportedPackage> requirements)
     throws ResolverException
   {
-    logger.debug(LOG_ENTRY, "validateOtherImports", requirements);
+    logger.debug("Method entry: {}, args {}", "validateOtherImports", requirements);
     for (ImportedPackage req : requirements)
     {
       String pkgName = req.getPackageName();
@@ -386,12 +383,12 @@ public final class DeployedBundlesImpl implements DeployedBundles
           ResolverException re = new ResolverException(MessageUtil.getMessage(
               "INVALID_PACKAGE_REQUIREMENT_ATTRIBUTES", new Object[] { assetName, name, pkgName }));
           re.setUnsatisfiedRequirements(Arrays.asList(pkgName));
-          logger.debug(LOG_EXIT, "validateOtherImports", re);
+          logger.debug("Method exit: {}, returning {}", "validateOtherImports", re);
           throw re;
         }
       }
     }
-    logger.debug(LOG_EXIT, "validateOtherImports");
+    logger.debug("Method exit: {}, returning {}", "validateOtherImports");
   }
 
   /**
@@ -403,7 +400,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
    */
   private ExportedPackage getPackageMatch(ImportedPackage requirement, Collection<ModelledResource> bundles)
   {
-    logger.debug(LOG_ENTRY, "getPackageMatch", new Object[]{requirement, bundles});
+    logger.debug("Method entry: {}, args {}", "getPackageMatch", new Object[]{requirement, bundles});
     ExportedPackage result = null;
     
     outer: for (ModelledResource bundle : bundles)
@@ -416,13 +413,13 @@ public final class DeployedBundlesImpl implements DeployedBundles
         }
       }
     }
-    logger.debug(LOG_EXIT, "getPackageMatch", new Object[]{result});
+    logger.debug("Method exit: {}, returning {}", "getPackageMatch", new Object[]{result});
     return result;
   }
   
   private String createManifestString(Collection<? extends DeploymentMFElement> values)
   {
-    logger.debug(LOG_ENTRY, "createManifestString", new Object[]{values});
+    logger.debug("Method entry: {}, args {}", "createManifestString", new Object[]{values});
     StringBuilder builder = new StringBuilder();
     for (DeploymentMFElement value : values)
     {
@@ -431,7 +428,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
     
     int length = builder.length();
     String result = length > 0 ? builder.substring(0, length - 1) : "";
-    logger.debug(LOG_EXIT, "createManifestString", new Object[]{result});
+    logger.debug("Method exit: {}, returning {}", "createManifestString", new Object[]{result});
     return result;
   }
   
@@ -450,8 +447,8 @@ public final class DeployedBundlesImpl implements DeployedBundles
    */
   public Collection<ModelledResource> getDeployedContent()
   {
-    logger.debug(LOG_ENTRY, "getDeployedContent");
-    logger.debug(LOG_EXIT,"getDeployedContent", deployedContent);
+    logger.debug("Method entry: {}, args {}", "getDeployedContent");
+    logger.debug("Method exit: {}, returning {}","getDeployedContent", deployedContent);
     return Collections.unmodifiableCollection(deployedContent);
   }
   
@@ -465,8 +462,8 @@ public final class DeployedBundlesImpl implements DeployedBundles
    */
   public Collection<ModelledResource> getDeployedProvisionBundle () 
   { 
-    logger.debug(LOG_ENTRY,"getDeployedProvisionBundle");
-    logger.debug(LOG_EXIT, "getDeployedProvisionBundle", deployedContent);
+    logger.debug("Method entry: {}, args {}","getDeployedProvisionBundle");
+    logger.debug("Method exit: {}, returning {}", "getDeployedProvisionBundle", deployedContent);
     return Collections.unmodifiableCollection(deployedProvisionBundle);
   }
   
@@ -478,7 +475,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
    */
   public Collection<ModelledResource> getRequiredUseBundle() throws ResolverException
   {
-    logger.debug(LOG_ENTRY, "getRequiredUseBundle");
+    logger.debug("Method entry: {}, args {}", "getRequiredUseBundle");
     
     Collection<ModelledResource> usedUseBundles =  cachedRequiredUseBundle;
     if (usedUseBundles == null)
@@ -497,7 +494,7 @@ public final class DeployedBundlesImpl implements DeployedBundles
       cachedRequiredUseBundle = usedUseBundles;
     }
     
-    logger.debug(LOG_EXIT, "getRequiredUseBundle", usedUseBundles);
+    logger.debug("Method exit: {}, returning {}", "getRequiredUseBundle", usedUseBundles);
     return usedUseBundles;
   }
 
@@ -505,9 +502,9 @@ public final class DeployedBundlesImpl implements DeployedBundles
    * DeployedBundles 
    */
   public Map<String, String> getExtraHeaders() {
-    logger.debug (LOG_ENTRY, "getExtraHeaders");
+    logger.debug ("Method entry: {}, args {}", "getExtraHeaders");
     Map<String, String> result = Collections.emptyMap();
-    logger.debug (LOG_EXIT, "getExtraHeaders", result);
+    logger.debug ("Method exit: {}, returning {}", "getExtraHeaders", result);
     return result;
   }
 }

@@ -13,9 +13,6 @@
  */
 package org.apache.aries.subsystem.obr.internal;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,7 +43,7 @@ public class RepositoryAdminRepository implements Repository {
 	}
 	
 	public Collection<Capability> findProviders(Requirement requirement) {
-		logger.debug(LOG_ENTRY, "findProviders", requirement);
+		logger.debug("Method entry: {}, args {}", "findProviders", requirement);
 		Collection<Capability> result = Collections.emptyList();
 		if (IdentityNamespace.IDENTITY_NAMESPACE.equals(requirement.getNamespace())) {
 			result = new ArrayList<Capability>();
@@ -79,7 +76,7 @@ public class RepositoryAdminRepository implements Repository {
 				}
 			}
 		}
-		logger.debug(LOG_EXIT, "findProviders", result);
+		logger.debug("Method exit: {}, returning {}", "findProviders", result);
 		return result;
 
 	}

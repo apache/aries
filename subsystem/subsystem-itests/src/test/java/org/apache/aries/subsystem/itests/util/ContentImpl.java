@@ -29,11 +29,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
 
-/**
- * Implementation of Content, copied from org.apache.aries.application.utils folder with 
- * intention to common this out to a common util folder
- *
- */
 public final class ContentImpl implements Content
 {
   private String contentName;

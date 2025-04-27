@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.aries.application.Content;
-import org.apache.aries.application.utils.internal.MessageUtil;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
@@ -40,15 +39,15 @@ public final class ContentImpl implements Content
   protected Map<String, String> attributes;
   private Map<String, String> directives;
   private Map<String, String> nameValueMap;
-  
+
   /**
-   * 
+   *
    * @param content  Application-Content, Import-Package content
    */
   public ContentImpl(String content) {
     Map<String, Map<String, String>> appContentsMap = ManifestHeaderProcessor.parseImportString(content);
     if (appContentsMap.size() != 1) {
-      throw new IllegalArgumentException(MessageUtil.getMessage("APPUTILS0004E",content));
+      throw new IllegalArgumentException("APPUTILS0004E: Unable to create ContentImpl object based on content: " + content);
     }
     for (Map.Entry<String, Map<String, String>> entry : appContentsMap.entrySet()) {
       this.contentName = entry.getKey();
@@ -57,23 +56,23 @@ public final class ContentImpl implements Content
       break;
     }
   }
-  
-  public ContentImpl (String bundleSymbolicName, Version version) { 
+
+  public ContentImpl (String bundleSymbolicName, Version version) {
     this.contentName = bundleSymbolicName;
     this.nameValueMap = new HashMap<String, String>();
     nameValueMap.put("version", version.toString());
     setup();
   }
-  
-  public ContentImpl (String bundleSymbolicName, VersionRange version) { 
+
+  public ContentImpl (String bundleSymbolicName, VersionRange version) {
     this.contentName = bundleSymbolicName;
     this.nameValueMap = new HashMap<String, String>();
     nameValueMap.put("version", version.toString());
     setup();
   }
   /**
-   * 
-   * @param contentName  
+   *
+   * @param contentName
    * @param nameValueMap
    */
   public ContentImpl(String contentName, Map<String, String> nameValueMap) {
@@ -81,24 +80,24 @@ public final class ContentImpl implements Content
     this.nameValueMap= nameValueMap;
     setup();
   }
-  
+
   public String getContentName() {
     return this.contentName;
   }
-  
+
   public Map<String, String> getAttributes() {
     return Collections.unmodifiableMap(this.attributes);
   }
-  
+
   public Map<String, String> getDirectives() {
     return Collections.unmodifiableMap(this.directives);
   }
-  
+
   public String getAttribute(String key) {
     String toReturn = this.attributes.get(key);
     return toReturn;
   }
-  
+
   /**
    * add key value to the attributes map
    * @param key
@@ -107,12 +106,12 @@ public final class ContentImpl implements Content
   public void addAttribute(String key, String value) {
     this.attributes.put(key, value);
   }
-  
+
   public String getDirective(String key) {
     String toReturn = this.directives.get(key);
     return toReturn;
   }
-  
+
   public Map<String, String> getNameValueMap() {
     Map<String, String> nvm = new HashMap<String, String>();
     for (String key : this.nameValueMap.keySet()) {
@@ -120,7 +119,7 @@ public final class ContentImpl implements Content
     }
     return nvm;
   }
-  
+
   /**
    * add key value to the directives map
    * @param key
@@ -129,26 +128,26 @@ public final class ContentImpl implements Content
   public void addDirective(String key, String value) {
     this.directives.put(key, value);
   }
-  
+
   public VersionRange getVersion() {
     VersionRange vi = null;
-    if (this.attributes.get(Constants.VERSION_ATTRIBUTE) != null 
+    if (this.attributes.get(Constants.VERSION_ATTRIBUTE) != null
         && this.attributes.get(Constants.VERSION_ATTRIBUTE).length() > 0) {
       vi = ManifestHeaderProcessor.parseVersionRange(this.attributes.get(Constants.VERSION_ATTRIBUTE));
     } else {
-      // what if version is not specified?  let's interpret it as 0.0.0 
+      // what if version is not specified?  let's interpret it as 0.0.0
       vi = ManifestHeaderProcessor.parseVersionRange("0.0.0");
     }
     return vi;
   }
-  
+
   @Override
   public String toString()
   {
     StringBuilder builder = new StringBuilder();
-    
+
     builder.append(this.contentName);
-    
+
     if (!nameValueMap.isEmpty()) {
       for (Map.Entry<String, String> entry : nameValueMap.entrySet()) {
         builder.append(';');
@@ -158,8 +157,8 @@ public final class ContentImpl implements Content
         builder.append('\"');
       }
     }
-    
-    
+
+
     return builder.toString();
   }
 
@@ -168,46 +167,46 @@ public final class ContentImpl implements Content
   {
     if (other == this) return true;
     if (other == null) return false;
-    
+
     if (other instanceof ContentImpl) {
       ContentImpl otherContent = (ContentImpl)other;
-      
+
       Map<String,String> attributesWithoutVersion = attributes;
-      
+
       if (attributes.containsKey("version")) {
         attributesWithoutVersion = new HashMap<String, String>(attributes);
         attributesWithoutVersion.remove("version");
       }
-      
+
       Map<String, String> otherAttributesWithoutVersion = otherContent.attributes;
-      
+
       if (otherContent.attributes.containsKey("version")) {
         otherAttributesWithoutVersion = new HashMap<String, String>(otherContent.attributes);
         otherAttributesWithoutVersion.remove("version");
       }
-      
-      return contentName.equals(otherContent.contentName) && 
+
+      return contentName.equals(otherContent.contentName) &&
              attributesWithoutVersion.equals(otherAttributesWithoutVersion) &&
              directives.equals(otherContent.directives) &&
              getVersion().equals(otherContent.getVersion());
     }
-    
+
     return false;
   }
-  
+
   @Override
   public int hashCode()
   {
     return contentName.hashCode();
   }
-  
+
   /**
    * set up directives and attributes
    */
   protected void setup() {
     this.attributes = new HashMap<String, String>();
     this.directives = new HashMap<String, String>();
-    
+
     for (String key : this.nameValueMap.keySet()) {
       if (key.endsWith(":")) {
         this.directives.put(key.substring(0, key.length() - 1), this.nameValueMap.get(key));

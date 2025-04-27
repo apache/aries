@@ -79,10 +79,5 @@ public interface AppConstants {
   String DEPLOYMENTSERVICE_IMPORT = "DeployedService-Import";
   
   String PROVISON_EXCLUDE_LOCAL_REPO_SYSPROP="provision.exclude.local.repository";
-  /**
-   * Logging insert strings
-   */
-  String LOG_ENTRY = "Method entry: {}, args {}";
-  String LOG_EXIT = "Method exit: {}, returning {}";
-  String LOG_EXCEPTION = "Caught exception";
+    String LOG_EXCEPTION = "Caught exception";
 }

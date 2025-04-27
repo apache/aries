@@ -31,7 +31,6 @@ import org.apache.aries.application.ApplicationMetadata;
 import org.apache.aries.application.ApplicationMetadataFactory;
 import org.apache.aries.application.Content;
 import org.apache.aries.application.ServiceDeclaration;
-import org.apache.aries.application.impl.ApplicationMetadataFactoryImpl;
 import org.junit.Test;
 import org.osgi.framework.Version;
 

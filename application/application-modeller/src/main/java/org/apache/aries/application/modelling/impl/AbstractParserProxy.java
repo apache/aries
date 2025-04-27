@@ -18,9 +18,6 @@
  */
 package org.apache.aries.application.modelling.impl;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -76,39 +73,39 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	  }
 
 	  public List<? extends WrappedServiceMetadata> parse(List<URL> blueprintsToParse) throws Exception {
-	    _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintsToParse});
+	    _logger.debug("Method entry: {}, args {}", "parse", new Object[]{blueprintsToParse});
 	    ComponentDefinitionRegistry cdr = parseCDR (blueprintsToParse);
 	    List<? extends WrappedServiceMetadata> result = parseCDRForServices (cdr, true);
-	    _logger.debug(LOG_EXIT, "parse", new Object[]{result});
+	    _logger.debug("Method exit: {}, returning {}", "parse", new Object[]{result});
 	    return result;
 	  }
 	   
 	  public List<? extends WrappedServiceMetadata> parse(URL blueprintToParse) throws Exception {
-	    _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintToParse});
+	    _logger.debug("Method entry: {}, args {}", "parse", new Object[]{blueprintToParse});
 	    List<URL> list = new ArrayList<URL>();
 	    list.add(blueprintToParse);
 	   
 	    List<? extends WrappedServiceMetadata> result = parse (list);
-	    _logger.debug(LOG_EXIT, "parse", new Object[]{result});
+	    _logger.debug("Method exit: {}, returning {}", "parse", new Object[]{result});
 	    return result;
 	  }
 
 	  public List<? extends WrappedServiceMetadata> parse(InputStream blueprintToParse) throws Exception {
-	    _logger.debug(LOG_ENTRY, "parse", new Object[]{blueprintToParse});
+	    _logger.debug("Method entry: {}, args {}", "parse", new Object[]{blueprintToParse});
 	    ComponentDefinitionRegistry cdr = parseCDR (blueprintToParse);
 	    List<? extends WrappedServiceMetadata> result = parseCDRForServices (cdr, true);
-	    _logger.debug(LOG_EXIT, "parse", new Object[]{result});
+	    _logger.debug("Method exit: {}, returning {}", "parse", new Object[]{result});
 	    return result;
 	  }
 	 
 
 	  public ParsedServiceElements parseAllServiceElements(InputStream blueprintToParse) throws Exception {
-	    _logger.debug(LOG_ENTRY, "parseAllServiceElements", new Object[]{blueprintToParse});
+	    _logger.debug("Method entry: {}, args {}", "parseAllServiceElements", new Object[]{blueprintToParse});
 	    ComponentDefinitionRegistry cdr = parseCDR (blueprintToParse);
 	    Collection<ExportedService> services = parseCDRForServices(cdr, false);
 	    Collection<ImportedService> references = parseCDRForReferences (cdr);
 	    ParsedServiceElements result = _modellingManager.getParsedServiceElements(services, references);
-	    _logger.debug(LOG_EXIT, "parseAllServiceElements", new Object[]{result});
+	    _logger.debug("Method exit: {}, returning {}", "parseAllServiceElements", new Object[]{result});
 	    return result;
 	  }
 	  
@@ -122,7 +119,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	   */
 	  private List<ExportedService> parseCDRForServices (ComponentDefinitionRegistry cdr, 
 	      boolean suppressAnonymousServices) { 
-	    _logger.debug(LOG_ENTRY, "parseCDRForServices", new Object[]{cdr, suppressAnonymousServices});
+	    _logger.debug("Method entry: {}, args {}", "parseCDRForServices", new Object[]{cdr, suppressAnonymousServices});
 	    List<ExportedService> result = new ArrayList<ExportedService>();
 	    for (ComponentMetadata compMetadata : findAllComponents(cdr)) { 
 	      if (compMetadata instanceof ServiceMetadata) { 
@@ -183,7 +180,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	        }
 	      }
 	    }
-	    _logger.debug(LOG_EXIT, "parseAllServiceElements", new Object[]{result});
+	    _logger.debug("Method exit: {}, returning {}", "parseAllServiceElements", new Object[]{result});
 	    return result; 
 	  }
     private void processMultiValueProperty(Map<String, Object> serviceProps,
@@ -231,7 +228,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	   * @throws InvalidAttributeException 
 	   */
 	  private List<ImportedService> parseCDRForReferences (ComponentDefinitionRegistry cdr) throws InvalidAttributeException { 
-	    _logger.debug(LOG_ENTRY, "parseCDRForReferences", new Object[]{cdr});
+	    _logger.debug("Method entry: {}, args {}", "parseCDRForReferences", new Object[]{cdr});
 	    List<ImportedService> result = new ArrayList<ImportedService>();
 	    for (ComponentMetadata compMetadata : findAllComponents(cdr)) { 
 	      if (compMetadata instanceof ServiceReferenceMetadata) { 
@@ -257,7 +254,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	        }
 	      }
 	    }
-	    _logger.debug(LOG_EXIT, "parseCDRForReferences", new Object[]{result});
+	    _logger.debug("Method exit: {}, returning {}", "parseCDRForReferences", new Object[]{result});
 	    return result; 
 	  }
 	  
@@ -360,7 +357,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	   *                        in the model being generated. 
 	   */
 	  protected boolean isBlacklisted (String iface, String blueprintFilter) { 
-	    _logger.debug(LOG_ENTRY, "isBlacklisted", new Object[]{iface, blueprintFilter});
+	    _logger.debug("Method entry: {}, args {}", "isBlacklisted", new Object[]{iface, blueprintFilter});
 	    boolean blacklisted = false;
 	    if (iface != null) {
 	      // JPA - detect interface;
@@ -380,7 +377,7 @@ abstract public class AbstractParserProxy implements ParserProxy {
 	        blacklisted |= filter.containsKey(JNDIConstants.JNDI_SERVICENAME);
 	      }
 	    }
-	    _logger.debug(LOG_EXIT, "isBlacklisted", new Object[]{!blacklisted});
+	    _logger.debug("Method exit: {}, returning {}", "isBlacklisted", new Object[]{!blacklisted});
 	    return blacklisted;
 	  }
 }

@@ -19,9 +19,6 @@
 package org.apache.aries.application.modelling.impl;
 
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -52,10 +49,10 @@ public final class ParsedServiceElementsImpl implements ParsedServiceElements
    */
   public ParsedServiceElementsImpl ( Collection<ExportedService> services, 
       Collection<ImportedService> references) { 
-    logger.debug(LOG_ENTRY, "ParsedServiceElementsImpl", new Object[]{services, references});
+    logger.debug("Method entry: {}, args {}", "ParsedServiceElementsImpl", new Object[]{services, references});
     _services = new HashSet<ExportedService>(services);
     _references = new HashSet<ImportedService>(references);
-    logger.debug(LOG_ENTRY, "ParsedServiceElementsImpl");
+    logger.debug("Method entry: {}, args {}", "ParsedServiceElementsImpl");
   }
 
   /**
@@ -63,8 +60,8 @@ public final class ParsedServiceElementsImpl implements ParsedServiceElements
    * @return imported services
    */
   public Collection<ImportedService> getReferences() {
-    logger.debug(LOG_ENTRY, "getReferences");
-    logger.debug(LOG_EXIT, "getReferences", _references);
+    logger.debug("Method entry: {}, args {}", "getReferences");
+    logger.debug("Method exit: {}, returning {}", "getReferences", _references);
     return Collections.unmodifiableCollection(_references);
   }
 
@@ -73,8 +70,8 @@ public final class ParsedServiceElementsImpl implements ParsedServiceElements
    * @return exported services
    */
   public Collection<ExportedService> getServices() {
-    logger.debug(LOG_ENTRY, "getServices");
-    logger.debug(LOG_EXIT, "getServices", _services);
+    logger.debug("Method entry: {}, args {}", "getServices");
+    logger.debug("Method exit: {}, returning {}", "getServices", _services);
     return Collections.unmodifiableCollection(_services);
   }
 }

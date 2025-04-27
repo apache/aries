@@ -13,9 +13,6 @@
  */
 package org.apache.aries.subsystem.util.felix;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import org.apache.aries.subsystem.obr.internal.NamespaceTranslator;
 import org.apache.aries.subsystem.obr.internal.ResourceHelper;
 import org.apache.felix.bundlerepository.Capability;
@@ -75,9 +72,9 @@ public class OsgiRequirementAdapter implements Requirement {
 	}
 
 	public boolean isSatisfied(Capability capability) {
-		logger.debug(LOG_ENTRY, "isSatisfied", capability);
+		logger.debug("Method entry: {}, args {}", "isSatisfied", capability);
 		boolean result = ResourceHelper.matches(requirement, new FelixCapabilityAdapter(capability, null));
-		logger.debug(LOG_EXIT, "isSatisfied", result);
+		logger.debug("Method exit: {}, returning {}", "isSatisfied", result);
 		return result;
 	}
 

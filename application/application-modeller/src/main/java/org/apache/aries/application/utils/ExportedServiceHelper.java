@@ -1,4 +1,4 @@
-package org.apache.aries.application.utils.service;
+package org.apache.aries.application.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -19,8 +19,6 @@
 package org.apache.aries.application.modelling.utils.impl;
 
 import static org.apache.aries.application.modelling.ModellingConstants.OPTIONAL_KEY;
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 import static org.osgi.framework.Constants.BUNDLE_VERSION_ATTRIBUTE;
 import static org.osgi.framework.Constants.VERSION_ATTRIBUTE;
 
@@ -70,18 +68,18 @@ public class ModellingHelperImpl implements ModellingHelper {
       Collection<ImportedBundle> appUseBundleNames,
       Collection<ModelledResource> fakeServiceProvidingBundles) 
   {
-    logger.debug(LOG_ENTRY, "createDeployedBundles", new Object[]{assetName, 
+    logger.debug("Method entry: {}, args {}", "createDeployedBundles", new Object[]{assetName,
         appContentNames, appUseBundleNames, fakeServiceProvidingBundles});  
     DeployedBundles result = new DeployedBundlesImpl (assetName, 
         appContentNames, appUseBundleNames, fakeServiceProvidingBundles);
-    logger.debug(LOG_EXIT, "createDeployedBundles", result);
+    logger.debug("Method exit: {}, returning {}", "createDeployedBundles", result);
     return result;
   }
   
   // These underlying static methods are directly accessible 
   // from other classes within the bundle
   public static boolean areMandatoryAttributesPresent_(Map<String,String> consumerAttributes, Provider p) {
-    logger.debug(LOG_ENTRY, "areMandatoryAttributesPresent_", new Object[]{consumerAttributes, p});
+    logger.debug("Method entry: {}, args {}", "areMandatoryAttributesPresent_", new Object[]{consumerAttributes, p});
     boolean allPresent = true;
     String mandatory = (String) p.getAttributes().get(Constants.MANDATORY_DIRECTIVE + ":");
     
@@ -94,14 +92,14 @@ public class ModellingHelperImpl implements ModellingHelper {
           break;
       }
     }
-    logger.debug(LOG_EXIT, "areMandatoryAttributesPresent_", allPresent);
+    logger.debug("Method exit: {}, returning {}", "areMandatoryAttributesPresent_", allPresent);
     return allPresent;
   }
   
   
   
   public static ImportedBundle buildFragmentHost_(String fragmentHostHeader) throws InvalidAttributeException {
-    logger.debug(LOG_ENTRY, "buildFragmentHost_", new Object[]{fragmentHostHeader});
+    logger.debug("Method entry: {}, args {}", "buildFragmentHost_", new Object[]{fragmentHostHeader});
     if(fragmentHostHeader == null) { 
       
       return null;
@@ -124,13 +122,13 @@ public class ModellingHelperImpl implements ModellingHelper {
     String filter = ManifestHeaderProcessor.generateFilter(attribs);
     
     ImportedBundle result = new ImportedBundleImpl(filter, attribs);
-    logger.debug(LOG_EXIT, "buildFragmentHost_", result);
+    logger.debug("Method exit: {}, returning {}", "buildFragmentHost_", result);
     return result;
   }
   
   public static ImportedPackage intersectPackage_ (ImportedPackage p1, ImportedPackage p2) { 
     
-    logger.debug(LOG_ENTRY, "intersectPackage_", new Object[]{p1, p2});
+    logger.debug("Method entry: {}, args {}", "intersectPackage_", new Object[]{p1, p2});
     ImportedPackage result = null;
     if (p1.getPackageName().equals(p2.getPackageName()))
     {
@@ -196,7 +194,7 @@ public class ModellingHelperImpl implements ModellingHelper {
         }
       }
     } 
-    logger.debug(LOG_EXIT, "intersectPackage_", result);
+    logger.debug("Method exit: {}, returning {}", "intersectPackage_", result);
     return result;
   }
   

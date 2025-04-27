@@ -20,8 +20,6 @@ package org.apache.aries.application.modelling.impl;
 
 import static org.apache.aries.application.modelling.ModellingConstants.OPTIONAL_KEY;
 import static org.apache.aries.application.modelling.ResourceType.PACKAGE;
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -65,7 +63,7 @@ public class ImportedPackageImpl implements ImportedPackage
    * @throws InvalidAttributeException
    */
   public ImportedPackageImpl (String pkg, Map<String, String> attributes) throws InvalidAttributeException {
-    logger.debug(LOG_ENTRY, "ImportedPackageImpl", new Object[] {pkg, attributes});
+    logger.debug("Method entry: {}, args {}", "ImportedPackageImpl", new Object[] {pkg, attributes});
     _package = pkg;
     String versionRange = null;
     if (attributes != null) {
@@ -87,10 +85,10 @@ public class ImportedPackageImpl implements ImportedPackage
     try { 
     _filter = FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(_filterString));
     } catch (InvalidSyntaxException isx) { 
-      logger.debug(LOG_EXIT, "ImportedPackageImpl", new Object[] {isx});
+      logger.debug("Method exit: {}, returning {}", "ImportedPackageImpl", new Object[] {isx});
       throw new InvalidAttributeException(isx);
     }
-    logger.debug(LOG_EXIT, "ImportedPackageImpl");
+    logger.debug("Method exit: {}, returning {}", "ImportedPackageImpl");
   }
   
   /**
@@ -98,8 +96,8 @@ public class ImportedPackageImpl implements ImportedPackage
    * @return attributes
    */
   public Map<String, String> getAttributes() { 
-    logger.debug(LOG_ENTRY, "getAttributes");
-    logger.debug(LOG_EXIT, "getAttributes", new Object[] {_attributes});
+    logger.debug("Method entry: {}, args {}", "getAttributes");
+    logger.debug("Method exit: {}, returning {}", "getAttributes", new Object[] {_attributes});
     return Collections.unmodifiableMap(_attributes);
   }
   
@@ -108,8 +106,8 @@ public class ImportedPackageImpl implements ImportedPackage
    * @return package name
    */
   public String getPackageName() { 
-    logger.debug(LOG_ENTRY, "getPackageName");
-    logger.debug(LOG_EXIT, "getPackageName", new Object[] {_package});
+    logger.debug("Method entry: {}, args {}", "getPackageName");
+    logger.debug("Method exit: {}, returning {}", "getPackageName", new Object[] {_package});
     return _package;
   }
   
@@ -118,44 +116,44 @@ public class ImportedPackageImpl implements ImportedPackage
    * @return version range
    */
   public String getVersionRange() {
-    logger.debug(LOG_ENTRY, "getVersionRange");
-    logger.debug(LOG_EXIT, "getVersionRange", new Object[] {_versionRange});
+    logger.debug("Method entry: {}, args {}", "getVersionRange");
+    logger.debug("Method exit: {}, returning {}", "getVersionRange", new Object[] {_versionRange});
     return _versionRange;
   }
   
 
   public String getAttributeFilter() {
-    logger.debug(LOG_ENTRY, "getAttributeFilter");
-    logger.debug(LOG_EXIT, "getAttributeFilter", new Object[] {_filterString});
+    logger.debug("Method entry: {}, args {}", "getAttributeFilter");
+    logger.debug("Method exit: {}, returning {}", "getAttributeFilter", new Object[] {_filterString});
     return _filterString;
   }
 
 
   public ResourceType getType() {
-    logger.debug(LOG_ENTRY, "getType");
-    logger.debug(LOG_EXIT, "getType", new Object[] {PACKAGE});
+    logger.debug("Method entry: {}, args {}", "getType");
+    logger.debug("Method exit: {}, returning {}", "getType", new Object[] {PACKAGE});
     return PACKAGE;
   }
 
 
   public boolean isMultiple() {
-    logger.debug(LOG_ENTRY, "isMultiple");
-    logger.debug(LOG_EXIT, "isMultiple", new Object[] {false});
+    logger.debug("Method entry: {}, args {}", "isMultiple");
+    logger.debug("Method exit: {}, returning {}", "isMultiple", new Object[] {false});
     return false;   // cannot import a given package more than once
   }
 
 
   public boolean isOptional() {
-    logger.debug(LOG_ENTRY, "isOptional");
-    logger.debug(LOG_EXIT, "isOptional", new Object[] {_optional});
+    logger.debug("Method entry: {}, args {}", "isOptional");
+    logger.debug("Method exit: {}, returning {}", "isOptional", new Object[] {_optional});
     return _optional;
   }
 
 
   public boolean isSatisfied(Provider capability) {
-    logger.debug(LOG_ENTRY, "isSatisfied", new Object[]{capability});
+    logger.debug("Method entry: {}, args {}", "isSatisfied", new Object[]{capability});
     if (capability.getType() != PACKAGE) { 
-      logger.debug(LOG_EXIT, "isSatisfied", new Object[] {false});
+      logger.debug("Method exit: {}, returning {}", "isSatisfied", new Object[] {false});
       return false;
     }
     Dictionary<String, Object> dict = new Hashtable<String, Object> (capability.getAttributes());
@@ -166,7 +164,7 @@ public class ImportedPackageImpl implements ImportedPackage
     
     boolean allPresent = ModellingHelperImpl.areMandatoryAttributesPresent_(_attributes, capability);
     boolean result = allPresent && _filter.match(dict);
-    logger.debug(LOG_EXIT, "isSatisfied", new Object[] {result});
+    logger.debug("Method exit: {}, returning {}", "isSatisfied", new Object[] {result});
     return result;
   }
 
@@ -180,7 +178,7 @@ public class ImportedPackageImpl implements ImportedPackage
   */
   @SuppressWarnings("deprecation")
   public String toDeploymentString() {
-    logger.debug(LOG_ENTRY, "toDeploymentString");
+    logger.debug("Method entry: {}, args {}", "toDeploymentString");
     StringBuilder sb = new StringBuilder(_package);
     // Note that the RESOLUTION_DIRECTIVE is set in this map, so it will be
     // output automatically. p41 of the OSGi Core Spec v4.2 includes an example
@@ -199,7 +197,7 @@ public class ImportedPackageImpl implements ImportedPackage
       }
     }
     String result = sb.toString();
-    logger.debug(LOG_EXIT, "toDeploymentString", new Object[]{result});
+    logger.debug("Method exit: {}, returning {}", "toDeploymentString", new Object[]{result});
     return result;
   }
   
