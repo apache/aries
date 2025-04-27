@@ -48,7 +48,7 @@
         <lastReleaseVersion>1.4.0</lastReleaseVersion>
 
         <blueprint.api.version>1.0.0</blueprint.api.version>
-        <osgi.core.version>4.3.1</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
     </properties>
 
     <profiles>

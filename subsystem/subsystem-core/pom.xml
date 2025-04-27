@@ -70,7 +70,7 @@
         <org.apache.aries.subsystem.api.version>2.0.10</org.apache.aries.subsystem.api.version>
         <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.aries.application.api.version>1.0.1-SNAPSHOT</org.apache.aries.application.api.version>
-        <osgi.core.version>6.0.0</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
         <osgi.enterprise.version>5.0.0</osgi.enterprise.version>
         <org.eclipse.equinox.coordinator.version>1.1.0.v20120522-1841</org.eclipse.equinox.coordinator.version>
         <org.eclipse.equinox.region.version>1.2.101.v20150831-1342</org.eclipse.equinox.region.version>

@@ -57,7 +57,7 @@
 
         <blueprint.core.version>1.3.0</blueprint.core.version>
         <geronimo-servlet_2.5_spec.version>1.2</geronimo-servlet_2.5_spec.version>
-        <osgi.core.version>4.3.1</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
     </properties>
 
     <profiles>

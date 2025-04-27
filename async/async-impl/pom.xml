@@ -66,7 +66,7 @@
         <org.osgi.service.log.version>1.5.0</org.osgi.service.log.version>
         <org.osgi.util.tracker.version>1.5.4</org.osgi.util.tracker.version>
         <osgi.annotation.version>8.1.0</osgi.annotation.version>
-        <osgi.core.version>4.3.1</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
     </properties>
 
     <dependencies>
