@@ -18,9 +18,6 @@
  */
 package org.apache.aries.application.modelling.impl;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -61,7 +58,7 @@ public class ImportedBundleImpl implements ImportedBundle {
    */
   public ImportedBundleImpl(String filterString, Map<String, String> attributes) throws InvalidAttributeException
   {
-    logger.debug(LOG_ENTRY, "ImportedBundleImpl", new Object[]{filterString, attributes});
+    logger.debug("Method entry: {}, args {}", "ImportedBundleImpl", new Object[]{filterString, attributes});
     _attributes = new HashMap<String, String> (attributes);
     String versionRange = _attributes.remove(Constants.BUNDLE_VERSION_ATTRIBUTE);
     if(versionRange == null) {
@@ -75,10 +72,10 @@ public class ImportedBundleImpl implements ImportedBundle {
       _filter = FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(_filterString));
     } catch (InvalidSyntaxException isx) {
       InvalidAttributeException iax = new InvalidAttributeException(isx);
-      logger.debug(LOG_EXIT, "ImportedBundleImpl", new Object[]{iax});
+      logger.debug("Method exit: {}, returning {}", "ImportedBundleImpl", new Object[]{iax});
       throw iax;
     }
-    logger.debug(LOG_EXIT, "ImportedBundleImpl");
+    logger.debug("Method exit: {}, returning {}", "ImportedBundleImpl");
   }
   
   /**
@@ -88,7 +85,7 @@ public class ImportedBundleImpl implements ImportedBundle {
    * @throws InvalidAttributeException
    */
   public ImportedBundleImpl (String bundleName, String versionRange) throws InvalidAttributeException { 
-    logger.debug(LOG_ENTRY, "ImportedBundleImpl", new Object[] {bundleName, versionRange});
+    logger.debug("Method entry: {}, args {}", "ImportedBundleImpl", new Object[] {bundleName, versionRange});
     _attributes = new HashMap<String, String> ();
     _attributes.put (ModellingConstants.OBR_SYMBOLIC_NAME, bundleName);
     _attributes.put (Constants.VERSION_ATTRIBUTE, versionRange);
@@ -97,52 +94,52 @@ public class ImportedBundleImpl implements ImportedBundle {
       _filter = FrameworkUtil.createFilter(FilterUtils.removeMandatoryFilterToken(_filterString));
     } catch (InvalidSyntaxException isx) { 
       InvalidAttributeException iax = new InvalidAttributeException(isx);
-      logger.debug(LOG_ENTRY, "ImportedBundleImpl", new Object[] {iax});
+      logger.debug("Method entry: {}, args {}", "ImportedBundleImpl", new Object[] {iax});
       throw iax;
     }
-    logger.debug(LOG_EXIT, "ImportedBundleImpl"); 
+    logger.debug("Method exit: {}, returning {}", "ImportedBundleImpl");
   }
  
 
   public String getAttributeFilter() {
-    logger.debug(LOG_ENTRY, "getAttributeFilter");
-    logger.debug(LOG_EXIT, "getAttributeFilter", new Object[] {_filterString});
+    logger.debug("Method entry: {}, args {}", "getAttributeFilter");
+    logger.debug("Method exit: {}, returning {}", "getAttributeFilter", new Object[] {_filterString});
     return _filterString;
   }
 
 
   public ResourceType getType() {
 
-    logger.debug(LOG_ENTRY, "getType");
-    logger.debug(LOG_EXIT, "getType", new Object[] {ResourceType.BUNDLE});
+    logger.debug("Method entry: {}, args {}", "getType");
+    logger.debug("Method exit: {}, returning {}", "getType", new Object[] {ResourceType.BUNDLE});
     return ResourceType.BUNDLE;
   }
 
 
   public boolean isMultiple() {
-    logger.debug(LOG_ENTRY, "isMultiple");
-    logger.debug(LOG_EXIT, "isMultiple", new Object[] {false});
+    logger.debug("Method entry: {}, args {}", "isMultiple");
+    logger.debug("Method exit: {}, returning {}", "isMultiple", new Object[] {false});
     return false;
   }
 
 
   public boolean isOptional() {
-    logger.debug(LOG_ENTRY, "isOptional");
+    logger.debug("Method entry: {}, args {}", "isOptional");
     boolean optional = false;
     if (_attributes.containsKey(Constants.RESOLUTION_DIRECTIVE + ":")) {
       if (Constants.RESOLUTION_OPTIONAL.equals(_attributes.get(Constants.RESOLUTION_DIRECTIVE + ":"))) {
         optional = true;
       }
     }
-    logger.debug(LOG_EXIT, "isOptional", optional);
+    logger.debug("Method exit: {}, returning {}", "isOptional", optional);
     return optional;
   }
 
   public boolean isSatisfied(Provider capability) {
-    logger.debug(LOG_ENTRY, "isSatisfied", capability);
+    logger.debug("Method entry: {}, args {}", "isSatisfied", capability);
     if (capability.getType() != ResourceType.BUNDLE 
         && capability.getType() != ResourceType.COMPOSITE) { 
-      logger.debug(LOG_EXIT, "isSatisfied", false);
+      logger.debug("Method exit: {}, returning {}", "isSatisfied", false);
       return false;
     }
     Dictionary<String, Object> dict = new Hashtable<String, Object> (capability.getAttributes());
@@ -152,7 +149,7 @@ public class ImportedBundleImpl implements ImportedBundle {
     }
     boolean allPresent = ModellingHelperImpl.areMandatoryAttributesPresent_(_attributes, capability);
     boolean result = allPresent && _filter.match(dict);
-    logger.debug(LOG_EXIT, "isSatisfied", result);
+    logger.debug("Method exit: {}, returning {}", "isSatisfied", result);
     return result;
   }
   
@@ -161,10 +158,10 @@ public class ImportedBundleImpl implements ImportedBundle {
    * @return Imported version range, as a string
    */
   public String getVersionRange() {
-    logger.debug(LOG_ENTRY, "getVersionRange");
+    logger.debug("Method entry: {}, args {}", "getVersionRange");
     String range = _attributes.get(Constants.VERSION_ATTRIBUTE);
     String result = (range == null) ? Version.emptyVersion.toString() : range;
-    logger.debug(LOG_EXIT, "getVersionRange", result);
+    logger.debug("Method exit: {}, returning {}", "getVersionRange", result);
     return result;
   }
   
@@ -173,9 +170,9 @@ public class ImportedBundleImpl implements ImportedBundle {
    * @return symbolic name
    */
   public String getSymbolicName() {
-    logger.debug(LOG_ENTRY, "getSymbolicName");
+    logger.debug("Method entry: {}, args {}", "getSymbolicName");
     String result = _attributes.get(ModellingConstants.OBR_SYMBOLIC_NAME);
-    logger.debug(LOG_EXIT, "getSymbolicName", result);
+    logger.debug("Method exit: {}, returning {}", "getSymbolicName", result);
     return result;
   }
   
@@ -185,7 +182,7 @@ public class ImportedBundleImpl implements ImportedBundle {
   @Override
   public boolean equals(Object o)
   {
-    logger.debug(LOG_ENTRY, "equals", o);
+    logger.debug("Method entry: {}, args {}", "equals", o);
     boolean result = false;
     if (o == this)
     {
@@ -197,16 +194,16 @@ public class ImportedBundleImpl implements ImportedBundle {
       result = (getSymbolicName().equals(ib.getSymbolicName())
           && getVersionRange().equals(ib.getVersionRange()));
     }
-    logger.debug(LOG_EXIT, "equals", result);
+    logger.debug("Method exit: {}, returning {}", "equals", result);
     return result;
   }
   
   @Override
   public int hashCode()
   {
-    logger.debug(LOG_ENTRY, "hashCode");
+    logger.debug("Method entry: {}, args {}", "hashCode");
     int hashCode = getSymbolicName().hashCode() + 31 * getVersionRange().hashCode();
-    logger.debug(LOG_ENTRY, "hashCode", hashCode);
+    logger.debug("Method entry: {}, args {}", "hashCode", hashCode);
     return hashCode;
   }
   

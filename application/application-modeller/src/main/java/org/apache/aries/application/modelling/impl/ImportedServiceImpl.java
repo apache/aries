@@ -19,8 +19,6 @@
 package org.apache.aries.application.modelling.impl;
 
 import static org.apache.aries.application.modelling.ResourceType.SERVICE;
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -90,7 +88,7 @@ public class ImportedServiceImpl implements ImportedService
   }
 
   private Filter generateAttributeFilter (Map<String, String> attrsToPopulate) throws InvalidAttributeException {
-    logger.debug(LOG_ENTRY, "generateAttributeFilter", new Object[]{attrsToPopulate});
+    logger.debug("Method entry: {}, args {}", "generateAttributeFilter", new Object[]{attrsToPopulate});
     Filter result = null;
     
     try {
@@ -123,10 +121,10 @@ public class ImportedServiceImpl implements ImportedService
     		  "A syntax error occurred attempting to parse the blueprint filter string '" 
     		  + _blueprintFilter + "' for element with id " + _id + ": " 
     		  + isx.getLocalizedMessage(), isx);
-      logger.debug(LOG_EXIT, "generateAttributeFilter", new Object[]{isx});
+      logger.debug("Method exit: {}, returning {}", "generateAttributeFilter", new Object[]{isx});
       throw iax;
     }
-    logger.debug(LOG_EXIT, "generateAttributeFilter", new Object[]{result});
+    logger.debug("Method exit: {}, returning {}", "generateAttributeFilter", new Object[]{result});
     return result;
   }
   
@@ -156,39 +154,39 @@ public class ImportedServiceImpl implements ImportedService
   }
 
   public String getFilter() {
-    logger.debug(LOG_ENTRY, "getFilter");
-    logger.debug(LOG_EXIT, "getFilter", _blueprintFilter);
+    logger.debug("Method entry: {}, args {}", "getFilter");
+    logger.debug("Method exit: {}, returning {}", "getFilter", _blueprintFilter);
     return _blueprintFilter;
   }
 
 
   public ResourceType getType() {
-    logger.debug(LOG_ENTRY, "getType");
-    logger.debug(LOG_EXIT, "getType",  SERVICE);
+    logger.debug("Method entry: {}, args {}", "getType");
+    logger.debug("Method exit: {}, returning {}", "getType",  SERVICE);
     return SERVICE;
   }
 
 
  public boolean isMultiple() {
-   logger.debug(LOG_ENTRY, "isMultiple");
-   logger.debug(LOG_EXIT, "isMultiple",  _isMultiple);
+   logger.debug("Method entry: {}, args {}", "isMultiple");
+   logger.debug("Method exit: {}, returning {}", "isMultiple",  _isMultiple);
     return _isMultiple;
   }
 
 
 
   public boolean isOptional() {
-    logger.debug(LOG_ENTRY, "isOptional");
-    logger.debug(LOG_EXIT, "isOptional",  _optional);
+    logger.debug("Method entry: {}, args {}", "isOptional");
+    logger.debug("Method exit: {}, returning {}", "isOptional",  _optional);
     return _optional;
   }
 
 
   public boolean isSatisfied(Provider capability) {
-    logger.debug(LOG_ENTRY, "isSatisfied", capability);
+    logger.debug("Method entry: {}, args {}", "isSatisfied", capability);
     
     if (capability.getType() != SERVICE) { 
-      logger.debug(LOG_EXIT, "isSatisfied",  false);
+      logger.debug("Method exit: {}, returning {}", "isSatisfied",  false);
       return false;
     }
     Dictionary<String, Object> dict = new Hashtable<String, Object> (capability.getAttributes());
@@ -201,47 +199,47 @@ public class ImportedServiceImpl implements ImportedService
     }
     
     if (_attributeFilter == null) { 
-      logger.debug(LOG_EXIT, "isSatisfied",  true);
+      logger.debug("Method exit: {}, returning {}", "isSatisfied",  true);
       return true;
     }
     boolean allPresent = ModellingHelperImpl.areMandatoryAttributesPresent_(_attributes, capability);
     boolean result = allPresent && _attributeFilter.match(dict);
-    logger.debug(LOG_EXIT, "isSatisfied",  result);
+    logger.debug("Method exit: {}, returning {}", "isSatisfied",  result);
     return result;
   }
 
   
   public String getComponentName() {
-    logger.debug(LOG_ENTRY, "getComponentName");
-    logger.debug(LOG_EXIT, "getComponentName",  _componentName);
+    logger.debug("Method entry: {}, args {}", "getComponentName");
+    logger.debug("Method exit: {}, returning {}", "getComponentName",  _componentName);
     return _componentName;
   }
 
   
   public String getId() {
-    logger.debug(LOG_ENTRY, "getId");
-    logger.debug(LOG_EXIT, "getId",  _id);
+    logger.debug("Method entry: {}, args {}", "getId");
+    logger.debug("Method exit: {}, returning {}", "getId",  _id);
     return _id;
   }
 
   
   public String getInterface() {
-    logger.debug(LOG_ENTRY, "getInterface");
-    logger.debug(LOG_EXIT, "getInterface",  _iface);
+    logger.debug("Method entry: {}, args {}", "getInterface");
+    logger.debug("Method exit: {}, returning {}", "getInterface",  _iface);
    return _iface;
   }
 
   public boolean isList() {
-    logger.debug(LOG_ENTRY, "isList");    
+    logger.debug("Method entry: {}, args {}", "isList");
     boolean result = isMultiple();
-    logger.debug(LOG_EXIT, "isList",  result);
+    logger.debug("Method exit: {}, returning {}", "isList",  result);
     return result;
   }
 
 
   public String getAttributeFilter() {
-    logger.debug(LOG_ENTRY, "getAttributeFilter");
-    logger.debug(LOG_EXIT, "getAttributeFilter",  _attribFilterString);
+    logger.debug("Method entry: {}, args {}", "getAttributeFilter");
+    logger.debug("Method exit: {}, returning {}", "getAttributeFilter",  _attribFilterString);
     return _attribFilterString;
   }
   
@@ -272,10 +270,10 @@ public class ImportedServiceImpl implements ImportedService
   
   @Override 
   public String toString() { 
-    logger.debug(LOG_ENTRY, "toString");
+    logger.debug("Method entry: {}, args {}", "toString");
     
     if (_toString != null) { 
-      logger.debug(LOG_EXIT, "toString",  _toString);
+      logger.debug("Method exit: {}, returning {}", "toString",  _toString);
       return _toString;
     }
     StringBuffer buf = new StringBuffer("<reference>");
@@ -287,7 +285,7 @@ public class ImportedServiceImpl implements ImportedService
     // We don't have a method for writing filters in a canonical form
     buf.append("<filter>" + _blueprintFilter + "</filter>");
     _toString = buf.toString();
-    logger.debug(LOG_EXIT, "toString",  _toString);
+    logger.debug("Method exit: {}, returning {}", "toString",  _toString);
     return _toString;
   }
 
@@ -295,13 +293,13 @@ public class ImportedServiceImpl implements ImportedService
    * A String suitable for use in DeployedImport-Service
    */
   public String toDeploymentString() {
-    logger.debug(LOG_ENTRY, "toDeploymentString");    
+    logger.debug("Method entry: {}, args {}", "toDeploymentString");
     String baseFilter = getAttributeFilter();
     // We may have one or more (service=service) elements that must be removed.
     String reducedFilter = SERVICE_EQUALS_SERVICE.matcher(baseFilter).replaceAll("");    
     // now trim off mandatory:<*service occurrences
     String result = FilterUtils.removeMandatoryFilterToken(reducedFilter);
-    logger.debug(LOG_EXIT, "toDeploymentString",  result);
+    logger.debug("Method exit: {}, returning {}", "toDeploymentString",  result);
     return result;
   }
 }

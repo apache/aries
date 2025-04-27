@@ -17,8 +17,6 @@
  * under the License.
  */
 package org.apache.aries.application.modelling.internal;
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -53,12 +51,12 @@ public final class PackageRequirementMerger
    */
   public PackageRequirementMerger(Collection<ImportedPackage> requirements)
   {
-    logger.debug(LOG_ENTRY, "PackageRequirementMerger", requirements);
+    logger.debug("Method entry: {}, args {}", "PackageRequirementMerger", requirements);
     
     if (requirements == null)
     {
       NullPointerException npe = new NullPointerException();
-      logger.debug(LOG_EXIT, "PackageRequirementMerger", npe);
+      logger.debug("Method exit: {}, returning {}", "PackageRequirementMerger", npe);
       throw npe;
     }
 
@@ -85,7 +83,7 @@ public final class PackageRequirementMerger
     }
     
     mergedRequirements = (invalidRequirements.isEmpty() ? reqMap.values() : null);
-    logger.debug(LOG_EXIT,"PackageRequirementMerger");
+    logger.debug("Method exit: {}, returning {}","PackageRequirementMerger");
     }
 
   /**
@@ -94,9 +92,9 @@ public final class PackageRequirementMerger
    */
   public boolean isMergeSuccessful()
   {
-    logger.debug(LOG_ENTRY, "isMergeSuccessful");
+    logger.debug("Method entry: {}, args {}", "isMergeSuccessful");
     boolean result = mergedRequirements != null;
-    logger.debug(LOG_EXIT, "isMergeSuccessful", result);
+    logger.debug("Method exit: {}, returning {}", "isMergeSuccessful", result);
     return result;
   }
   
@@ -112,14 +110,14 @@ public final class PackageRequirementMerger
    */
   public Collection<ImportedPackage> getMergedRequirements()
   {
-    logger.debug(LOG_ENTRY, "getMergedRequirements");
+    logger.debug("Method entry: {}, args {}", "getMergedRequirements");
     if (mergedRequirements == null)
     {
       IllegalStateException ise = new IllegalStateException();
-      logger.debug(LOG_EXIT, "getMergedRequirements", ise);
+      logger.debug("Method exit: {}, returning {}", "getMergedRequirements", ise);
       throw ise;
     }
-    logger.debug(LOG_EXIT, "getMergedRequirements", mergedRequirements);
+    logger.debug("Method exit: {}, returning {}", "getMergedRequirements", mergedRequirements);
     return Collections.unmodifiableCollection(mergedRequirements);
   }
   
@@ -130,8 +128,8 @@ public final class PackageRequirementMerger
    */
   public Set<String> getInvalidRequirements()
   {
-    logger.debug(LOG_ENTRY, "getInvalidRequirements");
-    logger.debug(LOG_EXIT, "getInvalidRequirements", invalidRequirements);
+    logger.debug("Method entry: {}, args {}", "getInvalidRequirements");
+    logger.debug("Method exit: {}, returning {}", "getInvalidRequirements", invalidRequirements);
     return Collections.unmodifiableSet(invalidRequirements);
   }
 

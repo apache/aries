@@ -18,9 +18,6 @@
  */
 package org.apache.aries.application.utils;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -38,7 +35,7 @@ public class FilterUtils
    * @return A filter with the mandatory stanzas removed or null if a null filter is supplied
    */
   public static String removeMandatoryFilterToken(String filter) {
-    logger.debug(LOG_ENTRY, "areMandatoryAttributesPresent", new Object[]{filter});
+    logger.debug("Method entry: {}, args {}", "areMandatoryAttributesPresent", new Object[]{filter});
     if(filter != null) {
       filter = regexp.matcher(filter).replaceAll("");
     
@@ -57,7 +54,7 @@ public class FilterUtils
         filter = filter.substring(2, filter.length() - 1);
       }
     }
-    logger.debug(LOG_EXIT, "removeMandatoryFilterToken", filter);
+    logger.debug("Method exit: {}, returning {}", "removeMandatoryFilterToken", filter);
     return filter;
   }
 }

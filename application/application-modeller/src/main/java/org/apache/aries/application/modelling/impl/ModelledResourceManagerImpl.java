@@ -18,9 +18,6 @@
  * */
 package org.apache.aries.application.modelling.impl;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -128,7 +125,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
   }
   
   private ParsedServiceElements getBlueprintServiceElements (BundleManifest bundleMf, Iterable<InputStream> blueprints) throws ModellerException { 
-    _logger.debug(LOG_ENTRY,"getServiceElements", new Object[] {bundleMf, blueprints} );
+    _logger.debug("Method entry: {}, args {}","getServiceElements", new Object[] {bundleMf, blueprints} );
 
     Set<ExportedService> services = new HashSet<ExportedService>();
     Set<ImportedService> references = new HashSet<ImportedService>();
@@ -144,11 +141,11 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
       }
     } catch (Exception e) {
       ModellerException m = new ModellerException(e);
-      _logger.debug(LOG_EXIT, "getServiceElements", m);
+      _logger.debug("Method exit: {}, returning {}", "getServiceElements", m);
       throw m;
     } 
     ParsedServiceElements result = _modellingManager.getParsedServiceElements(services, references);
-    _logger.debug(LOG_EXIT, "getServiceElements", result);
+    _logger.debug("Method exit: {}, returning {}", "getServiceElements", result);
     return result;
   }
 
@@ -175,7 +172,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
   }
   
   public ModelledResource getModelledResource(String uri, IDirectory bundle) throws ModellerException{
-    _logger.debug(LOG_ENTRY, "getModelledResource", new Object[]{uri, bundle});
+    _logger.debug("Method entry: {}, args {}", "getModelledResource", new Object[]{uri, bundle});
 
     if (bundle != null) {
         BundleManifest bm = BundleManifest.fromBundle(bundle);
@@ -184,7 +181,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
     } else {
       // The bundle does not exist
       ModellerException me = new ModellerException(MessageUtil.getMessage("INVALID_BUNDLE_LOCATION", bundle));
-      _logger.debug(LOG_EXIT, "getModelledResource", me);
+      _logger.debug("Method exit: {}, returning {}", "getModelledResource", me);
       throw me;
     }
 
@@ -197,10 +194,10 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
         mbi = _modellingManager.getModelledResource(uri, attributes, pse.getReferences(), pse.getServices());
       } catch (InvalidAttributeException iae) {
         ModellerException me = new ModellerException(iae);
-        _logger.debug(LOG_EXIT, "getModelledResource", me);
+        _logger.debug("Method exit: {}, returning {}", "getModelledResource", me);
         throw me;
       }
-      _logger.debug(LOG_EXIT, "getModelledResource", mbi);
+      _logger.debug("Method exit: {}, returning {}", "getModelledResource", mbi);
       return mbi;      
   }
 
@@ -216,7 +213,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
    */
   private Iterable<InputStream> findBlueprints(BundleManifest bundleMf, IDirectory bundle) throws IOException
   {
-    _logger.debug(LOG_ENTRY, "findBlueprints", bundle);
+    _logger.debug("Method entry: {}, args {}", "findBlueprints", bundle);
 
     Collection<IFile> blueprints = new ArrayList<IFile>();
     BundleBlueprintParser bpParser = new BundleBlueprintParser(bundleMf);
@@ -264,7 +261,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
         throw e;
     }
     
-    _logger.debug(LOG_EXIT, "findBlueprints", result);
+    _logger.debug("Method exit: {}, returning {}", "findBlueprints", result);
     return result;
   }
 

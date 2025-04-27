@@ -18,9 +18,6 @@
  */
 package org.apache.aries.application.modelling.impl;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +49,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
    * @throws InvalidAttributeException
    */
   public ExportedBundleImpl (Attributes attrs) throws InvalidAttributeException { 
-    logger.debug(LOG_ENTRY, "ExportedBundleImpl", attrs);
+    logger.debug("Method entry: {}, args {}", "ExportedBundleImpl", attrs);
     String symbolicName = attrs.getValue(Constants.BUNDLE_SYMBOLICNAME);
     
     Map<String,Map<String, String>> map = ManifestHeaderProcessor.parseImportString(symbolicName);
@@ -62,7 +59,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
     if(map.size() != 1) {
       InvalidAttributeException iax = new InvalidAttributeException (MessageUtil.getMessage(
           "TOO_MANY_SYM_NAMES", new Object[] {symbolicName}));
-      logger.debug(LOG_EXIT, "ExportedBundleImpl", iax);
+      logger.debug("Method exit: {}, returning {}", "ExportedBundleImpl", iax);
       throw iax;
     }
     
@@ -81,7 +78,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
     if (symbolicName == null || bmVersion == null) { 
       InvalidAttributeException iax = new InvalidAttributeException(MessageUtil.getMessage("INCORRECT_MANDATORY_HEADERS", 
           new Object[] {symbolicName, bmVersion}));
-      logger.debug(LOG_EXIT, "ExportedBundleImpl", iax);
+      logger.debug("Method exit: {}, returning {}", "ExportedBundleImpl", iax);
       throw iax;
     }
 
@@ -104,7 +101,7 @@ public class ExportedBundleImpl extends AbstractExportedBundle
     } else { 
       _fragHost = null;
     }
-    logger.debug(LOG_EXIT, "ExportedBundleImpl");
+    logger.debug("Method exit: {}, returning {}", "ExportedBundleImpl");
   }
   
   /**
@@ -113,17 +110,17 @@ public class ExportedBundleImpl extends AbstractExportedBundle
    * @param fragHost may be null if this bundle is not a fragment
    */
   public ExportedBundleImpl(Map<String, String> attributes, ImportedBundle fragHost) {
-    logger.debug(LOG_ENTRY, "ExportedBundleImpl", new Object[]{attributes, fragHost});
+    logger.debug("Method entry: {}, args {}", "ExportedBundleImpl", new Object[]{attributes, fragHost});
     _attributes = new HashMap<String, Object>(attributes);
     _fragHost = fragHost;
-    logger.debug(LOG_EXIT, "ExportedBundleImpl", new Object[]{attributes, fragHost});
+    logger.debug("Method exit: {}, returning {}", "ExportedBundleImpl", new Object[]{attributes, fragHost});
   }
 
 
   @Override
 public Map<String, Object> getAttributes() {
-    logger.debug(LOG_ENTRY, "getAttributes");
-    logger.debug(LOG_EXIT, "getAttributes", new Object[]{_attributes});
+    logger.debug("Method entry: {}, args {}", "getAttributes");
+    logger.debug("Method exit: {}, returning {}", "getAttributes", new Object[]{_attributes});
     return Collections.unmodifiableMap(_attributes);
   }
   
@@ -136,17 +133,17 @@ public String toString() {
  
   @Override
 public ImportedBundle getFragmentHost() {
-    logger.debug(LOG_ENTRY, "getFragmentHost");
-    logger.debug(LOG_EXIT, "getFragmentHost", new Object[]{_fragHost});
+    logger.debug("Method entry: {}, args {}", "getFragmentHost");
+    logger.debug("Method exit: {}, returning {}", "getFragmentHost", new Object[]{_fragHost});
     return _fragHost;
   }
 
 
   @Override
 public boolean isFragment() {
-    logger.debug(LOG_ENTRY, "isFragment");
+    logger.debug("Method entry: {}, args {}", "isFragment");
     boolean result = _fragHost != null;
-    logger.debug(LOG_EXIT, "isFragment", new Object[]{result});
+    logger.debug("Method exit: {}, returning {}", "isFragment", new Object[]{result});
     return result;
   }
 }

@@ -28,8 +28,6 @@ import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.aries.application.utils.AppConstants.*;
-
 /**
  * A bundle may contain a Bundle-Blueprint: header as per p649 of the v4 spec. If present, 
  * this denotes where to look for blueprint xml files. We could use Bundle.findEntries() 
@@ -183,7 +181,7 @@ public class BundleBlueprintParser {
    *  @return true if this is a blueprint file according to the Bundle-Blueprint header
    */
   public boolean isBPFile (String directory, String filename) { 
-    logger.debug(LOG_ENTRY, "isBPFile", new Object[] {directory, filename});
+    logger.debug("Method entry: {}, args {}", "isBPFile", new Object[] {directory, filename});
       
     boolean result=false;
     for (Path path: _paths) { 
@@ -193,7 +191,7 @@ public class BundleBlueprintParser {
       }
     }
     
-    logger.debug(LOG_EXIT, "isBPFile", result);
+    logger.debug("Method exit: {}, returning {}", "isBPFile", result);
     return result;
   }
        

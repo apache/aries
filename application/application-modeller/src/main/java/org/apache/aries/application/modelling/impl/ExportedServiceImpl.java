@@ -18,9 +18,6 @@
  */
 package org.apache.aries.application.modelling.impl;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +29,7 @@ import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.application.modelling.WrappedServiceMetadata;
-import org.apache.aries.application.utils.service.ExportedServiceHelper;
+import org.apache.aries.application.utils.ExportedServiceHelper;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +59,7 @@ public class ExportedServiceImpl implements ExportedService
       Map<String, Object> serviceProperties ) 
   { 
      
-    logger.debug(LOG_ENTRY,"ExportedServiceImpl", new Object[]{name, ranking, ifaces});
+    logger.debug("Method entry: {}, args {}","ExportedServiceImpl", new Object[]{name, ranking, ifaces});
     _interfaces = new TreeSet<String>(ifaces);
     if (!"".equals(name)) { 
       _name = name;
@@ -88,7 +85,7 @@ public class ExportedServiceImpl implements ExportedService
     _attributes.put(Constants.OBJECTCLASS, sb.toString());
     _attributes.put (Constants.SERVICE_RANKING, String.valueOf(_ranking));
     _attributes.put(ModellingConstants.OBR_SERVICE, ModellingConstants.OBR_SERVICE);
-    logger.debug(LOG_EXIT,"ExportedServiceImpl");
+    logger.debug("Method exit: {}, returning {}","ExportedServiceImpl");
   }
   
   /**
@@ -99,7 +96,7 @@ public class ExportedServiceImpl implements ExportedService
    */
   @Deprecated 
   public ExportedServiceImpl (String ifaceName, Map<String, String> attrs) { 
-    logger.debug(LOG_ENTRY,"ExportedServiceImpl", new Object[]{ ifaceName, attrs});
+    logger.debug("Method entry: {}, args {}","ExportedServiceImpl", new Object[]{ ifaceName, attrs});
     _interfaces = new TreeSet<String> (Arrays.asList(ifaceName));
     _ranking = 0;
     _attributes = new HashMap<String, Object> (attrs);
@@ -108,73 +105,73 @@ public class ExportedServiceImpl implements ExportedService
     _attributes.put(ModellingConstants.OBR_SERVICE, ModellingConstants.OBR_SERVICE);
     _serviceProperties = new HashMap<String, Object>();
     _name = null;
-    logger.debug(LOG_EXIT,"ExportedServiceImpl");
+    logger.debug("Method exit: {}, returning {}","ExportedServiceImpl");
    }
   
 
   public Map<String, Object> getAttributes() {    
-    logger.debug(LOG_ENTRY,"getAttributes");
-    logger.debug(LOG_EXIT, "getAttributes", _attributes);
+    logger.debug("Method entry: {}, args {}","getAttributes");
+    logger.debug("Method exit: {}, returning {}", "getAttributes", _attributes);
     return Collections.unmodifiableMap(_attributes);
   }
 
 
   public ResourceType getType() {
-    logger.debug(LOG_ENTRY,"getType");
-    logger.debug(LOG_EXIT, "getType", ResourceType.SERVICE);
+    logger.debug("Method entry: {}, args {}","getType");
+    logger.debug("Method exit: {}, returning {}", "getType", ResourceType.SERVICE);
     return ResourceType.SERVICE;
   }
 
 
   public Collection<String> getInterfaces() {
-    logger.debug(LOG_ENTRY,"getInterfaces");
-    logger.debug(LOG_EXIT, "getInterfaces", _interfaces);
+    logger.debug("Method entry: {}, args {}","getInterfaces");
+    logger.debug("Method exit: {}, returning {}", "getInterfaces", _interfaces);
     return Collections.unmodifiableCollection(_interfaces);
   }
 
 
   public String getName() {
-    logger.debug(LOG_ENTRY,"getName");
-    logger.debug(LOG_EXIT, "getName", _name);
+    logger.debug("Method entry: {}, args {}","getName");
+    logger.debug("Method exit: {}, returning {}", "getName", _name);
     return _name;
   }
 
 
   public int getRanking() {
-    logger.debug(LOG_ENTRY,"getRanking");
-    logger.debug(LOG_EXIT, "getRanking", _ranking);
+    logger.debug("Method entry: {}, args {}","getRanking");
+    logger.debug("Method exit: {}, returning {}", "getRanking", _ranking);
     return _ranking;
   }
 
 
   public Map<String, Object> getServiceProperties() {
-    logger.debug(LOG_ENTRY,"getServiceProperties");
-    logger.debug(LOG_EXIT, "getServiceProperties", _serviceProperties);
+    logger.debug("Method entry: {}, args {}","getServiceProperties");
+    logger.debug("Method exit: {}, returning {}", "getServiceProperties", _serviceProperties);
     return Collections.unmodifiableMap(_serviceProperties);
   }
 
 
   public int compareTo(WrappedServiceMetadata o) {
-    logger.debug(LOG_ENTRY, "compareTo", o);
+    logger.debug("Method entry: {}, args {}", "compareTo", o);
     int result = ExportedServiceHelper.portableExportedServiceCompareTo(this, o);
-    logger.debug(LOG_EXIT,"compareTo", result);
+    logger.debug("Method exit: {}, returning {}","compareTo", result);
     return result;
   }
 
   @Override
   public boolean equals (Object o) { 
-    logger.debug(LOG_ENTRY, "equals", o);
+    logger.debug("Method entry: {}, args {}", "equals", o);
     boolean eq = ExportedServiceHelper.portableExportedServiceEquals(this, o);
-    logger.debug(LOG_EXIT, "equals", eq);
+    logger.debug("Method exit: {}, returning {}", "equals", eq);
     return eq;
   }
   
   
   @Override
   public int hashCode() {
-    logger.debug(LOG_ENTRY, "hashCode");
+    logger.debug("Method entry: {}, args {}", "hashCode");
     int result = ExportedServiceHelper.portableExportedServiceHashCode(this);
-    logger.debug(LOG_EXIT, "hashCode", result);
+    logger.debug("Method exit: {}, returning {}", "hashCode", result);
     return result;
   }
   
@@ -188,11 +185,11 @@ public class ExportedServiceImpl implements ExportedService
   
 
   public boolean identicalOrDiffersOnlyByName(WrappedServiceMetadata wsmi) {
-    logger.debug(LOG_ENTRY,"identicalOrDiffersOnlyByName", wsmi);
+    logger.debug("Method entry: {}, args {}","identicalOrDiffersOnlyByName", wsmi);
     
     boolean result = ExportedServiceHelper.
         portableExportedServiceIdenticalOrDiffersOnlyByName(this, wsmi);
-    logger.debug(LOG_EXIT, "identicalOrDiffersOnlyByName", result);
+    logger.debug("Method exit: {}, returning {}", "identicalOrDiffersOnlyByName", result);
     return result;
   }
 }

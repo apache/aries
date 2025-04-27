@@ -47,7 +47,6 @@
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <org.apache.aries.application.api.version>1.0.1-SNAPSHOT</org.apache.aries.application.api.version>
         <org.apache.aries.application.modeller.version>1.0.1-SNAPSHOT</org.apache.aries.application.modeller.version>
-        <org.apache.aries.application.utils.version>1.0.1-SNAPSHOT</org.apache.aries.application.utils.version>
         <org.apache.aries.blueprint.version>1.2.0</org.apache.aries.blueprint.version>
         <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
         <org.apache.aries.subsystem.api.version>2.0.11-SNAPSHOT</org.apache.aries.subsystem.api.version>
@@ -132,22 +131,6 @@
             <groupId>org.apache.aries.application</groupId>
             <artifactId>org.apache.aries.application.modeller</artifactId>
             <version>${org.apache.aries.application.modeller.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>osgi.core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.utils</artifactId>
-            <scope>test</scope>
-            <version>${org.apache.aries.application.utils.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>

@@ -134,7 +134,6 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 				systemProperty("org.osgi.framework.storage.clean").value("onFirstInit"),
 				// Bundles
 				mavenBundle("org.apache.aries",             "org.apache.aries.util").versionAsInProject(),
-				mavenBundle("org.apache.aries.application", "org.apache.aries.application.utils").versionAsInProject(),
 				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
 				when(installModeler).useOptions(modelerBundles()),
                 when(installConfigAdmin).useOptions(

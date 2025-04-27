@@ -18,8 +18,6 @@
  */
 package org.apache.aries.application.modelling.impl;
 
-import static org.apache.aries.application.utils.AppConstants.LOG_ENTRY;
-import static org.apache.aries.application.utils.AppConstants.LOG_EXIT;
 import static org.osgi.framework.Constants.BUNDLE_VERSION_ATTRIBUTE;
 import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
 import static org.osgi.framework.Constants.EXPORT_PACKAGE;
@@ -101,8 +99,8 @@ public class ModelledResourceImpl implements ModelledResource
       Collection<ExportedService> exportedServices) throws InvalidAttributeException
   { 
     this (fileURI, bundleAttributes, resourceType, exportedBundle, importedServices, exportedServices);
-    logger.debug(LOG_ENTRY, "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices});
-    logger.debug(LOG_EXIT, "ModelledResourceImpl");
+    logger.debug("Method entry: {}, args {}", "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices});
+    logger.debug("Method exit: {}, returning {}", "ModelledResourceImpl");
   }
 
   /**
@@ -119,8 +117,8 @@ public class ModelledResourceImpl implements ModelledResource
       Collection<ExportedService> exportedServices) throws InvalidAttributeException
   { 
     this (fileURI, bundleAttributes, ResourceType.BUNDLE, null, importedServices, exportedServices );
-    logger.debug(LOG_ENTRY, "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices});
-    logger.debug(LOG_EXIT, "ModelledResourceImpl");
+    logger.debug("Method entry: {}, args {}", "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices});
+    logger.debug("Method exit: {}, returning {}", "ModelledResourceImpl");
   }
   
   public ModelledResourceImpl (String fileURI, Attributes bundleAttributes, 
@@ -129,7 +127,7 @@ public class ModelledResourceImpl implements ModelledResource
       Collection<ExportedService> exportedServices 
       ) throws InvalidAttributeException 
   {
-    logger.debug(LOG_ENTRY, "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices, 
+    logger.debug("Method entry: {}, args {}", "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices,
         resourceType});
 
     if (exportedBundle == null) { 
@@ -234,70 +232,70 @@ public class ModelledResourceImpl implements ModelledResource
         }
       }
     }
-    logger.debug(LOG_EXIT, "ModelledResourceImpl");
+    logger.debug("Method exit: {}, returning {}", "ModelledResourceImpl");
   }
 
 
   public String getLocation() {
-    logger.debug(LOG_ENTRY, "getLocation");
-    logger.debug(LOG_EXIT, "getLocation", _fileURI);
+    logger.debug("Method entry: {}, args {}", "getLocation");
+    logger.debug("Method exit: {}, returning {}", "getLocation", _fileURI);
     return _fileURI;
   }
 
   public ExportedBundle getExportedBundle() {
-    logger.debug(LOG_ENTRY, "getExportedBundle");
-    logger.debug(LOG_EXIT, "getExportedBundle",  _exportedBundle);
+    logger.debug("Method entry: {}, args {}", "getExportedBundle");
+    logger.debug("Method exit: {}, returning {}", "getExportedBundle",  _exportedBundle);
     return _exportedBundle;
   }
 
   public Collection<ExportedPackage> getExportedPackages() {
-    logger.debug(LOG_ENTRY, "getExportedPackages");
-    logger.debug(LOG_EXIT, "getExportedPackages",  _exportedPackages);
+    logger.debug("Method entry: {}, args {}", "getExportedPackages");
+    logger.debug("Method exit: {}, returning {}", "getExportedPackages",  _exportedPackages);
     return Collections.unmodifiableCollection(_exportedPackages);
   }
   
   public Collection<ImportedPackage> getImportedPackages() {
-    logger.debug(LOG_ENTRY, "getImportedPackages");
-    logger.debug(LOG_EXIT, "getImportedPackages",  _importedPackages);
+    logger.debug("Method entry: {}, args {}", "getImportedPackages");
+    logger.debug("Method exit: {}, returning {}", "getImportedPackages",  _importedPackages);
     return Collections.unmodifiableCollection(_importedPackages);
   }
 
   public Collection<ExportedService> getExportedServices() {
-    logger.debug(LOG_ENTRY, "getExportedServices");
-    logger.debug(LOG_EXIT, "getExportedServices",  _exportedServices);
+    logger.debug("Method entry: {}, args {}", "getExportedServices");
+    logger.debug("Method exit: {}, returning {}", "getExportedServices",  _exportedServices);
     return Collections.unmodifiableCollection(_exportedServices);
   }
 
   public Collection<ImportedService> getImportedServices() {
-    logger.debug(LOG_ENTRY, "getImportedServices");
-    logger.debug(LOG_EXIT, "getImportedServices",  _exportedServices);
+    logger.debug("Method entry: {}, args {}", "getImportedServices");
+    logger.debug("Method exit: {}, returning {}", "getImportedServices",  _exportedServices);
     return Collections.unmodifiableCollection(_importedServices);
   }
 
   public String getSymbolicName() {
-    logger.debug(LOG_ENTRY, "getSymbolicName");
+    logger.debug("Method entry: {}, args {}", "getSymbolicName");
     String result = _exportedBundle.getSymbolicName();
-    logger.debug(LOG_EXIT, "getSymbolicName",  result);
+    logger.debug("Method exit: {}, returning {}", "getSymbolicName",  result);
     return result;
   }
   
   public String getVersion() {
-    logger.debug(LOG_ENTRY, "getVersion");
+    logger.debug("Method entry: {}, args {}", "getVersion");
     String result = _exportedBundle.getVersion();
-    logger.debug(LOG_EXIT, "getVersion",  result);
+    logger.debug("Method exit: {}, returning {}", "getVersion",  result);
     return result;
   }
 
   public String toDeploymentString() {
-    logger.debug(LOG_ENTRY, "toDeploymentString");
+    logger.debug("Method entry: {}, args {}", "toDeploymentString");
     String result = _exportedBundle.toDeploymentString();
-    logger.debug(LOG_EXIT, "toDeploymentString",  result);
+    logger.debug("Method exit: {}, returning {}", "toDeploymentString",  result);
     return result;
   }
 
   public ResourceType getType() {
-    logger.debug(LOG_ENTRY, "getType");
-    logger.debug(LOG_EXIT, "getType",  ResourceType.BUNDLE);
+    logger.debug("Method entry: {}, args {}", "getType");
+    logger.debug("Method exit: {}, returning {}", "getType",  ResourceType.BUNDLE);
     return _resourceType;
   }
   
@@ -307,24 +305,24 @@ public class ModelledResourceImpl implements ModelledResource
 
 
   public Collection<ImportedBundle> getRequiredBundles() {
-    logger.debug(LOG_ENTRY, "getRequiredBundles");
-    logger.debug(LOG_EXIT, "getRequiredBundles",  _requiredBundles);
+    logger.debug("Method entry: {}, args {}", "getRequiredBundles");
+    logger.debug("Method exit: {}, returning {}", "getRequiredBundles",  _requiredBundles);
     return Collections.unmodifiableCollection(_requiredBundles);
   }
 
 
   public ImportedBundle getFragmentHost() {
-    logger.debug(LOG_ENTRY, "getFragmentHost");
+    logger.debug("Method entry: {}, args {}", "getFragmentHost");
     ImportedBundle result = _exportedBundle.getFragmentHost();
-    logger.debug(LOG_EXIT, "getFragmentHost",  result);
+    logger.debug("Method exit: {}, returning {}", "getFragmentHost",  result);
     return result;
   }
 
 
   public boolean isFragment() {
-    logger.debug(LOG_ENTRY, "isFragment");
+    logger.debug("Method entry: {}, args {}", "isFragment");
     boolean result = _exportedBundle.isFragment();
-    logger.debug(LOG_EXIT, "isFragment",  result);
+    logger.debug("Method exit: {}, returning {}", "isFragment",  result);
     return result;
   }
 }
