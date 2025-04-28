@@ -10,7 +10,6 @@ RUNNING
 The following bundles are required to run subsystems. All are available in at least one of the repositories configured within the Aries parent POM.
 
 mavenBundle("org.apache.aries",             "org.apache.aries.util").version("1.0.1-SNAPSHOT"),
-mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").version("1.0.0"),
 mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").version("1.0.0"),
 mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint").version("1.0.0"),
 mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").version("1.0.1-SNAPSHOT"),

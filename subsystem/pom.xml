@@ -42,7 +42,6 @@
     </scm>
 
     <modules>
-        <module>../application/application-api</module>
         <module>../application/application-modeller</module>
         <module>subsystem-api</module>
         <module>subsystem-core</module>
