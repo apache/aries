@@ -57,19 +57,6 @@ public final class ContentImpl implements Content
     }
   }
 
-  public ContentImpl (String bundleSymbolicName, Version version) {
-    this.contentName = bundleSymbolicName;
-    this.nameValueMap = new HashMap<String, String>();
-    nameValueMap.put("version", version.toString());
-    setup();
-  }
-
-  public ContentImpl (String bundleSymbolicName, VersionRange version) {
-    this.contentName = bundleSymbolicName;
-    this.nameValueMap = new HashMap<String, String>();
-    nameValueMap.put("version", version.toString());
-    setup();
-  }
   /**
    *
    * @param contentName
@@ -98,15 +85,6 @@ public final class ContentImpl implements Content
     return toReturn;
   }
 
-  /**
-   * add key value to the attributes map
-   * @param key
-   * @param value
-   */
-  public void addAttribute(String key, String value) {
-    this.attributes.put(key, value);
-  }
-
   public String getDirective(String key) {
     String toReturn = this.directives.get(key);
     return toReturn;
@@ -118,15 +96,6 @@ public final class ContentImpl implements Content
       nvm.put(key, this.nameValueMap.get(key));
     }
     return nvm;
-  }
-
-  /**
-   * add key value to the directives map
-   * @param key
-   * @param value
-   */
-  public void addDirective(String key, String value) {
-    this.directives.put(key, value);
   }
 
   public VersionRange getVersion() {

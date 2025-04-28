@@ -134,7 +134,6 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 				systemProperty("org.osgi.framework.storage.clean").value("onFirstInit"),
 				// Bundles
 				mavenBundle("org.apache.aries",             "org.apache.aries.util").versionAsInProject(),
-				mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
 				when(installModeler).useOptions(modelerBundles()),
                 when(installConfigAdmin).useOptions(
                         mavenBundle("org.apache.felix",     "org.apache.felix.configadmin").versionAsInProject()),
@@ -168,6 +167,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
 
     private Option modelerBundles() {
         return CoreOptions.composite(
+                mavenBundle("org.apache.aries.application", "org.apache.aries.application.api").versionAsInProject(),
         		mavenBundle("org.apache.aries.application", "org.apache.aries.application.modeller").versionAsInProject(),
         		mavenBundle("org.apache.aries.blueprint",   "org.apache.aries.blueprint.core").versionAsInProject(),
         		mavenBundle("org.apache.aries.proxy",       "org.apache.aries.proxy").versionAsInProject());
