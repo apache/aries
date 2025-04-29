@@ -45,7 +45,6 @@
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
-        <org.apache.aries.application.api.version>1.0.1-SNAPSHOT</org.apache.aries.application.api.version>
         <org.apache.aries.application.modeller.version>1.0.1-SNAPSHOT</org.apache.aries.application.modeller.version>
         <org.apache.aries.blueprint.version>1.2.0</org.apache.aries.blueprint.version>
         <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
@@ -100,22 +99,6 @@
             <artifactId>org.apache.aries.util</artifactId>
             <scope>test</scope>
             <version>${org.apache.aries.util.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
-                    <artifactId>osgi.core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.api</artifactId>
-            <scope>test</scope>
-            <version>${org.apache.aries.application.api.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
