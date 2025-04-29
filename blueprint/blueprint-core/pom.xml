@@ -104,7 +104,7 @@
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
         <org.apache.felix.utils.version>1.11.8</org.apache.felix.utils.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
-        <osgi.core.version>4.3.1</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
         <proxy.api.version>1.1.1</proxy.api.version>
         <proxy.impl.version>1.1.9</proxy.impl.version>
         <quiesce.api.version>1.0.0</quiesce.api.version>

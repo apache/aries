@@ -58,7 +58,7 @@
         <org.apache.aries.versioning.plugin.version>0.3.2-SNAPSHOT</org.apache.aries.versioning.plugin.version>
 
         <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
-        <osgi.core.version>4.3.1</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
     </properties>
 
     <dependencies>

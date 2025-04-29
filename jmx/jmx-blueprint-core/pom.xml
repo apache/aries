@@ -57,7 +57,7 @@
         <org.apache.aries.jmx.blueprint.api.version>1.2.0</org.apache.aries.jmx.blueprint.api.version>
         <org.apache.aries.util.version>1.1.1</org.apache.aries.util.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
-        <osgi.core.version>4.3.1</osgi.core.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
     </properties>
 
     <dependencies>
