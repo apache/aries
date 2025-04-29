@@ -37,8 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 
-import org.apache.aries.application.InvalidAttributeException;
-import org.apache.aries.application.management.BundleInfo;
+import org.apache.aries.application.modelling.InvalidAttributeException;
 import org.apache.aries.application.modelling.ExportedBundle;
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ExportedService;
@@ -71,38 +70,6 @@ public class ModelledResourceImpl implements ModelledResource
   private final ExportedBundle _exportedBundle; 
   private final ResourceType _resourceType;     
   
-  /**
-   * Construct a new {@link ModelledResourceImpl} for the following manifest and services
-   * @param fileURI The location of the bundle, may be null, which indicates a by value bundle
-   * @param bundleInfo The bundle info object
-   * @param importedServices The blueprint references defined by the bundle. May be null
-   * @param exportedServices The blueprint services exported by the bundle. May be null
-   * @throws InvalidAttributeException
-   */
-  public ModelledResourceImpl (String fileURI, BundleInfo bundleInfo, 
-      Collection<ImportedService> importedServices, 
-      Collection<ExportedService> exportedServices) throws InvalidAttributeException
-  {
-    this(fileURI, bundleInfo.getRawAttributes(), importedServices, exportedServices);
-  }
-  /**
-   * Construct a new {@link ModelledResourceImpl} for the following manifest and services
-   * @param fileURI The location of the bundle, may be null, which indicates a by value bundle
-   * @param bundleAttributes The bundle manifest, must not be null
-   * @param importedServices The blueprint references defined by the bundle. May be null
-   * @param exportedServices The blueprint services exported by the bundle. May be null
-   * @throws InvalidAttributeException
-   */
-  @SuppressWarnings("deprecation")
-  public ModelledResourceImpl (String fileURI, Attributes bundleAttributes, ExportedBundle exportedBundle, ResourceType resourceType,
-      Collection<ImportedService> importedServices, 
-      Collection<ExportedService> exportedServices) throws InvalidAttributeException
-  { 
-    this (fileURI, bundleAttributes, resourceType, exportedBundle, importedServices, exportedServices);
-    logger.debug("Method entry: {}, args {}", "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices});
-    logger.debug("Method exit: {}, returning {}", "ModelledResourceImpl");
-  }
-
   /**
    * Construct a new {@link ModelledResourceImpl} for the following manifest and services
    * @param fileURI The location of the bundle, may be null, which indicates a by value bundle

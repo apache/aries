@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.modelling.utils.impl;
+package org.apache.aries.application.modelling.impl;
 
 import static org.apache.aries.application.modelling.ModellingConstants.OPTIONAL_KEY;
 import static org.osgi.framework.Constants.BUNDLE_VERSION_ATTRIBUTE;
@@ -27,18 +27,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.aries.application.InvalidAttributeException;
+import org.apache.aries.application.modelling.InvalidAttributeException;
 import org.apache.aries.application.modelling.DeployedBundles;
 import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.Provider;
-import org.apache.aries.application.modelling.impl.DeployedBundlesImpl;
-import org.apache.aries.application.modelling.impl.ImportedBundleImpl;
-import org.apache.aries.application.modelling.impl.ImportedPackageImpl;
-import org.apache.aries.application.modelling.internal.MessageUtil;
-import org.apache.aries.application.modelling.utils.ModellingHelper;
+import org.apache.aries.application.modelling.ModellingHelper;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;

@@ -29,10 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import org.apache.aries.application.InvalidAttributeException;
+import org.apache.aries.application.modelling.InvalidAttributeException;
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModelledResource;
@@ -42,8 +40,6 @@ import org.apache.aries.application.modelling.ModellingManager;
 import org.apache.aries.application.modelling.ParsedServiceElements;
 import org.apache.aries.application.modelling.ParserProxy;
 import org.apache.aries.application.modelling.ServiceModeller;
-import org.apache.aries.application.modelling.internal.BundleBlueprintParser;
-import org.apache.aries.application.modelling.internal.MessageUtil;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.filesystem.ICloseableDirectory;
 import org.apache.aries.util.filesystem.IDirectory;
@@ -79,17 +75,17 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
   /**
    * For a given file, which we know to be a bundle, parse out all the
    * service, reference and reference-list elements. This method will return
-   * all such services, including anonymous ones, 
-   * but should not return indistinguishable duplicates. 
-   * @param archive CommonArchive. The caller is responsible for closing this afterwards. 
-   * @return ParsedServiceElementsImpl 
-   * @throws OpenFailureException 
+   * all such services, including anonymous ones,
+   * but should not return indistinguishable duplicates.
+   * @param archive CommonArchive. The caller is responsible for closing this afterwards.
+   * @return ParsedServiceElementsImpl
+   * @throws OpenFailureException
    */
-  public ParsedServiceElements getServiceElements (IDirectory archive) throws ModellerException { 
+  public ParsedServiceElements getServiceElements (IDirectory archive) throws ModellerException {
       BundleManifest bm = BundleManifest.fromBundle(archive);
       return getServiceElements(bm, archive);
   }
-  
+
   public ParsedServiceElements getServiceElements(InputStreamProvider archive) throws ModellerException {
       ICloseableDirectory dir = null;
       try {
@@ -102,7 +98,7 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
           IOUtils.close(dir);
       }
   }
-  
+
   private ParsedServiceElements getServiceElements (BundleManifest bundleMf, IDirectory archive) throws ModellerException { 
       
       Set<ExportedService> services = new HashSet<ExportedService>();
@@ -263,79 +259,6 @@ public class ModelledResourceManagerImpl implements ModelledResourceManager {
     
     _logger.debug("Method exit: {}, returning {}", "findBlueprints", result);
     return result;
-  }
-
-  private class ZipBlueprintIterator implements Iterator<InputStream> {
-      private final ZipInputStream zip;
-      private final BundleBlueprintParser bpParser;
-      private boolean valid;
-      
-      public ZipBlueprintIterator(ZipInputStream zip, BundleBlueprintParser bpParser) {
-          this.zip = zip;
-          this.bpParser = bpParser;
-      }
-
-      public boolean hasNext() {
-          valid = false;
-          ZipEntry entry;
-          
-          try {
-              while (!valid && (entry = zip.getNextEntry()) != null) {
-                  if (!entry.isDirectory()) {
-                      String name = entry.getName();
-                      String directory = "";
-                      int index = name.lastIndexOf('/');
-                      if (index != -1) {
-                          directory = name.substring(0, index);
-                          name = name.substring(index+1);
-                      }
-                      
-                      if (bpParser.isBPFile(directory, name)) {
-                          valid = true;
-                      }
-                      
-                  }
-              }
-          } catch (IOException e) {
-              _logger.error("Could not open next zip entry", e);
-          }
-          
-          return valid;
-      }
-
-      public InputStream next() {
-          if (!valid) throw new IllegalStateException();
-          
-          return new InputStream() {
-            public int read() throws IOException {
-                return zip.read();
-            }
-              
-            @Override
-            public void close() {
-                // intercept close so that the zipinputstream stays open
-            }
-          };
-      }
-
-      public void remove() {
-          throw new UnsupportedOperationException();
-      }
-      
-  }
-  
-  /**
-   * Internal use only. Different to the general Iterable interface this can return an Iterator only once.
-   */
-  private Iterable<InputStream> findBlueprints(BundleManifest bundleMf, InputStream stream) {
-      final BundleBlueprintParser bpParser = new BundleBlueprintParser(bundleMf);
-      final ZipInputStream zip = new ZipInputStream(stream);
-      
-      return new Iterable<InputStream>() {
-        public Iterator<InputStream> iterator() {
-            return new ZipBlueprintIterator(zip, bpParser);
-        }
-    };
   }
 
 }

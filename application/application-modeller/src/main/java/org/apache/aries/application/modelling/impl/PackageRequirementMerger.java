@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.modelling.internal;
+package org.apache.aries.application.modelling.impl;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.aries.application.modelling.ImportedPackage;
-import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

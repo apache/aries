@@ -16,14 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.management;
+package org.apache.aries.application.modelling;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.aries.application.modelling.ModellingConstants;
 
 /**
  * Exception thrown by the AriesApplicationResolver interface

@@ -16,26 +16,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.management;
 
-import org.apache.aries.util.VersionRange;
+package org.apache.aries.application.modelling;
 
-/**
- * An administrator may wish to change the content of an installed application. 
- * A ResolveConstraint records one of the desired elements of the newly re-resolved
- * application. 
- */
-public interface ResolveConstraint {
+
+
+public class InvalidAttributeException extends Exception
+{
   /**
-   * The name of the newly required bundle
-   * @return Bundle name
+   * 
    */
-  String getBundleName();
-  
-  /** 
-   * The version range of the newly required bundle
-   * @return allowed range
-   */
-  VersionRange getVersionRange();
+  private static final long serialVersionUID = 4889305636433626372L;
 
+  public InvalidAttributeException (Exception e) { 
+    super(e);
+  }
+  
+  public InvalidAttributeException (String s) { 
+    super(s);
+  }
+  
+  public InvalidAttributeException (String s, Throwable t) {
+	  super(s, t);
+  }
 }

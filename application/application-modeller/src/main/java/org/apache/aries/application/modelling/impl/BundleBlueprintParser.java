@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.modelling.internal;
+package org.apache.aries.application.modelling.impl;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.LinkedList;

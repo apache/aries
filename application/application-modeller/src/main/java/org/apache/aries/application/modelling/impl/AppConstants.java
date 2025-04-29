@@ -16,25 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application;
-
-import org.osgi.framework.Filter;
+package org.apache.aries.application.modelling.impl;
 
 /**
- * Represents a service imported or exported by an Aries application. 
+ * Widely used constants in parsing Aries applications
  */
-public interface ServiceDeclaration {
+public interface AppConstants {
+  /** The attribute used to record the deployed version of a bundle */
+  String DEPLOYMENT_BUNDLE_VERSION = "deployed-version";
 
-	/**
-	 * get the interface name for the service
-	 * @return The name of the service's interface class. 
-	 */
-	 String getInterfaceName();
-
-	/**
-	 * get the filter for the service
-	 * @return the filter for the service or null if there is no filter defined
-	 */
-	 Filter getFilter();
-
+  /* The Deployed-Content header in DEPLOYMENT.MF records all the bundles
+   * to be deployed for a particular application. 
+   */
+  String DEPLOYMENT_CONTENT = "Deployed-Content";
+  /** deployment.mf entry corresponding to application.mf Use-Bundle. */
+  String DEPLOYMENT_USE_BUNDLE = "Deployed-Use-Bundle";
+  /** Bundle dependencies required by bundles listed in Deployed-Content or Deployed-Use-Bundle. */
+  String DEPLOYMENT_PROVISION_BUNDLE = "Provision-Bundle";
 }

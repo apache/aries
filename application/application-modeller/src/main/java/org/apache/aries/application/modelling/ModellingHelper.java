@@ -16,17 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.aries.application.modelling.utils;
+package org.apache.aries.application.modelling;
 
 import java.util.Collection;
 import java.util.Map;
-
-import org.apache.aries.application.InvalidAttributeException;
-import org.apache.aries.application.modelling.DeployedBundles;
-import org.apache.aries.application.modelling.ImportedBundle;
-import org.apache.aries.application.modelling.ImportedPackage;
-import org.apache.aries.application.modelling.ModelledResource;
-import org.apache.aries.application.modelling.Provider;
 
 /**
  * Useful functions associated with application modelling 

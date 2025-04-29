@@ -23,13 +23,11 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.aries.application.InvalidAttributeException;
+import org.apache.aries.application.modelling.InvalidAttributeException;
 import org.apache.aries.application.modelling.ImportedBundle;
 import org.apache.aries.application.modelling.ModellingConstants;
 import org.apache.aries.application.modelling.Provider;
 import org.apache.aries.application.modelling.ResourceType;
-import org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl;
-import org.apache.aries.application.utils.FilterUtils;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;

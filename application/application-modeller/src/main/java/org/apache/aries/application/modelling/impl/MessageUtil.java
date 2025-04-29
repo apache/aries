@@ -17,25 +17,30 @@
  * under the License.
  */
 
-package org.apache.aries.application.management;
+package org.apache.aries.application.modelling.impl;
 
-/**
- * An exception thrown by various methods within this package.
- */
-public class ManagementException extends Exception {
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
-  private static final long serialVersionUID = 6472726820228618243L;
+public class MessageUtil
+{
+  /** The resource bundle for blueprint messages */
+  private final static ResourceBundle messages = ResourceBundle.getBundle("org.apache.aries.application.modelling.messages.APPModellingMessages");
 
-  public ManagementException (Exception e) { 
-    super(e);
-  }
-  
-  public ManagementException (String s) { 
-    super(s);
-  }
-  
-  public ManagementException(String s, Exception e)
+  /**
+   * Resolve a message from the bundle, including any necessary formatting.
+   * 
+   * @param key     the message key.
+   * @param inserts any required message inserts.
+   * @return        the message translated into the server local.
+   */
+  public static final String getMessage(String key, Object ... inserts)
   {
-    super(s, e);
+    String msg = messages.getString(key);
+    
+    if (inserts.length > 0)
+      msg = MessageFormat.format(msg, inserts);
+    
+    return msg;
   }
 }

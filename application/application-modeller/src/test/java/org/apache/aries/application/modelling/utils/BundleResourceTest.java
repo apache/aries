@@ -27,8 +27,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.jar.Manifest;
 
-import org.apache.aries.application.InvalidAttributeException;
-import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.modelling.InvalidAttributeException;
+import org.apache.aries.application.modelling.ResolverException;
 import org.apache.aries.application.modelling.ModelledResource;
 import org.apache.aries.application.modelling.ResourceType;
 import org.apache.aries.application.modelling.impl.ModelledResourceImpl;

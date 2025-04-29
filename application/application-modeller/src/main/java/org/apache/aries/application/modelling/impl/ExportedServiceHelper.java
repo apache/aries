@@ -1,4 +1,4 @@
-package org.apache.aries.application.utils;
+package org.apache.aries.application.modelling.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;

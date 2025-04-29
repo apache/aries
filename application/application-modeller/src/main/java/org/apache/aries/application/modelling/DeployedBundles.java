@@ -23,8 +23,6 @@ package org.apache.aries.application.modelling;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.aries.application.management.ResolverException;
-
 /** A model of a collection of bundles and similar resources */
 public interface DeployedBundles {
 
