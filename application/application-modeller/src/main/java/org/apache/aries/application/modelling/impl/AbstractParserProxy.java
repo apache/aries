@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import org.apache.aries.application.InvalidAttributeException;
+import org.apache.aries.application.modelling.InvalidAttributeException;
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedService;
 import org.apache.aries.application.modelling.ModellingManager;

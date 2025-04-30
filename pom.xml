@@ -37,7 +37,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>application</module>
         <module>async</module>
         <module>blueprint</module>
         <module>blueprint-maven-plugin</module>

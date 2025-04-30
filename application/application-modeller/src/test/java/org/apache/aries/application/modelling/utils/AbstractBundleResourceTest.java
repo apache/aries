@@ -25,7 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.aries.application.management.ResolverException;
+import org.apache.aries.application.modelling.ResolverException;
 import org.apache.aries.application.modelling.ExportedPackage;
 import org.apache.aries.application.modelling.ExportedService;
 import org.apache.aries.application.modelling.ImportedBundle;

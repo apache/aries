@@ -42,6 +42,7 @@
     </scm>
 
     <modules>
+        <module>../application/application-modeller</module>
         <module>subsystem-api</module>
         <module>subsystem-core</module>
         <module>subsystem-obr</module>

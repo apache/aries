@@ -26,10 +26,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.aries.application.InvalidAttributeException;
+import org.apache.aries.application.modelling.InvalidAttributeException;
 import org.apache.aries.application.modelling.ImportedPackage;
 import org.apache.aries.application.modelling.impl.ImportedPackageImpl;
-import org.apache.aries.application.modelling.internal.PackageRequirementMerger;
+import org.apache.aries.application.modelling.impl.PackageRequirementMerger;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.junit.Assert;

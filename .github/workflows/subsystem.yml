@@ -59,9 +59,6 @@ jobs:
     - name: Build util
       shell: bash
       run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f util
-    - name: Build application
-      shell: bash
-      run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f application
     - name: Build subsystem
       shell: bash
       run: mvn -U -e -B -ntp clean install -f subsystem

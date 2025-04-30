@@ -36,8 +36,8 @@
   <bean id="modellingManager" class="org.apache.aries.application.modelling.impl.ModellingManagerImpl"/>
   <service id="modellingManagerService" ref="modellingManager" interface="org.apache.aries.application.modelling.ModellingManager"/>
   
-  <bean id="modellingHelper" class="org.apache.aries.application.modelling.utils.impl.ModellingHelperImpl"/>
-  <service id="modellingHelperService" ref="modellingHelper" interface="org.apache.aries.application.modelling.utils.ModellingHelper"/>
+  <bean id="modellingHelper" class="org.apache.aries.application.modelling.impl.ModellingHelperImpl"/>
+  <service id="modellingHelperService" ref="modellingHelper" interface="org.apache.aries.application.modelling.ModellingHelper"/>
   
   <reference-list id="modellingPlugins" interface="org.apache.aries.application.modelling.ServiceModeller" availability="optional"/>
 </blueprint>
