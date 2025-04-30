@@ -62,7 +62,7 @@
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
         <org.apache.aries.blueprint.core.version>1.10.0</org.apache.aries.blueprint.core.version>
-        <osgi.cmpn.version>5.0.0</osgi.cmpn.version>
+        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
         <slf4j.version>2.0.17</slf4j.version>
     </properties>

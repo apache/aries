@@ -183,7 +183,7 @@
         <!--Dependencies-->
         <junit.version>4.13.2</junit.version>
         <pax-logging.version>2.2.9</pax-logging.version>
-        <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
+        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
         <slf4j.version>2.0.17</slf4j.version>
 
