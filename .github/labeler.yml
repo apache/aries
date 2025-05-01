@@ -1,6 +1,3 @@
-application:
-- changed-files:
-  - any-glob-to-any-file: 'application/**/*'
 async:
 - changed-files:
   - any-glob-to-any-file: 'async/**/*'
