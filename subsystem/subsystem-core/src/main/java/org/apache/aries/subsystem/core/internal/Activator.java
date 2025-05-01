@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Activator implements BundleActivator, ServiceTrackerCustomizer<Object, Object> {
     private static final Logger logger = LoggerFactory.getLogger(Activator.class);
-    public static final String MODELLED_RESOURCE_MANAGER = "org.apache.aries.application.modelling.ModelledResourceManager";
+    public static final String MODELLED_RESOURCE_MANAGER = "org.apache.aries.subsystem.modelling.ModelledResourceManager";
     private static final String LOCK_TIMEOUT = "org.apache.aries.subsystem.lock.timeout";
 
     public static final String LOG_ENTRY = "Method entry: {}, args {}";

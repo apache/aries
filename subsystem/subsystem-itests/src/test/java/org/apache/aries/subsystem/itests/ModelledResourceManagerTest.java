@@ -39,7 +39,7 @@ public class ModelledResourceManagerTest extends SubsystemTest {
 	public void setUp() throws Exception {
 		super.setUp();
 		RichBundleContext rootContext = context(getRootSubsystem());
-		assertNull("Modeller is installed", rootContext.getBundleByName("org.apache.aries.application.modeller"));
+		assertNull("Modeller is installed", rootContext.getBundleByName("org.apache.aries.subsystem.modeller"));
 		assertNull("Blueprint is installed", rootContext.getBundleByName("org.apache.aries.blueprint.core"));
 		assertNull("Proxy is installed", rootContext.getBundleByName("org.apache.aries.proxy"));
 	}

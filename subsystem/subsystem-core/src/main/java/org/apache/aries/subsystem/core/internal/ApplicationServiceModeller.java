@@ -16,11 +16,11 @@ package org.apache.aries.subsystem.core.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.aries.application.modelling.ExportedService;
-import org.apache.aries.application.modelling.ImportedService;
-import org.apache.aries.application.modelling.ModelledResourceManager;
-import org.apache.aries.application.modelling.ModellerException;
-import org.apache.aries.application.modelling.ParsedServiceElements;
+import org.apache.aries.subsystem.modelling.ExportedService;
+import org.apache.aries.subsystem.modelling.ImportedService;
+import org.apache.aries.subsystem.modelling.ModelledResourceManager;
+import org.apache.aries.subsystem.modelling.ModellerException;
+import org.apache.aries.subsystem.modelling.ParsedServiceElements;
 import org.apache.aries.util.filesystem.IDirectory;
 import org.osgi.namespace.service.ServiceNamespace;
 import org.osgi.resource.Capability;

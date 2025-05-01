@@ -48,7 +48,7 @@
         <aries.osgi.import>
             org.osgi.service.repository;version="[1.0,1.1)",
             org.osgi.service.subsystem;version="[1.1,1.2)",
-            org.apache.aries.application.*;resolution:=optional,
+            org.apache.aries.subsystem.modelling*;resolution:=optional,
             *
         </aries.osgi.import>
         <aries.osgi.export.pkg>
@@ -61,7 +61,7 @@
         </aries.osgi.private.pkg>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
-        <org.apache.aries.application.modeller.version>1.0.1-SNAPSHOT</org.apache.aries.application.modeller.version>
+        <org.apache.aries.subsystem.modeller.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.modeller.version>
         <org.apache.aries.blueprint.version>1.2.0</org.apache.aries.blueprint.version>
         <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
         <org.apache.aries.subsystem.api.version>2.0.10</org.apache.aries.subsystem.api.version>
@@ -90,9 +90,9 @@
             <version>${org.apache.aries.util.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.application</groupId>
-            <artifactId>org.apache.aries.application.modeller</artifactId>
-            <version>${org.apache.aries.application.modeller.version}</version>
+            <groupId>org.apache.aries.subsystem</groupId>
+            <artifactId>org.apache.aries.subsystem.modeller</artifactId>
+            <version>${org.apache.aries.subsystem.modeller.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>

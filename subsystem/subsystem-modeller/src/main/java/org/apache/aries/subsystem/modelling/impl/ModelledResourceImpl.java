@@ -1,0 +1,295 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIESOR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.aries.subsystem.modelling.impl;
+
+import static org.osgi.framework.Constants.BUNDLE_VERSION_ATTRIBUTE;
+import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
+import static org.osgi.framework.Constants.EXPORT_PACKAGE;
+import static org.osgi.framework.Constants.EXPORT_SERVICE;
+import static org.osgi.framework.Constants.IMPORT_PACKAGE;
+import static org.osgi.framework.Constants.IMPORT_SERVICE;
+import static org.osgi.framework.Constants.REQUIRE_BUNDLE;
+import static org.osgi.framework.Constants.RESOLUTION_DIRECTIVE;
+import static org.osgi.framework.Constants.RESOLUTION_OPTIONAL;
+import static org.osgi.framework.Constants.VERSION_ATTRIBUTE;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.jar.Attributes;
+
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
+import org.apache.aries.subsystem.modelling.ExportedBundle;
+import org.apache.aries.subsystem.modelling.ExportedPackage;
+import org.apache.aries.subsystem.modelling.ExportedService;
+import org.apache.aries.subsystem.modelling.ImportedBundle;
+import org.apache.aries.subsystem.modelling.ImportedPackage;
+import org.apache.aries.subsystem.modelling.ImportedService;
+import org.apache.aries.subsystem.modelling.ModelledResource;
+import org.apache.aries.subsystem.modelling.ModellingConstants;
+import org.apache.aries.subsystem.modelling.ResourceType;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor;
+import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+/**
+ * A model of a bundle or composite. Used for example to supply information to 
+ * RepositoryGenerator.generateRepository()
+ *
+ */
+public class ModelledResourceImpl implements ModelledResource
+{
+  private final Logger logger = LoggerFactory.getLogger(ModelledResourceImpl.class);
+  private final String _fileURI;
+  private final Collection<ImportedService> _importedServices;
+  private final Collection<ExportedService> _exportedServices;
+  private final Collection<ExportedPackage> _exportedPackages;
+  private final Collection<ImportedPackage> _importedPackages;
+  private final Collection<ImportedBundle> _requiredBundles;
+  private final ExportedBundle _exportedBundle; 
+  private final ResourceType _resourceType;     
+  
+  /**
+   * Construct a new {@link ModelledResourceImpl} for the following manifest and services
+   * @param fileURI The location of the bundle, may be null, which indicates a by value bundle
+   * @param bundleAttributes The bundle manifest, must not be null
+   * @param importedServices The blueprint references defined by the bundle. May be null
+   * @param exportedServices The blueprint services exported by the bundle. May be null
+   * @throws InvalidAttributeException
+   */
+  @SuppressWarnings("deprecation")
+  public ModelledResourceImpl (String fileURI, Attributes bundleAttributes, 
+      Collection<ImportedService> importedServices, 
+      Collection<ExportedService> exportedServices) throws InvalidAttributeException
+  { 
+    this (fileURI, bundleAttributes, ResourceType.BUNDLE, null, importedServices, exportedServices );
+    logger.debug("Method entry: {}, args {}", "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices});
+    logger.debug("Method exit: {}, returning {}", "ModelledResourceImpl");
+  }
+  
+  public ModelledResourceImpl (String fileURI, Attributes bundleAttributes, 
+      ResourceType resourceType, ExportedBundle exportedBundle,
+      Collection<ImportedService> importedServices, 
+      Collection<ExportedService> exportedServices 
+      ) throws InvalidAttributeException 
+  {
+    logger.debug("Method entry: {}, args {}", "ModelledResourceImpl", new Object[]{fileURI, bundleAttributes, importedServices, exportedServices,
+        resourceType});
+
+    if (exportedBundle == null) { 
+      _exportedBundle = new ExportedBundleImpl (bundleAttributes);
+    } else { 
+      _exportedBundle = exportedBundle;
+    }
+    _resourceType = resourceType;
+    _fileURI = fileURI;
+    if(importedServices != null)
+      _importedServices = new ArrayList<ImportedService> (importedServices);
+    else
+      _importedServices = new ArrayList<ImportedService>();
+    
+    if(exportedServices != null)
+      _exportedServices = new ArrayList<ExportedService> (exportedServices);
+    else
+      _exportedServices = new ArrayList<ExportedService>();
+    
+    _exportedPackages = new ArrayList<ExportedPackage>();
+    String packageExports = bundleAttributes.getValue(EXPORT_PACKAGE);
+    if (packageExports != null) {
+      List<NameValuePair> exportedPackages = ManifestHeaderProcessor
+        .parseExportString(packageExports);
+      for (NameValuePair exportedPackage : exportedPackages) {
+        _exportedPackages.add(new ExportedPackageImpl(this, exportedPackage.getName(), 
+            new HashMap<String, Object>(exportedPackage.getAttributes())));
+    
+      }
+    }
+  
+    _importedPackages = new ArrayList<ImportedPackage>();
+    String packageImports = bundleAttributes.getValue(IMPORT_PACKAGE);
+    if (packageImports != null) {
+      Map<String, Map<String, String>> importedPackages = ManifestHeaderProcessor
+          .parseImportString(packageImports);
+      for (Map.Entry<String, Map<String, String>> importedPackage : importedPackages.entrySet()) {
+        Map<String, String> atts = importedPackage.getValue();
+        _importedPackages.add(new ImportedPackageImpl(importedPackage.getKey(), atts));
+      }
+    }
+    
+    // Use of Import-Service and Export-Service is deprecated in OSGi. We like Blueprint. 
+    // Blueprint is good. 
+    
+    String serviceExports = null; 
+    if (_resourceType == ResourceType.BUNDLE) { 
+      serviceExports = bundleAttributes.getValue(EXPORT_SERVICE);
+    } 
+    if (serviceExports != null) {
+      List<NameValuePair> expServices = ManifestHeaderProcessor
+          .parseExportString(serviceExports);
+      for (NameValuePair exportedService : expServices) {
+        _exportedServices.add(new ExportedServiceImpl(exportedService.getName(), exportedService.getAttributes()));
+      }
+    }
+  
+    String serviceImports =null;
+    if (_resourceType == ResourceType.BUNDLE) { 
+      serviceImports = bundleAttributes.getValue(IMPORT_SERVICE);
+    } 
+    if (serviceImports != null) {
+      Map<String, Map<String, String>> svcImports = ManifestHeaderProcessor
+          .parseImportString(serviceImports);
+      for (Map.Entry<String, Map<String, String>> importedService : svcImports.entrySet()) {
+        _importedServices.add(new ImportedServiceImpl(importedService.getKey(), importedService.getValue()));
+      }
+    }
+    
+    _requiredBundles = new ArrayList<ImportedBundle>();
+    // Require-Bundle and DynamicImport-Package relevant to Bundles but not Composites
+    if (_resourceType == ResourceType.BUNDLE) { 
+      String requireBundleHeader = bundleAttributes.getValue(REQUIRE_BUNDLE);
+      if (requireBundleHeader != null) {
+        Map<String, Map<String, String>> requiredBundles = ManifestHeaderProcessor
+            .parseImportString(requireBundleHeader);
+        for (Map.Entry<String, Map<String, String>> bundle : requiredBundles.entrySet()) {
+          String type = bundle.getKey();
+          Map<String, String> attribs = bundle.getValue();
+          // We may parse a manifest with a header like Require-Bundle: bundle.a;bundle-version=3.0.0
+          // The filter that we generate is intended for OBR in which case we need (version>=3.0.0) and not (bundle-version>=3.0.0)
+          String bundleVersion = attribs.remove(BUNDLE_VERSION_ATTRIBUTE);
+          if (bundleVersion != null && attribs.get(VERSION_ATTRIBUTE) == null) { 
+            attribs.put (VERSION_ATTRIBUTE, bundleVersion);
+          }
+          String filter = ManifestHeaderProcessor.generateFilter(ModellingConstants.OBR_SYMBOLIC_NAME, type, attribs);
+          Map<String, String> atts = new HashMap<String, String>(bundle.getValue());
+          atts.put(ModellingConstants.OBR_SYMBOLIC_NAME,  bundle.getKey());
+          _requiredBundles.add(new ImportedBundleImpl(filter, atts));
+        }
+      }
+    
+      String dynamicImports = bundleAttributes.getValue(DYNAMICIMPORT_PACKAGE);
+      if (dynamicImports != null) {
+        Map<String, Map<String, String>> dynamicImportPackages = ManifestHeaderProcessor
+            .parseImportString(dynamicImports);
+        for (Map.Entry<String, Map<String, String>> dynImportPkg : dynamicImportPackages.entrySet()) {
+          if (dynImportPkg.getKey().indexOf("*") == -1) {
+            dynImportPkg.getValue().put(RESOLUTION_DIRECTIVE + ":", RESOLUTION_OPTIONAL);
+            _importedPackages.add(new ImportedPackageImpl(dynImportPkg.getKey(), dynImportPkg.getValue()));
+          }
+        }
+      }
+    }
+    logger.debug("Method exit: {}, returning {}", "ModelledResourceImpl");
+  }
+
+
+  public String getLocation() {
+    logger.debug("Method entry: {}, args {}", "getLocation");
+    logger.debug("Method exit: {}, returning {}", "getLocation", _fileURI);
+    return _fileURI;
+  }
+
+  public ExportedBundle getExportedBundle() {
+    logger.debug("Method entry: {}, args {}", "getExportedBundle");
+    logger.debug("Method exit: {}, returning {}", "getExportedBundle",  _exportedBundle);
+    return _exportedBundle;
+  }
+
+  public Collection<ExportedPackage> getExportedPackages() {
+    logger.debug("Method entry: {}, args {}", "getExportedPackages");
+    logger.debug("Method exit: {}, returning {}", "getExportedPackages",  _exportedPackages);
+    return Collections.unmodifiableCollection(_exportedPackages);
+  }
+  
+  public Collection<ImportedPackage> getImportedPackages() {
+    logger.debug("Method entry: {}, args {}", "getImportedPackages");
+    logger.debug("Method exit: {}, returning {}", "getImportedPackages",  _importedPackages);
+    return Collections.unmodifiableCollection(_importedPackages);
+  }
+
+  public Collection<ExportedService> getExportedServices() {
+    logger.debug("Method entry: {}, args {}", "getExportedServices");
+    logger.debug("Method exit: {}, returning {}", "getExportedServices",  _exportedServices);
+    return Collections.unmodifiableCollection(_exportedServices);
+  }
+
+  public Collection<ImportedService> getImportedServices() {
+    logger.debug("Method entry: {}, args {}", "getImportedServices");
+    logger.debug("Method exit: {}, returning {}", "getImportedServices",  _exportedServices);
+    return Collections.unmodifiableCollection(_importedServices);
+  }
+
+  public String getSymbolicName() {
+    logger.debug("Method entry: {}, args {}", "getSymbolicName");
+    String result = _exportedBundle.getSymbolicName();
+    logger.debug("Method exit: {}, returning {}", "getSymbolicName",  result);
+    return result;
+  }
+  
+  public String getVersion() {
+    logger.debug("Method entry: {}, args {}", "getVersion");
+    String result = _exportedBundle.getVersion();
+    logger.debug("Method exit: {}, returning {}", "getVersion",  result);
+    return result;
+  }
+
+  public String toDeploymentString() {
+    logger.debug("Method entry: {}, args {}", "toDeploymentString");
+    String result = _exportedBundle.toDeploymentString();
+    logger.debug("Method exit: {}, returning {}", "toDeploymentString",  result);
+    return result;
+  }
+
+  public ResourceType getType() {
+    logger.debug("Method entry: {}, args {}", "getType");
+    logger.debug("Method exit: {}, returning {}", "getType",  ResourceType.BUNDLE);
+    return _resourceType;
+  }
+  
+  public String toString() {
+    return toDeploymentString();
+  }
+
+
+  public Collection<ImportedBundle> getRequiredBundles() {
+    logger.debug("Method entry: {}, args {}", "getRequiredBundles");
+    logger.debug("Method exit: {}, returning {}", "getRequiredBundles",  _requiredBundles);
+    return Collections.unmodifiableCollection(_requiredBundles);
+  }
+
+
+  public ImportedBundle getFragmentHost() {
+    logger.debug("Method entry: {}, args {}", "getFragmentHost");
+    ImportedBundle result = _exportedBundle.getFragmentHost();
+    logger.debug("Method exit: {}, returning {}", "getFragmentHost",  result);
+    return result;
+  }
+
+
+  public boolean isFragment() {
+    logger.debug("Method entry: {}, args {}", "isFragment");
+    boolean result = _exportedBundle.isFragment();
+    logger.debug("Method exit: {}, returning {}", "isFragment",  result);
+    return result;
+  }
+}
