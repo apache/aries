@@ -61,9 +61,6 @@ updates:
       - dependency-name: "org.mockito:mockito*"
         versions:
           - ">=5.0.0" # does not support java 8
-      - dependency-name: "org.eclipse:osgi" # should be upgraded to org.eclipse.platform:org.eclipse.osgi
-        versions:
-          - ">=3.9.1" # higher version removed CompositeBundle used by some artifacts
       - dependency-name: "org.ops4j.pax.cdi:pax-cdi*"
         versions:
           - ">=1.0.0" # pax-cdi is only used in blueprint maven plugin as an optional annotation provider and it's changed in version 1.x in incompatible way - blueprint-maven-plugin-annotation should be used instead since provides annotations more focused on blueprint elements

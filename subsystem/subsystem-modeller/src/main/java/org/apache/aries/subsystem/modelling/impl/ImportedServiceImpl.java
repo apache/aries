@@ -102,7 +102,7 @@ public class ImportedServiceImpl implements ImportedService
           reducedBlueprintFilter = _blueprintFilter;
         }
         
-        attrsToPopulate.put(ManifestHeaderProcessor.NESTED_FILTER_ATTRIBUTE, reducedBlueprintFilter);
+        attrsToPopulate.put(ManifestHeaderProcessor.NESTED_FILTER_ATTRIBUTE_TO_USE_WITHOUT_FORMATTING, reducedBlueprintFilter);
       }
       if (_componentName != null) { 
         attrsToPopulate.put ("osgi.service.blueprint.compname", _componentName);

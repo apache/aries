@@ -66,7 +66,7 @@
         <org.apache.aries.proxy.version>1.1.0</org.apache.aries.proxy.version>
         <org.apache.aries.subsystem.api.version>2.0.10</org.apache.aries.subsystem.api.version>
         <org.apache.aries.subsystem.core.version>2.0.10</org.apache.aries.subsystem.core.version>
-        <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
+        <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.felix.resolver.version>2.0.4</org.apache.felix.resolver.version>
         <org.eclipse.equinox.coordinator.version>1.1.0.v20120522-1841</org.eclipse.equinox.coordinator.version>
         <org.eclipse.equinox.region.version>1.2.101.v20150831-1342</org.eclipse.equinox.region.version>
