@@ -66,35 +66,12 @@ public final class RecursiveBundleTracker {
             tracker = new BundleHookBundleTracker(context, stateMask, customizer);
         } catch (Throwable e) {
         }
-        if (areMultipleFrameworksAvailable(context)) {
-            compositeTracker = new InternalRecursiveBundleTracker(context, stateMask, customizer, tracker == null);
-        } else {
-            compositeTracker = null;
-        }
-        if (tracker == null && compositeTracker == null) {
+        compositeTracker = null;
+        if (tracker == null) {
             //R42
             tracker = new BundleTracker(context, stateMask, customizer);
         }
         this.tracker = tracker;
-    }
-
-    /*
-     * Checks whether or not the framework supports composite bundles. The only
-     * known supporting framework is Equinox. When the Equinox specific
-     * framework property osgi.resolverMode is set to "strict", the
-     * CompositeBundleFactory service is registered, but the x-internal
-     * org.osgi.service.framework package is not exported, thus the need for
-     * the additional Class.forName check.
-     */
-    private static boolean areMultipleFrameworksAvailable(BundleContext context) {
-    	String compositeBundleFactory = "org.osgi.service.framework.CompositeBundleFactory";
-    	try {
-    		Class.forName(compositeBundleFactory);
-    	} catch (ClassNotFoundException e) {
-    		return false;
-    	}
-        ServiceReference sr = context.getServiceReference(compositeBundleFactory);
-        return sr != null;
     }
 
     /**

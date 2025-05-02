@@ -58,7 +58,7 @@
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
         <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
-        <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
+        <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
     </properties>
 
     <dependencies>

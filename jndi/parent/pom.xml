@@ -52,7 +52,7 @@
         <jndi-rmi.dev-version>1.0.1-SNAPSHOT</jndi-rmi.dev-version>
         <jndi-url-itest-web.dev-version>1.0.1-SNAPSHOT</jndi-url-itest-web.dev-version>
         <jndi-url-itest-biz.dev-version>1.0.1-SNAPSHOT</jndi-url-itest-biz.dev-version>
-        <org.apache.aries.util.version>1.2.0-SNAPSHOT</org.apache.aries.util.version>
+        <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.aries.proxy.api.version>1.1.1</org.apache.aries.proxy.api.version>
         <org.apache.aries.proxy.impl.version>1.1.14</org.apache.aries.proxy.impl.version>
         <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>

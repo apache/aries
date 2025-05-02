@@ -118,7 +118,7 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
         return composite(
                 junitBundles(),
                 addPaxLoggingBundles(),
-                setPaxExamLogLevel("INFO"),
+                setPaxExamLogLevel("DEBUG"),
                 configurePaxUrlLocalMavenRepoIfNeeded(),
                 setupRemoteDebugging()
          );

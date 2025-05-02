@@ -69,7 +69,7 @@ public class ParserProxyTest {
       BundleContext mockCtx = Skeleton.newMock(new BundleContextMock(), BundleContext.class);
       NamespaceHandlerRegistry nhri = new NamespaceHandlerRegistryImpl (mockCtx);
 
-      ParserService parserService = new ParserServiceImpl(nhri);
+      ParserService parserService = new ParserServiceImpl(nhri, true);
       mockCtx.registerService(ParserService.class.getName(), parserService, new Hashtable<String, String>());
       
       ParserProxyImpl parserProxyService = new ParserProxyImpl();

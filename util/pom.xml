@@ -30,7 +30,7 @@
 
     <artifactId>org.apache.aries.util</artifactId>
     <packaging>bundle</packaging>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>Apache Aries Util</name>
     <description>
         This bundle contains the OSGi common util for Apache Aries
@@ -52,9 +52,7 @@
             org.osgi.framework.launch;resolution:=optional,
             org.osgi.framework.wiring.*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
-            org.eclipse.osgi.internal.loader;resolution:=optional,
             org.eclipse.osgi.framework.internal.core;resolution:=optional,
-            org.eclipse.osgi.framework.adaptor;resolution:=optional,
             org.osgi.service.log;resolution:=optional,
             *
         </aries.osgi.import.pkg>
@@ -68,7 +66,7 @@
 
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
         <org.apache.aries.testsupport.unit.version>1.0.0</org.apache.aries.testsupport.unit.version>
-        <osgi.version>3.9.1-v20140110-1610</osgi.version>
+        <org.eclipse.osgi.version>3.23.0</org.eclipse.osgi.version>
     </properties>
 
     <dependencies>
@@ -83,9 +81,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>osgi</artifactId>
-            <version>${osgi.version}</version>
+            <groupId>org.eclipse.platform</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>${org.eclipse.osgi.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
