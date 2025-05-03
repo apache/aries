@@ -29,9 +29,9 @@
     <packaging>pom</packaging>
 
     <properties>
-        <org.eclipse.osgi.version>3.23.0</org.eclipse.osgi.version>
         <cm.version>3.2.0-v20070116</cm.version>
-        <services.version>3.1.200-v20070605</services.version>
+        <org.eclipse.osgi.services.version>3.2.100.v20100503</org.eclipse.osgi.services.version>
+        <org.eclipse.osgi.version>3.23.0</org.eclipse.osgi.version>
     </properties>
 
     <dependencies>
@@ -49,8 +49,8 @@
 
         <dependency>
             <groupId>org.eclipse.osgi</groupId>
-            <artifactId>services</artifactId>
-            <version>${services.version}</version>
+            <artifactId>org.eclipse.osgi.services</artifactId>
+            <version>${org.eclipse.osgi.services.version}</version>
         </dependency>
 
         <dependency>

@@ -175,7 +175,7 @@ public class HelloworldSampleTest extends AbstractIntegrationTest {
 
                 // Bundles
                 mavenBundle("org.eclipse.equinox", "cm"),
-                mavenBundle("org.eclipse.osgi", "services"),
+                mavenBundle("org.eclipse.osgi", "org.eclipse.osgi.services"),
 
                 mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint" ),
                 mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
