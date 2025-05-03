@@ -46,7 +46,6 @@
         <asm.version>9.8</asm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.inject.version>1</javax.inject.version>
-        <logback.version>1.5.16</logback.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <org.apache.aries.proxy.api.version>1.1.2-SNAPSHOT</org.apache.aries.proxy.api.version>
         <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
