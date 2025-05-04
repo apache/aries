@@ -52,7 +52,6 @@
         </aries.osgi.activator>
         <!-- Export package versions are maintained in packageinfo files -->
         <aries.osgi.export.pkg>
-            !org.apache.aries.blueprint.annotation*,
             org.apache.aries.blueprint;-split-package:=merge-first,
             org.apache.aries.blueprint.mutable,
             org.apache.aries.blueprint.ext,
@@ -65,7 +64,6 @@
             !org.apache.aries.blueprint*,
             org.apache.aries.quiesce.manager;provide:=true;resolution:=optional,
             org.apache.aries.quiesce.participant;provide:=true;resolution:=optional,
-            org.apache.aries.blueprint.annotation.service,
             org.osgi.service.blueprint.*;provide:=true,
             org.osgi.service.event*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
@@ -96,7 +94,6 @@
         <lastReleaseVersion>1.6.0</lastReleaseVersion>
 
         <asm.version>9.8</asm.version>
-        <blueprint.annotation.api.version>1.0.1</blueprint.annotation.api.version>
         <blueprint.api.version>1.0.1</blueprint.api.version>
         <blueprint.parser.version>1.6.0</blueprint.parser.version>
         <easymock.version>5.5.0</easymock.version>
@@ -135,12 +132,6 @@
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
             <version>${blueprint.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-            <optional>true</optional>
-            <version>${blueprint.annotation.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>

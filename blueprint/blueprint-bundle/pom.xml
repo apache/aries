@@ -61,7 +61,6 @@
             org.osgi.service.event*;resolution:=optional,
             org.osgi.service.framework;resolution:=optional,
             org.osgi.service.cm;version="[1.2,2)",
-            org.apache.aries.blueprint.annotation.service;provide:=true;resolution:=optional,
             org.apache.aries.quiesce.manager;provide:=true;resolution:=optional,
             org.apache.aries.quiesce.participant;provide:=true;resolution:=optional,
             *
@@ -71,7 +70,6 @@
             org.osgi.service.blueprint;uses:="org.osgi.service.blueprint.container,org.osgi.service.blueprint.reflect,org.apache.aries.blueprint,org.apache.aries.blueprint.ext,org.apache.aries.blueprint.mutable,org.apache.aries.blueprint.compendium.cm";version="1.1.0";-split-package:=merge-first,
             org.osgi.service.blueprint.container;-split-package:=merge-first,
             org.osgi.service.blueprint.reflect;-split-package:=merge-first,
-            !org.apache.aries.blueprint.annotation*,
             org.apache.aries.blueprint,
             org.apache.aries.blueprint.services,
             org.apache.aries.blueprint.mutable,
