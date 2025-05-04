@@ -39,7 +39,6 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.aries.blueprint.BlueprintConstants;
-import org.apache.aries.blueprint.annotation.service.BlueprintAnnotationScanner;
 import org.apache.aries.blueprint.namespace.NamespaceHandlerRegistryImpl;
 import org.apache.aries.blueprint.services.BlueprintExtenderService;
 import org.apache.aries.blueprint.services.ParserService;
@@ -444,23 +443,6 @@ public class BlueprintExtender implements BundleActivator, BundleTrackerCustomiz
                         filePattern = name.substring(pos + 1);
                     }
                     addEntries(bundle, baseName, filePattern, pathList);
-                }
-            }
-            // Check annotations
-            if (blueprintHeaderAnnotation != null && blueprintHeaderAnnotation.trim().equalsIgnoreCase("true")) {
-                LOGGER.debug("Scanning bundle {}/{} for blueprint annotations", bundle.getSymbolicName(), bundle.getVersion());
-                ServiceReference sr = this.context.getServiceReference(BlueprintAnnotationScanner.class.getName());
-                if (sr != null) {
-                    BlueprintAnnotationScanner bas = (BlueprintAnnotationScanner) this.context.getService(sr);
-                    try {
-                        // try to generate the blueprint definition XML
-                        URL url = bas.createBlueprintModel(bundle);
-                        if (url != null) {
-                            pathList.add(url);
-                        }
-                    } finally {
-                        this.context.ungetService(sr);
-                    }
                 }
             }
             if (!pathList.isEmpty()) {
