@@ -67,16 +67,6 @@
         <jndi-core.version>1.1.0-SNAPSHOT</jndi-core.version>
     </properties>
 
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <jndi-api.version>${jndi-api.dev-version}</jndi-api.version>
-                <jndi-core.version>${jndi-core.dev-version}</jndi-core.version>
-            </properties>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.jndi</groupId>
