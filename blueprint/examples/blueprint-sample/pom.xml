@@ -57,18 +57,9 @@
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg/>
 
-        <blueprint.api.version>1.0.0</blueprint.api.version>
+        <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
         <osgi.core.version>4.3.1</osgi.core.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
-            </properties>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>

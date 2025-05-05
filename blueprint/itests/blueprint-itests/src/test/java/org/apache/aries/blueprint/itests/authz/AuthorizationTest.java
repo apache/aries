@@ -32,7 +32,9 @@ import javax.security.auth.login.LoginException;
 import org.apache.aries.blueprint.itests.AbstractBlueprintIntegrationTest;
 import org.apache.aries.blueprint.itests.Helper;
 import org.apache.aries.blueprint.itests.authz.helper.JAASHelper;
-import org.apache.aries.blueprint.itests.authz.testbundle.SecuredService;
+import org.apache.aries.blueprint.itests.authz.testbundle.
+
+        SecuredService;
 import org.apache.aries.blueprint.itests.authz.testbundle.impl.SecuredServiceImpl;
 import org.junit.Test;
 import org.ops4j.pax.exam.CoreOptions;

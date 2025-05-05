@@ -52,7 +52,7 @@
         </aries.osgi.export>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
-        <blueprint.core.version>1.0.0</blueprint.core.version>
+        <blueprint.core.version>1.10.4-SNAPSHOT</blueprint.core.version>
     </properties>
 
     <dependencies>
@@ -101,12 +101,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <blueprint.core.version>${blueprint.core.dev.version}</blueprint.core.version>
-            </properties>
-        </profile>
         <profile>
             <id>deploy</id>
             <properties>
