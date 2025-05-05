@@ -47,20 +47,10 @@
     </modules>
 
     <properties>
-        <blueprint.api.version>1.0.0</blueprint.api.version>
-        <blueprint.core.version>1.0.0</blueprint.core.version>
+        <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
+        <blueprint.core.version>1.10.4-SNAPSHOT</blueprint.core.version>
         <osgi.core.version>4.3.1</osgi.core.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
-                <blueprint.core.version>${blueprint.core.dev.version}</blueprint.core.version>
-            </properties>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>

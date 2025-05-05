@@ -94,8 +94,8 @@
         <lastReleaseVersion>1.6.0</lastReleaseVersion>
 
         <asm.version>9.8</asm.version>
-        <blueprint.api.version>1.0.1</blueprint.api.version>
-        <blueprint.parser.version>1.6.0</blueprint.parser.version>
+        <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
+        <blueprint.parser.version>1.6.2-SNAPSHOT</blueprint.parser.version>
         <easymock.version>5.5.0</easymock.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
@@ -108,24 +108,6 @@
         <util.version>2.0.0-SNAPSHOT</util.version>
         <slf4j.version>2.0.17</slf4j.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <blueprint.api.version>${blueprint.api.dev.version}</blueprint.api.version>
-                <blueprint.core.version>${blueprint.core.dev.version}</blueprint.core.version>
-                <blueprint.cm.version>${blueprint.cm.dev.version}</blueprint.cm.version>
-                <blueprint.parser.version>${blueprint.parser.dev.version}</blueprint.parser.version>
-                <blueprint.authz.version>${blueprint.authz.dev.version}</blueprint.authz.version>
-                <blueprint.spring.version>${blueprint.spring.dev.version}</blueprint.spring.version>
-                <blueprint.spring.extender.version>${blueprint.spring.extender.dev.version}</blueprint.spring.extender.version>
-                <blueprint.jexl.evaluator.version>${blueprint.jexl.evaluator.dev.version}</blueprint.jexl.evaluator.version>
-                <blueprint.sample.version>${blueprint.sample.dev.version}</blueprint.sample.version>
-                <blueprint.sample.fragment.version>${blueprint.sample.fragment.dev.version}</blueprint.sample.fragment.version>
-            </properties>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>
