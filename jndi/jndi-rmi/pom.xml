@@ -53,17 +53,8 @@
         <aries.osgi.export.pkg/>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
-        <jndi-api.version>1.0.0</jndi-api.version>
+        <jndi-api.version>1.1.1-SNAPSHOT</jndi-api.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>dev</id>
-            <properties>
-                <jndi-api.version>${jndi-api.dev-version}</jndi-api.version>
-            </properties>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>
