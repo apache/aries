@@ -22,13 +22,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.blueprint</groupId>
-        <artifactId>blueprint-itests-parent</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.0.1-SNAPSHOT</version>
+        <relativePath>../../../parent/pom.xml</relativePath>
     </parent>
 
+    <groupId>org.apache.aries.blueprint</groupId>
     <artifactId>org.apache.aries.blueprint.itests</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <name>Apache Aries Blueprint iTests</name>
     <description>
         Integration tests using the standalone blueprint-bundle for the implementation
