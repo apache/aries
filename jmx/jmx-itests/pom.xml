@@ -38,7 +38,7 @@
     </description>
 
     <properties>
-        <asm-debug-all.version>5.2</asm-debug-all.version>
+        <asm.version>9.8</asm.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <javax.inject.version>1</javax.inject.version>
         <org.apache.aries.blueprint.jexl.evaluator.version>1.0.0</org.apache.aries.blueprint.jexl.evaluator.version>
@@ -146,8 +146,26 @@
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
-            <version>${asm-debug-all.version}</version>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
