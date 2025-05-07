@@ -41,7 +41,6 @@
     </scm>
 
     <modules>
-        <module>jmx-parent</module>
         <module>jmx-api</module>
         <module>jmx-blueprint-api</module>
         <module>jmx-core</module>
