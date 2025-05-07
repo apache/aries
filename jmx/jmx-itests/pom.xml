@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.1.1</version>
+        <version>3.0.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -40,17 +40,20 @@
     <properties>
         <asm-debug-all.version>5.2</asm-debug-all.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
-        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.inject.version>1</javax.inject.version>
         <org.apache.aries.blueprint.jexl.evaluator.version>1.0.0</org.apache.aries.blueprint.jexl.evaluator.version>
         <org.apache.aries.blueprint.sample.version>1.0.0</org.apache.aries.blueprint.sample.version>
         <org.apache.aries.blueprint.version>1.0.0</org.apache.aries.blueprint.version>
+        <org.apache.aries.jmx.api.version>1.1.6-SNAPSHOT</org.apache.aries.jmx.api.version>
+        <org.apache.aries.jmx.blueprint.version>1.1.6-SNAPSHOT</org.apache.aries.jmx.blueprint.version>
         <org.apache.aries.jmx.core.version>1.1.9-SNAPSHOT</org.apache.aries.jmx.core.version>
         <org.apache.aries.jmx.core.whiteboard.version>1.1.7-SNAPSHOT</org.apache.aries.jmx.core.whiteboard.version>
         <org.apache.aries.jmx.mbeanserver-platform.version>0.0.2-SNAPSHOT</org.apache.aries.jmx.mbeanserver-platform.version>
-        <org.apache.aries.proxy.version>1.0.2-SNAPSHOT</org.apache.aries.proxy.version>
+        <org.apache.aries.jmx.whiteboard.version>1.2.1-SNAPSHOT</org.apache.aries.jmx.whiteboard.version>
+        <org.apache.aries.jmx.version>1.1.6-SNAPSHOT</org.apache.aries.jmx.version>
+        <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
-        <org.apache.aries.util.version>1.0.0</org.apache.aries.util.version>
+        <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.eclipse.osgi.version>3.23.0</org.eclipse.osgi.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
@@ -69,13 +72,13 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx</artifactId>
-            <version>${project.version}</version>
+            <version>${org.apache.aries.jmx.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.api</artifactId>
-            <version>${project.version}</version>
+            <version>${org.apache.aries.jmx.api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -87,13 +90,13 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.blueprint</artifactId>
-            <version>${project.version}</version>
+            <version>${org.apache.aries.jmx.blueprint.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.whiteboard</artifactId>
-            <version>${project.version}</version>
+            <version>${org.apache.aries.jmx.whiteboard.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
@@ -234,16 +237,6 @@
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <!-- TODO ARIES-2165: remove configuration when the newest parent pom is used -->
-                <version>${depends-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-depends-file</id>
-                        <goals>
-                            <goal>generate-depends-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
