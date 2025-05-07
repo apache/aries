@@ -22,14 +22,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.jmx</groupId>
-        <artifactId>org.apache.aries.jmx.parent</artifactId>
-        <version>1.1.6-SNAPSHOT</version>
-        <relativePath>../jmx-parent</relativePath>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.jmx</groupId>
     <artifactId>org.apache.aries.jmx.blueprint</artifactId>
+    <version>1.1.6-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Aries JMX Blueprint Bundle</name>
     <description>
@@ -61,8 +62,10 @@
         <aries.osgi.import.service>
             javax.management.MBeanServer
         </aries.osgi.import.service>
-        <lastReleaseVersion>1.1.1</lastReleaseVersion>
+        <lastReleaseVersion>1.1.5</lastReleaseVersion>
 
+        <org.apache.aries.jmx.blueprint.api.version>1.2.1-SNAPSHOT</org.apache.aries.jmx.blueprint.api.version>
+        <org.apache.aries.jmx.blueprint.core.version>1.2.1-SNAPSHOT</org.apache.aries.jmx.blueprint.core.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
     </properties>
@@ -71,12 +74,12 @@
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.blueprint.api</artifactId>
-            <version>${project.version}</version>
+            <version>${org.apache.aries.jmx.blueprint.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.jmx</groupId>
             <artifactId>org.apache.aries.jmx.blueprint.core</artifactId>
-            <version>${project.version}</version>
+            <version>${org.apache.aries.jmx.blueprint.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -192,19 +195,6 @@
                             <sourcepath>${project.build.directory}/sources</sourcepath>
                             <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.aries.versioning</groupId>
-                        <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>default-verify</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>version-check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

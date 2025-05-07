@@ -162,7 +162,7 @@ public class BlueprintMetadataTest {
         
         mockery.checking(new Expectations() {
             {
-                oneOf(mockContext).getServiceReferences(with(any(String.class)), with(any(String.class)));
+                oneOf(mockContext).getServiceReferences(with(any(String.class)), with(aNull(String.class)));
                 will(returnValue(mockServiceReferences));
             }
         });
@@ -181,7 +181,7 @@ public class BlueprintMetadataTest {
     {//It is impossible according to osgi spec, here just test the robustness of code
         mockery.checking(new Expectations() {
             {
-                oneOf(mockContext).getServiceReferences(with(any(String.class)), with(any(String.class)));
+                oneOf(mockContext).getServiceReferences(with(any(String.class)), with(aNull(String.class)));
                 //return null if no services are registered which satisfy the search
                 will(returnValue(null));
             }
