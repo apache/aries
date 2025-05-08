@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.jndi</groupId>
-        <artifactId>jndi-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../parent/pom.xml</relativePath>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.jndi</groupId>
@@ -43,9 +43,8 @@
     </scm>
 
     <properties>
-        <asm-debug-all.version>5.2</asm-debug-all.version>
+        <asm.version>9.8</asm.version>
         <cm.version>3.2.0-v20070116</cm.version>
-        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
         <jakarta.servlet-api.version>4.0.4</jakarta.servlet-api.version>
         <jndi-api.version>1.1.1-SNAPSHOT</jndi-api.version>
@@ -53,10 +52,17 @@
         <jndi-url-itest-biz.version>1.0.1-SNAPSHOT</jndi-url-itest-biz.version>
         <jndi-url-itest-web.version>1.0.1-SNAPSHOT</jndi-url-itest-web.version>
         <jndi-url.version>1.1.1-SNAPSHOT</jndi-url.version>
+        <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
+        <org.apache.aries.proxy.api.version>1.1.1</org.apache.aries.proxy.api.version>
+        <org.apache.aries.proxy.impl.version>1.1.14</org.apache.aries.proxy.impl.version>
+        <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
+        <org.apache.aries.blueprint.core.version>1.10.3</org.apache.aries.blueprint.core.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.apache.felix.fileinstall.version>3.7.4</org.apache.felix.fileinstall.version>
         <org.apache.servicemix.bundles.cglib.version>3.3.0_1</org.apache.servicemix.bundles.cglib.version>
         <org.eclipse.osgi.version>3.23.0</org.eclipse.osgi.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
+        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <pax-exam.version>4.13.5</pax-exam.version>
         <pax-swissbox.version>1.8.3</pax-swissbox.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
@@ -115,28 +121,33 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
+            <version>${org.apache.aries.blueprint.api.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.core</artifactId>
+            <version>${org.apache.aries.blueprint.core.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries</groupId>
             <artifactId>org.apache.aries.util</artifactId>
+            <version>${org.apache.aries.util.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.api</artifactId>
+            <version>${org.apache.aries.proxy.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy</artifactId>
+            <version>${org.apache.aries.proxy.impl.version}</version>
         </dependency>
 
         <!-- pax exam -->
@@ -214,9 +225,27 @@
 
         <dependency>
             <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
             <scope>test</scope>
-            <version>${asm-debug-all.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -291,8 +320,8 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.fileinstall</artifactId>
-            <scope>test</scope>
             <version>${org.apache.felix.fileinstall.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

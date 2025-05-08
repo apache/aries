@@ -17,6 +17,7 @@ on:
     paths:
       - parent/**
       - testsupport/**
+      - util/**
       - jndi/**
       - .github/workflows/jndi.yml
   push:
