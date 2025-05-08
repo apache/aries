@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.jndi</groupId>
-        <artifactId>jndi-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../parent/pom.xml</relativePath>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.jndi</groupId>
@@ -53,25 +53,6 @@
             org.apache.aries.jndi.spi
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg/>
-        <lastReleaseVersion>1.0.0</lastReleaseVersion>
+        <lastReleaseVersion>1.1.0</lastReleaseVersion>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>version-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>

@@ -22,10 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.aries.jndi</groupId>
-        <artifactId>jndi-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../parent/pom.xml</relativePath>
+        <groupId>org.apache.aries</groupId>
+        <artifactId>parent</artifactId>
+        <version>3.0.0</version>
+        <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.jndi</groupId>
@@ -61,10 +61,15 @@
         <aries.osgi.import.service>
             org.apache.aries.proxy.ProxyManager
         </aries.osgi.import.service>
-        <lastReleaseVersion>1.0.0</lastReleaseVersion>
+        <lastReleaseVersion>1.1.0</lastReleaseVersion>
 
         <jndi-api.version>1.1.1-SNAPSHOT</jndi-api.version>
         <jndi-core.version>1.1.0-SNAPSHOT</jndi-core.version>
+        <org.apache.aries.proxy.api.version>1.1.1</org.apache.aries.proxy.api.version>
+        <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
+        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
+        <osgi.enterprise.version>7.0.0</osgi.enterprise.version>
     </properties>
 
     <dependencies>
@@ -83,6 +88,7 @@
         <dependency>
             <groupId>org.apache.aries.proxy</groupId>
             <artifactId>org.apache.aries.proxy.api</artifactId>
+            <version>${org.apache.aries.proxy.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -92,11 +98,13 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.enterprise</artifactId>
+            <version>${osgi.enterprise.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.aries.testsupport</groupId>
             <artifactId>org.apache.aries.testsupport.unit</artifactId>
+            <version>${org.apache.aries.testsupport.unit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -110,23 +118,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.aries.versioning</groupId>
-                <artifactId>org.apache.aries.versioning.plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>version-check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>

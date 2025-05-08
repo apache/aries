@@ -38,7 +38,6 @@
     </description>
 
     <modules>
-        <module>parent</module>
         <module>jndi-api</module>
         <module>jndi-core</module>
         <module>jndi-url</module>
