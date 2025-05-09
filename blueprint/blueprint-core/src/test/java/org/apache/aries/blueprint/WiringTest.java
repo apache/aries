@@ -33,7 +33,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
-import junit.framework.Assert;
 
 import org.apache.aries.blueprint.CallbackTracker.Callback;
 import org.apache.aries.blueprint.container.BlueprintRepository;
@@ -43,19 +42,28 @@ import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
-import org.apache.aries.blueprint.intercept.BeanA;
 import org.apache.aries.blueprint.intercept.BeanB;
 import org.apache.aries.blueprint.intercept.TheInterceptor;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.pojos.*;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
+import org.junit.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class WiringTest extends AbstractBlueprintTest {
 
+    @Test
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
@@ -65,7 +73,7 @@ public class WiringTest extends AbstractBlueprintTest {
         assertTrue(obj1 instanceof PojoA);
         PojoA pojoa = (PojoA) obj1;
         // test singleton scope
-        assertTrue(obj1 == repository.create("pojoA"));
+        assertSame(obj1, repository.create("pojoA"));
         
         Object obj2 = repository.create("pojoB");
         assertNotNull(obj2);
@@ -125,7 +133,7 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(new Integer(200), pojoa.getNumberArray()[3]);
         
         // test init-method
-        assertEquals(true, pojob.getInitCalled());
+        assertTrue(pojob.getInitCalled());
         
         // test service
         Object obj3 = repository.create("service1");
@@ -146,15 +154,16 @@ public class WiringTest extends AbstractBlueprintTest {
         // tests 'prototype' scope
         Object obj4 = repository.create("pojoC");
         assertNotNull(obj4);
-        
-        assertTrue(obj4 != repository.create("pojoC"));
+
+        assertNotSame(obj4, repository.create("pojoC"));
         
         repository.destroy();
         
         // test destroy-method
-        assertEquals(true, pojob.getDestroyCalled());
+        assertTrue(pojob.getDestroyCalled());
     }
-    
+
+    @Test
     public void testSetterDisambiguation() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
@@ -167,7 +176,8 @@ public class WiringTest extends AbstractBlueprintTest {
         
         
     }
-    
+
+    @Test
     public void testFieldInjection() throws Exception {
       ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
       Repository repository = new TestBlueprintContainer(registry).getRepository();
@@ -185,18 +195,15 @@ public class WiringTest extends AbstractBlueprintTest {
       assertEquals("aName", bean.getBeanName());
       
       // fail if field-injection is not specified
-      try {
-          repository.create("FIFailureTestBean");
-          Assert.fail("Expected exception");
-      } catch (ComponentDefinitionException cde) {}
-      
+        assertThrows(ComponentDefinitionException.class,
+                ()-> repository.create("FIFailureTestBean"));
+
       // fail if field-injection is false
-      try {
-          repository.create("FIFailureTest2Bean");
-          Assert.fail("Expected exception");
-      } catch (ComponentDefinitionException cde) {}
+        assertThrows(ComponentDefinitionException.class,
+                ()-> repository.create("FIFailureTest2Bean"));
     }
-    
+
+    @Test
     public void testCompoundProperties() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-wiring.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
@@ -216,18 +223,16 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals("pojoA", bean.getName());
     }
 
+    @Test
     public void testIdRefs() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-bad-id-ref.xml");
 
-        try {
-            new TestBlueprintContainer(registry).getRepository();
-            fail("Did not throw exception");
-        } catch (RuntimeException e) {
-            // we expect exception
+        assertThrows(RuntimeException.class,
+                ()-> new TestBlueprintContainer(registry).getRepository());
             // TODO: check error string?
-        }
     }
-    
+
+    @Test
     public void testDependencies() throws Exception {
         CallbackTracker.clear();
 
@@ -258,7 +263,8 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals(Callback.DESTROY, callback.getType());
         assertEquals(obj, callback.getObject());
     }
-    
+
+    @Test
     public void testConstructor() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-constructor.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
@@ -304,15 +310,11 @@ public class WiringTest extends AbstractBlueprintTest {
         testMultiple(obj10, null, 1234, null);
 
         Object obj11 = repository.create("multipleFactory2");
-        testMultiple(obj11, "helloCreate-boolean", -1, null);        
-        
-        try {
-            repository.create("multipleFactoryNull");
-            fail("Did not throw exception");
-        } catch (RuntimeException e) {
-            // we expect exception 
+        testMultiple(obj11, "helloCreate-boolean", -1, null);
+
+        assertThrows(RuntimeException.class,
+                ()-> repository.create("multipleFactoryNull"));
             // TODO: check the exception string?
-        }
         
         Object obj12 = repository.create("multipleFactoryTypedNull");
         testMultiple(obj12, "hello-boolean", -1, null);
@@ -356,7 +358,7 @@ public class WiringTest extends AbstractBlueprintTest {
 
         BeanF obj15 = (BeanF) repository.create("booleanWrapped");
         assertNotNull(obj15.getWrapped());
-        assertEquals(false, (boolean) obj15.getWrapped());
+        assertFalse(obj15.getWrapped());
         assertNull(obj15.getPrim());
 
         // TODO: check the below tests when the incoherence between TCK / spec is solved
@@ -394,12 +396,14 @@ public class WiringTest extends AbstractBlueprintTest {
        assertEquals(map, ((Multiple)obj).getProperties());
    }
 
+    @Test
     public void testGenerics2() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("gen2");
     }
 
+    @Test
     public void testGenerics() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
@@ -457,64 +461,65 @@ public class WiringTest extends AbstractBlueprintTest {
         assertEquals("stringToo", ((Primavera) obj).prop);
     }
 
+    @Test
     public void testMixedGenericsTracker() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("tracker");
     }
 
+    @Test
     public void testMixedGenericsTypedTracker() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
-        try {
-            repository.create("typedTracker");
-            fail("Should have thrown an exception");
-        } catch (ComponentDefinitionException e) {
-            // expected
-        }
+        assertThrows(ComponentDefinitionException.class,
+                ()-> repository.create("typedTracker"));
     }
 
+    @Test
     public void testMixedGenericsTypedTrackerRaw() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("typedTrackerRaw");
     }
 
+    @Test
     public void testMixedGenericsTypedClassTracker() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
-        try {
-            repository.create("typedClassTracker");
-            fail("Should have thrown an exception");
-        } catch (ComponentDefinitionException e) {
-            // expected
-        }
+        assertThrows(ComponentDefinitionException.class,
+                ()-> repository.create("typedClassTracker"));
     }
 
+    @Test
     public void testMixedGenericsTypedClassTrackerRaw() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("typedClassTrackerRaw");
     }
 
+    @Test
     public void testMixedGenericsTypedGeneric() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("typedGenericTracker");
     }
 
+    @Test
     public void testMixedGenericsTypedGenericClass() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-generics-mix.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("typedClassGenericTracker");
     }
 
+    @Test
     public void testThreadPoolCreation() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-threadpool.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
         repository.create("executorService");
     }
 
+    @Test
     public void testCachePojo() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-cache.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
@@ -522,6 +527,7 @@ public class WiringTest extends AbstractBlueprintTest {
         repository.create("queueCountCache");
     }
 
+    @Test
     public void testVarArgPojo() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-vararg.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();
@@ -529,6 +535,7 @@ public class WiringTest extends AbstractBlueprintTest {
         assertArrayEquals(new String[] { "-web" }, va.args);
     }
 
+    @Test
     public void testCircular() throws Exception {
         BlueprintRepository repository = createBlueprintContainer().getRepository();
 
@@ -546,39 +553,26 @@ public class WiringTest extends AbstractBlueprintTest {
         
         assertEquals(obj2, ((PojoListener) obj3).getService() );        
     }
-     
+
+    @Test
     public void testCircularPrototype() throws Exception {
         BlueprintRepository repository = createBlueprintContainer().getRepository();
-        
-        try {
-            repository.create("circularPrototypeDriver");
-            fail("Did not throw exception");  
-        } catch (CircularDependencyException e) {
-            // that's what we expect
-        }
 
-        try {
-            repository.create("circularPrototype");
-            fail("Did not throw exception");  
-        } catch (CircularDependencyException e) {
-            // that's what we expect
-        }
+        assertThrows(CircularDependencyException.class,
+                ()-> repository.create("circularPrototypeDriver"));
+
+        assertThrows(CircularDependencyException.class,
+                ()-> repository.create("circularPrototype"));
     }
-    
+
+    @Test
     public void testRecursive() throws Exception {
         BlueprintRepository repository = createBlueprintContainer().getRepository();
-        
-        try {
-            repository.create("recursiveConstructor");
-            fail("Did not throw exception");           
-        } catch (ComponentDefinitionException e) {
-            if (e.getCause() instanceof CircularDependencyException) {                          
-                // that's what we expect
-            } else {
-                fail("Did not throw expected exception");
-                throw e;
-            }
-        }
+
+        ComponentDefinitionException e = assertThrows(ComponentDefinitionException.class,
+                () -> repository.create("recursiveConstructor"));
+
+        assertTrue(e.getCause() instanceof CircularDependencyException);
         
         PojoRecursive pojo;
         
@@ -588,7 +582,8 @@ public class WiringTest extends AbstractBlueprintTest {
         pojo = (PojoRecursive) repository.create("recursiveInitMethod");
         assertNotNull(pojo);
     }
-    
+
+    @Test
     public void testCircularBreaking() throws Exception {
         BlueprintRepository repository;
         
@@ -602,6 +597,7 @@ public class WiringTest extends AbstractBlueprintTest {
         assertNotNull(repository.create("c3"));
     }
 
+    @Test
     public void testInterceptors() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-interceptors.xml");
         Repository repository = new TestBlueprintContainer(registry).getRepository();

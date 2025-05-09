@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -129,12 +129,9 @@ public class FileSystemTest
   {
 	  File baseDir = new File(getTestResourceDir(), "/app1");
 	  File manifest = new File(baseDir, "META-INF/APPLICATION.MF");
-	  try {
+      assertThrows(IORuntimeException.class, () -> {
 	      FileSystem.getFSRoot(manifest);
-	      fail("Should have thrown an IORuntimeException");
-	  } catch (IORuntimeException e) {
-	      // good!
-	  }
+	  });
   }
 
   /**

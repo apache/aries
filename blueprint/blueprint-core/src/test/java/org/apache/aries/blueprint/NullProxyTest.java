@@ -25,9 +25,15 @@ import org.apache.aries.blueprint.pojos.PojoC;
 import org.apache.aries.blueprint.pojos.Service;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.impl.JdkProxyManager;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class NullProxyTest extends AbstractBlueprintTest {
 
+    @Test
     public void testNullProxy() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-null-proxy.xml");
         ProxyManager proxyManager = new JdkProxyManager();

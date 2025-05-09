@@ -20,7 +20,6 @@ package org.apache.aries.transaction.itests;
 
 import org.apache.aries.transaction.test.RollbackOnBean;
 import org.apache.aries.transaction.test.TestBean;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
@@ -29,7 +28,7 @@ import javax.inject.Inject;
 import javax.transaction.Status;
 import java.sql.SQLException;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class RollbackOnTest extends AbstractIntegrationTest {
 
@@ -56,7 +55,7 @@ public class RollbackOnTest extends AbstractIntegrationTest {
 		}
 		int txStatus = tran.getStatus();
 		tran.rollback();
-		Assert.assertEquals("tx was rolled back", Status.STATUS_ACTIVE, txStatus);
+		assertEquals("tx was rolled back", Status.STATUS_ACTIVE, txStatus);
 	}
 
 	//default behavior, doesn't rollback on exception
@@ -70,7 +69,7 @@ public class RollbackOnTest extends AbstractIntegrationTest {
 		}
 		int txStatus = tran.getStatus();
 		tran.rollback();
-		Assert.assertEquals("tx was rolled back", Status.STATUS_ACTIVE, txStatus);
+		assertEquals("tx was rolled back", Status.STATUS_ACTIVE, txStatus);
 	}
 
 	@Test
@@ -83,7 +82,7 @@ public class RollbackOnTest extends AbstractIntegrationTest {
 		}
 		int txStatus = tran.getStatus();
 		tran.rollback();
-		Assert.assertEquals("tx was not rolled back", Status.STATUS_MARKED_ROLLBACK, txStatus);
+		assertEquals("tx was not rolled back", Status.STATUS_MARKED_ROLLBACK, txStatus);
 	}
 
 	@Test
@@ -96,7 +95,7 @@ public class RollbackOnTest extends AbstractIntegrationTest {
 		}
 		int txStatus = tran.getStatus();
 		tran.rollback();
-		Assert.assertEquals("tx was not rolled back", Status.STATUS_MARKED_ROLLBACK, txStatus);
+		assertEquals("tx was not rolled back", Status.STATUS_MARKED_ROLLBACK, txStatus);
 	}
 
 	//throw Runtime / handle Exception

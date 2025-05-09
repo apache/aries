@@ -18,8 +18,10 @@
  */
 package org.apache.aries.jmx.whiteboard.integration.helper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.*;
-import static org.ops4j.pax.exam.OptionUtils.combine;
 
 import java.io.File;
 import java.util.Dictionary;
@@ -32,12 +34,9 @@ import javax.management.MBeanServerFactory;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.ops4j.pax.exam.Configuration;
-import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -149,10 +148,10 @@ public class IntegrationTestBase {
             final ObjectName objectName) {
         try {
             ObjectInstance instance = server.getObjectInstance(objectName);
-            TestCase.assertNotNull(instance);
-            TestCase.assertEquals(objectName, instance.getObjectName());
+            assertNotNull(instance);
+            assertEquals(objectName, instance.getObjectName());
         } catch (InstanceNotFoundException nfe) {
-            TestCase.fail("Expected instance of " + objectName
+            fail("Expected instance of " + objectName
                 + " registered with MBeanServer");
         }
     }
@@ -161,7 +160,7 @@ public class IntegrationTestBase {
             final ObjectName objectName) {
         try {
             server.getObjectInstance(objectName);
-            TestCase.fail("Unexpected instance of " + objectName
+            fail("Unexpected instance of " + objectName
                 + " registered with MBeanServer");
         } catch (InstanceNotFoundException nfe) {
             // expected, ignore

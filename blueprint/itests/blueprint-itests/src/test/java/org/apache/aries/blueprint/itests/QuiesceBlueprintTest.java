@@ -16,6 +16,7 @@
 package org.apache.aries.blueprint.itests;
 
 import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.bootDelegationPackages;
 
@@ -23,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
-
-import junit.framework.Assert;
 
 import org.apache.aries.blueprint.testquiescebundle.TestBean;
 import org.apache.aries.quiesce.manager.QuiesceCallback;
@@ -152,14 +151,14 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 	    System.out.println("Called Quiesce");
 	    
 	    Thread.sleep(1000);
-	    
-	    Assert.assertTrue("Quiesce callback should not have occurred yet; calls should be 0, but it is "+callback.getCalls(), callback.getCalls()==0);
+
+        assertEquals("Quiesce callback should not have occurred yet; calls should be 0, but it is " + callback.getCalls(), 0, callback.getCalls());
 	    
 	    t.join();
 	    
 	    System.out.println("After join");
-	    
-	    Assert.assertTrue("Quiesce callback should have occurred once; calls should be 1, but it is "+callback.getCalls(), callback.getCalls()==1);
+
+        assertEquals("Quiesce callback should have occurred once; calls should be 1, but it is " + callback.getCalls(), 1, callback.getCalls());
 	    
  	  }
   	  else
@@ -211,9 +210,9 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 		    System.out.println("Called Quiesce");
 		    
 		    Thread.sleep(200);
-		    
-		    Assert.assertTrue("Quiesce callback B should have occurred; calls should be 1, but it is "+callbackB.getCalls(), callbackB.getCalls()==1);
-		    Assert.assertTrue("Quiesce callback A should not have occurred yet; calls should be 0, but it is "+callbackA.getCalls(), callbackA.getCalls()==0);
+
+            assertEquals("Quiesce callback B should have occurred; calls should be 1, but it is " + callbackB.getCalls(), 1, callbackB.getCalls());
+            assertEquals("Quiesce callback A should not have occurred yet; calls should be 0, but it is " + callbackA.getCalls(), 0, callbackA.getCalls());
 		    
 		    bundleb.stop();
 		    
@@ -223,9 +222,9 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 		    Thread.sleep(1000);
 		    
 		    System.out.println("After second sleep");
-		    
-		    Assert.assertTrue("Quiesce callback A should have occurred once; calls should be 1, but it is "+callbackA.getCalls(), callbackA.getCalls()==1);
-		    Assert.assertTrue("Quiesce callback B should have occurred once; calls should be 1, but it is "+callbackB.getCalls(), callbackB.getCalls()==1);
+
+            assertEquals("Quiesce callback A should have occurred once; calls should be 1, but it is " + callbackA.getCalls(), 1, callbackA.getCalls());
+            assertEquals("Quiesce callback B should have occurred once; calls should be 1, but it is " + callbackB.getCalls(), 1, callbackB.getCalls());
 		    
 		}else{
 			throw new Exception("No Quiesce Participant found for the blueprint service");
@@ -276,14 +275,14 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 		    System.out.println("Called Quiesce");
 		    
 		    Thread.sleep(500);
-		    
-		    Assert.assertTrue("Quiesce callback should have occurred once for bundle a but not for bundle q; calls should be 1, but it is "+callback.getCalls(), callback.getCalls()==1);
+
+            assertEquals("Quiesce callback should have occurred once for bundle a but not for bundle q; calls should be 1, but it is " + callback.getCalls(), 1, callback.getCalls());
 		    
 		    Thread.sleep(1500);
 		    
 		    System.out.println("After second sleep");
-		    
-		    Assert.assertTrue("Quiesce callback should have occurred twice, once for bundle a and q respectively; calls should be 2, but it is "+callback.getCalls(), callback.getCalls()==2);
+
+            assertEquals("Quiesce callback should have occurred twice, once for bundle a and q respectively; calls should be 2, but it is " + callback.getCalls(), 2, callback.getCalls());
 		    
 		}else{
 			throw new Exception("No Quiesce Participant found for the blueprint service");
@@ -331,8 +330,8 @@ private QuiesceParticipant getParticipant(String bundleName) throws InvalidSynta
 		    t2.start();
 		    
 		    Thread.sleep(5000);
-		    
-		    Assert.assertTrue("Quiesce callback should have occurred once; calls should be 1, but it is "+callback.getCalls(), callback.getCalls()==1);
+
+            assertEquals("Quiesce callback should have occurred once; calls should be 1, but it is " + callback.getCalls(), 1, callback.getCalls());
 		    
    
 		}else{

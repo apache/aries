@@ -15,39 +15,24 @@ package org.apache.aries.subsystem.core.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import org.junit.Test;
 import org.osgi.framework.Version;
 
 public class LocationTest {
 	@Test
-	public void testAnyLocationString() {
+	public void testAnyLocationString() throws MalformedURLException, URISyntaxException {
 		String locationStr = "anyLocation";
-		Location location = null;
-		try {
-			location = new Location(locationStr);
-		}
-		catch (Throwable t) {
-			t.printStackTrace();
-			fail("Any location string must be supported");
-		}
+		Location location = new Location(locationStr);
 		assertNull("Wrong symbolic name", location.getSymbolicName());
 		assertEquals("Wrong value", locationStr, location.getValue());
 		assertNull("Wrong version", location.getVersion());
-		try {
-			location.open();
-			fail("Opening a location that does not represent a URL should fail");
-		}
-		catch (MalformedURLException e) {
-			// Okay
-		}
-		catch (Throwable t) {
-			t.printStackTrace();
-			fail("Wrong exception");
-		}
+        assertThrows(MalformedURLException.class, () -> location.open());
 	}
 
     @Test
@@ -73,17 +58,7 @@ public class LocationTest {
 
         Location location = new Location(locationString);
         assertEquals(locationString, location.getValue());
-        try {
-        	String sn = location.getSymbolicName();
-        	fail("Expecting an error: " + sn);
-        } catch (IllegalArgumentException e) {
-        	// expected
-        }
-        try {
-        	Version v = location.getVersion();
-        	fail("Expecting an error: " + v);
-        } catch (IllegalArgumentException e) {
-        	// expected
-        }
+        assertThrows(IllegalArgumentException.class, () -> location.getSymbolicName());
+        assertThrows(IllegalArgumentException.class, () -> location.getVersion());
     }
 }

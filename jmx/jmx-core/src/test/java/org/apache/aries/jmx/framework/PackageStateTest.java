@@ -22,7 +22,6 @@ import java.util.Collection;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -34,6 +33,11 @@ import org.osgi.framework.Version;
 import org.osgi.jmx.framework.PackageStateMBean;
 import org.osgi.service.packageadmin.ExportedPackage;
 import org.osgi.service.packageadmin.PackageAdmin;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * {@link PackageStateMBean} test case.
@@ -70,8 +74,8 @@ public class PackageStateTest {
         Mockito.when(bundle2.getBundleId()).thenReturn(Long.valueOf(6));
         Mockito.when(admin.getExportedPackages(Mockito.anyString())).thenReturn(new ExportedPackage[]{exported, exported2});
         long[] ids = mbean.getExportingBundles("test", "1.0.0");
-        Assert.assertNotNull(ids);
-        Assert.assertArrayEquals(new long[]{5,6}, ids);
+        assertNotNull(ids);
+        assertArrayEquals(new long[]{5,6}, ids);
     }
 
     @Test
@@ -86,7 +90,7 @@ public class PackageStateTest {
         Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(4));
         Mockito.when(admin.getExportedPackages(Mockito.anyString())).thenReturn(new ExportedPackage[]{exported});
         long[] ids = mbean.getImportingBundles("test", "1.0.0", 2);
-        Assert.assertArrayEquals(new long[]{4}, ids);
+        assertArrayEquals(new long[]{4}, ids);
     }
 
     @Test
@@ -99,7 +103,7 @@ public class PackageStateTest {
         Mockito.when(expBundle.getBundleId()).thenReturn(Long.valueOf(2));
         Mockito.when(admin.getExportedPackages(Mockito.anyString())).thenReturn(new ExportedPackage[]{exported});
         boolean isRemoval = mbean.isRemovalPending("test", "1.0.0", Long.valueOf(2));
-        Assert.assertTrue(isRemoval);
+        assertTrue(isRemoval);
     }
 
     @Test
@@ -116,16 +120,16 @@ public class PackageStateTest {
         Mockito.when(impBundle.getBundleId()).thenReturn(Long.valueOf(5));
         Mockito.when(admin.getExportedPackages(bundle)).thenReturn(new ExportedPackage[]{exported});
         TabularData table = mbean.listPackages();
-        Assert.assertEquals(PackageStateMBean.PACKAGES_TYPE,table.getTabularType());
+        assertEquals(PackageStateMBean.PACKAGES_TYPE,table.getTabularType());
         Collection values = table.values();
-        Assert.assertEquals(1, values.size());
+        assertEquals(1, values.size());
         CompositeData data = (CompositeData) values.iterator().next();
         Long[] exportingBundles = (Long[])data.get(PackageStateMBean.EXPORTING_BUNDLES);
-        Assert.assertArrayEquals(new Long[]{Long.valueOf(4)}, exportingBundles);
+        assertArrayEquals(new Long[]{Long.valueOf(4)}, exportingBundles);
         String name = (String) data.get(PackageStateMBean.NAME);
-        Assert.assertEquals("test", name);
+        assertEquals("test", name);
         String version = (String) data.get(PackageStateMBean.VERSION);
-        Assert.assertEquals("1.0.0", version);
+        assertEquals("1.0.0", version);
     }
 
 }

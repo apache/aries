@@ -18,7 +18,6 @@
  */
 package org.apache.aries.jndi;
 
-import junit.framework.Assert;
 import org.apache.aries.jndi.startup.Activator;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.unittest.mocks.MethodCall;
@@ -195,7 +194,7 @@ public class InitialContextTest {
 
         try {
             ic.lookup("test:something");
-            Assert.fail("Expected NamingException");
+            fail("Expected NamingException");
         } catch (NamingException ne) {
             assertNotNull(ne.getCause());
             assertEquals("doh", ne.getCause().getMessage());

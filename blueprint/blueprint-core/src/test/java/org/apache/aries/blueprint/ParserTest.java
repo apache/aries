@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import javax.xml.validation.Schema;
 
+import org.junit.Test;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -46,17 +47,24 @@ import org.osgi.service.blueprint.reflect.RefMetadata;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 import org.xml.sax.SAXException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * TODO: constructor injection
  * TODO: Dependency#setMethod 
  */
 public class ParserTest extends AbstractBlueprintTest {
 
+    @Test
     public void test() {
         Integer[] oo = new Integer[1];
         Object[] ii = oo;
     }
 
+    @Test
     public void testParseComponent() throws Exception {
         ComponentDefinitionRegistry registry = parse("/test-simple-component.xml");
         assertNotNull(registry);
@@ -147,11 +155,12 @@ public class ParserTest extends AbstractBlueprintTest {
         assertEquals(0, param.getIndex());
     }
 
+    @Test
     public void testParse() throws Exception {
         parse("/test.xml");
     }
 
-
+    @Test
     public void testCustomNodes() throws Exception {
         ComponentDefinitionRegistry registry = parse("/test-custom-nodes.xml", new TestNamespaceHandlerSet());
         
@@ -182,7 +191,8 @@ public class ParserTest extends AbstractBlueprintTest {
         BeanMetadata comp3 = (BeanMetadata) metadata;
         assertEquals("org.apache.aries.Cache", comp3.getClassName());         
     }
-    
+
+    @Test
     public void testScopes() throws Exception {
         ComponentDefinitionRegistry registry = parse("/test-scopes.xml", new TestNamespaceHandlerSet());
 

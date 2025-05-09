@@ -27,7 +27,6 @@ import org.apache.aries.jmx.codec.AuthorizationData;
 import org.apache.aries.jmx.codec.GroupData;
 import org.apache.aries.jmx.codec.RoleData;
 import org.apache.aries.jmx.codec.UserData;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -38,6 +37,12 @@ import org.osgi.service.useradmin.Authorization;
 import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 /**
  * UserAdminMBean test case.
@@ -73,7 +78,7 @@ public class UserAdminTest {
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getCredentials()).thenReturn(credentials);
         mbean.addCredential("password", new byte[] { 1, 2 }, "user1");
-        Assert.assertArrayEquals(new byte[] { 1, 2 }, (byte[]) credentials.get("password"));
+        assertArrayEquals(new byte[] { 1, 2 }, (byte[]) credentials.get("password"));
 
     }
 
@@ -92,7 +97,7 @@ public class UserAdminTest {
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getCredentials()).thenReturn(credentials);
         mbean.addCredentialString("password", "1234", "user1");
-        Assert.assertEquals("1234", (String) credentials.get("password"));
+        assertEquals("1234", (String) credentials.get("password"));
     }
 
     /**
@@ -109,7 +114,7 @@ public class UserAdminTest {
         Mockito.when(group1.getType()).thenReturn(Role.GROUP);
         Mockito.when(group1.addMember(user1)).thenReturn(true);
         boolean isAdded = mbean.addMember("group1", "user1");
-        Assert.assertTrue(isAdded);
+        assertTrue(isAdded);
         Mockito.verify(group1).addMember(user1);
     }
 
@@ -128,7 +133,7 @@ public class UserAdminTest {
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getProperties()).thenReturn(props);
         mbean.addPropertyString("key", "1234", "user1");
-        Assert.assertEquals("1234", (String) props.get("key"));
+        assertEquals("1234", (String) props.get("key"));
     }
 
     /**
@@ -145,7 +150,7 @@ public class UserAdminTest {
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getProperties()).thenReturn(props);
         mbean.addProperty("key", new byte[] { 1, 2 }, "user1");
-        Assert.assertArrayEquals(new byte[] { 1, 2 }, (byte[]) props.get("key"));
+        assertArrayEquals(new byte[] { 1, 2 }, (byte[]) props.get("key"));
     }
 
     /**
@@ -163,7 +168,7 @@ public class UserAdminTest {
         Mockito.when(group1.getType()).thenReturn(Role.GROUP);
         Mockito.when(group1.addRequiredMember(user1)).thenReturn(true);
         boolean isAdded = mbean.addRequiredMember("group1", "user1");
-        Assert.assertTrue(isAdded);
+        assertTrue(isAdded);
         Mockito.verify(group1).addRequiredMember(user1);
     }
 
@@ -185,12 +190,7 @@ public class UserAdminTest {
      */
     @Test
     public void testCreateRole() throws IOException {
-        try {
-            mbean.createRole("role1");
-            Assert.fail("Function did not throw exception as expected");
-        } catch (IOException e) {
-            // expected
-        }
+        assertThrows(IOException.class, () -> mbean.createRole("role1"));
     }
 
     /**
@@ -219,11 +219,11 @@ public class UserAdminTest {
         Mockito.when(auth.getName()).thenReturn("auth1");
         Mockito.when(auth.getRoles()).thenReturn(new String[]{"role1"});
         CompositeData data = mbean.getAuthorization("role1");
-        Assert.assertNotNull(data);
+        assertNotNull(data);
         AuthorizationData authData = AuthorizationData.from(data);
-        Assert.assertNotNull(authData);
-        Assert.assertEquals("auth1", authData.getName());
-        Assert.assertArrayEquals(new String[] { "role1" }, authData.getRoles());
+        assertNotNull(authData);
+        assertEquals("auth1", authData.getName());
+        assertArrayEquals(new String[] { "role1" }, authData.getRoles());
     }
 
     /**
@@ -240,12 +240,12 @@ public class UserAdminTest {
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(userAdmin.getRole(Mockito.anyString())).thenReturn(user1);
         TabularData data = mbean.getCredentials("user1");
-        Assert.assertNotNull(data);
-        Assert.assertEquals(JmxConstants.PROPERTIES_TYPE, data.getTabularType());
+        assertNotNull(data);
+        assertEquals(JmxConstants.PROPERTIES_TYPE, data.getTabularType());
         CompositeData composite = data.get(new Object[] { "key" });
-        Assert.assertNotNull(composite);
-        Assert.assertEquals("key", (String) composite.get(JmxConstants.KEY));
-        Assert.assertEquals("value", (String) composite.get(JmxConstants.VALUE));
+        assertNotNull(composite);
+        assertEquals("key", (String) composite.get(JmxConstants.KEY));
+        assertEquals("value", (String) composite.get(JmxConstants.VALUE));
     }
 
     /**
@@ -266,13 +266,13 @@ public class UserAdminTest {
         Mockito.when(group1.getMembers()).thenReturn(new Role[] { role2 });
         Mockito.when(userAdmin.getRole(Mockito.anyString())).thenReturn(group1);
         CompositeData data = mbean.getGroup("group1");
-        Assert.assertNotNull(data);
+        assertNotNull(data);
         GroupData group = GroupData.from(data);
-        Assert.assertNotNull(group);
-        Assert.assertEquals("group1", group.getName());
-        Assert.assertEquals(Role.GROUP, group.getType());
-        Assert.assertArrayEquals(new String[] { "role2" }, group.getMembers());
-        Assert.assertArrayEquals(new String[] { "role1" }, group.getRequiredMembers());
+        assertNotNull(group);
+        assertEquals("group1", group.getName());
+        assertEquals(Role.GROUP, group.getType());
+        assertArrayEquals(new String[] { "role2" }, group.getMembers());
+        assertArrayEquals(new String[] { "role1" }, group.getRequiredMembers());
         Mockito.verify(userAdmin).getRole(Mockito.anyString());
     }
 
@@ -288,7 +288,7 @@ public class UserAdminTest {
         Mockito.when(group1.getName()).thenReturn("group1");
         Mockito.when(userAdmin.getRoles("name=group1")).thenReturn(new Role[] { group1 });
         String[] groups = mbean.getGroups("name=group1");
-        Assert.assertArrayEquals(new String[] { "group1" }, groups);
+        assertArrayEquals(new String[] { "group1" }, groups);
     }
 
     /**
@@ -305,7 +305,7 @@ public class UserAdminTest {
         Mockito.when(userAdmin.getRole("role1")).thenReturn(user1);
         Mockito.when(userAdmin.getAuthorization(user1)).thenReturn(auth);
         String[] roles = mbean.getImpliedRoles("role1");
-        Assert.assertArrayEquals(new String[] { "role1" }, roles);
+        assertArrayEquals(new String[] { "role1" }, roles);
     }
 
     /**
@@ -323,7 +323,7 @@ public class UserAdminTest {
         Mockito.when(group1.getMembers()).thenReturn(new Role[] { user1 });
         Mockito.when(userAdmin.getRole("group1")).thenReturn(group1);
         String[] members = mbean.getMembers("group1");
-        Assert.assertArrayEquals(new String[] { "user1" }, members);
+        assertArrayEquals(new String[] { "user1" }, members);
     }
 
     /**
@@ -339,12 +339,12 @@ public class UserAdminTest {
         Mockito.when(user1.getProperties()).thenReturn(properties);
         Mockito.when(userAdmin.getRole(Mockito.anyString())).thenReturn(user1);
         TabularData data = mbean.getProperties("user1");
-        Assert.assertNotNull(data);
-        Assert.assertEquals(JmxConstants.PROPERTIES_TYPE, data.getTabularType());
+        assertNotNull(data);
+        assertEquals(JmxConstants.PROPERTIES_TYPE, data.getTabularType());
         CompositeData composite = data.get(new Object[] { "key" });
-        Assert.assertNotNull(composite);
-        Assert.assertEquals("key", (String) composite.get(JmxConstants.KEY));
-        Assert.assertEquals("value", (String) composite.get(JmxConstants.VALUE));
+        assertNotNull(composite);
+        assertEquals("key", (String) composite.get(JmxConstants.KEY));
+        assertEquals("value", (String) composite.get(JmxConstants.VALUE));
     }
 
     /**
@@ -362,7 +362,7 @@ public class UserAdminTest {
         Mockito.when(group1.getRequiredMembers()).thenReturn(new Role[] { user1 });
         Mockito.when(userAdmin.getRole("group1")).thenReturn(group1);
         String[] members = mbean.getRequiredMembers("group1");
-        Assert.assertArrayEquals(new String[] { "user1" }, members);
+        assertArrayEquals(new String[] { "user1" }, members);
     }
 
     /**
@@ -377,11 +377,11 @@ public class UserAdminTest {
         Mockito.when(user1.getName()).thenReturn("user1");
         Mockito.when(userAdmin.getRole(Mockito.anyString())).thenReturn(user1);
         CompositeData data = mbean.getRole("user1");
-        Assert.assertNotNull(data);
+        assertNotNull(data);
         RoleData role = RoleData.from(data);
-        Assert.assertNotNull(role);
-        Assert.assertEquals("user1", role.getName());
-        Assert.assertEquals(Role.USER, role.getType());
+        assertNotNull(role);
+        assertEquals("user1", role.getName());
+        assertEquals(Role.USER, role.getType());
         Mockito.verify(userAdmin).getRole(Mockito.anyString());
     }
 
@@ -397,7 +397,7 @@ public class UserAdminTest {
         Mockito.when(user1.getName()).thenReturn("user1");
         Mockito.when(userAdmin.getRoles("name=user1")).thenReturn(new Role[] { user1 });
         String[] roles = mbean.getRoles("name=user1");
-        Assert.assertArrayEquals(new String[] { "user1" }, roles);
+        assertArrayEquals(new String[] { "user1" }, roles);
     }
 
     /**
@@ -412,11 +412,11 @@ public class UserAdminTest {
         Mockito.when(user1.getName()).thenReturn("user1");
         Mockito.when(userAdmin.getRole(Mockito.anyString())).thenReturn(user1);
         CompositeData data = mbean.getUser("user1");
-        Assert.assertNotNull(data);
+        assertNotNull(data);
         UserData user = UserData.from(data);
-        Assert.assertNotNull(user);
-        Assert.assertEquals("user1", user.getName());
-        Assert.assertEquals(Role.USER, user.getType());
+        assertNotNull(user);
+        assertEquals("user1", user.getName());
+        assertEquals(Role.USER, user.getType());
         Mockito.verify(userAdmin).getRole(Mockito.anyString());
     }
 
@@ -432,7 +432,7 @@ public class UserAdminTest {
         Mockito.when(user1.getName()).thenReturn("user1");
         Mockito.when(userAdmin.getUser("key", "valuetest")).thenReturn(user1);
         String username = mbean.getUserWithProperty("key", "valuetest");
-        Assert.assertEquals(username, "user1");
+        assertEquals(username, "user1");
     }
 
     /**
@@ -447,7 +447,7 @@ public class UserAdminTest {
         Mockito.when(user1.getName()).thenReturn("user1");
         Mockito.when(userAdmin.getRoles("name=user1")).thenReturn(new Role[] { user1 });
         String[] roles = mbean.getUsers("name=user1");
-        Assert.assertArrayEquals(new String[] { "user1" }, roles);
+        assertArrayEquals(new String[] { "user1" }, roles);
     }
 
     /**
@@ -465,7 +465,7 @@ public class UserAdminTest {
         Mockito.when(group2.getName()).thenReturn("group2");
         Mockito.when(userAdmin.getRoles(null)).thenReturn(new Role[] { group1, group2 });
         String[] groups = mbean.listGroups();
-        Assert.assertArrayEquals(new String[] { "group1", "group2" }, groups);
+        assertArrayEquals(new String[] { "group1", "group2" }, groups);
     }
 
     /**
@@ -483,7 +483,7 @@ public class UserAdminTest {
         Mockito.when(user2.getName()).thenReturn("user2");
         Mockito.when(userAdmin.getRoles(null)).thenReturn(new Role[] { user1, user2 });
         String[] roles = mbean.listRoles();
-        Assert.assertArrayEquals(new String[] { "user1", "user2" }, roles);
+        assertArrayEquals(new String[] { "user1", "user2" }, roles);
     }
 
     /**
@@ -501,7 +501,7 @@ public class UserAdminTest {
         Mockito.when(user2.getName()).thenReturn("user2");
         Mockito.when(userAdmin.getRoles(null)).thenReturn(new Role[] { user1, user2 });
         String[] roles = mbean.listUsers();
-        Assert.assertArrayEquals(new String[] { "user1", "user2" }, roles);
+        assertArrayEquals(new String[] { "user1", "user2" }, roles);
     }
 
     /**
@@ -518,7 +518,7 @@ public class UserAdminTest {
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getCredentials()).thenReturn(cred);
         mbean.removeCredential("key", "user1");
-        Assert.assertEquals(0, cred.size());
+        assertEquals(0, cred.size());
     }
 
     /**
@@ -530,7 +530,7 @@ public class UserAdminTest {
     public void testRemoveGroup() throws IOException {
         Mockito.when(userAdmin.removeRole("group1")).thenReturn(true);
         boolean isRemoved = mbean.removeGroup("group1");
-        Assert.assertTrue(isRemoved);
+        assertTrue(isRemoved);
     }
 
     /**
@@ -548,7 +548,7 @@ public class UserAdminTest {
         Mockito.when(group1.getType()).thenReturn(Role.GROUP);
         Mockito.when(group1.removeMember(user1)).thenReturn(true);
         boolean isAdded = mbean.removeMember("group1", "user1");
-        Assert.assertTrue(isAdded);
+        assertTrue(isAdded);
         Mockito.verify(group1).removeMember(user1);
     }
 
@@ -566,7 +566,7 @@ public class UserAdminTest {
         Mockito.when(user1.getType()).thenReturn(Role.USER);
         Mockito.when(user1.getProperties()).thenReturn(props);
         mbean.removeProperty("key", "user1");
-        Assert.assertEquals(0, props.size());
+        assertEquals(0, props.size());
     }
 
     /**
@@ -578,7 +578,7 @@ public class UserAdminTest {
     public void testRemoveRole() throws IOException {
         Mockito.when(userAdmin.removeRole("role1")).thenReturn(true);
         boolean isRemoved = mbean.removeRole("role1");
-        Assert.assertTrue(isRemoved);
+        assertTrue(isRemoved);
     }
 
     /**
@@ -590,7 +590,7 @@ public class UserAdminTest {
     public void testRemoveUser() throws IOException {
         Mockito.when(userAdmin.removeRole("user1")).thenReturn(true);
         boolean isRemoved = mbean.removeUser("user1");
-        Assert.assertTrue(isRemoved);
+        assertTrue(isRemoved);
     }
 
 }

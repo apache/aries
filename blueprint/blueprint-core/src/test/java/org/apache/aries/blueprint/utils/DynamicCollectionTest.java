@@ -20,9 +20,14 @@ package org.apache.aries.blueprint.utils;
 
 import java.util.Iterator;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class DynamicCollectionTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class DynamicCollectionTest {
 
     protected static final Object O0 = new Object();
     protected static final Object O1 = new Object();
@@ -31,10 +36,12 @@ public class DynamicCollectionTest extends TestCase {
 
     protected DynamicCollection<Object> collection;
 
-    protected void setUp() {
+    @Before
+    public void setUp() {
         collection = new DynamicCollection<Object>();
     }
 
+    @Test
     public void testAddRemove() throws Exception {
         assertEquals(0, collection.size());
         assertTrue(collection.isEmpty());
@@ -54,6 +61,7 @@ public class DynamicCollectionTest extends TestCase {
         assertEquals(0, collection.size());
     }
 
+    @Test
     public void testSimpleIterator() throws Exception {
         collection.add(O0);
 
@@ -63,6 +71,7 @@ public class DynamicCollectionTest extends TestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testAddWhileIterating() throws Exception {
         Iterator iterator = collection.iterator();
         assertFalse(iterator.hasNext());
@@ -73,6 +82,7 @@ public class DynamicCollectionTest extends TestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testRemoveElementWhileIterating() throws Exception {
         collection.add(O0);
         collection.add(O1);
@@ -86,6 +96,7 @@ public class DynamicCollectionTest extends TestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testRemoveElementAfterWhileIterating() throws Exception {
         collection.add(O0);
         collection.add(O1);
@@ -97,6 +108,7 @@ public class DynamicCollectionTest extends TestCase {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
     public void testRemoveElementBeforeWhileIterating() throws Exception {
         collection.add(O0);
         collection.add(O1);

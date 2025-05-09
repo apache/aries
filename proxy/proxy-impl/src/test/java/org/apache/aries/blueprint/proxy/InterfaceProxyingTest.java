@@ -22,8 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -135,14 +135,10 @@ public class InterfaceProxyingTest {
         throw new RuntimeException();
       }
     });
-    try {
-      o.call();
-      fail("Should throw an exception");
-    } catch (RuntimeException re) {
-      assertCalled(tl, true, false, true);
-      assertSame(re, tl.getLastThrowable());
-    }
-    
+    RuntimeException re = assertThrows(RuntimeException.class, () -> o.call());
+    assertCalled(tl, true, false, true);
+    assertSame(re, tl.getLastThrowable());
+
     tl.clear();
     assertCalled(tl, false, false, false);
     

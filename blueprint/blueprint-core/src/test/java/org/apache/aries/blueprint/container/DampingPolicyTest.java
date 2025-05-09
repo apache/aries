@@ -25,13 +25,14 @@ import org.apache.aries.blueprint.container.SatisfiableRecipe.SatisfactionListen
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.easymock.EasyMock;
-import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
+
+import static org.junit.Assert.assertSame;
 
 public class DampingPolicyTest {
 
@@ -75,7 +76,7 @@ public class DampingPolicyTest {
         EasyMock.replay(container, containerContext, svcRef1);
 
         recipe.start(listener);
-        Assert.assertSame(svcRef1, currentReference.get());
+        assertSame(svcRef1, currentReference.get());
         EasyMock.verify(container, containerContext, svcRef1);
 
         EasyMock.reset(container, containerContext, svcRef1);
@@ -91,7 +92,7 @@ public class DampingPolicyTest {
         EasyMock.replay(container, containerContext, svcRef1, svcRef2);
 
         recipe.serviceChanged(event2);
-        Assert.assertSame(svcRef2, currentReference.get());
+        assertSame(svcRef2, currentReference.get());
         EasyMock.verify(container, containerContext, svcRef1, svcRef2);
 
     }

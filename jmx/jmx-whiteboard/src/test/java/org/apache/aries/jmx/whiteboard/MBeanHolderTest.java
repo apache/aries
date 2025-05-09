@@ -35,7 +35,7 @@ import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 public class MBeanHolderTest {
     @Test
@@ -117,12 +117,7 @@ public class MBeanHolderTest {
             thenThrow(new NullPointerException());
 
         assertEquals(0, registrations.size());
-        try {
-            mbh.register(ms, new String [] {});
-            fail("Should have thrown a NullPointerException");
-        } catch (NullPointerException npe) {
-            // good!
-        }
+        assertThrows(NullPointerException.class, () ->mbh.register(ms, new String [] {}));
     }
 
     private MBeanServer mockMBeanServer()

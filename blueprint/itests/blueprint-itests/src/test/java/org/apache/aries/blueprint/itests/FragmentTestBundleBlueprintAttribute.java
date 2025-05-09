@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.streamBundle;
 
 import java.io.InputStream;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -40,9 +40,9 @@ public class FragmentTestBundleBlueprintAttribute extends AbstractBlueprintInteg
   public void testFragmentProvidesBlueprintFile() throws Exception
   {
     Runnable r = context().getService(Runnable.class);
-    Assert.assertNotNull("Could not find blueprint registered service", r);
+    assertNotNull("Could not find blueprint registered service", r);
     BlueprintContainer bc = Helper.getBlueprintContainerForBundle(context(), "org.apache.aries.test.host");
-    Assert.assertNotNull("Could not find blueprint container for bundle", bc);
+    assertNotNull("Could not find blueprint container for bundle", bc);
   }
   
   @Configuration

@@ -23,13 +23,18 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.InvalidTransactionException;
 import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -61,14 +66,10 @@ public class TranStrategyTest {
       // status is Status.STATUS_NO_TRANSACTION it should not return null.
       expect(tm.getStatus()).andReturn(Status.STATUS_NO_TRANSACTION);
 
-      try {
+      assertThrows(IllegalStateException.class, () -> {
         assertNotNull("TransactionStrategy.MANDATORY.begin(tm) returned null when manager " +
               "status is STATUS_NO_TRANSACTION", TransactionAttribute.MANDATORY.begin(tm).getActiveTransaction());
-      } catch (IllegalStateException ise) {
-          // Expected to be in here
-      } catch (Exception e) {
-          fail("TransactionStrategy.MANDATORY.begin() threw an unexpected exception when tran manager status is STATUS_NO_TRANSACTION");
-      }
+      });
           
       // MANDATORY strategy should return null for all tran manager states other
       // than Status.STATUS_NO_TRANSACTION.
@@ -81,25 +82,17 @@ public class TranStrategyTest {
         expect(tm.getStatus()).andReturn(invalids[i]);
         expect(tm.getTransaction()).andReturn(null);
         c.replay();
-        try {
           Transaction tran = TransactionAttribute.MANDATORY.begin(tm).getActiveTransaction();
           assertNull("TransactionStrategy.MANDATORY.begin() did not return null when manager status value is " + invalids[i], tran);
-        } catch (Exception ise) {
-          fail("TransactionStrategy.MANDATORY.begin() threw Exception when manager status value is " + invalids[i]);
-        }
         c.verify();
       }
     }
      
     @Test
-    public void testMandatoryFinish()
-    {
-      try {
+    public void testMandatoryFinish() throws HeuristicRollbackException, SystemException, HeuristicMixedException, InvalidTransactionException, RollbackException {
         TransactionToken tranToken = new TransactionToken(t, null, TransactionAttribute.MANDATORY);
         TransactionAttribute.MANDATORY.finish(tm, tranToken);
-      } catch (Exception e) {
-          fail("TransactionStrategy.MANDATORY.finish() threw an unexpected exception");
-      }
+
     }
     
     
@@ -110,13 +103,9 @@ public class TranStrategyTest {
         // status is Status.STATUS_ACTIVE it should not return null.
         expect(tm.getStatus()).andReturn(Status.STATUS_ACTIVE);
 
-        try {
+        assertThrows(IllegalStateException.class, () -> {
             assertNotNull("TransactionStrategy.NEVER.begin() returned null when manager status is STATUS_ACTIVE", TransactionAttribute.NEVER.begin(tm));
-        } catch (IllegalStateException ise) {
-            // Expect to be in here
-        } catch (Exception e) {
-            fail("TransactionStrategy.NEVER.begin() threw an unexpected exception when tran manager status is STATUS_ACTIVE");
-        }
+        });
 
         // NEVER strategy should return null for all tran manager states other
         // than Status.STATUS_ACTIVE.
@@ -129,25 +118,16 @@ public class TranStrategyTest {
             expect(tm.getStatus()).andReturn(invalids[i]);
             expect(tm.getTransaction()).andReturn(null).anyTimes();
             c.replay();
-            try {
                 assertNull("TransactionStrategy.NEVER.begin() did not return null when manager status value is " + invalids[i], TransactionAttribute.NEVER.begin(tm).getActiveTransaction());
-            } catch (Exception ise) {
-                fail("TransactionStrategy.NEVER.begin() threw unexpected exception when manager status value is " + invalids[i]);
-            } 
             c.verify();
         }
 
     }
     
     @Test
-    public void testNeverFinish()
-    {
-      try {
+    public void testNeverFinish() throws HeuristicRollbackException, SystemException, HeuristicMixedException, InvalidTransactionException, RollbackException {
         TransactionToken tranToken = new TransactionToken(null, null, TransactionAttribute.NEVER);
         TransactionAttribute.NEVER.finish(tm, tranToken);
-      } catch (Exception e) {
-          fail("TransactionStrategy.NEVER.finish() threw an unexpected exception");
-      }
     }
     
     @Test
@@ -172,22 +152,16 @@ public class TranStrategyTest {
           expect(tm.getStatus()).andReturn(invalids[i]);
           expect(tm.getTransaction()).andReturn(null).anyTimes();
           c.replay();
-        try {
           assertNull("TransactionStrategy.NOT_SUPPORTED.begin() did not return null when manager status value is " + invalids[i], TransactionAttribute.NOT_SUPPORTED.begin(tm).getActiveTransaction());
-        } catch (Exception ise) {
-            fail("TransactionStrategy.NOT_SUPPORTED.begin() threw unexpected exception when manager status value is " + invalids[i]);
-        } 
         c.verify();
       }
      
     }
     
     @Test
-    public void testNotSupportedFinish()
-    {
+    public void testNotSupportedFinish() throws Exception {
       // If finish is called with a previously active transaction, then
       // we expect this transaction to be resumed for a NOT_SUPPORTED strategy
-      try {
         tm.resume(t);
         EasyMock.expectLastCall();
         c.replay();
@@ -198,9 +172,6 @@ public class TranStrategyTest {
         c.reset();
         tranToken = new TransactionToken(null, null, TransactionAttribute.NOT_SUPPORTED);
         TransactionAttribute.NOT_SUPPORTED.finish(tm, tranToken);
-      } catch (Exception e) {
-          fail("TransactionStrategy.NOT_SUPPORTED.finish() threw unexpected exception, " + e);
-      }
     }
     
     @Test
@@ -227,11 +198,7 @@ public class TranStrategyTest {
           expect(tm.getStatus()).andReturn(invalids[i]);
           expect(tm.getTransaction()).andReturn(null);
           c.replay();
-        try {
           assertNull("TransactionStrategy.REQUIRED.begin() did not return null when manager status value is " + invalids[i], TransactionAttribute.REQUIRED.begin(tm).getActiveTransaction());
-        } catch (Exception ise) {
-            fail("TransactionStrategy.REQUIRED.begin() threw unexpected exception when manager status value is " + invalids[i]);
-        } 
         c.verify();
       }
     }
@@ -311,11 +278,7 @@ public class TranStrategyTest {
           tm.begin();
           expectLastCall();
           c.replay();
-        try {
           assertNull("TransactionStrategy.REQUIRES_NEW.begin() did not return null when manager status value is " + manStatus[i], TransactionAttribute.REQUIRES_NEW.begin(tm).getActiveTransaction());
-        } catch (Exception ise) {
-            fail("TransactionStrategy.REQUIRES_NEW.begin() threw unexpected exception when manager status value is " + manStatus[i]);
-        } 
         c.verify();
       }
      
@@ -368,8 +331,6 @@ public class TranStrategyTest {
           // or to be in here
       } catch (Exception thrownE) {
           fail("TransactionStrategy.REQUIRES_NEW.begin() threw unexpected exception when manager status is " + managerStatus);
-      } finally {
-          // If Status.STATUS_ACTIVE
       }
       c.verify();
       c.reset();
@@ -391,25 +352,15 @@ public class TranStrategyTest {
             tm.resume(EasyMock.anyObject(Transaction.class));
             expectLastCall();
             c.replay();
-            try {
                 TransactionToken tranToken = new TransactionToken(t, t, TransactionAttribute.REQUIRES_NEW, true);
                 TransactionAttribute.REQUIRES_NEW.finish(tm, tranToken);
-            } catch (Exception e) {
-                fail("TransactionStrategy.REQUIRES_NEW.finish() threw unexpected exception when manager status is " + allStates[i]);
-            }
             c.verify();
             c.reset();
-            try {
                 expect(tm.getStatus()).andReturn(allStates[i]);
                 requiresNew_assertion(tm, allStates[i]);
                 c.replay();
-                TransactionToken tranToken = new TransactionToken(t, null, TransactionAttribute.REQUIRES_NEW, true);
-                TransactionAttribute.REQUIRES_NEW.finish(tm, tranToken);
-            } catch (Throwable e) {
-                e.printStackTrace();
-                fail("TransactionStrategy.REQUIRES_NEW.finish() threw unexpected exception when manager status is " + allStates[i]);
-            } finally {
-            }
+                TransactionToken tranToken2 = new TransactionToken(t, null, TransactionAttribute.REQUIRES_NEW, true);
+                TransactionAttribute.REQUIRES_NEW.finish(tm, tranToken2);
             c.verify();
         }
 

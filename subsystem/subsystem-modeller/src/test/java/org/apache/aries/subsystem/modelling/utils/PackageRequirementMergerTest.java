@@ -32,9 +32,13 @@ import org.apache.aries.subsystem.modelling.impl.ImportedPackageImpl;
 import org.apache.aries.subsystem.modelling.impl.PackageRequirementMerger;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
-import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.Constants;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 
 public final class PackageRequirementMergerTest
@@ -126,16 +130,16 @@ public final class PackageRequirementMergerTest
     reqs.add(newImportedPackage("c", "1.0.0"));
     PackageRequirementMerger merger = new PackageRequirementMerger(reqs);
     
-    Assert.assertTrue(merger.isMergeSuccessful());
+    assertTrue(merger.isMergeSuccessful());
     
-    Assert.assertTrue(merger.getInvalidRequirements().isEmpty());
+    assertTrue(merger.getInvalidRequirements().isEmpty());
     
     Collection<ImportedPackage> result = merger.getMergedRequirements();
     Collection<ImportedPackage> expected = new ArrayList<ImportedPackage>();
     expected.add(newImportedPackage("a", "3.0.0"));
     expected.add(newImportedPackage("b", "2.0.0"));
     expected.add(newImportedPackage("c", "1.0.0"));
-    Assert.assertTrue(result.toString(), isEqual(result, expected));
+    assertTrue(result.toString(), isEqual(result, expected));
   }
   
   @Test
@@ -150,20 +154,15 @@ public final class PackageRequirementMergerTest
     reqs.add(newImportedPackage("c", "2.0.0"));
     PackageRequirementMerger merger = new PackageRequirementMerger(reqs);
     
-    Assert.assertFalse(merger.isMergeSuccessful());
-    
-    try
-    {
-      merger.getMergedRequirements();
-      Assert.fail("getMergedRequirements should throw IllegalStateException.");
-    }
-    catch (IllegalStateException e) { }
-    
+    assertFalse(merger.isMergeSuccessful());
+
+    assertThrows(IllegalStateException.class, () -> merger.getMergedRequirements());
+
     Set<String> result = merger.getInvalidRequirements();
     Set<String> expected = new HashSet<String>();
     expected.add("a");
     expected.add("c");
-    Assert.assertEquals(expected, result);
+    assertEquals(expected, result);
   }
   
   @Test
@@ -174,14 +173,14 @@ public final class PackageRequirementMergerTest
     reqs.add(newImportedPackage("a", "2.0.0", true));
     PackageRequirementMerger merger = new PackageRequirementMerger(reqs);
     
-    Assert.assertTrue(merger.isMergeSuccessful());
+    assertTrue(merger.isMergeSuccessful());
     
-    Assert.assertTrue(merger.getInvalidRequirements().isEmpty());
+    assertTrue(merger.getInvalidRequirements().isEmpty());
     
     Collection<ImportedPackage> result = merger.getMergedRequirements();
     Collection<ImportedPackage> expected = new ArrayList<ImportedPackage>();
     expected.add(newImportedPackage("a", "2.0.0", true));
-    Assert.assertTrue(result.toString(), isEqual(result, expected));
+    assertTrue(result.toString(), isEqual(result, expected));
   }
   
   @Test
@@ -192,14 +191,14 @@ public final class PackageRequirementMergerTest
     reqs.add(newImportedPackage("a", "2.0.0", false));
     PackageRequirementMerger merger = new PackageRequirementMerger(reqs);
     
-    Assert.assertTrue(merger.isMergeSuccessful());
+    assertTrue(merger.isMergeSuccessful());
     
-    Assert.assertTrue(merger.getInvalidRequirements().isEmpty());
+    assertTrue(merger.getInvalidRequirements().isEmpty());
     
     Collection<ImportedPackage> result = merger.getMergedRequirements();
     Collection<ImportedPackage> expected = new ArrayList<ImportedPackage>();
     expected.add(newImportedPackage("a", "2.0.0"));
-    Assert.assertTrue(result.toString(), isEqual(result, expected));
+    assertTrue(result.toString(), isEqual(result, expected));
   }
   
   @Test
@@ -210,14 +209,14 @@ public final class PackageRequirementMergerTest
     reqs.add(newImportedPackage("a", "2.0.0", "foo=bar"));
     PackageRequirementMerger merger = new PackageRequirementMerger(reqs);
     
-    Assert.assertTrue(merger.isMergeSuccessful());
+    assertTrue(merger.isMergeSuccessful());
     
-    Assert.assertTrue(merger.getInvalidRequirements().isEmpty());
+    assertTrue(merger.getInvalidRequirements().isEmpty());
     
     Collection<ImportedPackage> result = merger.getMergedRequirements();
     Collection<ImportedPackage> expected = new ArrayList<ImportedPackage>();
     expected.add(newImportedPackage("a", "2.0.0", "foo=bar"));
-    Assert.assertTrue(result.toString(), isEqual(result, expected));
+    assertTrue(result.toString(), isEqual(result, expected));
   }
   
   @Test
@@ -229,19 +228,14 @@ public final class PackageRequirementMergerTest
     reqs.add(newImportedPackage("b", "1.0.0"));
     PackageRequirementMerger merger = new PackageRequirementMerger(reqs);
     
-    Assert.assertFalse(merger.isMergeSuccessful());
-    
-    try
-    {
-      merger.getMergedRequirements();
-      Assert.fail("getMergedRequirements should throw IllegalStateException.");
-    }
-    catch (IllegalStateException e) { }
-    
+    assertFalse(merger.isMergeSuccessful());
+
+    assertThrows(IllegalStateException.class, () -> merger.getMergedRequirements());
+
     Set<String> result = merger.getInvalidRequirements();
     Set<String> expected = new HashSet<String>();
     expected.add("a");
-    Assert.assertEquals(expected, result);
+    assertEquals(expected, result);
   }
   
 }

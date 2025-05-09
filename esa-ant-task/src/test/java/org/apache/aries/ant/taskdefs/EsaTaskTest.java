@@ -19,20 +19,19 @@
 
 package org.apache.aries.ant.taskdefs;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.FileSet;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id: $
@@ -40,7 +39,7 @@ import org.junit.Test;
 public class EsaTaskTest {
 
 	@Test
-	public void generateArchiveNoManifest() {
+	public void generateArchiveNoManifest() throws IOException {
 
 		File srcDir = new File("../src/test/resources");
 
@@ -63,20 +62,15 @@ public class EsaTaskTest {
 		esaTask.execute();
 		assertTrue(destfile.exists());
 
-		try {
-			ZipFile esaArchive = new ZipFile(destfile);
-			assertNotNull(esaArchive);
-			ZipEntry subsystemManifest =
-				esaArchive.getEntry("OSGI-INF/SUBSYSTEM.MF");
-			assertNull(subsystemManifest);
-		}
-		catch (IOException e) {
-			fail(e.getMessage());
-		}
+        ZipFile esaArchive = new ZipFile(destfile);
+        assertNotNull(esaArchive);
+        ZipEntry subsystemManifest =
+                esaArchive.getEntry("OSGI-INF/SUBSYSTEM.MF");
+        assertNull(subsystemManifest);
 	}
 
 	@Test
-	public void generateArchiveWithFileManifest() {
+	public void generateArchiveWithFileManifest() throws IOException {
 
 		File srcDir = new File("../src/test/resources");
 
@@ -100,20 +94,15 @@ public class EsaTaskTest {
 		esaTask.execute();
 		assertTrue(destfile.exists());
 
-		try {
-			ZipFile esaArchive = new ZipFile(destfile);
-			assertNotNull(esaArchive);
-			ZipEntry subsystemManifest =
-				esaArchive.getEntry("OSGI-INF/SUBSYSTEM.MF");
-			assertNotNull(subsystemManifest);
-		}
-		catch (IOException e) {
-			fail(e.getMessage());
-		}
+        ZipFile esaArchive = new ZipFile(destfile);
+        assertNotNull(esaArchive);
+        ZipEntry subsystemManifest =
+                esaArchive.getEntry("OSGI-INF/SUBSYSTEM.MF");
+        assertNotNull(subsystemManifest);
 	}
 
 	@Test
-	public void generateArchiveWithNewManifest() {
+	public void generateArchiveWithNewManifest() throws IOException {
 
 		File srcDir = new File("../src/test/resources");
 		assertTrue(srcDir.exists());
@@ -145,15 +134,9 @@ public class EsaTaskTest {
 		esaTask.execute();
 		assertTrue(destfile.exists());
 
-		try {
-			ZipFile esaArchive = new ZipFile(destfile);
-			assertNotNull(esaArchive);
-			ZipEntry subsystemManifest =
-				esaArchive.getEntry("OSGI-INF/SUBSYSTEM.MF");
-			assertNotNull(subsystemManifest);
-		}
-		catch (IOException e) {
-			fail(e.getMessage());
-		}
+        ZipFile esaArchive = new ZipFile(destfile);
+        assertNotNull(esaArchive);
+        ZipEntry subsystemManifest = esaArchive.getEntry("OSGI-INF/SUBSYSTEM.MF");
+        assertNotNull(subsystemManifest);
 	}
 }

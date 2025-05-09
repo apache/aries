@@ -16,8 +16,8 @@
  */
 package org.apache.aries.blueprint.spring.extender;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 /**
@@ -30,6 +30,6 @@ public class SpringXsdVersionResolverTest {
     public void testResolve() {
         final String xsdVersion = SpringXsdVersionResolver.resolve();
 
-        Assert.assertThat(xsdVersion, equalTo("5.3"));
+        assertEquals("5.3", xsdVersion);
     }
 }

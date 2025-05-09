@@ -40,7 +40,6 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 
-import junit.framework.Assert;
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.PropertyData;
@@ -197,7 +196,7 @@ public class ServiceStateMBeanTest extends AbstractIntegrationTest {
     }
 
 	private void assertBundleStarted(Bundle bundle) {
-		Assert.assertEquals("Bundle " + bundle.getSymbolicName() + " should be started but is in state " + bundle.getState(),
+		assertEquals("Bundle " + bundle.getSymbolicName() + " should be started but is in state " + bundle.getState(),
 				Bundle.ACTIVE, bundle.getState());
 	}
 

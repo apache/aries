@@ -26,15 +26,13 @@ import java.util.Set;
 
 import javax.xml.validation.Schema;
 
-import junit.framework.TestCase;
-
 import org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.xml.sax.SAXException;
 
-public abstract class AbstractBlueprintTest extends TestCase {
+public abstract class AbstractBlueprintTest {
 
     protected ComponentDefinitionRegistryImpl parse(String name) throws Exception {
         NamespaceHandlerSet handlers = new NamespaceHandlerSet() {

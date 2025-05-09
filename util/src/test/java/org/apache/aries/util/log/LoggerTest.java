@@ -25,13 +25,15 @@ import java.util.List;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 @SuppressWarnings("rawtypes")
 public class LoggerTest {
@@ -57,18 +59,18 @@ public class LoggerTest {
         TestLogService tls = new TestLogService();
         ctx.registerService(LogService.class.getName(), tls, null);
 
-        Assert.assertEquals("Precondition", 0, tls.logData.size());
+        assertEquals("Precondition", 0, tls.logData.size());
         logger.log(LogService.LOG_INFO, "Hi");
 
-        Assert.assertEquals(1, tls.logData.size());
+        assertEquals(1, tls.logData.size());
         LogData ld = tls.logData.get(0);
-        Assert.assertEquals(LogService.LOG_INFO, ld.level);
-        Assert.assertEquals("Hi", ld.message);
+        assertEquals(LogService.LOG_INFO, ld.level);
+        assertEquals("Hi", ld.message);
 
         logger.close();
 
         logger.log(LogService.LOG_INFO, "This message will disappear too");
-        Assert.assertEquals("The logger was closed so log messages shouldn't appear in the LogService any more",
+        assertEquals("The logger was closed so log messages shouldn't appear in the LogService any more",
                 1, tls.logData.size());
     }
 
@@ -79,15 +81,15 @@ public class LoggerTest {
         TestLogService tls = new TestLogService();
         ctx.registerService(LogService.class.getName(), tls, null);
 
-        Assert.assertEquals("Precondition", 0, tls.logData.size());
+        assertEquals("Precondition", 0, tls.logData.size());
         Throwable th = new Throwable();
         logger.log(LogService.LOG_INFO, "Hi", th);
 
-        Assert.assertEquals(1, tls.logData.size());
+        assertEquals(1, tls.logData.size());
         LogData ld = tls.logData.get(0);
-        Assert.assertEquals(LogService.LOG_INFO, ld.level);
-        Assert.assertEquals("Hi", ld.message);
-        Assert.assertEquals(th, ld.throwable);
+        assertEquals(LogService.LOG_INFO, ld.level);
+        assertEquals("Hi", ld.message);
+        assertEquals(th, ld.throwable);
     }
 
     @Test
@@ -97,15 +99,15 @@ public class LoggerTest {
         TestLogService tls = new TestLogService();
         ctx.registerService(LogService.class.getName(), tls, null);
 
-        Assert.assertEquals("Precondition", 0, tls.logData.size());
+        assertEquals("Precondition", 0, tls.logData.size());
         ServiceReference sr = new MockServiceReference();
         logger.log(sr, LogService.LOG_INFO, "Hi");
 
-        Assert.assertEquals(1, tls.logData.size());
+        assertEquals(1, tls.logData.size());
         LogData ld = tls.logData.get(0);
-        Assert.assertSame(sr, ld.serviceReference);
-        Assert.assertEquals(LogService.LOG_INFO, ld.level);
-        Assert.assertEquals("Hi", ld.message);
+        assertSame(sr, ld.serviceReference);
+        assertEquals(LogService.LOG_INFO, ld.level);
+        assertEquals("Hi", ld.message);
     }
 
     @Test
@@ -115,17 +117,17 @@ public class LoggerTest {
         TestLogService tls = new TestLogService();
         ctx.registerService(LogService.class.getName(), tls, null);
 
-        Assert.assertEquals("Precondition", 0, tls.logData.size());
+        assertEquals("Precondition", 0, tls.logData.size());
         ServiceReference sr = new MockServiceReference();
         Throwable th = new Throwable();
         logger.log(sr, LogService.LOG_INFO, "Hi", th);
 
-        Assert.assertEquals(1, tls.logData.size());
+        assertEquals(1, tls.logData.size());
         LogData ld = tls.logData.get(0);
-        Assert.assertSame(sr, ld.serviceReference);
-        Assert.assertEquals(LogService.LOG_INFO, ld.level);
-        Assert.assertEquals("Hi", ld.message);
-        Assert.assertEquals(th, ld.throwable);
+        assertSame(sr, ld.serviceReference);
+        assertEquals(LogService.LOG_INFO, ld.level);
+        assertEquals("Hi", ld.message);
+        assertEquals(th, ld.throwable);
     }
 
     private class TestLogService implements LogService {

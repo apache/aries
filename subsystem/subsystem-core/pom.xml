@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.1</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -66,7 +66,7 @@
             uses:="org.osgi.service.subsystem,org.apache.aries.subsystem"
         </aries.osgi.provide.capability>
 
-
+        <junit.version>4.13.2</junit.version>
         <org.apache.aries.subsystem.api.version>2.0.10</org.apache.aries.subsystem.api.version>
         <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.aries.subsystem.modeller.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.modeller.version>

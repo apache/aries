@@ -19,7 +19,7 @@
 package org.apache.aries.subsystem.core.archive;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 import org.osgi.framework.Version;
@@ -29,40 +29,19 @@ public class FragmentHostHeaderTest {
 	@Test
 	public void testNullClause() {
 		String headerStr = null;
-		try {
-		    new FragmentHostHeader(headerStr);
-		    fail("Null clause not allowed");
-		}
-		catch (NullPointerException e) {}
-		catch (Exception e) {
-		    fail("Null clause should result in NPE");
-		}
+        assertThrows(NullPointerException.class, () -> new FragmentHostHeader(headerStr));
 	}
 	
 	@Test
     public void testEmptyClause() {
         String headerStr = "";
-        try {
-            new FragmentHostHeader(headerStr);
-            fail("Empty clause not allowed");
-        }
-        catch (IllegalArgumentException e) {}
-        catch (Exception e) {
-            fail("Empty clause should result in IAE");
-        }
+        assertThrows(IllegalArgumentException.class, () -> new FragmentHostHeader(headerStr));
     }
 	
 	@Test
     public void testMultipleClauses() {
         String headerStr = "foo;bundle-version=1.0,bar";
-        try {
-            new FragmentHostHeader(headerStr);
-            fail("Multiple clauses not allowed");
-        }
-        catch (IllegalArgumentException e) {}
-        catch (Exception e) {
-            fail("Multiple cluases should result in IAE");
-        }
+        assertThrows(IllegalArgumentException.class, () -> new FragmentHostHeader(headerStr));
     }
 	
 	@Test

@@ -18,7 +18,9 @@
  */
 package org.apache.aries.transaction;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.sql.BatchUpdateException;
@@ -33,7 +35,6 @@ import org.apache.aries.transaction.pojo.ExtendedPojo;
 import org.apache.aries.transaction.pojo.ExtendedPojo2;
 import org.apache.aries.transaction.pojo.ExtendedPojo3;
 import org.apache.aries.transaction.pojo.OnRollbackPojo;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ComponentTxDataTest {
@@ -41,7 +42,7 @@ public class ComponentTxDataTest {
     @Test
     public void testFindAnnotation() throws NoSuchMethodException, SecurityException {
         ComponentTxData txData = new ComponentTxData(AnnotatedPojo.class);
-        Assert.assertTrue(txData.isTransactional());
+        assertTrue(txData.isTransactional());
         assertEquals(TxType.REQUIRED, getEffectiveType(txData, "increment").getTxType());
         assertEquals(TxType.SUPPORTS, getEffectiveType(txData, "checkValue").getTxType());
         assertEquals(TxType.MANDATORY, getEffectiveType(txData, "getRealObject").getTxType());

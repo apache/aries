@@ -39,7 +39,6 @@ import org.apache.aries.blueprint.reflect.RefMetadataImpl;
 import org.apache.aries.blueprint.reflect.ReferenceMetadataImpl;
 import org.apache.aries.proxy.ProxyManager;
 import org.easymock.EasyMock;
-import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -51,6 +50,9 @@ import org.osgi.framework.Version;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.BlueprintListener;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class LifecyclePolicyTest {
 
@@ -149,9 +151,9 @@ public class LifecyclePolicyTest {
         recipe.start(container);
 
         Bean2 bean2i = (Bean2) container.getRepository().create("bean2");
-        Assert.assertNotNull(bean2i);
-        Assert.assertEquals(1, Bean2.initialized);
-        Assert.assertEquals(0, Bean2.destroyed);
+        assertNotNull(bean2i);
+        assertEquals(1, Bean2.initialized);
+        assertEquals(0, Bean2.destroyed);
 
         EasyMock.verify(bundle, bundleContext, extenderBundle, extenderBundleContext,
                 eventDispatcher, namespaceHandlerRegistry, namespaceHandlerSet, proxyManager,
@@ -177,8 +179,8 @@ public class LifecyclePolicyTest {
                 svcRef1, registration);
 
         recipe.serviceChanged(new ServiceEvent(ServiceEvent.UNREGISTERING, svcRef1));
-        Assert.assertEquals(1, Bean2.initialized);
-        Assert.assertEquals(1, Bean2.destroyed);
+        assertEquals(1, Bean2.initialized);
+        assertEquals(1, Bean2.destroyed);
 
         EasyMock.verify(bundle, bundleContext, extenderBundle, extenderBundleContext,
                 eventDispatcher, namespaceHandlerRegistry, namespaceHandlerSet, proxyManager,
@@ -205,8 +207,8 @@ public class LifecyclePolicyTest {
                 svcRef1, registration);
 
         recipe.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, svcRef1));
-        Assert.assertEquals(2, Bean2.initialized);
-        Assert.assertEquals(1, Bean2.destroyed);
+        assertEquals(2, Bean2.initialized);
+        assertEquals(1, Bean2.destroyed);
 
         EasyMock.verify(bundle, bundleContext, extenderBundle, extenderBundleContext,
                 eventDispatcher, namespaceHandlerRegistry, namespaceHandlerSet, proxyManager,
