@@ -28,7 +28,6 @@ import org.apache.aries.subsystem.core.archive.SubsystemImportServiceHeader;
 import org.apache.aries.subsystem.itests.util.GenericMetadataWrapper;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.GenericMetadata;
-import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.Version;
@@ -65,7 +64,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 	/*
 	 * Bundle-SymbolicName: bundle.a.jar
 	 * Bundle-Blueprint: OSGI-INF/blueprint/*.xml
-	 * 
+	 *
 	 * <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 	 * 		<reference interface="bundle.b" filter="(&(active=true)(mode=shared))"/>
 	 * 		<service interface="bundle.a" ref="bundle.a"/>
@@ -75,7 +74,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 	/*
 	 * Bundle-SymbolicName: bundle.b.jar
 	 * Bundle-Blueprint: OSGI-INF/blueprint/*.xml
-	 * 
+	 *
 	 * <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 	 * 		<reference interface="bundle.a" availability="optional"/>
 	 * 		<service ref="bundle.b">
@@ -93,47 +92,47 @@ public class ServiceDependencyTest extends SubsystemTest {
 	 * </blueprint>
 	 */
 	private static final String BUNDLE_B = "bundle.b.jar";
-	
+
 	private static void createApplicationA() throws IOException {
 		createApplicationAManifest();
 		createSubsystem(APPLICATION_A, BUNDLE_A);
 	}
-	
+
 	private static void createApplicationB() throws IOException {
 		createApplicationBManifest();
 		createSubsystem(APPLICATION_B, BUNDLE_B);
 	}
-	
+
 	private static void createApplicationC() throws IOException {
 		createApplicationCManifest();
 		createSubsystem(APPLICATION_C, BUNDLE_A, BUNDLE_B);
 	}
-	
+
 	private static void createApplicationD() throws IOException {
 		createApplicationDManifest();
 		createSubsystem(APPLICATION_D, BUNDLE_A, COMPOSITE_A);
 	}
-	
+
 	private static void createApplicationAManifest() throws IOException {
 		createBasicApplicationManifest(APPLICATION_A);
 	}
-	
+
 	private static void createApplicationBManifest() throws IOException {
 		createBasicApplicationManifest(APPLICATION_B);
 	}
-	
+
 	private static void createApplicationCManifest() throws IOException {
 		createBasicApplicationManifest(APPLICATION_C);
 	}
-	
+
 	private static void createApplicationDManifest() throws IOException {
 		createBasicApplicationManifest(APPLICATION_D);
 	}
-	
+
 	private static void createBasicApplicationManifest(String symbolicName) throws IOException {
 		createBasicSubsystemManifest(symbolicName, null, null);
 	}
-	
+
 	private static void createBasicSubsystemManifest(String symbolicName, Version version, String type) throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, symbolicName);
@@ -143,12 +142,12 @@ public class ServiceDependencyTest extends SubsystemTest {
 			attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, type);
 		createManifest(symbolicName + ".mf", attributes);
 	}
-	
 
-	
+
+
 	private static void createBundleA() throws IOException {
 		createBlueprintBundle(
-				BUNDLE_A, 
+				BUNDLE_A,
 				new StringBuilder()
 					.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
 					.append("<blueprint ")
@@ -164,10 +163,10 @@ public class ServiceDependencyTest extends SubsystemTest {
 					.append("</blueprint>")
 					.toString());
 	}
-	
+
 	private static void createBundleB() throws IOException {
 		createBlueprintBundle(
-				BUNDLE_B, 
+				BUNDLE_B,
 				new StringBuilder()
 					.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
 					.append("<blueprint ")
@@ -191,22 +190,22 @@ public class ServiceDependencyTest extends SubsystemTest {
 					.append("</blueprint>")
 					.toString());
 	}
-	
+
 	private static void createCompositeA() throws IOException {
 		createCompositeAManifest();
 		createSubsystem(COMPOSITE_A, BUNDLE_B);
 	}
-	
+
 	private static void createCompositeAManifest() throws IOException {
 		Map<String, String> attributes = new HashMap<String, String>();
 		attributes.put(SubsystemConstants.SUBSYSTEM_SYMBOLICNAME, COMPOSITE_A);
 		attributes.put(SubsystemConstants.SUBSYSTEM_TYPE, SubsystemConstants.SUBSYSTEM_TYPE_COMPOSITE);
 		attributes.put(
-				SubsystemConstants.SUBSYSTEM_EXPORTSERVICE, 
+				SubsystemConstants.SUBSYSTEM_EXPORTSERVICE,
 				"bundle.b;filter:=\"(&(active=true)(mode=shared))\"");
 		createManifest(COMPOSITE_A + ".mf", attributes);
 	}
-	
+
 	@Override
 	public void createApplications() throws Exception {
 		createBundleA();
@@ -217,7 +216,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 		createCompositeA();
 		createApplicationD();
 	}
-	
+
 	//@Test
 	public void testImportServiceDependencySatisfiedByChild() throws Exception {
 		try {
@@ -227,7 +226,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 						"Generated application Subsystem-ImportService header when dependency satisfied by child",
 						subsystem.getSubsystemHeaders(null).get(SubsystemConstants.SUBSYSTEM_IMPORTSERVICE));
 				assertSubsystemExportServiceHeader(
-						subsystem.getChildren().iterator().next(), 
+						subsystem.getChildren().iterator().next(),
 						"bundle.b;filter:=\"(&(active=true)(mode=shared))\"");
 			}
 			finally {
@@ -239,7 +238,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 			fail("Installation must succeed if missing service dependency is satisfied");
 		}
 	}
-	
+
 	@Test
 	public void testImportServiceDependencySatisfiedByContent() throws Exception {
 		try {
@@ -258,7 +257,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 			fail("Installation must succeed if service dependency is satisfied");
 		}
 	}
-	
+
 	@Test
 	public void testImportServiceDependencySatisfiedByParent() throws Exception {
 		try {
@@ -285,7 +284,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 			fail("Installation must succeed if missing service dependency is optional");
 		}
 	}
-	
+
 	@Test
 	public void testMissingImportServiceDependencyMandatory() throws Exception {
 		try {
@@ -297,7 +296,7 @@ public class ServiceDependencyTest extends SubsystemTest {
 			// Okay.
 		}
 	}
-	
+
 	@Test
 	public void testMissingImportServiceDependencyOptional() throws Exception {
 		try {
@@ -314,23 +313,23 @@ public class ServiceDependencyTest extends SubsystemTest {
 			fail("Installation must succeed if missing service dependency is optional");
 		}
 	}
-	
+
 	private void assertSubsystemExportServiceHeader(Subsystem subsystem, String value) throws InvalidSyntaxException {
 		String header = assertHeaderExists(subsystem, SubsystemConstants.SUBSYSTEM_EXPORTSERVICE);
 		List<GenericMetadata> actual = ManifestHeaderProcessor.parseRequirementString(header);
 		List<GenericMetadata> expected = ManifestHeaderProcessor.parseRequirementString(value);
-		Assert.assertEquals("Wrong number of clauses", expected.size(), actual.size());
+		assertEquals("Wrong number of clauses", expected.size(), actual.size());
 		for (int i = 0; i < expected.size(); i++)
 			assertEquals("Wrong clause", new GenericMetadataWrapper(expected.get(i)), new GenericMetadataWrapper(actual.get(i)));
 	}
-	
+
 	private void assertSubsystemImportServiceHeader(Subsystem subsystem, String value) throws InvalidSyntaxException {
 		String header = assertHeaderExists(subsystem, SubsystemConstants.SUBSYSTEM_IMPORTSERVICE);
 		SubsystemImportServiceHeader actual = new SubsystemImportServiceHeader(header);
 		SubsystemImportServiceHeader expected = new SubsystemImportServiceHeader(value);
 		Collection<SubsystemImportServiceHeader.Clause> actualClauses = actual.getClauses();
 		Collection<SubsystemImportServiceHeader.Clause> expectedClauses = expected.getClauses();
-		Assert.assertEquals("Wrong number of clauses", expectedClauses.size(), actualClauses.size());
+		assertEquals("Wrong number of clauses", expectedClauses.size(), actualClauses.size());
 		Iterator<SubsystemImportServiceHeader.Clause> actualItr = actualClauses.iterator();
 		Iterator<SubsystemImportServiceHeader.Clause>  expectedItr = expectedClauses.iterator();
 		while (expectedItr.hasNext()) {

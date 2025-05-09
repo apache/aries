@@ -25,8 +25,11 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.aries.blueprint.authorization.impl.test.SecuredClass;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SecurityAnnoationParserTest {
 
@@ -38,23 +41,23 @@ public class SecurityAnnoationParserTest {
     
     @Test
     public void testIsSecured() {
-        Assert.assertTrue(annParser.isSecured(SecuredClass.class));
-        Assert.assertFalse(annParser.isSecured(Object.class));
-        Assert.assertFalse(annParser.isSecured(Activator.class));
+        assertTrue(annParser.isSecured(SecuredClass.class));
+        assertFalse(annParser.isSecured(Object.class));
+        assertFalse(annParser.isSecured(Activator.class));
     }
 
     @Test
     public void testAnnotationType() throws NoSuchMethodException, SecurityException {
-        Assert.assertTrue(getEffective("admin") instanceof RolesAllowed);
-        Assert.assertTrue(getEffective("user") instanceof RolesAllowed);
-        Assert.assertTrue(getEffective("anon") instanceof PermitAll);
-        Assert.assertTrue(getEffective("closed") instanceof DenyAll);
+        assertTrue(getEffective("admin") instanceof RolesAllowed);
+        assertTrue(getEffective("user") instanceof RolesAllowed);
+        assertTrue(getEffective("anon") instanceof PermitAll);
+        assertTrue(getEffective("closed") instanceof DenyAll);
     }
     
     @Test
     public void testRoles() throws NoSuchMethodException, SecurityException {
-        Assert.assertArrayEquals(new String[]{"admin"}, getRoles("admin"));
-        Assert.assertArrayEquals(new String[]{"user"}, getRoles("user"));
+        assertArrayEquals(new String[]{"admin"}, getRoles("admin"));
+        assertArrayEquals(new String[]{"user"}, getRoles("user"));
     }
 
     private Annotation getEffective(String methodName) throws NoSuchMethodException {
@@ -63,7 +66,7 @@ public class SecurityAnnoationParserTest {
     
     private String[] getRoles(String methodName) throws NoSuchMethodException {
         Annotation ann = getEffective(methodName);
-        Assert.assertTrue(ann instanceof RolesAllowed);
+        assertTrue(ann instanceof RolesAllowed);
         return ((RolesAllowed)ann).value();
     }
 

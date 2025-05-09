@@ -19,13 +19,15 @@ import java.util.Set;
 
 import org.apache.aries.subsystem.core.capabilityset.CapabilitySet;
 import org.apache.aries.subsystem.core.capabilityset.SimpleFilter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /*
  * https://issues.apache.org/jira/browse/ARIES-1453
@@ -58,7 +60,7 @@ public class Aries1453Test {
         CapabilitySet capabilitySet = new CapabilitySet(Arrays.asList(HostNamespace.HOST_NAMESPACE), true);
         capabilitySet.addCapability(capability);
         Set<Capability> capabilities = capabilitySet.match(simpleFilter, true);
-        Assert.assertTrue(capabilities.size() == 1);
-        Assert.assertSame(capabilities.iterator().next(), capability);
+        assertEquals(1, capabilities.size());
+        assertSame(capabilities.iterator().next(), capability);
 	}
 }

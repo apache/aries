@@ -18,7 +18,6 @@ package org.apache.aries.jmx.permissionadmin;
 
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,6 +25,12 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.osgi.jmx.service.permissionadmin.PermissionAdminMBean;
 import org.osgi.service.permissionadmin.PermissionInfo;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * {@link PermissionAdminMBean} test case.
@@ -53,16 +58,16 @@ public class PermissionAdminTest {
         Mockito.when(permAdmin.getPermissions(Mockito.anyString())).thenReturn(permInfos);
         String[] permissions = mbean.getPermissions("test");
 
-        Assert.assertNotNull(permissions);
-        Assert.assertEquals(2, permissions.length);
-        Assert.assertArrayEquals("Checks encoded permissions", new String[] { info.getEncoded(), info.getEncoded() },
+        assertNotNull(permissions);
+        assertEquals(2, permissions.length);
+        assertArrayEquals("Checks encoded permissions", new String[] { info.getEncoded(), info.getEncoded() },
                 permissions);
         
         Mockito.reset(permAdmin);
         Mockito.when(permAdmin.getPermissions(Mockito.anyString())).thenReturn(null);
         String[] permissions2 = mbean.getPermissions("test");
 
-        Assert.assertNull(permissions2);
+        assertNull(permissions2);
     }
 
     @Test
@@ -73,16 +78,16 @@ public class PermissionAdminTest {
         Mockito.when(permAdmin.getDefaultPermissions()).thenReturn(permInfos);
         String[] permissions = mbean.listDefaultPermissions();
 
-        Assert.assertNotNull(permissions);
-        Assert.assertEquals(2, permissions.length);
-        Assert.assertArrayEquals("Checks encoded default permissions", new String[] { info.getEncoded(), info.getEncoded() },
+        assertNotNull(permissions);
+        assertEquals(2, permissions.length);
+        assertArrayEquals("Checks encoded default permissions", new String[] { info.getEncoded(), info.getEncoded() },
                 permissions);
         
         Mockito.reset(permAdmin);
         Mockito.when(permAdmin.getDefaultPermissions()).thenReturn(null);
         String[] permissions2 = mbean.listDefaultPermissions();
 
-        Assert.assertNull(permissions2);
+        assertNull(permissions2);
     }
 
     @Test
@@ -90,9 +95,9 @@ public class PermissionAdminTest {
         String[] locations1 = new String[] { "test1", "test2" };
         Mockito.when(permAdmin.getLocations()).thenReturn(locations1);
         String[] locations2 = mbean.listLocations();
-        Assert.assertNotNull(locations2);
-        Assert.assertEquals(2, locations2.length);
-        Assert.assertSame(locations1, locations2);
+        assertNotNull(locations2);
+        assertEquals(2, locations2.length);
+        assertSame(locations1, locations2);
     }
 
     @Test

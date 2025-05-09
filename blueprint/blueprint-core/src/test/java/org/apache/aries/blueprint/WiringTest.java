@@ -33,7 +33,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.junit.Assert;
 
 import org.apache.aries.blueprint.CallbackTracker.Callback;
 import org.apache.aries.blueprint.container.BlueprintRepository;
@@ -186,13 +185,13 @@ public class WiringTest extends AbstractBlueprintTest {
       // fail if field-injection is not specified
       try {
           repository.create("FIFailureTestBean");
-          Assert.fail("Expected exception");
+          fail("Expected exception");
       } catch (ComponentDefinitionException cde) {}
       
       // fail if field-injection is false
       try {
           repository.create("FIFailureTest2Bean");
-          Assert.fail("Expected exception");
+          fail("Expected exception");
       } catch (ComponentDefinitionException cde) {}
     }
     

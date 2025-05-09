@@ -33,8 +33,13 @@ import org.apache.aries.spifly.Streams;
 import org.apache.aries.spifly.statictool.bundle.Test2Class;
 import org.apache.aries.spifly.statictool.bundle.Test3Class;
 import org.apache.aries.spifly.statictool.bundle.TestClass;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ConsumerTest {
     @Test
@@ -70,30 +75,30 @@ public class ConsumerTest {
             Main.main(jarFile.getCanonicalPath());
 
             expectedFile = new File(jarFile.getParent(), jarFile.getName().replaceAll("[.]jar", "_spifly.jar"));
-            Assert.assertTrue("A processed separate bundle should have been created", expectedFile.exists());
+            assertTrue("A processed separate bundle should have been created", expectedFile.exists());
 
             // Check manifest in generated bundle.
             JarFile transformedJarFile = new JarFile(expectedFile);
             Manifest expectedMF = transformedJarFile.getManifest();
-            Assert.assertEquals("1.0", expectedMF.getMainAttributes().getValue("Manifest-Version"));
-            Assert.assertEquals("2.0", expectedMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
-            Assert.assertEquals("testbundle", expectedMF.getMainAttributes().getValue("Bundle-SymbolicName"));
-            Assert.assertEquals("Bar Bar", expectedMF.getMainAttributes().getValue("Foo"));
-            Assert.assertEquals("org.apache.aries.spifly;version=\"[1.1.0,1.2.0)\"", expectedMF.getMainAttributes().getValue("Import-Package"));
-            Assert.assertNull(expectedMF.getMainAttributes().get(SpiFlyConstants.SPI_CONSUMER_HEADER));
+            assertEquals("1.0", expectedMF.getMainAttributes().getValue("Manifest-Version"));
+            assertEquals("2.0", expectedMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
+            assertEquals("testbundle", expectedMF.getMainAttributes().getValue("Bundle-SymbolicName"));
+            assertEquals("Bar Bar", expectedMF.getMainAttributes().getValue("Foo"));
+            assertEquals("org.apache.aries.spifly;version=\"[1.1.0,1.2.0)\"", expectedMF.getMainAttributes().getValue("Import-Package"));
+            assertNull(expectedMF.getMainAttributes().get(SpiFlyConstants.SPI_CONSUMER_HEADER));
 
             JarFile initialJarFile = new JarFile(jarFile);
             byte[] orgBytes = Streams.suck(initialJarFile.getInputStream(new ZipEntry(testClassFileName)));
             byte[] transBytes = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(testClassFileName)));
-            Assert.assertFalse("The transformed class should be different", Arrays.equals(orgBytes, transBytes));
+            assertFalse("The transformed class should be different", Arrays.equals(orgBytes, transBytes));
 
             byte[] orgBytes2 = Streams.suck(initialJarFile.getInputStream(new ZipEntry(test2ClassFileName)));
             byte[] nonTransBytes2 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test2ClassFileName)));
-            Assert.assertArrayEquals(orgBytes2, nonTransBytes2);
+            assertArrayEquals(orgBytes2, nonTransBytes2);
 
             byte[] orgBytes3 = Streams.suck(initialJarFile.getInputStream(new ZipEntry(test3ClassFileName)));
             byte[] nonTransBytes3 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test3ClassFileName)));
-            Assert.assertArrayEquals(orgBytes3, nonTransBytes3);
+            assertArrayEquals(orgBytes3, nonTransBytes3);
 
             initialJarFile.close();
             transformedJarFile.close();

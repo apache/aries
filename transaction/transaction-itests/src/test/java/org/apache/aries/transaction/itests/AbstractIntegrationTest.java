@@ -25,8 +25,6 @@ import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.vmOption;
-import static org.ops4j.pax.exam.CoreOptions.when;
 
 import java.sql.SQLException;
 
@@ -36,7 +34,6 @@ import javax.transaction.UserTransaction;
 
 import org.apache.aries.transaction.test.Counter;
 import org.apache.aries.transaction.test.TestBean;
-import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.CoreOptions;
@@ -124,7 +121,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
         try {
             bean.insertRow("testWithClientTranAndWithRuntimeException", 2, new RuntimeException("Dummy exception"));
         } catch (RuntimeException e) {
-            Assert.assertEquals("Dummy exception", e.getMessage());
+            assertEquals("Dummy exception", e.getMessage());
         }
         if (clientTransaction) {
             try {
@@ -151,7 +148,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
         try {
             bean.insertRow("testWithClientTranAndWithAppException", 2, new SQLException("Dummy exception"));
         } catch (SQLException e) {
-            Assert.assertEquals("Dummy exception", e.getMessage());
+            assertEquals("Dummy exception", e.getMessage());
         }
         if (clientTransaction) {
             tran.commit();

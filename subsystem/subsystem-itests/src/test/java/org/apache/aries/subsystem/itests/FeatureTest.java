@@ -23,7 +23,6 @@ import java.util.Collection;
 import junit.framework.AssertionFailedError;
 
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
-import org.junit.Assert;
 import org.junit.Test;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
@@ -32,6 +31,10 @@ import org.osgi.framework.Version;
 import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.Subsystem;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @ExamReactorStrategy(PerMethod.class)
 public class FeatureTest extends SubsystemTest {
@@ -169,45 +172,45 @@ public class FeatureTest extends SubsystemTest {
 			if (ResourceHelper.areEqual(constituent, resource))
 				return;
 		}
-		Assert.fail("Constituent not found");
+		fail("Constituent not found");
 	}
 	
 	private void assertContainsChild(Collection<Subsystem> children, Subsystem child) {
 		for (Subsystem subsystem : children) {
 			try {
-				assertEquals(child, subsystem);
+				assertSubsystemsEquals(child, subsystem);
 				return;
 			}
 			catch (AssertionError e) {}
 		}
-		Assert.fail("Child not found");
+		fail("Child not found");
 	}
 	
-	private void assertEquals(Subsystem subsystem1, Subsystem subsystem2) {
+	private void assertSubsystemsEquals(Subsystem subsystem1, Subsystem subsystem2) {
 		assertChildrenEqual(subsystem1.getChildren(), subsystem2.getChildren());
 		assertConstituentsEqual(subsystem1.getConstituents(), subsystem2.getConstituents());
-		Assert.assertEquals("Headers were not equal", subsystem1.getSubsystemHeaders(null), subsystem2.getSubsystemHeaders(null));
-		Assert.assertEquals("Locations were not equal", subsystem1.getLocation(), subsystem2.getLocation());
+		assertEquals("Headers were not equal", subsystem1.getSubsystemHeaders(null), subsystem2.getSubsystemHeaders(null));
+		assertEquals("Locations were not equal", subsystem1.getLocation(), subsystem2.getLocation());
 		assertParentsEqual(subsystem1.getParents(), subsystem2.getParents());
-		Assert.assertEquals("States were not equal", subsystem1.getState(), subsystem2.getState());
-		Assert.assertEquals("IDs were not equal", subsystem1.getSubsystemId(), subsystem2.getSubsystemId());
-		Assert.assertEquals("Symbolic names were not equal", subsystem1.getSymbolicName(), subsystem2.getSymbolicName());
-		Assert.assertEquals("Versions were not equal", subsystem1.getVersion(), subsystem2.getVersion());
+		assertEquals("States were not equal", subsystem1.getState(), subsystem2.getState());
+		assertEquals("IDs were not equal", subsystem1.getSubsystemId(), subsystem2.getSubsystemId());
+		assertEquals("Symbolic names were not equal", subsystem1.getSymbolicName(), subsystem2.getSymbolicName());
+		assertEquals("Versions were not equal", subsystem1.getVersion(), subsystem2.getVersion());
 	}
 	
 	private void assertParentsEqual(Subsystem parent1, Subsystem parent2) {
 		if (parent1 == null || parent2 == null) {
-			Assert.assertTrue("Parents were not equal", parent1 == null && parent2 == null);
+			assertTrue("Parents were not equal", parent1 == null && parent2 == null);
 			return;
 		}
 		assertConstituentsEqual(parent1.getConstituents(), parent2.getConstituents());
-		Assert.assertEquals("Headers were not equal", parent1.getSubsystemHeaders(null), parent2.getSubsystemHeaders(null));
-		Assert.assertEquals("Locations were not equal", parent1.getLocation(), parent2.getLocation());
+		assertEquals("Headers were not equal", parent1.getSubsystemHeaders(null), parent2.getSubsystemHeaders(null));
+		assertEquals("Locations were not equal", parent1.getLocation(), parent2.getLocation());
 		assertParentsEqual(parent1.getParents(), parent2.getParents());
-		Assert.assertEquals("States were not equal", parent1.getState(), parent2.getState());
-		Assert.assertEquals("IDs were not equal", parent1.getSubsystemId(), parent2.getSubsystemId());
-		Assert.assertEquals("Symbolic names were not equal", parent1.getSymbolicName(), parent2.getSymbolicName());
-		Assert.assertEquals("Versions were not equal", parent1.getVersion(), parent2.getVersion());
+		assertEquals("States were not equal", parent1.getState(), parent2.getState());
+		assertEquals("IDs were not equal", parent1.getSubsystemId(), parent2.getSubsystemId());
+		assertEquals("Symbolic names were not equal", parent1.getSymbolicName(), parent2.getSymbolicName());
+		assertEquals("Versions were not equal", parent1.getVersion(), parent2.getVersion());
 	}
 	
 	private void assertParentsEqual(Subsystem parent1, Collection<Subsystem> parents2) {
@@ -218,25 +221,25 @@ public class FeatureTest extends SubsystemTest {
 			}
 			catch (AssertionFailedError e) {}
 		}
-		Assert.fail("Parent not found: " + parent1.getSymbolicName());
+		fail("Parent not found: " + parent1.getSymbolicName());
 	}
 	
 	private void assertParentsEqual(Collection<Subsystem> parents1, Collection<Subsystem> parents2) {
-		Assert.assertEquals("Size not equal", parents1.size(), parents2.size());
+		assertEquals("Size not equal", parents1.size(), parents2.size());
 		for (Subsystem parent1 : parents1) {
 			assertParentsEqual(parent1, parents2);
 		}
 	}
 	
 	private void assertConstituentsEqual(Collection<Resource> resources1, Collection<Resource> resources2) {
-		Assert.assertEquals("Constituent size does not match", resources1.size(), resources2.size());
+		assertEquals("Constituent size does not match", resources1.size(), resources2.size());
 		for (Resource resource : resources1) {
 			assertContainsConstituent(resources2, resource);
 		}
 	}
 	
 	private void assertChildrenEqual(Collection<Subsystem> subsystems1, Collection<Subsystem> subsystems2) {
-		Assert.assertEquals("Children size does not match", subsystems1.size(), subsystems2.size());
+		assertEquals("Children size does not match", subsystems1.size(), subsystems2.size());
 		for (Subsystem subsystem : subsystems1) {
 			assertContainsChild(subsystems2, subsystem);
 		}

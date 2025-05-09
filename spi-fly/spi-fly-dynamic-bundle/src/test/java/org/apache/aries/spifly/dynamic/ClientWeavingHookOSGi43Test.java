@@ -45,7 +45,6 @@ import org.apache.aries.spifly.Streams;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -56,6 +55,9 @@ import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ClientWeavingHookOSGi43Test  {
     DynamicWeavingActivator activator;
@@ -89,23 +91,23 @@ public class ClientWeavingHookOSGi43Test  {
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        Assert.assertNotNull("Precondition", clsUrl);
+        assertNotNull("Precondition", clsUrl);
 
         String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
         WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
-        Assert.assertEquals(1, wc.getDynamicImports().size());
+        assertEquals(1, wc.getDynamicImports().size());
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
-        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
+        assertEquals("Weaving should have added a dynamic import", di1, di);
 
         // Invoke the woven class and check that it properly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
-        Assert.assertEquals(Collections.singleton("olleh"), result);
+        assertEquals(Collections.singleton("olleh"), result);
     }
 
     private Bundle mockSpiFlyBundle(String bsn, Version version, Bundle ... bundles) throws Exception {

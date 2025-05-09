@@ -45,7 +45,6 @@ import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.PropertyData;
 import org.apache.aries.jmx.test.bundlea.api.InterfaceA;
 import org.apache.aries.jmx.test.bundleb.api.InterfaceB;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.Configuration;

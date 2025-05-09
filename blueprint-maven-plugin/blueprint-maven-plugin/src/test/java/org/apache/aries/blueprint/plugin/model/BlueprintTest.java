@@ -21,7 +21,6 @@ package org.apache.aries.blueprint.plugin.model;
 import org.apache.aries.blueprint.plugin.BlueprintConfigurationImpl;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.ServiceReferences;
-import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -45,15 +44,15 @@ public class BlueprintTest {
     @Test
     public void testLists() {
         Blueprint blueprint = new Blueprint(blueprintConfiguration, MyBean3.class);
-        Assert.assertEquals(1, blueprint.getBeans().size());
-        Assert.assertEquals(0, getOsgiServices(blueprint).size());
+        assertEquals(1, blueprint.getBeans().size());
+        assertEquals(0, getOsgiServices(blueprint).size());
     }
 
     @Test
     public void testLists2() {
         Blueprint blueprint = new Blueprint(blueprintConfiguration, ServiceReferences.class);
-        Assert.assertEquals(1, blueprint.getBeans().size());
-        Assert.assertEquals(3, getOsgiServices(blueprint).size());
+        assertEquals(1, blueprint.getBeans().size());
+        assertEquals(3, getOsgiServices(blueprint).size());
     }
 
     private Set<String> getOsgiServices(Blueprint blueprint) {

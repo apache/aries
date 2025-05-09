@@ -20,6 +20,8 @@ package org.apache.aries.subsystem.modelling.utils;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +46,6 @@ import org.apache.aries.subsystem.modelling.impl.ModelledResourceImpl;
 import org.apache.aries.subsystem.modelling.impl.ModellingHelperImpl;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor.NameValuePair;
-import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.Constants;
 
@@ -188,7 +189,7 @@ public final class DeployedBundlesTest
     // Check the deployed content entry is correct.
     String contentEntry = deployedBundles.getContent();
     String expectedResult = "bundle.a;deployed-version=1.0.0,bundle.b;deployed-version=1.0.0";
-    Assert.assertTrue("Content=" + contentEntry, isEqual(contentEntry, expectedResult));
+    assertTrue("Content=" + contentEntry, isEqual(contentEntry, expectedResult));
   }
 
   @Test
@@ -201,7 +202,7 @@ public final class DeployedBundlesTest
     // Check the deployed use bundle entry is correct.
     String useBundleEntry = deployedBundles.getUseBundle();
     String expectedResult = "bundle.c;deployed-version=1.0.0,bundle.d;deployed-version=1.0.0";
-    Assert.assertTrue("UseBundle=" + useBundleEntry, isEqual(useBundleEntry, expectedResult));
+    assertTrue("UseBundle=" + useBundleEntry, isEqual(useBundleEntry, expectedResult));
   }
 
   @Test
@@ -212,7 +213,7 @@ public final class DeployedBundlesTest
     packagesResolve(deployedBundles);
     String provisionBundleEntry = deployedBundles.getProvisionBundle();
     String expectedResult = "bundle.e;deployed-version=1.0.0";
-    Assert.assertTrue("ProvisionBundle=" + provisionBundleEntry, isEqual(provisionBundleEntry, expectedResult));
+    assertTrue("ProvisionBundle=" + provisionBundleEntry, isEqual(provisionBundleEntry, expectedResult));
   }
 
   @Test
@@ -230,7 +231,7 @@ public final class DeployedBundlesTest
     catch (ResolverException e)
     {
       e.printStackTrace();
-      Assert.fail(e.toString());
+      fail(e.toString());
     }
     
     String expectedResult = "package.c;version=\"1.0.0\";bundle-symbolic-name=\"bundle.c\";bundle-version=\"[1.0.0,1.0.0]\","
@@ -246,7 +247,7 @@ public final class DeployedBundlesTest
         + ",package.e;version=\"[1.0.0,2.0.0)\""
         + ",package.g";
      */
-    Assert.assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
+    assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
   }
   
   
@@ -300,10 +301,10 @@ public final class DeployedBundlesTest
     catch (ResolverException e)
     {
       e.printStackTrace();
-      Assert.fail(e.toString());
+      fail(e.toString());
     }
     String expectedResult = "package.d;version=\"[2.0.0,3.0.0)\"";
-    Assert.assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
+    assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
   }
 
   @Test
@@ -328,10 +329,10 @@ public final class DeployedBundlesTest
     catch (ResolverException e)
     {
       e.printStackTrace();
-      Assert.fail(e.toString());
+      fail(e.toString());
     }
     String expectedResult = "package.c;was_internal=\"true\";version=\"2.0.0\"";
-    Assert.assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
+    assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
   }
 
   @Test
@@ -351,7 +352,7 @@ public final class DeployedBundlesTest
     try
     {
       importPackageEntry = deployedBundles.getImportPackage();
-      Assert.fail("Expected exception. ImportPackage=" + importPackageEntry);
+      fail("Expected exception. ImportPackage=" + importPackageEntry);
     }
     catch (ResolverException e)
     {
@@ -376,7 +377,7 @@ public final class DeployedBundlesTest
     try
     {
       importPackageEntry = deployedBundles.getImportPackage();
-      Assert.fail("Expected exception. ImportPackage=" + importPackageEntry);
+      fail("Expected exception. ImportPackage=" + importPackageEntry);
     }
     catch (ResolverException e)
     {
@@ -404,10 +405,10 @@ public final class DeployedBundlesTest
     catch (ResolverException e)
     {
       e.printStackTrace();
-      Assert.fail(e.toString());
+      fail(e.toString());
     }
     String expectedResult = "";  // All packages are satisfied internally 
-    Assert.assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
+    assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
 
   }
   
@@ -427,7 +428,7 @@ public final class DeployedBundlesTest
     try
     {
       importPackageEntry = deployedBundles.getImportPackage();
-      Assert.fail("Expected exception. ImportPackage=" + importPackageEntry);
+      fail("Expected exception. ImportPackage=" + importPackageEntry);
     }
     catch (ResolverException e)
     {
@@ -451,7 +452,7 @@ public final class DeployedBundlesTest
     try
     {
       importPackageEntry = deployedBundles.getImportPackage();
-      Assert.fail("Expected exception. ImportPackage=" + importPackageEntry);
+      fail("Expected exception. ImportPackage=" + importPackageEntry);
     }
     catch (ResolverException e)
     {
@@ -480,10 +481,10 @@ public final class DeployedBundlesTest
     catch (ResolverException e)
     {
       e.printStackTrace();
-      Assert.fail(e.toString());
+      fail(e.toString());
     }
     String expectedResult = "package.c;version=1.0.0";
-    Assert.assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
+    assertTrue("ImportPackage=" + importPackageEntry, isEqual(importPackageEntry, expectedResult));
   }
 
   @Test
@@ -512,9 +513,9 @@ public final class DeployedBundlesTest
     catch (ResolverException e)
     {
       e.printStackTrace();
-      Assert.fail(e.toString());
+      fail(e.toString());
     }
-    Assert.assertTrue("RequiredUseBundle=" + requiredUseBundle, requiredUseBundle.size() == 1);
+    assertTrue("RequiredUseBundle=" + requiredUseBundle, requiredUseBundle.size() == 1);
   }
 
   @Test
@@ -533,9 +534,9 @@ public final class DeployedBundlesTest
     catch (ResolverException e)
     {
       e.printStackTrace();
-      Assert.fail(e.toString());
+      fail(e.toString());
     }
-    Assert.assertTrue("RequiredUseBundle=" + requiredUseBundle, requiredUseBundle.size() == 2);
+    assertTrue("RequiredUseBundle=" + requiredUseBundle, requiredUseBundle.size() == 2);
   }
   
   //Inside cannot bundle-symbolic-name an outside bundle until the new RFC 138!
@@ -555,7 +556,7 @@ public final class DeployedBundlesTest
     try
     {
       importPackageEntry = deployedBundles.getImportPackage();
-      Assert.fail("Expected exception. ImportPackage=" + importPackageEntry);
+      fail("Expected exception. ImportPackage=" + importPackageEntry);
     }
     catch (ResolverException e)
     {

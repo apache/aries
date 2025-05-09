@@ -50,7 +50,6 @@ import org.apache.aries.spifly.Streams;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
@@ -61,6 +60,11 @@ import org.osgi.framework.hooks.weaving.WeavingHook;
 import org.osgi.framework.hooks.weaving.WovenClass;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class ClientWeavingHookTest {
     DynamicWeavingActivator activator;
@@ -96,23 +100,23 @@ public class ClientWeavingHookTest {
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        Assert.assertNotNull("Precondition", clsUrl);
+        assertNotNull("Precondition", clsUrl);
 
         String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
         WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
-        Assert.assertEquals(1, wc.getDynamicImports().size());
+        assertEquals(1, wc.getDynamicImports().size());
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
-        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
+        assertEquals("Weaving should have added a dynamic import", di1, di);
 
         // Invoke the woven class and check that it properly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
-        Assert.assertEquals(Collections.singleton("olleh"), result);
+        assertEquals(Collections.singleton("olleh"), result);
     }
 
     @Test
@@ -132,16 +136,16 @@ public class ClientWeavingHookTest {
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient3$EnumLoader.class");
-        Assert.assertNotNull("Precondition", clsUrl);
+        assertNotNull("Precondition", clsUrl);
 
         String clientClassName = "org.apache.aries.spifly.dynamic.TestClient3$EnumLoader";
         WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
-        Assert.assertEquals(1, wc.getDynamicImports().size());
+        assertEquals(1, wc.getDynamicImports().size());
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
-        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
+        assertTrue("Weaving should have added a dynamic import", di1.equals(di));
 
         // Invoke the woven class and check that it properly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
@@ -149,10 +153,10 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("load", new Class [] {Class.class});
         @SuppressWarnings({ "unchecked", "rawtypes" })
         Object result = method.invoke(Enum.valueOf((Class<? extends Enum>)cls, "INSTANCE"), MySPI.class);
-        Assert.assertTrue("Either null or not a MySPI", result instanceof MySPI);
+        assertTrue("Either null or not a MySPI", result instanceof MySPI);
         MySPI instance = (MySPI)result;
         String someMethod = instance.someMethod("Hello");
-        Assert.assertEquals("olleH", someMethod);
+        assertEquals("olleH", someMethod);
     }
 
     @Test
@@ -172,23 +176,23 @@ public class ClientWeavingHookTest {
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        Assert.assertNotNull("Precondition", clsUrl);
+        assertNotNull("Precondition", clsUrl);
 
         String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
         WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
-        Assert.assertEquals(1, wc.getDynamicImports().size());
+        assertEquals(1, wc.getDynamicImports().size());
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
-        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
+        assertTrue("Weaving should have added a dynamic import", di1.equals(di));
 
         // Invoke the woven class and check that it properly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("testService2", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
-        Assert.assertEquals(Collections.singleton("olleh"), result);
+        assertEquals(Collections.singleton("olleh"), result);
     }
 
     @Test
@@ -208,30 +212,30 @@ public class ClientWeavingHookTest {
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient2.class");
-        Assert.assertNotNull("Precondition", clsUrl);
+        assertNotNull("Precondition", clsUrl);
 
         String clientClassName = "org.apache.aries.spifly.dynamic.TestClient2";
         WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
-        Assert.assertEquals(1, wc.getDynamicImports().size());
+        assertEquals(1, wc.getDynamicImports().size());
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
-        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
+        assertTrue("Weaving should have added a dynamic import", di1.equals(di));
 
         // Invoke the woven class and check that it properly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
-        Assert.assertEquals(Collections.singleton("olleh"), result);
+        assertEquals(Collections.singleton("olleh"), result);
     }
 
     @Test
     public void testTCCLResetting() throws Exception {
         ClassLoader cl = new URLClassLoader(new URL [] {});
         Thread.currentThread().setContextClassLoader(cl);
-        Assert.assertSame("Precondition", cl, Thread.currentThread().getContextClassLoader());
+        assertSame("Precondition", cl, Thread.currentThread().getContextClassLoader());
 
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
         consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
@@ -248,16 +252,16 @@ public class ClientWeavingHookTest {
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("TestClient.class");
-        Assert.assertNotNull("Precondition", clsUrl);
+        assertNotNull("Precondition", clsUrl);
 
         String clientClassName = "org.apache.aries.spifly.dynamic.TestClient";
         WovenClass wc = new MyWovenClass(clsUrl, clientClassName, consumerBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
-        Assert.assertEquals(1, wc.getDynamicImports().size());
+        assertEquals(1, wc.getDynamicImports().size());
         String di1 = "org.apache.aries.spifly";
         String di = wc.getDynamicImports().get(0);
-        Assert.assertTrue("Weaving should have added a dynamic import", di1.equals(di));
+        assertTrue("Weaving should have added a dynamic import", di1.equals(di));
 
         // Invoke the woven class and check that it properly sets the TCCL so that the
         // META-INF/services/org.apache.aries.mytest.MySPI file from impl1 is visible.
@@ -265,7 +269,7 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         method.invoke(cls.getDeclaredConstructor().newInstance(), "hi there");
 
-        Assert.assertSame(cl, Thread.currentThread().getContextClassLoader());
+        assertSame(cl, Thread.currentThread().getContextClassLoader());
     }
 
     @Test
@@ -285,12 +289,12 @@ public class ClientWeavingHookTest {
 
         // Weave the TestClient class.
         URL clsUrl = getClass().getResource("UnaffectedTestClient.class");
-        Assert.assertNotNull("Precondition", clsUrl);
+        assertNotNull("Precondition", clsUrl);
         WovenClass wc = new MyWovenClass(clsUrl, "org.apache.aries.spifly.dynamic.UnaffectedTestClient", consumerBundle);
-        Assert.assertEquals("Precondition", 0, wc.getDynamicImports().size());
+        assertEquals("Precondition", 0, wc.getDynamicImports().size());
         wh.weave(wc);
 
-        Assert.assertEquals("The client is not affected so no additional imports should have been added",
+        assertEquals("The client is not affected so no additional imports should have been added",
             0, wc.getDynamicImports().size());
 
         // ok the weaving is done, now prepare the registry for the call
@@ -302,7 +306,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
-        Assert.assertEquals("impl4", result);
+        assertEquals("impl4", result);
     }
 
     @Test
@@ -334,7 +338,7 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "HELLO", "5"));
-        Assert.assertEquals("All three services should be invoked", expected, result);
+        assertEquals("All three services should be invoked", expected, result);
     }
 
     @Test
@@ -364,7 +368,7 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("HELLO", "5"));
-        Assert.assertEquals("Only the services from bundle impl2 should be selected", expected, result);
+        assertEquals("Only the services from bundle impl2 should be selected", expected, result);
     }
 
     @Test
@@ -394,7 +398,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
-        Assert.assertEquals("Only the services from bundle impl2 should be selected", Collections.singleton("Updated!hello!Updated"), result);
+        assertEquals("Only the services from bundle impl2 should be selected", Collections.singleton("Updated!hello!Updated"), result);
     }
 
     @Test
@@ -428,7 +432,7 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4"));
-        Assert.assertEquals("All providers should be selected for this one", expected, result);
+        assertEquals("All providers should be selected for this one", expected, result);
     }
 
     @Test
@@ -462,7 +466,7 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4"));
-        Assert.assertEquals("All providers should be selected for this one", expected, result);
+        assertEquals("All providers should be selected for this one", expected, result);
     }
 
     @Test
@@ -498,7 +502,7 @@ public class ClientWeavingHookTest {
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
         Set<String> expected = new HashSet<String>(Arrays.asList("olleh", "impl4", "HELLO", "5"));
-        Assert.assertEquals("All providers should be selected for this one", expected, result);
+        assertEquals("All providers should be selected for this one", expected, result);
 
         // Weave the AltTestClient class.
         URL cls2Url = getClass().getResource("AltTestClient.class");
@@ -509,7 +513,7 @@ public class ClientWeavingHookTest {
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {long.class});
         Object result2 = method2.invoke(cls2.getDeclaredConstructor().newInstance(), 4096);
-        Assert.assertEquals("Only the services from bundle impl4 should be selected", -4096L, result2);
+        assertEquals("Only the services from bundle impl4 should be selected", -4096L, result2);
     }
 
     @Test
@@ -568,7 +572,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {String.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
-        Assert.assertEquals(testClientResult, result);
+        assertEquals(testClientResult, result);
 
         URL clsUrl2 = getClass().getResource("JaxpClient.class");
         WovenClass wc2 = new MyWovenClass(clsUrl2, JaxpClient.class.getName(), consumerBundle);
@@ -577,7 +581,7 @@ public class ClientWeavingHookTest {
         Class<?> cls2 = wc2.getDefinedClass();
         Method method2 = cls2.getMethod("test", new Class [] {});
         Class<?> result2 = (Class<?>) method2.invoke(cls2.getDeclaredConstructor().newInstance());
-        Assert.assertEquals(jaxpClientResult, result2.getName());
+        assertEquals(jaxpClientResult, result2.getName());
     }
 
     private void testConsumerBundleWeavingNonConst(Bundle consumerBundle, WeavingHook wh, Set<String> testClientResult, String jaxpClientResult) throws Exception {
@@ -591,7 +595,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("testService", new Class [] {String.class, Class.class});
         Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello", MySPI.class);
-        Assert.assertEquals(testClientResult, result);
+        assertEquals(testClientResult, result);
     }
 
     @Test
@@ -612,7 +616,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.getDeclaredConstructor().newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
+        assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
     }
 
     // If there is an alternate implementation it should always be favoured over the JRE one
@@ -637,7 +641,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.getDeclaredConstructor().newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
+        assertEquals("JAXP implementation from JRE", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
     }
 
     @Test
@@ -661,7 +665,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.getDeclaredConstructor().newInstance());
-        Assert.assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
+        assertEquals("JAXP implementation from JRE", thisJVMsDBF, result.getName());
     }
 
     @Test
@@ -685,7 +689,7 @@ public class ClientWeavingHookTest {
         Class<?> cls = wc.getDefinedClass();
         Method method = cls.getMethod("test", new Class [] {});
         Class<?> result = (Class<?>) method.invoke(cls.getDeclaredConstructor().newInstance());
-        Assert.assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
+        assertEquals("JAXP implementation from alternative bundle", "org.apache.aries.spifly.dynamic.impl3.MyAltDocumentBuilderFactory", result.getName());
     }
 
     private Bundle mockSpiFlyBundle(Bundle ... bundles) throws Exception {

@@ -23,7 +23,6 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.codec.BatchActionResult;
 import org.apache.aries.jmx.codec.BatchInstallResult;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -35,6 +34,13 @@ import org.osgi.framework.BundleException;
 import org.osgi.jmx.framework.FrameworkMBean;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.startlevel.StartLevel;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * {@link FrameworkMBean} test case.
@@ -62,7 +68,7 @@ public class FrameworkTest {
     public void testGetFrameworkStartLevel() throws IOException {
         Mockito.when(startLevel.getStartLevel()).thenReturn(1);
         int level = mbean.getFrameworkStartLevel();
-        Assert.assertEquals(1, level);
+        assertEquals(1, level);
     }
 
     @Test
@@ -70,7 +76,7 @@ public class FrameworkTest {
         Mockito.when(startLevel.getInitialBundleStartLevel()).thenReturn(2);
         int level = mbean.getInitialBundleStartLevel();
         Mockito.verify(startLevel).getInitialBundleStartLevel();
-        Assert.assertEquals(2, level);
+        assertEquals(2, level);
     }
 
     @Test
@@ -79,13 +85,13 @@ public class FrameworkTest {
         Mockito.when(context.installBundle("file:test.jar")).thenReturn(bundle);
         Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(2));
         long bundleId = mbean.installBundle("file:test.jar");
-        Assert.assertEquals(2, bundleId);
+        assertEquals(2, bundleId);
         Mockito.reset(context);
         Mockito.when(context.installBundle("file:test2.jar")).thenThrow(new BundleException("location doesn't exist"));
 
         try {
             mbean.installBundle("file:test2.jar");
-            Assert.fail("Shouldn't go to this stage, location doesn't exist");
+            fail("Shouldn't go to this stage, location doesn't exist");
         } catch (IOException e) {
             // ok
         }
@@ -101,7 +107,7 @@ public class FrameworkTest {
         InputStream stream = Mockito.mock(InputStream.class);
         Mockito.doReturn(stream).when(spiedMBean).createStream("test.jar");
         long bundleId = spiedMBean.installBundleFromURL("file:test.jar", "test.jar");
-        Assert.assertEquals(2, bundleId);
+        assertEquals(2, bundleId);
         Mockito.reset(context);
         Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenThrow(
@@ -109,7 +115,7 @@ public class FrameworkTest {
 
         try {
             spiedMBean.installBundleFromURL("file:test2.jar", "test.jar");
-            Assert.fail("Shouldn't go to this stage, location doesn't exist");
+            fail("Shouldn't go to this stage, location doesn't exist");
         } catch (IOException e) {
             // ok
         }
@@ -123,23 +129,23 @@ public class FrameworkTest {
         Mockito.when(bundle.getBundleId()).thenReturn(Long.valueOf(2));
         CompositeData data = mbean.installBundles(locations);
         BatchInstallResult batch = BatchInstallResult.from(data);
-        Assert.assertNotNull(batch);
-        Assert.assertEquals(2, batch.getCompleted()[0]);
-        Assert.assertTrue(batch.isSuccess());
-        Assert.assertNull(batch.getError());
-        Assert.assertNull(batch.getRemainingLocationItems());
+        assertNotNull(batch);
+        assertEquals(2, batch.getCompleted()[0]);
+        assertTrue(batch.isSuccess());
+        assertNull(batch.getError());
+        assertNull(batch.getRemainingLocationItems());
         Mockito.reset(context);
         Mockito.when(context.installBundle("file:test.jar")).thenThrow(new BundleException("location doesn't exist"));
         CompositeData data2 = mbean.installBundles(locations);
         BatchInstallResult batch2 = BatchInstallResult.from(data2);
-        Assert.assertNotNull(batch2);
-        Assert.assertNotNull(batch2.getCompleted());
-        Assert.assertEquals(0, batch2.getCompleted().length);
-        Assert.assertFalse(batch2.isSuccess());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertEquals("file:test.jar", batch2.getBundleInError());
-        Assert.assertNotNull(batch2.getRemainingLocationItems());
-        Assert.assertEquals(0, batch2.getRemainingLocationItems().length);
+        assertNotNull(batch2);
+        assertNotNull(batch2.getCompleted());
+        assertEquals(0, batch2.getCompleted().length);
+        assertFalse(batch2.isSuccess());
+        assertNotNull(batch2.getError());
+        assertEquals("file:test.jar", batch2.getBundleInError());
+        assertNotNull(batch2.getRemainingLocationItems());
+        assertEquals(0, batch2.getRemainingLocationItems().length);
     }
 
     @Test
@@ -151,26 +157,26 @@ public class FrameworkTest {
         InputStream stream = Mockito.mock(InputStream.class);
         Mockito.doReturn(stream).when(spiedMBean).createStream(Mockito.anyString());
         CompositeData data = spiedMBean.installBundlesFromURL(new String[] { "file:test.jar" }, new String[] { "test.jar" });
-        Assert.assertNotNull(data);
+        assertNotNull(data);
         BatchInstallResult batch = BatchInstallResult.from(data);
-        Assert.assertEquals(2, batch.getCompleted()[0]);
-        Assert.assertTrue(batch.isSuccess());
-        Assert.assertNull(batch.getError());
-        Assert.assertNull(batch.getRemainingLocationItems());
+        assertEquals(2, batch.getCompleted()[0]);
+        assertTrue(batch.isSuccess());
+        assertNull(batch.getError());
+        assertNull(batch.getRemainingLocationItems());
         Mockito.reset(context);
         Mockito.when(spiedMBean.createStream(Mockito.anyString())).thenReturn(stream);
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenThrow(
                 new BundleException("location doesn't exist"));
         CompositeData data2 = spiedMBean.installBundlesFromURL(new String[] { "file:test.jar" }, new String[] { "test.jar" });
         BatchInstallResult batch2 = BatchInstallResult.from(data2);
-        Assert.assertNotNull(batch2);
-        Assert.assertNotNull(batch2.getCompleted());
-        Assert.assertEquals(0, batch2.getCompleted().length);
-        Assert.assertFalse(batch2.isSuccess());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertEquals("file:test.jar", batch2.getBundleInError());
-        Assert.assertNotNull(batch2.getRemainingLocationItems());
-        Assert.assertEquals(0, batch2.getRemainingLocationItems().length);
+        assertNotNull(batch2);
+        assertNotNull(batch2.getCompleted());
+        assertEquals(0, batch2.getCompleted().length);
+        assertFalse(batch2.isSuccess());
+        assertNotNull(batch2.getError());
+        assertEquals("file:test.jar", batch2.getBundleInError());
+        assertNotNull(batch2.getRemainingLocationItems());
+        assertEquals(0, batch2.getRemainingLocationItems().length);
     }
 
     @Test
@@ -183,7 +189,7 @@ public class FrameworkTest {
 
         try {
             mbean.refreshBundle(2);
-            Assert.fail("IOException should be thrown");
+            fail("IOException should be thrown");
         } catch (IOException e) {
             // expected
         }
@@ -246,17 +252,17 @@ public class FrameworkTest {
         CompositeData data = mbean.setBundleStartLevels(new long[] { 2 }, new int[] { 2 });
         Mockito.verify(startLevel).setBundleStartLevel(bundle, 2);
         BatchActionResult batch = BatchActionResult.from(data);
-        Assert.assertEquals(2, batch.getCompleted()[0]);
-        Assert.assertTrue(batch.isSuccess());
-        Assert.assertNull(batch.getError());
-        Assert.assertNull(batch.getRemainingItems());
+        assertEquals(2, batch.getCompleted()[0]);
+        assertTrue(batch.isSuccess());
+        assertNull(batch.getError());
+        assertNull(batch.getRemainingItems());
 
         CompositeData data2 = mbean.setBundleStartLevels(new long[] { 2 }, new int[] { 2, 4 });
         BatchActionResult batch2 = BatchActionResult.from(data2);
-        Assert.assertNull(batch2.getCompleted());
-        Assert.assertFalse(batch2.isSuccess());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertNull(batch2.getRemainingItems());
+        assertNull(batch2.getCompleted());
+        assertFalse(batch2.isSuccess());
+        assertNotNull(batch2.getError());
+        assertNull(batch2.getRemainingItems());
 
     }
 
@@ -296,7 +302,7 @@ public class FrameworkTest {
 
         try {
             mbean.startBundle(6);
-            Assert.fail("Shouldn't go to this stage, BundleException was thrown");
+            fail("Shouldn't go to this stage, BundleException was thrown");
         } catch (IOException ioe) {
             // expected
         }
@@ -304,7 +310,7 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(6)).thenReturn(null);
         try {
             mbean.startBundle(6);
-            Assert.fail("IOException should be thrown");
+            fail("IOException should be thrown");
         } catch (IOException e) {
             //expected
         }
@@ -318,18 +324,18 @@ public class FrameworkTest {
         Mockito.verify(bundle).start();
 
         BatchActionResult batch = BatchActionResult.from(data);
-        Assert.assertEquals(5, batch.getCompleted()[0]);
-        Assert.assertTrue(batch.isSuccess());
-        Assert.assertNull(batch.getError());
-        Assert.assertNull(batch.getRemainingItems());
+        assertEquals(5, batch.getCompleted()[0]);
+        assertTrue(batch.isSuccess());
+        assertNull(batch.getError());
+        assertNull(batch.getRemainingItems());
 
         CompositeData data2 = mbean.startBundles(null);
 
         BatchActionResult batch2 = BatchActionResult.from(data2);
-        Assert.assertNull(batch2.getCompleted());
-        Assert.assertFalse(batch2.isSuccess());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertNull(batch2.getRemainingItems());
+        assertNull(batch2.getCompleted());
+        assertFalse(batch2.isSuccess());
+        assertNotNull(batch2.getError());
+        assertNull(batch2.getRemainingItems());
     }
 
     @Test
@@ -342,7 +348,7 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(5)).thenReturn(null);
         try {
             mbean.stopBundle(5);
-            Assert.fail("IOException should be thrown");
+            fail("IOException should be thrown");
         } catch (IOException e) {
             //expected
         }
@@ -357,18 +363,18 @@ public class FrameworkTest {
         Mockito.verify(bundle).stop();
 
         BatchActionResult batch = BatchActionResult.from(data);
-        Assert.assertEquals(5, batch.getCompleted()[0]);
-        Assert.assertTrue(batch.isSuccess());
-        Assert.assertNull(batch.getError());
-        Assert.assertNull(batch.getRemainingItems());
+        assertEquals(5, batch.getCompleted()[0]);
+        assertTrue(batch.isSuccess());
+        assertNull(batch.getError());
+        assertNull(batch.getRemainingItems());
 
         CompositeData data2 = mbean.stopBundles(null);
 
         BatchActionResult batch2 = BatchActionResult.from(data2);
-        Assert.assertNull(batch2.getCompleted());
-        Assert.assertFalse(batch2.isSuccess());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertNull(batch2.getRemainingItems());
+        assertNull(batch2.getCompleted());
+        assertFalse(batch2.isSuccess());
+        assertNotNull(batch2.getError());
+        assertNull(batch2.getRemainingItems());
     }
 
     @Test
@@ -386,18 +392,18 @@ public class FrameworkTest {
         CompositeData data = mbean.uninstallBundles(new long[] { 5 });
         Mockito.verify(bundle).uninstall();
         BatchActionResult batch = BatchActionResult.from(data);
-        Assert.assertEquals(5, batch.getCompleted()[0]);
-        Assert.assertTrue(batch.isSuccess());
-        Assert.assertNull(batch.getError());
-        Assert.assertNull(batch.getRemainingItems());
+        assertEquals(5, batch.getCompleted()[0]);
+        assertTrue(batch.isSuccess());
+        assertNull(batch.getError());
+        assertNull(batch.getRemainingItems());
 
         CompositeData data2 = mbean.uninstallBundles(null);
 
         BatchActionResult batch2 = BatchActionResult.from(data2);
-        Assert.assertNull(batch2.getCompleted());
-        Assert.assertFalse(batch2.isSuccess());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertNull(batch2.getRemainingItems());
+        assertNull(batch2.getCompleted());
+        assertFalse(batch2.isSuccess());
+        assertNotNull(batch2.getError());
+        assertNull(batch2.getRemainingItems());
     }
 
     @Test
@@ -426,28 +432,28 @@ public class FrameworkTest {
         CompositeData data = mbean.updateBundles(new long[] { 5 });
         Mockito.verify(bundle).update();
         BatchActionResult batch = BatchActionResult.from(data);
-        Assert.assertEquals(5, batch.getCompleted()[0]);
-        Assert.assertTrue(batch.isSuccess());
-        Assert.assertNull(batch.getError());
-        Assert.assertNull(batch.getRemainingItems());
+        assertEquals(5, batch.getCompleted()[0]);
+        assertTrue(batch.isSuccess());
+        assertNull(batch.getError());
+        assertNull(batch.getRemainingItems());
 
         CompositeData data2 = mbean.updateBundles(null);
 
         BatchActionResult batch2 = BatchActionResult.from(data2);
-        Assert.assertNull(batch2.getCompleted());
-        Assert.assertFalse(batch2.isSuccess());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertNull(batch2.getRemainingItems());
+        assertNull(batch2.getCompleted());
+        assertFalse(batch2.isSuccess());
+        assertNotNull(batch2.getError());
+        assertNull(batch2.getRemainingItems());
 
         Mockito.reset(bundle);
         CompositeData data3 = mbean.updateBundles(new long[] { 6 });
         Mockito.when(context.getBundle(6)).thenReturn(bundle);
         Mockito.doThrow(new BundleException("")).when(bundle).update();
         BatchActionResult batch3 = BatchActionResult.from(data3);
-        Assert.assertEquals(0, batch3.getCompleted().length);
-        Assert.assertFalse(batch3.isSuccess());
-        Assert.assertNotNull(batch3.getError());
-        Assert.assertEquals(6, batch3.getBundleInError());
+        assertEquals(0, batch3.getCompleted().length);
+        assertFalse(batch3.isSuccess());
+        assertNotNull(batch3.getError());
+        assertEquals(6, batch3.getBundleInError());
 
         Bundle bundle6 = Mockito.mock(Bundle.class);
         Bundle bundle8 = Mockito.mock(Bundle.class);
@@ -459,15 +465,15 @@ public class FrameworkTest {
         CompositeData data4 = mbean.updateBundles(new long[] { 6, 8, 7 });
         BatchActionResult batch4 = BatchActionResult.from(data4);
         Mockito.verify(bundle6).update();
-        Assert.assertEquals(1, batch4.getCompleted().length);
+        assertEquals(1, batch4.getCompleted().length);
         // should contain only bundleid 6
-        Assert.assertEquals(6, batch4.getCompleted()[0]);
-        Assert.assertFalse(batch4.isSuccess());
-        Assert.assertNotNull(batch4.getError());
-        Assert.assertEquals(8, batch4.getBundleInError());
-        Assert.assertEquals(1, batch4.getRemainingItems().length);
+        assertEquals(6, batch4.getCompleted()[0]);
+        assertFalse(batch4.isSuccess());
+        assertNotNull(batch4.getError());
+        assertEquals(8, batch4.getBundleInError());
+        assertEquals(1, batch4.getRemainingItems().length);
         // should contain only bundleid 7
-        Assert.assertEquals(7, batch4.getRemainingItems()[0]);
+        assertEquals(7, batch4.getRemainingItems()[0]);
     }
 
     @Test
@@ -480,17 +486,17 @@ public class FrameworkTest {
         CompositeData data = spiedMBean.updateBundlesFromURL(new long[] { 5 }, new String[] { "file:test.jar" });
         Mockito.verify(bundle).update(stream);
         BatchActionResult batch = BatchActionResult.from(data);
-        Assert.assertEquals(5, batch.getCompleted()[0]);
-        Assert.assertTrue(batch.isSuccess());
-        Assert.assertNull(batch.getError());
-        Assert.assertNull(batch.getRemainingItems());
+        assertEquals(5, batch.getCompleted()[0]);
+        assertTrue(batch.isSuccess());
+        assertNull(batch.getError());
+        assertNull(batch.getRemainingItems());
 
         CompositeData data2 = spiedMBean.updateBundlesFromURL(new long[] { 2, 4 }, new String[] { "file:test.jar" });
         BatchActionResult batch2 = BatchActionResult.from(data2);
-        Assert.assertFalse(batch2.isSuccess());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertNotNull(batch2.getError());
-        Assert.assertNull(batch2.getRemainingItems());
+        assertFalse(batch2.isSuccess());
+        assertNotNull(batch2.getError());
+        assertNotNull(batch2.getError());
+        assertNull(batch2.getRemainingItems());
     }
 
     @Test

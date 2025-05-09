@@ -18,6 +18,7 @@
  */
 package org.apache.aries.spifly.statictool;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -29,7 +30,6 @@ import java.net.URL;
 import java.util.jar.Manifest;
 
 import org.apache.aries.spifly.Streams;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.internal.ArrayComparisonFailure;
 
@@ -54,8 +54,8 @@ public class MainTest {
                     "jar:" + jarURL + "!/dir/dir 2/a.txt");
             assertStreams(new File(tempDir, "dir/dir 2/b.txt"), 
                     "jar:" + jarURL + "!/dir/dir 2/b.txt");
-                        
-            Assert.assertTrue(new File(tempDir, "dir/dir.3").exists());
+
+            assertTrue(new File(tempDir, "dir/dir.3").exists());
             
             // Create a second jar from the exploded directory
             File copiedFile = new File(jarFile.getAbsolutePath() + ".copy");            
@@ -109,7 +109,7 @@ public class MainTest {
         try {
             byte[] bytes1 = Streams.suck(is1);
             byte[] bytes2 = Streams.suck(is2);
-            Assert.assertArrayEquals("Files not equal", bytes1, bytes2);
+            assertArrayEquals("Files not equal", bytes1, bytes2);
         } finally {
             is1.close();
             is2.close();
