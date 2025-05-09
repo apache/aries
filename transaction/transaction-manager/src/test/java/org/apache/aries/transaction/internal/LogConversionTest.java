@@ -33,10 +33,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class LogConversionTest {
@@ -86,7 +85,7 @@ public class LogConversionTest {
         long lm = earlierLastModified(new File(logDir, "transaction_1.log"));
 
         assertFalse(TransactionLogUtils.copyActiveTransactions(null, properties));
-        assertThat("Transaction log should not be touched", new File(logDir, "transaction_1.log").lastModified(), equalTo(lm));
+        assertEquals("Transaction log should not be touched", new File(logDir, "transaction_1.log").lastModified(), lm);
     }
 
     @Test
@@ -109,7 +108,7 @@ public class LogConversionTest {
         newConfig.put("aries.transaction.howl.logFileDir", newLogDir.getAbsolutePath());
 
         assertFalse(TransactionLogUtils.copyActiveTransactions(properties, newConfig));
-        assertThat("Transaction log should not be touched", new File(newLogDir, "transaction_1.log").lastModified(), equalTo(lm));
+        assertEquals("Transaction log should not be touched", new File(newLogDir, "transaction_1.log").lastModified(), lm);
         assertFalse("Old transaction log should be moved", logDir.exists());
         assertTrue("New transaction log should be created", newLogDir.exists());
     }
@@ -157,7 +156,7 @@ public class LogConversionTest {
         assertTrue(TransactionLogUtils.copyActiveTransactions(properties, newConfig));
         assertTrue("Transaction log should exist", new File(logDir, "transaction_1.log").exists());
         assertTrue("There should be 20 transaction log files", new File(logDir, "transaction_20.log").exists());
-        assertThat("Transaction log should be processed", new File(logDir, "transaction_1.log").lastModified(), not(equalTo(lm)));
+        assertNotEquals("Transaction log should be processed", new File(logDir, "transaction_1.log").lastModified(), lm);
     }
 
     private long earlierLastModified(File file) {
@@ -185,7 +184,7 @@ public class LogConversionTest {
         assertTrue(TransactionLogUtils.copyActiveTransactions(properties, newConfig));
         assertTrue("Transaction log should exist", new File(logDir, "transaction_1.log").exists());
         assertFalse("There should be 3 transaction log files", new File(logDir, "transaction_4.log").exists());
-        assertThat("Transaction log should be processed", new File(logDir, "transaction_1.log").lastModified(), not(equalTo(lm)));
+        assertNotEquals("Transaction log should be processed", new File(logDir, "transaction_1.log").lastModified(), lm);
     }
 
     @Test
@@ -207,7 +206,7 @@ public class LogConversionTest {
 
         assertTrue(TransactionLogUtils.copyActiveTransactions(properties, newConfig));
         assertTrue("Transaction log should exist", new File(logDir, "transaction_1.log").exists());
-        assertThat("Transaction log should be processed", new File(logDir, "transaction_1.log").lastModified(), not(equalTo(lm)));
+        assertNotEquals("Transaction log should be processed", new File(logDir, "transaction_1.log").lastModified(), lm);
     }
 
     @Test
@@ -235,7 +234,7 @@ public class LogConversionTest {
         assertTrue(TransactionLogUtils.copyActiveTransactions(properties, newConfig));
         assertTrue("Old transaction log should exist", new File(logDir, "transaction_1.log").exists());
         assertTrue("New transaction log should exist", new File(newLogDir, "transaction_1.log").exists());
-        assertThat("Old transaction log should be touched (HOWL Log opened)", new File(logDir, "transaction_1.log").lastModified(), not(equalTo(lm)));
+        assertNotEquals("Old transaction log should be touched (HOWL Log opened)", new File(logDir, "transaction_1.log").lastModified(), lm);
     }
 
     @Test
@@ -303,7 +302,7 @@ public class LogConversionTest {
         newConfig.put("aries.transaction.howl.bufferSize", "4");
 
         assertTrue(TransactionLogUtils.copyActiveTransactions(properties, newConfig));
-        assertThat("Old transaction log should be touched (HOWL Log opened)", new File(logDir, "transaction_1.log").lastModified(), not(equalTo(lm)));
+        assertNotEquals("Old transaction log should be touched (HOWL Log opened)", new File(logDir, "transaction_1.log").lastModified(), lm);
         assertTrue("New transaction log should exist", new File(logDir, "megatransaction_1.log").exists());
     }
 

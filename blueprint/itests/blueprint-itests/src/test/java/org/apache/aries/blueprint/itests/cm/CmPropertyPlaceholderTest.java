@@ -86,8 +86,8 @@ public class CmPropertyPlaceholderTest extends AbstractBlueprintIntegrationTest 
         assertNotNull(sr);
         FooInterface foo = (FooInterface)context().getService(sr);
         assertNotNull(foo);
-        assertThat(foo.getB(), equalTo("42"));
-        assertThat(foo.getC(), nullValue());
+        assertEquals("42", foo.getB());
+        assertNull(foo.getC());
 
         Configuration cf = ca.getConfiguration("blueprint-sample-properties.pid", null);
         Hashtable<String,Object> props = new Hashtable<String,Object>();
