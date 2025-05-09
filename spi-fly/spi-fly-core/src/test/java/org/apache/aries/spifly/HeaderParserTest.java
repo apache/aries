@@ -20,11 +20,11 @@ package org.apache.aries.spifly;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
-public class HeaderParserTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class HeaderParserTest {
 
     @Test
     public void testMethodWithMultipleParameters() {
@@ -36,9 +36,9 @@ public class HeaderParserTest extends TestCase {
 
         List<HeaderParser.PathElement> pathElements = HeaderParser.parseHeader(header);
         assertEquals(3, pathElements.size());
-        assertEquals(pathElements.get(0).getName(), "javax.ws.rs.client.FactoryFinder#find(java.lang.String,java.lang.String)");
-        assertEquals(pathElements.get(1).getName(), "javax.ws.rs.ext.FactoryFinder#find(java.lang.String,java.lang.String)");
-        assertEquals(pathElements.get(2).getName(), "javax.ws.rs.other.FactoryFinder#find(java.lang.String,java.lang.String)");
+        assertEquals("javax.ws.rs.client.FactoryFinder#find(java.lang.String,java.lang.String)", pathElements.get(0).getName());
+        assertEquals("javax.ws.rs.ext.FactoryFinder#find(java.lang.String,java.lang.String)", pathElements.get(1).getName());
+        assertEquals("javax.ws.rs.other.FactoryFinder#find(java.lang.String,java.lang.String)", pathElements.get(2).getName());
     }
 
 }

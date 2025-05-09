@@ -28,13 +28,16 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.AbstractProxyManager;
+import org.junit.Assert;
+import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 
+import static org.junit.Assert.assertThrows;
+
 public class ReferencesTest extends AbstractBlueprintTest {
 
-
-
+    @Test
     public void testWiring() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-references.xml");
         ProxyManager proxyManager = new AbstractProxyManager() {
@@ -57,17 +60,10 @@ public class ReferencesTest extends AbstractBlueprintTest {
         
         repository.create("refItf");
 
-        try {
-            repository.create("refClsErr");
-            fail("Should have failed");
-        } catch (ComponentDefinitionException e) {
-
-        }
+        assertThrows(ComponentDefinitionException.class,
+                () -> repository.create("refClsErr"));
 
         repository.create("refClsOk");
-    }
-
-    static class ProxyGenerationException extends RuntimeException {
     }
     
 }

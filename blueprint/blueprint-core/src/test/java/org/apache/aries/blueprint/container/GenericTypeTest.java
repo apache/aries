@@ -18,21 +18,25 @@
  */
 package org.apache.aries.blueprint.container;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.net.URI;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class GenericTypeTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class GenericTypeTest {
 
     private GenericType parse(String expression) throws Exception {
         GenericType type = GenericType.parse(expression, getClass().getClassLoader());
         assertEquals(expression, type.toString());
         return type;
     }
-    
+
+    @Test
     public void testArrays() {
         assertTrue(AggregateConverter.isAssignable(new Object[0], new GenericType(Object[].class)));
         assertFalse(AggregateConverter.isAssignable(new Object[0], new GenericType(String[].class)));
@@ -41,6 +45,7 @@ public class GenericTypeTest extends TestCase {
         assertTrue(AggregateConverter.isAssignable(new String[0], new GenericType(Object[].class)));
     }
 
+    @Test
     public void testParseTypes() throws Exception {
         
         GenericType type = parse("java.util.List<java.lang.String[]>");
@@ -69,6 +74,7 @@ public class GenericTypeTest extends TestCase {
         assertEquals(Number.class, type.getActualTypeArgument(0).getRawClass());
     }
 
+    @Test
     public void testBasic() throws Exception {        
         GenericType type = new GenericType(int[].class);
         assertEquals("int[]", type.toString());

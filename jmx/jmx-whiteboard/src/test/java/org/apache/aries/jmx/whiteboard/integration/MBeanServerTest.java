@@ -21,8 +21,6 @@ package org.apache.aries.jmx.whiteboard.integration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import junit.framework.TestCase;
-
 import org.apache.aries.jmx.whiteboard.integration.helper.IntegrationTestBase;
 import org.apache.aries.jmx.whiteboard.integration.helper.TestClass;
 import org.apache.aries.jmx.whiteboard.integration.helper.TestClassMBean;
@@ -32,6 +30,8 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.ServiceRegistration;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * The <code>MBeanTest</code> tests MBean registration with MBean Servers
@@ -65,7 +65,7 @@ public class MBeanServerTest extends IntegrationTestBase {
         assertRegistered(server, objectName);
 
         // expect MBean to return expected value
-        TestCase.assertEquals(instanceName,
+        assertEquals(instanceName,
             server.getAttribute(objectName, "InstanceName"));
 
         // unregister MBean server, expect MBean to be unregistered

@@ -32,28 +32,41 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import junit.framework.TestCase;
 import org.apache.aries.blueprint.TestBlueprintContainer;
 import org.apache.aries.blueprint.pojos.PojoGenerics2.MyClass;
 import org.apache.aries.blueprint.pojos.PojoGenerics2.MyObject;
 import org.apache.aries.blueprint.pojos.PojoGenerics2.Tata;
 import org.apache.aries.blueprint.pojos.PojoGenerics2.Toto;
+import org.junit.Before;
+import org.junit.Test;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.Converter;
 
-public class AggregateConverterTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
+public class AggregateConverterTest {
 
     private AggregateConverter service;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         service = new AggregateConverter(new TestBlueprintContainer(null));
     }
 
+    @Test
     public void testConvertNumbers() throws Exception {
         assertEquals(1, service.convert(1.46f, int.class));
         assertEquals(1.0d, service.convert(1, double.class));
     }
 
+    @Test
     public void testConvertSimpleTypes() throws Exception {
         assertEquals(123, service.convert("123", int.class));
         assertEquals(123, service.convert("123", Integer.class));
@@ -67,6 +80,7 @@ public class AggregateConverterTest extends TestCase {
         assertEquals(1.5, service.convert("1.5", Double.class));
     }
 
+    @Test
     public void testConvertCharacter() throws Exception {
         assertEquals('c', service.convert("c", char.class));
         assertEquals('c', service.convert("c", Character.class));
@@ -74,6 +88,7 @@ public class AggregateConverterTest extends TestCase {
         assertEquals('\u00F6', service.convert("\\u00F6", Character.class));
     }
 
+    @Test
     public void testConvertBoolean() throws Exception {
         assertEquals(Boolean.TRUE, service.convert("true", Boolean.class));
         assertEquals(Boolean.TRUE, service.convert("yes", Boolean.class));
@@ -106,12 +121,14 @@ public class AggregateConverterTest extends TestCase {
         assertEquals(Boolean.TRUE, service.convert(true, Boolean.class));
     }
 
+    @Test
     public void testConvertOther() throws Exception {
         assertEquals(URI.create("urn:test"), service.convert("urn:test", URI.class));
         assertEquals(new URL("file:/test"), service.convert("file:/test", URL.class));
         assertEquals(new BigInteger("12345"), service.convert("12345", BigInteger.class));
     }
 
+    @Test
     public void testConvertProperties() throws Exception {
         Properties props = new Properties();
         props.setProperty("key", "value");
@@ -122,6 +139,7 @@ public class AggregateConverterTest extends TestCase {
         assertEquals("value", props.getProperty("key"));
     }
 
+    @Test
     public void testConvertLocale() throws Exception {
         Object result;
         result = service.convert("en", Locale.class);
@@ -144,7 +162,8 @@ public class AggregateConverterTest extends TestCase {
         assertTrue(result instanceof Locale);
         assertEquals(new Locale("de", "", "POSIX"), result);
     }
-    
+
+    @Test
     public void testConvertClass() throws Exception {
         assertEquals(this, service.convert(this, AggregateConverterTest.class));
         assertEquals(AggregateConverterTest.class, service.convert(this.getClass().getName(), Class.class));
@@ -153,6 +172,7 @@ public class AggregateConverterTest extends TestCase {
         assertTrue(AggregateConverter.isAssignable(RegionIterable.class, new GenericType(Class.class, new GenericType(RegionIterable.class))));
     }
 
+    @Test
     public void testConvertArray() throws Exception {
         Object obj = service.convert(Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4)),
                                      GenericType.parse("java.util.List<java.lang.Integer>[]", getClass().getClassLoader()));
@@ -172,7 +192,8 @@ public class AggregateConverterTest extends TestCase {
         assertEquals(4, ((List) o[1]).get(1));
         //assertEquals((Object) new int[] { 1, 2 }, (Object) service.convert(Arrays.asList(1, 2), int[].class));
     }
-    
+
+    @Test
     public void testCustom() throws Exception {
         AggregateConverter s = new AggregateConverter(new TestBlueprintContainer(null));
         s.registerConverter(new RegionConverter());
@@ -200,6 +221,7 @@ public class AggregateConverterTest extends TestCase {
         assertNull(result);
     }
 
+    @Test
     public void testGenericWilcard() throws Exception {
         Constructor cns = MyClass.class.getConstructor(MyObject.class);
         assertTrue(AggregateConverter.isAssignable(new Toto(), new GenericType(cns.getGenericParameterTypes()[0])));
@@ -208,43 +230,34 @@ public class AggregateConverterTest extends TestCase {
         assertTrue(AggregateConverter.isAssignable(new Toto(), new GenericType(cns.getGenericParameterTypes()[0])));
     }
 
+    @Test
     public void testGenericAssignable() throws Exception {
         AggregateConverter s = new AggregateConverter(new TestBlueprintContainer(null));
 
         assertNotNull(s.convert(new RegionIterable(), new GenericType(Iterable.class, new GenericType(Region.class))));
 
-        try {
-            s.convert(new ArrayList<Region>(), new GenericType(Iterable.class, new GenericType(Region.class)));
-            fail("Conversion should have thrown an exception");
-        } catch (Exception e) {
-            // Ignore
-        }
+        assertThrows(Exception.class, () ->
+                s.convert(new ArrayList<Region>(), new GenericType(Iterable.class, new GenericType(Region.class))));
 
         assertTrue(Iterable.class.isAssignableFrom(RegionIterable.class));
         // note that method signature is fromType, toType - reverse than above
         assertTrue("Type should be assignable.", AggregateConverter.isTypeAssignable(new GenericType(RegionIterable.class), new GenericType(Iterable.class)));
     }
 
+    @Test
     public void testGenericCollection() throws Exception {
         AggregateConverter s = new AggregateConverter(new TestBlueprintContainer(null));
 
-        try {
-            s.convert(new ArrayList(), new GenericType(Iterable.class, new GenericType(Region.class)));
-            fail("Conversion should have thrown an exception");
-        } catch (Exception e) {
-            // Ignore
-        }
+        assertThrows(Exception.class,
+                () -> s.convert(new ArrayList<Region>(), new GenericType(Iterable.class, new GenericType(Region.class))));
 
-        try {
-            s.convert(Arrays.asList(0l), new GenericType(Iterable.class, new GenericType(Region.class)));
-            fail("Conversion should have thrown an exception");
-        } catch (Exception e) {
-            // Ignore
-        }
+        assertThrows(Exception.class,
+                () -> s.convert(Arrays.asList(0l), new GenericType(Iterable.class, new GenericType(Region.class))));
 
         assertNotNull(s.convert(Arrays.asList(new EuRegion() {}), new GenericType(List.class, new GenericType(Region.class))));
     }
 
+    @Test
     public void testConvertCompatibleCollections() throws Exception {
         Object org = Arrays.asList(Arrays.asList(1, 2), Arrays.asList(3, 4));
         Object obj = service.convert(org,

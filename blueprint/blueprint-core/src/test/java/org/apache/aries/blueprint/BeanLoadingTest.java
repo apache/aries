@@ -21,9 +21,14 @@ package org.apache.aries.blueprint;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.pojos.SimpleBean;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class BeanLoadingTest extends AbstractBlueprintTest {
 
+    @Test
     public void testLoadSimpleBean() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-bean-classes.xml");
         Repository repository = new TestBlueprintContainer(registry)
@@ -34,6 +39,7 @@ public class BeanLoadingTest extends AbstractBlueprintTest {
         assertTrue(obj instanceof SimpleBean);
     }
 
+    @Test
     public void testLoadSimpleBeanNested() throws Exception {
         ComponentDefinitionRegistryImpl registry = parse("/test-bean-classes.xml");
         Repository repository = new TestBlueprintContainer(registry)

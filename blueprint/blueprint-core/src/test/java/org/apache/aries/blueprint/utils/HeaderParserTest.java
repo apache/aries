@@ -20,12 +20,15 @@ package org.apache.aries.blueprint.utils;
 
 import java.util.List;
 
-import junit.framework.TestCase;
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
+import org.junit.Test;
 
-public class HeaderParserTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
-    public void testSimple() throws Exception {
+public class HeaderParserTest {
+
+    @Test
+    public void testSimple() {
         List<PathElement> paths = HeaderParser.parseHeader("/foo.xml, /foo/bar.xml");
         assertEquals(2, paths.size());
         assertEquals("/foo.xml", paths.get(0).getName());
@@ -35,8 +38,9 @@ public class HeaderParserTest extends TestCase {
         assertEquals(0, paths.get(1).getAttributes().size());
         assertEquals(0, paths.get(1).getDirectives().size());
     }
-    
-    public void testComplex() throws Exception {
+
+    @Test
+    public void testComplex() {
         List<PathElement> paths = HeaderParser.parseHeader("OSGI-INF/blueprint/comp1_named.xml;ignored-directive:=true,OSGI-INF/blueprint/comp2_named.xml;some-other-attribute=1");
         assertEquals(2, paths.size());
         assertEquals("OSGI-INF/blueprint/comp1_named.xml", paths.get(0).getName());
@@ -49,7 +53,8 @@ public class HeaderParserTest extends TestCase {
         assertEquals(0, paths.get(1).getDirectives().size());
     }
 
-    public void testPaths() throws Exception {
+    @Test
+    public void testPaths() {
         List<PathElement> paths = HeaderParser.parseHeader("OSGI-INF/blueprint/comp1_named.xml;ignored-directive:=true,OSGI-INF/blueprint/comp2_named.xml;foo.xml;a=b;1:=2;c:=d;4=5");
         assertEquals(3, paths.size());
         assertEquals("OSGI-INF/blueprint/comp1_named.xml", paths.get(0).getName());
