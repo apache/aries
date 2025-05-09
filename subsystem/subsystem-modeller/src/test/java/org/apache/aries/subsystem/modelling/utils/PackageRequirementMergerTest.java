@@ -37,8 +37,8 @@ import org.osgi.framework.Constants;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 
 public final class PackageRequirementMergerTest
@@ -155,14 +155,9 @@ public final class PackageRequirementMergerTest
     PackageRequirementMerger merger = new PackageRequirementMerger(reqs);
     
     assertFalse(merger.isMergeSuccessful());
-    
-    try
-    {
-      merger.getMergedRequirements();
-      fail("getMergedRequirements should throw IllegalStateException.");
-    }
-    catch (IllegalStateException e) { }
-    
+
+    assertThrows(IllegalStateException.class, () -> merger.getMergedRequirements());
+
     Set<String> result = merger.getInvalidRequirements();
     Set<String> expected = new HashSet<String>();
     expected.add("a");
@@ -234,14 +229,9 @@ public final class PackageRequirementMergerTest
     PackageRequirementMerger merger = new PackageRequirementMerger(reqs);
     
     assertFalse(merger.isMergeSuccessful());
-    
-    try
-    {
-      merger.getMergedRequirements();
-      fail("getMergedRequirements should throw IllegalStateException.");
-    }
-    catch (IllegalStateException e) { }
-    
+
+    assertThrows(IllegalStateException.class, () -> merger.getMergedRequirements());
+
     Set<String> result = merger.getInvalidRequirements();
     Set<String> expected = new HashSet<String>();
     expected.add("a");

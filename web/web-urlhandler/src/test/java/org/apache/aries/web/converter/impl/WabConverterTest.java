@@ -19,8 +19,8 @@
 package org.apache.aries.web.converter.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -224,15 +224,12 @@ public class WabConverterTest
     attrs.putValue(Constants.BUNDLE_VERSION, "1.0");
     attrs.putValue(Constants.IMPORT_PACKAGE, "org.apache.util,org.apache.test;version=1.0");
     attrs.putValue(Constants.BUNDLE_CLASSPATH, "jsp/classes");
-    
-    try {
-        convertWithProperties(m, 
+
+      assertThrows(IOException.class, () -> {
+        convertWithProperties(m,
                 WarToWabConverter.WEB_CONTEXT_PATH, "WebFiles",
                 Constants.BUNDLE_SYMBOLICNAME, "foobar");
-        fail("Conversion did not fail as expected");
-    } catch (IOException e) {
-        // that's expected
-    }
+    });
   }
   
   private Attributes convertWithProperties(Manifest m, String ... props) throws Exception {

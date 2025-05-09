@@ -21,8 +21,8 @@ package org.apache.aries.blueprint.proxy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -294,14 +294,11 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testUnweavableSuperWithNoNoargsAllTheWay() throws Exception
   {
-    try {
-      getProxyClass(ProxyTestClassUnweavableSibling.class);
-      fail();
-    } catch (RuntimeException re) {
+    RuntimeException re = assertThrows(RuntimeException.class, () ->
+      getProxyClass(ProxyTestClassUnweavableSibling.class));
       assertTrue(re.getCause() instanceof UnableToProxyException);
       assertEquals(ProxyTestClassUnweavableSibling.class.getName(),
           ((UnableToProxyException)re.getCause()).getClassName());
-    }
   }  
   
   /**
@@ -310,16 +307,15 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testUnweavableSuperWithFinalMethod() throws Exception
   {
-    try{
-      getProxyClass(ProxyTestClassUnweavableChildWithFinalMethodParent.class);
-      fail();
-    } catch (RuntimeException re) {
+      RuntimeException re = assertThrows(RuntimeException.class, () -> {
+          getProxyClass(ProxyTestClassUnweavableChildWithFinalMethodParent.class);
+      });
+
       assertTrue(re.getCause() instanceof FinalModifierException);
       assertEquals(ProxyTestClassUnweavableSuperWithFinalMethod.class.getName(),
           ((FinalModifierException)re.getCause()).getClassName());
       assertEquals("doStuff2", ((FinalModifierException)re.getCause())
           .getFinalMethods());
-    }
   }
   
   /**
@@ -328,28 +324,24 @@ public class WovenProxyGeneratorTest extends AbstractProxyTest
   @Test
   public void testUnweavableSuperWithDefaultMethodInWrongPackage() throws Exception
   {
-    try{
-      getProxyClass(ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class);
-      fail();
-    } catch (RuntimeException re) {
+      RuntimeException re = assertThrows(RuntimeException.class, () -> {
+                  getProxyClass(ProxyTestClassUnweavableChildWithDefaultMethodWrongPackageParent.class);
+              });
       assertTrue(re.getCause() instanceof UnableToProxyException);
       assertEquals(ProxyTestClassUnweavableSuperWithDefaultMethodWrongPackageParent
           .class.getName(), ((UnableToProxyException)re.getCause()).getClassName());
-    }
   }
   
   @Test
   public void testInnerWithNoParentNoArgs() throws Exception {
     //An inner class has no no-args (the parent gets added as an arg) so we can't
     //get an instance
-    try{
+      RuntimeException re = assertThrows(RuntimeException.class, () -> {
       getProxyClass(ProxyTestClassUnweavableInnerChild.class);
-      fail();
-    } catch (RuntimeException re) {
+    });
       assertTrue(re.getCause() instanceof UnableToProxyException);
       assertEquals(ProxyTestClassUnweavableInnerChild.class.getName(), 
           ((UnableToProxyException)re.getCause()).getClassName());
-    }
   }
   
   @Test(expected=NoSuchFieldException.class)

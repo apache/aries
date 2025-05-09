@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.osgi.framework.Version;
@@ -148,30 +148,20 @@ public class VersionRangeTest
   @Test
   public void testExactVersion() throws Exception 
   {
-    VersionRange vr;
-    try {
-      vr = new VersionRange("[1.0.0, 2.0.0]", true);
-      fail("from 1 to 2 not excludsive is not an exact range");
-    } catch (IllegalArgumentException e) {
-      // expected
-    }
-    
-    vr = new VersionRange("[1.0.0, 1.0.0]", true);
+      assertThrows(IllegalArgumentException.class, () -> {
+      new VersionRange("[1.0.0, 2.0.0]", true);
+    });
+
+      VersionRange vr = new VersionRange("[1.0.0, 1.0.0]", true);
     assertTrue(vr.isExactVersion());
-    
-    try {
-      vr = new VersionRange("(1.0.0, 1.0.0]", true);
-      fail("from 1 (not including 1) to 1, is not valid");
-    } catch (IllegalArgumentException e) {
-      // expected
-    }
-    
-    try {
-      vr = new VersionRange("[1.0.0, 1.0.0)", true);
-      fail("sfrom 1 to 1 (not including 1), is not valid");
-    } catch (IllegalArgumentException e) {
-      // expected
-    }
+
+      assertThrows(IllegalArgumentException.class, () -> {
+      new VersionRange("(1.0.0, 1.0.0]", true);
+    });
+
+      assertThrows(IllegalArgumentException.class, () -> {
+      new VersionRange("[1.0.0, 1.0.0)", true);
+      });
 
     vr = new VersionRange("1.0.0", true);
     assertTrue(vr.isExactVersion());

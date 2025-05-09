@@ -16,7 +16,6 @@ package org.apache.aries.subsystem.core.archive;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -190,13 +189,7 @@ public class BundleRequiredExecutionEnvironmentHeaderTest {
 	}
 	
 	private void doTestParser(String clause, String name, Version version) {
-		ExecutionEnvironment ee = null;
-		try {
-			ee = new Parser().parse(clause);
-		}
-		catch (Exception e) {
-			fail("Unable to parse execution environment from clause " + clause);
-		}
+		ExecutionEnvironment ee = new Parser().parse(clause);
 		assertExecutionEnvironmentName(ee, name);
 		assertExecutionEnvironmentVersion(ee, version);
 	}

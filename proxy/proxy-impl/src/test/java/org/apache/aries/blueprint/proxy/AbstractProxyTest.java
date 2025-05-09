@@ -18,24 +18,24 @@
  */
 package org.apache.aries.blueprint.proxy;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-
 import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassInner;
 import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassStaticInner;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.junit.Test;
 import org.osgi.framework.wiring.BundleWiring;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractProxyTest {
 
@@ -323,14 +323,14 @@ public abstract class AbstractProxyTest {
     assertCalled(tl, false, false, false);
     
     m = getDeclaredMethod(getTestClass(), "testException", new Class[] {});
-    try {
-      m.invoke(obj);
-      fail("Should throw an exception");
-    } catch (InvocationTargetException re) {
-      if(!re.getTargetException().getClass().equals(RuntimeException.class))
-        throw re.getTargetException();
+
+      Method finalM = m;
+      InvocationTargetException re = assertThrows(InvocationTargetException.class,
+              () -> finalM.invoke(obj));
+      if (!re.getTargetException().getClass().equals(RuntimeException.class))
+          throw re.getTargetException();
       assertCalled(tl, true, false, true);
-    }
+
     
     tl.clear();
     assertCalled(tl, false, false, false);

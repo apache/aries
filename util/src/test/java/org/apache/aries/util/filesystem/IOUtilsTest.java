@@ -177,18 +177,12 @@ public class IOUtilsTest
       @Override
       public void write(int b) throws IOException
       {
-        if(b!=data[idx++]){
-          fail("Data written to outputstream was not as expected");
-        }
+          assertEquals(b, data[idx++]);
       }
     };
     
     IOUtils.copy(is,os);
-    if(is.available()!=123456789){
-      fail("close was not invoked");
-    }
-    
-    
+    assertEquals(is.available(),123456789);
   }
   
   @Test
@@ -218,9 +212,7 @@ public class IOUtilsTest
       @Override
       public void write(int b) throws IOException
       {
-        if(b!=data[idx++]){
-          fail("Data written to outputstream was not as expected");
-        }
+          assertEquals(b, data[idx++]);
       }
     };
     

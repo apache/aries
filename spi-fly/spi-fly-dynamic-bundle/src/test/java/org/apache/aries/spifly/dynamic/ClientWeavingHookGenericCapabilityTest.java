@@ -67,8 +67,8 @@ import aQute.bnd.header.Parameters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class ClientWeavingHookGenericCapabilityTest {
     DynamicWeavingActivator activator;
@@ -317,17 +317,13 @@ public class ClientWeavingHookGenericCapabilityTest {
 
         // Invoke the woven class, check that it properly set the TCCL so that the implementation of impl5 is called.
         // That implementation throws an exception, after which we are making sure that the TCCL is set back appropriately.
-        try {
-            method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
-            fail("Invocation should have thrown an exception");
-        } catch (InvocationTargetException ite) {
-            RuntimeException re = (RuntimeException) ite.getCause();
-            String msg = re.getMessage();
-            assertEquals("Uh-oh: hello", msg);
+        InvocationTargetException ite = assertThrows(InvocationTargetException.class, () -> method.invoke(cls.getDeclaredConstructor().newInstance(), "hello"));
+        RuntimeException re = (RuntimeException) ite.getCause();
+        String msg = re.getMessage();
+        assertEquals("Uh-oh: hello", msg);
 
-            // The TCCL should have been reset correctly
-            assertSame(cl, Thread.currentThread().getContextClassLoader());
-        }
+        // The TCCL should have been reset correctly
+        assertSame(cl, Thread.currentThread().getContextClassLoader());
     }
 
     @Test

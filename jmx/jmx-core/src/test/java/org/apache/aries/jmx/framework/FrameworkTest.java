@@ -39,8 +39,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * {@link FrameworkMBean} test case.
@@ -89,12 +89,7 @@ public class FrameworkTest {
         Mockito.reset(context);
         Mockito.when(context.installBundle("file:test2.jar")).thenThrow(new BundleException("location doesn't exist"));
 
-        try {
-            mbean.installBundle("file:test2.jar");
-            fail("Shouldn't go to this stage, location doesn't exist");
-        } catch (IOException e) {
-            // ok
-        }
+        assertThrows(IOException.class, () -> mbean.installBundle("file:test2.jar"));
 
     }
 
@@ -113,12 +108,7 @@ public class FrameworkTest {
         Mockito.when(context.installBundle(Mockito.anyString(), Mockito.any(InputStream.class))).thenThrow(
                 new BundleException("location doesn't exist"));
 
-        try {
-            spiedMBean.installBundleFromURL("file:test2.jar", "test.jar");
-            fail("Shouldn't go to this stage, location doesn't exist");
-        } catch (IOException e) {
-            // ok
-        }
+        assertThrows(IOException.class, () -> spiedMBean.installBundleFromURL("file:test2.jar", "test.jar"));
     }
 
     @Test
@@ -187,12 +177,7 @@ public class FrameworkTest {
         mbean.refreshBundle(1);
         Mockito.verify(admin).refreshPackages((Bundle[]) Mockito.any());
 
-        try {
-            mbean.refreshBundle(2);
-            fail("IOException should be thrown");
-        } catch (IOException e) {
-            // expected
-        }
+        assertThrows(IOException.class, () -> mbean.refreshBundle(2));
     }
 
     @Test
@@ -300,20 +285,11 @@ public class FrameworkTest {
         Mockito.when(context.getBundle(6)).thenReturn(bundle);
         Mockito.doThrow(new BundleException("")).when(bundle).start();
 
-        try {
-            mbean.startBundle(6);
-            fail("Shouldn't go to this stage, BundleException was thrown");
-        } catch (IOException ioe) {
-            // expected
-        }
+        assertThrows(IOException.class, () -> mbean.startBundle(6));
 
         Mockito.when(context.getBundle(6)).thenReturn(null);
-        try {
-            mbean.startBundle(6);
-            fail("IOException should be thrown");
-        } catch (IOException e) {
-            //expected
-        }
+
+        assertThrows(IOException.class, () -> mbean.startBundle(6));
     }
 
     @Test
@@ -346,13 +322,7 @@ public class FrameworkTest {
         Mockito.verify(bundle).stop();
 
         Mockito.when(context.getBundle(5)).thenReturn(null);
-        try {
-            mbean.stopBundle(5);
-            fail("IOException should be thrown");
-        } catch (IOException e) {
-            //expected
-        }
-
+        assertThrows(IOException.class, () -> mbean.startBundle(5));
     }
 
     @Test

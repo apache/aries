@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.1</version>
+        <version>2.1.1</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -53,6 +53,7 @@
 
         <easymock.version>5.5.0</easymock.version>
         <javax.transaction-api.version>1.2</javax.transaction-api.version>
+        <junit.version>4.13.2</junit.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
@@ -98,6 +99,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

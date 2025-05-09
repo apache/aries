@@ -23,8 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -514,30 +514,20 @@ public class ManifestHeaderProcessorTest
     @Test
     public void testExactVersion() throws Exception
     {
-      VersionRange vr;
-      try {
-        vr = ManifestHeaderProcessor.parseVersionRange("[1.0.0, 2.0.0]", true);
-        fail("should not get here 1");
-      } catch (IllegalArgumentException e) {
-        // expected
-      }
+        assertThrows(IllegalArgumentException.class, () -> {
+       ManifestHeaderProcessor.parseVersionRange("[1.0.0, 2.0.0]", true);
+      });
 
-      vr = ManifestHeaderProcessor.parseVersionRange("[1.0.0, 1.0.0]", true);
+        VersionRange vr = ManifestHeaderProcessor.parseVersionRange("[1.0.0, 1.0.0]", true);
       assertTrue(vr.isExactVersion());
 
-      try {
-        vr = ManifestHeaderProcessor.parseVersionRange("(1.0.0, 1.0.0]", true);
-        fail("should not get here 2");
-      } catch (IllegalArgumentException e) {
-        // expected
-      }
+        assertThrows(IllegalArgumentException.class, () -> {
+        ManifestHeaderProcessor.parseVersionRange("(1.0.0, 1.0.0]", true);
+        });
 
-      try {
-        vr = ManifestHeaderProcessor.parseVersionRange("[1.0.0, 1.0.0)", true);
-        fail("should not get here 3");
-      } catch (IllegalArgumentException e) {
-        // expected
-      }
+        assertThrows(IllegalArgumentException.class, () -> {
+        ManifestHeaderProcessor.parseVersionRange("[1.0.0, 1.0.0)", true);
+        });
 
       vr = ManifestHeaderProcessor.parseVersionRange("[1.0.0, 2.0.0]");
       assertFalse(vr.isExactVersion());

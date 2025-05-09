@@ -18,8 +18,9 @@
 */
 package org.apache.aries.versioning.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,9 +45,8 @@ public class FilterResultsTest {
    * class, where the later versioned class has had a method removed.
    */
     @Test
-    public void testApiMethodErrorExcluded() {
+    public void testApiMethodErrorExcluded() throws IOException {
    
-      try {
         File oldBundleFile = new File("../src/test/resources/api_1.0.0.jar");
         BundleInfo oldBundle = new BundleInfo(BundleManifest.fromBundle(oldBundleFile), oldBundleFile);
   
@@ -72,11 +72,7 @@ public class FilterResultsTest {
         String bundleElement = bundleCompatibility.getBundleElement();
         String pkgElement = bundleCompatibility.getPkgElements().toString();
 
-        assertTrue("Unexpected bundle versioning issue", bundleElement==null);
-        assertTrue("Unexpected package versioning issue", pkgElement.trim().length() == 0);
-      
-      } catch (IOException e) {
-        fail("Unexpected IOException " + e);
-      }
+        assertNull("Unexpected bundle versioning issue", bundleElement);
+        assertEquals("Unexpected package versioning issue", 0, pkgElement.trim().length());
     }
 }

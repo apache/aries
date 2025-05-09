@@ -18,24 +18,19 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class GenericHeaderTest {
-	@Test
-	public void testEmptyHeader() {
-		try {
-		    GenericHeader header = new GenericHeader("Foo-Bar", "");
-		    assertEquals(
-		    		"Empty headers are treated the same as those with an empty quoted string",
-		    		"\"\"",
-		    		header.getValue());
-		    assertEquals("Empty headers should have one clause", 1, header.getClauses().size());
-		}
-		catch (Exception e) {
-		    fail("Empty headers are allowed");
-		}
-	}
+    @Test
+    public void testEmptyHeader() {
+        GenericHeader header = new GenericHeader("Foo-Bar", "");
+        assertEquals(
+                "Empty headers are treated the same as those with an empty quoted string",
+                "\"\"",
+                header.getValue());
+        assertEquals("Empty headers should have one clause", 1, header.getClauses().size());
+
+    }
 }
