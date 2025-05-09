@@ -18,7 +18,7 @@
  */
 package org.apache.aries.jmx.test.blueprint.framework;
 
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;

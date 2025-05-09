@@ -29,7 +29,7 @@ import javax.inject.Inject;
 import javax.transaction.Status;
 import java.sql.SQLException;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class RollbackOnTest extends AbstractIntegrationTest {
 

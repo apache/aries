@@ -33,7 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.aries.blueprint.CallbackTracker.Callback;
 import org.apache.aries.blueprint.container.BlueprintRepository;
@@ -43,7 +43,6 @@ import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.MapRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.Repository;
-import org.apache.aries.blueprint.intercept.BeanA;
 import org.apache.aries.blueprint.intercept.BeanB;
 import org.apache.aries.blueprint.intercept.TheInterceptor;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;

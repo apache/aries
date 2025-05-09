@@ -29,8 +29,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import junit.framework.Assert;
-
 import org.apache.aries.blueprint.sample.BindingListener;
 import org.apache.aries.blueprint.sample.DefaultRunnable;
 import org.apache.aries.blueprint.sample.DestroyTest;
@@ -171,7 +169,7 @@ public class TestReferences extends AbstractBlueprintIntegrationTest {
       
       assertEquals("The default runnable was called when a service was bound", 1, defaultRunnable.getCount());
       
-      Assert.assertTrue("Service should have been called", called.get());
+      assertTrue("Service should have been called", called.get());
       
       reg.unregister();
       waitForAsynchronousHandling();

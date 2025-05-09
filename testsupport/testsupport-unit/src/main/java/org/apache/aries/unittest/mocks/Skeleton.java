@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.apache.aries.unittest.mocks.annotations.InjectSkeleton;
@@ -987,7 +987,7 @@ public final class Skeleton implements InvocationHandler
    */
   public void assertNotCalled(MethodCall call)
   {
-    Assert.assertFalse( "The method call " + 
+    Assert.assertFalse( "The method call " +
                         call + 
                         " occurred in the skeleton " + 
                         this.toString(), checkCall(call));
