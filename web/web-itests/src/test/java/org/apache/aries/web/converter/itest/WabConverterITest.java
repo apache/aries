@@ -107,7 +107,8 @@ public class WabConverterITest extends AbstractIntegrationTest {
                 junitBundles(),
                 setPaxExamLogLevel("INFO"),
                 addPaxLoggingBundles(),
-                configurePaxUrlLocalMavenRepoIfNeeded()
+                configurePaxUrlLocalMavenRepoIfNeeded(),
+                failOnUnresolvableBundles()
         );
 	}
 

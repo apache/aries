@@ -283,7 +283,8 @@ public class QuiesceManagerTest extends AbstractIntegrationTest {
                 setPaxExamLogLevel("INFO"),
                 addPaxLoggingBundles(),
                 configurePaxUrlLocalMavenRepoIfNeeded(),
-                setupRemoteDebugging()
+                setupRemoteDebugging(),
+                failOnUnresolvableBundles()
         );
     }
 

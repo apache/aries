@@ -121,6 +121,7 @@ public abstract class AbstractBlogIntegrationTest extends org.apache.aries.itest
                 addPaxLoggingBundles(),
                 setPaxExamLogLevel("INFO"),
                 configurePaxUrlLocalMavenRepoIfNeeded(),
+                failOnUnresolvableBundles(),
                 mavenBundle("org.apache.aries.testsupport", "org.apache.aries.testsupport.unit").versionAsInProject()
         );
     }

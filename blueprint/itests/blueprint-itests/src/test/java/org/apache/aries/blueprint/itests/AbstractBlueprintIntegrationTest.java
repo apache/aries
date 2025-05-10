@@ -68,7 +68,7 @@ public abstract class AbstractBlueprintIntegrationTest extends AbstractIntegrati
                 addPaxLoggingBundles(),
                 addAsmBundles(),
                 configurePaxUrlLocalMavenRepoIfNeeded(),
-                systemProperty("pax.exam.osgi.unresolved.fail").value("true")
+                failOnUnresolvableBundles()
         );
     }
 
