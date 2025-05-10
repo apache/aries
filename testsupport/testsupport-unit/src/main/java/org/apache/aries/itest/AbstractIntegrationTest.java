@@ -126,4 +126,8 @@ public abstract class AbstractIntegrationTest {
         return when(localRepo != null)
                 .useOptions(vmOption("-Dorg.ops4j.pax.url.mvn.localRepository=" + localRepo));
     }
+
+    protected Option failOnUnresolvableBundles() {
+        return systemProperty("pax.exam.osgi.unresolved.fail").value("true");
+    }
 }

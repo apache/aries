@@ -134,7 +134,8 @@ public class JndiUrlIntegrationTest extends AbstractIntegrationTest {
                 junitBundles(),
                 addPaxLoggingBundles(),
                 setPaxExamLogLevel("INFO"),
-                configurePaxUrlLocalMavenRepoIfNeeded()
+                configurePaxUrlLocalMavenRepoIfNeeded(),
+                failOnUnresolvableBundles()
         );
     }
 

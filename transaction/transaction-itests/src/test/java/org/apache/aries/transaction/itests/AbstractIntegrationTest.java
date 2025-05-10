@@ -61,7 +61,8 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
                 addPaxLoggingBundles(),
                 setPaxExamLogLevel("INFO"),
                 configurePaxUrlLocalMavenRepoIfNeeded(),
-                setupRemoteDebugging()
+                setupRemoteDebugging(),
+                failOnUnresolvableBundles()
          );
     }
 

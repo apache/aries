@@ -120,7 +120,8 @@ public abstract class SubsystemTest extends AbstractIntegrationTest {
                 addPaxLoggingBundles(),
                 setPaxExamLogLevel("DEBUG"),
                 configurePaxUrlLocalMavenRepoIfNeeded(),
-                setupRemoteDebugging()
+                setupRemoteDebugging(),
+                failOnUnresolvableBundles()
          );
     }
 
