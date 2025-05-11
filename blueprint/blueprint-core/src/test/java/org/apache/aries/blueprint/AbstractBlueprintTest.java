@@ -23,13 +23,12 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.validation.Schema;
 
 import org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
-import org.apache.aries.blueprint.parser.Parser;
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
+import org.apache.aries.blueprint.parser.Parser;
 import org.xml.sax.SAXException;
 
 public abstract class AbstractBlueprintTest {

@@ -18,14 +18,15 @@
  */
 package org.apache.aries.blueprint;
 
-import org.apache.aries.blueprint.container.BlueprintContainerImpl;
-import org.apache.aries.blueprint.sample.Foo;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import org.apache.aries.blueprint.container.BlueprintContainerImpl;
+import org.apache.aries.blueprint.sample.Foo;
+import org.junit.Test;
 
 public class BlueprintContainerTest {
 

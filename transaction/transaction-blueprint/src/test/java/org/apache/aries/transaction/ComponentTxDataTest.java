@@ -26,11 +26,10 @@ import java.lang.reflect.Method;
 import java.sql.BatchUpdateException;
 import java.sql.SQLDataException;
 import java.util.List;
-
 import javax.transaction.Transactional.TxType;
 
-import org.apache.aries.transaction.pojo.BadlyAnnotatedPojo1;
 import org.apache.aries.transaction.pojo.AnnotatedPojo;
+import org.apache.aries.transaction.pojo.BadlyAnnotatedPojo1;
 import org.apache.aries.transaction.pojo.ExtendedPojo;
 import org.apache.aries.transaction.pojo.ExtendedPojo2;
 import org.apache.aries.transaction.pojo.ExtendedPojo3;

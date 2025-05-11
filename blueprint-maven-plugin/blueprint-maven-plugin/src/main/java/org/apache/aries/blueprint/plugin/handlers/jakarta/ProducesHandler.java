@@ -18,8 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import jakarta.enterprise.inject.Produces;
 import org.apache.aries.blueprint.plugin.spi.FactoryMethodFinder;
+
+import jakarta.enterprise.inject.Produces;
 
 public class ProducesHandler implements FactoryMethodFinder<Produces> {
     @Override

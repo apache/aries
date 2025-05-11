@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
-import org.springframework.context.annotation.DependsOn;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
+import org.springframework.context.annotation.DependsOn;
 
 @Singleton
 @DependsOn

@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import javax.inject.Inject;
+
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 import org.springframework.context.annotation.Lazy;
-
-import javax.inject.Inject;
 
 @Lazy
 public class MyProduced {

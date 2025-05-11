@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.test.osgiserviceprovider;
 
+import javax.inject.Singleton;
+
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
 import org.ops4j.pax.cdi.api.Property;
-
-import javax.inject.Singleton;
 
 @OsgiServiceProvider
 @Properties({

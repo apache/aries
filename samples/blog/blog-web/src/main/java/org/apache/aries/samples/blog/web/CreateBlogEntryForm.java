@@ -19,7 +19,6 @@
 package org.apache.aries.samples.blog.web;
 
 import java.io.PrintWriter;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.aries.samples.blog.web.util.FormServlet;

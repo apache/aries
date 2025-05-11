@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.paxcdi;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.util.Arrays;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 class ServiceProperty {
     final String name;

@@ -16,10 +16,10 @@
  */
 package org.apache.aries.samples.ariestrader.beans;
 
-import org.apache.aries.samples.ariestrader.util.Log;
-import org.apache.aries.samples.ariestrader.util.TradeConfig;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountProfileDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 
 public class AccountProfileDataBeanImpl implements AccountProfileDataBean, java.io.Serializable {

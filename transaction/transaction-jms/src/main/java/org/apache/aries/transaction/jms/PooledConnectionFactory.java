@@ -17,7 +17,6 @@
 package org.apache.aries.transaction.jms;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;

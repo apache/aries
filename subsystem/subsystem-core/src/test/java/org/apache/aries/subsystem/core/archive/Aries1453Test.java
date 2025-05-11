@@ -13,6 +13,9 @@
  */
 package org.apache.aries.subsystem.core.archive;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -25,9 +28,6 @@ import org.osgi.resource.Capability;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 
 /*
  * https://issues.apache.org/jira/browse/ARIES-1453

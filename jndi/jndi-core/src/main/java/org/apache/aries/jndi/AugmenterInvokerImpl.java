@@ -18,13 +18,13 @@
  */
 package org.apache.aries.jndi;
 
+import java.util.Hashtable;
+
 import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.apache.aries.jndi.spi.EnvironmentAugmentation;
 import org.apache.aries.jndi.spi.EnvironmentUnaugmentation;
 import org.apache.aries.jndi.startup.Activator;
 import org.osgi.framework.BundleContext;
-
-import java.util.Hashtable;
 
 
 public class AugmenterInvokerImpl implements AugmenterInvoker {

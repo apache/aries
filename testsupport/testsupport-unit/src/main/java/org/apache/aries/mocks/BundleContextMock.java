@@ -41,8 +41,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
-import junit.framework.AssertionFailedError;
-
+import org.apache.aries.unittest.mocks.Skeleton;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -55,7 +54,7 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
-import org.apache.aries.unittest.mocks.Skeleton;
+import junit.framework.AssertionFailedError;
 
 /**
  *

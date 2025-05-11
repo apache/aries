@@ -18,6 +18,12 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,8 +36,6 @@ import org.apache.aries.blueprint.di.PassThroughRecipe;
 import org.apache.aries.blueprint.utils.generics.TypeInference;
 import org.junit.Test;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-
-import static org.junit.Assert.*;
 
 public class BeanRecipeTest {
 	static class Base {

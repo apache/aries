@@ -22,7 +22,6 @@ import static org.apache.aries.blueprint.itests.Helper.blueprintBundles;
 import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.keepCaches;
 import static org.ops4j.pax.exam.CoreOptions.streamBundle;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.InputStream;
 import java.net.URL;

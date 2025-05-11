@@ -18,6 +18,9 @@
  */
 package org.apache.aries.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -32,8 +35,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
-
-import static org.junit.Assert.*;
 
 public class SingleServiceTrackerTest {
   private BundleContext ctx;

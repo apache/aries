@@ -19,7 +19,6 @@
 package org.apache.aries.samples.blog.comment.ejb;
 
 import java.util.Date;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.Entity;

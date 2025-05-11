@@ -18,6 +18,14 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.aries.blueprint.TestBlueprintContainer;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.pojos.DummyServiceTrackerCustomizer;
@@ -28,14 +36,6 @@ import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.util.tracker.ServiceTracker;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
 
 public class TypeInferenceTest {
 

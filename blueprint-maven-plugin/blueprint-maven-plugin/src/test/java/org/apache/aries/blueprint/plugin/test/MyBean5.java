@@ -18,6 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.plugin.AnnotatedService;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
@@ -25,10 +29,6 @@ import org.apache.aries.blueprint.plugin.test.interfaces.ServiceC;
 import org.ops4j.pax.cdi.api.OsgiService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 @Singleton
 @DependsOn("myBean6")

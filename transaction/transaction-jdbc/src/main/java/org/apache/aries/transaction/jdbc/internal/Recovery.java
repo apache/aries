@@ -18,18 +18,18 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
+import java.io.IOException;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+import javax.transaction.SystemException;
+import javax.transaction.xa.XAResource;
+
 import org.apache.geronimo.transaction.manager.NamedXAResource;
 import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-import javax.transaction.SystemException;
-import javax.transaction.xa.XAResource;
-import java.io.IOException;
 
 /**
  * This class will ensure the broker is properly recovered when wired with

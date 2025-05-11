@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.collection;
 
+import java.lang.annotation.Annotation;
+
 import org.apache.aries.blueprint.annotation.collection.CollectionInject;
 import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
-
-import java.lang.annotation.Annotation;
 
 public class CollectionInjectHandler implements CollectionDependencyAnnotationHandler<CollectionInject> {
     @Override

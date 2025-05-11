@@ -16,7 +16,7 @@
  */
 package org.apache.aries.blueprint.jexl.evaluator;
 
-import java.util.*;
+import java.util.Map;
 
 import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluatorExt;
 import org.apache.commons.jexl2.Expression;

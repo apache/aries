@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.MethodCallHandler;
 import org.apache.aries.unittest.mocks.Skeleton;
@@ -47,6 +45,8 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
+
+import junit.framework.AssertionFailedError;
 
 @Singleton
 public class BundleMock

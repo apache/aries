@@ -18,11 +18,37 @@
  */
 package org.apache.aries.jndi.startup;
 
-import org.apache.aries.jndi.*;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.naming.NamingException;
+import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.InitialContextFactoryBuilder;
+import javax.naming.spi.NamingManager;
+import javax.naming.spi.ObjectFactory;
+import javax.naming.spi.ObjectFactoryBuilder;
+
+import org.apache.aries.jndi.AugmenterInvokerImpl;
+import org.apache.aries.jndi.ContextManagerServiceFactory;
+import org.apache.aries.jndi.JREInitialContextFactoryBuilder;
+import org.apache.aries.jndi.OSGiInitialContextFactoryBuilder;
+import org.apache.aries.jndi.OSGiObjectFactoryBuilder;
+import org.apache.aries.jndi.ProviderAdminServiceFactory;
+import org.apache.aries.jndi.Utils;
 import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.apache.aries.jndi.tracker.CachingServiceTracker;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.jndi.JNDIConstants;
 import org.osgi.service.jndi.JNDIContextManager;
@@ -30,12 +56,6 @@ import org.osgi.service.jndi.JNDIProviderAdmin;
 import org.osgi.util.tracker.BundleTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.naming.NamingException;
-import javax.naming.spi.*;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The activator for this bundle makes sure the static classes in it are

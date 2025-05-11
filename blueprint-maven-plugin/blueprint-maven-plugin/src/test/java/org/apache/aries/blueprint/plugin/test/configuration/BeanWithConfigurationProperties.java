@@ -18,14 +18,14 @@
  */
 package org.apache.aries.blueprint.plugin.test.configuration;
 
-import org.apache.aries.blueprint.annotation.config.ConfigProperties;
-import org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor;
-
+import java.util.Properties;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.Properties;
+
+import org.apache.aries.blueprint.annotation.config.ConfigProperties;
+import org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor;
 
 @Singleton
 public class BeanWithConfigurationProperties {

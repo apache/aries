@@ -19,9 +19,9 @@
 package org.apache.aries.blueprint.mutable;
 
 import org.apache.aries.blueprint.ExtendedServiceReferenceMetadata;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.ReferenceListener;
 import org.osgi.service.blueprint.reflect.Target;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**

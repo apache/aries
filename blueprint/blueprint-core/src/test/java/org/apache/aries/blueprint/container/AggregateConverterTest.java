@@ -18,6 +18,15 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
@@ -39,17 +48,8 @@ import org.apache.aries.blueprint.pojos.PojoGenerics2.Tata;
 import org.apache.aries.blueprint.pojos.PojoGenerics2.Toto;
 import org.junit.Before;
 import org.junit.Test;
-import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.Converter;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 public class AggregateConverterTest {
 

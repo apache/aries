@@ -18,13 +18,13 @@
  */
 package org.apache.aries.transaction.test.impl;
 
+import static javax.transaction.Transactional.TxType;
+
+import java.sql.SQLException;
+import javax.transaction.Transactional;
+
 import org.apache.aries.transaction.test.RollbackOnBean;
 import org.apache.aries.transaction.test.TestBean;
-
-import javax.transaction.Transactional;
-import java.sql.SQLException;
-
-import static javax.transaction.Transactional.TxType;
 
 public class RollbackOnBeanImpl implements RollbackOnBean {
 

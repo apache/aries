@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
 import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluatorExt;
 import org.apache.felix.utils.properties.Properties;
 import org.slf4j.Logger;

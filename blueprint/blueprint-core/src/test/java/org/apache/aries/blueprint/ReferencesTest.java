@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint;
 
+import static org.junit.Assert.assertThrows;
+
 import java.lang.reflect.InvocationHandler;
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -28,12 +30,9 @@ import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.UnableToProxyException;
 import org.apache.aries.proxy.impl.AbstractProxyManager;
-import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-
-import static org.junit.Assert.assertThrows;
 
 public class ReferencesTest extends AbstractBlueprintTest {
 

@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.proxy;
 
+import java.util.List;
+
 import org.apache.aries.blueprint.Interceptor;
 import org.apache.aries.proxy.InvocationListener;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
-
-import java.util.List;
 
 public class CollaboratorFactory {
     public static InvocationListener create(ComponentMetadata componentMetadata, List<Interceptor> interceptors) {

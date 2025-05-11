@@ -18,10 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import jakarta.persistence.PersistenceContext;
+import java.lang.reflect.Field;
+
 import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceContextHandler;
 
-import java.lang.reflect.Field;
+import jakarta.persistence.PersistenceContext;
 
 public class PersistenceContextHandler extends AbstractPersistenceContextHandler<PersistenceContext> {
 

@@ -16,6 +16,9 @@
  */
 package org.apache.aries.transaction.internal;
 
+import static org.apache.aries.transaction.internal.TransactionManagerService.DEFAULT_RECOVERABLE;
+import static org.apache.aries.transaction.internal.TransactionManagerService.RECOVERABLE;
+
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -31,9 +34,6 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.aries.transaction.internal.TransactionManagerService.DEFAULT_RECOVERABLE;
-import static org.apache.aries.transaction.internal.TransactionManagerService.RECOVERABLE;
 
 /**
  */

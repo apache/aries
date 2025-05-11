@@ -17,6 +17,7 @@
  * under the License.
  */
 package org.apache.aries.subsystem.modelling.impl;
+
 import static org.apache.aries.subsystem.modelling.ResourceType.PACKAGE;
 
 import java.util.Collections;

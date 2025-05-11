@@ -22,7 +22,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Set;
-
 import javax.transaction.TransactionManager;
 
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;

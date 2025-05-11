@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.spring;
 
+import java.lang.reflect.AnnotatedElement;
+
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.springframework.stereotype.Component;
-
-import java.lang.reflect.AnnotatedElement;
 
 public class ComponentAsNamed implements NamedLikeHandler {
     @Override

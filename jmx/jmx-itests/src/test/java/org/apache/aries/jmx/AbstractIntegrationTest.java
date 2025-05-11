@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.inject.Inject;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerInvocationHandler;

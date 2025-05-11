@@ -18,7 +18,6 @@ package org.apache.aries.samples.ariestrader.entities;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -28,9 +27,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
-import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
 
 @Entity(name = "quoteejb")
 @Table(name = "quoteejb")

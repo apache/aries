@@ -22,9 +22,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.jar.Attributes;
 
-import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ExportedService;
 import org.apache.aries.subsystem.modelling.ImportedService;
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ModelledResource;
 import org.apache.aries.subsystem.modelling.ModellingManager;
 import org.apache.aries.subsystem.modelling.ParsedServiceElements;

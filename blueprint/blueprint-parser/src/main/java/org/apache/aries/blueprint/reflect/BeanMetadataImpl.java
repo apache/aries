@@ -21,7 +21,6 @@ package org.apache.aries.blueprint.reflect;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.xml.namespace.QName;
 
 import org.apache.aries.blueprint.ExtendedBeanMetadata;

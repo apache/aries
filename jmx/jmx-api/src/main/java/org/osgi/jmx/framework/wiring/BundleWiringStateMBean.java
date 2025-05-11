@@ -17,7 +17,6 @@
 package org.osgi.jmx.framework.wiring;
 
 import java.io.IOException;
-
 import javax.management.JMException;
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeData;

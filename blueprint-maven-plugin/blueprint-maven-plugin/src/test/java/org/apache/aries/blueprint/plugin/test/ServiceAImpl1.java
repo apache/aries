@@ -18,9 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
-
 import javax.inject.Named;
+
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 
 @Named("my1")
 public class ServiceAImpl1 implements ServiceA {

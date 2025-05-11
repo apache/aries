@@ -18,12 +18,12 @@
  */
 package org.apache.aries.tutorials.blueprint.greeter.client;
 
+import javax.inject.Inject;
+
 import org.apache.aries.blueprint.annotation.bean.Bean;
 import org.apache.aries.blueprint.annotation.config.ConfigProperty;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.tutorials.blueprint.greeter.api.GreeterMessageService;
-
-import javax.inject.Inject;
 
 @Bean(initMethod = "doRequests")
 public class GreeterBlueprintClient {

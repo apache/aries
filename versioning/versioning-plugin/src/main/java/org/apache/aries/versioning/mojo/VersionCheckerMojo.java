@@ -24,8 +24,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Map;
-
 import javax.inject.Inject;
+
 import org.apache.aries.util.manifest.BundleManifest;
 import org.apache.aries.versioning.check.BundleCompatibility;
 import org.apache.aries.versioning.check.BundleInfo;

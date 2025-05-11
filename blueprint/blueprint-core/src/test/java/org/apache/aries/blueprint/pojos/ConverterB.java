@@ -20,8 +20,8 @@ package org.apache.aries.blueprint.pojos;
 
 import java.net.URI;
 
-import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 public class ConverterB implements Converter {
 

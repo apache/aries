@@ -19,7 +19,6 @@
 package org.apache.aries.samples.blog.web.util;
 
 import java.io.IOException;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 

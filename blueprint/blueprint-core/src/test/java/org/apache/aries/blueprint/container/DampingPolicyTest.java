@@ -18,6 +18,8 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static org.junit.Assert.assertSame;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.aries.blueprint.ExtendedReferenceMetadata;
@@ -31,8 +33,6 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceReference;
-
-import static org.junit.Assert.assertSame;
 
 public class DampingPolicyTest {
 

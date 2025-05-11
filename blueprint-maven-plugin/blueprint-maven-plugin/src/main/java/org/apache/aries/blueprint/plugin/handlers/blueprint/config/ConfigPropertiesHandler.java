@@ -18,15 +18,15 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.config;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.Properties;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.aries.blueprint.annotation.config.ConfigProperties;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.lang.reflect.AnnotatedElement;
-import java.util.Properties;
 
 public class ConfigPropertiesHandler implements CustomDependencyAnnotationHandler<ConfigProperties> {
     @Override

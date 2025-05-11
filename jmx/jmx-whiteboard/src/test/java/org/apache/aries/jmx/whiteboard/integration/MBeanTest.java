@@ -18,6 +18,8 @@
  */
 package org.apache.aries.jmx.whiteboard.integration;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.management.DynamicMBean;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -33,8 +35,6 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.ServiceRegistration;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * The <code>MBeanTest</code> tests MBean registration with MBean Servers

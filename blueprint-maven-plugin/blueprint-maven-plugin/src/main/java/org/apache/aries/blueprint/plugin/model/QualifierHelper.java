@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.handlers.Handlers;
-
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
 
 class QualifierHelper {
     static Set<Annotation> getQualifiers(Annotation[] annotations) {

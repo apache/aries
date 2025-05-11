@@ -18,10 +18,10 @@
  */
 package org.apache.aries.jndi.legacy.support;
 
+import javax.naming.spi.InitialContextFactoryBuilder;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-
-import javax.naming.spi.InitialContextFactoryBuilder;
 
 public class Activator implements BundleActivator {
 

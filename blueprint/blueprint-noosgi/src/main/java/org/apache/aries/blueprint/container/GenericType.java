@@ -17,13 +17,18 @@
  */
 package org.apache.aries.blueprint.container;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.service.blueprint.container.ReifiedType;
-
-import java.lang.reflect.*;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * XXXX: Currently, in case of arrays getActualTypeArgument(0) returns something similar to what

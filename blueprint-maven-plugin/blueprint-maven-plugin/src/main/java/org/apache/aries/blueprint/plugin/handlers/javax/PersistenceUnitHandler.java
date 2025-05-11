@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.javax;
 
-import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceUnitHandler;
-
-import javax.persistence.PersistenceUnit;
 import java.lang.reflect.Field;
+import javax.persistence.PersistenceUnit;
+
+import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceUnitHandler;
 
 public class PersistenceUnitHandler extends AbstractPersistenceUnitHandler<PersistenceUnit> {
 

@@ -16,12 +16,12 @@
  */
 package org.apache.aries.transaction.internal;
 
+import javax.transaction.xa.XAException;
+
 import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionLog;
 import org.apache.geronimo.transaction.manager.XidFactory;
-
-import javax.transaction.xa.XAException;
 
 public class AriesTransactionManagerImpl extends GeronimoTransactionManager implements AriesTransactionManager {
 

@@ -16,13 +16,13 @@
  */
 package org.apache.aries.jmx.framework;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
-
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Hashtable;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 
 /**
  * Configuration for {@link BundleState} and {@link ServiceState}.

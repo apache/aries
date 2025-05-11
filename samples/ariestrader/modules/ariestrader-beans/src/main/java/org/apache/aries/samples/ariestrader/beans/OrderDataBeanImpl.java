@@ -20,12 +20,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.apache.aries.samples.ariestrader.util.Log;
-import org.apache.aries.samples.ariestrader.util.TradeConfig;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.HoldingDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.OrderDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 
 public class OrderDataBeanImpl implements OrderDataBean, Serializable {

@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
-import org.apache.aries.blueprint.annotation.service.ServiceProperty;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.aries.blueprint.annotation.service.ServiceProperty;
 
 class ServicePropertyWriter {
     private final List<ServiceProperty> serviceProperties;

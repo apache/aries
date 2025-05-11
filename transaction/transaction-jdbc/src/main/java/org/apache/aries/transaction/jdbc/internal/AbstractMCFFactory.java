@@ -20,7 +20,6 @@ package org.apache.aries.transaction.jdbc.internal;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.sql.CommonDataSource;
 

@@ -28,8 +28,8 @@ import java.io.IOException;
 import java.util.jar.Manifest;
 
 import org.apache.aries.subsystem.modelling.InvalidAttributeException;
-import org.apache.aries.subsystem.modelling.ResolverException;
 import org.apache.aries.subsystem.modelling.ModelledResource;
+import org.apache.aries.subsystem.modelling.ResolverException;
 import org.apache.aries.subsystem.modelling.ResourceType;
 import org.apache.aries.subsystem.modelling.impl.ModelledResourceImpl;
 import org.junit.Test;

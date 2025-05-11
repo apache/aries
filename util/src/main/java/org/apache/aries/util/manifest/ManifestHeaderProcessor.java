@@ -19,11 +19,6 @@
 
 package org.apache.aries.util.manifest;
 
-import org.apache.aries.util.ManifestHeaderUtils;
-import org.apache.aries.util.VersionRange;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Version;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +27,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.aries.util.ManifestHeaderUtils;
+import org.apache.aries.util.VersionRange;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
 
 
 public class ManifestHeaderProcessor

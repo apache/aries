@@ -16,9 +16,13 @@
  */
 package org.apache.aries.jmx.framework;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Collection;
-
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 
@@ -33,11 +37,6 @@ import org.osgi.framework.Version;
 import org.osgi.jmx.framework.PackageStateMBean;
 import org.osgi.service.packageadmin.ExportedPackage;
 import org.osgi.service.packageadmin.PackageAdmin;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * {@link PackageStateMBean} test case.

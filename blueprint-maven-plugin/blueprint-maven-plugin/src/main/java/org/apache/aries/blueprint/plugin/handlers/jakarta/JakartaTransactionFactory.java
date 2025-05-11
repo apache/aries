@@ -18,11 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import com.google.common.base.CaseFormat;
-import jakarta.transaction.Transactional;
+import java.lang.reflect.AnnotatedElement;
+
 import org.apache.aries.blueprint.plugin.handlers.common.AbstractTransactionFactory;
 
-import java.lang.reflect.AnnotatedElement;
+import com.google.common.base.CaseFormat;
+import jakarta.transaction.Transactional;
 
 public class JakartaTransactionFactory extends AbstractTransactionFactory<Transactional> {
 

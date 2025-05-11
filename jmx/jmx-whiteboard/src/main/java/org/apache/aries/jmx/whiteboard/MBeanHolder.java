@@ -21,7 +21,6 @@ package org.apache.aries.jmx.whiteboard;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.management.DynamicMBean;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;

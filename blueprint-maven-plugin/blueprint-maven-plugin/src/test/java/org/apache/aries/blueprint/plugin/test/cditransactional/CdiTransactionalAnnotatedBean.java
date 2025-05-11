@@ -18,12 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.test.cditransactional;
 
-import org.apache.aries.blueprint.plugin.test.ParentBean;
-
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.transaction.cdi.Transactional;
 import javax.transaction.cdi.Transactional.TxType;
+
+import org.apache.aries.blueprint.plugin.test.ParentBean;
 
 @Singleton
 @Transactional(value = TxType.REQUIRES_NEW)

@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.test.service;
 
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.blueprint.annotation.service.ServiceProperty;
-
-import javax.inject.Singleton;
 
 @Service(ranking = 2, properties = @ServiceProperty(name = "service.ranking", values = "3"))
 @Singleton

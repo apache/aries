@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.test.reference;
 
-import org.apache.aries.blueprint.annotation.service.Availability;
-import org.apache.aries.blueprint.annotation.service.Reference;
-
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.apache.aries.blueprint.annotation.service.Availability;
+import org.apache.aries.blueprint.annotation.service.Reference;
 
 @Singleton
 public class BeanWithReferences {

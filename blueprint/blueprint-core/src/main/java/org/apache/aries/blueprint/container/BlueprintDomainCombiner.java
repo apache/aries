@@ -24,7 +24,6 @@ import java.security.DomainCombiner;
 import java.security.ProtectionDomain;
 
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 
 public class BlueprintDomainCombiner implements DomainCombiner {
     private final Bundle bundle;

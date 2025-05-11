@@ -19,7 +19,6 @@
 package org.apache.aries.jmx.blueprint.codec;
 
 import java.util.Map;
-
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;

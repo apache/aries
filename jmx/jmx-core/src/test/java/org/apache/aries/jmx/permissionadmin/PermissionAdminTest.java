@@ -16,6 +16,12 @@
  */
 package org.apache.aries.jmx.permissionadmin;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
 import java.io.IOException;
 
 import org.junit.Before;
@@ -25,12 +31,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.osgi.jmx.service.permissionadmin.PermissionAdminMBean;
 import org.osgi.service.permissionadmin.PermissionInfo;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 /**
  * {@link PermissionAdminMBean} test case.

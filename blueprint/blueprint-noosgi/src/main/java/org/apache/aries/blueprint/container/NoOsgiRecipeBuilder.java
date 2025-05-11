@@ -18,17 +18,49 @@
  */
 package org.apache.aries.blueprint.container;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ExtendedBeanMetadata;
 import org.apache.aries.blueprint.PassThroughMetadata;
-import org.apache.aries.blueprint.di.*;
+import org.apache.aries.blueprint.di.ArrayRecipe;
+import org.apache.aries.blueprint.di.CollectionRecipe;
+import org.apache.aries.blueprint.di.ComponentFactoryRecipe;
+import org.apache.aries.blueprint.di.DependentComponentFactoryRecipe;
+import org.apache.aries.blueprint.di.IdRefRecipe;
+import org.apache.aries.blueprint.di.MapRecipe;
+import org.apache.aries.blueprint.di.PassThroughRecipe;
+import org.apache.aries.blueprint.di.Recipe;
+import org.apache.aries.blueprint.di.RefRecipe;
+import org.apache.aries.blueprint.di.ValueRecipe;
 import org.apache.aries.blueprint.ext.ComponentFactoryMetadata;
 import org.apache.aries.blueprint.ext.DependentComponentFactoryMetadata;
 import org.apache.aries.blueprint.reflect.MetadataUtil;
 import org.apache.aries.blueprint.utils.ServiceListener;
-import org.osgi.service.blueprint.reflect.*;
-
-import java.util.*;
+import org.osgi.service.blueprint.reflect.BeanArgument;
+import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.osgi.service.blueprint.reflect.BeanProperty;
+import org.osgi.service.blueprint.reflect.CollectionMetadata;
+import org.osgi.service.blueprint.reflect.ComponentMetadata;
+import org.osgi.service.blueprint.reflect.IdRefMetadata;
+import org.osgi.service.blueprint.reflect.MapEntry;
+import org.osgi.service.blueprint.reflect.MapMetadata;
+import org.osgi.service.blueprint.reflect.Metadata;
+import org.osgi.service.blueprint.reflect.NullMetadata;
+import org.osgi.service.blueprint.reflect.PropsMetadata;
+import org.osgi.service.blueprint.reflect.RefMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
+import org.osgi.service.blueprint.reflect.ReferenceListener;
+import org.osgi.service.blueprint.reflect.ReferenceMetadata;
+import org.osgi.service.blueprint.reflect.RegistrationListener;
+import org.osgi.service.blueprint.reflect.ServiceMetadata;
+import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 public class NoOsgiRecipeBuilder {
 

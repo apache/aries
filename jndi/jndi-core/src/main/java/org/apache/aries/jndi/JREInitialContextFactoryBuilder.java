@@ -18,11 +18,11 @@
  */
 package org.apache.aries.jndi;
 
+import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
-import java.util.Hashtable;
 
 public class JREInitialContextFactoryBuilder implements InitialContextFactoryBuilder {
 

@@ -35,19 +35,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.apache.aries.blueprint.reflect.MetadataUtil;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.container.BeanRecipe.UnwrapperedBeanHolder;
 import org.apache.aries.blueprint.di.CircularDependencyException;
+import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.ExecutionContext;
 import org.apache.aries.blueprint.di.IdRefRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.RefRecipe;
 import org.apache.aries.blueprint.di.Repository;
-import org.apache.aries.blueprint.di.CollectionRecipe;
-import org.osgi.service.blueprint.container.ReifiedType;
+import org.apache.aries.blueprint.reflect.MetadataUtil;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.container.NoSuchComponentException;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 

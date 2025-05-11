@@ -18,15 +18,15 @@
  */
 package org.apache.aries.blueprint.proxy.complex;
 
-import org.apache.aries.blueprint.proxy.complex.manager.MonitorableTransactionManager;
-import org.apache.aries.blueprint.proxy.complex.manager.RecoverableTransactionManager;
-import org.apache.aries.blueprint.proxy.complex.manager.XAWork;
-import org.apache.aries.blueprint.proxy.complex.manager.XidImporter;
-
 import javax.resource.spi.XATerminator;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
+
+import org.apache.aries.blueprint.proxy.complex.manager.MonitorableTransactionManager;
+import org.apache.aries.blueprint.proxy.complex.manager.RecoverableTransactionManager;
+import org.apache.aries.blueprint.proxy.complex.manager.XAWork;
+import org.apache.aries.blueprint.proxy.complex.manager.XidImporter;
 
 public interface AriesTransactionManager extends
         TransactionManager, UserTransaction,

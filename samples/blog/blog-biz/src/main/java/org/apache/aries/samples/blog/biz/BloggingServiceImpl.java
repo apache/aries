@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.inject.Singleton;
 
 import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.samples.blog.api.BlogAuthor;
@@ -31,8 +32,6 @@ import org.apache.aries.samples.blog.api.BlogCommentManager;
 import org.apache.aries.samples.blog.api.BlogEntry;
 import org.apache.aries.samples.blog.api.BlogEntryManager;
 import org.apache.aries.samples.blog.api.BloggingService;
-
-import javax.inject.Singleton;
 
 /** Implementation of the BloggingService */
 @Service(classes = BloggingService.class)

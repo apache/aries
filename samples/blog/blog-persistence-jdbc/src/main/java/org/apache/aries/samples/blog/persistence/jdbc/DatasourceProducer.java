@@ -18,10 +18,10 @@
  */
 package org.apache.aries.samples.blog.persistence.jdbc;
 
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.annotation.bean.Bean;
 import org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class DatasourceProducer {

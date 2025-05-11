@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.config;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.aries.blueprint.annotation.config.Config;
 import org.apache.aries.blueprint.annotation.config.DefaultProperty;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 class ConfigWriter implements XmlWriter {
 

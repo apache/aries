@@ -22,15 +22,12 @@ package org.apache.aries.jndi.url;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.InitialContext;

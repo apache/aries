@@ -18,15 +18,15 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.spi.Activation;
-import org.apache.aries.blueprint.plugin.spi.Availability;
-import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.aries.blueprint.plugin.spi.Activation;
+import org.apache.aries.blueprint.plugin.spi.Availability;
+import org.apache.aries.blueprint.plugin.spi.BlueprintConfiguration;
 
 public class BlueprintConfigurationImpl implements BlueprintConfiguration {
     private static final String NS_TX2 = "http://aries.apache.org/xmlns/transactions/v2.0.0";

@@ -18,11 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.javax;
 
-import com.google.common.base.CaseFormat;
+import java.lang.reflect.AnnotatedElement;
+import javax.transaction.cdi.Transactional;
+
 import org.apache.aries.blueprint.plugin.handlers.common.AbstractTransactionFactory;
 
-import javax.transaction.cdi.Transactional;
-import java.lang.reflect.AnnotatedElement;
+import com.google.common.base.CaseFormat;
 
 public class CdiTransactionFactory extends AbstractTransactionFactory<Transactional> {
 

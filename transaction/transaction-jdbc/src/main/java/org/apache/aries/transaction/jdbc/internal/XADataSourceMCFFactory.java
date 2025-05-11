@@ -19,7 +19,6 @@
 package org.apache.aries.transaction.jdbc.internal;
 
 import java.sql.SQLException;
-
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.ManagedConnection;

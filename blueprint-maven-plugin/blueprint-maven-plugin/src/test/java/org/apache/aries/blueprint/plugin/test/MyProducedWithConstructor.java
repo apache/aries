@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
-import org.ops4j.pax.cdi.api.OsgiService;
-
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
+import org.ops4j.pax.cdi.api.OsgiService;
 
 public class MyProducedWithConstructor {
 

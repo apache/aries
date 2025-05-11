@@ -18,7 +18,17 @@
  */
 package org.apache.aries.blueprint.plugin;
 
+import java.io.File;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
+
 import org.apache.aries.blueprint.plugin.model.Blueprint;
 import org.apache.aries.blueprint.plugin.model.ConflictDetected;
 import org.apache.aries.blueprint.plugin.spi.Activation;
@@ -36,16 +46,6 @@ import org.apache.xbean.finder.ClassFinder;
 import org.codehaus.plexus.build.BuildContext;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
-
-import java.io.File;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Generates blueprint from CDI annotations

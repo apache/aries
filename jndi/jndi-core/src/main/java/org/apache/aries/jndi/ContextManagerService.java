@@ -18,13 +18,17 @@
  */
 package org.apache.aries.jndi;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.jndi.JNDIContextManager;
-
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import java.util.*;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.service.jndi.JNDIContextManager;
 
 public class ContextManagerService implements JNDIContextManager {
 

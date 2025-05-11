@@ -19,7 +19,9 @@
 package org.apache.aries.pushstream;
 
 import static java.util.Optional.ofNullable;
-import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.*;
+import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.BUILDING;
+import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.CLOSED;
+import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.STARTED;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;

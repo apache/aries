@@ -18,10 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import jakarta.persistence.PersistenceUnit;
+import java.lang.reflect.Field;
+
 import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceUnitHandler;
 
-import java.lang.reflect.Field;
+import jakarta.persistence.PersistenceUnit;
 
 public class PersistenceUnitHandler extends AbstractPersistenceUnitHandler<PersistenceUnit> {
 

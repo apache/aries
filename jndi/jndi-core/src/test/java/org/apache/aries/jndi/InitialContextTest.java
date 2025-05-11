@@ -18,6 +18,28 @@
  */
 package org.apache.aries.jndi;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.Name;
+import javax.naming.NamingException;
+import javax.naming.NoInitialContextException;
+import javax.naming.ldap.Control;
+import javax.naming.ldap.ExtendedRequest;
+import javax.naming.ldap.InitialLdapContext;
+import javax.naming.ldap.LdapContext;
+import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.InitialContextFactoryBuilder;
+import javax.naming.spi.ObjectFactory;
+
 import org.apache.aries.jndi.startup.Activator;
 import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.unittest.mocks.MethodCall;
@@ -27,21 +49,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.jndi.JNDIConstants;
-
-import javax.naming.*;
-import javax.naming.ldap.Control;
-import javax.naming.ldap.ExtendedRequest;
-import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.LdapContext;
-import javax.naming.spi.InitialContextFactory;
-import javax.naming.spi.InitialContextFactoryBuilder;
-import javax.naming.spi.ObjectFactory;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.*;
 
 public class InitialContextTest {
     private Activator activator;

@@ -19,7 +19,6 @@ package org.osgi.jmx;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.SimpleType;

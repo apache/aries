@@ -18,14 +18,11 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.tranql.connector.AbstractManagedConnection;
-import org.tranql.connector.ManagedConnectionHandle;
-import org.tranql.connector.UserPasswordManagedConnectionFactory;
-import org.tranql.connector.jdbc.ConnectionHandle;
-import org.tranql.connector.jdbc.TranqlDataSource;
-
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
@@ -36,11 +33,13 @@ import javax.resource.spi.TransactionSupport;
 import javax.resource.spi.ValidatingManagedConnectionFactory;
 import javax.security.auth.Subject;
 
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tranql.connector.AbstractManagedConnection;
+import org.tranql.connector.ManagedConnectionHandle;
+import org.tranql.connector.UserPasswordManagedConnectionFactory;
+import org.tranql.connector.jdbc.ConnectionHandle;
+import org.tranql.connector.jdbc.TranqlDataSource;
 
 @SuppressWarnings({
     "rawtypes", "serial", "unchecked"

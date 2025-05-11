@@ -18,6 +18,9 @@
  */
 package org.apache.aries.util.log;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,9 +34,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 
 @SuppressWarnings("rawtypes")
 public class LoggerTest {

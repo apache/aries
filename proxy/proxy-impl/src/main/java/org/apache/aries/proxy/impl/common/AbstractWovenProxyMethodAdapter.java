@@ -28,7 +28,9 @@ import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.NO_AR
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.OBJECT_TYPE;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.THROWABLE_INAME;
 import static org.apache.aries.proxy.impl.common.AbstractWovenProxyAdapter.WOVEN_PROXY_IFACE_TYPE;
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ACONST_NULL;
+import static org.objectweb.asm.Opcodes.ASM9;
+import static org.objectweb.asm.Opcodes.IFNE;
 
 import java.util.Arrays;
 

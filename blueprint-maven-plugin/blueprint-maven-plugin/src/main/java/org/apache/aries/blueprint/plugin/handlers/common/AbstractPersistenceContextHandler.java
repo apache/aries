@@ -18,16 +18,16 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.common;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.List;
 
 public abstract class AbstractPersistenceContextHandler<T extends Annotation> implements FieldAnnotationHandler<T> {
 

@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.util.Collection;
 
-import org.apache.aries.web.converter.impl.JSPImportParser;
 import org.junit.Test;
 
 public class JSPImportParserTest {

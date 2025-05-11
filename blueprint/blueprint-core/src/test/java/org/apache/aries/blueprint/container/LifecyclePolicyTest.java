@@ -18,6 +18,9 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,9 +53,6 @@ import org.osgi.framework.Version;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.BlueprintListener;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class LifecyclePolicyTest {
 

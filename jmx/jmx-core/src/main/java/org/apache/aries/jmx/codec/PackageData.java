@@ -19,7 +19,6 @@ package org.apache.aries.jmx.codec;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;

@@ -20,7 +20,6 @@ package org.apache.aries.jmx.mbean_server.platform.impl;
 
 import java.lang.management.ManagementFactory;
 import java.util.Hashtable;
-
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.MBeanServer;

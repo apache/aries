@@ -16,8 +16,9 @@
  */
 package org.apache.aries.jmx.codec;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.osgi.jmx.framework.BundleStateMBean.BUNDLE_EVENT_TYPE;
 import static org.osgi.jmx.framework.BundleStateMBean.EVENT;
 import static org.osgi.jmx.framework.BundleStateMBean.IDENTIFIER;
@@ -26,7 +27,6 @@ import static org.osgi.jmx.framework.BundleStateMBean.SYMBOLIC_NAME;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 

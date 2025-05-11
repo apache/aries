@@ -13,8 +13,11 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
-import static org.easymock.EasyMock.*;
 
 import java.lang.reflect.Field;
 import java.util.Collections;

@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.authorization.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.aries.blueprint.BeanProcessor;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Processor;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AuthorizationBeanProcessor implements BeanProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationInterceptor.class);

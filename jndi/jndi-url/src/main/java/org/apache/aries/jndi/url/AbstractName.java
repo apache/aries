@@ -19,11 +19,11 @@
 
 package org.apache.aries.jndi.url;
 
-import javax.naming.CompositeName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import javax.naming.CompositeName;
 
 @SuppressWarnings("serial")
 public abstract class AbstractName extends CompositeName {

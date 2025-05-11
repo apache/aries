@@ -18,24 +18,24 @@
  */
 package org.apache.aries.blueprint.proxy;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
+
 import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassInner;
 import org.apache.aries.blueprint.proxy.ProxyTestClassInnerClasses.ProxyTestClassStaticInner;
 import org.apache.aries.proxy.InvocationListener;
 import org.apache.aries.proxy.impl.SingleInstanceDispatcher;
 import org.junit.Test;
 import org.osgi.framework.wiring.BundleWiring;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.concurrent.Callable;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public abstract class AbstractProxyTest {
 

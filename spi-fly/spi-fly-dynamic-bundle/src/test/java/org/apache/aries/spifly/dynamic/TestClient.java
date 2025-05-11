@@ -18,11 +18,11 @@
  */
 package org.apache.aries.spifly.dynamic;
 
-import org.apache.aries.mytest.MySPI;
-
 import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import org.apache.aries.mytest.MySPI;
 
 public class TestClient {
 	/**

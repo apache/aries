@@ -18,21 +18,20 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+
 import java.util.List;
 
-import org.apache.aries.blueprint.testbundles.BeanC;
 import org.apache.aries.blueprint.testbundles.BeanCItf;
 import org.junit.Test;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-
-import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 public class SpringTest extends AbstractBlueprintIntegrationTest {
 

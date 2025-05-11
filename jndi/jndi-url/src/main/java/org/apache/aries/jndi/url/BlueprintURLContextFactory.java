@@ -19,16 +19,16 @@
 
 package org.apache.aries.jndi.url;
 
+import java.util.Hashtable;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.spi.ObjectFactory;
+
 import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIConstants;
-
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.spi.ObjectFactory;
-import java.util.Hashtable;
 
 public class BlueprintURLContextFactory implements ObjectFactory {
 

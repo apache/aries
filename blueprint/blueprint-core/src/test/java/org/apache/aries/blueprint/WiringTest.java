@@ -18,6 +18,16 @@
  */
 package org.apache.aries.blueprint;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
@@ -33,7 +43,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
-
 import org.apache.aries.blueprint.CallbackTracker.Callback;
 import org.apache.aries.blueprint.container.BlueprintRepository;
 import org.apache.aries.blueprint.container.ServiceRecipe;
@@ -45,21 +54,23 @@ import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.intercept.BeanB;
 import org.apache.aries.blueprint.intercept.TheInterceptor;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
-import org.apache.aries.blueprint.pojos.*;
+import org.apache.aries.blueprint.pojos.AmbiguousPojo;
+import org.apache.aries.blueprint.pojos.BeanD;
+import org.apache.aries.blueprint.pojos.BeanF;
+import org.apache.aries.blueprint.pojos.CachePojos;
+import org.apache.aries.blueprint.pojos.FITestBean;
+import org.apache.aries.blueprint.pojos.Multiple;
+import org.apache.aries.blueprint.pojos.PojoA;
+import org.apache.aries.blueprint.pojos.PojoB;
+import org.apache.aries.blueprint.pojos.PojoGenerics;
+import org.apache.aries.blueprint.pojos.PojoListener;
+import org.apache.aries.blueprint.pojos.PojoRecursive;
+import org.apache.aries.blueprint.pojos.Primavera;
+import org.apache.aries.blueprint.pojos.VarArg;
 import org.apache.aries.blueprint.proxy.ProxyUtils;
 import org.junit.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 public class WiringTest extends AbstractBlueprintTest {
 

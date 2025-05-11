@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.spring;
 
+import java.lang.reflect.AnnotatedElement;
+
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.springframework.context.annotation.Lazy;
-
-import java.lang.reflect.AnnotatedElement;
 
 public class LazyAttributeResolver implements BeanAnnotationHandler<Lazy> {
     @Override

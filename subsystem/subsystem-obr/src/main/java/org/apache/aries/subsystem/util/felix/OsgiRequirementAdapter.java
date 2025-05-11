@@ -13,6 +13,8 @@
  */
 package org.apache.aries.subsystem.util.felix;
 
+import java.util.Map;
+
 import org.apache.aries.subsystem.obr.internal.NamespaceTranslator;
 import org.apache.aries.subsystem.obr.internal.ResourceHelper;
 import org.apache.felix.bundlerepository.Capability;
@@ -21,8 +23,6 @@ import org.osgi.framework.Constants;
 import org.osgi.resource.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 public class OsgiRequirementAdapter implements Requirement {
 	private static final Logger logger = LoggerFactory.getLogger(OsgiRequirementAdapter.class);

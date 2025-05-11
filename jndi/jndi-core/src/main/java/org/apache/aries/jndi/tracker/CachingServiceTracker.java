@@ -18,13 +18,18 @@
  */
 package org.apache.aries.jndi.tracker;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 import org.apache.aries.jndi.Utils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
-
-import java.util.*;
-import java.util.function.Function;
 
 public class CachingServiceTracker<S> extends ServiceTracker<S, ServiceReference<S>> {
 

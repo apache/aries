@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.javax;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import javax.annotation.PreDestroy;
+
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
-
-import javax.annotation.PreDestroy;
-import java.lang.reflect.Method;
-import java.util.List;
 
 public class PreDestroyHandler implements MethodAnnotationHandler<PreDestroy> {
     @Override

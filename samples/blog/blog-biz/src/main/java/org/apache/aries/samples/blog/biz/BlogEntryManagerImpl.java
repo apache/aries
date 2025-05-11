@@ -23,15 +23,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogEntry;
 import org.apache.aries.samples.blog.api.BlogEntryManager;
 import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
 import org.apache.aries.samples.blog.api.persistence.Entry;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 
 @Singleton

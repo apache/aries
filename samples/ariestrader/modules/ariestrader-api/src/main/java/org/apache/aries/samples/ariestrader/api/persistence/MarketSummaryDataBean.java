@@ -18,14 +18,12 @@ package org.apache.aries.samples.ariestrader.api.persistence;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.aries.samples.ariestrader.util.FinancialUtils;
 import org.apache.aries.samples.ariestrader.util.Log;
-import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 public class MarketSummaryDataBean implements Serializable
 {

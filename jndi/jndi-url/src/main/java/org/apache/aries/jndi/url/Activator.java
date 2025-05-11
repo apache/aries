@@ -18,17 +18,17 @@
  */
 package org.apache.aries.jndi.url;
 
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.spi.ObjectFactory;
+
 import org.apache.aries.proxy.ProxyManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jndi.JNDIConstants;
-
-import javax.naming.spi.ObjectFactory;
-import java.util.Hashtable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Activator implements BundleActivator {
     private static SingleServiceTracker<ProxyManager> proxyManager;

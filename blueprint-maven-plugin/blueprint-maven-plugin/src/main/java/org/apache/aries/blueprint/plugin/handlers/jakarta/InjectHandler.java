@@ -18,8 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import jakarta.inject.Inject;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
+
+import jakarta.inject.Inject;
 
 public class InjectHandler implements InjectLikeHandler<Inject> {
     @Override

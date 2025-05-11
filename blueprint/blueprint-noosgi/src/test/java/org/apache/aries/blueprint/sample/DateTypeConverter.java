@@ -16,12 +16,12 @@
  */
 package org.apache.aries.blueprint.sample;
 
-import org.osgi.service.blueprint.container.Converter;
-import org.osgi.service.blueprint.container.ReifiedType;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.osgi.service.blueprint.container.Converter;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 public class DateTypeConverter implements Converter {
 

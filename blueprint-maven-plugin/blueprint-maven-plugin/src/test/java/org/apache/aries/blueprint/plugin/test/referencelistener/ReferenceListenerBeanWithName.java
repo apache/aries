@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.test.referencelistener;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.annotation.referencelistener.Cardinality;
 import org.apache.aries.blueprint.annotation.referencelistener.ReferenceListener;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 @ReferenceListener(referenceInterface = ServiceA.class, cardinality = Cardinality.SINGLE, referenceName = "serviceAReferenceWithoutMethods")
 @Singleton

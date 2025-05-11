@@ -16,6 +16,17 @@
  */
 package org.apache.aries.transaction.internal;
 
+import static org.apache.aries.transaction.internal.TransactionManagerService.HOWL_BUFFER_SIZE;
+import static org.apache.aries.transaction.internal.TransactionManagerService.HOWL_LOG_FILE_DIR;
+import static org.apache.aries.transaction.internal.TransactionManagerService.HOWL_LOG_FILE_EXT;
+import static org.apache.aries.transaction.internal.TransactionManagerService.HOWL_LOG_FILE_NAME;
+import static org.apache.aries.transaction.internal.TransactionManagerService.HOWL_MAX_BLOCKS_PER_FILE;
+import static org.apache.aries.transaction.internal.TransactionManagerService.HOWL_MAX_LOG_FILES;
+import static org.apache.aries.transaction.internal.TransactionManagerService.RECOVERABLE;
+import static org.apache.aries.transaction.internal.TransactionManagerService.TMID;
+import static org.apache.aries.transaction.internal.TransactionManagerService.getInt;
+import static org.apache.aries.transaction.internal.TransactionManagerService.getString;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -40,8 +51,6 @@ import org.objectweb.howl.log.LogRecordType;
 import org.osgi.service.cm.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.aries.transaction.internal.TransactionManagerService.*;
 
 public class TransactionLogUtils {
 

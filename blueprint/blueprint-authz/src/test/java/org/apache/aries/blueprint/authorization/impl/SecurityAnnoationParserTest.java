@@ -18,18 +18,17 @@
  */
 package org.apache.aries.blueprint.authorization.impl;
 
-import java.lang.annotation.Annotation;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.lang.annotation.Annotation;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 
 import org.apache.aries.blueprint.authorization.impl.test.SecuredClass;
 import org.junit.Test;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class SecurityAnnoationParserTest {
 

@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.aries.subsystem.core.archive.AttributeFactory;
-import org.apache.aries.subsystem.core.archive.Parameter;
-import org.apache.aries.subsystem.core.archive.VersionRangeAttribute;
 import org.osgi.framework.VersionRange;
 
 public class SimpleFilter

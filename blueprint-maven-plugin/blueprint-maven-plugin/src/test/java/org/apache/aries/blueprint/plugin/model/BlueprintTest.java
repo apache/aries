@@ -18,6 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import static org.junit.Assert.assertEquals;
+
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.aries.blueprint.plugin.BlueprintConfigurationImpl;
 import org.apache.aries.blueprint.plugin.test.MyBean3;
 import org.apache.aries.blueprint.plugin.test.ServiceReferences;
@@ -26,13 +33,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
-
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
 
 public class BlueprintTest {
     private static final String NS_JPA1 = "http://aries.apache.org/xmlns/jpa/v1.0.0";

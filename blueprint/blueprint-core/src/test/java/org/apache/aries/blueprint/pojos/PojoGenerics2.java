@@ -18,10 +18,6 @@
  */
 package org.apache.aries.blueprint.pojos;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 public class PojoGenerics2 {
 
     public static class MyClass<T> {

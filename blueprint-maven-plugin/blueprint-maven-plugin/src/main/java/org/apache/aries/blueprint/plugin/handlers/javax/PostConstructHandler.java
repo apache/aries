@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.javax;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import javax.annotation.PostConstruct;
+
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
-
-import javax.annotation.PostConstruct;
-import java.lang.reflect.Method;
-import java.util.List;
 
 public class PostConstructHandler implements MethodAnnotationHandler<PostConstruct> {
     @Override

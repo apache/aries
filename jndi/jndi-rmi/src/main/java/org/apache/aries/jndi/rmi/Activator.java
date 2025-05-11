@@ -18,15 +18,15 @@
  */
 package org.apache.aries.jndi.rmi;
 
+import java.util.Hashtable;
+import javax.naming.spi.ObjectFactory;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.jndi.JNDIConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.naming.spi.ObjectFactory;
-import java.util.Hashtable;
 
 public class Activator implements BundleActivator {
 

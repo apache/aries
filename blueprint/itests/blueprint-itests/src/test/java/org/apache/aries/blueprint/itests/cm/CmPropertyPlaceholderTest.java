@@ -18,6 +18,13 @@
  */
 package org.apache.aries.blueprint.itests.cm;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.ops4j.pax.exam.CoreOptions.keepCaches;
+import static org.ops4j.pax.exam.CoreOptions.streamBundle;
+
 import java.io.InputStream;
 import java.util.Hashtable;
 import javax.inject.Inject;
@@ -37,13 +44,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.*;
-import static org.ops4j.pax.exam.CoreOptions.keepCaches;
-import static org.ops4j.pax.exam.CoreOptions.streamBundle;
 
 public class CmPropertyPlaceholderTest extends AbstractBlueprintIntegrationTest {
     private static final String TEST_BUNDLE = "org.apache.aries.blueprint.cm.test.b1";

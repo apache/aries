@@ -17,13 +17,19 @@
 package org.apache.aries.samples.ariestrader.web;
 
 import java.io.IOException;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.aries.samples.ariestrader.api.TradeServicesManager;
 import org.apache.aries.samples.ariestrader.api.TradeServiceUtilities;
 import org.apache.aries.samples.ariestrader.api.TradeServices;
-import org.apache.aries.samples.ariestrader.util.*;
+import org.apache.aries.samples.ariestrader.api.TradeServicesManager;
+import org.apache.aries.samples.ariestrader.util.Log;
 
 public class OrdersAlertFilter implements Filter {
 

@@ -37,13 +37,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 
-import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ExportedBundle;
 import org.apache.aries.subsystem.modelling.ExportedPackage;
 import org.apache.aries.subsystem.modelling.ExportedService;
 import org.apache.aries.subsystem.modelling.ImportedBundle;
 import org.apache.aries.subsystem.modelling.ImportedPackage;
 import org.apache.aries.subsystem.modelling.ImportedService;
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ModelledResource;
 import org.apache.aries.subsystem.modelling.ModellingConstants;
 import org.apache.aries.subsystem.modelling.ResourceType;

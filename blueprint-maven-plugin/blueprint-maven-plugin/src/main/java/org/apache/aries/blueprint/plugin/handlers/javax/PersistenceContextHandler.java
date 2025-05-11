@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.javax;
 
-import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceContextHandler;
-
-import javax.persistence.PersistenceContext;
 import java.lang.reflect.Field;
+import javax.persistence.PersistenceContext;
+
+import org.apache.aries.blueprint.plugin.handlers.common.AbstractPersistenceContextHandler;
 
 public class PersistenceContextHandler extends AbstractPersistenceContextHandler<PersistenceContext> {
 

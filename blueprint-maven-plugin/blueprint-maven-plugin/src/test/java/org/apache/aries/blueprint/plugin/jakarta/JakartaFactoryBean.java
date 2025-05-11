@@ -18,13 +18,14 @@
  */
 package org.apache.aries.blueprint.plugin.jakarta;
 
-import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import org.apache.aries.blueprint.annotation.config.ConfigProperty;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.blueprint.plugin.test.MyBean1;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceC;
+
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class JakartaFactoryBean {

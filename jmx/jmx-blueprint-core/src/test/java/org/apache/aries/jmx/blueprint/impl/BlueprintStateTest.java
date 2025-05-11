@@ -18,14 +18,7 @@
  */
 package org.apache.aries.jmx.blueprint.impl;
 
-import org.apache.aries.jmx.blueprint.BlueprintStateMBean;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.osgi.framework.BundleContext;
 
 //@RunWith(JMock.class)
 public class BlueprintStateTest {

@@ -18,14 +18,14 @@
  */
 package org.apache.aries.blueprint.services;
 
+import java.net.URL;
+import java.security.AccessControlContext;
+import java.util.List;
+
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.Processor;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.blueprint.container.Converter;
-
-import java.net.URL;
-import java.security.AccessControlContext;
-import java.util.List;
 
 public interface ExtendedBlueprintContainer extends BlueprintContainer {
 

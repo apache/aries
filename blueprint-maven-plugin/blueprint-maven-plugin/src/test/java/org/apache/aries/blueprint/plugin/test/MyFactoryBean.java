@@ -18,15 +18,15 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
-import org.apache.aries.blueprint.plugin.test.interfaces.ServiceC;
-import org.ops4j.pax.cdi.api.OsgiService;
-import org.springframework.beans.factory.annotation.Value;
-
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceB;
+import org.apache.aries.blueprint.plugin.test.interfaces.ServiceC;
+import org.ops4j.pax.cdi.api.OsgiService;
+import org.springframework.beans.factory.annotation.Value;
 
 @Singleton
 public class MyFactoryBean {

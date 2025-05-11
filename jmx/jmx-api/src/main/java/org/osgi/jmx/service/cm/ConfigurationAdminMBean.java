@@ -17,7 +17,6 @@
 package org.osgi.jmx.service.cm;
 
 import java.io.IOException;
-
 import javax.management.openmbean.TabularData;
 
 import org.osgi.jmx.JmxConstants;

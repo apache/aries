@@ -18,13 +18,6 @@
  */
 package org.apache.aries.jndi;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.BundleReference;
-import org.osgi.service.jndi.JNDIConstants;
-
-import javax.naming.NamingException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
@@ -35,6 +28,13 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.naming.NamingException;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.BundleReference;
+import org.osgi.service.jndi.JNDIConstants;
 
 /**
  */

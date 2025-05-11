@@ -22,7 +22,6 @@ package org.apache.aries.jmx.blueprint;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 import javax.management.openmbean.ArrayType;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.OpenDataException;

@@ -16,9 +16,15 @@
  */
 package org.apache.aries.jmx.framework;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.codec.BatchActionResult;
@@ -34,13 +40,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.jmx.framework.FrameworkMBean;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.startlevel.StartLevel;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 /**
  * {@link FrameworkMBean} test case.

@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.test.collection;
 
+import java.util.List;
+import java.util.Set;
+
 import org.apache.aries.blueprint.annotation.bean.Bean;
 import org.apache.aries.blueprint.annotation.collection.CollectionInject;
 import org.apache.aries.blueprint.plugin.AnnotatedService;
-
-import java.util.List;
-import java.util.Set;
 
 @Bean
 public class BeanWithCollections {

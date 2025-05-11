@@ -18,19 +18,18 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
+import java.util.Hashtable;
+import java.util.Map;
+import javax.sql.CommonDataSource;
+import javax.sql.DataSource;
+import javax.sql.XADataSource;
+
 import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.aries.transaction.jdbc.RecoverableDataSource;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-
-import javax.sql.CommonDataSource;
-import javax.sql.DataSource;
-import javax.sql.XADataSource;
-
-import java.util.Hashtable;
-import java.util.Map;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ManagedDataSourceFactory {

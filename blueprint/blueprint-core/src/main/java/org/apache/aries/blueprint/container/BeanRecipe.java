@@ -18,7 +18,13 @@
  */
 package org.apache.aries.blueprint.container;
 
-import java.lang.reflect.*;
+import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,8 +58,6 @@ import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
 
 /**
  * A <code>Recipe</code> to create POJOs.

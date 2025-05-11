@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-import org.osgi.service.blueprint.container.Converter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
+import org.osgi.service.blueprint.container.Converter;
 
 class CustomTypeConverterWriter implements XmlWriter {
 

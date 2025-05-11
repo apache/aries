@@ -18,8 +18,8 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.javax;
 
-import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
+import javax.inject.Named;
 
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 

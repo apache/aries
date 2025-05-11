@@ -20,6 +20,13 @@
 
 package org.apache.aries.util.tracker.hook;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -28,13 +35,6 @@ import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.hooks.bundle.EventHook;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The Tracked and AbstractTracked inner classes are copied from felix framework 4.0.1.

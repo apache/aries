@@ -18,9 +18,13 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+
 import java.util.Currency;
 import java.util.Hashtable;
-
 import javax.inject.Inject;
 
 import org.apache.aries.blueprint.sample.Foo;
@@ -36,11 +40,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-
-import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)

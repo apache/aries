@@ -15,15 +15,15 @@ package org.apache.aries.subsystem.itests;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.junit.Test;
 import org.osgi.framework.Filter;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.subsystem.Subsystem;
 import org.osgi.util.tracker.ServiceTracker;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 public class ConfigAdminPropsFileContentHandlerTest extends SubsystemTest {
     public ConfigAdminPropsFileContentHandlerTest() {

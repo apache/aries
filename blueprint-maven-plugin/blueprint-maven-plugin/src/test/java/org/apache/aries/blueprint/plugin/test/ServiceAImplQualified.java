@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.plugin.AnnotatedService;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
-
-import javax.inject.Singleton;
 
 @Singleton
 @AnnotatedService

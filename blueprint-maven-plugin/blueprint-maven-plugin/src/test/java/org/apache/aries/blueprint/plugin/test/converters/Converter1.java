@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.test.converters;
 
+import javax.inject.Singleton;
+
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class Converter1 implements Converter {

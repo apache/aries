@@ -16,6 +16,11 @@
  */
 package org.apache.aries.transaction.internal;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.Dictionary;
@@ -32,11 +37,6 @@ import org.apache.geronimo.transaction.manager.XidImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 public class LogConversionTest {
 

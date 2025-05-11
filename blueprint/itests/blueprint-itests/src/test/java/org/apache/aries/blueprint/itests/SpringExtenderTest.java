@@ -18,16 +18,16 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import org.apache.aries.blueprint.testbundlee.BeanCItf;
 import org.junit.Test;
 import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.container.BlueprintContainer;
-
-import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 public class SpringExtenderTest extends AbstractBlueprintIntegrationTest {
 

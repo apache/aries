@@ -17,6 +17,7 @@
 package org.apache.aries.subsystem.core.repository;
 
 import java.io.InputStream;
+
 import org.osgi.resource.Resource;
 
 /**

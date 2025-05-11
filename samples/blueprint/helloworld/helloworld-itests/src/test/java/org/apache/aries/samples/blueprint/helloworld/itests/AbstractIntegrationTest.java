@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,8 +43,6 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
-
-import javax.inject.Inject;
 
 
 public abstract class AbstractIntegrationTest {

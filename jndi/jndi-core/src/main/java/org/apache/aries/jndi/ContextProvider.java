@@ -18,11 +18,11 @@
  */
 package org.apache.aries.jndi;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-
 import javax.naming.Context;
 import javax.naming.NamingException;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public abstract class ContextProvider {
     private final ServiceReference<?> reference;

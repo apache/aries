@@ -17,6 +17,7 @@
 package org.osgi.service.repository;
 
 import java.io.InputStream;
+
 import org.osgi.resource.Resource;
 
 /**

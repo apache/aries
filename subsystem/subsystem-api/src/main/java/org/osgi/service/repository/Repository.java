@@ -22,6 +22,7 @@ package org.osgi.service.repository;
 
 import java.util.Collection;
 import java.util.Map;
+
 import org.osgi.resource.Capability;
 import org.osgi.resource.Requirement;
 import org.osgi.resource.Resource;

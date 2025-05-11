@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.utils.threading.impl;
 
-import java.util.Collections;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;

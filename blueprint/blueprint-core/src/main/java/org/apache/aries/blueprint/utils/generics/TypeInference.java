@@ -18,10 +18,27 @@
  */
 package org.apache.aries.blueprint.utils.generics;
 
-import org.apache.aries.blueprint.utils.ReflectionUtils;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import java.lang.reflect.*;
-import java.util.*;
+import org.apache.aries.blueprint.utils.ReflectionUtils;
 
 public class TypeInference {
 

@@ -25,7 +25,6 @@ import java.util.Set;
 
 import org.apache.aries.spifly.Util;
 import org.apache.aries.spifly.WeavingData;
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;

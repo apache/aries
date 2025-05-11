@@ -18,15 +18,18 @@
  */
 package org.apache.aries.jndi;
 
-import org.apache.aries.jndi.startup.Activator;
-import org.osgi.framework.BundleContext;
-
+import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.Name;
-import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
-import javax.naming.spi.*;
-import java.util.Hashtable;
+import javax.naming.spi.DirObjectFactory;
+import javax.naming.spi.DirectoryManager;
+import javax.naming.spi.NamingManager;
+import javax.naming.spi.ObjectFactory;
+import javax.naming.spi.ObjectFactoryBuilder;
+
+import org.apache.aries.jndi.startup.Activator;
+import org.osgi.framework.BundleContext;
 
 public class OSGiObjectFactoryBuilder implements ObjectFactoryBuilder, ObjectFactory, DirObjectFactory {
 
