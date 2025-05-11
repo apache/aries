@@ -16,6 +16,16 @@
  */
 package org.apache.aries.samples.ariestrader.persist.jpa.cm;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
+
 import org.apache.aries.blueprint.annotation.bean.Bean;
 import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.blueprint.annotation.service.ServiceProperty;
@@ -34,16 +44,6 @@ import org.apache.aries.samples.ariestrader.entities.QuoteDataBeanImpl;
 import org.apache.aries.samples.ariestrader.util.FinancialUtils;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.transaction.Transactional;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * TradeJpaCm uses JPA via Container Managed (CM) Entity

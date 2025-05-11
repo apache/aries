@@ -18,16 +18,16 @@
  */
 package org.apache.aries.blueprint.container;
 
-import org.apache.aries.blueprint.container.AggregateConverter.Convertible;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
-import org.osgi.service.blueprint.container.ReifiedType;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.aries.blueprint.container.AggregateConverter.Convertible;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.osgi.service.blueprint.container.ReifiedType;
 
 public class NullProxy implements Convertible {
 

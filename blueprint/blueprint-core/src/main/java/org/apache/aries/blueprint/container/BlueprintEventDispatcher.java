@@ -36,6 +36,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.aries.blueprint.utils.JavaUtils;
+import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper;
+import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper.ScheduledExecutorServiceFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -48,10 +51,6 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.apache.aries.blueprint.utils.JavaUtils;
-import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper;
-import org.apache.aries.blueprint.utils.threading.ScheduledExecutorServiceWrapper.ScheduledExecutorServiceFactory;
 
 /**
  * The delivery of {@link BlueprintEvent}s is complicated.  The blueprint extender and its containers use this class to

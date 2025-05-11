@@ -21,8 +21,6 @@ package org.apache.aries.blueprint.container;
 import java.net.URI;
 import java.util.Set;
 
-import javax.xml.validation.Schema;
-
 import org.apache.aries.blueprint.parser.NamespaceHandlerSet;
 import org.osgi.framework.Bundle;
 

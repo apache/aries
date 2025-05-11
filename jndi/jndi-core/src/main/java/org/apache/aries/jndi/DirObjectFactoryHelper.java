@@ -18,9 +18,9 @@
  */
 package org.apache.aries.jndi;
 
-import org.osgi.framework.BundleContext;
-
 import javax.naming.spi.DirObjectFactory;
+
+import org.osgi.framework.BundleContext;
 
 public class DirObjectFactoryHelper extends ObjectFactoryHelper implements DirObjectFactory {
 

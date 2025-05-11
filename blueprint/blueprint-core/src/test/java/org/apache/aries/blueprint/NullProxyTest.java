@@ -18,6 +18,10 @@
  */
 package org.apache.aries.blueprint;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.aries.blueprint.container.SatisfiableRecipe;
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
@@ -26,10 +30,6 @@ import org.apache.aries.blueprint.pojos.Service;
 import org.apache.aries.proxy.ProxyManager;
 import org.apache.aries.proxy.impl.JdkProxyManager;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class NullProxyTest extends AbstractBlueprintTest {
 

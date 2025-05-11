@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.aries.subsystem.modelling.ResolverException;
 import org.apache.aries.subsystem.modelling.DeployedBundles;
 import org.apache.aries.subsystem.modelling.DeploymentMFElement;
 import org.apache.aries.subsystem.modelling.ExportedBundle;
@@ -39,6 +38,7 @@ import org.apache.aries.subsystem.modelling.ImportedBundle;
 import org.apache.aries.subsystem.modelling.ImportedPackage;
 import org.apache.aries.subsystem.modelling.ImportedService;
 import org.apache.aries.subsystem.modelling.ModelledResource;
+import org.apache.aries.subsystem.modelling.ResolverException;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

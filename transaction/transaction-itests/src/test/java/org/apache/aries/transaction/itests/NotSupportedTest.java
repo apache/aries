@@ -18,7 +18,6 @@ package org.apache.aries.transaction.itests;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
-
 import javax.inject.Inject;
 
 import org.apache.aries.transaction.test.TestBean;

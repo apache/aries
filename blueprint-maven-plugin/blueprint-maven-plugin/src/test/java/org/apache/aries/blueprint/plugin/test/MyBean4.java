@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import javax.inject.Inject;
+
 import org.osgi.framework.BundleContext;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
 
 @Component
 @DependsOn({"myBean5", "myBean6"})

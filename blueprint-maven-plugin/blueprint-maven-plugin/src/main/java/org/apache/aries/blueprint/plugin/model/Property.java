@@ -18,20 +18,20 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.handlers.Handlers;
-import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
+import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
-import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
+import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 class Property implements Comparable<Property>, XmlWriter {
     public final String name;

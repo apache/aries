@@ -18,12 +18,12 @@
  */
 package org.apache.aries.tutorials.blueprint.greeter.server.osgi;
 
+import java.util.Properties;
+
 import org.apache.aries.tutorials.blueprint.greeter.api.GreeterMessageService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-
-import java.util.Properties;
 
 public class ServiceRegisteringActivator implements BundleActivator {
 

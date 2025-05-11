@@ -6,8 +6,8 @@ import static org.junit.Assert.assertFalse;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ImportedPackage;
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.impl.ImportedPackageImpl;
 import org.junit.Test;
 import org.osgi.framework.Constants;

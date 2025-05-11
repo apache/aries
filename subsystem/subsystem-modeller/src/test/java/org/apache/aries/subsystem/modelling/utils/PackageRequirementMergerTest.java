@@ -19,6 +19,11 @@
 package org.apache.aries.subsystem.modelling.utils;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,19 +31,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ImportedPackage;
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.impl.ImportedPackageImpl;
 import org.apache.aries.subsystem.modelling.impl.PackageRequirementMerger;
 import org.apache.aries.util.VersionRange;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.junit.Test;
 import org.osgi.framework.Constants;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 
 public final class PackageRequirementMergerTest

@@ -18,8 +18,8 @@
  */
 package org.apache.aries.samples.blog.biz;
 
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.aries.samples.blog.api.BlogAuthor;
 import org.apache.aries.samples.blog.api.BlogComment;

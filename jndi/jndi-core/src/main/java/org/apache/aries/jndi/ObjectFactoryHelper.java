@@ -18,21 +18,27 @@
  */
 package org.apache.aries.jndi;
 
-import org.apache.aries.jndi.startup.Activator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import static org.osgi.service.jndi.JNDIConstants.JNDI_URLSCHEME;
 
-import javax.naming.*;
-import javax.naming.directory.Attributes;
-import javax.naming.spi.DirObjectFactory;
-import javax.naming.spi.ObjectFactory;
-import javax.naming.spi.ObjectFactoryBuilder;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NamingException;
+import javax.naming.RefAddr;
+import javax.naming.Reference;
+import javax.naming.Referenceable;
+import javax.naming.StringRefAddr;
+import javax.naming.directory.Attributes;
+import javax.naming.spi.DirObjectFactory;
+import javax.naming.spi.ObjectFactory;
+import javax.naming.spi.ObjectFactoryBuilder;
 
-import static org.osgi.service.jndi.JNDIConstants.JNDI_URLSCHEME;
+import org.apache.aries.jndi.startup.Activator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class ObjectFactoryHelper implements ObjectFactory {
 

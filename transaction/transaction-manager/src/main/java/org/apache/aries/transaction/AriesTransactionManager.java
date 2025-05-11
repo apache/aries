@@ -16,15 +16,15 @@
  */
 package org.apache.aries.transaction;
 
-import org.apache.geronimo.transaction.manager.MonitorableTransactionManager;
-import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
-import org.apache.geronimo.transaction.manager.XAWork;
-import org.apache.geronimo.transaction.manager.XidImporter;
-
 import javax.resource.spi.XATerminator;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
+
+import org.apache.geronimo.transaction.manager.MonitorableTransactionManager;
+import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
+import org.apache.geronimo.transaction.manager.XAWork;
+import org.apache.geronimo.transaction.manager.XidImporter;
 
 public interface AriesTransactionManager extends
         TransactionManager, UserTransaction,

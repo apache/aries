@@ -22,7 +22,6 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
 

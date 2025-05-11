@@ -30,7 +30,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import aQute.bnd.osgi.Analyzer;
 import org.apache.aries.util.manifest.BundleManifest;
 import org.apache.maven.archiver.PomPropertiesUtil;
 import org.apache.maven.artifact.Artifact;
@@ -41,6 +40,8 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
+
+import aQute.bnd.osgi.Analyzer;
 
 /**
  * Builds OSGi Enterprise Subsystem Archive (esa) files.

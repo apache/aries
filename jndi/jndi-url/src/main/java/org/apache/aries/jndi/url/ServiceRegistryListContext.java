@@ -18,14 +18,20 @@
  */
 package org.apache.aries.jndi.url;
 
+import java.util.Map;
+import java.util.NoSuchElementException;
+import javax.naming.Binding;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameClassPair;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+
 import org.apache.aries.jndi.services.ServiceHelper;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-
-import javax.naming.*;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 public class ServiceRegistryListContext extends AbstractServiceRegistryContext implements Context {
     /**

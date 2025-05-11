@@ -18,16 +18,16 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.paxcdi;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import org.ops4j.pax.cdi.api.OsgiService;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 public class OsgiServiceHandler implements CustomDependencyAnnotationHandler<OsgiService> {
     @Override

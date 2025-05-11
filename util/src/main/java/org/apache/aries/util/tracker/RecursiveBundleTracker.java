@@ -21,7 +21,6 @@ package org.apache.aries.util.tracker;
 import org.apache.aries.util.tracker.hook.BundleHookBundleTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 

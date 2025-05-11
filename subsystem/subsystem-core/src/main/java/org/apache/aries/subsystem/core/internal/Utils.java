@@ -28,9 +28,9 @@ import org.osgi.resource.Resource;
 import org.osgi.service.coordinator.Coordination;
 import org.osgi.service.coordinator.CoordinationException;
 import org.osgi.service.subsystem.Subsystem;
+import org.osgi.service.subsystem.Subsystem.State;
 import org.osgi.service.subsystem.SubsystemConstants;
 import org.osgi.service.subsystem.SubsystemException;
-import org.osgi.service.subsystem.Subsystem.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

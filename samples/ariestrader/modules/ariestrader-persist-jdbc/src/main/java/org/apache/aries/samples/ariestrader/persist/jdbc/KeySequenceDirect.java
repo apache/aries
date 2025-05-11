@@ -16,15 +16,16 @@
  */
 package org.apache.aries.samples.ariestrader.persist.jdbc;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.HashMap;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 
-import org.apache.aries.samples.ariestrader.util.*;
+import org.apache.aries.samples.ariestrader.util.KeyBlock;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 public class KeySequenceDirect {
 

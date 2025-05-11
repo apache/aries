@@ -16,7 +16,17 @@
  */
 package org.apache.aries.jmx.blueprint.impl;
 
-import javax.management.*;
+import javax.management.ListenerNotFoundException;
+import javax.management.MBeanInfo;
+import javax.management.MBeanNotificationInfo;
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.NotCompliantMBeanException;
+import javax.management.NotificationEmitter;
+import javax.management.NotificationFilter;
+import javax.management.NotificationListener;
+import javax.management.ObjectName;
+import javax.management.StandardMBean;
 
 /**
  * The <code>StandardMBean</code> does not appear to delegate correctly to the underlying MBean implementation. Due to

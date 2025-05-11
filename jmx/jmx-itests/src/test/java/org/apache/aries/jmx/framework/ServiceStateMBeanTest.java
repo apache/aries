@@ -32,14 +32,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.management.AttributeChangeNotification;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
-
 
 import org.apache.aries.jmx.AbstractIntegrationTest;
 import org.apache.aries.jmx.codec.PropertyData;

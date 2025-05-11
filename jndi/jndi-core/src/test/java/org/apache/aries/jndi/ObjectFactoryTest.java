@@ -18,6 +18,20 @@
  */
 package org.apache.aries.jndi;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Properties;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.Reference;
+import javax.naming.StringRefAddr;
+import javax.naming.spi.NamingManager;
+import javax.naming.spi.ObjectFactory;
+
 import org.apache.aries.jndi.startup.Activator;
 import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
 import org.apache.aries.mocks.BundleContextMock;
@@ -28,18 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.jndi.JNDIConstants;
-
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-import javax.naming.spi.NamingManager;
-import javax.naming.spi.ObjectFactory;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Properties;
-
-import static org.junit.Assert.*;
 
 public class ObjectFactoryTest {
     private Activator activator;

@@ -18,15 +18,19 @@
  */
 package org.apache.aries.jndi.url;
 
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameParser;
+import javax.naming.NamingException;
+import javax.naming.OperationNotSupportedException;
+
 import org.apache.aries.jndi.spi.AugmenterInvoker;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jndi.JNDIConstants;
-
-import javax.naming.*;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 public abstract class AbstractServiceRegistryContext implements Context {
 

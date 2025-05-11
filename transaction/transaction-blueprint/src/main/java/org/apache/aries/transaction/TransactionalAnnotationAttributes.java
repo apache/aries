@@ -18,10 +18,10 @@
  */
 package org.apache.aries.transaction;
 
-import javax.transaction.Transactional.TxType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.transaction.Transactional.TxType;
 
 public class TransactionalAnnotationAttributes {
 

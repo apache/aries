@@ -18,20 +18,20 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
+import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.aries.blueprint.annotation.service.MemberType;
 import org.apache.aries.blueprint.annotation.service.ReferenceList;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-
-import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
 
 public class ReferenceListHandler implements CustomDependencyAnnotationHandler<ReferenceList> {
     @Override

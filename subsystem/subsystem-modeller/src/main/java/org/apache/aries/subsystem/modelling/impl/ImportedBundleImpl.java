@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ImportedBundle;
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ModellingConstants;
 import org.apache.aries.subsystem.modelling.Provider;
 import org.apache.aries.subsystem.modelling.ResourceType;

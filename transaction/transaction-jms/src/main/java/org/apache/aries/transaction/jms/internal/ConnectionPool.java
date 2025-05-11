@@ -19,7 +19,6 @@ package org.apache.aries.transaction.jms.internal;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.jms.Connection;
 import javax.jms.IllegalStateException;
 import javax.jms.JMSException;

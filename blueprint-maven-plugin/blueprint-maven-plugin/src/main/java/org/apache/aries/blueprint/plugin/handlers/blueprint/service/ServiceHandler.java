@@ -18,16 +18,16 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
+import java.lang.reflect.AnnotatedElement;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.aries.blueprint.annotation.service.AutoExport;
 import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.lang.reflect.AnnotatedElement;
 
 public class ServiceHandler implements BeanAnnotationHandler<Service> {
     @Override

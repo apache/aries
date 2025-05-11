@@ -18,14 +18,14 @@
  */
 package org.apache.aries.jndi;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.service.jndi.JNDIProviderAdmin;
-
+import java.util.Hashtable;
+import java.util.Map;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.directory.Attributes;
-import java.util.Hashtable;
-import java.util.Map;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.service.jndi.JNDIProviderAdmin;
 
 public class ProviderAdminService implements JNDIProviderAdmin {
 

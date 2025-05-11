@@ -16,7 +16,7 @@
  */
 package org.apache.aries.samples.ariestrader.web.prims;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * 

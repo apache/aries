@@ -17,6 +17,7 @@
  * under the License.
  */
 package org.apache.aries.subsystem.modelling.utils;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

@@ -18,16 +18,16 @@
  */
 package org.apache.aries.jndi;
 
-import org.apache.aries.jndi.startup.Activator;
-import org.osgi.framework.BundleContext;
-
+import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
-import java.util.Hashtable;
+
+import org.apache.aries.jndi.startup.Activator;
+import org.osgi.framework.BundleContext;
 
 public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBuilder, InitialContextFactory {
 

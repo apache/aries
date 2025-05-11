@@ -18,10 +18,10 @@
  */
 package org.apache.aries.jmx.test.blueprint.framework;
 
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.*;
-
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;

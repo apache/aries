@@ -20,8 +20,9 @@ package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
 import java.lang.reflect.AnnotatedElement;
 
-import jakarta.inject.Named;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
+
+import jakarta.inject.Named;
 
 public class NamedHandler implements NamedLikeHandler<Named> {
     @Override

@@ -18,13 +18,14 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import jakarta.annotation.PostConstruct;
+import java.lang.reflect.Method;
+import java.util.List;
+
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 
-import java.lang.reflect.Method;
-import java.util.List;
+import jakarta.annotation.PostConstruct;
 
 public class PostConstructHandler implements MethodAnnotationHandler<PostConstruct> {
     @Override

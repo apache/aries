@@ -18,18 +18,18 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.handlers.Handlers;
-import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
+import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 class RefCollection implements XmlWriter {
     private final String type;

@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.blueprint.ComponentDefinitionRegistryProcessor;
 import org.apache.aries.blueprint.ExtendedValueMetadata;
-import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanArgument;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanProperty;

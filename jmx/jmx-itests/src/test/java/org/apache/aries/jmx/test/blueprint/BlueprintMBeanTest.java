@@ -23,7 +23,6 @@ import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 import java.util.Arrays;
-
 import javax.inject.Inject;
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;

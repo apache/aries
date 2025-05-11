@@ -18,21 +18,30 @@
  */
 package org.apache.aries.blueprint.container;
 
-import java.util.*;
+import java.util.AbstractCollection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.RandomAccess;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
+import org.apache.aries.blueprint.di.CollectionRecipe;
+import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.ValueRecipe;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
-import org.apache.aries.blueprint.ExtendedReferenceListMetadata;
-import org.apache.aries.blueprint.di.Recipe;
-import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.utils.DynamicCollection;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.osgi.service.blueprint.container.ReifiedType;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.osgi.service.blueprint.reflect.ReferenceListMetadata;
 import org.slf4j.Logger;

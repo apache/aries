@@ -31,14 +31,14 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-import org.apache.aries.subsystem.modelling.InvalidAttributeException;
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.subsystem.modelling.ExportedService;
 import org.apache.aries.subsystem.modelling.ImportedService;
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ModellingManager;
 import org.apache.aries.subsystem.modelling.ParsedServiceElements;
 import org.apache.aries.subsystem.modelling.ParserProxy;
 import org.apache.aries.subsystem.modelling.WrappedServiceMetadata;
-import org.apache.aries.blueprint.ComponentDefinitionRegistry;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.osgi.service.blueprint.reflect.BeanArgument;
 import org.osgi.service.blueprint.reflect.BeanMetadata;

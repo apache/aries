@@ -27,11 +27,9 @@ package org.apache.aries.samples.blueprint.idverifier.client;
 
 import java.util.Set;
 
-import org.apache.aries.samples.blueprint.idverifier.api.*;
+import org.apache.aries.samples.blueprint.idverifier.api.CreditRecordOperation;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

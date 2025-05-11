@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import javax.inject.Named;
-import javax.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import javax.inject.Named;
+import javax.inject.Qualifier;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier

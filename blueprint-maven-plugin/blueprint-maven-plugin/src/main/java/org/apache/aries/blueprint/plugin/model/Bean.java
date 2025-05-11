@@ -18,17 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.handlers.Handlers;
-import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
-import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
-import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
+import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findSingleton;
+import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -41,9 +33,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findSingleton;
-import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
+import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
+import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
+import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
+import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 class Bean implements BeanEnricher, XmlWriter, Comparable<Bean> {
 

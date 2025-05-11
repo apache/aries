@@ -19,11 +19,11 @@
 
 package org.apache.aries.jndi.url;
 
+import javax.naming.spi.ObjectFactory;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
-
-import javax.naming.spi.ObjectFactory;
 
 
 /**

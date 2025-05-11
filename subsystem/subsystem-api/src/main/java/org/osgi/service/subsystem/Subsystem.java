@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+
 import org.osgi.annotation.versioning.ProviderType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;

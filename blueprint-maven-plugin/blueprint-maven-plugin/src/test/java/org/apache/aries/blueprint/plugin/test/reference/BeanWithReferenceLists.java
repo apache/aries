@@ -18,16 +18,16 @@
  */
 package org.apache.aries.blueprint.plugin.test.reference;
 
-import org.apache.aries.blueprint.annotation.service.Availability;
-import org.apache.aries.blueprint.annotation.service.MemberType;
-import org.apache.aries.blueprint.annotation.service.ReferenceList;
-import org.osgi.framework.ServiceReference;
-
+import java.util.List;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.List;
+
+import org.apache.aries.blueprint.annotation.service.Availability;
+import org.apache.aries.blueprint.annotation.service.MemberType;
+import org.apache.aries.blueprint.annotation.service.ReferenceList;
+import org.osgi.framework.ServiceReference;
 
 @Singleton
 public class BeanWithReferenceLists {

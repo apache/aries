@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
 
-import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ExportedService;
 import org.apache.aries.subsystem.modelling.ImportedService;
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ModelledResource;
 import org.apache.aries.subsystem.modelling.ModelledResourceManager;
 import org.apache.aries.subsystem.modelling.ModellerException;

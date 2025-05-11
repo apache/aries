@@ -16,7 +16,9 @@
 
 package org.osgi.util.pushstream;
 
-import static org.osgi.util.pushstream.PushEvent.EventType.*;
+import static org.osgi.util.pushstream.PushEvent.EventType.CLOSE;
+import static org.osgi.util.pushstream.PushEvent.EventType.DATA;
+import static org.osgi.util.pushstream.PushEvent.EventType.ERROR;
 
 /**
  * A PushEvent is an immutable object that is transferred through a

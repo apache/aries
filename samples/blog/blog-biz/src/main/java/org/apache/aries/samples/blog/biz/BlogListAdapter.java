@@ -19,7 +19,6 @@
 package org.apache.aries.samples.blog.biz;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;

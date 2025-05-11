@@ -21,7 +21,6 @@ package org.apache.aries.blueprint.itests.authz.helper;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.security.auth.Subject;
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag;

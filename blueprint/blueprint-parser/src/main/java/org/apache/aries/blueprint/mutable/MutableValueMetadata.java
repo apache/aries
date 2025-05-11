@@ -19,7 +19,6 @@
 package org.apache.aries.blueprint.mutable;
 
 import org.apache.aries.blueprint.ExtendedValueMetadata;
-import org.osgi.service.blueprint.reflect.ValueMetadata;
 
 /**
  * A mutable version of the <code>ValueMetadata</code> that allows modifications.

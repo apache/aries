@@ -18,8 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.model.Blueprint;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -29,9 +30,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+
+import org.apache.aries.blueprint.plugin.model.Blueprint;
 
 class BlueprintFileWriter {
 

@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceD;
 import org.ops4j.pax.cdi.api.OsgiService;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class MyBean7 {

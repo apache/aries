@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.pojos.NonStandardSetter;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class NonStandardSettersTest extends AbstractBlueprintTest {
 

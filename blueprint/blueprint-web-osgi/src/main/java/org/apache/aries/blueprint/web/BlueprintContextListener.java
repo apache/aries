@@ -20,7 +20,6 @@ package org.apache.aries.blueprint.web;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

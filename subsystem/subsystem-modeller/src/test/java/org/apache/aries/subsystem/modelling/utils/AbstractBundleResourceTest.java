@@ -25,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.aries.subsystem.modelling.ResolverException;
 import org.apache.aries.subsystem.modelling.ExportedPackage;
 import org.apache.aries.subsystem.modelling.ExportedService;
 import org.apache.aries.subsystem.modelling.ImportedBundle;
@@ -33,6 +32,7 @@ import org.apache.aries.subsystem.modelling.ImportedPackage;
 import org.apache.aries.subsystem.modelling.ImportedService;
 import org.apache.aries.subsystem.modelling.ModelledResource;
 import org.apache.aries.subsystem.modelling.ModellingConstants;
+import org.apache.aries.subsystem.modelling.ResolverException;
 import org.apache.aries.util.manifest.ManifestHeaderProcessor;
 import org.junit.Before;
 import org.junit.Ignore;

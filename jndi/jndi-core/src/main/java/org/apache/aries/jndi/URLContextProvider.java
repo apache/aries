@@ -18,13 +18,13 @@
  */
 package org.apache.aries.jndi;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-
+import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
-import java.util.Hashtable;
+
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class URLContextProvider extends ContextProvider {
     private final ObjectFactory factory;

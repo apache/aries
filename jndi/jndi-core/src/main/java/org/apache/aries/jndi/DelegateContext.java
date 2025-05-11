@@ -18,17 +18,28 @@
  */
 package org.apache.aries.jndi;
 
-import org.osgi.framework.BundleContext;
-
-import javax.naming.*;
-import javax.naming.directory.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import javax.naming.Binding;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameClassPair;
+import javax.naming.NameParser;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.NoInitialContextException;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.ExtendedRequest;
 import javax.naming.ldap.ExtendedResponse;
 import javax.naming.ldap.LdapContext;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+
+import org.osgi.framework.BundleContext;
 
 public class DelegateContext implements DirContext, LdapContext {
 

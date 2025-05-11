@@ -18,11 +18,11 @@
  */
 package org.apache.aries.jndi;
 
+import java.util.function.Supplier;
+
 import org.apache.aries.jndi.startup.Activator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-
-import java.util.function.Supplier;
 
 public class ServicePair<T> implements Supplier<T> {
 

@@ -18,6 +18,7 @@
 package org.apache.aries.transaction.internal;
 
 import javax.transaction.xa.Xid;
+
 import org.apache.geronimo.transaction.manager.XidFactory;
 import org.apache.geronimo.transaction.manager.XidImpl;
 

@@ -18,17 +18,17 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
-import org.apache.aries.blueprint.plugin.handlers.Handlers;
-import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
-import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.lang.annotation.Annotation;
-
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findName;
 import static org.apache.aries.blueprint.plugin.model.AnnotationHelper.findValue;
 import static org.apache.aries.blueprint.plugin.model.NamingHelper.getBeanName;
+
+import java.lang.annotation.Annotation;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
+import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
+import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 
 class Argument implements XmlWriter {
     private final String ref;

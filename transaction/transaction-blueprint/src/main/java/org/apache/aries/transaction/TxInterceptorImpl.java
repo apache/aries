@@ -20,7 +20,6 @@ package org.apache.aries.transaction;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
-
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.Transaction;

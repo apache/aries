@@ -18,9 +18,11 @@
  */
 package org.apache.aries.subsystem.itests;
 
-import java.util.Collection;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import junit.framework.AssertionFailedError;
+import java.util.Collection;
 
 import org.apache.aries.subsystem.core.internal.ResourceHelper;
 import org.junit.Test;
@@ -32,9 +34,7 @@ import org.osgi.framework.namespace.IdentityNamespace;
 import org.osgi.resource.Resource;
 import org.osgi.service.subsystem.Subsystem;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import junit.framework.AssertionFailedError;
 
 @ExamReactorStrategy(PerMethod.class)
 public class FeatureTest extends SubsystemTest {

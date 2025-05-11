@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.codec.BatchActionResult;

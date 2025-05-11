@@ -18,17 +18,17 @@
  */
 package org.apache.aries.transaction.itests;
 
+import static org.junit.Assert.assertEquals;
+
+import java.sql.SQLException;
+import javax.inject.Inject;
+import javax.transaction.Status;
+
 import org.apache.aries.transaction.test.RollbackOnBean;
 import org.apache.aries.transaction.test.TestBean;
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.exam.util.Filter;
-
-import javax.inject.Inject;
-import javax.transaction.Status;
-import java.sql.SQLException;
-
-import static org.junit.Assert.assertEquals;
 
 public class RollbackOnTest extends AbstractIntegrationTest {
 

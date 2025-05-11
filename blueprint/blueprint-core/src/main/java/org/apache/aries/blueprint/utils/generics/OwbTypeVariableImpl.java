@@ -18,7 +18,12 @@
  */
 package org.apache.aries.blueprint.utils.generics;
 
-import java.lang.reflect.*;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 
 

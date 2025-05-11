@@ -20,8 +20,10 @@ package org.apache.aries.pushstream;
 
 import static java.util.Collections.emptyList;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.*;
-import static org.osgi.util.pushstream.PushEventConsumer.*;
+import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.BUILDING;
+import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.CLOSED;
+import static org.osgi.util.pushstream.PushEventConsumer.ABORT;
+import static org.osgi.util.pushstream.PushEventConsumer.CONTINUE;
 
 import java.time.Duration;
 import java.util.AbstractQueue;
@@ -65,12 +67,12 @@ import java.util.stream.Collectors;
 import org.osgi.util.promise.Deferred;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.pushstream.PushEvent;
+import org.osgi.util.pushstream.PushEvent.EventType;
 import org.osgi.util.pushstream.PushEventConsumer;
 import org.osgi.util.pushstream.PushEventSource;
 import org.osgi.util.pushstream.PushStream;
 import org.osgi.util.pushstream.PushStreamBuilder;
 import org.osgi.util.pushstream.PushStreamProvider;
-import org.osgi.util.pushstream.PushEvent.EventType;
 
 public abstract class AbstractPushStreamImpl<T> implements PushStream<T> {
 	

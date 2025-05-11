@@ -22,7 +22,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -40,12 +39,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.apache.aries.samples.ariestrader.util.Log;
-import org.apache.aries.samples.ariestrader.util.TradeConfig;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountProfileDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.HoldingDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.OrderDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 @Entity (name = "accountejb")
 @Table(name = "accountejb")

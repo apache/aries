@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.test;
 
-import org.springframework.context.annotation.Lazy;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
+
+import org.springframework.context.annotation.Lazy;
 
 @Singleton
 @Transactional(value=TxType.REQUIRES_NEW)

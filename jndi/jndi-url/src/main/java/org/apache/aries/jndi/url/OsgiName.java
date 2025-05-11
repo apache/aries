@@ -18,9 +18,9 @@
  */
 package org.apache.aries.jndi.url;
 
+import java.util.Enumeration;
 import javax.naming.InvalidNameException;
 import javax.naming.Name;
-import java.util.Enumeration;
 
 /**
  * A composite name for the aries namespace. This provides useful utility methods

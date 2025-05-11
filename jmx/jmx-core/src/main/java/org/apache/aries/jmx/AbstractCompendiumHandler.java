@@ -17,7 +17,6 @@
 package org.apache.aries.jmx;
 
 import java.util.concurrent.atomic.AtomicLong;
-
 import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.agent.JMXAgentContext;

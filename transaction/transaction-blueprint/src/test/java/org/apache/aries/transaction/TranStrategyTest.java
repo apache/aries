@@ -29,7 +29,6 @@ import static org.junit.Assert.fail;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.InvalidTransactionException;

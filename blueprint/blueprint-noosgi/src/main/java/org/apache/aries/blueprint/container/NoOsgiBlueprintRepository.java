@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.container;
 
-import org.apache.aries.blueprint.di.CollectionRecipe;
 import org.apache.aries.blueprint.di.IdRefRecipe;
 import org.apache.aries.blueprint.di.Recipe;
 import org.apache.aries.blueprint.di.RefRecipe;

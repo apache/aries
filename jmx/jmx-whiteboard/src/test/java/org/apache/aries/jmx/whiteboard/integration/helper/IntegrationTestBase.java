@@ -21,12 +21,15 @@ package org.apache.aries.jmx.whiteboard.integration.helper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.ops4j.pax.exam.CoreOptions.*;
+import static org.ops4j.pax.exam.CoreOptions.bundle;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
 import java.util.Dictionary;
 import java.util.Hashtable;
-
 import javax.inject.Inject;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;

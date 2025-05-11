@@ -26,8 +26,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ImportedService;
+import org.apache.aries.subsystem.modelling.InvalidAttributeException;
 import org.apache.aries.subsystem.modelling.ModellingConstants;
 import org.apache.aries.subsystem.modelling.Provider;
 import org.apache.aries.subsystem.modelling.ResourceType;

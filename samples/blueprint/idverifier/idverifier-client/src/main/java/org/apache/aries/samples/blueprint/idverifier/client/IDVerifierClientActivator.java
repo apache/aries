@@ -19,7 +19,6 @@
 package org.apache.aries.samples.blueprint.idverifier.client;
 
 import java.lang.management.ManagementFactory;
-
 import javax.management.MBeanServer;
 
 import org.osgi.framework.BundleActivator;

@@ -18,7 +18,6 @@
  */
 package org.apache.aries.blueprint.container;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -27,7 +26,6 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.aries.blueprint.di.Recipe;
@@ -35,7 +33,6 @@ import org.apache.aries.quiesce.manager.QuiesceCallback;
 import org.apache.aries.quiesce.participant.QuiesceParticipant;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class BlueprintQuiesceParticipant implements QuiesceParticipant {
     private final BundleContext ctx;

@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;

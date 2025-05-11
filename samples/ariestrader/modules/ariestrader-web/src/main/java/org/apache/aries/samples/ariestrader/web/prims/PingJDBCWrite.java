@@ -16,15 +16,19 @@
  */
 package org.apache.aries.samples.ariestrader.web.prims;
 
-import java.io.*;
+import java.io.IOException;
 import java.math.BigDecimal;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.aries.samples.ariestrader.api.TradeServiceUtilities;
 import org.apache.aries.samples.ariestrader.api.TradeServices;
-import org.apache.aries.samples.ariestrader.api.persistence.*;
-import org.apache.aries.samples.ariestrader.util.*;
+import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 /**
  * 

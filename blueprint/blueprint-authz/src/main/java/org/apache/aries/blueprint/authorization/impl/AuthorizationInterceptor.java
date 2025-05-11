@@ -27,7 +27,6 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.security.auth.Subject;

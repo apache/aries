@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
-
 import javax.management.AttributeChangeNotification;
 import javax.management.AttributeChangeNotificationFilter;
 import javax.management.Notification;

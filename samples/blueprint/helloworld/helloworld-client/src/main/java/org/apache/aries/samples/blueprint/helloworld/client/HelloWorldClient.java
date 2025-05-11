@@ -18,11 +18,11 @@
  */
 package org.apache.aries.samples.blueprint.helloworld.client;
 
+import javax.inject.Inject;
+
 import org.apache.aries.blueprint.annotation.bean.Bean;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.samples.blueprint.helloworld.api.HelloWorldService;
-
-import javax.inject.Inject;
 
 @Bean(initMethod = "startUp")
 public class HelloWorldClient {

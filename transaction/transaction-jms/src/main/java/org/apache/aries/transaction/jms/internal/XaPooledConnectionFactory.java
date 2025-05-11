@@ -18,7 +18,6 @@ package org.apache.aries.transaction.jms.internal;
 
 import java.io.Serializable;
 import java.util.Hashtable;
-
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.QueueConnection;

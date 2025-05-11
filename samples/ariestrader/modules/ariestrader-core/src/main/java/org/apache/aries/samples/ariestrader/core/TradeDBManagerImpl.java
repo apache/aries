@@ -16,23 +16,22 @@
  */
 package org.apache.aries.samples.ariestrader.core;
 
-import javax.sql.DataSource;
-
-import org.apache.aries.blueprint.annotation.bean.Bean;
-import org.apache.aries.blueprint.annotation.service.Service;
-import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
-import org.apache.aries.samples.ariestrader.util.Log;
-import org.apache.aries.samples.ariestrader.util.MDBStats;
-import org.apache.aries.samples.ariestrader.util.ServiceUtilities;
-import org.apache.aries.samples.ariestrader.util.TradeConfig;
-import org.apache.aries.samples.ariestrader.api.TradeDBManager;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.sql.DataSource;
+
+import org.apache.aries.blueprint.annotation.bean.Bean;
+import org.apache.aries.blueprint.annotation.service.Service;
+import org.apache.aries.samples.ariestrader.api.TradeDBManager;
+import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.MDBStats;
+import org.apache.aries.samples.ariestrader.util.ServiceUtilities;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 
 /**

@@ -18,15 +18,15 @@
  */
 package org.apache.aries.async.promise.test;
 
-import org.osgi.util.promise.Deferred;
-import org.osgi.util.promise.Promise;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.osgi.util.promise.Deferred;
+import org.osgi.util.promise.Promise;
 
 public class CallbackTest {
 

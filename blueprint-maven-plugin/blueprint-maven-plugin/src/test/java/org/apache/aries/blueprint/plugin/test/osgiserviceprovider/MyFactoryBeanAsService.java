@@ -18,15 +18,15 @@
  */
 package org.apache.aries.blueprint.plugin.test.osgiserviceprovider;
 
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.plugin.test.MyProduced;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
 import org.ops4j.pax.cdi.api.OsgiServiceProvider;
 import org.ops4j.pax.cdi.api.Properties;
 import org.ops4j.pax.cdi.api.Property;
-
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 @Singleton
 public class MyFactoryBeanAsService {

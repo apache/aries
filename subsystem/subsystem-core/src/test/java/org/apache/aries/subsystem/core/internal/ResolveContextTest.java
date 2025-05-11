@@ -13,6 +13,9 @@
  */
 package org.apache.aries.subsystem.core.internal;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -24,9 +27,6 @@ import org.junit.Test;
 import org.osgi.framework.BundleContext;
 import org.osgi.resource.Capability;
 import org.osgi.service.resolver.HostedCapability;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 
 public class ResolveContextTest {
     @Test

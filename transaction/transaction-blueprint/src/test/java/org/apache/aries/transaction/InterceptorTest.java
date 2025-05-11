@@ -22,7 +22,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 
 import java.io.IOException;
-
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 

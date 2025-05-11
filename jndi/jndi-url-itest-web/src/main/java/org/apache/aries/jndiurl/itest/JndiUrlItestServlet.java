@@ -19,15 +19,15 @@
 
 package org.apache.aries.jndiurl.itest;
 
-import org.apache.aries.jndiurl.itest.beans.ConfigBean;
-
+import java.io.IOException;
+import java.util.List;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
+
+import org.apache.aries.jndiurl.itest.beans.ConfigBean;
 
 public class JndiUrlItestServlet extends HttpServlet {
 

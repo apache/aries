@@ -18,8 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.jakarta;
 
-import jakarta.inject.Qualifier;
 import org.apache.aries.blueprint.plugin.spi.QualifingAnnotationFinder;
+
+import jakarta.inject.Qualifier;
 
 public class QualifierHandler implements QualifingAnnotationFinder<Qualifier> {
     @Override

@@ -22,10 +22,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import javax.management.StandardMBean;
 
 import org.apache.aries.jmx.agent.JMXAgentContext;

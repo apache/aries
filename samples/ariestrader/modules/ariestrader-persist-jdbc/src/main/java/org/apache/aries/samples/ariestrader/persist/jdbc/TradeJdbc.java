@@ -17,8 +17,12 @@
 package org.apache.aries.samples.ariestrader.persist.jdbc;
 
 import java.math.BigDecimal;
-import java.util.Collection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
@@ -26,26 +30,21 @@ import org.apache.aries.blueprint.annotation.bean.Bean;
 import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.blueprint.annotation.service.ServiceProperty;
 import org.apache.aries.samples.ariestrader.api.TradeServices;
-import org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl;
-import org.apache.aries.samples.ariestrader.beans.AccountProfileDataBeanImpl;
-import org.apache.aries.samples.ariestrader.beans.HoldingDataBeanImpl;
-import org.apache.aries.samples.ariestrader.beans.OrderDataBeanImpl;
-import org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.AccountProfileDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.HoldingDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.OrderDataBean;
 import org.apache.aries.samples.ariestrader.api.persistence.QuoteDataBean;
+import org.apache.aries.samples.ariestrader.beans.AccountDataBeanImpl;
+import org.apache.aries.samples.ariestrader.beans.AccountProfileDataBeanImpl;
+import org.apache.aries.samples.ariestrader.beans.HoldingDataBeanImpl;
+import org.apache.aries.samples.ariestrader.beans.OrderDataBeanImpl;
+import org.apache.aries.samples.ariestrader.beans.QuoteDataBeanImpl;
 import org.apache.aries.samples.ariestrader.util.FinancialUtils;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.ServiceUtilities;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
 
 
 /**

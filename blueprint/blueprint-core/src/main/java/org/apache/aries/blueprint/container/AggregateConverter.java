@@ -16,6 +16,8 @@
  */
 package org.apache.aries.blueprint.container;
 
+import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
+
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -51,8 +53,6 @@ import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.apache.aries.blueprint.utils.ReflectionUtils;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
-
-import static org.apache.aries.blueprint.utils.ReflectionUtils.getRealCause;
 
 /**
  * Implementation of the Converter.

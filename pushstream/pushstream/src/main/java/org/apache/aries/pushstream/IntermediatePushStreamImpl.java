@@ -18,7 +18,8 @@
  */
 package org.apache.aries.pushstream;
 
-import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.*;
+import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.BUILDING;
+import static org.apache.aries.pushstream.AbstractPushStreamImpl.State.STARTED;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;

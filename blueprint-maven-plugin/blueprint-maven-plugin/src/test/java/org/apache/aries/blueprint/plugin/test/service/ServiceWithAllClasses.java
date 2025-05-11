@@ -18,10 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin.test.service;
 
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.annotation.service.AutoExport;
 import org.apache.aries.blueprint.annotation.service.Service;
-
-import javax.inject.Singleton;
 
 @Service(autoExport = AutoExport.ALL_CLASSES)
 @Singleton

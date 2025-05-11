@@ -18,6 +18,13 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.junit.Assert.assertNotNull;
+import static org.ops4j.pax.exam.CoreOptions.composite;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+
+import java.io.InputStream;
+import java.util.Hashtable;
+
 import org.apache.aries.itest.AbstractIntegrationTest;
 import org.apache.aries.itest.RichBundleContext;
 import org.junit.runner.RunWith;
@@ -33,15 +40,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.service.blueprint.container.BlueprintContainer;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
-
-import java.io.InputStream;
-import java.util.Hashtable;
-
-import static org.apache.aries.blueprint.itests.Helper.mvnBundle;
-import static org.junit.Assert.assertNotNull;
-import static org.ops4j.pax.exam.CoreOptions.composite;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
  * Base class for Pax Exam 1.2.x based unit tests Contains the injection point and various utilities used in

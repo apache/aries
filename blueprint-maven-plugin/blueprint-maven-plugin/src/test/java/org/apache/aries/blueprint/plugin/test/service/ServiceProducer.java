@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.test.service;
 
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.annotation.bean.Bean;
 import org.apache.aries.blueprint.annotation.service.AutoExport;
 import org.apache.aries.blueprint.annotation.service.Service;
 import org.apache.aries.blueprint.annotation.service.ServiceProperty;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class ServiceProducer implements Service1, Service2 {

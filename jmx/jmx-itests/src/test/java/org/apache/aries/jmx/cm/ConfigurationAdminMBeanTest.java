@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.options;
 
 import java.util.Dictionary;
-
 import javax.inject.Inject;
 import javax.management.openmbean.TabularData;
 

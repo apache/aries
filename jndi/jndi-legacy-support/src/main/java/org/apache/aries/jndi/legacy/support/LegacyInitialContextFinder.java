@@ -18,13 +18,13 @@
  */
 package org.apache.aries.jndi.legacy.support;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Hashtable;
 
 /**
  * Some OSGi based server runtimes, such as jetty OSGi and virgo rely on the thread context classloader

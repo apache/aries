@@ -18,24 +18,24 @@
  */
 package org.apache.aries.jndi;
 
-import org.apache.aries.jndi.startup.Activator;
-import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 import javax.naming.spi.ObjectFactory;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.aries.jndi.startup.Activator;
+import org.apache.aries.jndi.urls.URLObjectFactoryFinder;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Provides helper methods for the DelegateContext. This provides the methods so

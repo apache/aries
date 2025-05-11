@@ -18,6 +18,12 @@
  */
 package org.apache.aries.blueprint.itests;
 
+import static org.apache.aries.blueprint.itests.Helper.blueprintBundles;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.ops4j.pax.exam.CoreOptions.keepCaches;
+import static org.ops4j.pax.exam.CoreOptions.streamBundle;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,11 +39,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.BlueprintEvent;
 import org.osgi.service.blueprint.container.BlueprintListener;
-
-import static org.apache.aries.blueprint.itests.Helper.blueprintBundles;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.*;
 
 public class ParserServiceImportAndIncludeXSDsTest extends AbstractBlueprintIntegrationTest {
 

@@ -18,7 +18,12 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.spring;
 
-import com.google.common.base.CaseFormat;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Set;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
@@ -29,13 +34,7 @@ import org.apache.aries.blueprint.plugin.spi.XmlWriter;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
+import com.google.common.base.CaseFormat;
 
 public class SpringTransactionalFactory implements BeanAnnotationHandler<Transactional>, MethodAnnotationHandler<Transactional> {
     private static final String PATTERN_NS_TX1 = "http\\:\\/\\/aries\\.apache\\.org\\/xmlns\\/transactions\\/v1\\.(.)\\.(.)";

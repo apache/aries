@@ -18,9 +18,9 @@
  */
 package org.apache.aries.jndi.urls;
 
+import java.util.Hashtable;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
-import java.util.Hashtable;
 
 public interface URLObjectFactoryFinder {
 

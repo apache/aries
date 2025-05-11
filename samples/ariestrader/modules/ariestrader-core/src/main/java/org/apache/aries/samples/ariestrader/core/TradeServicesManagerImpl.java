@@ -22,11 +22,11 @@ import java.util.Map;
 import org.apache.aries.blueprint.annotation.bean.Bean;
 import org.apache.aries.blueprint.annotation.referencelistener.ReferenceListener;
 import org.apache.aries.blueprint.annotation.service.Service;
+import org.apache.aries.samples.ariestrader.api.TradeServices;
+import org.apache.aries.samples.ariestrader.api.TradeServicesManager;
 import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
-import org.apache.aries.samples.ariestrader.api.TradeServicesManager;
-import org.apache.aries.samples.ariestrader.api.TradeServices;
 
 
 /**

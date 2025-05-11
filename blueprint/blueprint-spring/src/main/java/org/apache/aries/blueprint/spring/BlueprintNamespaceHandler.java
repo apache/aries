@@ -31,8 +31,6 @@ import org.apache.aries.blueprint.PassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
 import org.apache.aries.blueprint.mutable.MutablePassThroughMetadata;
 import org.apache.aries.blueprint.mutable.MutableRefMetadata;
-import org.apache.aries.blueprint.parser.Parser;
-import org.apache.aries.blueprint.parser.ParserContextImpl;
 import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.service.blueprint.reflect.BeanMetadata;
@@ -59,7 +57,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Blueprint NamespaceHandler wrapper for a spring NamespaceHandler

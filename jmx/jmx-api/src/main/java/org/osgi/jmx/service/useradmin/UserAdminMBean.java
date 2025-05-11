@@ -17,7 +17,6 @@
 package org.osgi.jmx.service.useradmin;
 
 import java.io.IOException;
-
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.SimpleType;

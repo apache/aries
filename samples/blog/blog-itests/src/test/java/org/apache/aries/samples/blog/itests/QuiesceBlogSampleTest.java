@@ -18,16 +18,15 @@
  */
 package org.apache.aries.samples.blog.itests;
 
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+
 import java.util.Arrays;
 import java.util.Collections;
-
 import javax.inject.Inject;
 
 import org.apache.aries.quiesce.manager.QuiesceManager;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
-
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 
 
 public class QuiesceBlogSampleTest extends AbstractBlogIntegrationTest {

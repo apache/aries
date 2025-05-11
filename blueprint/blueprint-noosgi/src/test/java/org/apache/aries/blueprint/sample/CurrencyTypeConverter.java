@@ -16,10 +16,10 @@
  */
 package org.apache.aries.blueprint.sample;
 
+import java.util.Currency;
+
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
-
-import java.util.Currency;
 
 public class CurrencyTypeConverter implements Converter {
 

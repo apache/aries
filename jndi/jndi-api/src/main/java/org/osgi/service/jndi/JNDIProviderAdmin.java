@@ -17,7 +17,6 @@
 package org.osgi.service.jndi;
 
 import java.util.Map;
-
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.directory.Attributes;

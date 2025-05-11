@@ -18,14 +18,14 @@
  */
 package org.apache.aries.proxy.impl.weaving;
 
+import static org.objectweb.asm.Opcodes.ASM9;
+
 import java.lang.reflect.Modifier;
 
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.SerialVersionUIDAdder;
-
-import static org.objectweb.asm.Opcodes.ASM9;
 
 class SyntheticSerialVerUIDAdder extends SerialVersionUIDAdder {
 

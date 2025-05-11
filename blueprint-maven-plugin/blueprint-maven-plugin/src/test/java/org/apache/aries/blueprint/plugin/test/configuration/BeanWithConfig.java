@@ -18,14 +18,14 @@
  */
 package org.apache.aries.blueprint.plugin.test.configuration;
 
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.annotation.config.Config;
 import org.apache.aries.blueprint.annotation.config.ConfigProperty;
 import org.apache.aries.blueprint.annotation.config.DefaultProperty;
 import org.apache.aries.blueprint.plugin.test.MyProducedWithConstructor;
-
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 @Config(
         pid = "org.apache.aries.my",

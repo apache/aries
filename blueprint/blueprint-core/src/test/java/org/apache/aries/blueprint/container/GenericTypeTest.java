@@ -18,15 +18,15 @@
  */
 package org.apache.aries.blueprint.container;
 
-import java.util.List;
-import java.util.Map;
-import java.net.URI;
-
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
 
 public class GenericTypeTest {
 

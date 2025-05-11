@@ -20,17 +20,15 @@ package org.apache.aries.samples.blog.biz;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import javax.inject.Singleton;
 
 import org.apache.aries.blueprint.annotation.service.Reference;
-import org.apache.aries.samples.blog.api.*;
+import org.apache.aries.samples.blog.api.BlogAuthor;
+import org.apache.aries.samples.blog.api.BlogAuthorManager;
 import org.apache.aries.samples.blog.api.persistence.Author;
 import org.apache.aries.samples.blog.api.persistence.BlogPersistenceService;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class BlogAuthorManagerImpl implements BlogAuthorManager

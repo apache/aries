@@ -18,14 +18,14 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
+import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
+import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needTimeout;
+
 import org.apache.aries.blueprint.annotation.service.Availability;
 import org.apache.aries.blueprint.annotation.service.MemberType;
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.blueprint.annotation.service.ReferenceList;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-
-import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
-import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needTimeout;
 
 class ReferenceId {
     static String generateReferenceId(Class clazz, Reference reference, ContextEnricher contextEnricher) {

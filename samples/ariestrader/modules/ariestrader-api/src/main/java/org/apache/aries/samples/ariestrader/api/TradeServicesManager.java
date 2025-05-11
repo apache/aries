@@ -17,7 +17,6 @@
 package org.apache.aries.samples.ariestrader.api;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.aries.samples.ariestrader.api.persistence.MarketSummaryDataBean;
 

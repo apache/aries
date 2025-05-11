@@ -19,7 +19,7 @@
 
 package org.apache.aries.samples.blueprint.idverifier.client;
 
-import org.apache.aries.samples.blueprint.idverifier.api.*;
+import org.apache.aries.samples.blueprint.idverifier.api.PersonIDVerifier;
 import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
 

@@ -19,19 +19,19 @@
 
 package org.apache.aries.ant.taskdefs;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.FileSet;
+import org.junit.Test;
 
 /**
  * @version $Id: $

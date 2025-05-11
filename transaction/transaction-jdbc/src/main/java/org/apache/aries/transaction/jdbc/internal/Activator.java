@@ -18,6 +18,9 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
+import java.util.Hashtable;
+import javax.sql.CommonDataSource;
+
 import org.apache.aries.blueprint.NamespaceHandler;
 import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.aries.util.tracker.SingleServiceTracker;
@@ -32,10 +35,6 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.CommonDataSource;
-
-import java.util.Hashtable;
 
 @SuppressWarnings("rawtypes")
 public class Activator implements BundleActivator,

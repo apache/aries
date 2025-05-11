@@ -18,15 +18,20 @@
  */
 package org.apache.aries.jndi.url;
 
+import java.security.AccessControlException;
+import java.util.Hashtable;
+import java.util.Map;
+import javax.naming.Binding;
+import javax.naming.Context;
+import javax.naming.Name;
+import javax.naming.NameClassPair;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+
 import org.apache.aries.jndi.services.ServiceHelper;
 import org.osgi.framework.AdminPermission;
 import org.osgi.framework.BundleContext;
-
-import javax.naming.*;
-import java.security.AccessControlException;
-import java.security.AccessController;
-import java.util.Hashtable;
-import java.util.Map;
 
 /**
  * A JNDI context for looking stuff up from the service registry.

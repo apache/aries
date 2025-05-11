@@ -19,7 +19,6 @@
 package org.apache.aries.transaction.test.impl;
 
 import java.sql.SQLException;
-
 import javax.transaction.Transactional;
 
 public class RequiredTestBeanImpl extends TestBeanImpl {

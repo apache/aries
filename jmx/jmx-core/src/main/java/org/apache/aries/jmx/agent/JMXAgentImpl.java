@@ -18,7 +18,6 @@ package org.apache.aries.jmx.agent;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
-
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;

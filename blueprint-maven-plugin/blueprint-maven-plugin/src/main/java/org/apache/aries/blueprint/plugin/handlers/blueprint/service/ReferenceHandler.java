@@ -18,19 +18,19 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.blueprint.service;
 
+import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
+import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needTimeout;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.aries.blueprint.annotation.service.Reference;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.CustomDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needAvailability;
-import static org.apache.aries.blueprint.plugin.handlers.blueprint.service.ReferenceParameters.needTimeout;
 
 public class ReferenceHandler implements CustomDependencyAnnotationHandler<Reference> {
     @Override

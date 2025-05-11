@@ -18,6 +18,9 @@
  */
 package org.apache.aries.unittest.mocks;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -33,13 +36,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import junit.framework.AssertionFailedError;
-
 import org.apache.aries.unittest.mocks.annotations.InjectSkeleton;
 import org.apache.aries.unittest.mocks.annotations.Singleton;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import junit.framework.AssertionFailedError;
 
 /**
  * <p>The Skeleton class is an implementation of the 

@@ -18,11 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.maven.artifact.Artifact;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.apache.maven.artifact.Artifact;
 
 class ArtifactFilter {
 

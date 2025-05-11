@@ -16,16 +16,18 @@
  */
 package org.apache.aries.samples.ariestrader.web;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.IOException;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.aries.samples.ariestrader.api.TradeDBManager;
 import org.apache.aries.samples.ariestrader.api.TradeServiceUtilities;
 import org.apache.aries.samples.ariestrader.api.persistence.RunStatsDataBean;
 import org.apache.aries.samples.ariestrader.util.Log;
 import org.apache.aries.samples.ariestrader.util.TradeConfig;
-
-import java.io.IOException;
 
 /**
  * TradeConfigServlet provides a servlet interface to adjust AriesTrader runtime parameters.

@@ -26,7 +26,6 @@ import static org.osgi.jmx.framework.ServiceStateMBean.SERVICE_EVENT_TYPE;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenDataException;

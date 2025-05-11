@@ -21,7 +21,6 @@ package org.apache.aries.jmx.whiteboard;
 import java.lang.reflect.Field;
 import java.util.Dictionary;
 import java.util.Hashtable;
-
 import javax.management.DynamicMBean;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;

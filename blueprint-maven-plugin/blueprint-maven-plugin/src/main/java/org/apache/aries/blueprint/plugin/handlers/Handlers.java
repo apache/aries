@@ -18,6 +18,11 @@
  */
 package org.apache.aries.blueprint.plugin.handlers;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ServiceLoader;
+
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanFinder;
 import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
@@ -30,11 +35,6 @@ import org.apache.aries.blueprint.plugin.spi.MethodAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.QualifingAnnotationFinder;
 import org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ServiceLoader;
 
 public class Handlers {
     public static final List<Class<? extends Annotation>> BEAN_MARKING_ANNOTATION_CLASSES = new ArrayList<>();

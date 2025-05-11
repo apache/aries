@@ -19,11 +19,11 @@
 package org.apache.aries.blueprint.plugin.model;
 
 
+import java.lang.reflect.Method;
+
 import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
-
-import java.lang.reflect.Method;
 
 class BeanFromFactory extends Bean {
     private static final String BLUEPRINT_BEAN_FROM_FACTORY_NAME_PROPERTY = "blueprint.beanFromFactory.nameFromFactoryMethodName";

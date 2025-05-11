@@ -16,16 +16,21 @@
  */
 package org.apache.aries.samples.ariestrader.web;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-
-import org.apache.aries.samples.ariestrader.api.persistence.*;
-import org.apache.aries.samples.ariestrader.util.*;
-
-import java.util.Collection;
-import java.util.Iterator;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.aries.samples.ariestrader.api.persistence.HoldingDataBean;
+import org.apache.aries.samples.ariestrader.util.Log;
+import org.apache.aries.samples.ariestrader.util.TradeConfig;
 
 /**
  * TradeScenarioServlet emulates a population of web users by generating a specific Trade operation 

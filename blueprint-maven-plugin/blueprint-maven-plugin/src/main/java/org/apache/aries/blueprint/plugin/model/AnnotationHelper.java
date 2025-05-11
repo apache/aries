@@ -18,15 +18,15 @@
  */
 package org.apache.aries.blueprint.plugin.model;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.aries.blueprint.plugin.handlers.Handlers;
 import org.apache.aries.blueprint.plugin.spi.CollectionDependencyAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.InjectLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.NamedLikeHandler;
 import org.apache.aries.blueprint.plugin.spi.ValueInjectionHandler;
-
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
 
 class AnnotationHelper {
     static Class<? extends Annotation>[] injectDependencyAnnotations = findInjectDependencyAnnotations();

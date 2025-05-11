@@ -18,20 +18,20 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.common;
 
+import static org.apache.aries.blueprint.plugin.handlers.common.Namespaces.PATTERN_NS_JPA1;
+import static org.apache.aries.blueprint.plugin.handlers.common.Namespaces.PATTERN_NS_JPA2;
+import static org.apache.aries.blueprint.plugin.handlers.common.Namespaces.getNamespaceByPattern;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.List;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.aries.blueprint.plugin.spi.FieldAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.XmlWriter;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.List;
-
-import static org.apache.aries.blueprint.plugin.handlers.common.Namespaces.PATTERN_NS_JPA1;
-import static org.apache.aries.blueprint.plugin.handlers.common.Namespaces.PATTERN_NS_JPA2;
-import static org.apache.aries.blueprint.plugin.handlers.common.Namespaces.getNamespaceByPattern;
 
 public abstract class AbstractPersistenceUnitHandler<T extends Annotation> implements FieldAnnotationHandler<T> {
 

@@ -33,7 +33,6 @@ import java.util.Dictionary;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-
 import javax.inject.Inject;
 import javax.management.openmbean.TabularData;
 

@@ -18,20 +18,20 @@
  */
 package org.apache.aries.transaction.jdbc;
 
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import javax.sql.CommonDataSource;
+import javax.sql.DataSource;
+import javax.sql.XADataSource;
+
 import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.aries.transaction.jdbc.internal.AbstractMCFFactory;
 import org.apache.aries.transaction.jdbc.internal.ConnectionManagerFactory;
 import org.apache.aries.transaction.jdbc.internal.DataSourceMCFFactory;
 import org.apache.aries.transaction.jdbc.internal.Recovery;
 import org.apache.aries.transaction.jdbc.internal.XADataSourceMCFFactory;
-
-import javax.sql.CommonDataSource;
-import javax.sql.DataSource;
-import javax.sql.XADataSource;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 
 /**
  * Defines a JDBC DataSource that will auto-enlist into existing XA transactions.

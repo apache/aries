@@ -17,16 +17,15 @@
 
 package org.apache.aries.transaction.internal;
 
-import java.util.concurrent.TimeUnit;
-import javax.transaction.xa.Xid;
-
-import org.apache.aries.transaction.internal.XidFactoryImpl;
-import org.apache.geronimo.transaction.manager.XidFactory;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.TimeUnit;
+import javax.transaction.xa.Xid;
+
+import org.apache.geronimo.transaction.manager.XidFactory;
+import org.junit.Test;
 
 public class XidFactoryImplTest {
 

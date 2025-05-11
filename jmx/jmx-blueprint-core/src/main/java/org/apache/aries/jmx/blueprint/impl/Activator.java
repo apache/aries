@@ -18,8 +18,6 @@
  */
 package org.apache.aries.jmx.blueprint.impl;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;

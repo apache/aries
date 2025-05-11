@@ -18,24 +18,10 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.model.Blueprint;
-import org.apache.aries.blueprint.plugin.test.transactionenable.TxBean;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.xbean.finder.ClassFinder;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,10 +31,24 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
-import static org.apache.aries.blueprint.plugin.FilteredClassFinder.findClasses;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.apache.aries.blueprint.plugin.model.Blueprint;
+import org.apache.aries.blueprint.plugin.test.transactionenable.TxBean;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.xbean.finder.ClassFinder;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 public class EnableAnnotationTest {
 

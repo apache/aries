@@ -18,27 +18,6 @@
  */
 package org.apache.aries.proxy.itests;
 
-import org.apache.aries.itest.AbstractIntegrationTest;
-import org.apache.aries.proxy.InvocationListener;
-import org.apache.aries.proxy.ProxyManager;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.ops4j.pax.exam.CoreOptions;
-import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-
-import javax.inject.Inject;
-import java.lang.reflect.Method;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,6 +25,26 @@ import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.CoreOptions.composite;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+
+import java.lang.reflect.Method;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Callable;
+import javax.inject.Inject;
+
+import org.apache.aries.itest.AbstractIntegrationTest;
+import org.apache.aries.proxy.InvocationListener;
+import org.apache.aries.proxy.ProxyManager;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)

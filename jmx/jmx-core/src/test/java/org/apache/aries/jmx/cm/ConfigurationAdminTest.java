@@ -29,7 +29,6 @@ import static org.osgi.jmx.JmxConstants.PROPERTIES_TYPE;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
-
 import javax.management.openmbean.TabularData;
 import javax.management.openmbean.TabularDataSupport;
 

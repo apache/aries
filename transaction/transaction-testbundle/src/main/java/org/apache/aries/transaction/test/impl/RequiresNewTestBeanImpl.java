@@ -18,10 +18,9 @@
  */
 package org.apache.aries.transaction.test.impl;
 
+import java.sql.SQLException;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
-
-import java.sql.SQLException;
 
 public class RequiresNewTestBeanImpl extends TestBeanImpl {
 

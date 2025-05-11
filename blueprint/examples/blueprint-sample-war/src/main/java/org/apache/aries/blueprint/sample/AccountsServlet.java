@@ -16,15 +16,15 @@
  */
 package org.apache.aries.blueprint.sample;
 
-import org.apache.aries.blueprint.web.BlueprintContextListener;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-
+import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
+
+import org.apache.aries.blueprint.web.BlueprintContextListener;
+import org.osgi.service.blueprint.container.BlueprintContainer;
 
 public class AccountsServlet extends HttpServlet {
 

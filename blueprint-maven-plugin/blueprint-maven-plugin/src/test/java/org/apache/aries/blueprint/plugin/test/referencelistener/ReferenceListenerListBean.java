@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.test.referencelistener;
 
+import javax.inject.Singleton;
+
 import org.apache.aries.blueprint.annotation.referencelistener.Availability;
 import org.apache.aries.blueprint.annotation.referencelistener.Bind;
 import org.apache.aries.blueprint.annotation.referencelistener.ReferenceListener;
 import org.apache.aries.blueprint.annotation.referencelistener.Unbind;
 import org.apache.aries.blueprint.plugin.test.interfaces.ServiceA;
-
-import javax.inject.Singleton;
 
 @ReferenceListener(referenceInterface = ServiceA.class, filter = "(b=c)", componentName = "a", availability = Availability.MANDATORY)
 @Singleton

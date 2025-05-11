@@ -19,7 +19,6 @@
 package org.apache.aries.blueprint.plugin.spi;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
 /**
  * Annotation A on constructor, setter or field adds inject collection (array, list, set) of beans into annotated element.

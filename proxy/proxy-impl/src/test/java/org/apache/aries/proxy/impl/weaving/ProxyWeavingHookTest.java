@@ -18,15 +18,15 @@
  */
 package org.apache.aries.proxy.impl.weaving;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class ProxyWeavingHookTest {
 

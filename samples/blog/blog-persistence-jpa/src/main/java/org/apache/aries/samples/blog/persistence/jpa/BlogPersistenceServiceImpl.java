@@ -23,7 +23,6 @@ package org.apache.aries.samples.blog.persistence.jpa;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;

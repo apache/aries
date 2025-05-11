@@ -18,12 +18,12 @@
  */
 package org.apache.aries.blueprint.utils;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
 import org.apache.aries.blueprint.utils.HeaderParser.PathElement;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class HeaderParserTest {
 

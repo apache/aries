@@ -19,6 +19,7 @@
 package org.apache.aries.quiesce.participant;
 
 import java.util.List;
+
 import org.apache.aries.quiesce.manager.QuiesceCallback;
 import org.osgi.framework.Bundle;
 

@@ -18,12 +18,11 @@
  */
 package org.apache.aries.jndi.services;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 
-import org.apache.aries.jndi.services.ServiceHelper;
 import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
 
 public class ServiceHelperTest {
 

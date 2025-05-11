@@ -16,9 +16,8 @@
  */
 package org.apache.aries.blueprint.sample;
 
-import java.util.Map;
 import java.util.List;
-import java.io.Serializable;
+import java.util.Map;
 
 import org.osgi.framework.ServiceReference;
 

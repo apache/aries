@@ -18,8 +18,8 @@
  */
 package org.apache.aries.transaction.test.impl;
 
-import javax.transaction.Transactional;
 import java.sql.SQLException;
+import javax.transaction.Transactional;
 
 public class MandatoryTestBeanImpl extends TestBeanImpl {
 

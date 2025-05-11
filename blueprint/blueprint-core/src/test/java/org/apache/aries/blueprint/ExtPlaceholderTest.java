@@ -18,15 +18,15 @@
  */
 package org.apache.aries.blueprint;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.aries.blueprint.di.Repository;
 import org.apache.aries.blueprint.ext.impl.ExtNamespaceHandler;
 import org.apache.aries.blueprint.parser.ComponentDefinitionRegistryImpl;
 import org.apache.aries.blueprint.pojos.BeanD;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class ExtPlaceholderTest extends AbstractBlueprintTest {
 

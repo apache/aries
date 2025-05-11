@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin.handlers.spring;
 
+import java.lang.reflect.AnnotatedElement;
+
 import org.apache.aries.blueprint.plugin.spi.BeanAnnotationHandler;
 import org.apache.aries.blueprint.plugin.spi.BeanEnricher;
 import org.apache.aries.blueprint.plugin.spi.ContextEnricher;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.DependsOn;
-
-import java.lang.reflect.AnnotatedElement;
 
 public class DependsOnAttributeResolver implements BeanAnnotationHandler<DependsOn> {
     @Override

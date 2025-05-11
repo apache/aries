@@ -17,7 +17,6 @@
  */
 package org.apache.aries.blueprint.di;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.aries.blueprint.container.GenericType;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.osgi.service.blueprint.container.Converter;
 import org.osgi.service.blueprint.container.ReifiedType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

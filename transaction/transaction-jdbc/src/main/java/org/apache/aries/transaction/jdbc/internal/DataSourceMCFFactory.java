@@ -18,16 +18,16 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
-import org.tranql.connector.CredentialExtractor;
-import org.tranql.connector.jdbc.AbstractLocalDataSourceMCF;
-
+import java.sql.Connection;
+import java.sql.SQLException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ResourceAdapterInternalException;
 import javax.resource.spi.TransactionSupport;
 import javax.security.auth.Subject;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+
+import org.tranql.connector.CredentialExtractor;
+import org.tranql.connector.jdbc.AbstractLocalDataSourceMCF;
 
 public class DataSourceMCFFactory extends AbstractMCFFactory {
 

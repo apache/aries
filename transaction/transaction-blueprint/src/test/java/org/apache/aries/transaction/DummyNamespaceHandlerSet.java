@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.validation.Schema;
 
 import org.apache.aries.blueprint.NamespaceHandler;

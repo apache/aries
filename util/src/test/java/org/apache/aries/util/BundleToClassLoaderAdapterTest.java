@@ -19,13 +19,13 @@
 
 package org.apache.aries.util;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.aries.unittest.mocks.MethodCall;
 import org.apache.aries.unittest.mocks.Skeleton;
 import org.apache.aries.util.internal.BundleToClassLoaderAdapter;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
-
-import static org.junit.Assert.assertEquals;
 
 public class BundleToClassLoaderAdapterTest {
     @Test(expected=ClassNotFoundException.class)

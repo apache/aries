@@ -18,16 +18,6 @@
  */
 package org.apache.aries.blueprint.ext;
 
-import org.apache.aries.blueprint.ComponentDefinitionRegistry;
-import org.apache.aries.blueprint.PassThroughMetadata;
-import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluator;
-import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluatorExt;
-import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
-import org.apache.felix.utils.properties.Properties;
-import org.osgi.service.blueprint.container.ComponentDefinitionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -36,6 +26,15 @@ import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.aries.blueprint.ComponentDefinitionRegistry;
+import org.apache.aries.blueprint.PassThroughMetadata;
+import org.apache.aries.blueprint.ext.evaluator.PropertyEvaluatorExt;
+import org.apache.aries.blueprint.services.ExtendedBlueprintContainer;
+import org.apache.felix.utils.properties.Properties;
+import org.osgi.service.blueprint.container.ComponentDefinitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Property placeholder that looks for properties in the System properties.

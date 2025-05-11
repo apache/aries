@@ -20,7 +20,6 @@ package org.apache.aries.jmx.test.blueprint.framework;
 
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
-
 import javax.management.openmbean.CompositeData;
 
 public class Util {

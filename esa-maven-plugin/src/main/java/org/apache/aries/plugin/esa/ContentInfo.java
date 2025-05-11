@@ -27,13 +27,13 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import aQute.bnd.osgi.Analyzer;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.shared.osgi.DefaultMaven2OsgiConverter;
 import org.apache.maven.shared.osgi.Maven2OsgiConverter;
+
+import aQute.bnd.osgi.Analyzer;
 
 public class ContentInfo {
 

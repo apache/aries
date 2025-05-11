@@ -18,6 +18,9 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
+import javax.resource.spi.ConnectionManager;
+import javax.resource.spi.ManagedConnectionFactory;
+
 import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
 import org.apache.geronimo.connector.outbound.SubjectSource;
@@ -33,9 +36,6 @@ import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrack
 import org.apache.geronimo.connector.outbound.connectiontracking.GeronimoTransactionListener;
 import org.apache.geronimo.transaction.manager.TransactionManagerMonitor;
 import org.tranql.connector.UserPasswordManagedConnectionFactory;
-
-import javax.resource.spi.ConnectionManager;
-import javax.resource.spi.ManagedConnectionFactory;
 
 public class ConnectionManagerFactory {
 

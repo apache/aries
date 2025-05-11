@@ -19,11 +19,10 @@ package org.apache.aries.blueprint;
 import java.net.URL;
 import java.util.Set;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
 import org.osgi.service.blueprint.reflect.Metadata;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * A processor for custom blueprint extensions

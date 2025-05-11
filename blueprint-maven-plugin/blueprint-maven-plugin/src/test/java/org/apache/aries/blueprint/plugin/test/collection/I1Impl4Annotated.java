@@ -18,9 +18,9 @@
  */
 package org.apache.aries.blueprint.plugin.test.collection;
 
-import org.apache.aries.blueprint.plugin.AnnotatedService;
-
 import javax.inject.Singleton;
+
+import org.apache.aries.blueprint.plugin.AnnotatedService;
 
 @Singleton
 @AnnotatedService

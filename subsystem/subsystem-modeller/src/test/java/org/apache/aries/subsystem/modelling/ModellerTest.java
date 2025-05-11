@@ -19,6 +19,11 @@
 
 package org.apache.aries.subsystem.modelling;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,10 +34,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
 
+import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.subsystem.modelling.impl.ModelledResourceManagerImpl;
 import org.apache.aries.subsystem.modelling.impl.ModellingManagerImpl;
 import org.apache.aries.subsystem.modelling.impl.ParserProxyTest;
-import org.apache.aries.mocks.BundleContextMock;
 import org.apache.aries.util.filesystem.FileSystem;
 import org.apache.aries.util.io.IOUtils;
 import org.junit.AfterClass;
@@ -41,7 +46,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public class ModellerTest {

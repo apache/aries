@@ -18,13 +18,13 @@
  */
 package org.apache.aries.blueprint.plugin;
 
-import org.apache.aries.blueprint.plugin.handlers.Handlers;
-import org.apache.xbean.finder.ClassFinder;
-
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.aries.blueprint.plugin.handlers.Handlers;
+import org.apache.xbean.finder.ClassFinder;
 
 class FilteredClassFinder {
 

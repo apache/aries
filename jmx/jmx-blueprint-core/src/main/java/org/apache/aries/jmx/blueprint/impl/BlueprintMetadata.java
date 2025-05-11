@@ -20,7 +20,6 @@ package org.apache.aries.jmx.blueprint.impl;
 
 import java.io.IOException;
 import java.util.Collection;
-
 import javax.management.openmbean.CompositeData;
 
 import org.apache.aries.jmx.blueprint.BlueprintMetadataMBean;

@@ -21,9 +21,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.bootDelegationPackages;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Arrays;
 
 import org.apache.aries.blueprint.testquiescebundle.TestBean;
 import org.apache.aries.quiesce.manager.QuiesceCallback;

@@ -21,10 +21,9 @@ package org.apache.aries.samples.blueprint.idverifier.client;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.apache.aries.samples.blueprint.idverifier.api.PersonIDVerifier;
-import org.apache.aries.samples.blueprint.idverifier.server.PersonIDVerifierSimpleImpl;
 import org.apache.aries.samples.blueprint.idverifier.server.PersonIDVerifierComplexImpl;
+import org.apache.aries.samples.blueprint.idverifier.server.PersonIDVerifierSimpleImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

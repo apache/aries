@@ -26,7 +26,6 @@ import static org.ops4j.pax.exam.CoreOptions.streamBundle;
 
 import java.io.InputStream;
 import java.util.Hashtable;
-
 import javax.inject.Inject;
 
 import org.apache.aries.blueprint.itests.AbstractBlueprintIntegrationTest;
