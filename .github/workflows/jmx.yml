@@ -20,6 +20,8 @@ on:
       - versioning/**
       - util/**
       - proxy/**
+      - quiesce/**
+      - blueprint/**
       - jmx/**
       - .github/workflows/jmx.yml
   push:
@@ -62,6 +64,12 @@ jobs:
     - name: Build proxy
       shell: bash
       run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f proxy
+    - name: Build quiesce
+      shell: bash
+      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f quiesce
+    - name: Build blueprint
+      shell: bash
+      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f blueprint
     - name: Build jmx
       shell: bash
       run: mvn -U -e -B -ntp clean install -f jmx
