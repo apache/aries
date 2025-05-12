@@ -59,6 +59,7 @@ public abstract class AbstractIntegrationTest extends org.apache.aries.itest.Abs
 	public Option baseOptions() {
         return composite(
                 junitBundles(),
+				addPaxLoggingBundles(),
                 setPaxExamLogLevel("INFO"),
                 configurePaxUrlLocalMavenRepoIfNeeded()
                 // there could be unresolved bundles e.g. fragments
