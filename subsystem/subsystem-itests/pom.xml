@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>3.0.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -39,14 +39,13 @@
 
     <properties>
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
-        <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <easymock.version>5.5.0</easymock.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
         <org.apache.aries.subsystem.modeller.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.modeller.version>
         <org.apache.aries.blueprint.version>1.10.4-SNAPSHOT</org.apache.aries.blueprint.version>
-        <org.apache.aries.proxy.version>1.1.9</org.apache.aries.proxy.version>
+        <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
         <org.apache.aries.subsystem.api.version>2.0.11-SNAPSHOT</org.apache.aries.subsystem.api.version>
         <org.apache.aries.subsystem.core.version>2.0.11-SNAPSHOT</org.apache.aries.subsystem.core.version>
         <org.apache.aries.subsystem.itest.interfaces.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.itest.interfaces.version>
@@ -905,16 +904,6 @@
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <!-- TODO ARIES-2165: remove configuration when the newest parent pom is used -->
-                <version>${depends-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-depends-file</id>
-                        <goals>
-                            <goal>generate-depends-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
