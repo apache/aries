@@ -96,7 +96,7 @@
         <asm.version>9.8</asm.version>
         <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
         <blueprint.parser.version>1.6.2-SNAPSHOT</blueprint.parser.version>
-        <easymock.version>5.5.0</easymock.version>
+        <easymock.version>5.6.0</easymock.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
         <org.apache.felix.utils.version>1.11.8</org.apache.felix.utils.version>
