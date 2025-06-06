@@ -38,7 +38,7 @@
     </description>
 
     <properties>
-        <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <easymock.version>5.6.0</easymock.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
