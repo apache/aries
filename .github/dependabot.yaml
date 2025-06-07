@@ -58,6 +58,9 @@ updates:
       - dependency-name: "org.apache.openjpa:openjpa"
         versions:
           - ">=4.0.0" # does not support java 8
+      - dependency-name: "org.codehaus.plexus:plexus-xml*"
+        versions:
+          - ">=4.1.0" # does not support java 8
       - dependency-name: "org.mockito:mockito*"
         versions:
           - ">=5.0.0" # does not support java 8

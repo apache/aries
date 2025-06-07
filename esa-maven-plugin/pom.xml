@@ -43,7 +43,7 @@
 
     <properties>
         <biz.aQute.bndlib.version>6.4.1</biz.aQute.bndlib.version>
-        <maven.version>3.9.9</maven.version>
+        <maven.version>3.9.10</maven.version>
         <maven-archiver.version>3.6.3</maven-archiver.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <maven-invoker-plugin.version>3.9.0</maven-invoker-plugin.version>
@@ -52,6 +52,7 @@
         <plexus-archiver.version>4.10.0</plexus-archiver.version>
         <plexus-container-default.version>2.1.1</plexus-container-default.version>
         <plexus-utils.version>4.0.2</plexus-utils.version>
+        <plexus-xml.version>4.0.4</plexus-xml.version>
     </properties>
 
     <dependencies>
@@ -114,6 +115,11 @@
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
             <version>${plexus-utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-xml</artifactId>
+            <version>${plexus-xml.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
