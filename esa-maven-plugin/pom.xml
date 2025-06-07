@@ -52,6 +52,7 @@
         <plexus-archiver.version>4.10.0</plexus-archiver.version>
         <plexus-container-default.version>2.1.1</plexus-container-default.version>
         <plexus-utils.version>4.0.2</plexus-utils.version>
+        <plexus-xml.version>4.1.0</plexus-xml.version>
     </properties>
 
     <dependencies>
@@ -114,6 +115,11 @@
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
             <version>${plexus-utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-xml</artifactId>
+            <version>${plexus-xml.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
