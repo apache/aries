@@ -31,14 +31,12 @@
     <properties>
         <cm.version>3.2.0-v20070116</cm.version>
         <org.eclipse.osgi.services.version>3.2.100.v20100503</org.eclipse.osgi.services.version>
-        <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>${org.eclipse.osgi.version}</version>
         </dependency>
 
         <dependency>
