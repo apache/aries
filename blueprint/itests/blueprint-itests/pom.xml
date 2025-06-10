@@ -63,7 +63,7 @@
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.apache.servicemix.bundles.aopalliance.version>1.0_6</org.apache.servicemix.bundles.aopalliance.version>
         <org.apache.servicemix.bundles.spring.version>5.3.39_2</org.apache.servicemix.bundles.spring.version>
-        <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.15.300</org.eclipse.osgi.version>
         <pax-exam.version>4.13.5</pax-exam.version>
         <pax-logging.version>2.2.9</pax-logging.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
