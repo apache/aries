@@ -34,7 +34,6 @@
         <java.source.version>8</java.source.version>
 
         <commons-dbcp.version>1.4</commons-dbcp.version>
-        <org.eclipse.osgi.version>3.23.0</org.eclipse.osgi.version>
         <pax-exam.version>4.13.5</pax-exam.version>
         <pax-swissbox.version>1.7.0</pax-swissbox.version>
         <pax-tinybundles.version>2.0.0</pax-tinybundles.version>
@@ -47,7 +46,6 @@
         <dependency>
             <groupId>org.eclipse.platform</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
-            <version>${org.eclipse.osgi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

@@ -78,6 +78,7 @@
         <commons-lang.version>2.6</commons-lang.version>
         <commons-pool.version>1.6</commons-pool.version>
         <org.apache.servicemix.bundles.serp.version>1.15.1_1</org.apache.servicemix.bundles.serp.version>
+        <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
 
         <openjpa.version>2.2.2</openjpa.version>
         <geronimo-jpa_2.0_spec.version>1.1</geronimo-jpa_2.0_spec.version>
@@ -418,6 +419,12 @@
                 <artifactId>javax.annotation-api</artifactId>
                 <version>${javax.annotation-api.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.platform</groupId>
+                <artifactId>org.eclipse.osgi</artifactId>
+                <version>${org.eclipse.osgi.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
