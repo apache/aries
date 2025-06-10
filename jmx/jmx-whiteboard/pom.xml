@@ -85,7 +85,7 @@
         <mockito-core.version>4.11.0</mockito-core.version>
         <org.apache.aries.jmx.core.version>1.1.9-SNAPSHOT</org.apache.aries.jmx.core.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
-        <org.eclipse.osgi.version>3.23.0</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
         <pax-exam.version>4.13.5</pax-exam.version>
