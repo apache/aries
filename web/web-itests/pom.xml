@@ -52,7 +52,7 @@
         <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
         <pax-exam.version>4.13.5</pax-exam.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
-        <pax-url.version>2.6.16</pax-url.version>
+        <pax-url.version>2.6.17</pax-url.version>
     </properties>
 
     <dependencies>

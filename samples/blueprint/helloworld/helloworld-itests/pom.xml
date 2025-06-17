@@ -38,7 +38,7 @@
         <org.eclipse.osgi.services.version>3.2.100.v20100503</org.eclipse.osgi.services.version>
         <pax-exam.version>4.13.5</pax-exam.version>
         <pax-logging.version>1.12.12</pax-logging.version>
-        <pax-url.version>2.6.16</pax-url.version>
+        <pax-url.version>2.6.17</pax-url.version>
     </properties>
 
     <dependencies>
