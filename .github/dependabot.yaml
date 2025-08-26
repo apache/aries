@@ -16,9 +16,6 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 20
     ignore:
-      - dependency-name: "org.apache.felix:maven-bundle-plugin"
-        versions:
-          - ">=6.0.0" # does not support java 8
       - dependency-name: "biz.aQute.bnd:biz.aQute.bndlib"
         versions:
           - ">=7.0.0" # does not support java 8
@@ -46,18 +43,21 @@ updates:
       - dependency-name: "org.apache.derby:derby"
         versions:
           - ">=10.15.0" # does not support java 8
-      - dependency-name: "org.springframework:spring-*"
+      - dependency-name: "org.apache.felix:maven-bundle-plugin"
         versions:
           - ">=6.0.0" # does not support java 8
       - dependency-name: "org.apache.geronimo.components:geronimo-connector"
         versions:
           - ">=4.0.0" # does not support java 8
-      - dependency-name: "org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-*"
+      - dependency-name: "org.apache.groovy:groovy-xml"
         versions:
-          - ">=6.0.0" # does not support java 8
+          - ">=5.0.0" # does not support java 8
       - dependency-name: "org.apache.openjpa:openjpa"
         versions:
           - ">=4.0.0" # does not support java 8
+      - dependency-name: "org.apache.servicemix.bundles:org.apache.servicemix.bundles.spring-*"
+        versions:
+          - ">=6.0.0" # does not support java 8
       - dependency-name: "org.codehaus.plexus:plexus-xml*"
         versions:
           - ">=4.1.0" # does not support java 8
@@ -87,3 +87,6 @@ updates:
       - dependency-name: "org.ops4j.pax.swissbox:pax-swissbox*"
         versions:
           - ">1.8.3" # 1.9.0 does not support java 8, but 1.8.4 has SLF4j dependency which cannot be met https://github.com/ops4j/org.ops4j.pax.exam/issues/1056
+      - dependency-name: "org.springframework:spring-*"
+        versions:
+          - ">=6.0.0" # does not support java 8
