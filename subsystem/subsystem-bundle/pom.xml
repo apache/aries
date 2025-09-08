@@ -70,7 +70,7 @@
         <org.apache.felix.resolver.version>2.0.4</org.apache.felix.resolver.version>
         <org.eclipse.equinox.coordinator.version>1.1.0.v20120522-1841</org.eclipse.equinox.coordinator.version>
         <org.eclipse.equinox.region.version>1.2.101.v20150831-1342</org.eclipse.equinox.region.version>
-        <org.eclipse.osgi.version>3.15.300</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.23.200</org.eclipse.osgi.version>
     </properties>
 
     <dependencies>
