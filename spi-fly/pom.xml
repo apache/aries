@@ -52,7 +52,7 @@
 
         <apache-rat-plugin.version>0.16.1</apache-rat-plugin.version>
         <asm.version>9.8</asm.version>
-        <assertj.version>3.27.4</assertj.version>
+        <assertj.version>3.27.5</assertj.version>
         <bnd.version>6.4.1</bnd.version>
         <bnd-maven-plugins.version>6.4.0</bnd-maven-plugins.version>
         <easymock.version>5.6.0</easymock.version>
