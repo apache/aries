@@ -61,6 +61,12 @@ updates:
       - dependency-name: "org.codehaus.plexus:plexus-xml*"
         versions:
           - ">=4.1.0" # does not support java 8
+      - dependency-name: "org.junit.jupiter:junit-jupiter-*"
+        versions:
+          - ">=6.0.0" # does not support java 8
+      - dependency-name: "org.junit.platform:junit-platform-*"
+        versions:
+          - ">=6.0.0" # does not support java 8
       - dependency-name: "org.mockito:mockito*"
         versions:
           - ">=5.0.0" # does not support java 8
