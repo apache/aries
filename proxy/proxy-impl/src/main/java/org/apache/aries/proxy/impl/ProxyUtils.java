@@ -29,7 +29,7 @@ public class ProxyUtils
   private static Logger LOGGER = LoggerFactory.getLogger(ProxyUtils.class);
   public static final int JAVA_CLASS_VERSION = new BigDecimal(System.getProperty("java.class.version")).intValue();
   private static int weavingJavaVersion = -1; // initialise an invalid number
-  
+
   /**
    * Get the java version to be woven at.
    * @return
@@ -39,6 +39,22 @@ public class ProxyUtils
       //In order to avoid an inconsistent stack error the version of the woven byte code needs to match
       //the level of byte codes in the original class
       switch(JAVA_CLASS_VERSION) {
+        case Opcodes.V25:
+          LOGGER.debug("Weaving to Java 25");
+          weavingJavaVersion = Opcodes.V25;
+          break;
+        case Opcodes.V24:
+          LOGGER.debug("Weaving to Java 24");
+          weavingJavaVersion = Opcodes.V24;
+          break;
+        case Opcodes.V23:
+          LOGGER.debug("Weaving to Java 23");
+          weavingJavaVersion = Opcodes.V23;
+          break;
+        case Opcodes.V22:
+          LOGGER.debug("Weaving to Java 22");
+          weavingJavaVersion = Opcodes.V22;
+          break;
         case Opcodes.V21:
           LOGGER.debug("Weaving to Java 21");
           weavingJavaVersion = Opcodes.V21;
