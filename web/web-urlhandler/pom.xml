@@ -57,7 +57,7 @@
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
         <org.apache.aries.versioning.plugin.version>0.3.2-SNAPSHOT</org.apache.aries.versioning.plugin.version>
 
-        <asm.version>9.8</asm.version>
+        <asm.version>9.9</asm.version>
     </properties>
 
     <dependencies>
