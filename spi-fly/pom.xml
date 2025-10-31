@@ -62,7 +62,7 @@
         <felix.logback.version>1.0.6</felix.logback.version>
         <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
         <junit-jupiter.version>5.14.0</junit-jupiter.version>
-        <junit-platform.version>1.14.0</junit-platform.version>
+        <junit-platform.version>1.14.1</junit-platform.version>
         <junit.version>4.13.2</junit.version>
         <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.9.0</maven-dependency-plugin.version>
