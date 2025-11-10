@@ -42,7 +42,7 @@
         <blueprint-maven-plugin-pax-cdi-handlers.version>1.0.0</blueprint-maven-plugin-pax-cdi-handlers.version>
         <blueprint-maven-plugin-spi.version>1.1.0</blueprint-maven-plugin-spi.version>
         <blueprint-maven-plugin-spring-handlers.version>1.0.0</blueprint-maven-plugin-spring-handlers.version>
-        <commons-io.version>2.20.0</commons-io.version>
+        <commons-io.version>2.21.0</commons-io.version>
         <guava.version>33.5.0-jre</guava.version>
         <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
         <jakarta.enterprise.cdi-api.version>3.0.1</jakarta.enterprise.cdi-api.version>
