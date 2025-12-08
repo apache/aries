@@ -61,7 +61,7 @@
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.apache.felix.coordinator.version>1.0.2</org.apache.felix.coordinator.version>
         <org.apache.servicemix.bundles.javax-inject.version>1_3</org.apache.servicemix.bundles.javax-inject.version>
-        <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.24.0</org.eclipse.osgi.version>
         <osgi.core.version>6.0.0</osgi.core.version>
         <pax-swissbox.version>1.8.3</pax-swissbox.version>
         <pax-exam.version>4.13.5</pax-exam.version>
