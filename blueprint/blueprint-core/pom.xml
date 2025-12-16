@@ -93,7 +93,7 @@
         </aries.osgi.include.resource>
         <lastReleaseVersion>1.6.0</lastReleaseVersion>
 
-        <asm.version>9.9</asm.version>
+        <asm.version>9.9.1</asm.version>
         <blueprint.api.version>1.0.2-SNAPSHOT</blueprint.api.version>
         <blueprint.parser.version>1.6.2-SNAPSHOT</blueprint.parser.version>
         <easymock.version>5.6.0</easymock.version>

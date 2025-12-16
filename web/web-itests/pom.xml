@@ -43,7 +43,7 @@
     <properties>
         <aries.skip.version.check>true</aries.skip.version.check>
 
-        <asm.version>9.9</asm.version>
+        <asm.version>9.9.1</asm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
