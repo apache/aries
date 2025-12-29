@@ -54,7 +54,7 @@
         <asm.version>9.9.1</asm.version>
         <assertj.version>3.27.6</assertj.version>
         <bnd.version>6.4.1</bnd.version>
-        <bnd-maven-plugins.version>6.4.0</bnd-maven-plugins.version>
+        <bnd-maven-plugins.version>7.2.0</bnd-maven-plugins.version>
         <easymock.version>5.6.0</easymock.version>
         <felix.framework.version>7.0.5</felix.framework.version>
         <felix.log.extension.version>1.0.0</felix.log.extension.version>
