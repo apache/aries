@@ -188,7 +188,7 @@
         <slf4j.version>2.0.17</slf4j.version>
 
         <!--Plugin versions-->
-        <animal-sniffer-enforcer-rule.version>1.26</animal-sniffer-enforcer-rule.version>
+        <animal-sniffer-enforcer-rule.version>1.27</animal-sniffer-enforcer-rule.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <depgraph-maven-plugin.version>4.0.3</depgraph-maven-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
