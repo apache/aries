@@ -180,9 +180,9 @@
 
     <profiles>
         <profile>
-            <id>java9To21</id>
+            <id>java9To25</id>
             <activation>
-                <jdk>(8,22)</jdk>
+                <jdk>(8,26)</jdk>
             </activation>
             <build>
                 <plugins>
@@ -231,7 +231,7 @@
             </build>
         </profile>
         <profile>
-            <id>java21+</id>
+            <id>java21</id>
             <activation>
                 <jdk>21</jdk>
             </activation>
@@ -249,6 +249,38 @@
                                         <!-- diff from previous java versions: fork and jvmarg -->
                                         <java classname="org.apache.aries.proxy.synthesizer.Synthesizer" classpathref="maven.runtime.classpath" fork="true">
                                             <jvmarg value="-Djava.security.manager=allow" />
+                                            <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class"/>
+                                        </java>
+                                        <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>java25</id>
+            <activation>
+                <jdk>25</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-classes</phase>
+                                <configuration>
+                                    <target>
+                                        <!-- run the Synthesizer on the WovenProxy class -->
+                                        <!-- diff from previous java versions: fork and jvmarg -->
+                                        <java classname="org.apache.aries.proxy.synthesizer.Synthesizer" classpathref="maven.runtime.classpath" fork="true">
                                             <arg value="${project.build.outputDirectory}/org/apache/aries/proxy/weaving/WovenProxy.class"/>
                                         </java>
                                         <delete dir="${project.build.outputDirectory}/org/apache/aries/proxy/synthesizer"/>
