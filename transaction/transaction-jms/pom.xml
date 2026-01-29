@@ -69,7 +69,7 @@
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
         <osgi.core.version>4.3.1</osgi.core.version>
-        <xbean.version>4.29</xbean.version>
+        <xbean.version>4.30</xbean.version>
     </properties>
 
     <dependencies>
