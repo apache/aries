@@ -18,22 +18,22 @@ package org.apache.aries.transaction.jms.internal;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.jms.Connection;
-import javax.jms.ConnectionConsumer;
-import javax.jms.ConnectionMetaData;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueSession;
-import javax.jms.ServerSessionPool;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
-import javax.jms.TemporaryTopic;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicSession;
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionConsumer;
+import jakarta.jms.ConnectionMetaData;
+import jakarta.jms.Destination;
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.Queue;
+import jakarta.jms.QueueConnection;
+import jakarta.jms.QueueSession;
+import jakarta.jms.ServerSessionPool;
+import jakarta.jms.Session;
+import jakarta.jms.TemporaryQueue;
+import jakarta.jms.TemporaryTopic;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,6 +175,26 @@ public class PooledConnection implements TopicConnection, QueueConnection, Poole
         return result;
     }
 
+    @Override
+    public Session createSession() throws JMSException {
+        return createSession(true, Session.AUTO_ACKNOWLEDGE);
+    }
+
+    @Override
+    public Session createSession(int sessionMode) throws JMSException {
+        return createSession(true, sessionMode);
+    }
+
+    @Override
+    public ConnectionConsumer createSharedConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException {
+        return getConnection().createSharedConnectionConsumer(topic, subscriptionName, messageSelector, sessionPool, maxMessages);
+    }
+
+    @Override
+    public ConnectionConsumer createSharedDurableConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException {
+        return getConnection().createSharedDurableConnectionConsumer(topic, subscriptionName, messageSelector, sessionPool, maxMessages);
+    }
+
     // Implementation methods
     // -------------------------------------------------------------------------
 
@@ -200,9 +220,9 @@ public class PooledConnection implements TopicConnection, QueueConnection, Poole
         return pool.getConnection();
     }
 
-    protected void assertNotClosed() throws javax.jms.IllegalStateException {
+    protected void assertNotClosed() throws jakarta.jms.IllegalStateException {
         if (stopped || pool == null) {
-            throw new javax.jms.IllegalStateException("Connection closed");
+            throw new jakarta.jms.IllegalStateException("Connection closed");
         }
     }
 

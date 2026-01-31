@@ -16,11 +16,11 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
-import javax.jms.Destination;
-import javax.jms.InvalidDestinationException;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
+import jakarta.jms.Destination;
+import jakarta.jms.InvalidDestinationException;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageProducer;
 
 /**
  * A pooled {@link MessageProducer}
@@ -36,6 +36,7 @@ public class PooledProducer implements MessageProducer {
     private int priority;
     private long timeToLive;
     private boolean anonymous = true;
+    private long deliveryDelay;
 
     public PooledProducer(MessageProducer messageProducer, Destination destination) throws JMSException {
         this.messageProducer = messageProducer;
@@ -47,6 +48,7 @@ public class PooledProducer implements MessageProducer {
         this.disableMessageTimestamp = messageProducer.getDisableMessageTimestamp();
         this.priority = messageProducer.getPriority();
         this.timeToLive = messageProducer.getTimeToLive();
+        this.deliveryDelay = messageProducer.getDeliveryDelay();
     }
 
     @Override
@@ -94,6 +96,54 @@ public class PooledProducer implements MessageProducer {
             // based send method otherwise we might violate a JMS rule.
             messageProducer.send(destination, message, deliveryMode, priority, timeToLive);
         }
+    }
+
+    @Override
+    public void send(Destination destination, Message message, int deliveryMode, int priority, long timeToLive, jakarta.jms.CompletionListener completionListener) throws JMSException {
+        if (destination == null) {
+            if (messageProducer.getDestination() == null) {
+                throw new UnsupportedOperationException("A destination must be specified.");
+            }
+            throw new InvalidDestinationException("Don't understand null destinations");
+        }
+
+        MessageProducer messageProducer = getMessageProducer();
+
+        // just in case let only one thread send at once
+        synchronized (messageProducer) {
+            if (anonymous && this.destination != null && !this.destination.equals(destination)) {
+                throw new UnsupportedOperationException("This producer can only send messages to: " + this.destination);
+            }
+
+            // Producer will do it's own Destination validation so always use the destination
+            // based send method otherwise we might violate a JMS rule.
+            messageProducer.send(destination, message, deliveryMode, priority, timeToLive, completionListener);
+        }
+    }
+
+    @Override
+    public void send(Message message, jakarta.jms.CompletionListener completionListener) throws JMSException {
+        send(destination, message, getDeliveryMode(), getPriority(), getTimeToLive(), completionListener);
+    }
+
+    @Override
+    public void send(Destination destination, Message message, jakarta.jms.CompletionListener completionListener) throws JMSException {
+        send(destination, message, getDeliveryMode(), getPriority(), getTimeToLive(), completionListener);
+    }
+
+    @Override
+    public void send(Message message, int deliveryMode, int priority, long timeToLive, jakarta.jms.CompletionListener completionListener) throws JMSException {
+        send(destination, message, deliveryMode, priority, timeToLive, completionListener);
+    }
+
+    @Override
+    public long getDeliveryDelay() throws JMSException {
+        return deliveryDelay;
+    }
+
+    @Override
+    public void setDeliveryDelay(long deliveryDelay) throws JMSException {
+        this.deliveryDelay = deliveryDelay;
     }
 
     @Override

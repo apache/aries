@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 import java.sql.BatchUpdateException;
 import java.sql.SQLDataException;
 import java.util.List;
-import javax.transaction.Transactional.TxType;
+import jakarta.transaction.Transactional.TxType;
 
 import org.apache.aries.transaction.pojo.AnnotatedPojo;
 import org.apache.aries.transaction.pojo.BadlyAnnotatedPojo1;

@@ -16,11 +16,11 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Queue;
-import javax.jms.QueueSender;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Queue;
+import jakarta.jms.QueueSender;
 
 /**
  * 
@@ -43,6 +43,35 @@ public class PooledQueueSender extends PooledProducer implements QueueSender {
         return getQueueSender().getQueue();
     }
 
+    @Override
+    public void send(Destination destination, Message message, int deliveryMode, int priority, long timeToLive, jakarta.jms.CompletionListener completionListener) throws JMSException {
+        getQueueSender().send(destination, message, deliveryMode, priority, timeToLive, completionListener);
+    }
+
+    @Override
+    public void send(Message message, jakarta.jms.CompletionListener completionListener) throws JMSException {
+        getQueueSender().send(message, completionListener);
+    }
+
+    @Override
+    public void send(Destination destination, Message message, jakarta.jms.CompletionListener completionListener) throws JMSException {
+        getQueueSender().send(destination, message, completionListener);
+    }
+
+    @Override
+    public void send(Message message, int deliveryMode, int priority, long timeToLive, jakarta.jms.CompletionListener completionListener) throws JMSException {
+        getQueueSender().send(message, deliveryMode, priority, timeToLive, completionListener);
+    }
+
+    @Override
+    public long getDeliveryDelay() throws JMSException {
+        return getQueueSender().getDeliveryDelay();
+    }
+
+    @Override
+    public void setDeliveryDelay(long deliveryDelay) throws JMSException {
+        getQueueSender().setDeliveryDelay(deliveryDelay);
+    }
 
     protected QueueSender getQueueSender() {
         return (QueueSender) getMessageProducer();

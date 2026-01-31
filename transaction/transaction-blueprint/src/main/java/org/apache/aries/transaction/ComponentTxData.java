@@ -23,8 +23,8 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

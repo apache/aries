@@ -18,12 +18,12 @@
  */
 
 //
-// This source code implements specifications defined by the Java
+// This source code implements specifications defined by the Jakarta
 // Community Process. In order to remain compliant with the specification
 // DO NOT add / change / or delete method signatures!
 //
 
-package javax.resource.spi;
+package jakarta.resource.spi;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;

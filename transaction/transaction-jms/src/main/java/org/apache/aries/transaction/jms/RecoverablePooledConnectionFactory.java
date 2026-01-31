@@ -16,7 +16,7 @@
  */
 package org.apache.aries.transaction.jms;
 
-import javax.jms.Connection;
+import jakarta.jms.Connection;
 
 import org.apache.aries.transaction.jms.internal.ConnectionPool;
 import org.apache.aries.transaction.jms.internal.GenericResourceManager;

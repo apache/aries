@@ -18,7 +18,7 @@
  */
 package org.apache.aries.transaction;
 
-import javax.transaction.Transaction;
+import jakarta.transaction.Transaction;
 
 import org.osgi.service.coordinator.Coordination;
 

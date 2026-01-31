@@ -20,9 +20,9 @@ package org.apache.aries.transaction.jdbc.internal;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.resource.ResourceException;
-import javax.resource.spi.ResourceAdapterInternalException;
-import javax.resource.spi.TransactionSupport;
+import jakarta.resource.ResourceException;
+import jakarta.resource.spi.ResourceAdapterInternalException;
+import jakarta.resource.spi.TransactionSupport;
 import javax.security.auth.Subject;
 import javax.sql.DataSource;
 

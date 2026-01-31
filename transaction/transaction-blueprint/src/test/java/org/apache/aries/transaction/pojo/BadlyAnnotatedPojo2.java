@@ -18,7 +18,7 @@
  */
 package org.apache.aries.transaction.pojo;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 public class BadlyAnnotatedPojo2 {
 

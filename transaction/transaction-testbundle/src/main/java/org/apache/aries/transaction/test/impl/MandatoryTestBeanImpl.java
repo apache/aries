@@ -19,7 +19,7 @@
 package org.apache.aries.transaction.test.impl;
 
 import java.sql.SQLException;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 public class MandatoryTestBeanImpl extends TestBeanImpl {
 
