@@ -323,10 +323,10 @@
             <type>bundle</type>
             <scope>compile</scope>
             <exclusions>
-            <exclusion>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.core</artifactId>
-            </exclusion>
+                <exclusion>
+                    <groupId>org.apache.aries.blueprint</groupId>
+                    <artifactId>org.apache.aries.blueprint.core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -369,16 +369,6 @@
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <!-- TODO ARIES-2165: remove configuration when the newest parent pom is used -->
-                <version>${depends-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-depends-file</id>
-                        <goals>
-                            <goal>generate-depends-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
