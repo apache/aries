@@ -67,7 +67,7 @@
         <pax-swissbox.version>1.8.3</pax-swissbox.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
         <pax-url.version>2.6.17</pax-url.version>
-        <pax-web.version>8.0.33</pax-web.version>
+        <pax-web.version>8.0.35</pax-web.version>
         <services.version>3.2.100.v20100503</services.version>
         <xbean.version>4.30</xbean.version>
     </properties>
