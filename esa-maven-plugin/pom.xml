@@ -43,7 +43,7 @@
 
     <properties>
         <biz.aQute.bndlib.version>6.4.1</biz.aQute.bndlib.version>
-        <maven.version>3.9.13</maven.version>
+        <maven.version>3.9.14</maven.version>
         <maven-archiver.version>3.6.6</maven-archiver.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <maven-invoker-plugin.version>3.9.1</maven-invoker-plugin.version>
