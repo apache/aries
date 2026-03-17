@@ -56,7 +56,7 @@
         <junit.version>4.13.2</junit.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
-        <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
+
         <osgi.core.version>8.0.0</osgi.core.version>
     </properties>
 
