@@ -44,7 +44,8 @@ jobs:
         java-version: 8
     - name: Run PMD
       shell: bash
-      run: mvn -U -e -B -ntp clean install -DskipTests pmd:pmd
+      # Excluding spi-fly since java 17 is necessary
+      run: mvn -U -e -B -ntp clean install -DskipTests -pl '!spi-fly/spi-fly-core,!spi-fly/spi-fly-dynamic-bundle,!spi-fly/spi-fly-dynamic-framework-extension,!spi-fly/spi-fly-examples,!spi-fly/spi-fly-itests,!spi-fly/spi-fly-static-bundle,!spi-fly/spi-fly-static-tool,!spi-fly/spi-fly-weaver,!spi-fly/spi-fly-examples/spi-fly-example-client1-bundle,!spi-fly/spi-fly-examples/spi-fly-example-client1-jar,!spi-fly/spi-fly-examples/spi-fly-example-client2-bundle,!spi-fly/spi-fly-examples/spi-fly-example-client3-bundle,!spi-fly/spi-fly-examples/spi-fly-example-client3-fragment,!spi-fly/spi-fly-examples/spi-fly-example-provider1-bundle,!spi-fly/spi-fly-examples/spi-fly-example-provider1-jar,!spi-fly/spi-fly-examples/spi-fly-example-provider2-bundle,!spi-fly/spi-fly-examples/spi-fly-example-provider3-bundle,!spi-fly/spi-fly-examples/spi-fly-example-provider3-fragment,!spi-fly/spi-fly-examples/spi-fly-example-provider-consumer-bundle,!spi-fly/spi-fly-examples/spi-fly-example-resource-client-bundle,!spi-fly/spi-fly-examples/spi-fly-example-resource-provider-bundle,!spi-fly/spi-fly-examples/spi-fly-example-spi-bundle,!spi-fly' pmd:pmd
     - name: Publish PMD results
       uses: jwgmeligmeyling/pmd-github-action@322e346bd76a0757c4d54ff9209e245965aa066d
       with:
