@@ -53,7 +53,8 @@
         <apache-rat-plugin.version>0.17</apache-rat-plugin.version>
         <asm.version>9.9.1</asm.version>
         <assertj.version>3.27.7</assertj.version>
-        <bnd.version>7.2.3</bnd.version>
+        <!-- bnd 6.x is supporting java < 17 -->
+        <bnd.version>6.4.1</bnd.version>
         <bnd-maven-plugins.version>7.2.3</bnd-maven-plugins.version>
         <easymock.version>5.6.0</easymock.version>
         <felix.framework.version>7.0.5</felix.framework.version>
