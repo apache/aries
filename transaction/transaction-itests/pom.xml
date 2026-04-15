@@ -65,7 +65,7 @@
         <osgi.core.version>6.0.0</osgi.core.version>
         <pax-swissbox.version>1.8.3</pax-swissbox.version>
         <pax-exam.version>4.13.5</pax-exam.version>
-        <pax-logging.version>2.2.11</pax-logging.version>
+        <pax-logging.version>2.2.12</pax-logging.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
         <pax-url.version>2.6.17</pax-url.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>

@@ -53,7 +53,7 @@
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
         <pax-exam.version>4.13.5</pax-exam.version>
-        <pax-logging.version>2.2.11</pax-logging.version>
+        <pax-logging.version>2.2.12</pax-logging.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
         <pax-url.version>2.6.17</pax-url.version>
     </properties>
