@@ -187,6 +187,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
