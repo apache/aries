@@ -69,7 +69,7 @@
         <org.apache.felix.utils.version>1.11.8</org.apache.felix.utils.version>
         <osgi.cmpn.version>5.0.0</osgi.cmpn.version>
         <osgi.core.version>6.0.0</osgi.core.version>
-        <slf4j.version>2.0.17</slf4j.version>
+        <slf4j.version>2.0.18</slf4j.version>
         <spring.version>5.3.39</spring.version>
     </properties>
 
