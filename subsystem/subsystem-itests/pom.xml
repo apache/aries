@@ -62,7 +62,7 @@
         <osgi.core.version>8.0.0</osgi.core.version>
         <osgi.enterprise.version>5.0.0</osgi.enterprise.version>
         <pax-exam.version>4.13.5</pax-exam.version>
-        <pax-logging.version>2.2.12</pax-logging.version>
+        <pax-logging.version>2.2.13</pax-logging.version>
         <!-- Newer tiny bundles have problem in some tests where classes are added with explicit classloader -->
         <pax-tinybundles.version>2.0.0</pax-tinybundles.version>
         <pax-url.version>2.7.1</pax-url.version>
