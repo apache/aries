@@ -51,7 +51,7 @@
         <java.source.version>8</java.source.version>
 
         <apache-rat-plugin.version>0.17</apache-rat-plugin.version>
-        <asm.version>9.9.1</asm.version>
+        <asm.version>9.10</asm.version>
         <assertj.version>3.27.7</assertj.version>
         <bnd.version>6.4.1</bnd.version>
         <bnd-maven-plugins.version>6.4.0</bnd-maven-plugins.version>
