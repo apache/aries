@@ -56,7 +56,7 @@
         <javax.transaction-api.version>1.2</javax.transaction-api.version>
         <javax.transaction.cdi-api.version>1.2-b03</javax.transaction.cdi-api.version>
         <maven-plugin-plugin.version>3.15.2</maven-plugin-plugin.version>
-        <maven.version>3.9.15</maven.version>
+        <maven.version>3.9.16</maven.version>
         <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.cm.version>1.3.2</org.apache.aries.blueprint.cm.version>
         <org.apache.aries.blueprint.core.version>1.10.3</org.apache.aries.blueprint.core.version>
