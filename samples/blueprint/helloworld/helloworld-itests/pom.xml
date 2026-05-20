@@ -38,7 +38,7 @@
         <org.eclipse.osgi.services.version>3.2.100.v20100503</org.eclipse.osgi.services.version>
         <pax-exam.version>4.13.5</pax-exam.version>
         <pax-logging.version>1.12.12</pax-logging.version>
-        <pax-url.version>2.6.17</pax-url.version>
+        <pax-url.version>2.7.1</pax-url.version>
     </properties>
 
     <dependencies>
@@ -184,6 +184,13 @@
             <groupId>org.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi.services</artifactId>
             <version>${org.eclipse.osgi.services.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
             <scope>test</scope>
         </dependency>
 

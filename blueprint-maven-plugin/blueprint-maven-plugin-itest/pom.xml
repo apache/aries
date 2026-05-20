@@ -40,11 +40,11 @@
         <blueprint-maven-plugin.version>1.10.1-SNAPSHOT</blueprint-maven-plugin.version>
         <blueprint-maven-plugin-pax-cdi-handlers.version>1.0.1-SNAPSHOT</blueprint-maven-plugin-pax-cdi-handlers.version>
         <blueprint-maven-plugin-spring-handlers.version>1.0.1-SNAPSHOT</blueprint-maven-plugin-spring-handlers.version>
-        <groovy.version>4.0.30</groovy.version>
+        <groovy.version>4.0.32</groovy.version>
         <javax.enterprise.cdi-api.version>2.0.SP1</javax.enterprise.cdi-api.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.transaction-api.version>1.2</javax.transaction-api.version>
-        <maven-invoker-plugin.version>3.9.1</maven-invoker-plugin.version>
+        <maven-invoker-plugin.version>3.10.1</maven-invoker-plugin.version>
         <pax-cdi.version>0.12.0</pax-cdi.version>
         <spring.version>5.3.39</spring.version>
     </properties>

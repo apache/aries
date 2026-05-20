@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>37</version>
+        <version>38</version>
         <relativePath />
     </parent>
 
@@ -182,10 +182,10 @@
 
         <!--Dependencies-->
         <junit.version>4.13.2</junit.version>
-        <pax-logging.version>2.2.11</pax-logging.version>
+        <pax-logging.version>2.2.13</pax-logging.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
-        <slf4j.version>2.0.17</slf4j.version>
+        <slf4j.version>2.0.18</slf4j.version>
 
         <!--Plugin versions-->
         <animal-sniffer-enforcer-rule.version>1.27</animal-sniffer-enforcer-rule.version>

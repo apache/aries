@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>37</version>
+        <version>38</version>
         <relativePath/>
     </parent>
 
@@ -51,7 +51,7 @@
         <java.source.version>8</java.source.version>
 
         <apache-rat-plugin.version>0.17</apache-rat-plugin.version>
-        <asm.version>9.9.1</asm.version>
+        <asm.version>9.10</asm.version>
         <assertj.version>3.27.7</assertj.version>
         <bnd.version>6.4.1</bnd.version>
         <bnd-maven-plugins.version>6.4.0</bnd-maven-plugins.version>
@@ -61,18 +61,18 @@
         <felix.log.version>1.3.0</felix.log.version>
         <felix.logback.version>1.0.6</felix.logback.version>
         <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
-        <junit-jupiter.version>5.14.3</junit-jupiter.version>
-        <junit-platform.version>1.14.3</junit-platform.version>
+        <junit-jupiter.version>5.14.4</junit-jupiter.version>
+        <junit-platform.version>1.14.4</junit-platform.version>
         <junit.version>4.13.2</junit.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
-        <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
         <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
         <mockito.core.version>4.11.0</mockito.core.version>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
         <osgi.core.version>8.0.0</osgi.core.version>
         <osgi.test.version>1.3.0</osgi.test.version>
-        <slf4j.version>2.0.17</slf4j.version>
+        <slf4j.version>2.0.18</slf4j.version>
     </properties>
 
     <modules>

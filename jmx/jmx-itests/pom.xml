@@ -38,7 +38,7 @@
     </description>
 
     <properties>
-        <asm.version>9.9.1</asm.version>
+        <asm.version>9.10</asm.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <javax.inject.version>1</javax.inject.version>
         <objenesis.version>3.5</objenesis.version>
@@ -60,7 +60,7 @@
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <pax-exam.version>4.13.5</pax-exam.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
-        <pax-url.version>2.6.17</pax-url.version>
+        <pax-url.version>2.7.1</pax-url.version>
         <slf4j-api.version>1.7.7</slf4j-api.version>
     </properties>
 
