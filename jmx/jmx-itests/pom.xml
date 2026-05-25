@@ -38,7 +38,7 @@
     </description>
 
     <properties>
-        <asm.version>9.10</asm.version>
+        <asm.version>9.10.1</asm.version>
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <javax.inject.version>1</javax.inject.version>
         <objenesis.version>3.5</objenesis.version>
