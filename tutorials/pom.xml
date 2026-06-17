@@ -47,7 +47,7 @@
         <blueprint-maven-plugin.version>1.10.0</blueprint-maven-plugin.version>
         <jansi.version>2.4.3</jansi.version>
         <javax.inject.version>1</javax.inject.version>
-        <jline.version>4.2.0</jline.version>
+        <jline.version>4.2.1</jline.version>
         <org.apache.aries.blueprint.api.version>1.0.1</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.core.version>1.10.3</org.apache.aries.blueprint.core.version>
         <org.apache.aries.proxy.version>1.1.14</org.apache.aries.proxy.version>
