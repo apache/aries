@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
 import javax.inject.Inject;
-import javax.transaction.Status;
+import jakarta.transaction.Status;
 
 import org.apache.aries.transaction.test.RollbackOnBean;
 import org.apache.aries.transaction.test.TestBean;

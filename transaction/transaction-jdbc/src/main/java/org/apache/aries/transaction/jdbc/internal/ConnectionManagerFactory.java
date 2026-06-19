@@ -18,8 +18,8 @@
  */
 package org.apache.aries.transaction.jdbc.internal;
 
-import javax.resource.spi.ConnectionManager;
-import javax.resource.spi.ManagedConnectionFactory;
+import jakarta.resource.spi.ConnectionManager;
+import jakarta.resource.spi.ManagedConnectionFactory;
 
 import org.apache.aries.transaction.AriesTransactionManager;
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;

@@ -16,16 +16,16 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
-import javax.jms.TemporaryTopic;
-import javax.jms.XAConnection;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
+import jakarta.jms.Connection;
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
+import jakarta.jms.TemporaryQueue;
+import jakarta.jms.TemporaryTopic;
+import jakarta.jms.XAConnection;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.Status;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 /**
@@ -106,7 +106,7 @@ public class XaConnectionPool extends ConnectionPool {
         return session.getXAResource();
     }
 
-    protected class Synchronization implements javax.transaction.Synchronization {
+    protected class Synchronization implements jakarta.transaction.Synchronization {
         private final PooledSession session;
 
         private Synchronization(PooledSession session) {

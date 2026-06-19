@@ -24,14 +24,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.1.1</version>
+        <version>3.0.0</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>org.apache.aries.transaction.blueprint</artifactId>
     <packaging>bundle</packaging>
-    <version>2.3.2-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Apache Aries Transaction Blueprint</name>
 
     <scm>
@@ -52,12 +52,12 @@
         <lastReleaseVersion>1.1.0</lastReleaseVersion>
 
         <easymock.version>5.6.0</easymock.version>
-        <javax.transaction-api.version>1.2</javax.transaction-api.version>
+        <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
         <junit.version>4.13.2</junit.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
         <org.apache.aries.blueprint.core.version>1.0.0</org.apache.aries.blueprint.core.version>
-        <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
-        <osgi.core.version>4.3.1</osgi.core.version>
+
+        <osgi.core.version>8.0.0</osgi.core.version>
     </properties>
 
     <dependencies>
@@ -85,9 +85,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>javax.transaction-api</artifactId>
-            <version>${javax.transaction-api.version}</version>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>${jakarta.transaction-api.version}</version>
             <scope>provided</scope>
         </dependency>
 

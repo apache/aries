@@ -21,7 +21,7 @@ package org.apache.aries.transaction.jdbc.internal;
 import java.io.IOException;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
-import javax.transaction.SystemException;
+import jakarta.transaction.SystemException;
 import javax.transaction.xa.XAResource;
 
 import org.apache.geronimo.transaction.manager.NamedXAResource;

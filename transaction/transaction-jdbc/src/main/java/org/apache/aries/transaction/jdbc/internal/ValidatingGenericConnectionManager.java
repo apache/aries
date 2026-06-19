@@ -25,10 +25,10 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReadWriteLock;
-import javax.resource.ResourceException;
-import javax.resource.spi.ManagedConnection;
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.ValidatingManagedConnectionFactory;
+import jakarta.resource.ResourceException;
+import jakarta.resource.spi.ManagedConnection;
+import jakarta.resource.spi.ManagedConnectionFactory;
+import jakarta.resource.spi.ValidatingManagedConnectionFactory;
 
 import org.apache.geronimo.connector.outbound.AbstractSinglePoolConnectionInterceptor;
 import org.apache.geronimo.connector.outbound.ConnectionInfo;
@@ -90,7 +90,7 @@ public final class ValidatingGenericConnectionManager extends GenericConnectionM
         if (current instanceof AbstractSinglePoolConnectionInterceptor) {
             foundPool = Reflections.get(current, "pool");
         } else if (current instanceof MultiPoolConnectionInterceptor) {
-            log.warn("validation on stack {} not supported", stack);
+            log.warning("validation on stack {} " + stack + " not supported");
         }
         this.pool = foundPool;
 
@@ -145,7 +145,7 @@ public final class ValidatingGenericConnectionManager extends GenericConnectionM
                 } else if (stack instanceof SinglePoolMatchAllConnectionInterceptor) {
                     connections = (Map<ManagedConnection, ManagedConnectionInfo>) pool;
                 } else {
-                    log.warn("stack {} currently not supported", stack);
+                    log.warning("stack " + stack + " currently not supported");
                     return;
                 }
 
@@ -158,7 +158,7 @@ public final class ValidatingGenericConnectionManager extends GenericConnectionM
                         }
                     }
                 } catch (ResourceException e) {
-                    log.error(e.getMessage(), e);
+                    log.log(java.util.logging.Level.SEVERE, e.getMessage(), e);
                 }
             } finally {
                 if (lock != null) {

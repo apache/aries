@@ -31,7 +31,7 @@
     <property name="coordinator" ref="coordinator" />
   </bean>
   
-  <reference id="tm" interface="javax.transaction.TransactionManager"/>
+  <reference id="tm" interface="jakarta.transaction.TransactionManager"/>
   <reference id="coordinator" interface="org.osgi.service.coordinator.Coordinator"/>
 
 </blueprint>

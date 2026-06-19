@@ -24,14 +24,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>3.0.0</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>org.apache.aries.transaction.testbundle</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>Apache Aries Transaction Test Bundle</name>
 
     <scm>
@@ -50,8 +50,8 @@
             org.apache.aries.transaction.test.impl
         </aries.osgi.private.pkg>
 
-        <javax.transaction-api.version>1.2</javax.transaction-api.version>
-        <org.apache.aries.transaction.blueprint.version>1.0.2</org.apache.aries.transaction.blueprint.version>
+        <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
+        <org.apache.aries.transaction.blueprint.version>3.0.0-SNAPSHOT</org.apache.aries.transaction.blueprint.version>
     </properties>
 
     <dependencies>
@@ -62,11 +62,33 @@
             <version>${org.apache.aries.transaction.blueprint.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>javax.transaction-api</artifactId>
-            <version>${javax.transaction-api.version}</version>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>${jakarta.transaction-api.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.9</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>org.apache.aries.transaction.test</Export-Package>
+                        <Private-Package>org.apache.aries.transaction.test.impl</Private-Package>
+                        <Import-Package>
+                            jakarta.transaction;version="[2.0,3.0)",
+                            java.sql,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

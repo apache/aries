@@ -24,14 +24,14 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>3.0.0</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.aries.transaction</groupId>
     <artifactId>org.apache.aries.transaction.itests</artifactId>
     <name>Apache Aries Transaction Integration Tests</name>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:https://gitbox.apache.org/repos/asf/aries.git</connection>
@@ -40,27 +40,40 @@
     </scm>
 
     <properties>
-        <javax.enterprise.cdi-api.version>2.0.SP1</javax.enterprise.cdi-api.version>
+        <jakarta.enterprise.cdi-api.version>4.0.1</jakarta.enterprise.cdi-api.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <geronimo-connector.version>3.1.5</geronimo-connector.version>
-        <geronimo-j2ee-connector_1.6_spec.version>1.0</geronimo-j2ee-connector_1.6_spec.version>
-        <geronimo-validation_1.0_spec.version>1.1</geronimo-validation_1.0_spec.version>
-        <javax.el-api.version>3.0.0</javax.el-api.version>
-        <javax.interceptor-api.version>1.2.2</javax.interceptor-api.version>
-        <javax.transaction-api.version>1.2</javax.transaction-api.version>
+        <geronimo-connector.version>4.0.0</geronimo-connector.version>
+        <jakarta.resource-api.version>2.1.0</jakarta.resource-api.version>
+        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>
+        <jakarta.el-api.version>5.0.1</jakarta.el-api.version>
+        <jakarta.inject-api.version>2.0.1</jakarta.inject-api.version>
+        <jakarta.interceptor-api.version>2.1.0</jakarta.interceptor-api.version>
+        <jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
+        <javax.inject.version>1</javax.inject.version>
         <org.apache.aries.blueprint.api.version>1.0.0</org.apache.aries.blueprint.api.version>
         <org.apache.aries.blueprint.core.version>1.4.4</org.apache.aries.blueprint.core.version>
         <org.apache.aries.proxy.impl.version>1.0.6</org.apache.aries.proxy.impl.version>
         <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
-        <org.apache.aries.transaction.blueprint.version>2.3.2-SNAPSHOT</org.apache.aries.transaction.blueprint.version>
-        <org.apache.aries.transaction.jdbc.version>2.1.4-SNAPSHOT</org.apache.aries.transaction.jdbc.version>
-        <org.apache.aries.transaction.manager.version>1.3.4-SNAPSHOT</org.apache.aries.transaction.manager.version>
-        <org.apache.aries.transaction.testbundle.version>1.0.1-SNAPSHOT</org.apache.aries.transaction.testbundle.version>
-        <org.apache.aries.transaction.testds.version>1.0.1-SNAPSHOT</org.apache.aries.transaction.testds.version>
+        <org.apache.aries.transaction.blueprint.version>3.0.0-SNAPSHOT</org.apache.aries.transaction.blueprint.version>
+        <org.apache.aries.transaction.jdbc.version>3.0.0-SNAPSHOT</org.apache.aries.transaction.jdbc.version>
+        <org.apache.aries.transaction.manager.version>2.0.0-SNAPSHOT</org.apache.aries.transaction.manager.version>
+        <org.apache.aries.transaction.testbundle.version>2.0.0-SNAPSHOT</org.apache.aries.transaction.testbundle.version>
+        <org.apache.aries.transaction.testds.version>2.0.0-SNAPSHOT</org.apache.aries.transaction.testds.version>
         <org.apache.aries.util.version>1.1.3</org.apache.aries.util.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.apache.felix.coordinator.version>1.0.2</org.apache.felix.coordinator.version>
+        <org.apache.felix.scr.version>2.2.14</org.apache.felix.scr.version>
         <org.apache.servicemix.bundles.javax-inject.version>1_3</org.apache.servicemix.bundles.javax-inject.version>
+<<<<<<< jakarta-transaction-2.0
+        <org.eclipse.osgi.version>3.24.0</org.eclipse.osgi.version>
+        <osgi.core.version>8.0.0</osgi.core.version>
+        <pax-swissbox.version>1.9.0</pax-swissbox.version>
+        <pax-exam.version>4.14.0</pax-exam.version>
+        <pax-logging.version>2.3.1</pax-logging.version>
+        <pax-tinybundles.version>4.0.1</pax-tinybundles.version>
+        <bndlib.version>6.4.0</bndlib.version>
+        <pax-url.version>2.6.17</pax-url.version>
+=======
         <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
         <osgi.core.version>6.0.0</osgi.core.version>
         <pax-swissbox.version>1.8.3</pax-swissbox.version>
@@ -68,6 +81,7 @@
         <pax-logging.version>2.2.13</pax-logging.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
         <pax-url.version>2.7.1</pax-url.version>
+>>>>>>> trunk
         <slf4j-api.version>1.7.7</slf4j-api.version>
     </properties>
 
@@ -113,14 +127,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-j2ee-connector_1.6_spec</artifactId>
-            <version>${geronimo-j2ee-connector_1.6_spec.version}</version>
+            <groupId>jakarta.resource</groupId>
+            <artifactId>jakarta.resource-api</artifactId>
+            <version>${jakarta.resource-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-validation_1.0_spec</artifactId>
-            <version>${geronimo-validation_1.0_spec.version}</version>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${jakarta.validation-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.components</groupId>
@@ -128,31 +142,37 @@
             <version>${geronimo-connector.version}</version>
         </dependency>
 
-        <!--  JTA 1.2 -->
+        <!--  Jakarta Transaction 2.0 -->
         <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>javax.transaction-api</artifactId>
-            <version>${javax.transaction-api.version}</version>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>${jakarta.transaction-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.interceptor</groupId>
-            <artifactId>javax.interceptor-api</artifactId>
-            <version>${javax.interceptor-api.version}</version>
+            <groupId>jakarta.interceptor</groupId>
+            <artifactId>jakarta.interceptor-api</artifactId>
+            <version>${jakarta.interceptor-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
-            <version>${org.apache.servicemix.bundles.javax-inject.version}</version>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <version>${jakarta.inject-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>${javax.el-api.version}</version>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <version>${javax.enterprise.cdi-api.version}</version>
+            <groupId>jakarta.el</groupId>
+            <artifactId>jakarta.el-api</artifactId>
+            <version>${jakarta.el-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>${jakarta.enterprise.cdi-api.version}</version>
         </dependency>
 
         <dependency>
@@ -252,17 +272,10 @@
             <artifactId>tinybundles</artifactId>
             <version>${pax-tinybundles.version}</version>
         </dependency>
-        <!-- Explicit dependency for swissbox to fix https://github.com/ops4j/org.ops4j.pax.exam/issues/1124 -->
         <dependency>
-            <groupId>org.ops4j.pax.swissbox</groupId>
-            <artifactId>pax-swissbox-framework</artifactId>
-            <version>${pax-swissbox.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.swissbox</groupId>
-            <artifactId>pax-swissbox-tracker</artifactId>
-            <version>${pax-swissbox.version}</version>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr</artifactId>
+            <version>${org.apache.felix.scr.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

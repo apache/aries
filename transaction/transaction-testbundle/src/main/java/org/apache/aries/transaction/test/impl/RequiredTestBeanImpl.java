@@ -19,18 +19,18 @@
 package org.apache.aries.transaction.test.impl;
 
 import java.sql.SQLException;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 public class RequiredTestBeanImpl extends TestBeanImpl {
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRED)
+    @Transactional(jakarta.transaction.Transactional.TxType.REQUIRED)
     public void insertRow(String name, int value, Exception e) throws SQLException {
         super.insertRow(name, value, e);
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRED)
+    @Transactional(jakarta.transaction.Transactional.TxType.REQUIRED)
     public void delegateInsertRow(String name, int value) throws SQLException {
         super.delegateInsertRow(name, value);
     }

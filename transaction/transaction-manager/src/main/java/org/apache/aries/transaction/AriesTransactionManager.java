@@ -16,10 +16,10 @@
  */
 package org.apache.aries.transaction;
 
-import javax.resource.spi.XATerminator;
-import javax.transaction.TransactionManager;
-import javax.transaction.TransactionSynchronizationRegistry;
-import javax.transaction.UserTransaction;
+import jakarta.resource.spi.XATerminator;
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.TransactionSynchronizationRegistry;
+import jakarta.transaction.UserTransaction;
 
 import org.apache.geronimo.transaction.manager.MonitorableTransactionManager;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;

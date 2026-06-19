@@ -20,10 +20,10 @@ package org.apache.aries.transaction;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.Status;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 
 import org.apache.aries.blueprint.Interceptor;
 import org.osgi.service.blueprint.reflect.ComponentMetadata;
@@ -75,7 +75,7 @@ public class TxInterceptorImpl implements Interceptor {
         if (requiresNewCoordination) {
             String coordName = "txInterceptor." + m.getDeclaringClass().getName() + "." + m.getName();
             Coordination coord = coordinator.begin(coordName , 0);
-            // @javax.transaction.Transactional is only part of 1.2 and even if it's about time that all previous
+            // @jakarta.transaction.Transactional is only part of 1.2 and even if it's about time that all previous
             // JTA versions should be forgotten, we can't rely on it...
             coord.getVariables().put(Transaction.class, txAttribute.name());
             token.setCoordination(coord);
@@ -139,7 +139,7 @@ public class TxInterceptorImpl implements Interceptor {
         } catch (Exception e) {
             // We are throwing an exception, so we don't error it out
             LOGGER.debug("Exception while completing transaction.", e);
-            RollbackException rbe = new javax.transaction.RollbackException();
+            RollbackException rbe = new RollbackException();
             rbe.addSuppressed(e);
             throw rbe;
         }

@@ -18,19 +18,23 @@ package org.apache.aries.transaction.jms.internal;
 
 import java.io.Serializable;
 import java.util.Hashtable;
-import javax.jms.Connection;
-import javax.jms.JMSException;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.JMSContext;
+import jakarta.jms.JMSRuntimeException;
+import jakarta.jms.QueueConnection;
+import jakarta.jms.QueueConnectionFactory;
+import jakarta.jms.Session;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicConnectionFactory;
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingEnumeration;
 import javax.naming.spi.ObjectFactory;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import org.apache.aries.transaction.jms.PooledConnectionFactory;
 import org.slf4j.Logger;
@@ -140,6 +144,30 @@ public class XaPooledConnectionFactory extends PooledConnectionFactory implement
     @Override
     public TopicConnection createTopicConnection(String userName, String password) throws JMSException {
         return (TopicConnection) createConnection(userName, password);
+    }
+
+    @Override
+    public JMSContext createContext() throws JMSRuntimeException {
+        return createContext(null, null, Session.AUTO_ACKNOWLEDGE);
+    }
+
+    @Override
+    public JMSContext createContext(int sessionMode) throws JMSRuntimeException {
+        return createContext(null, null, sessionMode);
+    }
+
+    @Override
+    public JMSContext createContext(String userName, String password, int sessionMode) throws JMSRuntimeException {
+        ConnectionFactory cf = getConnectionFactory();
+        if (cf == null) {
+            throw new JMSRuntimeException("ConnectionFactory not set");
+        }
+        return cf.createContext(userName, password, sessionMode);
+    }
+
+    @Override
+    public JMSContext createContext(String userName, String password) throws JMSRuntimeException {
+        return createContext(userName, password, Session.AUTO_ACKNOWLEDGE);
     }
 
 }

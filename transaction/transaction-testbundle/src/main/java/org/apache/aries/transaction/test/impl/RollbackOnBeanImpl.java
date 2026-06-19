@@ -18,10 +18,10 @@
  */
 package org.apache.aries.transaction.test.impl;
 
-import static javax.transaction.Transactional.TxType;
+import static jakarta.transaction.Transactional.TxType;
 
 import java.sql.SQLException;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.aries.transaction.test.RollbackOnBean;
 import org.apache.aries.transaction.test.TestBean;

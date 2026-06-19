@@ -21,7 +21,7 @@ package org.apache.aries.transaction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.transaction.Transactional.TxType;
+import jakarta.transaction.Transactional.TxType;
 
 public class TransactionalAnnotationAttributes {
 

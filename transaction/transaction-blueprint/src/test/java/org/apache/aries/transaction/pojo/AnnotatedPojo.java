@@ -18,8 +18,8 @@
  */
 package org.apache.aries.transaction.pojo;
 
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 
 @Transactional(TxType.REQUIRED)
 public class AnnotatedPojo {

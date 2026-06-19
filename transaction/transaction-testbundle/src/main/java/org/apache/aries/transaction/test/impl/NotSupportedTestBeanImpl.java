@@ -19,7 +19,7 @@
 package org.apache.aries.transaction.test.impl;
 
 import java.sql.SQLException;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class NotSupportedTestBeanImpl extends TestBeanImpl {

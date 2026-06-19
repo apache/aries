@@ -16,11 +16,7 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Topic;
-import javax.jms.TopicPublisher;
+import jakarta.jms.*;
 
 /**
  * 
@@ -53,5 +49,37 @@ public class PooledTopicPublisher extends PooledProducer implements TopicPublish
 
     protected TopicPublisher getTopicPublisher() {
         return (TopicPublisher) getMessageProducer();
+    }
+
+    @Override
+    public void setDeliveryDelay(long deliveryDelay) throws JMSException {
+        getTopicPublisher().setDeliveryDelay(deliveryDelay);
+    }
+
+    @Override
+    public long getDeliveryDelay() throws JMSException {
+        return getDeliveryMode();
+    }
+
+    @Override
+    public void send(Message message, CompletionListener completionListener) throws JMSException {
+        getTopicPublisher().send(message, completionListener);
+    }
+
+    @Override
+    public void send(Message message, int deliveryMode, int priority, long timeToLive, CompletionListener completionListener)
+            throws JMSException {
+        getTopicPublisher().send(message, deliveryMode, priority, timeToLive, completionListener);
+    }
+
+    @Override
+    public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException {
+        getTopicPublisher().send(destination, message, completionListener);
+    }
+
+    @Override
+    public void send(Destination destination, Message message, int deliveryMode, int priority, long timeToLive,
+            CompletionListener completionListener) throws JMSException {
+        getTopicPublisher().send(destination, message, deliveryMode, priority, timeToLive, completionListener);
     }
 }

@@ -17,11 +17,14 @@
 package org.apache.aries.transaction.jms;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.XAConnection;
-import javax.jms.XAConnectionFactory;
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSContext;
+import jakarta.jms.JMSException;
+import jakarta.jms.JMSRuntimeException;
+import jakarta.jms.Session;
+import jakarta.jms.XAConnection;
+import jakarta.jms.XAConnectionFactory;
 
 import org.apache.aries.transaction.jms.internal.ConnectionKey;
 import org.apache.aries.transaction.jms.internal.ConnectionPool;
@@ -251,6 +254,29 @@ public class PooledConnectionFactory implements ConnectionFactory {
         } else {
             return connectionFactory.createConnection(key.getUserName(), key.getPassword());
         }
+    }
+
+    @Override
+    public JMSContext createContext() throws JMSRuntimeException {
+        return createContext(null, null, Session.AUTO_ACKNOWLEDGE);
+    }
+
+    @Override
+    public JMSContext createContext(int sessionMode) throws JMSRuntimeException {
+        return createContext(null, null, sessionMode);
+    }
+
+    @Override
+    public JMSContext createContext(String userName, String password, int sessionMode) throws JMSRuntimeException {
+        if (connectionFactory == null) {
+            throw new JMSRuntimeException("ConnectionFactory not set");
+        }
+        return connectionFactory.createContext(userName, password, sessionMode);
+    }
+
+    @Override
+    public JMSContext createContext(String userName, String password) throws JMSRuntimeException {
+        return createContext(userName, password, Session.AUTO_ACKNOWLEDGE);
     }
 
     public void start() {
@@ -557,6 +583,36 @@ public class PooledConnectionFactory implements ConnectionFactory {
         @Override
         public XAConnection createXAConnection(String userName, String password) throws JMSException {
             return delegate.createXAConnection(userName, password);
+        }
+
+        @Override
+        public JMSContext createContext() throws JMSRuntimeException {
+            return delegate.createXAContext();
+        }
+
+        @Override
+        public JMSContext createContext(int sessionMode) throws JMSRuntimeException {
+            return delegate.createXAContext();
+        }
+
+        @Override
+        public JMSContext createContext(String userName, String password, int sessionMode) throws JMSRuntimeException {
+            return delegate.createXAContext(userName, password);
+        }
+
+        @Override
+        public JMSContext createContext(String userName, String password) throws JMSRuntimeException {
+            return delegate.createXAContext(userName, password);
+        }
+
+        @Override
+        public jakarta.jms.XAJMSContext createXAContext(String userName, String password) throws JMSRuntimeException {
+            return delegate.createXAContext(userName, password);
+        }
+
+        @Override
+        public jakarta.jms.XAJMSContext createXAContext() throws JMSRuntimeException {
+            return delegate.createXAContext();
         }
     }
 }

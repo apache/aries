@@ -19,10 +19,10 @@ package org.apache.aries.transaction.jms.internal;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.jms.Connection;
-import javax.jms.IllegalStateException;
-import javax.jms.JMSException;
-import javax.jms.Session;
+import jakarta.jms.Connection;
+import jakarta.jms.IllegalStateException;
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
 
 import org.apache.commons.pool.KeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
@@ -125,7 +125,7 @@ public class ConnectionPool {
         try {
             session = sessionPool.borrowObject(key);
         } catch (Exception e) {
-            javax.jms.IllegalStateException illegalStateException = new IllegalStateException(e.toString());
+            jakarta.jms.IllegalStateException illegalStateException = new IllegalStateException(e.toString());
             illegalStateException.initCause(e);
             throw illegalStateException;
         }

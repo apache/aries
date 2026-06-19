@@ -16,10 +16,10 @@
  */
 package org.apache.aries.transaction.jms.internal;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
-import javax.jms.XASession;
-import javax.transaction.TransactionManager;
+import jakarta.jms.Connection;
+import jakarta.jms.JMSException;
+import jakarta.jms.XASession;
+import jakarta.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 import org.apache.geronimo.transaction.manager.WrapperNamedXAResource;
