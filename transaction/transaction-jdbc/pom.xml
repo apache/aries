@@ -77,7 +77,7 @@
         <osgi.core.version>4.3.1</osgi.core.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <tranql-connector.version>1.8</tranql-connector.version>
-        <xbean.version>4.30</xbean.version>
+        <xbean.version>4.31</xbean.version>
     </properties>
 
     <dependencies>
