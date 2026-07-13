@@ -49,7 +49,7 @@
         <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.aries.web.urlhandler.version>1.0.1-SNAPSHOT</org.apache.aries.web.urlhandler.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
-        <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
+        <org.eclipse.osgi.version>3.24.200</org.eclipse.osgi.version>
         <pax-exam.version>4.13.5</pax-exam.version>
         <pax-tinybundles.version>2.1.1</pax-tinybundles.version>
         <pax-url.version>2.7.1</pax-url.version>
