@@ -131,6 +131,7 @@
                         aQute.bnd.version.maven,\
                         aQute.lib.collections,\
                         aQute.lib.date,\
+                        aQute.lib.hex,\
                         aQute.lib.io,\
                         aQute.lib.stringrover,\
                         aQute.lib.strings,\
