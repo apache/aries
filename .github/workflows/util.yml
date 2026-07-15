@@ -16,6 +16,7 @@ on:
   pull_request:
     paths:
       - parent/**
+      - testsupport/**
       - versioning/**
       - util/**
       - .github/workflows/util.yml
@@ -47,6 +48,9 @@ jobs:
     - name: Build parent
       shell: bash
       run: mvn -V -U -e -B -ntp clean install -f parent
+    - name: Build testsupport
+      shell: bash
+      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f testsupport
     - name: Build versioning
       shell: bash
       run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f versioning
