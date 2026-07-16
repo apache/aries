@@ -17,6 +17,7 @@ on:
     paths:
       - parent/**
       - testsupport/**
+      - util/**
       - versioning/**
       - .github/workflows/versioning.yml
   push:
@@ -50,6 +51,9 @@ jobs:
     - name: Build testsupport
       shell: bash
       run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f testsupport
+    - name: Build util
+      shell: bash
+      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f util
     - name: Set up Java
       uses: actions/setup-java@v5
       with:

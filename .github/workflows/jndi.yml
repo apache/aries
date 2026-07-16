@@ -54,10 +54,10 @@ jobs:
       run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f testsupport
     - name: Build versioning
       shell: bash
-      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f versioning
+      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f util
     - name: Build util
       shell: bash
-      run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f util
+      run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f versioning
     - name: Build jndi
       shell: bash
       run: mvn -U -e -B -ntp clean install -f jndi

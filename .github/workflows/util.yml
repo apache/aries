@@ -17,7 +17,6 @@ on:
     paths:
       - parent/**
       - testsupport/**
-      - versioning/**
       - util/**
       - .github/workflows/util.yml
   push:
@@ -51,9 +50,6 @@ jobs:
     - name: Build testsupport
       shell: bash
       run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f testsupport
-    - name: Build versioning
-      shell: bash
-      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f versioning
     - name: Set up Java ${{ matrix.java }}
       uses: actions/setup-java@v5
       with:
