@@ -60,10 +60,10 @@ jobs:
       run: mvn -U -e -B -ntp -Dmaven.test.skip=true clean install -f proxy
     - name: Build versioning
       shell: bash
-      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f versioning
+      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f util
     - name: Build util
       shell: bash
-      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f util
+      run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f versioning
     - name: Build quiesce
       shell: bash
       run: mvn -V -U -e -B -ntp -Dmaven.test.skip=true clean install -f quiesce
