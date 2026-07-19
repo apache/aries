@@ -66,7 +66,7 @@
         <jndi-api.version>1.1.1-SNAPSHOT</jndi-api.version>
         <jndi-core.version>1.1.0-SNAPSHOT</jndi-core.version>
         <org.apache.aries.proxy.api.version>1.1.1</org.apache.aries.proxy.api.version>
-        <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
+        <org.apache.aries.testsupport.unit.version>2.0.1-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <osgi.core.version>8.0.0</osgi.core.version>
         <osgi.cmpn.version>7.0.0</osgi.cmpn.version>
         <osgi.enterprise.version>7.0.0</osgi.enterprise.version>

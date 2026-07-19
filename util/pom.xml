@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
@@ -67,7 +67,7 @@
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
 
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-        <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
+        <org.apache.aries.testsupport.unit.version>2.0.1-SNAPSHOT</org.apache.aries.testsupport.unit.version>
         <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
     </properties>
 

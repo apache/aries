@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -62,8 +62,8 @@
 
         <asm.version>9.10.1</asm.version>
         <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
-        <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
-        <org.apache.aries.util.version>2.0.0</org.apache.aries.util.version>
+        <org.apache.aries.testsupport.unit.version>2.0.1-SNAPSHOT</org.apache.aries.testsupport.unit.version>
+        <org.apache.aries.util.version>2.0.1-SNAPSHOT</org.apache.aries.util.version>
     </properties>
 
     <dependencies>
