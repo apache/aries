@@ -30,7 +30,7 @@
 
     <groupId>org.apache.aries.versioning</groupId>
     <artifactId>org.apache.aries.versioning.plugin</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>org.apache.aries.versioning.plugin Maven Mojo</name>
 
@@ -38,7 +38,7 @@
         <connection>scm:git:git@github.com:apache/aries.git</connection>
         <developerConnection>scm:git:git@github.com:apache/aries.git</developerConnection>
         <url>https://github.com/apache/aries</url>
-      <tag>versioning-plugin-0.4.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
