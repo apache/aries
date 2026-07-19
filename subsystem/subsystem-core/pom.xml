@@ -68,7 +68,7 @@
 
         <junit.version>4.13.2</junit.version>
         <org.apache.aries.subsystem.api.version>2.0.10</org.apache.aries.subsystem.api.version>
-        <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
+        <org.apache.aries.util.version>2.0.1-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.aries.subsystem.modeller.version>1.0.0-SNAPSHOT</org.apache.aries.subsystem.modeller.version>
         <osgi.core.version>6.0.0</osgi.core.version>
         <osgi.enterprise.version>5.0.0</osgi.enterprise.version>

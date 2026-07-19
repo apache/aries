@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -45,8 +45,8 @@
 
         <asm.version>9.10.1</asm.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
-        <org.apache.aries.testsupport.unit.version>2.0.0-SNAPSHOT</org.apache.aries.testsupport.unit.version>
-        <org.apache.aries.util.version>2.0.0-SNAPSHOT</org.apache.aries.util.version>
+        <org.apache.aries.testsupport.unit.version>2.0.1-SNAPSHOT</org.apache.aries.testsupport.unit.version>
+        <org.apache.aries.util.version>2.0.1-SNAPSHOT</org.apache.aries.util.version>
         <org.apache.aries.web.urlhandler.version>1.0.1-SNAPSHOT</org.apache.aries.web.urlhandler.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
