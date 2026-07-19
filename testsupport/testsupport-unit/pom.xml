@@ -32,7 +32,7 @@
     <artifactId>org.apache.aries.testsupport.unit</artifactId>
     <packaging>bundle</packaging>
     <name>Apache Aries Unit Test Support</name>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
     <description>
         This bundle provides unit test support.
     </description>
@@ -41,7 +41,7 @@
         <connection>scm:git:git@github.com:apache/aries.git</connection>
         <developerConnection>scm:git:git@github.com:apache/aries.git</developerConnection>
         <url>https://github.com/apache/aries</url>
-      <tag>testsupport-unit-2.0.0</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
