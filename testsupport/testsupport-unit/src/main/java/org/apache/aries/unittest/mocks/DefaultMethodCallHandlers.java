@@ -77,7 +77,7 @@ public class DefaultMethodCallHandlers
 
   /**
    * The Default MethodCallHandler for the toString method, reproduces
-   * <classname>@<hashCode>
+   * {@code className@hashCode}.
    */
   public static final MethodCallHandler TOSTRING_HANDLER = new MethodCallHandler()
   {
