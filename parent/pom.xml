@@ -32,7 +32,7 @@
     <groupId>org.apache.aries</groupId>
     <artifactId>parent</artifactId>
     <name>Aries :: Parent POM</name>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.1.0</version>
     <packaging>pom</packaging>
 
     <description>
@@ -52,7 +52,7 @@
         <connection>scm:git:git@github.com:apache/aries.git</connection>
         <developerConnection>scm:git:git@github.com:apache/aries.git</developerConnection>
         <url>https://github.com/apache/aries</url>
-        <tag>HEAD</tag>
+        <tag>parent-3.1.0</tag>
     </scm>
 
     <issueManagement>
