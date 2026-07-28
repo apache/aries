@@ -51,7 +51,7 @@
         </aries.osgi.export.pkg>
         <aries.osgi.private.pkg/>
         <lastReleaseVersion>1.1.1</lastReleaseVersion>
-        <org.apache.aries.versioning.plugin.version>0.4.1-SNAPSHOT</org.apache.aries.versioning.plugin.version>
+        <org.apache.aries.versioning.plugin.version>0.4.0</org.apache.aries.versioning.plugin.version>
     </properties>
 
     <dependencies>

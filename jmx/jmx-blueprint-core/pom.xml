@@ -55,7 +55,7 @@
 
         <jmock.version>2.13.1</jmock.version>
         <org.apache.aries.jmx.blueprint.api.version>1.2.1-SNAPSHOT</org.apache.aries.jmx.blueprint.api.version>
-        <org.apache.aries.util.version>2.0.1-SNAPSHOT</org.apache.aries.util.version>
+        <org.apache.aries.util.version>2.0.0</org.apache.aries.util.version>
         <osgi.cmpn.version>4.3.1</osgi.cmpn.version>
         <osgi.core.version>4.3.1</osgi.core.version>
     </properties>

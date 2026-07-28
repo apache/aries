@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.1-SNAPSHOT</version>
+        <version>3.1.0</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
@@ -63,7 +63,7 @@
         <org.apache.aries.quiesce.manager.version>1.0.0</org.apache.aries.quiesce.manager.version>
 
         <!-- Aries Testsupport Versions -->
-        <org.apache.aries.testsupport.unit.version>2.0.1-SNAPSHOT</org.apache.aries.testsupport.unit.version>
+        <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
 
         <!-- Aries Transaction Versions -->
         <org.apache.aries.transaction.blueprint.version>1.0.0</org.apache.aries.transaction.blueprint.version>

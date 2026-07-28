@@ -64,7 +64,7 @@
         <aries.osgi.private.pkg>
             org.apache.aries.proxy.impl*
         </aries.osgi.private.pkg>
-        <org.apache.aries.versioning.plugin.version>0.4.1-SNAPSHOT</org.apache.aries.versioning.plugin.version>
+        <org.apache.aries.versioning.plugin.version>0.4.0</org.apache.aries.versioning.plugin.version>
         <lastReleaseVersion>1.1.14</lastReleaseVersion>
 
         <asm.version>9.10.1</asm.version>
