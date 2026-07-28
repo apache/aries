@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.1-SNAPSHOT</version>
+        <version>3.1.0</version>
         <relativePath>../../../parent/pom.xml</relativePath>
     </parent>
 
@@ -60,7 +60,7 @@
         <objenesis.version>3.5</objenesis.version>
         <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
         <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
-        <org.apache.aries.testsupport.unit.version>2.0.1-SNAPSHOT</org.apache.aries.testsupport.unit.version>
+        <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.apache.servicemix.bundles.aopalliance.version>1.0_6</org.apache.servicemix.bundles.aopalliance.version>
         <org.apache.servicemix.bundles.spring.version>5.3.39_2</org.apache.servicemix.bundles.spring.version>

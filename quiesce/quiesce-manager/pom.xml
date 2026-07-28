@@ -54,11 +54,11 @@
         <aries.osgi.export.service>
             org.apache.aries.quiesce.manager.QuiesceManager
         </aries.osgi.export.service>
-        <org.apache.aries.versioning.plugin.version>0.4.1-SNAPSHOT</org.apache.aries.versioning.plugin.version>
+        <org.apache.aries.versioning.plugin.version>0.4.0</org.apache.aries.versioning.plugin.version>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
         <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
-        <org.apache.aries.util.version>2.0.1-SNAPSHOT</org.apache.aries.util.version>
+        <org.apache.aries.util.version>2.0.0</org.apache.aries.util.version>
     </properties>
 
     <dependencies>
