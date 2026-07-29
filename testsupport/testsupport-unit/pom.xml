@@ -61,6 +61,7 @@
             *
         </aries.osgi.import.pkg>
 
+        <lastReleaseVersion>2.0.0</lastReleaseVersion>
         <javax.inject.version>1</javax.inject.version>
         <pax-exam.version>4.13.5</pax-exam.version>
     </properties>

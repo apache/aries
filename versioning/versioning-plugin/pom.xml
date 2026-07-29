@@ -42,6 +42,7 @@
   </scm>
 
     <properties>
+        <lastReleaseVersion>0.4.0</lastReleaseVersion>
         <asm.version>9.10.1</asm.version>
         <javax.inject.version>1</javax.inject.version>
         <maven-artifact-resolver.version>1.0</maven-artifact-resolver.version>
