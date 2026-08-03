@@ -8,3 +8,4 @@ velocity.log
 .factorypath
 .vscode
 .flattened-pom.xml
+dependency-reduced-pom.xml
