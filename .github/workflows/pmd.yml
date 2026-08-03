@@ -49,3 +49,6 @@ jobs:
       uses: jwgmeligmeyling/pmd-github-action@322e346bd76a0757c4d54ff9209e245965aa066d
       with:
         path: '**/pmd.xml'
+    - name: Check for dirty workspace
+      shell: bash
+      run: bash .github/scripts/check-dirty-workspace.sh

@@ -50,3 +50,6 @@ jobs:
     - name: Build spi-fly
       shell: bash
       run: mvn -U -e -B -ntp clean install -f spi-fly
+    - name: Check for dirty workspace
+      shell: bash
+      run: bash .github/scripts/check-dirty-workspace.sh

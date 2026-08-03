@@ -67,3 +67,6 @@ jobs:
     - name: Build web
       shell: bash
       run: mvn -V -U -e -B -ntp clean install -f web
+    - name: Check for dirty workspace
+      shell: bash
+      run: bash .github/scripts/check-dirty-workspace.sh
