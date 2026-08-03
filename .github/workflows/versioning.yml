@@ -62,3 +62,6 @@ jobs:
     - name: Build versioning
       shell: bash
       run: mvn -U -e -B -ntp clean install -f versioning
+    - name: Check for dirty workspace
+      shell: bash
+      run: bash .github/scripts/check-dirty-workspace.sh

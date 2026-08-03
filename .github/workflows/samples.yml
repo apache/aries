@@ -56,3 +56,6 @@ jobs:
     - name: Run idverifier
       shell: bash
       run: timeout --preserve-status 10 bash ./samples/blueprint/idverifier/idverifier-assembly/target/run.sh || exit 0
+    - name: Check for dirty workspace
+      shell: bash
+      run: bash .github/scripts/check-dirty-workspace.sh

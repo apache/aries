@@ -67,3 +67,6 @@ jobs:
     - name: Build quiesce
       shell: bash
       run: mvn -V -U -e -B -ntp clean install -f quiesce
+    - name: Check for dirty workspace
+      shell: bash
+      run: bash .github/scripts/check-dirty-workspace.sh

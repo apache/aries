@@ -49,3 +49,6 @@ jobs:
     - name: Build blueprint plugin
       shell: bash
       run: mvn -U -e -B -ntp clean install -f blueprint-maven-plugin
+    - name: Check for dirty workspace
+      shell: bash
+      run: bash .github/scripts/check-dirty-workspace.sh
