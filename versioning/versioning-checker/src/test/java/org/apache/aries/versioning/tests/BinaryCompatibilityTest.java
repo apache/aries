@@ -301,7 +301,7 @@ public class BinaryCompatibilityTest {
     }
 
     /**
-     * Change the signature of the field from Colllection<AA> to Collection<String>
+     * Change the signature of the field from {@code Colllection<AA>} to {@code Collection<String>}
      */
     @Test
     public void test_jdk_chap13_4_7_5() {
