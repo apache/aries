@@ -24,9 +24,6 @@ import java.io.File;
 
 import org.apache.aries.util.manifest.BundleManifest;
 
-/**
-* @version $Rev:$ $Date:$
-*/
 public class BundleInfo {
     private final BundleManifest bundleManifest;
     private final File bundle;

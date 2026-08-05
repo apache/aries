@@ -26,7 +26,7 @@ import org.osgi.util.tracker.ServiceTracker;
 // Note this file originated in the JMX subproject.
 
 /**
- * <p>This <tt>Logger</tt> class represents ServiceTracker for LogService.
+ * <p>This <code>Logger</code> class represents ServiceTracker for LogService.
  * It provides a simple mechanism for interacting with the log service.
  *
  * @see org.osgi.service.log.LogService

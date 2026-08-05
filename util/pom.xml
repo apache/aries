@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
@@ -66,7 +66,7 @@
         <aries.skip.version.check>true</aries.skip.version.check>
         <org.apache.aries.versioning.plugin.version>0.3.1</org.apache.aries.versioning.plugin.version>
 
-        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+        <aries.javadoc.exclude.packages>${aries.osgi.private.pkg}</aries.javadoc.exclude.packages>
         <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
         <org.eclipse.osgi.version>3.23.100</org.eclipse.osgi.version>
     </properties>
@@ -101,25 +101,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven-javadoc-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>javadoc-jar</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <failOnError>false</failOnError>
-                            <excludePackageNames>*.impl:*.internal</excludePackageNames>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

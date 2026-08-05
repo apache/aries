@@ -22,9 +22,6 @@ package org.apache.aries.versioning.check;
 
 import org.osgi.framework.Version;
 
-/**
- * @version $Rev:$ $Date:$
- */
 public class VersionChange {
     private BundleCompatibility.VERSION_CHANGE_TYPE changeType;
     private Version oldVersion;

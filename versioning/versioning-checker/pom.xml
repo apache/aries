@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.1.0</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -57,6 +57,7 @@
         <aries.osgi.private.pkg>
             org.apache.aries.versioning.utils;
         </aries.osgi.private.pkg>
+        <aries.javadoc.exclude.packages>org.apache.aries.versioning.utils</aries.javadoc.exclude.packages>
         <lastReleaseVersion>0.4.0</lastReleaseVersion>
         <aries.skip.version.check>true</aries.skip.version.check>
 

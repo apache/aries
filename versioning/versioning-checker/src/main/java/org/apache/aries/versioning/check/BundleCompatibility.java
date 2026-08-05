@@ -54,9 +54,6 @@ import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @version $Rev:$ $Date:$
- */
 public class BundleCompatibility {
   private static final Logger _logger = LoggerFactory.getLogger(BundleCompatibility.class);
 
