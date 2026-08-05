@@ -57,7 +57,7 @@
         <commons-jexl.version>2.1.1</commons-jexl.version>
         <depends-maven-plugin.version>1.5.0</depends-maven-plugin.version>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
-        <objenesis.version>3.5</objenesis.version>
+        <objenesis.version>3.6</objenesis.version>
         <org.apache.aries.proxy.version>1.1.15-SNAPSHOT</org.apache.aries.proxy.version>
         <org.apache.aries.quiesce.api.version>1.0.1-SNAPSHOT</org.apache.aries.quiesce.api.version>
         <org.apache.aries.testsupport.unit.version>2.0.0</org.apache.aries.testsupport.unit.version>
