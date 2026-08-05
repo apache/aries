@@ -440,7 +440,73 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <source>${java.source.version}</source>
+                    <quiet>true</quiet>
+                    <excludePackageNames>${aries.javadoc.exclude.packages}</excludePackageNames>
+                    <!--
+                        External links are deliberately omitted here: javadoc would fetch the
+                        referenced package-list/element-list files on every invocation, making
+                        the build dependent on network access. External API links are only
+                        configured for the generated site (reporting section below).
+                    -->
+                    <tags>
+                        <tag>
+                            <name>goal</name>
+                            <placement>Xt</placement>
+                        </tag>
+                        <tag>
+                            <name>phase</name>
+                            <placement>Xt</placement>
+                        </tag>
+                        <tag>
+                            <name>execute</name>
+                            <placement>Xt</placement>
+                        </tag>
+                        <tag>
+                            <name>requiresDependencyResolution</name>
+                            <placement>Xt</placement>
+                        </tag>
+                        <tag>
+                            <name>parameter</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>required</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>readonly</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>component</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>plexus.component</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>plexus.requirement</name>
+                            <placement>Xf</placement>
+                        </tag>
+                        <tag>
+                            <name>Immutable</name>
+                            <placement>t</placement>
+                        </tag>
+                        <tag>
+                            <name>ThreadSafe</name>
+                            <placement>t</placement>
+                        </tag>
+                    </tags>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.rat</groupId>
@@ -554,8 +620,8 @@
                     <quiet>true</quiet>
                     <source>${java.source.version}</source>
                     <links>
-                        <link>http://java.sun.com/j2se/1.7.0/docs/api</link>
-                        <link>http://www.osgi.org/javadoc/r4v43/</link>
+                        <link>https://docs.osgi.org/javadoc/r4v43/core/</link>
+                        <link>https://docs.osgi.org/javadoc/r4v43/cmpn/</link>
                     </links>
                     <tags>
                         <tag>
