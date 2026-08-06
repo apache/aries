@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.aries.spifly.itests.util.TeeOutputStream;
 import org.junit.jupiter.api.AfterEach;
@@ -43,6 +44,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.test.assertj.bundle.BundleAssert;
 import org.osgi.test.common.annotation.InjectBundleContext;
 import org.osgi.test.junit5.context.BundleContextExtension;
@@ -142,13 +144,20 @@ public class InitialTest {
      * <p>The first assertion verifies the host's own capability. The second is the regression
      * assertion: the merge must keep same-named capability clauses from different sources
      * distinct so that the fragment's capability is registered alongside the host's.
+     * The host is started before the fragment is installed, and the fragment contributes a
+     * provider configuration from an embedded Bundle-ClassPath entry, covering both late
+     * attachment reprocessing and effective class-path discovery.
      *
      * @throws Exception if the example bundles cannot be installed or inspected
      */
     @Test
     public void example5() throws Exception {
-        Bundle provider5fragment = assertBundleInstallation(getExampleJar("spi-fly-example-provider5-fragment"), true);
         Bundle provider5Bundle = assertBundleInstallation(getExampleJar("spi-fly-example-provider5-bundle"));
+        Bundle provider5fragment = assertBundleInstallation(
+                getExampleJar("spi-fly-example-provider5-fragment"), true);
+        FrameworkWiring frameworkWiring = bundleContext.getBundle(0).adapt(FrameworkWiring.class);
+        assertThat(frameworkWiring.resolveBundles(
+                Collections.singleton(provider5fragment))).isTrue();
         BundleAssert.assertThat(provider5fragment).isFragment().isInState(Bundle.RESOLVED);
         assertFragmentAttached(provider5Bundle, provider5fragment);
 
@@ -157,8 +166,8 @@ public class InitialTest {
                         "org.apache.aries.spifly.mysvc.SPIProvider", null));
         assertThat(providerRegistrations).as(
             "each host decorating capability should create a separate registration"
-        ).hasSize(2).extracting(reference -> reference.getProperty("decorator"))
-            .containsExactlyInAnyOrder("first", "second");
+        ).hasSize(3).extracting(reference -> reference.getProperty("decorator"))
+            .containsExactlyInAnyOrder("first", "second", "fragment-embedded");
 
         ServiceReference<?> firstDecorator = providerRegistrations.stream()
                 .filter(reference -> "first".equals(reference.getProperty("decorator")))

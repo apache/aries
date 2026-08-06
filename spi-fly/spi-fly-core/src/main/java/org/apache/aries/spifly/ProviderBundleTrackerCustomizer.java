@@ -135,7 +135,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         if (providedServices == null) {
             log(Level.FINE, "No provided SPI services. Skipping bundle: "
                     + bundle.getSymbolicName());
-            return null;
+            // Keep active hosts tracked so a fragment attached later can add provider
+            // capabilities and configuration resources to them.
+            return new ArrayList<ServiceRegistration>();
         } else {
             log(Level.FINE, "Examining bundle for SPI provider: "
                     + bundle.getSymbolicName());
@@ -149,7 +151,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         if (serviceFileURLs == null) {
-            serviceFileURLs = getServiceFileUrls(bundle);
+            serviceFileURLs = getServiceFileUrls(bundle,
+                    discoveryMode == DiscoveryMode.SERVICELOADER_CAPABILITIES
+                            ? providedServices : null);
         }
 
         final List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
@@ -319,6 +323,29 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     }
 
     private List<URL> getServiceFileUrls(Bundle bundle) {
+        return getServiceFileUrls(bundle, null);
+    }
+
+    List<URL> getServiceFileUrls(Bundle bundle, List<String> serviceTypes) {
+        if (serviceTypes != null) {
+            BundleWiring wiring = WiringUtils.getWiring(bundle);
+            ClassLoader classLoader = wiring == null ? null : wiring.getClassLoader();
+            if (classLoader != null) {
+                Set<URL> serviceFileURLs = new LinkedHashSet<URL>();
+                for (String serviceType : new LinkedHashSet<String>(serviceTypes)) {
+                    try {
+                        Enumeration<URL> resources = classLoader.getResources(
+                                METAINF_SERVICES + "/" + serviceType);
+                        serviceFileURLs.addAll(Collections.list(resources));
+                    }
+                    catch (IOException e) {
+                        log(Level.FINE, "Could not find SPI metadata for " + serviceType, e);
+                    }
+                }
+                return new ArrayList<URL>(serviceFileURLs);
+            }
+        }
+
         List<URL> serviceFileURLs = new ArrayList<URL>();
 
         Enumeration<URL> entries = bundle.findEntries(METAINF_SERVICES, "*", false);
@@ -454,6 +481,21 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         // implementation is unnecessary for this use case
     }
 
+    @SuppressWarnings("unchecked")
+    void reprocessBundle(Bundle bundle, Object registrations) {
+        List<ServiceRegistration> current = (List<ServiceRegistration>) registrations;
+        synchronized (current) {
+            activator.unregisterProviderBundle(bundle);
+            unregister(current);
+            current.clear();
+
+            List<ServiceRegistration> replacements = addingBundle(bundle, null);
+            if (replacements != null) {
+                current.addAll(replacements);
+            }
+        }
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public void removedBundle(Bundle bundle, BundleEvent event, Object registrations) {
@@ -462,7 +504,14 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         if (registrations == null)
             return;
 
-        for (ServiceRegistration reg : (List<ServiceRegistration>) registrations) {
+        List<ServiceRegistration> current = (List<ServiceRegistration>) registrations;
+        synchronized (current) {
+            unregister(current);
+        }
+    }
+
+    private void unregister(List<ServiceRegistration> registrations) {
+        for (ServiceRegistration reg : registrations) {
             try {
                 reg.unregister();
                 log(Level.FINE, "Unregistered: " + reg);

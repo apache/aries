@@ -20,6 +20,7 @@ package org.apache.aries.spifly;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 public class ConsumerBundleTrackerCustomizer implements BundleTrackerCustomizer {
@@ -34,6 +35,12 @@ public class ConsumerBundleTrackerCustomizer implements BundleTrackerCustomizer 
     @Override
     public Object addingBundle(Bundle bundle, BundleEvent event) {
         try {
+            BundleRevision revision = bundle.adapt(BundleRevision.class);
+            if (revision != null
+                    && (revision.getTypes() & BundleRevision.TYPE_FRAGMENT) != 0) {
+                activator.fragmentAttached(bundle, headerName);
+                return bundle;
+            }
             activator.addConsumerWeavingData(bundle, headerName);
         } catch (Exception e) {
             throw new RuntimeException(e);

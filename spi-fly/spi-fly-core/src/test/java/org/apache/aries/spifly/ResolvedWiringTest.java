@@ -21,6 +21,7 @@ package org.apache.aries.spifly;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -40,6 +41,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 
@@ -207,6 +209,33 @@ public class ResolvedWiringTest {
         assertNotNull(activator.getWeavingData(consumer));
         assertEquals(Collections.singleton(selectedProvider), activator.findConsumerRestrictions(
                 consumer, ServiceLoader.class.getName(), "load", serviceArguments(SERVICE_TYPE)));
+    }
+
+    @Test
+    public void resolvedFragmentTriggersHostRefreshPath() {
+        final boolean[] attached = new boolean[1];
+        BaseActivator fragmentActivator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+
+            @Override
+            void fragmentAttached(Bundle fragment, String consumerHeaderName) {
+                attached[0] = true;
+            }
+        };
+        BundleRevision revision = EasyMock.createNiceMock(BundleRevision.class);
+        EasyMock.expect(revision.getTypes()).andReturn(
+                BundleRevision.TYPE_FRAGMENT).anyTimes();
+        EasyMock.replay(revision);
+        Bundle fragment = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(fragment.adapt(BundleRevision.class))
+                .andReturn(revision).anyTimes();
+        EasyMock.replay(fragment);
+
+        new ConsumerBundleTrackerCustomizer(fragmentActivator,
+                SpiFlyConstants.SPI_CONSUMER_HEADER).addingBundle(fragment, null);
+
+        assertTrue(attached[0]);
     }
 
     private BundleWiring mockConsumerWiring(List<BundleWire> extenderWires,

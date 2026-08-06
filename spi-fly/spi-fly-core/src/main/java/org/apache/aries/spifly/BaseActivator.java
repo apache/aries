@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
@@ -68,6 +69,7 @@ public abstract class BaseActivator implements BundleActivator {
     private BundleTracker consumerBundleTracker;
     @SuppressWarnings("rawtypes")
     private BundleTracker providerBundleTracker;
+    private ProviderBundleTrackerCustomizer providerBundleTrackerCustomizer;
     private Optional<Parameters> autoConsumerInstructions;
     private Optional<Parameters> autoProviderInstructions;
 
@@ -100,8 +102,10 @@ public abstract class BaseActivator implements BundleActivator {
             log(Level.FINE, t.getMessage(), t);
         }
 
+        providerBundleTrackerCustomizer =
+                new ProviderBundleTrackerCustomizer(this, context.getBundle());
         providerBundleTracker = new BundleTracker(context,
-                Bundle.ACTIVE | Bundle.STARTING, new ProviderBundleTrackerCustomizer(this, context.getBundle()));
+                Bundle.ACTIVE | Bundle.STARTING, providerBundleTrackerCustomizer);
         providerBundleTracker.open();
 
         consumerBundleTracker = new BundleTracker(context,
@@ -228,6 +232,34 @@ public abstract class BaseActivator implements BundleActivator {
         bundleWeavingData.remove(bundle);
         consumerRestrictions.remove(bundle);
         standardConsumerWirings.remove(bundle);
+    }
+
+    void fragmentAttached(Bundle fragment, String consumerHeaderName) throws Exception {
+        BundleWiring fragmentWiring = WiringUtils.getWiring(fragment);
+        if (fragmentWiring == null) {
+            return;
+        }
+
+        for (BundleWire hostWire : fragmentWiring.getRequiredWires(
+                HostNamespace.HOST_NAMESPACE)) {
+            BundleWiring hostWiring = hostWire.getProviderWiring();
+            Bundle host = hostWiring == null ? null : hostWiring.getBundle();
+            if (host == null) {
+                continue;
+            }
+
+            if (providerBundleTracker != null && providerBundleTrackerCustomizer != null) {
+                Object registrations = providerBundleTracker.getObject(host);
+                if (registrations != null) {
+                    providerBundleTrackerCustomizer.reprocessBundle(host, registrations);
+                }
+            }
+
+            if (consumerBundleTracker != null && consumerBundleTracker.getObject(host) != null) {
+                removeWeavingData(host);
+                addConsumerWeavingData(host, consumerHeaderName);
+            }
+        }
     }
 
     @Override

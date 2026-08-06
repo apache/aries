@@ -23,12 +23,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -100,7 +102,37 @@ public class ProviderBundleTrackerCustomizerTest {
         Bundle implBundle = mockSPIBundle(implBC, null);
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, null);
-        assertNull("Bundle doesn't opt-in so should be ignored", customizer.addingBundle(implBundle, null));
+        assertEquals("Bundle without providers should remain tracked for late fragments",
+                Collections.emptyList(), customizer.addingBundle(implBundle, null));
+    }
+
+    @Test
+    public void testStandardDiscoveryUsesWiringClassLoader() throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        final URL serviceFile = getClass().getResource(
+                "impl1/META-INF/services/" + serviceType);
+        assertNotNull("precondition", serviceFile);
+
+        ClassLoader classLoader = new ClassLoader() {
+            @Override
+            public Enumeration<URL> getResources(String name) throws IOException {
+                assertEquals("META-INF/services/" + serviceType, name);
+                return Collections.enumeration(Collections.singleton(serviceFile));
+            }
+        };
+        BundleWiring wiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(wiring.getClassLoader()).andReturn(classLoader).anyTimes();
+        EasyMock.replay(wiring);
+        Bundle bundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(bundle.adapt(BundleWiring.class)).andReturn(wiring).anyTimes();
+        EasyMock.replay(bundle);
+
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+
+        assertEquals(Collections.singletonList(serviceFile),
+                customizer.getServiceFileUrls(bundle,
+                        Arrays.asList(serviceType, serviceType)));
     }
 
     @Test
