@@ -164,11 +164,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                 if (details.properties != null) {
                     ServiceRegistration reg = null;
-                    Object instance =
-                        (details.properties.containsKey("service.scope") &&
-                        "prototype".equalsIgnoreCase(String.valueOf(details.properties.get("service.scope")))) ?
-                            new ProviderPrototypeServiceFactory(cls) :
-                            new ProviderServiceFactory(cls);
+                    Object instance = new ProviderServiceFactory(cls);
 
                     SecurityManager sm = System.getSecurityManager();
                     if (sm != null) {

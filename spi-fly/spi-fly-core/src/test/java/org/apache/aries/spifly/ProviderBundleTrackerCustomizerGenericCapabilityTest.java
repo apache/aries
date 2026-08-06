@@ -19,6 +19,7 @@
 package org.apache.aries.spifly;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -369,6 +370,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         firstAttributes.put("doubleValue", Double.valueOf(2.5));
         firstAttributes.put("versionValue", new Version("1.2.3"));
         firstAttributes.put("listValue", Arrays.asList(Long.valueOf(1), Long.valueOf(2)));
+        firstAttributes.put(Constants.SERVICE_SCOPE, Constants.SCOPE_PROTOTYPE);
         firstAttributes.put(".private", "hidden");
         firstAttributes.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, Long.valueOf(99));
         Map<String, String> firstDirectives = new HashMap<String, String>();
@@ -401,6 +403,9 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         assertEquals(2, registrations.size());
         Set<Object> decorators = new HashSet<Object>();
         for (@SuppressWarnings("rawtypes") ServiceRegistration registration : registrations) {
+            Object serviceObject = ((ServiceRegistrationImpl) registration).getServiceObject();
+            assertTrue(serviceObject instanceof ProviderServiceFactory);
+            assertFalse(serviceObject instanceof ProviderPrototypeServiceFactory);
             ServiceReference<?> reference = registration.getReference();
             decorators.add(reference.getProperty("decorator"));
             assertEquals(Long.valueOf(42), reference.getProperty(
