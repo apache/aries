@@ -39,11 +39,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.framework.wiring.FrameworkWiring;
 
 public class ResolvedWiringTest {
     private static final String SERVICE_TYPE = "org.example.Service";
@@ -63,9 +65,7 @@ public class ResolvedWiringTest {
         EasyMock.expect(context.getBundle()).andReturn(mediator).anyTimes();
         EasyMock.replay(context);
 
-        Field contextField = BaseActivator.class.getDeclaredField("bundleContext");
-        contextField.setAccessible(true);
-        contextField.set(activator, context);
+        setBundleContext(context);
     }
 
     @Test
@@ -238,6 +238,79 @@ public class ResolvedWiringTest {
         assertTrue(attached[0]);
     }
 
+    @Test
+    public void lateProcessorFragmentRefreshesConsumerHostOnce() throws Exception {
+        BundleWiring wiring = mockConsumerWiring(
+                Collections.singletonList(mockWire(
+                        SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                        SpiFlyConstants.PROCESSOR_EXTENDER_NAME, mediator)),
+                Collections.<BundleRequirement>emptyList(),
+                Collections.<BundleWire>emptyList());
+        Bundle consumer = mockConsumer(wiring);
+        BundleRevision fragmentRevision = EasyMock.createNiceMock(BundleRevision.class);
+        EasyMock.replay(fragmentRevision);
+
+        FrameworkWiring frameworkWiring = EasyMock.createMock(FrameworkWiring.class);
+        frameworkWiring.refreshBundles(
+                EasyMock.eq(Collections.singleton(consumer)),
+                EasyMock.<FrameworkListener[]>anyObject());
+        EasyMock.expectLastCall().once();
+        EasyMock.replay(frameworkWiring);
+
+        Bundle systemBundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(systemBundle.adapt(FrameworkWiring.class))
+                .andReturn(frameworkWiring).anyTimes();
+        EasyMock.replay(systemBundle);
+        BundleContext context = EasyMock.createNiceMock(BundleContext.class);
+        EasyMock.expect(context.getBundle()).andReturn(mediator).anyTimes();
+        EasyMock.expect(context.getBundle(0)).andReturn(systemBundle).anyTimes();
+        EasyMock.replay(context);
+        setBundleContext(context);
+
+        activator.reprocessConsumerHost(
+                consumer, fragmentRevision, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        assertTrue(activator.isStandardConsumer(consumer));
+
+        // A refresh can make the tracker rebuild the host metadata and observe the same
+        // attached fragment revision again. It must not start a refresh loop.
+        activator.removeWeavingData(consumer);
+        activator.reprocessConsumerHost(
+                consumer, fragmentRevision, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        EasyMock.verify(frameworkWiring);
+    }
+
+    @Test
+    public void lateProcessorFragmentDoesNotRefreshStaticConsumer() throws Exception {
+        FrameworkWiring frameworkWiring = EasyMock.createMock(FrameworkWiring.class);
+        EasyMock.replay(frameworkWiring);
+        Bundle systemBundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(systemBundle.adapt(FrameworkWiring.class))
+                .andReturn(frameworkWiring).anyTimes();
+        EasyMock.replay(systemBundle);
+        BundleContext context = EasyMock.createNiceMock(BundleContext.class);
+        EasyMock.expect(context.getBundle()).andReturn(mediator).anyTimes();
+        EasyMock.expect(context.getBundle(0)).andReturn(systemBundle).anyTimes();
+        EasyMock.replay(context);
+        setBundleContext(context);
+
+        BundleWiring wiring = mockConsumerWiring(
+                Collections.singletonList(mockWire(
+                        SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                        SpiFlyConstants.PROCESSOR_EXTENDER_NAME, mediator)),
+                Collections.<BundleRequirement>emptyList(),
+                Collections.<BundleWire>emptyList());
+        Bundle consumer = mockConsumer(wiring, true, true);
+        BundleRevision fragmentRevision = EasyMock.createNiceMock(BundleRevision.class);
+        EasyMock.replay(fragmentRevision);
+
+        activator.reprocessConsumerHost(consumer, fragmentRevision,
+                SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER);
+
+        assertTrue(activator.isStandardConsumer(consumer));
+        EasyMock.verify(frameworkWiring);
+    }
+
     private BundleWiring mockConsumerWiring(List<BundleWire> extenderWires,
             List<BundleRequirement> serviceRequirements, List<BundleWire> serviceWires) {
         BundleWiring wiring = EasyMock.createNiceMock(BundleWiring.class);
@@ -291,6 +364,12 @@ public class ResolvedWiringTest {
         EasyMock.expect(consumer.adapt(BundleWiring.class)).andReturn(wiring).anyTimes();
         EasyMock.replay(consumer);
         return consumer;
+    }
+
+    private void setBundleContext(BundleContext context) throws Exception {
+        Field contextField = BaseActivator.class.getDeclaredField("bundleContext");
+        contextField.setAccessible(true);
+        contextField.set(activator, context);
     }
 
     private Bundle mockBundle(long id) {

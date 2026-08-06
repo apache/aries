@@ -42,11 +42,13 @@ import java.util.logging.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
+import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.util.tracker.BundleTracker;
 
 import aQute.bnd.header.Parameters;
@@ -84,6 +86,10 @@ public abstract class BaseActivator implements BundleActivator {
 
     private final ConcurrentMap<Bundle, StandardConsumerWiring> standardConsumerWirings =
             new ConcurrentHashMap<Bundle, StandardConsumerWiring>();
+
+    private final Set<Pair<Bundle, BundleRevision>> refreshedConsumerHosts =
+            Collections.newSetFromMap(
+                    new ConcurrentHashMap<Pair<Bundle, BundleRevision>, Boolean>());
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
@@ -260,9 +266,53 @@ public abstract class BaseActivator implements BundleActivator {
             }
 
             if (consumerBundleTracker != null && consumerBundleTracker.getObject(host) != null) {
-                removeWeavingData(host);
-                addConsumerWeavingData(host, consumerHeaderName);
+                reprocessConsumerHost(host, fragmentWiring.getRevision(), consumerHeaderName);
             }
+        }
+    }
+
+    void reprocessConsumerHost(Bundle host, BundleRevision fragmentRevision,
+            String consumerHeaderName) throws Exception {
+        boolean wasStandardConsumer = isStandardConsumer(host);
+        removeWeavingData(host);
+        addConsumerWeavingData(host, consumerHeaderName);
+
+        if (SpiFlyConstants.SPI_CONSUMER_HEADER.equals(consumerHeaderName)
+                && !wasStandardConsumer && isStandardConsumer(host)) {
+            refreshConsumerHost(host, fragmentRevision);
+        }
+    }
+
+    private void refreshConsumerHost(Bundle host, BundleRevision fragmentRevision) {
+        if (fragmentRevision == null) {
+            return;
+        }
+        Bundle systemBundle = bundleContext == null ? null : bundleContext.getBundle(0);
+        FrameworkWiring frameworkWiring = systemBundle == null
+                ? null : systemBundle.adapt(FrameworkWiring.class);
+        if (frameworkWiring == null) {
+            log(Level.WARNING, "Cannot refresh consumer host " + host
+                    + " after processor fragment attachment: FrameworkWiring is unavailable");
+            return;
+        }
+        Pair<Bundle, BundleRevision> refreshKey =
+                new Pair<Bundle, BundleRevision>(host, fragmentRevision);
+        if (!refreshedConsumerHosts.add(refreshKey)) {
+            return;
+        }
+
+        try {
+            frameworkWiring.refreshBundles(Collections.singleton(host), event -> {
+                if (event.getType() == FrameworkEvent.ERROR) {
+                    log(Level.WARNING, "Could not refresh consumer host " + host
+                            + " after processor fragment attachment", event.getThrowable());
+                }
+            });
+        }
+        catch (RuntimeException e) {
+            refreshedConsumerHosts.remove(refreshKey);
+            log(Level.WARNING, "Could not request refresh of consumer host " + host
+                    + " after processor fragment attachment", e);
         }
     }
 
@@ -272,6 +322,7 @@ public abstract class BaseActivator implements BundleActivator {
 
         consumerBundleTracker.close();
         providerBundleTracker.close();
+        refreshedConsumerHosts.clear();
     }
 
     public boolean isLogEnabled(Level level) {

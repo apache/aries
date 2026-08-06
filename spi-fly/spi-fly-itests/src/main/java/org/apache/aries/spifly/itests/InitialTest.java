@@ -31,6 +31,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.aries.spifly.itests.util.TeeOutputStream;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +42,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleWire;
@@ -114,10 +118,37 @@ public class InitialTest {
         BundleAssert.assertThat(provider3fragment).isFragment().isInState(Bundle.RESOLVED);
         assertFragmentAttached(provider3Bundle, provider3fragment);
 
-        Bundle client3fragment = assertBundleInstallation(getExampleJar("spi-fly-example-client3-fragment"), true);
         Bundle client3Bundle = assertBundleInstallation(getExampleJar("spi-fly-example-client3-bundle"));
-        BundleAssert.assertThat(client3fragment).isFragment().isInState(Bundle.RESOLVED);
-        assertFragmentAttached(client3Bundle, client3fragment);
+        assertThat(outContent.toString()).contains(
+                "*** Result from invoking the SPI from untreated bundle:")
+                .doesNotContain("Doing it as well!");
+
+        CountDownLatch clientRestarted = new CountDownLatch(1);
+        BundleListener restartListener = event -> {
+            if (event.getType() == BundleEvent.STARTED
+                    && client3Bundle.equals(event.getBundle())) {
+                clientRestarted.countDown();
+            }
+        };
+        bundleContext.addBundleListener(restartListener);
+        try {
+            Bundle client3fragment = assertBundleInstallation(
+                    getExampleJar("spi-fly-example-client3-fragment"), true);
+            FrameworkWiring frameworkWiring =
+                    bundleContext.getBundle(0).adapt(FrameworkWiring.class);
+            assertThat(frameworkWiring.resolveBundles(
+                    Collections.singleton(client3fragment))).isTrue();
+            assertThat(clientRestarted.await(30, TimeUnit.SECONDS))
+                    .as("the late processor fragment should refresh and restart its host")
+                    .isTrue();
+
+            BundleAssert.assertThat(client3fragment).isFragment().isInState(Bundle.RESOLVED);
+            BundleAssert.assertThat(client3Bundle).isInState(Bundle.ACTIVE);
+            assertFragmentAttached(client3Bundle, client3fragment);
+        }
+        finally {
+            bundleContext.removeBundleListener(restartListener);
+        }
 
         assertThat(
             outContent.toString()
