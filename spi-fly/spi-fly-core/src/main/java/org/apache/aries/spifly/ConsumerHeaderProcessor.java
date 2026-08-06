@@ -186,6 +186,12 @@ public class ConsumerHeaderProcessor {
                 argRestrictions.addRestriction(1, ClassLoader.class.getName());
                 methodRestriction = new MethodRestriction(methodName, argRestrictions);
                 weavingData.add(createWeavingData(className, methodName, methodRestriction, allowedBundles));
+
+                methodName = "loadInstalled";
+                argRestrictions = new ArgRestrictions();
+                argRestrictions.addRestriction(0, Class.class.getName());
+                methodRestriction = new MethodRestriction(methodName, argRestrictions);
+                weavingData.add(createWeavingData(className, methodName, methodRestriction, allowedBundles));
             }
         }
         return weavingData;
@@ -236,6 +242,15 @@ public class ConsumerHeaderProcessor {
             ar.addRestriction(1, ClassLoader.class.getName());
             MethodRestriction mr = new MethodRestriction("load", ar);
             weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+        }
+
+        // ServiceLoader.loadInstalled(Class)
+        {
+            ArgRestrictions ar = new ArgRestrictions();
+            ar.addRestriction(0, Class.class.getName());
+            MethodRestriction mr = new MethodRestriction("loadInstalled", ar);
+            weavingData.add(createWeavingData(
+                    ServiceLoader.class.getName(), "loadInstalled", mr, allowedBundles));
         }
 
         return weavingData;

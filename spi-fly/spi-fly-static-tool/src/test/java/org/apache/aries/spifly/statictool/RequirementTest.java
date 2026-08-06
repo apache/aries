@@ -38,6 +38,7 @@ import org.apache.aries.spifly.SpiFlyConstants;
 import org.apache.aries.spifly.Streams;
 import org.apache.aries.spifly.statictool.bundle.Test2Class;
 import org.apache.aries.spifly.statictool.bundle.Test3Class;
+import org.apache.aries.spifly.statictool.bundle.Test4Class;
 import org.apache.aries.spifly.statictool.bundle.TestClass;
 import org.junit.Test;
 
@@ -52,6 +53,8 @@ public class RequirementTest {
 		URL test2ClassURL = getClass().getResource("/" + test2ClassFileName);
 		String test3ClassFileName = Test3Class.class.getName().replace('.', '/') + ".class";
 		URL test3ClassURL = getClass().getResource("/" + test3ClassFileName);
+		String test4ClassFileName = Test4Class.class.getName().replace('.', '/') + ".class";
+		URL test4ClassURL = getClass().getResource("/" + test4ClassFileName);
 
 		File jarFile = new File(System.getProperty("java.io.tmpdir") + "/testjar_" + System.currentTimeMillis() + ".jar");
 		File expectedFile = null;
@@ -76,6 +79,8 @@ public class RequirementTest {
 			Streams.pump(test2ClassURL.openStream(), jos);
 			jos.putNextEntry(new ZipEntry(test3ClassFileName));
 			Streams.pump(test3ClassURL.openStream(), jos);
+			jos.putNextEntry(new ZipEntry(test4ClassFileName));
+			Streams.pump(test4ClassURL.openStream(), jos);
 			jos.close();
 
 			Main.main(jarFile.getCanonicalPath());
@@ -125,6 +130,10 @@ public class RequirementTest {
 			byte[] orgBytes3 = Streams.suck(initialJarFile.getInputStream(new ZipEntry(test3ClassFileName)));
 			byte[] transBytes3 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test3ClassFileName)));
 			assertFalse("The transformed class should be different", Arrays.equals(orgBytes3, transBytes3));
+
+			byte[] orgBytes4 = Streams.suck(initialJarFile.getInputStream(new ZipEntry(test4ClassFileName)));
+			byte[] transBytes4 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test4ClassFileName)));
+			assertFalse("The loadInstalled class should be transformed", Arrays.equals(orgBytes4, transBytes4));
 
 			initialJarFile.close();
 			transformedJarFile.close();

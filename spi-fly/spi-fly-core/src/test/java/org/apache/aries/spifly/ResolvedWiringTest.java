@@ -135,6 +135,9 @@ public class ResolvedWiringTest {
 
         assertEquals(Collections.emptySet(), activator.findConsumerRestrictions(
                 consumer, ServiceLoader.class.getName(), "load", serviceArguments(SERVICE_TYPE)));
+        assertEquals(Collections.emptySet(), activator.findConsumerRestrictions(
+                consumer, ServiceLoader.class.getName(), "loadInstalled",
+                serviceArguments(SERVICE_TYPE)));
     }
 
     @Test
@@ -151,6 +154,9 @@ public class ResolvedWiringTest {
 
         assertNull(activator.findConsumerRestrictions(
                 consumer, ServiceLoader.class.getName(), "load", serviceArguments(SERVICE_TYPE)));
+        assertNull(activator.findConsumerRestrictions(
+                consumer, ServiceLoader.class.getName(), "loadInstalled",
+                serviceArguments(SERVICE_TYPE)));
     }
 
     @Test

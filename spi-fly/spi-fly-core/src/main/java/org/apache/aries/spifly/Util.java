@@ -38,7 +38,10 @@ import java.util.logging.Level;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServicePermission;
+
+import aQute.bnd.annotation.baseline.BaselineIgnore;
 
 /**
  * Methods used from ASM-generated code. They store, change and reset the thread context classloader.
@@ -76,23 +79,10 @@ public class Util {
             return null;
         }
 
-        ClassLoader bundleLoader = AccessController.doPrivileged(
-            new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    return caller.getClassLoader();
-                }
-            }
-        );
-
-        if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+        Bundle consumerBundle = getConsumerBundle(caller);
+        if (consumerBundle == null) {
             return ServiceLoader.load(service);
         }
-
-        BundleReference bundleReference = (BundleReference)bundleLoader;
-
-        Bundle consumerBundle = bundleReference.getBundle();
         final ClassLoader bundleClassloader = findContextClassloader(
             consumerBundle, ServiceLoader.class.getName(), "load", service, true);
 
@@ -124,23 +114,10 @@ public class Util {
             return null;
         }
 
-        ClassLoader bundleLoader = AccessController.doPrivileged(
-            new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    return caller.getClassLoader();
-                }
-            }
-        );
-
-        if (!(bundleLoader instanceof BundleReference)) {
-            BaseActivator.activator.log(Level.FINE, "Classloader of consuming bundle doesn't implement BundleReference: " + bundleLoader);
+        Bundle consumerBundle = getConsumerBundle(caller);
+        if (consumerBundle == null) {
             return ServiceLoader.load(service, specifiedClassLoader);
         }
-
-        BundleReference bundleReference = (BundleReference)bundleLoader;
-
-        Bundle consumerBundle = bundleReference.getBundle();
         final ClassLoader bundleClassloader = findContextClassloader(
             consumerBundle, ServiceLoader.class.getName(), "load", service, true);
 
@@ -158,6 +135,67 @@ public class Util {
                     service.getName()));
         }
         return ServiceLoader.load(service, new WrapperCL(specifiedClassLoader, bundleClassloader));
+    }
+
+    @BaselineIgnore("1.4.0")
+    public static <C,S> ServiceLoader<S> serviceLoaderLoadInstalled(
+            Class<S> service, Class<C> caller) {
+        if (BaseActivator.activator == null) {
+            return null;
+        }
+
+        Bundle consumerBundle = getConsumerBundle(caller);
+        if (consumerBundle == null) {
+            return ServiceLoader.loadInstalled(service);
+        }
+
+        ClassLoader bundleClassloader = findContextClassloader(
+                consumerBundle, ServiceLoader.class.getName(),
+                "loadInstalled", service, true);
+        if (bundleClassloader == null
+                && !BaseActivator.activator.isStandardConsumer(consumerBundle)) {
+            return ServiceLoader.loadInstalled(service);
+        }
+
+        ClassLoader installedClassLoader = getInstalledClassLoader();
+        return ServiceLoader.load(service, new ProviderViewClassLoader(
+                installedClassLoader, bundleClassloader, consumerBundle,
+                service.getName()));
+    }
+
+    private static ClassLoader getInstalledClassLoader() {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                ClassLoader loader = ClassLoader.getSystemClassLoader();
+                while (loader != null && loader.getParent() != null) {
+                    loader = loader.getParent();
+                }
+                return loader;
+            }
+        });
+    }
+
+    private static Bundle getConsumerBundle(final Class<?> caller) {
+        Bundle bundle = FrameworkUtil.getBundle(caller);
+        if (bundle != null) {
+            return bundle;
+        }
+
+        ClassLoader bundleLoader = AccessController.doPrivileged(
+                new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return caller.getClassLoader();
+                    }
+                });
+        if (bundleLoader instanceof BundleReference) {
+            return ((BundleReference) bundleLoader).getBundle();
+        }
+
+        BaseActivator.activator.log(Level.FINE,
+                "Could not identify consuming bundle for class " + caller.getName());
+        return null;
     }
 
     public static void fixContextClassloader(String cls, String method, Class<?> clsArg, ClassLoader bundleLoader) {
@@ -190,7 +228,7 @@ public class Util {
         String requestedClass;
         Map<Pair<Integer, String>, String> args;
         boolean serviceLoaderCall = ServiceLoader.class.getName().equals(className)
-                && "load".equals(methodName);
+                && ("load".equals(methodName) || "loadInstalled".equals(methodName));
         if (serviceLoaderCall) {
             requestedClass = clsArg.getName();
             args = new HashMap<Pair<Integer,String>, String>();
@@ -214,7 +252,7 @@ public class Util {
             }
         }
 
-        if (ServiceLoader.class.getName().equals(className) && "load".equals(methodName)) {
+        if (serviceLoaderCall) {
             bundles = activator.filterCompatibleProviderBundles(
                     consumerBundle, clsArg, bundles);
         }

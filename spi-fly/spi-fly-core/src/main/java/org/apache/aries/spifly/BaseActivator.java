@@ -476,7 +476,7 @@ public abstract class BaseActivator implements BundleActivator {
             Map<Pair<Integer, String>, String> args) {
         StandardConsumerWiring standardWiring = standardConsumerWirings.get(consumer);
         if (standardWiring != null && ServiceLoader.class.getName().equals(className)
-                && "load".equals(methodName)) {
+                && isServiceLoaderMethod(methodName)) {
             String serviceType = args == null ? null
                     : args.get(new Pair<Integer, String>(0, Class.class.getName()));
             return standardWiring.getProviders(serviceType);
@@ -532,8 +532,8 @@ public abstract class BaseActivator implements BundleActivator {
                 } else if (desc.getFilter() != null) {
                     Hashtable<String, Object> d = new Hashtable<String, Object>();
 
-                    if (ServiceLoader.class.getName().equals(className) &&
-                        "load".equals(methodName)) {
+                    if (ServiceLoader.class.getName().equals(className)
+                            && isServiceLoaderMethod(methodName)) {
                         String type = args.get(new Pair<Integer, String>(0, Class.class.getName()));
                         if (type != null) {
                             d.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, type);
@@ -552,6 +552,10 @@ public abstract class BaseActivator implements BundleActivator {
             }
         }
         return bundles;
+    }
+
+    private static boolean isServiceLoaderMethod(String methodName) {
+        return "load".equals(methodName) || "loadInstalled".equals(methodName);
     }
 
     private static final class StandardConsumerWiring {

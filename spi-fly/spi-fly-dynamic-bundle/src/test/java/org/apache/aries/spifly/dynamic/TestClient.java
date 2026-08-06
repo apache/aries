@@ -68,4 +68,13 @@ public class TestClient {
         }
         return results;
     }
+
+    public Set<String> testInstalled(String input) {
+        Set<String> results = new HashSet<String>();
+        ServiceLoader<MySPI> loader = ServiceLoader.loadInstalled(MySPI.class);
+        for (MySPI mySPI : loader) {
+            results.add(mySPI.someMethod(input));
+        }
+        return results;
+    }
 }

@@ -196,6 +196,40 @@ public class ClientWeavingHookTest {
     }
 
     @Test
+    public void testServiceLoaderLoadInstalled() throws Exception {
+        Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
+        consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");
+
+        Bundle providerBundle = mockProviderBundle("impl1", 1);
+        activator.registerProviderBundle("org.apache.aries.mytest.MySPI",
+                providerBundle, new HashMap<String, Object>());
+
+        Bundle consumerBundle = mockConsumerBundle(consumerHeaders, providerBundle);
+        activator.addConsumerWeavingData(
+                consumerBundle, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        Bundle spiFlyBundle = mockSpiFlyBundle(
+                "spifly", Version.parseVersion("1.9.4"),
+                consumerBundle, providerBundle);
+        WeavingHook wh = new ClientWeavingHook(
+                spiFlyBundle.getBundleContext(), activator);
+
+        URL clsUrl = getClass().getResource("TestClient.class");
+        assertNotNull("Precondition", clsUrl);
+        WovenClass wc = new MyWovenClass(clsUrl,
+                "org.apache.aries.spifly.dynamic.TestClient", consumerBundle);
+        wh.weave(wc);
+
+        Class<?> cls = wc.getDefinedClass();
+        assertTrue(activator.getWeavingData(consumerBundle).toString(),
+                activator.getWeavingData(consumerBundle).stream()
+                .anyMatch(data -> "loadInstalled".equals(data.getMethodName())));
+        Method method = cls.getMethod("testInstalled", String.class);
+        Object result = method.invoke(cls.getDeclaredConstructor().newInstance(), "hello");
+        assertEquals(Collections.singleton("olleh"), result);
+    }
+
+    @Test
     public void testBasicServiceLoaderUsage3() throws Exception {
         Dictionary<String, String> consumerHeaders = new Hashtable<String, String>();
         consumerHeaders.put(SpiFlyConstants.SPI_CONSUMER_HEADER, "*");

@@ -216,6 +216,15 @@ public class TCCLSetterVisitor extends ClassVisitor implements Opcodes {
             additionalImportRequired = true;
             woven = true;
 
+            // ServiceLoader.loadInstalled(Class)
+            if (ServiceLoader.class.getName().equals(wd.getClassName())
+                    && "loadInstalled".equals(wd.getMethodName())) {
+                visitLdcInsn(targetClass);
+                invokeStatic(UTIL_CLASS, new Method("serviceLoaderLoadInstalled",
+                        SERVICELOADER_TYPE, new Type[] {CLASS_TYPE, CLASS_TYPE}));
+                return;
+            }
+
             // ServiceLoader.load(Class, ClassLoader)
             if (ServiceLoader.class.getName().equals(wd.getClassName()) &&
                     "load".equals(wd.getMethodName()) &&

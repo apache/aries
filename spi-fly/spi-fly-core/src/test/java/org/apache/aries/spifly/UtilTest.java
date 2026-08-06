@@ -168,6 +168,8 @@ public class UtilTest {
                 MySPI.class, callerClass(consumer));
 
         assertFalse(loader.iterator().hasNext());
+        assertFalse(Util.serviceLoaderLoadInstalled(
+                MySPI.class, callerClass(consumer)).iterator().hasNext());
     }
 
     @Test
