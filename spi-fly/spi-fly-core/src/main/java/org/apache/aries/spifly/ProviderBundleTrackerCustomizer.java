@@ -297,8 +297,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     }
 
     private String getHeaderFromBundleOrFragment(Bundle bundle, String headerName, String matchString) {
+        final boolean mergeHeader = MERGE_HEADERS.contains(headerName);
         Parameters headerParameters = new Parameters(bundle.getHeaders().get(headerName));
-        if (matches(headerParameters.toString(), matchString) && !MERGE_HEADERS.contains(headerName)) {
+        if (matches(headerParameters.toString(), matchString) && !mergeHeader) {
             return headerParameters.isEmpty() ? null : headerParameters.toString();
         }
 
@@ -309,15 +310,19 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 for (BundleWire wire : wiring.getProvidedWires("osgi.wiring.host")) {
                     Bundle fragment = wire.getRequirement().getRevision().getBundle();
                     Parameters fragmentParameters = new Parameters(fragment.getHeaders().get(headerName));
-                    if (MERGE_HEADERS.contains(headerName)) {
-                        headerParameters.mergeWith(fragmentParameters, false);
+                    if (mergeHeader) {
+                        // Parameters.mergeWith merges the attributes of colliding map entries.
+                        // Fragment headers are parsed independently, so append every clause and
+                        // let Parameters.add assign fresh duplicate markers where needed.
+                        for (Entry<String, Attrs> entry : fragmentParameters.entrySet()) {
+                            headerParameters.add(entry.getKey(), new Attrs(entry.getValue()));
+                        }
                     }
                     else {
                         headerParameters = fragmentParameters;
-                    }
-
-                    if (matches(headerParameters.toString(), matchString)) {
-                        return headerParameters.toString();
+                        if (matches(headerParameters.toString(), matchString)) {
+                            return headerParameters.toString();
+                        }
                     }
                 }
             }
