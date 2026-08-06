@@ -108,7 +108,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     @Test
-    public void testCapReqHeadersInFragment() throws Exception {
+    public void testCapReqHeadersInFragmentWhenHostAlreadyProvidesCapability() throws Exception {
         Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
         EasyMock.replay(mediatorBundle);
@@ -119,49 +119,62 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
 
-        ServiceRegistration<?> sreg = EasyMock.createNiceMock(ServiceRegistration.class);
-        EasyMock.replay(sreg);
-
-        BundleContext implBC = mockSPIBundleContext(sreg);
+        BundleContext implBC = mockSPIBundleContext4();
         Dictionary<String, String> headers = new Hashtable<String, String>();
-        // A typical requirement that is not for us...
-        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.6))\"");
-
-        List<BundleWire> wires = new ArrayList<BundleWire>();
-        BundleWire wire = EasyMock.createMock(BundleWire.class);
-        Bundle fragment = EasyMock.createMock(Bundle.class);
-        BundleRevision frev = EasyMock.createMock(BundleRevision.class);
-        EasyMock.expect(frev.getBundle()).andReturn(fragment).anyTimes();
-        EasyMock.replay(frev);
-        BundleRequirement req = EasyMock.createMock(BundleRequirement.class);
-        EasyMock.expect(req.getRevision()).andReturn(frev).anyTimes();
-        EasyMock.replay(req);
-        EasyMock.expect(wire.getRequirement()).andReturn(req).anyTimes();
-        EasyMock.replay(wire);
-        wires.add(wire);
-
-        BundleWiring bw = EasyMock.createMock(BundleWiring.class);
-        EasyMock.expect(bw.getProvidedWires("osgi.wiring.host")).andReturn(wires).anyTimes();
-        EasyMock.replay(bw);
-
-        BundleRevision rev = EasyMock.createMock(BundleRevision.class);
-        EasyMock.expect(rev.getWiring()).andReturn(bw).anyTimes();
-        EasyMock.expect(rev.getTypes()).andReturn(0).anyTimes();
-        EasyMock.replay(rev);
-        Bundle implBundle = mockSPIBundle(implBC, headers, rev);
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
+        headers.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI");
 
         Dictionary<String, String> fheaders = new Hashtable<String, String>();
         fheaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
         fheaders.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
-              SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI");
-        EasyMock.expect(fragment.getHeaders()).andReturn(fheaders).anyTimes();
-        EasyMock.replay(fragment);
+              SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI2");
+        Bundle fragment = mockFragment(fheaders);
+        Bundle implBundle = mockSPIBundle4(implBC, headers, mockHostRevision(fragment));
 
         assertEquals("Precondition", 0, activator.findProviderBundles("org.apache.aries.mytest.MySPI").size());
-        customizer.addingBundle(implBundle, null);
-        Collection<Bundle> bundles = activator.findProviderBundles("org.apache.aries.mytest.MySPI");
-        assertEquals(1, bundles.size());
-        assertSame(implBundle, bundles.iterator().next());
+        assertEquals("Precondition", 0, activator.findProviderBundles("org.apache.aries.mytest.MySPI2").size());
+        @SuppressWarnings("rawtypes")
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        assertEquals(3, registrations.size());
+        assertProviderBundle(activator, "org.apache.aries.mytest.MySPI", implBundle);
+        assertProviderBundle(activator, "org.apache.aries.mytest.MySPI2", implBundle);
+    }
+
+    @Test
+    public void testCapReqHeadersInMultipleFragments() throws Exception {
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42l).anyTimes();
+        EasyMock.replay(mediatorBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        ProviderBundleTrackerCustomizer customizer = new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
+        BundleContext implBC = mockSPIBundleContext4();
+
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.6))\"");
+
+        Dictionary<String, String> fheaders1 = new Hashtable<String, String>();
+        fheaders1.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
+        fheaders1.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI");
+
+        Dictionary<String, String> fheaders2 = new Hashtable<String, String>();
+        fheaders2.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
+        fheaders2.put(SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; " +
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI2");
+
+        Bundle implBundle = mockSPIBundle4(implBC, headers,
+                mockHostRevision(mockFragment(fheaders1), mockFragment(fheaders2)));
+
+        @SuppressWarnings("rawtypes")
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+        assertEquals(3, registrations.size());
+        assertProviderBundle(activator, "org.apache.aries.mytest.MySPI", implBundle);
+        assertProviderBundle(activator, "org.apache.aries.mytest.MySPI2", implBundle);
     }
 
     @Test
@@ -662,9 +675,15 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     private Bundle mockSPIBundle4(BundleContext implBC, Dictionary<String, String> headers) throws ClassNotFoundException {
+        return mockSPIBundle4(implBC, headers, null);
+    }
+
+    private Bundle mockSPIBundle4(BundleContext implBC, Dictionary<String, String> headers, BundleRevision rev) throws ClassNotFoundException {
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        if (rev != null)
+            EasyMock.expect(implBundle.adapt(BundleRevision.class)).andReturn(rev).anyTimes();
 
         // List the resources found at META-INF/services in the test bundle
         URL dir = getClass().getResource("impl4/META-INF/services");
@@ -688,6 +707,47 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         EasyMock.replay(implBundle);
         return implBundle;
+    }
+
+    private Bundle mockFragment(Dictionary<String, String> headers) {
+        Bundle fragment = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(fragment.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.replay(fragment);
+        return fragment;
+    }
+
+    private BundleRevision mockHostRevision(Bundle... fragments) {
+        List<BundleWire> wires = new ArrayList<BundleWire>();
+        for (Bundle fragment : fragments) {
+            BundleRevision fragmentRevision = EasyMock.createMock(BundleRevision.class);
+            EasyMock.expect(fragmentRevision.getBundle()).andReturn(fragment).anyTimes();
+            EasyMock.replay(fragmentRevision);
+
+            BundleRequirement requirement = EasyMock.createMock(BundleRequirement.class);
+            EasyMock.expect(requirement.getRevision()).andReturn(fragmentRevision).anyTimes();
+            EasyMock.replay(requirement);
+
+            BundleWire wire = EasyMock.createMock(BundleWire.class);
+            EasyMock.expect(wire.getRequirement()).andReturn(requirement).anyTimes();
+            EasyMock.replay(wire);
+            wires.add(wire);
+        }
+
+        BundleWiring wiring = EasyMock.createMock(BundleWiring.class);
+        EasyMock.expect(wiring.getProvidedWires("osgi.wiring.host")).andReturn(wires).anyTimes();
+        EasyMock.replay(wiring);
+
+        BundleRevision revision = EasyMock.createMock(BundleRevision.class);
+        EasyMock.expect(revision.getWiring()).andReturn(wiring).anyTimes();
+        EasyMock.expect(revision.getTypes()).andReturn(0).anyTimes();
+        EasyMock.replay(revision);
+        return revision;
+    }
+
+    private void assertProviderBundle(BaseActivator activator, String serviceName, Bundle implBundle) {
+        Collection<Bundle> bundles = activator.findProviderBundles(serviceName);
+        assertEquals(1, bundles.size());
+        assertSame(implBundle, bundles.iterator().next());
     }
 
     @SuppressWarnings("rawtypes")
