@@ -28,6 +28,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.aries.spifly.itests.util.TeeOutputStream;
 import org.junit.jupiter.api.AfterEach;
@@ -37,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
@@ -149,11 +152,20 @@ public class InitialTest {
         BundleAssert.assertThat(provider5fragment).isFragment().isInState(Bundle.RESOLVED);
         assertFragmentAttached(provider5Bundle, provider5fragment);
 
-        assertThat(
-            bundleContext.getServiceReferences("org.apache.aries.spifly.mysvc.SPIProvider", null)
-        ).as(
-            "the host bundle's own native osgi.serviceloader capability should always be registered"
-        ).isNotEmpty();
+        Collection<ServiceReference<?>> providerRegistrations = Arrays.asList(
+                bundleContext.getServiceReferences(
+                        "org.apache.aries.spifly.mysvc.SPIProvider", null));
+        assertThat(providerRegistrations).as(
+            "each host decorating capability should create a separate registration"
+        ).hasSize(2).extracting(reference -> reference.getProperty("decorator"))
+            .containsExactlyInAnyOrder("first", "second");
+
+        ServiceReference<?> firstDecorator = providerRegistrations.stream()
+                .filter(reference -> "first".equals(reference.getProperty("decorator")))
+                .findFirst().get();
+        assertThat(firstDecorator.getProperty("ranking")).isEqualTo(Long.valueOf(5));
+        assertThat(firstDecorator.getProperty(".private")).isNull();
+        assertThat(firstDecorator.getProperty("x-test-directive")).isNull();
 
         assertThat(
             bundleContext.getServiceReferences("org.apache.aries.spifly.mysvc.SPIProvider2", null)

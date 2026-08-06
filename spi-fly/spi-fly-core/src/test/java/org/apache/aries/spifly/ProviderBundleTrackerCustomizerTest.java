@@ -251,6 +251,8 @@ public class ProviderBundleTrackerCustomizerTest {
         serviceAttributes.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, serviceType);
         BundleCapability serviceCapability = EasyMock.createNiceMock(BundleCapability.class);
         EasyMock.expect(serviceCapability.getAttributes()).andReturn(serviceAttributes).anyTimes();
+        EasyMock.expect(serviceCapability.getDirectives()).andReturn(
+                Collections.<String, String>emptyMap()).anyTimes();
         EasyMock.replay(serviceCapability);
 
         Map<String, Object> extenderAttributes = new HashMap<String, Object>();

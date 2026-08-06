@@ -54,6 +54,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
@@ -348,7 +349,74 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
     @Test
     public void testRegisterAltAttributeDatatype() throws Exception {
-        // TODO
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42L).anyTimes();
+        EasyMock.replay(mediatorBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
+        BundleContext implBC = mockSPIBundleContext4();
+
+        Map<String, Object> firstAttributes = new HashMap<String, Object>();
+        firstAttributes.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE,
+                "org.apache.aries.mytest.MySPI");
+        firstAttributes.put("decorator", "first");
+        firstAttributes.put("longValue", Long.valueOf(7));
+        firstAttributes.put("doubleValue", Double.valueOf(2.5));
+        firstAttributes.put("versionValue", new Version("1.2.3"));
+        firstAttributes.put("listValue", Arrays.asList(Long.valueOf(1), Long.valueOf(2)));
+        firstAttributes.put(".private", "hidden");
+        firstAttributes.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, Long.valueOf(99));
+        Map<String, String> firstDirectives = new HashMap<String, String>();
+        firstDirectives.put("register",
+                "org.apache.aries.spifly.impl1.MySPIImpl1");
+        firstDirectives.put("effective", "active");
+
+        Map<String, Object> secondAttributes = new HashMap<String, Object>();
+        secondAttributes.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE,
+                "org.apache.aries.mytest.MySPI");
+        secondAttributes.put("decorator", "second");
+        Map<String, String> secondDirectives = Collections.singletonMap(
+                "register",
+                "org.apache.aries.spifly.impl1.MySPIImpl1");
+
+        BundleWiring wiring = mockProviderWiring(Arrays.asList(
+                mockCapability(firstAttributes, firstDirectives),
+                mockCapability(secondAttributes, secondDirectives)), true, 42L);
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
+        headers.put(SpiFlyConstants.PROVIDE_CAPABILITY,
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + ";"
+                + SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE
+                + "=org.apache.aries.mytest.MySPI");
+        Bundle implBundle = mockSPIBundle(implBC, headers, null, wiring);
+
+        @SuppressWarnings("rawtypes")
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+
+        assertEquals(2, registrations.size());
+        Set<Object> decorators = new HashSet<Object>();
+        for (@SuppressWarnings("rawtypes") ServiceRegistration registration : registrations) {
+            ServiceReference<?> reference = registration.getReference();
+            decorators.add(reference.getProperty("decorator"));
+            assertEquals(Long.valueOf(42), reference.getProperty(
+                    SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY));
+            assertNull(reference.getProperty(".private"));
+            assertNull(reference.getProperty("effective"));
+
+            if ("first".equals(reference.getProperty("decorator"))) {
+                assertEquals(Long.valueOf(7), reference.getProperty("longValue"));
+                assertEquals(Double.valueOf(2.5), reference.getProperty("doubleValue"));
+                assertEquals(new Version("1.2.3"), reference.getProperty("versionValue"));
+                assertEquals(Arrays.asList(Long.valueOf(1), Long.valueOf(2)),
+                        reference.getProperty("listValue"));
+            }
+        }
+        assertEquals(new HashSet<Object>(Arrays.<Object>asList("first", "second")), decorators);
     }
 
     @Test
@@ -721,13 +789,17 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     private Bundle mockSPIBundle4(BundleContext implBC, Dictionary<String, String> headers, BundleRevision rev) throws ClassNotFoundException {
+        return mockSPIBundle4(implBC, headers, rev, mockProviderWiring(headers, rev));
+    }
+
+    private Bundle mockSPIBundle4(BundleContext implBC, Dictionary<String, String> headers,
+            BundleRevision rev, BundleWiring providerWiring) throws ClassNotFoundException {
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
         if (rev != null)
             EasyMock.expect(implBundle.adapt(BundleRevision.class)).andReturn(rev).anyTimes();
-        EasyMock.expect(implBundle.adapt(BundleWiring.class)).andReturn(
-                mockProviderWiring(headers, rev)).anyTimes();
+        EasyMock.expect(implBundle.adapt(BundleWiring.class)).andReturn(providerWiring).anyTimes();
 
         // List the resources found at META-INF/services in the test bundle
         URL dir = getClass().getResource("impl4/META-INF/services");
@@ -826,15 +898,25 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                     continue;
                 }
                 Map<String, Object> attributes = new HashMap<String, Object>();
-                attributes.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE,
-                        entry.getValue().get(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE));
-                BundleCapability capability = EasyMock.createNiceMock(BundleCapability.class);
-                EasyMock.expect(capability.getAttributes()).andReturn(attributes).anyTimes();
-                EasyMock.replay(capability);
-                capabilities.add(capability);
+                Map<String, String> directives = new HashMap<String, String>();
+                for (String name : entry.getValue().keySet()) {
+                    if (aQute.bnd.header.Attrs.isDirective(name)) {
+                        directives.put(name.substring(0, name.length() - 1),
+                                entry.getValue().get(name));
+                    }
+                    else {
+                        attributes.put(name, entry.getValue().getTyped(name));
+                    }
+                }
+                capabilities.add(mockCapability(attributes, directives));
             }
         }
 
+        return mockProviderWiring(capabilities, registrarRequired, mediatorBundleId);
+    }
+
+    private BundleWiring mockProviderWiring(List<BundleCapability> capabilities,
+            boolean registrarRequired, long mediatorBundleId) {
         List<BundleWire> extenderWires = registrarRequired
                 ? Collections.singletonList(mockExtenderWire(
                         SpiFlyConstants.REGISTRAR_EXTENDER_NAME, mediatorBundleId))
@@ -846,6 +928,15 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 .andReturn(extenderWires).anyTimes();
         EasyMock.replay(wiring);
         return wiring;
+    }
+
+    private BundleCapability mockCapability(Map<String, Object> attributes,
+            Map<String, String> directives) {
+        BundleCapability capability = EasyMock.createNiceMock(BundleCapability.class);
+        EasyMock.expect(capability.getAttributes()).andReturn(attributes).anyTimes();
+        EasyMock.expect(capability.getDirectives()).andReturn(directives).anyTimes();
+        EasyMock.replay(capability);
+        return capability;
     }
 
     private BundleWire mockExtenderWire(String extenderName, long mediatorBundleId) {

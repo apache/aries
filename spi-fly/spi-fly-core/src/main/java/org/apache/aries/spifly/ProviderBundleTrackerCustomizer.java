@@ -57,7 +57,6 @@ import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 import aQute.bnd.header.Attrs;
-import aQute.bnd.header.OSGiHeader;
 import aQute.bnd.header.Parameters;
 import aQute.bnd.stream.MapStream;
 import aQute.libg.glob.Glob;
@@ -68,6 +67,7 @@ import aQute.libg.glob.Glob;
 @SuppressWarnings("rawtypes")
 public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer {
     private static final String METAINF_SERVICES = "META-INF/services";
+    private static final String REGISTER_DIRECTIVE_NAME = "register";
     private static final List<String> MERGE_HEADERS = Arrays.asList(
         Constants.IMPORT_PACKAGE, Constants.REQUIRE_BUNDLE, Constants.EXPORT_PACKAGE,
         Constants.PROVIDE_CAPABILITY, Constants.REQUIRE_CAPABILITY);
@@ -91,11 +91,12 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         DiscoveryMode discoveryMode = DiscoveryMode.SERVICELOADER_CAPABILITIES;
         List<String> providedServices = null;
+        List<BundleCapability> serviceLoaderCapabilities = Collections.emptyList();
         boolean registerServiceLoaderServices = false;
         Map<String, Object> customAttributes = new HashMap<String, Object>();
         BundleWiring wiring = WiringUtils.getWiring(bundle);
         if (wiring != null) {
-            List<BundleCapability> serviceLoaderCapabilities = wiring.getCapabilities(
+            serviceLoaderCapabilities = wiring.getCapabilities(
                     SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
             if (!serviceLoaderCapabilities.isEmpty()) {
                 providedServices = new ArrayList<String>();
@@ -150,8 +151,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         final List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
-        for (ServiceDetails details : collectServiceDetails(
-                bundle, serviceFileURLs, discoveryMode, registerServiceLoaderServices)) {
+        for (ServiceDetails details : collectServiceDetails(bundle, serviceFileURLs, discoveryMode,
+                serviceLoaderCapabilities, registerServiceLoaderServices)) {
             if ((discoveryMode == DiscoveryMode.SERVICELOADER_CAPABILITIES
                     || providedServices.size() > 0)
                     && !providedServices.contains(details.serviceType))
@@ -188,7 +189,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     }
                 }
 
-                activator.registerProviderBundle(details.serviceType, bundle, details.properties);
+                activator.registerProviderBundle(details.serviceType, bundle,
+                        details.properties == null
+                                ? Collections.<String, Object>emptyMap() : details.properties);
                 log(Level.INFO, "Registered provider " + details.instanceType + " of service " + details.serviceType + " in bundle " + bundle.getSymbolicName());
             } catch (Exception | NoClassDefFoundError e) {
                 log(Level.FINE,
@@ -200,40 +203,47 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     }
 
     private List<ServiceDetails> collectServiceDetails(Bundle bundle, List<URL> serviceFileURLs,
-            DiscoveryMode discoveryMode, boolean registerServiceLoaderServices) {
+            DiscoveryMode discoveryMode, List<BundleCapability> serviceLoaderCapabilities,
+            boolean registerServiceLoaderServices) {
         List<ServiceDetails> serviceDetails = new ArrayList<>();
 
         for (Entry<String, List<String>> providerFile : readServiceProviderFiles(serviceFileURLs).entrySet()) {
             String registrationClassName = providerFile.getKey();
             for (String className : providerFile.getValue()) {
                 try {
-                    final Hashtable<String, Object> properties;
+                    final List<Hashtable<String, Object>> registrations;
                     if (discoveryMode == DiscoveryMode.SPI_PROVIDER_HEADER) {
-                        properties = new Hashtable<String, Object>();
+                        registrations = Collections.singletonList(new Hashtable<String, Object>());
                     }
                     else if (discoveryMode == DiscoveryMode.AUTO_PROVIDERS_PROPERTY) {
-                        properties = activator.getAutoProviderInstructions().map(
+                        Hashtable<String, Object> properties = activator.getAutoProviderInstructions().map(
                             Parameters::stream
                         ).orElseGet(MapStream::empty).filterKey(
                             i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
                         ).values().findFirst().map(
                             Hashtable<String, Object>::new
                         ).orElseGet(() -> new Hashtable<String, Object>());
+                        registrations = Collections.singletonList(properties);
                     }
                     else if (registerServiceLoaderServices) {
-                        properties = findServiceRegistrationProperties(bundle, registrationClassName, className);
+                        registrations = findServiceRegistrationProperties(
+                                serviceLoaderCapabilities, registrationClassName, className);
                     }
                     else {
-                        properties = null;
+                        registrations = Collections.emptyList();
                     }
 
-                    if (properties != null) {
+                    if (registrations.isEmpty()) {
+                        serviceDetails.add(new ServiceDetails(
+                                registrationClassName, className, null));
+                    }
+                    for (Hashtable<String, Object> properties : registrations) {
                         properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
                         properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, className);
                         properties.put(SpiFlyConstants.PROVIDER_DISCOVERY_MODE, discoveryMode.toString());
+                        serviceDetails.add(new ServiceDetails(
+                                registrationClassName, className, properties));
                     }
-
-                    serviceDetails.add(new ServiceDetails(registrationClassName, className, properties));
                 } catch (Exception e) {
                     log(Level.FINE,
                             "Could not process SPI implementation " + className + " for " + registrationClassName, e);
@@ -291,8 +301,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             un -> {
                 List<URL> serviceFileURLs = getServiceFileUrls(bundle);
 
-                List<ServiceDetails> collectServiceDetails = collectServiceDetails(
-                        bundle, serviceFileURLs, DiscoveryMode.AUTO_PROVIDERS_PROPERTY, false);
+                List<ServiceDetails> collectServiceDetails = collectServiceDetails(bundle,
+                        serviceFileURLs, DiscoveryMode.AUTO_PROVIDERS_PROPERTY,
+                        Collections.<BundleCapability>emptyList(), false);
 
                 collectServiceDetails.stream().map(ServiceDetails::getProperties).filter(Objects::nonNull).forEach(
                     hashtable -> hashtable.forEach(customAttributes::put)
@@ -380,43 +391,35 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return idx >= 0;
     }
 
-    // null means don't register,
-    // otherwise the return value should be taken as the service registration properties
-    private Hashtable<String, Object> findServiceRegistrationProperties(Bundle bundle, String spiName, String implName) {
-        Object capabilityHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.PROVIDE_CAPABILITY);
-        if (capabilityHeader == null)
-            return null;
-
-        Parameters capabilities = OSGiHeader.parseHeader(capabilityHeader.toString());
-
-        for (Map.Entry<String, Attrs> entry : capabilities.entrySet()) {
-            String key = ConsumerHeaderProcessor.removeDuplicateMarker(entry.getKey());
-            Attrs attrs = entry.getValue();
-
-            if (!SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(key))
+    private List<Hashtable<String, Object>> findServiceRegistrationProperties(
+            List<BundleCapability> capabilities, String spiName, String implName) {
+        List<Hashtable<String, Object>> registrations =
+                new ArrayList<Hashtable<String, Object>>();
+        for (BundleCapability capability : capabilities) {
+            Map<String, Object> attributes = capability.getAttributes();
+            if (!spiName.equals(attributes.get(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))) {
                 continue;
+            }
 
-            if (!attrs.containsKey(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE) ||
-                    !attrs.get(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE).equals(spiName))
+            String register = capability.getDirectives().get(REGISTER_DIRECTIVE_NAME);
+            if (register != null && !register.equals(implName)) {
                 continue;
-
-            if (attrs.containsKey(SpiFlyConstants.REGISTER_DIRECTIVE) &&
-                    !attrs.get(SpiFlyConstants.REGISTER_DIRECTIVE).equals(implName))
-                continue;
+            }
 
             Hashtable<String, Object> properties = new Hashtable<String, Object>();
-            for (Map.Entry<String, String> prop : attrs.entrySet()) {
-                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(prop.getKey()) ||
-                        SpiFlyConstants.REGISTER_DIRECTIVE.equals(prop.getKey()) ||
-                        key.startsWith("."))
+            for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+                String name = attribute.getKey();
+                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(name)
+                        || name.startsWith(".")) {
                     continue;
+                }
 
-                properties.put(prop.getKey(), prop.getValue());
+                properties.put(name, attribute.getValue());
             }
-            return properties;
+            registrations.add(properties);
         }
-
-        return null;
+        return registrations;
     }
 
     private List<URL> getMetaInfServiceURLsFromJar(URL url) {

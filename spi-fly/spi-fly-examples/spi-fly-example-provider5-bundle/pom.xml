@@ -68,7 +68,20 @@
                         <Private-Package>
                             org.apache.aries.spifly.mysvc.impl5
                         </Private-Package>
-                        <Provide-Capability>osgi.serviceloader; osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider</Provide-Capability>
+                        <Provide-Capability>
+                            osgi.serviceloader;
+                                osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider;
+                                register:="org.apache.aries.spifly.mysvc.impl5.SPIProviderImpl5";
+                                decorator=first;
+                                ranking:Long=5;
+                                .private=hidden;
+                                x-test-directive:=hidden,
+                            osgi.serviceloader;
+                                osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider;
+                                register:="org.apache.aries.spifly.mysvc.impl5.SPIProviderImpl5";
+                                decorator=second;
+                                ranking:Long=6
+                        </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
