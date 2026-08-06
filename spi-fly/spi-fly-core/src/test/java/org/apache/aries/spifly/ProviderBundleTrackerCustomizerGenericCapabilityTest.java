@@ -53,6 +53,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.Version;
@@ -631,6 +632,38 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         assertProviderBundle(activator, "org.apache.aries.mytest.MySPI", implBundle);
     }
 
+    @Test
+    public void testProviderWithoutRegisterPermissionIsNotExposed() throws Exception {
+        Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
+        EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42L).anyTimes();
+        EasyMock.replay(mediatorBundle);
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {}
+        };
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, mediatorBundle);
+
+        BundleContext implBC = EasyMock.createNiceMock(BundleContext.class);
+        EasyMock.replay(implBC);
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
+        headers.put(SpiFlyConstants.PROVIDE_CAPABILITY,
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "; "
+                + SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE
+                + "=org.apache.aries.mytest.MySPI");
+        Bundle implBundle = mockSPIBundle(implBC, headers, null,
+                mockProviderWiring(headers, null), false);
+
+        @SuppressWarnings("rawtypes")
+        List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
+
+        assertTrue(registrations.isEmpty());
+        assertTrue(activator.findProviderBundles(
+                "org.apache.aries.mytest.MySPI").isEmpty());
+        EasyMock.verify(implBC);
+    }
+
     @SuppressWarnings({ "resource", "unchecked" })
     @Test
     public void testAddingBundleWithBundleClassPath() throws Exception {
@@ -654,6 +687,8 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
+                .andReturn(true).anyTimes();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.PROVIDER_REQUIREMENT);
@@ -725,11 +760,19 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
     private Bundle mockSPIBundle(BundleContext implBC, Dictionary<String, String> headers,
             BundleRevision rev, BundleWiring providerWiring) throws ClassNotFoundException {
+        return mockSPIBundle(implBC, headers, rev, providerWiring, true);
+    }
+
+    private Bundle mockSPIBundle(BundleContext implBC, Dictionary<String, String> headers,
+            BundleRevision rev, BundleWiring providerWiring, boolean registerPermission)
+            throws ClassNotFoundException {
         if (headers == null)
             headers = new Hashtable<String, String>();
 
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
+                .andReturn(registerPermission).anyTimes();
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
         EasyMock.expect(implBundle.getSymbolicName()).andReturn("bsn").anyTimes();
 
@@ -801,6 +844,8 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
             BundleRevision rev, BundleWiring providerWiring) throws ClassNotFoundException {
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
+                .andReturn(true).anyTimes();
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
         if (rev != null)
             EasyMock.expect(implBundle.adapt(BundleRevision.class)).andReturn(rev).anyTimes();

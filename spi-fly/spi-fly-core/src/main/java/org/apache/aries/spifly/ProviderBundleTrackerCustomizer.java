@@ -143,7 +143,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         for (String serviceType : providedServices) {
             // Eagerly register any services that are explicitly listed, as they may not be found in META-INF/services
-            activator.registerProviderBundle(serviceType, bundle, customAttributes);
+            if (hasRegisterPermission(bundle, serviceType)) {
+                activator.registerProviderBundle(serviceType, bundle, customAttributes);
+            }
         }
 
         if (serviceFileURLs == null) {
@@ -158,6 +160,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     && !providedServices.contains(details.serviceType))
                 continue;
 
+            if (!hasRegisterPermission(bundle, details.serviceType)) {
+                continue;
+            }
+
             try {
                 final Class<?> cls = bundle.loadClass(details.instanceType);
                 log(Level.FINE, "Loaded SPI provider: " + cls);
@@ -166,18 +172,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     ServiceRegistration reg = null;
                     Object instance = new ProviderServiceFactory(cls);
 
-                    SecurityManager sm = System.getSecurityManager();
-                    if (sm != null) {
-                        if (bundle.hasPermission(new ServicePermission(details.serviceType, ServicePermission.REGISTER))) {
-                            reg = bundle.getBundleContext().registerService(
-                                    details.serviceType, instance, details.properties);
-                        } else {
-                            log(Level.FINE, "Bundle " + bundle + " does not have the permission to register services of type: " + details.serviceType);
-                        }
-                    } else {
-                        reg = bundle.getBundleContext().registerService(
+                    reg = bundle.getBundleContext().registerService(
                             details.serviceType, instance, details.properties);
-                    }
 
                     if (reg != null) {
                         registrations.add(reg);
@@ -196,6 +192,16 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         return registrations;
+    }
+
+    private boolean hasRegisterPermission(Bundle bundle, String serviceType) {
+        boolean permitted = bundle.hasPermission(
+                new ServicePermission(serviceType, ServicePermission.REGISTER));
+        if (!permitted) {
+            log(Level.FINE, "Bundle " + bundle
+                    + " does not have permission to provide services of type: " + serviceType);
+        }
+        return permitted;
     }
 
     private List<ServiceDetails> collectServiceDetails(Bundle bundle, List<URL> serviceFileURLs,

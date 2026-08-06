@@ -40,6 +40,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleWire;
@@ -121,6 +122,8 @@ public class ProviderBundleTrackerCustomizerTest {
 
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
+                .andReturn(true).anyTimes();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(SpiFlyConstants.SPI_PROVIDER_HEADER, "*");
@@ -190,6 +193,8 @@ public class ProviderBundleTrackerCustomizerTest {
     private Bundle mockSPIBundle(BundleContext implBC, String spiProviderHeader) throws ClassNotFoundException {
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
+                .andReturn(true).anyTimes();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         if (spiProviderHeader != null)
@@ -213,6 +218,8 @@ public class ProviderBundleTrackerCustomizerTest {
     private Bundle mockMultiSPIBundle(BundleContext implBC) throws ClassNotFoundException {
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
+                .andReturn(true).anyTimes();
 
         Dictionary<String, String> headers = new Hashtable<String, String>();
         headers.put(
