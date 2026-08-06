@@ -633,7 +633,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     @Test
-    public void testProviderWithoutRegisterPermissionIsNotExposed() throws Exception {
+    public void testProviderWithoutRegisterPermissionRemainsCandidate() throws Exception {
         Bundle mediatorBundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(mediatorBundle.getBundleId()).andReturn(42L).anyTimes();
         EasyMock.replay(mediatorBundle);
@@ -659,8 +659,8 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
         List<ServiceRegistration> registrations = customizer.addingBundle(implBundle, null);
 
         assertTrue(registrations.isEmpty());
-        assertTrue(activator.findProviderBundles(
-                "org.apache.aries.mytest.MySPI").isEmpty());
+        assertProviderBundle(activator,
+                "org.apache.aries.mytest.MySPI", implBundle);
         EasyMock.verify(implBC);
     }
 

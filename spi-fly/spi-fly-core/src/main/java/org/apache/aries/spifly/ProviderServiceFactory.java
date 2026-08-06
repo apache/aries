@@ -20,17 +20,30 @@ package org.apache.aries.spifly;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
+import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceRegistration;
 
 public class ProviderServiceFactory implements ServiceFactory {
     private final Class<?> providerClass;
+    private final Bundle providerBundle;
+    private final String serviceType;
 
     public ProviderServiceFactory(Class<?> cls) {
+        this(cls, null, null);
+    }
+
+    ProviderServiceFactory(Class<?> cls, Bundle providerBundle, String serviceType) {
         providerClass = cls;
+        this.providerBundle = providerBundle;
+        this.serviceType = serviceType;
     }
 
     @Override
     public Object getService(Bundle bundle, ServiceRegistration registration) {
+        if (providerBundle != null && !providerBundle.hasPermission(
+                new ServicePermission(serviceType, ServicePermission.REGISTER))) {
+            return null;
+        }
         try {
             return providerClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {

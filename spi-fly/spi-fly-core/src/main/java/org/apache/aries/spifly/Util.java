@@ -21,7 +21,6 @@ package org.apache.aries.spifly;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -95,7 +94,7 @@ public class Util {
 
         Bundle consumerBundle = bundleReference.getBundle();
         final ClassLoader bundleClassloader = findContextClassloader(
-            consumerBundle, ServiceLoader.class.getName(), "load", service);
+            consumerBundle, ServiceLoader.class.getName(), "load", service, true);
 
         if (bundleClassloader == null
                 && !BaseActivator.activator.isStandardConsumer(consumerBundle)) {
@@ -109,7 +108,8 @@ public class Util {
                     ClassLoader contextClassLoader =
                             Thread.currentThread().getContextClassLoader();
                     return ServiceLoader.load(service, new ProviderViewClassLoader(
-                            contextClassLoader, bundleClassloader, service.getName()));
+                            contextClassLoader, bundleClassloader, consumerBundle,
+                            service.getName()));
                 }
             }
         );
@@ -142,19 +142,20 @@ public class Util {
 
         Bundle consumerBundle = bundleReference.getBundle();
         final ClassLoader bundleClassloader = findContextClassloader(
-            consumerBundle, ServiceLoader.class.getName(), "load", service);
+            consumerBundle, ServiceLoader.class.getName(), "load", service, true);
 
         if (bundleClassloader == null) {
             if (BaseActivator.activator.isStandardConsumer(consumerBundle)) {
                 return ServiceLoader.load(service, new ProviderViewClassLoader(
-                        specifiedClassLoader, null, service.getName()));
+                        specifiedClassLoader, null, consumerBundle, service.getName()));
             }
             return ServiceLoader.load(service, specifiedClassLoader);
         }
 
         if (BaseActivator.activator.isStandardConsumer(consumerBundle)) {
             return ServiceLoader.load(service, new ProviderViewClassLoader(
-                    specifiedClassLoader, bundleClassloader, service.getName()));
+                    specifiedClassLoader, bundleClassloader, consumerBundle,
+                    service.getName()));
         }
         return ServiceLoader.load(service, new WrapperCL(specifiedClassLoader, bundleClassloader));
     }
@@ -166,7 +167,8 @@ public class Util {
             return;
         }
 
-        final ClassLoader cl = findContextClassloader(br.getBundle(), cls, method, clsArg);
+        final ClassLoader cl = findContextClassloader(
+                br.getBundle(), cls, method, clsArg, false);
         if (cl != null) {
             BaseActivator.activator.log(Level.FINE, "Temporarily setting Thread Context Classloader to: " + cl);
             AccessController.doPrivileged(new PrivilegedAction<Void>() {
@@ -181,26 +183,19 @@ public class Util {
         }
     }
 
-    private static ClassLoader findContextClassloader(Bundle consumerBundle, String className, String methodName, Class<?> clsArg) {
+    private static ClassLoader findContextClassloader(Bundle consumerBundle, String className,
+            String methodName, Class<?> clsArg, boolean permissionAware) {
         BaseActivator activator = BaseActivator.activator;
 
         String requestedClass;
         Map<Pair<Integer, String>, String> args;
-        if (ServiceLoader.class.getName().equals(className) && "load".equals(methodName)) {
+        boolean serviceLoaderCall = ServiceLoader.class.getName().equals(className)
+                && "load".equals(methodName);
+        if (serviceLoaderCall) {
             requestedClass = clsArg.getName();
             args = new HashMap<Pair<Integer,String>, String>();
             args.put(new Pair<Integer, String>(0, Class.class.getName()), requestedClass);
 
-            SecurityManager sm = System.getSecurityManager();
-            if (sm != null) {
-                try {
-                    sm.checkPermission(new ServicePermission(requestedClass, ServicePermission.GET));
-                } catch (AccessControlException ace) {
-                    // access denied
-                    activator.log(Level.FINE, "No permission to obtain service of type: " + requestedClass);
-                    return null;
-                }
-            }
         } else {
             requestedClass = className;
             args = null; // only supported on ServiceLoader.load() at the moment
@@ -229,11 +224,15 @@ public class Util {
             return null;
         case 1:
             Bundle bundle = bundles.iterator().next();
-            return getBundleClassLoader(bundle);
+            return serviceLoaderCall && permissionAware
+                    ? getProviderClassLoader(bundle, requestedClass)
+                    : getBundleClassLoader(bundle);
         default:
             List<ClassLoader> loaders = new ArrayList<ClassLoader>();
             for (Bundle b : bundles) {
-                loaders.add(getBundleClassLoader(b));
+                loaders.add(serviceLoaderCall && permissionAware
+                        ? getProviderClassLoader(b, requestedClass)
+                        : getBundleClassLoader(b));
             }
             return new MultiDelegationClassloader(loaders.toArray(new ClassLoader[loaders.size()]));
         }
@@ -246,6 +245,12 @@ public class Util {
                 return getBundleClassLoaderPrivileged(b);
             }
         });
+    }
+
+    private static ClassLoader getProviderClassLoader(Bundle providerBundle,
+            String serviceType) {
+        return new ProviderBundleClassLoader(providerBundle,
+                getBundleClassLoader(providerBundle), serviceType);
     }
 
     private static ClassLoader getBundleClassLoaderPrivileged(Bundle b) {
@@ -401,19 +406,23 @@ public class Util {
 
     private static class ProviderViewClassLoader extends ClassLoader {
         private final ClassLoader providerClassLoader;
+        private final Bundle consumerBundle;
+        private final String serviceType;
         private final String providerConfiguration;
 
         ProviderViewClassLoader(ClassLoader parent, ClassLoader providerClassLoader,
-                String serviceType) {
+                Bundle consumerBundle, String serviceType) {
             super(parent);
             this.providerClassLoader = providerClassLoader;
+            this.consumerBundle = consumerBundle;
+            this.serviceType = serviceType;
             providerConfiguration = "META-INF/services/" + serviceType;
         }
 
         @Override
         public URL getResource(String name) {
             if (providerConfiguration.equals(name)) {
-                return providerClassLoader == null
+                return !hasGetPermission() || providerClassLoader == null
                         ? null : providerClassLoader.getResource(name);
             }
             return super.getResource(name);
@@ -422,7 +431,7 @@ public class Util {
         @Override
         public Enumeration<URL> getResources(String name) throws IOException {
             if (providerConfiguration.equals(name)) {
-                return providerClassLoader == null
+                return !hasGetPermission() || providerClassLoader == null
                         ? java.util.Collections.<URL>emptyEnumeration()
                         : providerClassLoader.getResources(name);
             }
@@ -430,24 +439,85 @@ public class Util {
         }
 
         @Override
-        protected Class<?> findClass(String name) throws ClassNotFoundException {
-            if (providerClassLoader == null) {
+        protected synchronized Class<?> loadClass(String name, boolean resolve)
+                throws ClassNotFoundException {
+            if (!hasGetPermission() || providerClassLoader == null) {
                 throw new ClassNotFoundException(name);
             }
-            return providerClassLoader.loadClass(name);
+            Class<?> cls = providerClassLoader.loadClass(name);
+            if (resolve) {
+                resolveClass(cls);
+            }
+            return cls;
         }
 
         @Override
         protected URL findResource(String name) {
-            return providerClassLoader == null
+            return !hasGetPermission() || providerClassLoader == null
                     ? null : providerClassLoader.getResource(name);
         }
 
         @Override
         protected Enumeration<URL> findResources(String name) throws IOException {
-            return providerClassLoader == null
+            return !hasGetPermission() || providerClassLoader == null
                     ? java.util.Collections.<URL>emptyEnumeration()
                     : providerClassLoader.getResources(name);
+        }
+
+        private boolean hasGetPermission() {
+            boolean permitted = consumerBundle.hasPermission(
+                    new ServicePermission(serviceType, ServicePermission.GET));
+            if (!permitted) {
+                BaseActivator.activator.log(Level.FINE, "Bundle " + consumerBundle
+                        + " does not have permission to obtain services of type: "
+                        + serviceType);
+            }
+            return permitted;
+        }
+    }
+
+    private static class ProviderBundleClassLoader extends ClassLoader {
+        private final Bundle providerBundle;
+        private final ClassLoader delegate;
+        private final String serviceType;
+
+        ProviderBundleClassLoader(Bundle providerBundle, ClassLoader delegate,
+                String serviceType) {
+            super(null);
+            this.providerBundle = providerBundle;
+            this.delegate = delegate;
+            this.serviceType = serviceType;
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            if (!hasRegisterPermission()) {
+                throw new ClassNotFoundException(name);
+            }
+            return delegate.loadClass(name);
+        }
+
+        @Override
+        public URL getResource(String name) {
+            return hasRegisterPermission() ? delegate.getResource(name) : null;
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            return hasRegisterPermission()
+                    ? delegate.getResources(name)
+                    : java.util.Collections.<URL>emptyEnumeration();
+        }
+
+        private boolean hasRegisterPermission() {
+            boolean permitted = providerBundle.hasPermission(
+                    new ServicePermission(serviceType, ServicePermission.REGISTER));
+            if (!permitted) {
+                BaseActivator.activator.log(Level.FINE, "Bundle " + providerBundle
+                        + " does not have permission to provide services of type: "
+                        + serviceType);
+            }
+            return permitted;
         }
     }
 }

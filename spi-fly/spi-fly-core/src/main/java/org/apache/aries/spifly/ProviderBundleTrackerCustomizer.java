@@ -145,9 +145,9 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         for (String serviceType : providedServices) {
             // Eagerly register any services that are explicitly listed, as they may not be found in META-INF/services
-            if (hasRegisterPermission(bundle, serviceType)) {
-                activator.registerProviderBundle(serviceType, bundle, customAttributes);
-            }
+            // Keep every eligible bundle indexed so Conditional Permission Admin grants and
+            // revocations can be observed by the lazy ServiceLoader view without reprocessing.
+            activator.registerProviderBundle(serviceType, bundle, customAttributes);
         }
 
         if (serviceFileURLs == null) {
@@ -164,17 +164,15 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     && !providedServices.contains(details.serviceType))
                 continue;
 
-            if (!hasRegisterPermission(bundle, details.serviceType)) {
-                continue;
-            }
-
             try {
                 final Class<?> cls = bundle.loadClass(details.instanceType);
                 log(Level.FINE, "Loaded SPI provider: " + cls);
 
-                if (details.properties != null) {
+                if (details.properties != null
+                        && hasRegisterPermission(bundle, details.serviceType)) {
                     ServiceRegistration reg = null;
-                    Object instance = new ProviderServiceFactory(cls);
+                    Object instance = new ProviderServiceFactory(
+                            cls, bundle, details.serviceType);
 
                     reg = bundle.getBundleContext().registerService(
                             details.serviceType, instance, details.properties);
