@@ -65,6 +65,7 @@
         <junit-platform.version>1.14.4</junit-platform.version>
         <junit.version>4.13.2</junit.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <aries.javadoc.exclude.packages></aries.javadoc.exclude.packages>
         <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
@@ -185,6 +186,23 @@
                         <phase>clean</phase>
                         <goals>
                             <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>${java.source.version}</source>
+                    <quiet>true</quiet>
+                    <excludePackageNames>${aries.javadoc.exclude.packages}</excludePackageNames>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
