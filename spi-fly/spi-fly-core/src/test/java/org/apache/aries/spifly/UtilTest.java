@@ -18,14 +18,20 @@
  */
 package org.apache.aries.spifly;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import org.apache.aries.mytest.MySPI;
@@ -38,6 +44,9 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
 
 public class UtilTest {
     private ClassLoader storedTCCL;
@@ -51,6 +60,7 @@ public class UtilTest {
     public void tearDown() {
         Thread.currentThread().setContextClassLoader(storedTCCL);
         storedTCCL = null;
+        BaseActivator.activator = null;
     }
 
     @Test
@@ -136,6 +146,141 @@ public class UtilTest {
         Util.fixContextClassloader(ServiceLoader.class.getName(), "load", MySPI.class, clientCL);
         assertSame("The system is not yet initialized, so the TCCL should not be set",
                 null, Thread.currentThread().getContextClassLoader());
+    }
+
+    @Test
+    public void standardConsumerWithNoProvidersHasClosedView() throws Exception {
+        BaseActivator activator = newActivator();
+        Bundle consumer = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.replay(consumer);
+        activator.registerStandardConsumer(consumer, null);
+
+        URL forbidden = getClass().getResource("/embedded2.jar");
+        assertNotNull("precondition", forbidden);
+        Thread.currentThread().setContextClassLoader(
+                new URLClassLoader(new URL[] {forbidden}, getClass().getClassLoader()));
+
+        ServiceLoader<MySPI> loader = Util.serviceLoaderLoad(
+                MySPI.class, callerClass(consumer));
+
+        assertFalse(loader.iterator().hasNext());
+    }
+
+    @Test
+    public void explicitLoaderCannotAddProviderConfigurations() throws Exception {
+        BaseActivator activator = newActivator();
+        Bundle consumer = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.replay(consumer);
+        BundleWiring consumerWiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(consumerWiring.getRequirements(
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
+                .andReturn(Collections.<BundleRequirement>emptyList()).anyTimes();
+        EasyMock.replay(consumerWiring);
+        activator.registerStandardConsumer(consumer, consumerWiring);
+
+        URL selected = getClass().getResource("/embedded.jar");
+        URL forbidden = getClass().getResource("/embedded2.jar");
+        assertNotNull("precondition", selected);
+        assertNotNull("precondition", forbidden);
+        Bundle provider = mockProviderBundle(42L, selected);
+        activator.registerProviderBundle(
+                MySPI.class.getName(), provider, new HashMap<String, Object>());
+
+        ClassLoader specified = new URLClassLoader(
+                new URL[] {forbidden}, getClass().getClassLoader());
+        ServiceLoader<MySPI> loader = Util.serviceLoaderLoad(
+                MySPI.class, specified, callerClass(consumer));
+
+        List<String> providerTypes = new ArrayList<String>();
+        for (MySPI providerInstance : loader) {
+            providerTypes.add(providerInstance.getClass().getName());
+        }
+        assertEquals(2, providerTypes.size());
+        assertTrue(providerTypes.contains(
+                "org.apache.aries.spifly.impl2.MySPIImpl2a"));
+        assertTrue(providerTypes.contains(
+                "org.apache.aries.spifly.impl2.MySPIImpl2b"));
+        assertFalse(providerTypes.contains(
+                "org.apache.aries.spifly.impl3.MySPIImpl3"));
+    }
+
+    @Test
+    public void unprocessedCallerRetainsOriginalLoaderFallback() throws Exception {
+        newActivator();
+        Bundle consumer = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.replay(consumer);
+        URL providerConfig = getClass().getResource("/embedded2.jar");
+        assertNotNull("precondition", providerConfig);
+        Thread.currentThread().setContextClassLoader(new URLClassLoader(
+                new URL[] {providerConfig}, getClass().getClassLoader()));
+
+        ServiceLoader<MySPI> loader = Util.serviceLoaderLoad(
+                MySPI.class, callerClass(consumer));
+
+        assertEquals("org.apache.aries.spifly.impl3.MySPIImpl3",
+                loader.iterator().next().getClass().getName());
+    }
+
+    private BaseActivator newActivator() {
+        BaseActivator activator = new BaseActivator() {
+            @Override
+            public void start(BundleContext context) throws Exception {
+            }
+        };
+        BaseActivator.activator = activator;
+        return activator;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<Object> callerClass(Bundle consumer) throws Exception {
+        URL callerJar = getClass().getResource("/embedded3.jar");
+        assertNotNull("precondition", callerJar);
+        return (Class<Object>) new TestBundleClassLoader(
+                new URL[] {callerJar}, getClass().getClassLoader(), consumer)
+                .loadClass("org.apache.aries.spifly.testpkg.TestClass");
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Bundle mockProviderBundle(long bundleId, URL providerJar) throws Exception {
+        Bundle providerBundle = EasyMock.createMock(Bundle.class);
+        final ClassLoader providerCL = new TestBundleClassLoader(
+                new URL[] {providerJar}, getClass().getClassLoader(), providerBundle);
+        BundleWiring providerWiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(providerWiring.getClassLoader()).andReturn(providerCL).anyTimes();
+        EasyMock.replay(providerWiring);
+        BundleRevision providerRevision = EasyMock.createNiceMock(BundleRevision.class);
+        EasyMock.expect(providerRevision.getWiring()).andReturn(providerWiring).anyTimes();
+        EasyMock.replay(providerRevision);
+        Bundle systemBundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(systemBundle.loadClass(BundleRevision.class.getName()))
+                .andReturn((Class) BundleRevision.class).anyTimes();
+        EasyMock.expect(systemBundle.loadClass(BundleWiring.class.getName()))
+                .andReturn((Class) BundleWiring.class).anyTimes();
+        EasyMock.replay(systemBundle);
+        BundleContext providerContext = EasyMock.createNiceMock(BundleContext.class);
+        EasyMock.expect(providerContext.getBundle(0)).andReturn(systemBundle).anyTimes();
+        EasyMock.replay(providerContext);
+        EasyMock.expect(providerBundle.getBundleContext())
+                .andReturn(providerContext).anyTimes();
+        EasyMock.expect(providerBundle.adapt(BundleRevision.class))
+                .andReturn(providerRevision).anyTimes();
+        EasyMock.expect(providerBundle.getBundleId()).andReturn(bundleId).anyTimes();
+        EasyMock.expect(providerBundle.getEntryPaths((String) EasyMock.anyObject()))
+                .andReturn(null).anyTimes();
+        Dictionary<String, String> providerHeaders = new Hashtable<String, String>();
+        providerHeaders.put(Constants.BUNDLE_CLASSPATH, ".,provider.jar");
+        EasyMock.expect(providerBundle.getHeaders()).andReturn(providerHeaders).anyTimes();
+        EasyMock.expect(providerBundle.getResource("provider.jar"))
+                .andReturn(providerJar).anyTimes();
+        providerBundle.loadClass((String) EasyMock.anyObject());
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Class<?>>() {
+            @Override
+            public Class<?> answer() throws Throwable {
+                return providerCL.loadClass((String) EasyMock.getCurrentArguments()[0]);
+            }
+        }).anyTimes();
+        EasyMock.replay(providerBundle);
+        return providerBundle;
     }
 
     private static class TestBundleClassLoader extends URLClassLoader implements BundleReference {

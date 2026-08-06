@@ -197,10 +197,14 @@ public abstract class BaseActivator implements BundleActivator {
         }
     }
 
-    private void registerStandardConsumer(Bundle bundle, BundleWiring wiring) {
+    void registerStandardConsumer(Bundle bundle, BundleWiring wiring) {
         Set<WeavingData> weavingData = ConsumerHeaderProcessor.createServiceLoaderWeavingData();
         standardConsumerWirings.put(bundle, StandardConsumerWiring.from(wiring));
         bundleWeavingData.put(bundle, Collections.unmodifiableSet(weavingData));
+    }
+
+    boolean isStandardConsumer(Bundle bundle) {
+        return standardConsumerWirings.containsKey(bundle);
     }
 
     private List<String> getAllHeaders(String headerName, Bundle bundle) {

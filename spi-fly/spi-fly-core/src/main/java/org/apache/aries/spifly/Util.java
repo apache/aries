@@ -93,29 +93,23 @@ public class Util {
 
         BundleReference bundleReference = (BundleReference)bundleLoader;
 
+        Bundle consumerBundle = bundleReference.getBundle();
         final ClassLoader bundleClassloader = findContextClassloader(
-            bundleReference.getBundle(), ServiceLoader.class.getName(), "load", service);
+            consumerBundle, ServiceLoader.class.getName(), "load", service);
 
-        if (bundleClassloader == null) {
+        if (bundleClassloader == null
+                && !BaseActivator.activator.isStandardConsumer(consumerBundle)) {
             return ServiceLoader.load(service);
         }
-
-        Thread thread = Thread.currentThread();
 
         return AccessController.doPrivileged(
             new PrivilegedAction<ServiceLoader<S>>() {
                 @Override
                 public ServiceLoader<S> run() {
-                    ClassLoader contextClassLoader = thread.getContextClassLoader();
-
-                    try {
-                        thread.setContextClassLoader(bundleClassloader);
-
-                        return ServiceLoader.load(service);
-                    }
-                    finally {
-                        thread.setContextClassLoader(contextClassLoader);
-                    }
+                    ClassLoader contextClassLoader =
+                            Thread.currentThread().getContextClassLoader();
+                    return ServiceLoader.load(service, new ProviderViewClassLoader(
+                            contextClassLoader, bundleClassloader, service.getName()));
                 }
             }
         );
@@ -146,13 +140,22 @@ public class Util {
 
         BundleReference bundleReference = (BundleReference)bundleLoader;
 
+        Bundle consumerBundle = bundleReference.getBundle();
         final ClassLoader bundleClassloader = findContextClassloader(
-            bundleReference.getBundle(), ServiceLoader.class.getName(), "load", service);
+            consumerBundle, ServiceLoader.class.getName(), "load", service);
 
         if (bundleClassloader == null) {
+            if (BaseActivator.activator.isStandardConsumer(consumerBundle)) {
+                return ServiceLoader.load(service, new ProviderViewClassLoader(
+                        specifiedClassLoader, null, service.getName()));
+            }
             return ServiceLoader.load(service, specifiedClassLoader);
         }
 
+        if (BaseActivator.activator.isStandardConsumer(consumerBundle)) {
+            return ServiceLoader.load(service, new ProviderViewClassLoader(
+                    specifiedClassLoader, bundleClassloader, service.getName()));
+        }
         return ServiceLoader.load(service, new WrapperCL(specifiedClassLoader, bundleClassloader));
     }
 
@@ -393,6 +396,58 @@ public class Util {
         @Override
         protected Enumeration<URL> findResources(String name) throws IOException {
             return bundleClassloader.getResources(name);
+        }
+    }
+
+    private static class ProviderViewClassLoader extends ClassLoader {
+        private final ClassLoader providerClassLoader;
+        private final String providerConfiguration;
+
+        ProviderViewClassLoader(ClassLoader parent, ClassLoader providerClassLoader,
+                String serviceType) {
+            super(parent);
+            this.providerClassLoader = providerClassLoader;
+            providerConfiguration = "META-INF/services/" + serviceType;
+        }
+
+        @Override
+        public URL getResource(String name) {
+            if (providerConfiguration.equals(name)) {
+                return providerClassLoader == null
+                        ? null : providerClassLoader.getResource(name);
+            }
+            return super.getResource(name);
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            if (providerConfiguration.equals(name)) {
+                return providerClassLoader == null
+                        ? java.util.Collections.<URL>emptyEnumeration()
+                        : providerClassLoader.getResources(name);
+            }
+            return super.getResources(name);
+        }
+
+        @Override
+        protected Class<?> findClass(String name) throws ClassNotFoundException {
+            if (providerClassLoader == null) {
+                throw new ClassNotFoundException(name);
+            }
+            return providerClassLoader.loadClass(name);
+        }
+
+        @Override
+        protected URL findResource(String name) {
+            return providerClassLoader == null
+                    ? null : providerClassLoader.getResource(name);
+        }
+
+        @Override
+        protected Enumeration<URL> findResources(String name) throws IOException {
+            return providerClassLoader == null
+                    ? java.util.Collections.<URL>emptyEnumeration()
+                    : providerClassLoader.getResources(name);
         }
     }
 }
