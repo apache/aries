@@ -27,6 +27,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.jar.Attributes;
@@ -44,7 +48,12 @@ import org.apache.aries.spifly.weaver.TCCLSetterVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
+
+import aQute.bnd.header.Attrs;
+import aQute.bnd.header.Parameters;
 
 public class Main {
     static final String PROCESSED_REQUIRE_CAPABILITY_HEADER =
@@ -102,8 +111,15 @@ public class Main {
                 manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeaderVal);
             } else {
                 // It's SpiFlyConstants.REQUIRE_CAPABILITY
-                // Keep the processor requirement so the transformed consumer is resolved to the
-                // mediator that will enforce its provider wires at runtime.
+                String remainingRequirements = removeProcessorRequirement(consumerHeaderVal);
+                if (remainingRequirements.isEmpty()) {
+                    manifest.getMainAttributes().remove(
+                            new Attributes.Name(SpiFlyConstants.REQUIRE_CAPABILITY));
+                }
+                else {
+                    manifest.getMainAttributes().putValue(
+                            SpiFlyConstants.REQUIRE_CAPABILITY, remainingRequirements);
+                }
                 manifest.getMainAttributes().putValue(
                         PROCESSED_REQUIRE_CAPABILITY_HEADER, consumerHeaderVal);
             }
@@ -117,6 +133,41 @@ public class Main {
             System.out.println("[SPI Fly Static Tool] This file is not marked as an SPI Consumer.");
         }
         delTree(tempDir);
+    }
+
+    static String removeProcessorRequirement(String header) throws Exception {
+        Parameters requirements = new Parameters(header);
+        Dictionary<String, Object> processorCapability = new Hashtable<String, Object>();
+        processorCapability.put(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                SpiFlyConstants.PROCESSOR_EXTENDER_NAME);
+        processorCapability.put("version", SpiFlyConstants.SPECIFICATION_VERSION);
+
+        for (Iterator<Map.Entry<String, Attrs>> iterator =
+                requirements.entrySet().iterator(); iterator.hasNext();) {
+            Map.Entry<String, Attrs> requirement = iterator.next();
+            if (!SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE.equals(
+                    removeDuplicateMarker(requirement.getKey()))) {
+                continue;
+            }
+
+            String filterString = requirement.getValue().get(SpiFlyConstants.FILTER_DIRECTIVE);
+            if (filterString == null) {
+                continue;
+            }
+            Filter filter = FrameworkUtil.createFilter(filterString);
+            if (filter.match(processorCapability)) {
+                iterator.remove();
+            }
+        }
+        return requirements.toString();
+    }
+
+    private static String removeDuplicateMarker(String key) {
+        int end = key.length();
+        while (end > 0 && key.charAt(end - 1) == '~') {
+            end--;
+        }
+        return key.substring(0, end);
     }
 
     private static void extendImportPackage(Manifest manifest) throws IOException {

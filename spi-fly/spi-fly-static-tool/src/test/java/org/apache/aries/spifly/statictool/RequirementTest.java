@@ -41,6 +41,8 @@ import org.apache.aries.spifly.statictool.bundle.Test3Class;
 import org.apache.aries.spifly.statictool.bundle.TestClass;
 import org.junit.Test;
 
+import aQute.bnd.header.Parameters;
+
 public class RequirementTest {
 	@Test
 	public void testConsumerBundle() throws Exception {
@@ -64,7 +66,8 @@ public class RequirementTest {
 			mainAttributes.putValue("Import-Package", "org.foo.bar");
 			mainAttributes.putValue(SpiFlyConstants.REQUIRE_CAPABILITY,
 					"osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple, " +
-					"osgi.extender; filter:=\"(osgi.extender=osgi.serviceloader.processor)\"");
+					"osgi.extender; filter:=\"(&(osgi.extender=osgi.serviceloader.processor)(version>=1.0))\", " +
+					"osgi.extender; filter:=\"(osgi.extender=example.other)\";resolution:=optional");
 
 			JarOutputStream jos = new JarOutputStream(new FileOutputStream(jarFile), mf);
 			jos.putNextEntry(new ZipEntry(testClassFileName));
@@ -88,9 +91,17 @@ public class RequirementTest {
 			assertEquals("Bar Bar", actualMF.getMainAttributes().getValue("Foo"));
 			String requirement =
 					"osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple, " +
-					"osgi.extender; filter:=\"(osgi.extender=osgi.serviceloader.processor)\"";
-			assertEquals(requirement,
+					"osgi.extender; filter:=\"(&(osgi.extender=osgi.serviceloader.processor)(version>=1.0))\", " +
+					"osgi.extender; filter:=\"(osgi.extender=example.other)\";resolution:=optional";
+			Parameters remainingRequirements = new Parameters(
 					actualMF.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY));
+			assertEquals(2, remainingRequirements.size());
+			assertTrue(remainingRequirements.toString(), remainingRequirements.toString().contains(
+					"osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider"));
+			assertTrue(remainingRequirements.toString(), remainingRequirements.toString().contains(
+					"osgi.extender=example.other"));
+			assertFalse(remainingRequirements.toString(), remainingRequirements.toString().contains(
+					SpiFlyConstants.PROCESSOR_EXTENDER_NAME));
 			assertEquals(requirement,
 					actualMF.getMainAttributes().getValue(
 							Main.PROCESSED_REQUIRE_CAPABILITY_HEADER));
