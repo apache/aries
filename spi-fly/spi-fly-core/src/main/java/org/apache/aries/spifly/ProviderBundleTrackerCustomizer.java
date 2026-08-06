@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,10 +33,13 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -184,57 +188,68 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     private List<ServiceDetails> collectServiceDetails(Bundle bundle, List<URL> serviceFileURLs, DiscoveryMode discoveryMode) {
         List<ServiceDetails> serviceDetails = new ArrayList<>();
 
+        for (Entry<String, List<String>> providerFile : readServiceProviderFiles(serviceFileURLs).entrySet()) {
+            String registrationClassName = providerFile.getKey();
+            for (String className : providerFile.getValue()) {
+                try {
+                    final Hashtable<String, Object> properties;
+                    if (discoveryMode == DiscoveryMode.SPI_PROVIDER_HEADER) {
+                        properties = new Hashtable<String, Object>();
+                    }
+                    else if (discoveryMode == DiscoveryMode.AUTO_PROVIDERS_PROPERTY) {
+                        properties = activator.getAutoProviderInstructions().map(
+                            Parameters::stream
+                        ).orElseGet(MapStream::empty).filterKey(
+                            i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
+                        ).values().findFirst().map(
+                            Hashtable<String, Object>::new
+                        ).orElseGet(() -> new Hashtable<String, Object>());
+                    }
+                    else {
+                        properties = findServiceRegistrationProperties(bundle, registrationClassName, className);
+                    }
+
+                    if (properties != null) {
+                        properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
+                        properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, className);
+                        properties.put(SpiFlyConstants.PROVIDER_DISCOVERY_MODE, discoveryMode.toString());
+                    }
+
+                    serviceDetails.add(new ServiceDetails(registrationClassName, className, properties));
+                } catch (Exception e) {
+                    log(Level.FINE,
+                            "Could not process SPI implementation " + className + " for " + registrationClassName, e);
+                }
+            }
+        }
+
+        return serviceDetails;
+    }
+
+    Map<String, List<String>> readServiceProviderFiles(List<URL> serviceFileURLs) {
+        Map<String, Set<String>> providers = new LinkedHashMap<String, Set<String>>();
+
         for (URL serviceFileURL : serviceFileURLs) {
             log(Level.FINE, "Found SPI resource: " + serviceFileURL);
 
-            try {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(serviceFileURL.openStream()));
-                String className = null;
-                while((className = reader.readLine()) != null) {
-                    try {
-                        className = className.trim();
+            String serviceFile = serviceFileURL.toExternalForm();
+            int idx = serviceFile.lastIndexOf('/');
+            String serviceType = serviceFile.substring(idx + 1);
+            Set<String> serviceProviders = providers.computeIfAbsent(
+                    serviceType, key -> new LinkedHashSet<String>());
 
-                        if (className.length() == 0)
-                            continue; // empty line
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(serviceFileURL.openStream(), StandardCharsets.UTF_8))) {
+                String className;
+                while ((className = reader.readLine()) != null) {
+                    int comment = className.indexOf('#');
+                    if (comment >= 0) {
+                        className = className.substring(0, comment);
+                    }
 
-                        if (className.startsWith("#"))
-                            continue; // a comment
-
-                        String serviceFile = serviceFileURL.toExternalForm();
-                        int idx = serviceFile.lastIndexOf('/');
-                        String registrationClassName = className;
-                        if (serviceFile.length() > idx) {
-                            registrationClassName = serviceFile.substring(idx + 1);
-                        }
-
-                        final Hashtable<String, Object> properties;
-                        if (discoveryMode == DiscoveryMode.SPI_PROVIDER_HEADER) {
-                            properties = new Hashtable<String, Object>();
-                        }
-                        else if (discoveryMode == DiscoveryMode.AUTO_PROVIDERS_PROPERTY) {
-                            properties = activator.getAutoProviderInstructions().map(
-                                Parameters::stream
-                            ).orElseGet(MapStream::empty).filterKey(
-                                i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
-                            ).values().findFirst().map(
-                                Hashtable<String, Object>::new
-                            ).orElseGet(() -> new Hashtable<String, Object>());
-                        }
-                        else {
-                            properties = findServiceRegistrationProperties(bundle, registrationClassName, className);
-                        }
-
-                        if (properties != null) {
-                            properties.put(SpiFlyConstants.SERVICELOADER_MEDIATOR_PROPERTY, spiBundle.getBundleId());
-                            properties.put(SpiFlyConstants.PROVIDER_IMPLCLASS_PROPERTY, className);
-                            properties.put(SpiFlyConstants.PROVIDER_DISCOVERY_MODE, discoveryMode.toString());
-                        }
-
-                        serviceDetails.add(new ServiceDetails(registrationClassName, className, properties));
-                    } catch (Exception e) {
-                        log(Level.FINE,
-                                "Could not load SPI implementation referred from " + serviceFileURL, e);
+                    className = className.trim();
+                    if (!className.isEmpty()) {
+                        serviceProviders.add(className);
                     }
                 }
             } catch (IOException e) {
@@ -242,7 +257,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
         }
 
-        return serviceDetails;
+        Map<String, List<String>> result = new LinkedHashMap<String, List<String>>();
+        for (Entry<String, Set<String>> entry : providers.entrySet()) {
+            result.put(entry.getKey(), new ArrayList<String>(entry.getValue()));
+        }
+        return result;
     }
     private Entry<List<String>, List<URL>> getFromAutoProviderProperty(Bundle bundle, Map<String, Object> customAttributes) {
         return activator.getAutoProviderInstructions().map(
