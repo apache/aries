@@ -50,6 +50,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
@@ -183,7 +184,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     }
                 }
 
-                activator.registerProviderBundle(details.serviceType, bundle,
+                activator.registerProviderBundle(details.serviceType,
+                        details.instanceType, bundle,
                         details.properties == null
                                 ? Collections.<String, Object>emptyMap() : details.properties);
                 log(Level.INFO, "Registered provider " + details.instanceType + " of service " + details.serviceType + " in bundle " + bundle.getSymbolicName());
@@ -327,21 +329,52 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     List<URL> getServiceFileUrls(Bundle bundle, List<String> serviceTypes) {
         if (serviceTypes != null) {
             BundleWiring wiring = WiringUtils.getWiring(bundle);
-            ClassLoader classLoader = wiring == null ? null : wiring.getClassLoader();
-            if (classLoader != null) {
-                Set<URL> serviceFileURLs = new LinkedHashSet<URL>();
-                for (String serviceType : new LinkedHashSet<String>(serviceTypes)) {
-                    try {
-                        Enumeration<URL> resources = classLoader.getResources(
-                                METAINF_SERVICES + "/" + serviceType);
-                        serviceFileURLs.addAll(Collections.list(resources));
-                    }
-                    catch (IOException e) {
-                        log(Level.FINE, "Could not find SPI metadata for " + serviceType, e);
+            if (wiring == null) {
+                return Collections.emptyList();
+            }
+
+            Set<String> requestedTypes = new LinkedHashSet<String>(serviceTypes);
+            Set<URL> serviceFileURLs = new LinkedHashSet<URL>();
+            for (String serviceType : requestedTypes) {
+                List<URL> entries = wiring.findEntries(
+                        METAINF_SERVICES, serviceType, 0);
+                if (entries != null) {
+                    serviceFileURLs.addAll(entries);
+                }
+            }
+            if (serviceFileURLs.isEmpty()) {
+                Enumeration<URL> entries = bundle.findEntries(
+                        METAINF_SERVICES, "*", false);
+                if (entries != null) {
+                    for (URL entry : Collections.list(entries)) {
+                        String path = entry.getPath();
+                        int separator = path.lastIndexOf('/');
+                        String serviceType = separator < 0
+                                ? path : path.substring(separator + 1);
+                        if (requestedTypes.contains(serviceType)) {
+                            serviceFileURLs.add(entry);
+                        }
                     }
                 }
-                return new ArrayList<URL>(serviceFileURLs);
             }
+
+            addBundleClassPathServiceFiles(
+                    bundle, requestedTypes, serviceFileURLs);
+            List<BundleWire> hostWires = wiring.getProvidedWires(
+                    HostNamespace.HOST_NAMESPACE);
+            if (hostWires != null) {
+                for (BundleWire hostWire : hostWires) {
+                    BundleRevision fragmentRevision = hostWire.getRequirement() == null
+                            ? null : hostWire.getRequirement().getRevision();
+                    Bundle fragment = fragmentRevision == null
+                            ? null : fragmentRevision.getBundle();
+                    if (fragment != null) {
+                        addBundleClassPathServiceFiles(
+                                fragment, requestedTypes, serviceFileURLs);
+                    }
+                }
+            }
+            return new ArrayList<URL>(serviceFileURLs);
         }
 
         List<URL> serviceFileURLs = new ArrayList<URL>();
@@ -358,7 +391,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                 if (entry.equals("."))
                     continue;
 
-                URL url = bundle.getResource(entry);
+                URL url = bundle.getEntry(entry);
                 if (url != null) {
                     serviceFileURLs.addAll(getMetaInfServiceURLsFromJar(url));
                 }
@@ -366,6 +399,26 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         return serviceFileURLs;
+    }
+
+    private void addBundleClassPathServiceFiles(Bundle bundle,
+            Set<String> serviceTypes, Set<URL> serviceFileURLs) {
+        Object bcp = bundle.getHeaders().get(Constants.BUNDLE_CLASSPATH);
+        if (!(bcp instanceof String)) {
+            return;
+        }
+
+        for (String entry : ((String) bcp).split(",")) {
+            entry = entry.trim();
+            if (entry.equals(".")) {
+                continue;
+            }
+            URL url = bundle.getEntry(entry);
+            if (url != null) {
+                serviceFileURLs.addAll(
+                        getMetaInfServiceURLsFromJar(url, serviceTypes));
+            }
+        }
     }
 
     private String getHeaderFromBundleOrFragment(Bundle bundle, String headerName) {
@@ -450,6 +503,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     }
 
     private List<URL> getMetaInfServiceURLsFromJar(URL url) {
+        return getMetaInfServiceURLsFromJar(url, null);
+    }
+
+    private List<URL> getMetaInfServiceURLsFromJar(
+            URL url, Set<String> serviceTypes) {
         List<URL> urls = new ArrayList<URL>();
         try {
             JarInputStream jis = null;
@@ -458,8 +516,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
                 JarEntry je = null;
                 while((je = jis.getNextJarEntry()) != null) {
-                    if (je.getName().startsWith(METAINF_SERVICES) &&
-                        je.getName().length() > (METAINF_SERVICES.length() + 1)) {
+                    if (je.getName().startsWith(METAINF_SERVICES + "/")
+                            && je.getName().length() > (METAINF_SERVICES.length() + 1)
+                            && (serviceTypes == null || serviceTypes.contains(
+                                    je.getName().substring(METAINF_SERVICES.length() + 1)))) {
                         urls.add(new URL("jar:" + url + "!/" + je.getName()));
                     }
                 }

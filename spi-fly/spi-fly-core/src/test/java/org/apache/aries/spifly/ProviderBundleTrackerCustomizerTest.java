@@ -23,14 +23,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -107,24 +105,20 @@ public class ProviderBundleTrackerCustomizerTest {
     }
 
     @Test
-    public void testStandardDiscoveryUsesWiringClassLoader() throws Exception {
+    public void testStandardDiscoveryUsesBundleLocalEntries() throws Exception {
         final String serviceType = "org.apache.aries.mytest.MySPI";
         final URL serviceFile = getClass().getResource(
                 "impl1/META-INF/services/" + serviceType);
         assertNotNull("precondition", serviceFile);
 
-        ClassLoader classLoader = new ClassLoader() {
-            @Override
-            public Enumeration<URL> getResources(String name) throws IOException {
-                assertEquals("META-INF/services/" + serviceType, name);
-                return Collections.enumeration(Collections.singleton(serviceFile));
-            }
-        };
         BundleWiring wiring = EasyMock.createNiceMock(BundleWiring.class);
-        EasyMock.expect(wiring.getClassLoader()).andReturn(classLoader).anyTimes();
+        EasyMock.expect(wiring.findEntries("META-INF/services", serviceType, 0))
+                .andReturn(Collections.singletonList(serviceFile)).anyTimes();
         EasyMock.replay(wiring);
         Bundle bundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(bundle.adapt(BundleWiring.class)).andReturn(wiring).anyTimes();
+        EasyMock.expect(bundle.getHeaders())
+                .andReturn(new Hashtable<String, String>()).anyTimes();
         EasyMock.replay(bundle);
 
         ProviderBundleTrackerCustomizer customizer =
@@ -164,10 +158,10 @@ public class ProviderBundleTrackerCustomizerTest {
 
         URL embeddedJar = getClass().getResource("/embedded.jar");
         assertNotNull("precondition", embeddedJar);
-        EasyMock.expect(implBundle.getResource("embedded.jar")).andReturn(embeddedJar).anyTimes();
+        EasyMock.expect(implBundle.getEntry("embedded.jar")).andReturn(embeddedJar).anyTimes();
         URL embedded2Jar = getClass().getResource("/embedded2.jar");
         assertNotNull("precondition", embedded2Jar);
-        EasyMock.expect(implBundle.getResource("embedded2.jar")).andReturn(embedded2Jar).anyTimes();
+        EasyMock.expect(implBundle.getEntry("embedded2.jar")).andReturn(embedded2Jar).anyTimes();
         URL dir = new URL("jar:" + embeddedJar + "!/META-INF/services");
         assertNotNull("precondition", dir);
         EasyMock.expect(implBundle.getResource("/META-INF/services")).andReturn(dir).anyTimes();

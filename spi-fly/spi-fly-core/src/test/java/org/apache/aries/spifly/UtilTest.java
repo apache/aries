@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.aries.mytest.MySPI;
 import org.easymock.EasyMock;
@@ -188,8 +189,12 @@ public class UtilTest {
         assertNotNull("precondition", selected);
         assertNotNull("precondition", forbidden);
         Bundle provider = mockProviderBundle(42L, selected);
-        activator.registerProviderBundle(
-                MySPI.class.getName(), provider, new HashMap<String, Object>());
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl2.MySPIImpl2a", provider,
+                new HashMap<String, Object>());
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl2.MySPIImpl2b", provider,
+                new HashMap<String, Object>());
 
         ClassLoader specified = new URLClassLoader(
                 new URL[] {forbidden}, getClass().getClassLoader()) {
@@ -251,8 +256,9 @@ public class UtilTest {
         URL selected = getClass().getResource("/embedded2.jar");
         assertNotNull("precondition", selected);
         Bundle provider = mockProviderBundle(42L, selected);
-        activator.registerProviderBundle(
-                MySPI.class.getName(), provider, new HashMap<String, Object>());
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl3.MySPIImpl3", provider,
+                new HashMap<String, Object>());
 
         ServiceLoader<MySPI> loader = Util.serviceLoaderLoad(
                 MySPI.class, callerClass(consumer));
@@ -286,8 +292,9 @@ public class UtilTest {
         URL selected = getClass().getResource("/embedded2.jar");
         assertNotNull("precondition", selected);
         Bundle provider = mockProviderBundle(42L, selected, providerPermission);
-        activator.registerProviderBundle(
-                MySPI.class.getName(), provider, new HashMap<String, Object>());
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl3.MySPIImpl3", provider,
+                new HashMap<String, Object>());
 
         assertFalse(Util.serviceLoaderLoad(MySPI.class, callerClass(consumer))
                 .iterator().hasNext());
@@ -301,6 +308,122 @@ public class UtilTest {
         providerPermission.set(true);
         assertTrue(Util.serviceLoaderLoad(MySPI.class, callerClass(consumer))
                 .iterator().hasNext());
+    }
+
+    @Test
+    public void providerPermissionCannotBeBorrowedFromAnotherAdvertiser()
+            throws Exception {
+        BaseActivator activator = newActivator();
+        Bundle consumer = mockPermissionBundle(new AtomicBoolean(true));
+        BundleWiring consumerWiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(consumerWiring.getRequirements(
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
+                .andReturn(Collections.<BundleRequirement>emptyList()).anyTimes();
+        EasyMock.replay(consumerWiring);
+        activator.registerStandardConsumer(consumer, consumerWiring);
+
+        AtomicBoolean firstPermission = new AtomicBoolean(true);
+        Bundle first = mockProviderBundle(41L,
+                getClass().getResource("/embedded2.jar"), firstPermission);
+        Bundle second = mockProviderBundle(42L,
+                getClass().getResource("/embedded.jar"));
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl3.MySPIImpl3", first,
+                new HashMap<String, Object>());
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl2.MySPIImpl2a", second,
+                new HashMap<String, Object>());
+
+        Iterator<MySPI> iterator = Util.serviceLoaderLoad(
+                MySPI.class, callerClass(consumer)).iterator();
+        assertTrue(iterator.hasNext());
+        firstPermission.set(false);
+
+        assertThrows(ServiceConfigurationError.class, iterator::next);
+    }
+
+    @Test
+    public void duplicateAdvertisementCanUseAnotherActualAdvertiser()
+            throws Exception {
+        BaseActivator activator = newActivator();
+        Bundle consumer = mockPermissionBundle(new AtomicBoolean(true));
+        BundleWiring consumerWiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(consumerWiring.getRequirements(
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
+                .andReturn(Collections.<BundleRequirement>emptyList()).anyTimes();
+        EasyMock.replay(consumerWiring);
+        activator.registerStandardConsumer(consumer, consumerWiring);
+
+        AtomicBoolean firstPermission = new AtomicBoolean(false);
+        URL providerJar = getClass().getResource("/embedded2.jar");
+        Bundle first = mockProviderBundle(41L, providerJar, firstPermission);
+        Bundle second = mockProviderBundle(42L, providerJar);
+        String implementation = "org.apache.aries.spifly.impl3.MySPIImpl3";
+        activator.registerProviderBundle(MySPI.class.getName(),
+                implementation, first, new HashMap<String, Object>());
+        activator.registerProviderBundle(MySPI.class.getName(),
+                implementation, second, new HashMap<String, Object>());
+
+        Iterator<MySPI> iterator = Util.serviceLoaderLoad(
+                MySPI.class, callerClass(consumer)).iterator();
+        assertTrue(iterator.hasNext());
+        assertEquals(implementation, iterator.next().getClass().getName());
+        assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    public void stoppedProviderCannotServeExistingLoader() throws Exception {
+        BaseActivator activator = newActivator();
+        Bundle consumer = mockPermissionBundle(new AtomicBoolean(true));
+        BundleWiring consumerWiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(consumerWiring.getRequirements(
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
+                .andReturn(Collections.<BundleRequirement>emptyList()).anyTimes();
+        EasyMock.replay(consumerWiring);
+        activator.registerStandardConsumer(consumer, consumerWiring);
+
+        AtomicInteger providerState = new AtomicInteger(Bundle.ACTIVE);
+        Bundle provider = mockProviderBundle(42L,
+                getClass().getResource("/embedded2.jar"),
+                new AtomicBoolean(true), providerState, new AtomicBoolean(true));
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl3.MySPIImpl3", provider,
+                new HashMap<String, Object>());
+
+        Iterator<MySPI> iterator = Util.serviceLoaderLoad(
+                MySPI.class, callerClass(consumer)).iterator();
+        assertTrue(iterator.hasNext());
+        providerState.set(Bundle.RESOLVED);
+
+        assertThrows(ServiceConfigurationError.class, iterator::next);
+    }
+
+    @Test
+    public void replacedProviderRevisionCannotServeExistingLoader() throws Exception {
+        BaseActivator activator = newActivator();
+        Bundle consumer = mockPermissionBundle(new AtomicBoolean(true));
+        BundleWiring consumerWiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(consumerWiring.getRequirements(
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
+                .andReturn(Collections.<BundleRequirement>emptyList()).anyTimes();
+        EasyMock.replay(consumerWiring);
+        activator.registerStandardConsumer(consumer, consumerWiring);
+
+        AtomicBoolean originalRevision = new AtomicBoolean(true);
+        Bundle provider = mockProviderBundle(42L,
+                getClass().getResource("/embedded2.jar"),
+                new AtomicBoolean(true), new AtomicInteger(Bundle.ACTIVE),
+                originalRevision);
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl3.MySPIImpl3", provider,
+                new HashMap<String, Object>());
+
+        Iterator<MySPI> iterator = Util.serviceLoaderLoad(
+                MySPI.class, callerClass(consumer)).iterator();
+        assertTrue(iterator.hasNext());
+        originalRevision.set(false);
+
+        assertThrows(ServiceConfigurationError.class, iterator::next);
     }
 
     @Test
@@ -343,15 +466,35 @@ public class UtilTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private Bundle mockProviderBundle(long bundleId, URL providerJar,
             final AtomicBoolean permission) throws Exception {
+        return mockProviderBundle(bundleId, providerJar, permission,
+                new AtomicInteger(Bundle.ACTIVE), new AtomicBoolean(true));
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Bundle mockProviderBundle(long bundleId, URL providerJar,
+            final AtomicBoolean permission, final AtomicInteger state,
+            final AtomicBoolean originalRevision) throws Exception {
         Bundle providerBundle = EasyMock.createMock(Bundle.class);
         final ClassLoader providerCL = new TestBundleClassLoader(
                 new URL[] {providerJar}, getClass().getClassLoader(), providerBundle);
         BundleWiring providerWiring = EasyMock.createNiceMock(BundleWiring.class);
         EasyMock.expect(providerWiring.getClassLoader()).andReturn(providerCL).anyTimes();
-        EasyMock.replay(providerWiring);
         BundleRevision providerRevision = EasyMock.createNiceMock(BundleRevision.class);
+        BundleRevision replacementRevision = EasyMock.createNiceMock(BundleRevision.class);
+        EasyMock.expect(providerWiring.getRevision()).andAnswer(
+                new IAnswer<BundleRevision>() {
+                    @Override
+                    public BundleRevision answer() throws Throwable {
+                        return originalRevision.get()
+                                ? providerRevision : replacementRevision;
+                    }
+                }).anyTimes();
         EasyMock.expect(providerRevision.getWiring()).andReturn(providerWiring).anyTimes();
         EasyMock.replay(providerRevision);
+        EasyMock.expect(replacementRevision.getWiring())
+                .andReturn(providerWiring).anyTimes();
+        EasyMock.replay(replacementRevision);
+        EasyMock.replay(providerWiring);
         Bundle systemBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(systemBundle.loadClass(BundleRevision.class.getName()))
                 .andReturn((Class) BundleRevision.class).anyTimes();
@@ -364,8 +507,22 @@ public class UtilTest {
         EasyMock.expect(providerBundle.getBundleContext())
                 .andReturn(providerContext).anyTimes();
         EasyMock.expect(providerBundle.adapt(BundleRevision.class))
-                .andReturn(providerRevision).anyTimes();
+                .andAnswer(new IAnswer<BundleRevision>() {
+                    @Override
+                    public BundleRevision answer() throws Throwable {
+                        return originalRevision.get()
+                                ? providerRevision : replacementRevision;
+                    }
+                }).anyTimes();
+        EasyMock.expect(providerBundle.adapt(BundleWiring.class))
+                .andReturn(providerWiring).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(bundleId).anyTimes();
+        EasyMock.expect(providerBundle.getState()).andAnswer(new IAnswer<Integer>() {
+            @Override
+            public Integer answer() throws Throwable {
+                return state.get();
+            }
+        }).anyTimes();
         EasyMock.expect(providerBundle.hasPermission(
                 EasyMock.isA(ServicePermission.class))).andAnswer(new IAnswer<Boolean>() {
                     @Override
@@ -393,6 +550,7 @@ public class UtilTest {
 
     private Bundle mockPermissionBundle(final AtomicBoolean permission) {
         Bundle bundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(bundle.getState()).andReturn(Bundle.ACTIVE).anyTimes();
         EasyMock.expect(bundle.hasPermission(EasyMock.isA(ServicePermission.class)))
                 .andAnswer(new IAnswer<Boolean>() {
                     @Override

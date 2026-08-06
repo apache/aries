@@ -804,6 +804,7 @@ public class ClientWeavingHookTest {
         }
         EasyMock.expect(providerBundle.getSymbolicName()).andReturn(bsn).anyTimes();
         EasyMock.expect(providerBundle.getBundleId()).andReturn(id).anyTimes();
+        EasyMock.expect(providerBundle.getState()).andReturn(Bundle.ACTIVE).anyTimes();
         EasyMock.expect(providerBundle.getBundleContext()).andReturn(bc).anyTimes();
         EasyMock.expect(providerBundle.getVersion()).andReturn(version).anyTimes();
         EasyMock.expect(providerBundle.hasPermission(EasyMock.isA(ServicePermission.class))).andReturn(true).anyTimes();

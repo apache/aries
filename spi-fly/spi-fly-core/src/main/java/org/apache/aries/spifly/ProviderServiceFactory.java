@@ -40,9 +40,12 @@ public class ProviderServiceFactory implements ServiceFactory {
 
     @Override
     public Object getService(Bundle bundle, ServiceRegistration registration) {
-        if (providerBundle != null && !providerBundle.hasPermission(
-                new ServicePermission(serviceType, ServicePermission.REGISTER))) {
-            return null;
+        if (providerBundle != null) {
+            if (providerBundle.getState() != Bundle.ACTIVE
+                    || !providerBundle.hasPermission(new ServicePermission(
+                            serviceType, ServicePermission.REGISTER))) {
+                return null;
+            }
         }
         try {
             return providerClass.getDeclaredConstructor().newInstance();

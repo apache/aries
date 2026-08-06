@@ -81,6 +81,9 @@ public abstract class BaseActivator implements BundleActivator {
     private final ConcurrentMap<String, SortedMap<Long, Pair<Bundle, Map<String, Object>>>> registeredProviders =
             new ConcurrentHashMap<String, SortedMap<Long, Pair<Bundle, Map<String, Object>>>>();
 
+    private final ConcurrentMap<String, SortedMap<Long, ProviderAdvertisement>> providerAdvertisements =
+            new ConcurrentHashMap<String, SortedMap<Long, ProviderAdvertisement>>();
+
     private final ConcurrentMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>> consumerRestrictions =
             new ConcurrentHashMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>>();
 
@@ -406,6 +409,25 @@ public abstract class BaseActivator implements BundleActivator {
             });
     }
 
+    void registerProviderBundle(String serviceType, String implementationName,
+            Bundle bundle, Map<String, Object> customAttributes) {
+        registerProviderBundle(serviceType, bundle, customAttributes);
+        SortedMap<Long, ProviderAdvertisement> advertisements =
+                providerAdvertisements.computeIfAbsent(serviceType,
+                        key -> Collections.synchronizedSortedMap(
+                                new TreeMap<Long, ProviderAdvertisement>()));
+        synchronized (advertisements) {
+            ProviderAdvertisement advertisement = advertisements.get(bundle.getBundleId());
+            if (advertisement == null) {
+                BundleWiring wiring = WiringUtils.getWiring(bundle);
+                BundleRevision revision = wiring == null ? null : wiring.getRevision();
+                advertisement = new ProviderAdvertisement(bundle, revision);
+                advertisements.put(bundle.getBundleId(), advertisement);
+            }
+            advertisement.addImplementation(implementationName);
+        }
+    }
+
     public void unregisterProviderBundle(Bundle bundle) {
         for (Map<Long, Pair<Bundle, Map<String, Object>>> value : registeredProviders.values()) {
             for(Iterator<Entry<Long, Pair<Bundle, Map<String, Object>>>> it = value.entrySet().iterator(); it.hasNext(); ) {
@@ -414,6 +436,10 @@ public abstract class BaseActivator implements BundleActivator {
                     it.remove();
                 }
             }
+        }
+        for (Map<Long, ProviderAdvertisement> advertisements
+                : providerAdvertisements.values()) {
+            advertisements.remove(bundle.getBundleId());
         }
     }
 
@@ -449,6 +475,25 @@ public abstract class BaseActivator implements BundleActivator {
             }
         }
         return compatible;
+    }
+
+    List<ProviderAdvertisement> findProviderAdvertisements(
+            String serviceType, Collection<Bundle> selectedBundles) {
+        SortedMap<Long, ProviderAdvertisement> advertisements =
+                providerAdvertisements.get(serviceType);
+        if (advertisements == null || selectedBundles.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<ProviderAdvertisement> selected = new ArrayList<ProviderAdvertisement>();
+        synchronized (advertisements) {
+            for (ProviderAdvertisement advertisement : advertisements.values()) {
+                if (selectedBundles.contains(advertisement.getBundle())) {
+                    selected.add(advertisement.snapshot());
+                }
+            }
+        }
+        return selected;
     }
 
     public Map<String, Object> getCustomBundleAttributes(String name, Bundle b) {
@@ -646,6 +691,40 @@ public abstract class BaseActivator implements BundleActivator {
             }
             Set<Bundle> providers = providersByServiceType.get(serviceType);
             return providers == null ? Collections.<Bundle>emptySet() : providers;
+        }
+    }
+
+    static final class ProviderAdvertisement {
+        private final Bundle bundle;
+        private final BundleRevision revision;
+        private final Set<String> implementationNames =
+                new java.util.LinkedHashSet<String>();
+
+        private ProviderAdvertisement(Bundle bundle, BundleRevision revision) {
+            this.bundle = bundle;
+            this.revision = revision;
+        }
+
+        private synchronized void addImplementation(String implementationName) {
+            implementationNames.add(implementationName);
+        }
+
+        private synchronized ProviderAdvertisement snapshot() {
+            ProviderAdvertisement snapshot = new ProviderAdvertisement(bundle, revision);
+            snapshot.implementationNames.addAll(implementationNames);
+            return snapshot;
+        }
+
+        Bundle getBundle() {
+            return bundle;
+        }
+
+        BundleRevision getRevision() {
+            return revision;
+        }
+
+        synchronized List<String> getImplementationNames() {
+            return new ArrayList<String>(implementationNames);
         }
     }
 

@@ -687,6 +687,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.getState()).andReturn(Bundle.ACTIVE).anyTimes();
         EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
                 .andReturn(true).anyTimes();
 
@@ -702,10 +703,10 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         URL embeddedJar = getClass().getResource("/embedded.jar");
         assertNotNull("precondition", embeddedJar);
-        EasyMock.expect(implBundle.getResource("embedded.jar")).andReturn(embeddedJar).anyTimes();
+        EasyMock.expect(implBundle.getEntry("embedded.jar")).andReturn(embeddedJar).anyTimes();
         URL embedded2Jar = getClass().getResource("/embedded2.jar");
         assertNotNull("precondition", embedded2Jar);
-        EasyMock.expect(implBundle.getResource("embedded2.jar")).andReturn(embedded2Jar).anyTimes();
+        EasyMock.expect(implBundle.getEntry("embedded2.jar")).andReturn(embedded2Jar).anyTimes();
         URL dir = new URL("jar:" + embeddedJar + "!/META-INF/services");
         assertNotNull("precondition", dir);
         EasyMock.expect(implBundle.getResource("/META-INF/services")).andReturn(dir).anyTimes();
@@ -771,6 +772,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
 
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.getState()).andReturn(Bundle.ACTIVE).anyTimes();
         EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
                 .andReturn(registerPermission).anyTimes();
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
@@ -844,6 +846,7 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
             BundleRevision rev, BundleWiring providerWiring) throws ClassNotFoundException {
         Bundle implBundle = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(implBundle.getBundleContext()).andReturn(implBC).anyTimes();
+        EasyMock.expect(implBundle.getState()).andReturn(Bundle.ACTIVE).anyTimes();
         EasyMock.expect(implBundle.hasPermission(EasyMock.isA(ServicePermission.class)))
                 .andReturn(true).anyTimes();
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();

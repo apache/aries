@@ -18,9 +18,14 @@
  */
 package org.apache.aries.spifly;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -28,9 +33,12 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -40,6 +48,8 @@ import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServicePermission;
+import org.osgi.framework.wiring.BundleRevision;
+import org.osgi.framework.wiring.BundleWiring;
 
 import aQute.bnd.annotation.baseline.BaselineIgnore;
 
@@ -255,6 +265,14 @@ public class Util {
         if (serviceLoaderCall) {
             bundles = activator.filterCompatibleProviderBundles(
                     consumerBundle, clsArg, bundles);
+        }
+
+        if (serviceLoaderCall && permissionAware
+                && activator.isStandardConsumer(consumerBundle)
+                && !bundles.isEmpty()) {
+            return new ProviderAdvertisementClassLoader(
+                    activator.findProviderAdvertisements(requestedClass, bundles),
+                    requestedClass);
         }
 
         switch (bundles.size()) {
@@ -514,6 +532,114 @@ public class Util {
         }
     }
 
+    private static class ProviderAdvertisementClassLoader extends ClassLoader {
+        private final String serviceType;
+        private final String providerConfiguration;
+        private final Map<String, List<BaseActivator.ProviderAdvertisement>>
+                advertisersByImplementation =
+                        new LinkedHashMap<String, List<BaseActivator.ProviderAdvertisement>>();
+
+        ProviderAdvertisementClassLoader(
+                List<BaseActivator.ProviderAdvertisement> advertisements,
+                String serviceType) {
+            super(null);
+            this.serviceType = serviceType;
+            providerConfiguration = "META-INF/services/" + serviceType;
+            for (BaseActivator.ProviderAdvertisement advertisement : advertisements) {
+                for (String implementation : advertisement.getImplementationNames()) {
+                    advertisersByImplementation.computeIfAbsent(implementation,
+                            key -> new ArrayList<BaseActivator.ProviderAdvertisement>())
+                            .add(advertisement);
+                }
+            }
+        }
+
+        @Override
+        public URL getResource(String name) {
+            if (!providerConfiguration.equals(name)) {
+                return null;
+            }
+            return createProviderConfiguration();
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            URL configuration = getResource(name);
+            return configuration == null
+                    ? java.util.Collections.<URL>emptyEnumeration()
+                    : java.util.Collections.enumeration(
+                            java.util.Collections.singleton(configuration));
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            List<BaseActivator.ProviderAdvertisement> advertisements =
+                    advertisersByImplementation.get(name);
+            if (advertisements == null) {
+                throw new ClassNotFoundException(name);
+            }
+
+            ClassNotFoundException last = null;
+            for (BaseActivator.ProviderAdvertisement advertisement : advertisements) {
+                if (!isProviderAvailable(advertisement, serviceType)) {
+                    continue;
+                }
+                try {
+                    return advertisement.getBundle().loadClass(name);
+                }
+                catch (ClassNotFoundException e) {
+                    last = e;
+                }
+            }
+            throw last == null ? new ClassNotFoundException(name) : last;
+        }
+
+        private URL createProviderConfiguration() {
+            Set<String> implementations = new LinkedHashSet<String>();
+            for (Map.Entry<String, List<BaseActivator.ProviderAdvertisement>> entry
+                    : advertisersByImplementation.entrySet()) {
+                for (BaseActivator.ProviderAdvertisement advertisement : entry.getValue()) {
+                    if (isProviderAvailable(advertisement, serviceType)) {
+                        implementations.add(entry.getKey());
+                        break;
+                    }
+                }
+            }
+            if (implementations.isEmpty()) {
+                return null;
+            }
+
+            StringBuilder contents = new StringBuilder();
+            for (String implementation : implementations) {
+                contents.append(implementation).append('\n');
+            }
+            final byte[] bytes = contents.toString().getBytes(StandardCharsets.UTF_8);
+            try {
+                return new URL(null,
+                        "spifly:" + serviceType + "/"
+                                + Integer.toHexString(System.identityHashCode(this)),
+                        new URLStreamHandler() {
+                            @Override
+                            protected URLConnection openConnection(URL url) {
+                                return new URLConnection(url) {
+                                    @Override
+                                    public void connect() {
+                                    }
+
+                                    @Override
+                                    public InputStream getInputStream() {
+                                        return new ByteArrayInputStream(bytes);
+                                    }
+                                };
+                            }
+                        });
+            }
+            catch (java.net.MalformedURLException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
+
     private static class ProviderBundleClassLoader extends ClassLoader {
         private final Bundle providerBundle;
         private final ClassLoader delegate;
@@ -557,5 +683,38 @@ public class Util {
             }
             return permitted;
         }
+    }
+
+    private static boolean isProviderAvailable(
+            BaseActivator.ProviderAdvertisement advertisement, String serviceType) {
+        return isProviderAvailable(advertisement.getBundle(),
+                advertisement.getRevision(), serviceType);
+    }
+
+    private static boolean isProviderAvailable(Bundle providerBundle,
+            BundleRevision providerRevision, String serviceType) {
+        if (providerBundle.getState() != Bundle.ACTIVE) {
+            BaseActivator.activator.log(Level.FINE, "Bundle " + providerBundle
+                    + " is not active and cannot provide services of type: "
+                    + serviceType);
+            return false;
+        }
+        if (!providerBundle.hasPermission(
+                new ServicePermission(serviceType, ServicePermission.REGISTER))) {
+            BaseActivator.activator.log(Level.FINE, "Bundle " + providerBundle
+                    + " does not have permission to provide services of type: "
+                    + serviceType);
+            return false;
+        }
+        if (providerRevision != null) {
+            BundleWiring wiring = WiringUtils.getWiring(providerBundle);
+            if (wiring == null || wiring.getRevision() != providerRevision) {
+                BaseActivator.activator.log(Level.FINE, "Bundle " + providerBundle
+                        + " no longer has the revision that advertised service type: "
+                        + serviceType);
+                return false;
+            }
+        }
+        return true;
     }
 }
