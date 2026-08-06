@@ -48,9 +48,9 @@ import java.util.stream.Stream;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Constants;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServicePermission;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
@@ -91,12 +91,23 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         DiscoveryMode discoveryMode = DiscoveryMode.SERVICELOADER_CAPABILITIES;
         List<String> providedServices = null;
+        boolean registerServiceLoaderServices = false;
         Map<String, Object> customAttributes = new HashMap<String, Object>();
-        if (bundle.getHeaders().get(SpiFlyConstants.REQUIRE_CAPABILITY) != null) {
-            try {
-                providedServices = readServiceLoaderMediatorCapabilityMetadata(bundle, customAttributes);
-            } catch (InvalidSyntaxException e) {
-                log(Level.FINE, "Unable to read capabilities from bundle " + bundle, e);
+        BundleWiring wiring = WiringUtils.getWiring(bundle);
+        if (wiring != null) {
+            List<BundleCapability> serviceLoaderCapabilities = wiring.getCapabilities(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+            if (!serviceLoaderCapabilities.isEmpty()) {
+                providedServices = new ArrayList<String>();
+                for (BundleCapability capability : serviceLoaderCapabilities) {
+                    Object serviceType = capability.getAttributes().get(
+                            SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+                    if (serviceType instanceof String) {
+                        providedServices.add(((String) serviceType).trim());
+                    }
+                }
+                registerServiceLoaderServices = WiringUtils.isWiredToExtender(
+                        wiring, spiBundle, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
             }
         }
 
@@ -139,8 +150,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         final List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
-        for (ServiceDetails details : collectServiceDetails(bundle, serviceFileURLs, discoveryMode)) {
-            if (providedServices.size() > 0 && !providedServices.contains(details.serviceType))
+        for (ServiceDetails details : collectServiceDetails(
+                bundle, serviceFileURLs, discoveryMode, registerServiceLoaderServices)) {
+            if ((discoveryMode == DiscoveryMode.SERVICELOADER_CAPABILITIES
+                    || providedServices.size() > 0)
+                    && !providedServices.contains(details.serviceType))
                 continue;
 
             try {
@@ -185,7 +199,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         return registrations;
     }
 
-    private List<ServiceDetails> collectServiceDetails(Bundle bundle, List<URL> serviceFileURLs, DiscoveryMode discoveryMode) {
+    private List<ServiceDetails> collectServiceDetails(Bundle bundle, List<URL> serviceFileURLs,
+            DiscoveryMode discoveryMode, boolean registerServiceLoaderServices) {
         List<ServiceDetails> serviceDetails = new ArrayList<>();
 
         for (Entry<String, List<String>> providerFile : readServiceProviderFiles(serviceFileURLs).entrySet()) {
@@ -205,8 +220,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                             Hashtable<String, Object>::new
                         ).orElseGet(() -> new Hashtable<String, Object>());
                     }
-                    else {
+                    else if (registerServiceLoaderServices) {
                         properties = findServiceRegistrationProperties(bundle, registrationClassName, className);
+                    }
+                    else {
+                        properties = null;
                     }
 
                     if (properties != null) {
@@ -273,7 +291,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             un -> {
                 List<URL> serviceFileURLs = getServiceFileUrls(bundle);
 
-                List<ServiceDetails> collectServiceDetails = collectServiceDetails(bundle, serviceFileURLs, DiscoveryMode.AUTO_PROVIDERS_PROPERTY);
+                List<ServiceDetails> collectServiceDetails = collectServiceDetails(
+                        bundle, serviceFileURLs, DiscoveryMode.AUTO_PROVIDERS_PROPERTY, false);
 
                 collectServiceDetails.stream().map(ServiceDetails::getProperties).filter(Objects::nonNull).forEach(
                     hashtable -> hashtable.forEach(customAttributes::put)
@@ -359,44 +378,6 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
         int idx = val.indexOf(matchString);
         return idx >= 0;
-    }
-
-    // An empty list returned means 'all SPIs'
-    // A return value of null means no SPIs
-    // A populated list means: only these SPIs
-    private List<String> readServiceLoaderMediatorCapabilityMetadata(Bundle bundle, Map<String, Object> customAttributes) throws InvalidSyntaxException {
-        String requirementHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.REQUIRE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
-        if (requirementHeader == null)
-            return null;
-
-        Parameters requirements = OSGiHeader.parseHeader(requirementHeader);
-        Entry<String, ? extends Map<String, String>> extenderRequirement = ConsumerHeaderProcessor.findRequirement(requirements, SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE, SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
-        if (extenderRequirement == null)
-            return null;
-
-        Parameters capabilities;
-        String capabilityHeader = getHeaderFromBundleOrFragment(bundle, SpiFlyConstants.PROVIDE_CAPABILITY, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
-        if (capabilityHeader == null) {
-            capabilities = new Parameters();
-        } else {
-            capabilities = OSGiHeader.parseHeader(capabilityHeader);
-        }
-
-        List<String> serviceNames = new ArrayList<String>();
-        for (Entry<String, ? extends Map<String, String>> serviceLoaderCapability : ConsumerHeaderProcessor.findAllMetadata(capabilities, SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
-            for (Entry<String, String> entry : serviceLoaderCapability.getValue().entrySet()) {
-                if (SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE.equals(entry.getKey())) {
-                    serviceNames.add(entry.getValue().trim());
-                    continue;
-                }
-                if (SpiFlyConstants.REGISTER_DIRECTIVE.equals(entry.getKey()) && entry.getValue().equals("")) {
-                    continue;
-                }
-
-                customAttributes.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return serviceNames;
     }
 
     // null means don't register,

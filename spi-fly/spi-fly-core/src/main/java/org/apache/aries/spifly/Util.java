@@ -216,6 +216,11 @@ public class Util {
             }
         }
 
+        if (ServiceLoader.class.getName().equals(className) && "load".equals(methodName)) {
+            bundles = activator.filterCompatibleProviderBundles(
+                    consumerBundle, clsArg, bundles);
+        }
+
         switch (bundles.size()) {
         case 0:
             return null;

@@ -113,7 +113,8 @@
                         META-INF/LICENSE=LICENSE,\
                         META-INF/NOTICE=NOTICE
                     Provide-Capability: \
-                        osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0
+                        osgi.extender;osgi.extender=osgi.serviceloader.registrar;version:Version=1.0,\
+                        osgi.extender;osgi.extender=osgi.serviceloader.processor;version:Version=1.0;uses:="org.apache.aries.spifly"
                     -fixupmessages: Export org.apache.aries.spifly,  has 1,  private references
                     ]]></bnd>
                 </configuration>

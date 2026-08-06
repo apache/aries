@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
@@ -52,6 +53,8 @@ import aQute.bnd.stream.MapStream;
 import aQute.libg.glob.Glob;
 
 public abstract class BaseActivator implements BundleActivator {
+    private static final String PROCESSED_REQUIRE_CAPABILITY_HEADER =
+            "X-SpiFly-Processed-Require-Capability";
     private static final Set<WeavingData> NON_WOVEN_BUNDLE = Collections.emptySet();
     private static final Logger logger = Logger.getLogger(BaseActivator.class.getName());
 
@@ -76,6 +79,9 @@ public abstract class BaseActivator implements BundleActivator {
 
     private final ConcurrentMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>> consumerRestrictions =
             new ConcurrentHashMap<Bundle, Map<ConsumerRestriction, List<BundleDescriptor>>>();
+
+    private final ConcurrentMap<Bundle, StandardConsumerWiring> standardConsumerWirings =
+            new ConcurrentHashMap<Bundle, StandardConsumerWiring>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
@@ -115,17 +121,49 @@ public abstract class BaseActivator implements BundleActivator {
             return;
         }
 
+        Bundle mediatorBundle = bundleContext == null ? null : bundleContext.getBundle();
+        List<String> proprietaryHeaders = getAllHeaders(consumerHeaderName, bundle);
+        boolean directRequirementCompatibility =
+                SpiFlyConstants.REQUIRE_CAPABILITY.equals(consumerHeaderName);
+        boolean standardCandidate = proprietaryHeaders.isEmpty()
+                && !directRequirementCompatibility;
+        BundleWiring wiring = mediatorBundle == null || !standardCandidate
+                ? null : WiringUtils.getWiring(bundle);
+        boolean staticMediator = SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER.equals(consumerHeaderName);
+        boolean processedStandardBundle = !staticMediator
+                || !getAllHeaders(PROCESSED_REQUIRE_CAPABILITY_HEADER, bundle).isEmpty();
+
+        if (mediatorBundle != null && processedStandardBundle
+                && WiringUtils.isWiredToExtender(
+                        wiring, mediatorBundle, SpiFlyConstants.PROCESSOR_EXTENDER_NAME)) {
+            registerStandardConsumer(bundle, wiring);
+            return;
+        }
+
+        // Older statically woven bundles had their processor requirement removed. Keep them
+        // working as an explicitly separate compatibility path, but use their remaining resolved
+        // ServiceLoader wires instead of reapplying the saved requirement filters.
+        boolean legacyStaticBundle = staticMediator
+                && !getAllHeaders(PROCESSED_REQUIRE_CAPABILITY_HEADER, bundle).isEmpty()
+                && getAllHeaders(SpiFlyConstants.REQUIRE_CAPABILITY, bundle).stream()
+                        .noneMatch(header -> header.contains(SpiFlyConstants.PROCESSOR_EXTENDER_NAME));
+        if (legacyStaticBundle) {
+            registerStandardConsumer(bundle, wiring);
+            return;
+        }
+
+        // A statically woven standard consumer will call Util even when its processor
+        // requirement resolves to another mediator. Record an explicit deny state so
+        // those calls cannot fall through to the unrestricted compatibility path.
+        if (staticMediator && processedStandardBundle && standardCandidate) {
+            standardConsumerWirings.put(bundle, StandardConsumerWiring.denied());
+        }
+
         Map<String, List<String>> allHeaders = new HashMap<String, List<String>>();
-        Set<String> addedHeaders = new HashSet<String>();
-        List<String> added = allHeaders.put(consumerHeaderName, getAllHeaders(consumerHeaderName, bundle));
-        if (added != null) {
-            added.stream().forEach(addedHeaders::add);
+        if (!proprietaryHeaders.isEmpty()) {
+            allHeaders.put(consumerHeaderName, proprietaryHeaders);
         }
-        added = allHeaders.put(SpiFlyConstants.REQUIRE_CAPABILITY, getAllHeaders(SpiFlyConstants.REQUIRE_CAPABILITY, bundle));
-        if (added != null) {
-            added.stream().forEach(addedHeaders::add);
-        }
-        if (addedHeaders.isEmpty()) {
+        else {
             getAutoConsumerInstructions().map(Parameters::stream).orElseGet(MapStream::empty).filterKey(
                 i -> Glob.toPattern(i).asPredicate().test(bundle.getSymbolicName())
             ).findFirst().ifPresent(
@@ -153,6 +191,12 @@ public abstract class BaseActivator implements BundleActivator {
         } else {
             bundleWeavingData.put(bundle, NON_WOVEN_BUNDLE);
         }
+    }
+
+    private void registerStandardConsumer(Bundle bundle, BundleWiring wiring) {
+        Set<WeavingData> weavingData = ConsumerHeaderProcessor.createServiceLoaderWeavingData();
+        standardConsumerWirings.put(bundle, StandardConsumerWiring.from(wiring));
+        bundleWeavingData.put(bundle, Collections.unmodifiableSet(weavingData));
     }
 
     private List<String> getAllHeaders(String headerName, Bundle bundle) {
@@ -183,6 +227,7 @@ public abstract class BaseActivator implements BundleActivator {
     public void removeWeavingData(Bundle bundle) {
         bundleWeavingData.remove(bundle);
         consumerRestrictions.remove(bundle);
+        standardConsumerWirings.remove(bundle);
     }
 
     @Override
@@ -298,6 +343,27 @@ public abstract class BaseActivator implements BundleActivator {
         return bundles;
     }
 
+    Collection<Bundle> filterCompatibleProviderBundles(
+            Bundle consumer, Class<?> serviceType, Collection<Bundle> providers) {
+        if (!standardConsumerWirings.containsKey(consumer)) {
+            return providers;
+        }
+
+        List<Bundle> compatible = new ArrayList<Bundle>();
+        for (Bundle provider : providers) {
+            try {
+                if (provider.loadClass(serviceType.getName()) == serviceType) {
+                    compatible.add(provider);
+                }
+            }
+            catch (ClassNotFoundException | LinkageError e) {
+                log(Level.FINE, "Provider " + provider
+                        + " is not type-space compatible with " + serviceType.getName(), e);
+            }
+        }
+        return compatible;
+    }
+
     public Map<String, Object> getCustomBundleAttributes(String name, Bundle b) {
         SortedMap<Long, Pair<Bundle, Map<String, Object>>> map = registeredProviders.get(name);
         if (map == null)
@@ -321,6 +387,14 @@ public abstract class BaseActivator implements BundleActivator {
 
     public Collection<Bundle> findConsumerRestrictions(Bundle consumer, String className, String methodName,
             Map<Pair<Integer, String>, String> args) {
+        StandardConsumerWiring standardWiring = standardConsumerWirings.get(consumer);
+        if (standardWiring != null && ServiceLoader.class.getName().equals(className)
+                && "load".equals(methodName)) {
+            String serviceType = args == null ? null
+                    : args.get(new Pair<Integer, String>(0, Class.class.getName()));
+            return standardWiring.getProviders(serviceType);
+        }
+
         Map<ConsumerRestriction, List<BundleDescriptor>> restrictions = consumerRestrictions.get(consumer);
         if (restrictions == null) {
             // Null means: no restrictions
@@ -391,6 +465,60 @@ public abstract class BaseActivator implements BundleActivator {
             }
         }
         return bundles;
+    }
+
+    private static final class StandardConsumerWiring {
+        private final boolean restricted;
+        private final Map<String, Set<Bundle>> providersByServiceType;
+
+        private StandardConsumerWiring(boolean restricted, Map<String, Set<Bundle>> providersByServiceType) {
+            this.restricted = restricted;
+            this.providersByServiceType = providersByServiceType;
+        }
+
+        static StandardConsumerWiring from(BundleWiring wiring) {
+            if (wiring == null) {
+                return new StandardConsumerWiring(true, Collections.<String, Set<Bundle>>emptyMap());
+            }
+
+            List<BundleRequirement> requirements = wiring.getRequirements(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+            if (requirements.isEmpty()) {
+                return new StandardConsumerWiring(false, Collections.<String, Set<Bundle>>emptyMap());
+            }
+
+            Map<String, Set<Bundle>> providers = new HashMap<String, Set<Bundle>>();
+            for (BundleWire wire : wiring.getRequiredWires(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
+                Object serviceType = wire.getCapability().getAttributes().get(
+                        SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+                BundleWiring providerWiring = wire.getProviderWiring();
+                if (serviceType instanceof String && providerWiring != null) {
+                    providers.computeIfAbsent((String) serviceType, key -> new HashSet<Bundle>())
+                            .add(providerWiring.getBundle());
+                }
+            }
+
+            Map<String, Set<Bundle>> immutableProviders = new HashMap<String, Set<Bundle>>();
+            for (Map.Entry<String, Set<Bundle>> entry : providers.entrySet()) {
+                immutableProviders.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
+            }
+            return new StandardConsumerWiring(
+                    true, Collections.unmodifiableMap(immutableProviders));
+        }
+
+        static StandardConsumerWiring denied() {
+            return new StandardConsumerWiring(
+                    true, Collections.<String, Set<Bundle>>emptyMap());
+        }
+
+        Collection<Bundle> getProviders(String serviceType) {
+            if (!restricted) {
+                return null;
+            }
+            Set<Bundle> providers = providersByServiceType.get(serviceType);
+            return providers == null ? Collections.<Bundle>emptySet() : providers;
+        }
     }
 
 }

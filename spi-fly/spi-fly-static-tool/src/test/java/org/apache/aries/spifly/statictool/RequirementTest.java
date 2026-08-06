@@ -86,8 +86,14 @@ public class RequirementTest {
 			assertEquals("2.0", actualMF.getMainAttributes().getValue("Bundle-ManifestVersion"));
 			assertEquals("testbundle", actualMF.getMainAttributes().getValue("Bundle-SymbolicName"));
 			assertEquals("Bar Bar", actualMF.getMainAttributes().getValue("Foo"));
-			assertEquals("osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple",
+			String requirement =
+					"osgi.serviceloader; filter:=\"(osgi.serviceloader=org.apache.aries.spifly.mysvc.SPIProvider)\";cardinality:=multiple, " +
+					"osgi.extender; filter:=\"(osgi.extender=osgi.serviceloader.processor)\"";
+			assertEquals(requirement,
 					actualMF.getMainAttributes().getValue(SpiFlyConstants.REQUIRE_CAPABILITY));
+			assertEquals(requirement,
+					actualMF.getMainAttributes().getValue(
+							Main.PROCESSED_REQUIRE_CAPABILITY_HEADER));
 			assertNull("Should not generate this header when processing Require-Capability",
 					actualMF.getMainAttributes().getValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER));
 			String importPackage = actualMF.getMainAttributes().getValue("Import-Package");

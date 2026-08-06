@@ -29,8 +29,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.easymock.EasyMock;
 import org.junit.Test;
@@ -39,6 +41,9 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleWire;
+import org.osgi.framework.wiring.BundleWiring;
 
 public class ProviderBundleTrackerCustomizerTest {
 
@@ -220,6 +225,8 @@ public class ProviderBundleTrackerCustomizerTest {
             "osgi.serviceloader;osgi.serviceloader='org.apache.aries.mytest.MySPI2';register:='org.apache.aries.spifly.impl4.MySPIImpl4c';foo='ccc'"
         );
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(implBundle.adapt(BundleWiring.class)).andReturn(
+                mockStandardProviderWiring("org.apache.aries.mytest.MySPI2", 25L)).anyTimes();
 
         // List the resources found at META-INF/services in the test bundle
         URL dir = getClass().getResource("impl4/META-INF/services");
@@ -237,5 +244,40 @@ public class ProviderBundleTrackerCustomizerTest {
         EasyMock.<Object>expect(implBundle.loadClass("org.apache.aries.spifly.impl4.MySPIImpl4c")).andReturn(cls).anyTimes();
         EasyMock.replay(implBundle);
         return implBundle;
+    }
+
+    private BundleWiring mockStandardProviderWiring(String serviceType, long mediatorBundleId) {
+        Map<String, Object> serviceAttributes = new HashMap<String, Object>();
+        serviceAttributes.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, serviceType);
+        BundleCapability serviceCapability = EasyMock.createNiceMock(BundleCapability.class);
+        EasyMock.expect(serviceCapability.getAttributes()).andReturn(serviceAttributes).anyTimes();
+        EasyMock.replay(serviceCapability);
+
+        Map<String, Object> extenderAttributes = new HashMap<String, Object>();
+        extenderAttributes.put(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                SpiFlyConstants.REGISTRAR_EXTENDER_NAME);
+        BundleCapability extenderCapability = EasyMock.createNiceMock(BundleCapability.class);
+        EasyMock.expect(extenderCapability.getAttributes()).andReturn(extenderAttributes).anyTimes();
+        EasyMock.replay(extenderCapability);
+
+        Bundle mediator = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(mediator.getBundleId()).andReturn(mediatorBundleId).anyTimes();
+        EasyMock.replay(mediator);
+        BundleWiring mediatorWiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(mediatorWiring.getBundle()).andReturn(mediator).anyTimes();
+        EasyMock.replay(mediatorWiring);
+
+        BundleWire extenderWire = EasyMock.createNiceMock(BundleWire.class);
+        EasyMock.expect(extenderWire.getCapability()).andReturn(extenderCapability).anyTimes();
+        EasyMock.expect(extenderWire.getProviderWiring()).andReturn(mediatorWiring).anyTimes();
+        EasyMock.replay(extenderWire);
+
+        BundleWiring wiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(wiring.getCapabilities(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
+                .andReturn(Collections.singletonList(serviceCapability)).anyTimes();
+        EasyMock.expect(wiring.getRequiredWires(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE))
+                .andReturn(Collections.singletonList(extenderWire)).anyTimes();
+        EasyMock.replay(wiring);
+        return wiring;
     }
 }

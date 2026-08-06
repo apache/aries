@@ -47,6 +47,8 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
 public class Main {
+    static final String PROCESSED_REQUIRE_CAPABILITY_HEADER =
+            "X-SpiFly-Processed-Require-Capability";
     private static final String MODIFIED_BUNDLE_SUFFIX = "_spifly.jar";
     private static final String IMPORT_PACKAGE = "Import-Package";
 
@@ -100,18 +102,10 @@ public class Main {
                 manifest.getMainAttributes().putValue(SpiFlyConstants.PROCESSED_SPI_CONSUMER_HEADER, consumerHeaderVal);
             } else {
                 // It's SpiFlyConstants.REQUIRE_CAPABILITY
-
-                // Take out the processor requirement, this probably needs to be improved a little bit
-                String newConsumerHeaderVal = consumerHeaderVal.replaceAll(
-                        "osgi[.]extender;\\s*filter[:][=][\"]?[(]osgi[.]extender[=]osgi[.]serviceloader[.]processor[)][\"]?", "").
-                        trim();
-                if (newConsumerHeaderVal.startsWith(","))
-                    newConsumerHeaderVal = newConsumerHeaderVal.substring(1);
-
-                if (newConsumerHeaderVal.endsWith(","))
-                    newConsumerHeaderVal = newConsumerHeaderVal.substring(0, newConsumerHeaderVal.length()-1);
-                manifest.getMainAttributes().putValue(SpiFlyConstants.REQUIRE_CAPABILITY, newConsumerHeaderVal);
-                manifest.getMainAttributes().putValue("X-SpiFly-Processed-Require-Capability", consumerHeaderVal);
+                // Keep the processor requirement so the transformed consumer is resolved to the
+                // mediator that will enforce its provider wires at runtime.
+                manifest.getMainAttributes().putValue(
+                        PROCESSED_REQUIRE_CAPABILITY_HEADER, consumerHeaderVal);
             }
 
             // TODO if new packages needed then...
@@ -352,4 +346,3 @@ public class Main {
                 throw new IOException("Unable to create directory " + outDir.getAbsolutePath());
     }
 }
-

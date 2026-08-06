@@ -20,6 +20,7 @@ package org.apache.aries.spifly;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -207,22 +208,34 @@ public class ConsumerHeaderProcessor {
                 }
             }
 
-            // ServiceLoader.load(Class)
-            {
-                ArgRestrictions ar = new ArgRestrictions();
-                ar.addRestriction(0, Class.class.getName());
-                MethodRestriction mr = new MethodRestriction("load", ar);
-                weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
-            }
+            weavingData.addAll(createServiceLoaderWeavingData(allowedBundles));
+        }
 
-            // ServiceLoader.load(Class, ClassLoader)
-            {
-                ArgRestrictions ar = new ArgRestrictions();
-                ar.addRestriction(0, Class.class.getName());
-                ar.addRestriction(1, ClassLoader.class.getName());
-                MethodRestriction mr = new MethodRestriction("load", ar);
-                weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
-            }
+        return weavingData;
+    }
+
+    static Set<WeavingData> createServiceLoaderWeavingData() {
+        return createServiceLoaderWeavingData(Collections.<BundleDescriptor>emptyList());
+    }
+
+    private static Set<WeavingData> createServiceLoaderWeavingData(List<BundleDescriptor> allowedBundles) {
+        Set<WeavingData> weavingData = new HashSet<WeavingData>();
+
+        // ServiceLoader.load(Class)
+        {
+            ArgRestrictions ar = new ArgRestrictions();
+            ar.addRestriction(0, Class.class.getName());
+            MethodRestriction mr = new MethodRestriction("load", ar);
+            weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
+        }
+
+        // ServiceLoader.load(Class, ClassLoader)
+        {
+            ArgRestrictions ar = new ArgRestrictions();
+            ar.addRestriction(0, Class.class.getName());
+            ar.addRestriction(1, ClassLoader.class.getName());
+            MethodRestriction mr = new MethodRestriction("load", ar);
+            weavingData.add(createWeavingData(ServiceLoader.class.getName(), "load", mr, allowedBundles));
         }
 
         return weavingData;
