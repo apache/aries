@@ -125,9 +125,9 @@ public class InitialTest {
     /**
      * Regression test for {@code ProviderBundleTrackerCustomizer}'s header merging. Without a
      * clause-preserving merge, a fragment's own {@code osgi.serviceloader} Provide-Capability
-     * clause (for {@link SPIProvider2}) is silently dropped when merged into a host bundle
+     * clause (for {@code SPIProvider2}) is silently dropped when merged into a host bundle
      * (provider5-bundle) that already natively declares one {@code osgi.serviceloader} clause of
-     * its own (for {@link SPIProvider}) -
+     * its own (for {@code SPIProvider}) -
      * mirroring a real-world host such as {@code ch.qos.logback.classic}, which itself natively
      * provides more than one {@code osgi.serviceloader} capability. The collision happens because
      * {@code aQute.bnd.header.Parameters} is a {@code Map<clauseName, Attrs>}: merging two
@@ -139,6 +139,8 @@ public class InitialTest {
      * <p>The first assertion verifies the host's own capability. The second is the regression
      * assertion: the merge must keep same-named capability clauses from different sources
      * distinct so that the fragment's capability is registered alongside the host's.
+     *
+     * @throws Exception if the example bundles cannot be installed or inspected
      */
     @Test
     public void example5() throws Exception {
