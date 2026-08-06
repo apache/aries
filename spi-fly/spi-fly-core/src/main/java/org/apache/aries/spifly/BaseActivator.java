@@ -572,9 +572,7 @@ public abstract class BaseActivator implements BundleActivator {
                 return new StandardConsumerWiring(true, Collections.<String, Set<Bundle>>emptyMap());
             }
 
-            List<BundleRequirement> requirements = wiring.getRequirements(
-                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
-            if (requirements.isEmpty()) {
+            if (!hasDeclaredServiceLoaderRequirement(wiring)) {
                 return new StandardConsumerWiring(false, Collections.<String, Set<Bundle>>emptyMap());
             }
 
@@ -596,6 +594,45 @@ public abstract class BaseActivator implements BundleActivator {
             }
             return new StandardConsumerWiring(
                     true, Collections.unmodifiableMap(immutableProviders));
+        }
+
+        private static boolean hasDeclaredServiceLoaderRequirement(BundleWiring wiring) {
+            BundleRevision hostRevision = wiring.getRevision();
+            if (hostRevision == null) {
+                // Compatibility for older wiring implementations and test doubles. A real
+                // R8 wiring supplies its revision, whose declared view is authoritative.
+                List<BundleRequirement> requirements = wiring.getRequirements(
+                        SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+                return requirements != null && !requirements.isEmpty();
+            }
+
+            if (hasDeclaredServiceLoaderRequirement(hostRevision)) {
+                return true;
+            }
+            List<BundleWire> hostWires = wiring.getProvidedWires(
+                    HostNamespace.HOST_NAMESPACE);
+            if (hostWires == null) {
+                return false;
+            }
+            for (BundleWire hostWire : hostWires) {
+                BundleRequirement hostRequirement = hostWire.getRequirement();
+                BundleRevision fragmentRevision = hostRequirement == null
+                        ? null : hostRequirement.getRevision();
+                if (hasDeclaredServiceLoaderRequirement(fragmentRevision)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static boolean hasDeclaredServiceLoaderRequirement(
+                BundleRevision revision) {
+            if (revision == null) {
+                return false;
+            }
+            List<BundleRequirement> requirements = revision.getDeclaredRequirements(
+                    SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
+            return requirements != null && !requirements.isEmpty();
         }
 
         static StandardConsumerWiring denied() {

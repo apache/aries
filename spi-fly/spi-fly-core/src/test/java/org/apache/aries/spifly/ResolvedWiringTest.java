@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRequirement;
 import org.osgi.framework.wiring.BundleRevision;
@@ -135,6 +136,63 @@ public class ResolvedWiringTest {
 
         assertEquals(Collections.emptySet(), activator.findConsumerRestrictions(
                 consumer, ServiceLoader.class.getName(), "load", serviceArguments(SERVICE_TYPE)));
+        assertEquals(Collections.emptySet(), activator.findConsumerRestrictions(
+                consumer, ServiceLoader.class.getName(), "loadInstalled",
+                serviceArguments(SERVICE_TYPE)));
+    }
+
+    @Test
+    public void optionalDeclaredButDiscardedRequirementAllowsNoProviders()
+            throws Exception {
+        BundleRequirement declaredRequirement =
+                EasyMock.createNiceMock(BundleRequirement.class);
+        EasyMock.replay(declaredRequirement);
+        BundleRevision hostRevision = mockRevision(
+                Collections.singletonList(declaredRequirement));
+        BundleWiring wiring = mockConsumerWiring(
+                Collections.singletonList(mockWire(
+                        SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                        SpiFlyConstants.PROCESSOR_EXTENDER_NAME, mediator)),
+                Collections.<BundleRequirement>emptyList(),
+                Collections.<BundleWire>emptyList(), hostRevision,
+                Collections.<BundleWire>emptyList());
+        Bundle consumer = mockConsumer(wiring);
+
+        activator.addConsumerWeavingData(consumer, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        assertEquals(Collections.emptySet(), activator.findConsumerRestrictions(
+                consumer, ServiceLoader.class.getName(), "load",
+                serviceArguments(SERVICE_TYPE)));
+    }
+
+    @Test
+    public void fragmentDeclaredButDiscardedRequirementAllowsNoProviders()
+            throws Exception {
+        BundleRequirement declaredRequirement =
+                EasyMock.createNiceMock(BundleRequirement.class);
+        EasyMock.replay(declaredRequirement);
+        BundleRevision fragmentRevision = mockRevision(
+                Collections.singletonList(declaredRequirement));
+        BundleRequirement hostRequirement = EasyMock.createNiceMock(BundleRequirement.class);
+        EasyMock.expect(hostRequirement.getRevision())
+                .andReturn(fragmentRevision).anyTimes();
+        EasyMock.replay(hostRequirement);
+        BundleWire hostWire = EasyMock.createNiceMock(BundleWire.class);
+        EasyMock.expect(hostWire.getRequirement()).andReturn(hostRequirement).anyTimes();
+        EasyMock.replay(hostWire);
+
+        BundleWiring wiring = mockConsumerWiring(
+                Collections.singletonList(mockWire(
+                        SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                        SpiFlyConstants.PROCESSOR_EXTENDER_NAME, mediator)),
+                Collections.<BundleRequirement>emptyList(),
+                Collections.<BundleWire>emptyList(),
+                mockRevision(Collections.<BundleRequirement>emptyList()),
+                Collections.singletonList(hostWire));
+        Bundle consumer = mockConsumer(wiring);
+
+        activator.addConsumerWeavingData(consumer, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
         assertEquals(Collections.emptySet(), activator.findConsumerRestrictions(
                 consumer, ServiceLoader.class.getName(), "loadInstalled",
                 serviceArguments(SERVICE_TYPE)));
@@ -319,6 +377,13 @@ public class ResolvedWiringTest {
 
     private BundleWiring mockConsumerWiring(List<BundleWire> extenderWires,
             List<BundleRequirement> serviceRequirements, List<BundleWire> serviceWires) {
+        return mockConsumerWiring(extenderWires, serviceRequirements, serviceWires,
+                null, Collections.<BundleWire>emptyList());
+    }
+
+    private BundleWiring mockConsumerWiring(List<BundleWire> extenderWires,
+            List<BundleRequirement> serviceRequirements, List<BundleWire> serviceWires,
+            BundleRevision revision, List<BundleWire> hostWires) {
         BundleWiring wiring = EasyMock.createNiceMock(BundleWiring.class);
         EasyMock.expect(wiring.getRequiredWires(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE))
                 .andReturn(extenderWires).anyTimes();
@@ -326,8 +391,20 @@ public class ResolvedWiringTest {
                 .andReturn(serviceRequirements).anyTimes();
         EasyMock.expect(wiring.getRequiredWires(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
                 .andReturn(serviceWires).anyTimes();
+        EasyMock.expect(wiring.getRevision()).andReturn(revision).anyTimes();
+        EasyMock.expect(wiring.getProvidedWires(HostNamespace.HOST_NAMESPACE))
+                .andReturn(hostWires).anyTimes();
         EasyMock.replay(wiring);
         return wiring;
+    }
+
+    private BundleRevision mockRevision(List<BundleRequirement> serviceRequirements) {
+        BundleRevision revision = EasyMock.createNiceMock(BundleRevision.class);
+        EasyMock.expect(revision.getDeclaredRequirements(
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
+                .andReturn(serviceRequirements).anyTimes();
+        EasyMock.replay(revision);
+        return revision;
     }
 
     private BundleWire mockWire(String namespace, String value, Bundle provider) {
