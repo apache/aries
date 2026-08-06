@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -90,7 +91,7 @@ public abstract class BaseActivator implements BundleActivator {
     private final ConcurrentMap<Bundle, StandardConsumerWiring> standardConsumerWirings =
             new ConcurrentHashMap<Bundle, StandardConsumerWiring>();
 
-    private final Set<Pair<Bundle, BundleRevision>> refreshedConsumerHosts =
+    private final Set<Pair<Bundle, BundleRevision>> requestedConsumerRefreshes =
             Collections.newSetFromMap(
                     new ConcurrentHashMap<Pair<Bundle, BundleRevision>, Boolean>());
 
@@ -126,6 +127,10 @@ public abstract class BaseActivator implements BundleActivator {
         }
 
         activator = this;
+
+        if (SpiFlyConstants.SPI_CONSUMER_HEADER.equals(consumerHeaderName)) {
+            refreshActiveConsumers();
+        }
     }
 
     public void addConsumerWeavingData(Bundle bundle, String consumerHeaderName) throws Exception {
@@ -290,32 +295,79 @@ public abstract class BaseActivator implements BundleActivator {
         if (fragmentRevision == null) {
             return;
         }
+        requestConsumerRefreshes(
+                Collections.singleton(new Pair<Bundle, BundleRevision>(host, fragmentRevision)),
+                "after processor fragment attachment");
+    }
+
+    void refreshActiveConsumers() {
+        if (bundleContext == null) {
+            return;
+        }
+
+        Bundle mediatorBundle = bundleContext.getBundle();
+        List<Pair<Bundle, BundleRevision>> refreshes =
+                new ArrayList<Pair<Bundle, BundleRevision>>();
+        for (Bundle bundle : bundleContext.getBundles()) {
+            int state = bundle.getState();
+            if ((state & (Bundle.ACTIVE | Bundle.STARTING)) == 0
+                    || bundle.equals(mediatorBundle)
+                    || !isStandardConsumer(bundle)) {
+                continue;
+            }
+
+            BundleRevision revision = bundle.adapt(BundleRevision.class);
+            if (revision == null
+                    || (revision.getTypes() & BundleRevision.TYPE_FRAGMENT) != 0) {
+                continue;
+            }
+            refreshes.add(new Pair<Bundle, BundleRevision>(bundle, revision));
+        }
+
+        Collections.sort(refreshes, (left, right) -> Long.compare(
+                left.getLeft().getBundleId(), right.getLeft().getBundleId()));
+        requestConsumerRefreshes(refreshes, "after dynamic mediator startup");
+    }
+
+    private void requestConsumerRefreshes(
+            Collection<Pair<Bundle, BundleRevision>> refreshes, String reason) {
+        if (refreshes.isEmpty()) {
+            return;
+        }
         Bundle systemBundle = bundleContext == null ? null : bundleContext.getBundle(0);
         FrameworkWiring frameworkWiring = systemBundle == null
                 ? null : systemBundle.adapt(FrameworkWiring.class);
         if (frameworkWiring == null) {
-            log(Level.WARNING, "Cannot refresh consumer host " + host
-                    + " after processor fragment attachment: FrameworkWiring is unavailable");
+            log(Level.WARNING, "Cannot refresh consumers " + reason
+                    + ": FrameworkWiring is unavailable");
             return;
         }
-        Pair<Bundle, BundleRevision> refreshKey =
-                new Pair<Bundle, BundleRevision>(host, fragmentRevision);
-        if (!refreshedConsumerHosts.add(refreshKey)) {
+
+        List<Pair<Bundle, BundleRevision>> newRefreshes =
+                new ArrayList<Pair<Bundle, BundleRevision>>();
+        Set<Bundle> bundles = new LinkedHashSet<Bundle>();
+        for (Pair<Bundle, BundleRevision> refresh : refreshes) {
+            if (requestedConsumerRefreshes.add(refresh)) {
+                newRefreshes.add(refresh);
+                bundles.add(refresh.getLeft());
+            }
+        }
+        if (bundles.isEmpty()) {
             return;
         }
 
         try {
-            frameworkWiring.refreshBundles(Collections.singleton(host), event -> {
+            frameworkWiring.refreshBundles(bundles, event -> {
                 if (event.getType() == FrameworkEvent.ERROR) {
-                    log(Level.WARNING, "Could not refresh consumer host " + host
-                            + " after processor fragment attachment", event.getThrowable());
+                    log(Level.WARNING, "Could not refresh consumers " + bundles + " "
+                            + reason, event.getThrowable());
                 }
             });
         }
         catch (RuntimeException e) {
-            refreshedConsumerHosts.remove(refreshKey);
-            log(Level.WARNING, "Could not request refresh of consumer host " + host
-                    + " after processor fragment attachment", e);
+            requestedConsumerRefreshes.removeAll(newRefreshes);
+            log(Level.WARNING, "Could not request refresh of consumers " + bundles + " "
+                    + reason, e);
         }
     }
 
@@ -325,7 +377,7 @@ public abstract class BaseActivator implements BundleActivator {
 
         consumerBundleTracker.close();
         providerBundleTracker.close();
-        refreshedConsumerHosts.clear();
+        requestedConsumerRefreshes.clear();
     }
 
     public boolean isLogEnabled(Level level) {

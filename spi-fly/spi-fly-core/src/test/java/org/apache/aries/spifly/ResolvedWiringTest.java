@@ -21,6 +21,7 @@ package org.apache.aries.spifly;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -375,6 +377,68 @@ public class ResolvedWiringTest {
         EasyMock.verify(frameworkWiring);
     }
 
+    @Test
+    public void lateDynamicMediatorStartupRefreshesExistingStandardConsumersOnce()
+            throws Exception {
+        Bundle activeConsumer = mockRefreshBundle(7L, Bundle.ACTIVE, 0, null);
+        Bundle startingConsumer = mockRefreshBundle(8L, Bundle.STARTING, 0, null);
+        Bundle resolvedConsumer = mockRefreshBundle(9L, Bundle.RESOLVED, 0, null);
+        Bundle fragmentConsumer = mockRefreshBundle(
+                10L, Bundle.ACTIVE, BundleRevision.TYPE_FRAGMENT, null);
+        Bundle unrelatedConsumer = mockRefreshBundle(11L, Bundle.ACTIVE, 0, null);
+        Bundle proprietaryConsumer = mockRefreshBundle(
+                12L, Bundle.ACTIVE, 0, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        Capture<Collection<Bundle>> refreshedBundles = EasyMock.newCapture();
+        FrameworkWiring frameworkWiring = EasyMock.createMock(FrameworkWiring.class);
+        frameworkWiring.refreshBundles(
+                EasyMock.capture(refreshedBundles),
+                EasyMock.<FrameworkListener[]>anyObject());
+        EasyMock.expectLastCall().andAnswer(() -> {
+            assertSame(activator, BaseActivator.activator);
+            return null;
+        }).once();
+        EasyMock.replay(frameworkWiring);
+
+        Bundle systemBundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(systemBundle.adapt(FrameworkWiring.class))
+                .andReturn(frameworkWiring).anyTimes();
+        EasyMock.replay(systemBundle);
+        BundleContext context = EasyMock.createNiceMock(BundleContext.class);
+        EasyMock.expect(context.getBundle()).andReturn(mediator).anyTimes();
+        EasyMock.expect(context.getBundle(0)).andReturn(systemBundle).anyTimes();
+        EasyMock.expect(context.getBundles()).andReturn(new Bundle[] {
+                unrelatedConsumer, startingConsumer, mediator, fragmentConsumer,
+                resolvedConsumer, proprietaryConsumer, activeConsumer
+        }).anyTimes();
+        EasyMock.replay(context);
+        setBundleContext(context);
+
+        activator.registerStandardConsumer(activeConsumer, null);
+        activator.registerStandardConsumer(startingConsumer, null);
+        activator.registerStandardConsumer(resolvedConsumer, null);
+        activator.registerStandardConsumer(fragmentConsumer, null);
+        activator.registerStandardConsumer(mediator, null);
+        activator.addConsumerWeavingData(
+                proprietaryConsumer, SpiFlyConstants.SPI_CONSUMER_HEADER);
+        assertNotNull(activator.getWeavingData(proprietaryConsumer));
+
+        BaseActivator.activator = activator;
+        try {
+            activator.refreshActiveConsumers();
+            // A repeated startup callback must not cause a refresh loop for the
+            // same consumer revisions.
+            activator.refreshActiveConsumers();
+        }
+        finally {
+            BaseActivator.activator = null;
+        }
+
+        assertEquals(Arrays.asList(activeConsumer, startingConsumer),
+                new java.util.ArrayList<Bundle>(refreshedBundles.getValue()));
+        EasyMock.verify(frameworkWiring);
+    }
+
     private BundleWiring mockConsumerWiring(List<BundleWire> extenderWires,
             List<BundleRequirement> serviceRequirements, List<BundleWire> serviceWires) {
         return mockConsumerWiring(extenderWires, serviceRequirements, serviceWires,
@@ -447,6 +511,25 @@ public class ResolvedWiringTest {
         EasyMock.expect(consumer.adapt(BundleWiring.class)).andReturn(wiring).anyTimes();
         EasyMock.replay(consumer);
         return consumer;
+    }
+
+    private Bundle mockRefreshBundle(long id, int state, int revisionTypes,
+            String proprietaryHeader) {
+        BundleRevision revision = EasyMock.createNiceMock(BundleRevision.class);
+        EasyMock.expect(revision.getTypes()).andReturn(revisionTypes).anyTimes();
+        EasyMock.replay(revision);
+
+        Dictionary<String, String> headers = new Hashtable<String, String>();
+        if (proprietaryHeader != null) {
+            headers.put(proprietaryHeader, "*");
+        }
+        Bundle bundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(bundle.getBundleId()).andReturn(id).anyTimes();
+        EasyMock.expect(bundle.getState()).andReturn(state).anyTimes();
+        EasyMock.expect(bundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(bundle.adapt(BundleRevision.class)).andReturn(revision).anyTimes();
+        EasyMock.replay(bundle);
+        return bundle;
     }
 
     private void setBundleContext(BundleContext context) throws Exception {
