@@ -122,6 +122,50 @@ public class InitialTest {
         ).doesNotContain("Doing it!", "Doing it too!");
     }
 
+    /**
+     * Regression test for {@code ProviderBundleTrackerCustomizer}'s header merging. Without a
+     * clause-preserving merge, a fragment's own {@code osgi.serviceloader} Provide-Capability
+     * clause (for {@code SPIProvider2}) is silently dropped when merged into a host bundle
+     * (provider5-bundle) that already natively declares one {@code osgi.serviceloader} clause of
+     * its own (for {@code SPIProvider}) -
+     * mirroring a real-world host such as {@code ch.qos.logback.classic}, which itself natively
+     * provides more than one {@code osgi.serviceloader} capability. The collision happens because
+     * {@code aQute.bnd.header.Parameters} is a {@code Map<clauseName, Attrs>}: merging two
+     * independently-parsed headers that both use the unmarked clause name {@code osgi.serviceloader}
+     * falls into {@code Attrs.mergeWith(..., overwrite=false)} instead of being added as a third,
+     * distinct clause - so the fragment's {@code osgi.serviceloader=SPIProvider2} attribute value
+     * is discarded in favour of the host's own pre-existing one.
+     *
+     * <p>The first assertion verifies the host's own capability. The second is the regression
+     * assertion: the merge must keep same-named capability clauses from different sources
+     * distinct so that the fragment's capability is registered alongside the host's.
+     *
+     * @throws Exception if the example bundles cannot be installed or inspected
+     */
+    @Test
+    public void example5() throws Exception {
+        Bundle provider5fragment = assertBundleInstallation(getExampleJar("spi-fly-example-provider5-fragment"), true);
+        Bundle provider5Bundle = assertBundleInstallation(getExampleJar("spi-fly-example-provider5-bundle"));
+        BundleAssert.assertThat(provider5fragment).isFragment().isInState(Bundle.RESOLVED);
+        assertFragmentAttached(provider5Bundle, provider5fragment);
+
+        assertThat(
+            bundleContext.getServiceReferences("org.apache.aries.spifly.mysvc.SPIProvider", null)
+        ).as(
+            "the host bundle's own native osgi.serviceloader capability should always be registered"
+        ).isNotEmpty();
+
+        assertThat(
+            bundleContext.getServiceReferences("org.apache.aries.spifly.mysvc.SPIProvider2", null)
+        ).as(
+            "the fragment's osgi.serviceloader capability for a second, distinct service should " +
+            "ALSO be registered alongside the host's own - if this is empty, " +
+            "ProviderBundleTrackerCustomizer silently dropped it while merging the fragment's " +
+            "Provide-Capability header into the host's, because the host already had one " +
+            "osgi.serviceloader clause of its own"
+        ).isNotEmpty();
+    }
+
     @Test
     public void example4() throws Exception {
         assertBundleInstallation(getExampleJar("spi-fly-example-resource-provider-bundle"));
