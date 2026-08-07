@@ -49,29 +49,29 @@ public class ConsumerHeaderProcessor {
     /**
      * Parses headers of the following syntax:
      * <ul>
-     * <li><tt>org.acme.MyClass#myMethod</tt> - apply the weaving to all overloads of <tt>myMethod()</tt>
-     * in <tt>MyClass</tt>
-     * <li><tt>org.acme.MyClass#myMethod(java.lang.String, java.util.List)</tt> - apply the weaving only
-     * to the <tt>myMethod(String, List)</tt> overload in <tt>MyClass</tt>
-     * <li><tt>org.acme.MyClass#myMethod()</tt> - apply the weaving only to the noarg overload of
-     * <tt>myMethod()</tt>
-     * <li><b>true</b> - equivalent to <tt>java.util.ServiceLoader#load(java.lang.Class)</tt>
+     * <li><code>org.acme.MyClass#myMethod</code> - apply the weaving to all overloads of <code>myMethod()</code>
+     * in <code>MyClass</code>
+     * <li><code>org.acme.MyClass#myMethod(java.lang.String, java.util.List)</code> - apply the weaving only
+     * to the <code>myMethod(String, List)</code> overload in <code>MyClass</code>
+     * <li><code>org.acme.MyClass#myMethod()</code> - apply the weaving only to the noarg overload of
+     * <code>myMethod()</code>
+     * <li><b>true</b> - equivalent to <code>java.util.ServiceLoader#load(java.lang.Class)</code>
      * </ul>
      * Additionally, it registers the consumer's constraints with the consumer registry in the activator, if the
      * consumer is only constrained to a certain set of bundles.<p>
      *
      * The following attributes are supported:
      * <ul>
-     * <li><tt>bundle</tt> - restrict wiring to the bundle with the specifies Symbolic Name. The attribute value
+     * <li><code>bundle</code> - restrict wiring to the bundle with the specifies Symbolic Name. The attribute value
      * is a list of bundle identifiers separated by a '|' sign. The bundle identifier starts with the Symbolic name
      * and can optionally contain a version suffix. E.g. bundle=impl2:version=1.2.3 or bundle=impl2|impl4.
-     * <li><tt>bundleId</tt> - restrict wiring to the bundle with the specified bundle ID. Typically used when
-     * the service should be forcibly picked up from the system bundle (<tt>bundleId=0</tt>). Multiple bundle IDs
+     * <li><code>bundleId</code> - restrict wiring to the bundle with the specified bundle ID. Typically used when
+     * the service should be forcibly picked up from the system bundle (<code>bundleId=0</code>). Multiple bundle IDs
      * can be specified separated by a '|' sign.
      * </ul>
      *
      * @param consumerHeaderName the name of the header (either Require-Capability or SPI-Consumer)
-     * @param consumerHeader the <tt>SPI-Consumer</tt> header.
+     * @param consumerHeader the <code>SPI-Consumer</code> header.
      * @return an instance of the {@link WeavingData} class.
      * @throws Exception when a header cannot be parsed.
      */
