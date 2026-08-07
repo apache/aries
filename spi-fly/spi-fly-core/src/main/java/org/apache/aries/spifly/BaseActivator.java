@@ -473,7 +473,7 @@ public abstract class BaseActivator implements BundleActivator {
             if (advertisement == null) {
                 BundleWiring wiring = WiringUtils.getWiring(bundle);
                 BundleRevision revision = wiring == null ? null : wiring.getRevision();
-                advertisement = new ProviderAdvertisement(bundle, revision);
+                advertisement = new ProviderAdvertisement(bundle, revision, wiring);
                 advertisements.put(bundle.getBundleId(), advertisement);
             }
             advertisement.addImplementation(implementationName);
@@ -749,12 +749,15 @@ public abstract class BaseActivator implements BundleActivator {
     static final class ProviderAdvertisement {
         private final Bundle bundle;
         private final BundleRevision revision;
+        private final BundleWiring wiring;
         private final Set<String> implementationNames =
                 new java.util.LinkedHashSet<String>();
 
-        private ProviderAdvertisement(Bundle bundle, BundleRevision revision) {
+        private ProviderAdvertisement(Bundle bundle, BundleRevision revision,
+                BundleWiring wiring) {
             this.bundle = bundle;
             this.revision = revision;
+            this.wiring = wiring;
         }
 
         private synchronized void addImplementation(String implementationName) {
@@ -762,7 +765,8 @@ public abstract class BaseActivator implements BundleActivator {
         }
 
         private synchronized ProviderAdvertisement snapshot() {
-            ProviderAdvertisement snapshot = new ProviderAdvertisement(bundle, revision);
+            ProviderAdvertisement snapshot = new ProviderAdvertisement(
+                    bundle, revision, wiring);
             snapshot.implementationNames.addAll(implementationNames);
             return snapshot;
         }
@@ -773,6 +777,10 @@ public abstract class BaseActivator implements BundleActivator {
 
         BundleRevision getRevision() {
             return revision;
+        }
+
+        BundleWiring getWiring() {
+            return wiring;
         }
 
         synchronized List<String> getImplementationNames() {

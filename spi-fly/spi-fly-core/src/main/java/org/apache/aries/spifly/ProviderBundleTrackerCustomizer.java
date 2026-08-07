@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -43,6 +44,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Stream;
 
 import org.osgi.framework.Bundle;
@@ -75,6 +78,11 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     final BaseActivator activator;
     final Bundle spiBundle;
+    private final Map<BundleWiring, Map<String, List<URL>>> wiringServiceFiles =
+            Collections.synchronizedMap(
+                    new IdentityHashMap<BundleWiring, Map<String, List<URL>>>());
+    private final ConcurrentMap<Bundle, BundleWiring> processedWirings =
+            new ConcurrentHashMap<Bundle, BundleWiring>();
 
     public ProviderBundleTrackerCustomizer(BaseActivator activator, Bundle spiBundle) {
         this.activator = activator;
@@ -138,6 +146,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                     + bundle.getSymbolicName());
             // Keep active hosts tracked so a fragment attached later can add provider
             // capabilities and configuration resources to them.
+            recordProcessedWiring(bundle, wiring);
             return new ArrayList<ServiceRegistration>();
         } else {
             log(Level.FINE, "Examining bundle for SPI provider: "
@@ -195,7 +204,17 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
         }
 
+        recordProcessedWiring(bundle, wiring);
         return registrations;
+    }
+
+    private void recordProcessedWiring(Bundle bundle, BundleWiring wiring) {
+        if (wiring == null) {
+            processedWirings.remove(bundle);
+        }
+        else {
+            processedWirings.put(bundle, wiring);
+        }
     }
 
     private boolean hasRegisterPermission(Bundle bundle, String serviceType) {
@@ -334,45 +353,13 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             }
 
             Set<String> requestedTypes = new LinkedHashSet<String>(serviceTypes);
+            Map<String, List<URL>> compatibilityEntries =
+                    getBundleRootServiceFiles(bundle, requestedTypes);
             Set<URL> serviceFileURLs = new LinkedHashSet<URL>();
             for (String serviceType : requestedTypes) {
-                List<URL> entries = wiring.findEntries(
-                        METAINF_SERVICES, serviceType, 0);
-                if (entries != null) {
-                    serviceFileURLs.addAll(entries);
-                }
-            }
-            if (serviceFileURLs.isEmpty()) {
-                Enumeration<URL> entries = bundle.findEntries(
-                        METAINF_SERVICES, "*", false);
-                if (entries != null) {
-                    for (URL entry : Collections.list(entries)) {
-                        String path = entry.getPath();
-                        int separator = path.lastIndexOf('/');
-                        String serviceType = separator < 0
-                                ? path : path.substring(separator + 1);
-                        if (requestedTypes.contains(serviceType)) {
-                            serviceFileURLs.add(entry);
-                        }
-                    }
-                }
-            }
-
-            addBundleClassPathServiceFiles(
-                    bundle, requestedTypes, serviceFileURLs);
-            List<BundleWire> hostWires = wiring.getProvidedWires(
-                    HostNamespace.HOST_NAMESPACE);
-            if (hostWires != null) {
-                for (BundleWire hostWire : hostWires) {
-                    BundleRevision fragmentRevision = hostWire.getRequirement() == null
-                            ? null : hostWire.getRequirement().getRevision();
-                    Bundle fragment = fragmentRevision == null
-                            ? null : fragmentRevision.getBundle();
-                    if (fragment != null) {
-                        addBundleClassPathServiceFiles(
-                                fragment, requestedTypes, serviceFileURLs);
-                    }
-                }
+                serviceFileURLs.addAll(getServiceFileUrls(
+                        bundle, wiring, serviceType,
+                        compatibilityEntries.get(serviceType)));
             }
             return new ArrayList<URL>(serviceFileURLs);
         }
@@ -399,6 +386,143 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         return serviceFileURLs;
+    }
+
+    private Map<String, List<URL>> getBundleRootServiceFiles(Bundle bundle,
+            Set<String> serviceTypes) {
+        Map<String, List<URL>> result = new HashMap<String, List<URL>>();
+        Enumeration<URL> entries = bundle.findEntries(
+                METAINF_SERVICES, "*", false);
+        if (entries == null) {
+            return result;
+        }
+        while (entries.hasMoreElements()) {
+            URL entry = entries.nextElement();
+            String path = entry.getPath();
+            int separator = path.lastIndexOf('/');
+            String serviceType = separator < 0
+                    ? path : path.substring(separator + 1);
+            if (serviceTypes.contains(serviceType)) {
+                result.computeIfAbsent(serviceType,
+                        key -> new ArrayList<URL>()).add(entry);
+            }
+        }
+        return result;
+    }
+
+    private List<URL> getServiceFileUrls(Bundle bundle, BundleWiring wiring,
+            String serviceType, List<URL> compatibilityEntries) {
+        synchronized (wiringServiceFiles) {
+            for (java.util.Iterator<BundleWiring> iterator =
+                    wiringServiceFiles.keySet().iterator(); iterator.hasNext();) {
+                BundleWiring cachedWiring = iterator.next();
+                if (cachedWiring != wiring && !cachedWiring.isInUse()) {
+                    iterator.remove();
+                }
+            }
+            Map<String, List<URL>> byService = wiringServiceFiles.get(wiring);
+            if (byService != null && byService.containsKey(serviceType)) {
+                return byService.get(serviceType);
+            }
+        }
+
+        Set<URL> urls = new LinkedHashSet<URL>();
+        List<URL> rootEntries = wiring.findEntries(
+                METAINF_SERVICES, serviceType, 0);
+        if (rootEntries != null) {
+            urls.addAll(rootEntries);
+        }
+        if (urls.isEmpty() && compatibilityEntries != null) {
+            urls.addAll(compatibilityEntries);
+        }
+
+        addExactWiringServiceFile(wiring, serviceType, urls);
+
+        List<URL> result = Collections.unmodifiableList(
+                new ArrayList<URL>(urls));
+        synchronized (wiringServiceFiles) {
+            Map<String, List<URL>> byService = wiringServiceFiles.get(wiring);
+            if (byService == null) {
+                byService = new HashMap<String, List<URL>>();
+                wiringServiceFiles.put(wiring, byService);
+            }
+            List<URL> cached = byService.get(serviceType);
+            if (cached == null) {
+                byService.put(serviceType, result);
+                cached = result;
+            }
+            return cached;
+        }
+    }
+
+    private void addExactWiringServiceFile(BundleWiring wiring,
+            String serviceType, Set<URL> serviceFileURLs) {
+        String resourceName = METAINF_SERVICES + "/" + serviceType;
+        java.util.Collection<String> localResources = wiring.listResources(
+                METAINF_SERVICES, serviceType, BundleWiring.LISTRESOURCES_LOCAL);
+        if (localResources == null || !localResources.contains(resourceName)) {
+            return;
+        }
+
+        ClassLoader classLoader = wiring.getClassLoader();
+        if (classLoader == null) {
+            return;
+        }
+        Set<String> foreignUrls = getForeignResourceUrls(wiring, resourceName);
+        try {
+            Enumeration<URL> resources = classLoader.getResources(resourceName);
+            while (resources.hasMoreElements()) {
+                URL resource = resources.nextElement();
+                if (!foreignUrls.contains(resource.toExternalForm())) {
+                    serviceFileURLs.add(resource);
+                }
+            }
+        }
+        catch (IOException | RuntimeException e) {
+            log(Level.FINE, "Could not read local SPI resource " + resourceName
+                    + " from exact provider wiring", e);
+        }
+    }
+
+    private Set<String> getForeignResourceUrls(BundleWiring wiring,
+            String resourceName) {
+        Set<String> foreignUrls = new LinkedHashSet<String>();
+        try {
+            Enumeration<URL> systemResources =
+                    ClassLoader.getSystemResources(resourceName);
+            while (systemResources.hasMoreElements()) {
+                foreignUrls.add(systemResources.nextElement().toExternalForm());
+            }
+        }
+        catch (IOException | RuntimeException e) {
+            log(Level.FINE, "Could not identify system SPI resource "
+                    + resourceName, e);
+        }
+        List<BundleWire> requiredWires = wiring.getRequiredWires(null);
+        if (requiredWires == null) {
+            return foreignUrls;
+        }
+        for (BundleWire wire : requiredWires) {
+            BundleWiring providerWiring = wire.getProviderWiring();
+            if (providerWiring == null || providerWiring == wiring) {
+                continue;
+            }
+            ClassLoader providerLoader = providerWiring.getClassLoader();
+            if (providerLoader == null) {
+                continue;
+            }
+            try {
+                Enumeration<URL> resources = providerLoader.getResources(resourceName);
+                while (resources.hasMoreElements()) {
+                    foreignUrls.add(resources.nextElement().toExternalForm());
+                }
+            }
+            catch (IOException | RuntimeException e) {
+                log(Level.FINE, "Could not identify non-local SPI resource "
+                        + resourceName, e);
+            }
+        }
+        return foreignUrls;
     }
 
     private void addBundleClassPathServiceFiles(Bundle bundle,
@@ -536,7 +660,13 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object registrations) {
-        // implementation is unnecessary for this use case
+        if (event != null && event.getType() == BundleEvent.STARTED
+                && registrations != null
+                && processedWirings.get(bundle) != WiringUtils.getWiring(bundle)) {
+            // Some frameworks deliver STARTING before publishing the refreshed host
+            // wiring. Reprocess at STARTED when the effective wiring changed.
+            reprocessBundle(bundle, registrations);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -557,6 +687,7 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     @Override
     @SuppressWarnings("unchecked")
     public void removedBundle(Bundle bundle, BundleEvent event, Object registrations) {
+        processedWirings.remove(bundle);
         activator.unregisterProviderBundle(bundle);
 
         if (registrations == null)

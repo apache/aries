@@ -20,10 +20,12 @@ package org.apache.aries.spifly.dynamic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +51,7 @@ import java.util.jar.Manifest;
 
 import org.apache.aries.mytest.MySPI;
 import org.apache.aries.spifly.dynamic.impl1.MySPIImpl1;
+import org.apache.aries.spifly.dynamic.impl2.MySPIImpl2;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.commons.AdviceAdapter;
@@ -60,10 +63,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.framework.namespace.PackageNamespace;
+import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.framework.wiring.FrameworkWiring;
 import org.osgi.util.tracker.BundleTracker;
@@ -139,6 +145,102 @@ public class LateMediatorStartupTest {
         }
     }
 
+    @Test
+    public void providerDiscoveryUsesAttachedFragmentRevisionUntilRefresh()
+            throws Exception {
+        Path storage = Files.createTempDirectory("spifly-fragment-revision-");
+        Framework framework = null;
+        try {
+            Map<String, String> configuration = new HashMap<String, String>();
+            configuration.put(Constants.FRAMEWORK_STORAGE,
+                    storage.resolve("framework").toString());
+            configuration.put(Constants.FRAMEWORK_STORAGE_CLEAN,
+                    Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+            framework = newFramework(configuration);
+            framework.start();
+
+            BundleContext context = framework.getBundleContext();
+            installDependency(context, ClassReader.class);
+            installDependency(context, AdviceAdapter.class);
+            installDependency(context, ClassNode.class);
+            installDependency(context, Analyzer.class);
+            installDependency(context, CheckClassAdapter.class);
+            installDependency(context, BundleTracker.class);
+
+            Bundle mediator = context.installBundle(
+                    bundleFromClasses(storage, "spifly-dynamic.jar").toUri().toString());
+            Bundle api = context.installBundle(createApiBundle(storage).toUri().toString());
+            Path fragmentF1 = createProviderFragment(
+                    storage.resolve("fragment-f1.jar"), MySPIImpl1.class, "1.0.0");
+            Path fragmentF2 = createProviderFragment(
+                    storage.resolve("fragment-f2.jar"), MySPIImpl2.class, "2.0.0");
+            Bundle fragment = context.installBundle(fragmentF1.toUri().toString());
+            Bundle provider = context.installBundle(
+                    createProviderHost(storage).toUri().toString());
+            Bundle consumer = context.installBundle(
+                    createConsumerBundle(storage).toUri().toString());
+
+            FrameworkWiring frameworkWiring = framework.adapt(FrameworkWiring.class);
+            assertTrue(frameworkWiring.resolveBundles(java.util.Arrays.asList(
+                    mediator, api, fragment, provider, consumer)));
+            mediator.start();
+            provider.start();
+            consumer.start();
+            assertEquals(Collections.singleton("olleh"),
+                    invokeConsumer(consumer.loadClass(TestClient.class.getName())));
+
+            BundleWiring originalWiring = provider.adapt(BundleWiring.class);
+            BundleRevision attachedF1 = originalWiring.getProvidedWires(
+                    HostNamespace.HOST_NAMESPACE).get(0).getRequirement().getRevision();
+            InputStream update = Files.newInputStream(fragmentF2);
+            try {
+                fragment.update(update);
+            }
+            finally {
+                update.close();
+            }
+            assertNotSame("The host must remain attached to F1 before refresh",
+                    fragment.adapt(BundleRevision.class), attachedF1);
+
+            provider.stop();
+            provider.start();
+            assertSame("A stop/start must not change the effective host wiring",
+                    originalWiring, provider.adapt(BundleWiring.class));
+            assertEquals(Collections.singleton("olleh"),
+                    invokeConsumer(consumer.loadClass(TestClient.class.getName())));
+
+            CountDownLatch refreshed = new CountDownLatch(1);
+            frameworkWiring.refreshBundles(
+                    java.util.Arrays.asList(provider, fragment), event -> {
+                        if (event.getType() == FrameworkEvent.PACKAGES_REFRESHED) {
+                            refreshed.countDown();
+                        }
+                    });
+            assertTrue("Provider and fragment refresh did not complete",
+                    refreshed.await(30, TimeUnit.SECONDS));
+            BundleWiring refreshedWiring = provider.adapt(BundleWiring.class);
+            assertNotSame(originalWiring, refreshedWiring);
+            BundleRevision attachedF2 = refreshedWiring.getProvidedWires(
+                    HostNamespace.HOST_NAMESPACE).get(0).getRequirement().getRevision();
+            assertSame("The refreshed host must attach the current fragment revision",
+                    fragment.adapt(BundleRevision.class), attachedF2);
+            assertTrue(refreshedWiring.listResources("META-INF/services", SERVICE_TYPE,
+                    BundleWiring.LISTRESOURCES_LOCAL).contains(
+                            "META-INF/services/" + SERVICE_TYPE));
+            assertEquals(MySPIImpl2.class.getName(),
+                    provider.loadClass(MySPIImpl2.class.getName()).getName());
+            assertEquals(Collections.singleton("HELLO"),
+                    invokeConsumer(consumer.loadClass(TestClient.class.getName())));
+        }
+        finally {
+            if (framework != null) {
+                framework.stop();
+                framework.waitForStop(30000);
+            }
+            deleteRecursively(storage);
+        }
+    }
+
     private Framework newFramework(Map<String, String> configuration) throws Exception {
         String factoryName = System.getProperty(
                 "spifly.test.frameworkFactory",
@@ -192,6 +294,64 @@ public class LateMediatorStartupTest {
         entries.put("META-INF/services/" + SERVICE_TYPE,
                 (IMPLEMENTATION + "\n").getBytes(StandardCharsets.UTF_8));
         return writeBundle(directory.resolve("provider.jar"), manifest, entries);
+    }
+
+    private Path createProviderHost(Path directory) throws IOException {
+        Manifest manifest = bundleManifest("spifly.test.fragment.provider");
+        manifest.getMainAttributes().putValue(
+                Constants.IMPORT_PACKAGE, "org.apache.aries.mytest;version=\"[1,2)\"");
+        return writeBundle(directory.resolve("provider-host.jar"), manifest,
+                Collections.<String, byte[]>emptyMap());
+    }
+
+    private Path createProviderFragment(Path path, Class<?> implementation,
+            String version) throws IOException {
+        Manifest manifest = bundleManifest("spifly.test.fragment");
+        Attributes attributes = manifest.getMainAttributes();
+        attributes.putValue(Constants.BUNDLE_VERSION, version);
+        attributes.putValue(Constants.FRAGMENT_HOST,
+                "spifly.test.fragment.provider;bundle-version=\"[1,2)\"");
+        attributes.putValue(Constants.BUNDLE_CLASSPATH, ".,embedded.jar");
+        attributes.putValue(Constants.REQUIRE_CAPABILITY,
+                "osgi.extender;filter:=\"(osgi.extender=osgi.serviceloader.registrar)\"");
+        attributes.putValue(Constants.PROVIDE_CAPABILITY,
+                "osgi.serviceloader;osgi.serviceloader=\"" + SERVICE_TYPE + "\"");
+        Map<String, byte[]> entries = new LinkedHashMap<String, byte[]>();
+        entries.put("embedded.jar", createEmbeddedProviderJar(implementation));
+        return writeBundle(path, manifest, entries);
+    }
+
+    private byte[] createEmbeddedProviderJar(Class<?> implementation)
+            throws IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        JarOutputStream output = new JarOutputStream(bytes);
+        try {
+            String classResource = implementation.getName().replace('.', '/') + ".class";
+            output.putNextEntry(new JarEntry(classResource));
+            InputStream classBytes = implementation.getClassLoader()
+                    .getResourceAsStream(classResource);
+            if (classBytes == null) {
+                throw new IOException("Cannot find test class " + classResource);
+            }
+            try {
+                byte[] buffer = new byte[8192];
+                for (int read; (read = classBytes.read(buffer)) >= 0;) {
+                    output.write(buffer, 0, read);
+                }
+            }
+            finally {
+                classBytes.close();
+            }
+            output.closeEntry();
+            output.putNextEntry(new JarEntry("META-INF/services/" + SERVICE_TYPE));
+            output.write((implementation.getName() + "\n")
+                    .getBytes(StandardCharsets.UTF_8));
+            output.closeEntry();
+        }
+        finally {
+            output.close();
+        }
+        return bytes.toByteArray();
     }
 
     private Path createConsumerBundle(Path directory) throws IOException {

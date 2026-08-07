@@ -698,14 +698,15 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE + "=org.apache.aries.mytest.MySPI");
         headers.put(Constants.BUNDLE_CLASSPATH, ".,non-jar.jar,embedded.jar,embedded2.jar");
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
-        EasyMock.expect(implBundle.adapt(BundleWiring.class)).andReturn(
-                mockProviderWiring(headers, null)).anyTimes();
-
         URL embeddedJar = getClass().getResource("/embedded.jar");
         assertNotNull("precondition", embeddedJar);
         EasyMock.expect(implBundle.getEntry("embedded.jar")).andReturn(embeddedJar).anyTimes();
         URL embedded2Jar = getClass().getResource("/embedded2.jar");
         assertNotNull("precondition", embedded2Jar);
+        ClassLoader providerClassLoader = new URLClassLoader(
+                new URL[] {embeddedJar, embedded2Jar}, getClass().getClassLoader());
+        EasyMock.expect(implBundle.adapt(BundleWiring.class)).andReturn(
+                mockProviderWiring(headers, null, providerClassLoader)).anyTimes();
         EasyMock.expect(implBundle.getEntry("embedded2.jar")).andReturn(embedded2Jar).anyTimes();
         URL dir = new URL("jar:" + embeddedJar + "!/META-INF/services");
         assertNotNull("precondition", dir);
@@ -914,11 +915,23 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
     }
 
     private BundleWiring mockProviderWiring(Dictionary<String, String> hostHeaders, BundleRevision hostRevision) {
-        return mockProviderWiring(hostHeaders, hostRevision, 42L);
+        return mockProviderWiring(hostHeaders, hostRevision, 42L, null);
+    }
+
+    private BundleWiring mockProviderWiring(Dictionary<String, String> hostHeaders,
+            BundleRevision hostRevision, ClassLoader classLoader) {
+        return mockProviderWiring(hostHeaders, hostRevision, 42L, classLoader);
     }
 
     private BundleWiring mockProviderWiring(Dictionary<String, String> hostHeaders,
             BundleRevision hostRevision, long mediatorBundleId) {
+        return mockProviderWiring(
+                hostHeaders, hostRevision, mediatorBundleId, null);
+    }
+
+    private BundleWiring mockProviderWiring(Dictionary<String, String> hostHeaders,
+            BundleRevision hostRevision, long mediatorBundleId,
+            ClassLoader classLoader) {
         if (hostHeaders == null) {
             hostHeaders = new Hashtable<String, String>();
         }
@@ -965,11 +978,19 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
             }
         }
 
-        return mockProviderWiring(capabilities, registrarRequired, mediatorBundleId);
+        return mockProviderWiring(
+                capabilities, registrarRequired, mediatorBundleId, classLoader);
     }
 
     private BundleWiring mockProviderWiring(List<BundleCapability> capabilities,
             boolean registrarRequired, long mediatorBundleId) {
+        return mockProviderWiring(capabilities, registrarRequired,
+                mediatorBundleId, null);
+    }
+
+    private BundleWiring mockProviderWiring(List<BundleCapability> capabilities,
+            boolean registrarRequired, long mediatorBundleId,
+            ClassLoader classLoader) {
         List<BundleWire> extenderWires = registrarRequired
                 ? Collections.singletonList(mockExtenderWire(
                         SpiFlyConstants.REGISTRAR_EXTENDER_NAME, mediatorBundleId))
@@ -979,6 +1000,16 @@ public class ProviderBundleTrackerCustomizerGenericCapabilityTest {
                 .andReturn(capabilities).anyTimes();
         EasyMock.expect(wiring.getRequiredWires(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE))
                 .andReturn(extenderWires).anyTimes();
+        if (classLoader != null) {
+            EasyMock.expect(wiring.getClassLoader()).andReturn(classLoader).anyTimes();
+            EasyMock.expect(wiring.getRequiredWires(null))
+                    .andReturn(Collections.emptyList()).anyTimes();
+            EasyMock.expect(wiring.listResources("META-INF/services",
+                    "org.apache.aries.mytest.MySPI",
+                    BundleWiring.LISTRESOURCES_LOCAL)).andReturn(Collections.singleton(
+                            "META-INF/services/org.apache.aries.mytest.MySPI"))
+                    .anyTimes();
+        }
         EasyMock.replay(wiring);
         return wiring;
     }

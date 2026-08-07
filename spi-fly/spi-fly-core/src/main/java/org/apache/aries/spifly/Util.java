@@ -688,11 +688,12 @@ public class Util {
     private static boolean isProviderAvailable(
             BaseActivator.ProviderAdvertisement advertisement, String serviceType) {
         return isProviderAvailable(advertisement.getBundle(),
-                advertisement.getRevision(), serviceType);
+                advertisement.getRevision(), advertisement.getWiring(), serviceType);
     }
 
     private static boolean isProviderAvailable(Bundle providerBundle,
-            BundleRevision providerRevision, String serviceType) {
+            BundleRevision providerRevision, BundleWiring providerWiring,
+            String serviceType) {
         if (providerBundle.getState() != Bundle.ACTIVE) {
             BaseActivator.activator.log(Level.FINE, "Bundle " + providerBundle
                     + " is not active and cannot provide services of type: "
@@ -708,7 +709,8 @@ public class Util {
         }
         if (providerRevision != null) {
             BundleWiring wiring = WiringUtils.getWiring(providerBundle);
-            if (wiring == null || wiring.getRevision() != providerRevision) {
+            if (wiring == null || wiring != providerWiring
+                    || wiring.getRevision() != providerRevision) {
                 BaseActivator.activator.log(Level.FINE, "Bundle " + providerBundle
                         + " no longer has the revision that advertised service type: "
                         + serviceType);
