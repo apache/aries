@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -39,8 +41,14 @@ import org.apache.aries.spifly.Streams;
 import org.apache.aries.spifly.statictool.bundle.Test2Class;
 import org.apache.aries.spifly.statictool.bundle.Test3Class;
 import org.apache.aries.spifly.statictool.bundle.Test4Class;
+import org.apache.aries.spifly.statictool.bundle.Test5Class;
 import org.apache.aries.spifly.statictool.bundle.TestClass;
 import org.junit.Test;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import aQute.bnd.header.Parameters;
 
@@ -55,6 +63,8 @@ public class RequirementTest {
 		URL test3ClassURL = getClass().getResource("/" + test3ClassFileName);
 		String test4ClassFileName = Test4Class.class.getName().replace('.', '/') + ".class";
 		URL test4ClassURL = getClass().getResource("/" + test4ClassFileName);
+		String test5ClassFileName = Test5Class.class.getName().replace('.', '/') + ".class";
+		URL test5ClassURL = getClass().getResource("/" + test5ClassFileName);
 
 		File jarFile = new File(System.getProperty("java.io.tmpdir") + "/testjar_" + System.currentTimeMillis() + ".jar");
 		File expectedFile = null;
@@ -81,6 +91,8 @@ public class RequirementTest {
 			Streams.pump(test3ClassURL.openStream(), jos);
 			jos.putNextEntry(new ZipEntry(test4ClassFileName));
 			Streams.pump(test4ClassURL.openStream(), jos);
+			jos.putNextEntry(new ZipEntry(test5ClassFileName));
+			Streams.pump(test5ClassURL.openStream(), jos);
 			jos.close();
 
 			Main.main(jarFile.getCanonicalPath());
@@ -135,6 +147,11 @@ public class RequirementTest {
 			byte[] transBytes4 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test4ClassFileName)));
 			assertFalse("The loadInstalled class should be transformed", Arrays.equals(orgBytes4, transBytes4));
 
+			byte[] orgBytes5 = Streams.suck(initialJarFile.getInputStream(new ZipEntry(test5ClassFileName)));
+			byte[] transBytes5 = Streams.suck(transformedJarFile.getInputStream(new ZipEntry(test5ClassFileName)));
+			assertFalse("ServiceLoader method references should be transformed", Arrays.equals(orgBytes5, transBytes5));
+			assertServiceLoaderHandlesRewritten(transBytes5, Test5Class.class.getName());
+
 			initialJarFile.close();
 			transformedJarFile.close();
 		} finally {
@@ -143,5 +160,35 @@ public class RequirementTest {
 			if (expectedFile != null)
 				expectedFile.delete();
 		}
+	}
+
+	private static void assertServiceLoaderHandlesRewritten(
+			byte[] classBytes, String className) {
+		Set<String> bridgeTargets = new HashSet<String>();
+		new ClassReader(classBytes).accept(new ClassVisitor(Opcodes.ASM9) {
+			@Override
+			public MethodVisitor visitMethod(int access, String name, String descriptor,
+					String signature, String[] exceptions) {
+				return new MethodVisitor(Opcodes.ASM9) {
+					@Override
+					public void visitInvokeDynamicInsn(String name, String descriptor,
+							Handle bootstrapMethodHandle,
+							Object... bootstrapMethodArguments) {
+						for (Object argument : bootstrapMethodArguments) {
+							if (argument instanceof Handle) {
+								Handle handle = (Handle) argument;
+								assertFalse("ServiceLoader handle was not rewritten",
+										"java/util/ServiceLoader".equals(handle.getOwner()));
+								if (className.replace('.', '/').equals(handle.getOwner())) {
+									bridgeTargets.add(handle.getName());
+								}
+							}
+						}
+					}
+				};
+			}
+		}, 0);
+		assertEquals("All ServiceLoader method references should use bridges",
+				3, bridgeTargets.size());
 	}
 }
