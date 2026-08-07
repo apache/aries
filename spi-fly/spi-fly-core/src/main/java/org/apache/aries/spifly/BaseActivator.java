@@ -65,7 +65,16 @@ public abstract class BaseActivator implements BundleActivator {
     // Static access to the activator used by the woven code, therefore
     // this bundle must be a singleton.
     // TODO see if we can get rid of the static access.
-    public static BaseActivator activator;
+    public static volatile BaseActivator activator;
+
+    /*
+     * A ServiceLoader is lazy, so clearing activator alone is not sufficient:
+     * a loader created before stop could otherwise discover or instantiate a
+     * provider after this mediator instance has stopped. Each activation gets
+     * a distinct token which is captured by the class loaders backing that
+     * ServiceLoader view.
+     */
+    private volatile Object activeSession = new Object();
 
     private BundleContext bundleContext;
     @SuppressWarnings("rawtypes")
@@ -126,6 +135,7 @@ public abstract class BaseActivator implements BundleActivator {
             addConsumerWeavingData(bundle, consumerHeaderName);
         }
 
+        activeSession = new Object();
         activator = this;
 
         if (SpiFlyConstants.SPI_CONSUMER_HEADER.equals(consumerHeaderName)) {
@@ -373,11 +383,24 @@ public abstract class BaseActivator implements BundleActivator {
 
     @Override
     public synchronized void stop(BundleContext context) throws Exception {
+        activeSession = null;
         activator = null;
 
-        consumerBundleTracker.close();
-        providerBundleTracker.close();
+        if (consumerBundleTracker != null) {
+            consumerBundleTracker.close();
+        }
+        if (providerBundleTracker != null) {
+            providerBundleTracker.close();
+        }
         requestedConsumerRefreshes.clear();
+    }
+
+    Object getActiveSession() {
+        return activeSession;
+    }
+
+    boolean isSessionActive(Object session) {
+        return session != null && activeSession == session && activator == this;
     }
 
     public boolean isLogEnabled(Level level) {

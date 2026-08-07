@@ -155,6 +155,44 @@ public class UtilTest {
     }
 
     @Test
+    public void serviceLoaderFactoriesReturnClosedViewWhenMediatorUnavailable()
+            throws Exception {
+        BaseActivator.activator = null;
+
+        URL provider = getClass().getResource("/embedded2.jar");
+        assertNotNull("precondition", provider);
+        ClassLoader providerLoader = new URLClassLoader(
+                new URL[] {provider}, getClass().getClassLoader());
+        Thread.currentThread().setContextClassLoader(providerLoader);
+
+        ServiceLoader<MySPI> contextLoader = Util.serviceLoaderLoad(
+                MySPI.class, UtilTest.class);
+        ServiceLoader<MySPI> specifiedLoader = Util.serviceLoaderLoad(
+                MySPI.class, providerLoader, UtilTest.class);
+        ServiceLoader<MySPI> installedLoader = Util.serviceLoaderLoadInstalled(
+                MySPI.class, UtilTest.class);
+
+        assertNotNull(contextLoader);
+        assertNotNull(specifiedLoader);
+        assertNotNull(installedLoader);
+        assertFalse(contextLoader.iterator().hasNext());
+        assertFalse(specifiedLoader.iterator().hasNext());
+        assertFalse(installedLoader.iterator().hasNext());
+    }
+
+    @Test
+    public void closedServiceLoaderFactoriesRetainNullValidation() {
+        BaseActivator.activator = null;
+
+        assertThrows(NullPointerException.class, () -> Util.serviceLoaderLoad(
+                (Class<MySPI>) null, UtilTest.class));
+        assertThrows(NullPointerException.class, () -> Util.serviceLoaderLoad(
+                (Class<MySPI>) null, getClass().getClassLoader(), UtilTest.class));
+        assertThrows(NullPointerException.class, () -> Util.serviceLoaderLoadInstalled(
+                (Class<MySPI>) null, UtilTest.class));
+    }
+
+    @Test
     public void standardConsumerWithNoProvidersHasClosedView() throws Exception {
         BaseActivator activator = newActivator();
         Bundle consumer = mockPermissionBundle(new AtomicBoolean(true));
@@ -396,6 +434,38 @@ public class UtilTest {
         providerState.set(Bundle.RESOLVED);
 
         assertThrows(ServiceConfigurationError.class, iterator::next);
+    }
+
+    @Test
+    public void stoppedMediatorClosesExistingLazyLoaderAcrossRestart()
+            throws Exception {
+        BaseActivator activator = newActivator();
+        Bundle consumer = mockPermissionBundle(new AtomicBoolean(true));
+        BundleWiring consumerWiring = EasyMock.createNiceMock(BundleWiring.class);
+        EasyMock.expect(consumerWiring.getRequirements(
+                SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE))
+                .andReturn(Collections.<BundleRequirement>emptyList()).anyTimes();
+        EasyMock.replay(consumerWiring);
+        activator.registerStandardConsumer(consumer, consumerWiring);
+
+        Bundle provider = mockProviderBundle(42L,
+                getClass().getResource("/embedded2.jar"));
+        activator.registerProviderBundle(MySPI.class.getName(),
+                "org.apache.aries.spifly.impl3.MySPIImpl3", provider,
+                new HashMap<String, Object>());
+
+        ServiceLoader<MySPI> activeLoader = Util.serviceLoaderLoad(
+                MySPI.class, callerClass(consumer));
+        ServiceLoader<MySPI> deferredLoader = Util.serviceLoaderLoad(
+                MySPI.class, callerClass(consumer));
+        assertTrue(activeLoader.iterator().hasNext());
+
+        activator.stop(null);
+        assertFalse(deferredLoader.iterator().hasNext());
+
+        newActivator();
+        deferredLoader.reload();
+        assertFalse(deferredLoader.iterator().hasNext());
     }
 
     @Test

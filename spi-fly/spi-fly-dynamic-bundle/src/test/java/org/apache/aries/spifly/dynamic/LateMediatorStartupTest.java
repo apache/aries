@@ -135,6 +135,14 @@ public class LateMediatorStartupTest {
             Class<?> classAfterMediator = consumer.loadClass(TestClient.class.getName());
             assertNotSame(classBeforeMediator, classAfterMediator);
             assertEquals(Collections.singleton("olleh"), invokeConsumer(classAfterMediator));
+            assertEquals(new java.util.HashSet<String>(java.util.Arrays.asList(
+                    "load:olleh", "loader:olleh", "installed:olleh")),
+                    invokeMethodReferences(classAfterMediator));
+
+            mediator.stop();
+            assertEquals(Collections.emptySet(), invokeConsumer(classAfterMediator));
+            assertEquals(Collections.emptySet(),
+                    invokeMethodReferences(classAfterMediator));
         }
         finally {
             if (framework != null) {
@@ -255,6 +263,16 @@ public class LateMediatorStartupTest {
         Method method = consumerClass.getMethod("test", String.class);
         return (Set<String>) method.invoke(
                 consumerClass.getDeclaredConstructor().newInstance(), "hello");
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<String> invokeMethodReferences(Class<?> consumerClass)
+            throws Exception {
+        Method method = consumerClass.getMethod("testMethodReferences",
+                String.class, ClassLoader.class);
+        return (Set<String>) method.invoke(
+                consumerClass.getDeclaredConstructor().newInstance(), "hello",
+                consumerClass.getClassLoader());
     }
 
     private void installDependency(BundleContext context, Class<?> type) throws Exception {
