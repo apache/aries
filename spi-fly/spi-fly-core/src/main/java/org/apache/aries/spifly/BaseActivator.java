@@ -104,6 +104,13 @@ public abstract class BaseActivator implements BundleActivator {
             Collections.newSetFromMap(
                     new ConcurrentHashMap<Pair<Bundle, BundleRevision>, Boolean>());
 
+    private final ConcurrentMap<Bundle, Set<Bundle>> consumersByProvider =
+            new ConcurrentHashMap<Bundle, Set<Bundle>>();
+
+    private final Set<Bundle> requestedProviderStopRefreshes =
+            Collections.newSetFromMap(
+                    new ConcurrentHashMap<Bundle, Boolean>());
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public synchronized void start(BundleContext context, final String consumerHeaderName) throws Exception {
         bundleContext = context;
@@ -339,6 +346,99 @@ public abstract class BaseActivator implements BundleActivator {
         requestConsumerRefreshes(refreshes, "after dynamic mediator startup");
     }
 
+    void recordProviderUse(Bundle consumer, Bundle provider, Object session) {
+        if (!isSessionActive(session) || consumer == null || provider == null
+                || !isStandardConsumer(consumer)) {
+            return;
+        }
+        consumersByProvider.computeIfAbsent(provider,
+                key -> Collections.newSetFromMap(
+                        new ConcurrentHashMap<Bundle, Boolean>())).add(consumer);
+    }
+
+    void forgetConsumerProviderUses(Bundle consumer) {
+        for (Map.Entry<Bundle, Set<Bundle>> entry : consumersByProvider.entrySet()) {
+            Set<Bundle> consumers = entry.getValue();
+            consumers.remove(consumer);
+            if (consumers.isEmpty()) {
+                consumersByProvider.remove(entry.getKey(), consumers);
+            }
+        }
+    }
+
+    void providerBundleStopped(Bundle provider) {
+        Object session = getActiveSession();
+        if (!isSessionActive(session)) {
+            return;
+        }
+        int state = provider.getState();
+        if ((state & (Bundle.ACTIVE | Bundle.STARTING)) != 0) {
+            return;
+        }
+
+        Set<Bundle> consumers = consumersByProvider.remove(provider);
+        if (consumers == null || consumers.isEmpty()) {
+            return;
+        }
+
+        List<Bundle> refreshes = new ArrayList<Bundle>();
+        for (Bundle consumer : consumers) {
+            int consumerState = consumer.getState();
+            BundleRevision revision = consumer.adapt(BundleRevision.class);
+            if ((consumerState & (Bundle.ACTIVE | Bundle.STARTING)) != 0
+                    && isStandardConsumer(consumer)
+                    && revision != null
+                    && (revision.getTypes() & BundleRevision.TYPE_FRAGMENT) == 0) {
+                refreshes.add(consumer);
+            }
+        }
+        Collections.sort(refreshes, (left, right) -> Long.compare(
+                left.getBundleId(), right.getBundleId()));
+        requestProviderStopRefreshes(refreshes, provider);
+    }
+
+    private void requestProviderStopRefreshes(
+            Collection<Bundle> refreshes, Bundle provider) {
+        if (refreshes.isEmpty()) {
+            return;
+        }
+        Bundle systemBundle = bundleContext == null ? null : bundleContext.getBundle(0);
+        FrameworkWiring frameworkWiring = systemBundle == null
+                ? null : systemBundle.adapt(FrameworkWiring.class);
+        if (frameworkWiring == null) {
+            log(Level.WARNING, "Cannot refresh consumers after provider " + provider
+                    + " stopped: FrameworkWiring is unavailable");
+            return;
+        }
+
+        List<Bundle> newRefreshes = new ArrayList<Bundle>();
+        for (Bundle consumer : refreshes) {
+            if (requestedProviderStopRefreshes.add(consumer)) {
+                newRefreshes.add(consumer);
+            }
+        }
+        if (newRefreshes.isEmpty()) {
+            return;
+        }
+
+        Set<Bundle> bundles = new LinkedHashSet<Bundle>(newRefreshes);
+        try {
+            frameworkWiring.refreshBundles(bundles, event -> {
+                requestedProviderStopRefreshes.removeAll(newRefreshes);
+                if (event.getType() == FrameworkEvent.ERROR) {
+                    log(Level.WARNING, "Could not refresh consumers " + bundles
+                            + " after provider " + provider + " stopped",
+                            event.getThrowable());
+                }
+            });
+        }
+        catch (RuntimeException e) {
+            requestedProviderStopRefreshes.removeAll(newRefreshes);
+            log(Level.WARNING, "Could not request refresh of consumers " + bundles
+                    + " after provider " + provider + " stopped", e);
+        }
+    }
+
     private void requestConsumerRefreshes(
             Collection<Pair<Bundle, BundleRevision>> refreshes, String reason) {
         if (refreshes.isEmpty()) {
@@ -393,6 +493,8 @@ public abstract class BaseActivator implements BundleActivator {
             providerBundleTracker.close();
         }
         requestedConsumerRefreshes.clear();
+        consumersByProvider.clear();
+        requestedProviderStopRefreshes.clear();
     }
 
     Object getActiveSession() {

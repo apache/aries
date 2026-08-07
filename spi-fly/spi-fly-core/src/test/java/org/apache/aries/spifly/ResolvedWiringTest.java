@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.namespace.HostNamespace;
 import org.osgi.framework.wiring.BundleCapability;
@@ -437,6 +438,81 @@ public class ResolvedWiringTest {
         assertEquals(Arrays.asList(activeConsumer, startingConsumer),
                 new java.util.ArrayList<Bundle>(refreshedBundles.getValue()));
         EasyMock.verify(frameworkWiring);
+    }
+
+    @Test
+    public void providerStopRefreshesActiveStandardConsumerPerUse()
+            throws Exception {
+        Bundle consumer = mockRefreshBundle(7L, Bundle.ACTIVE, 0, null);
+        Bundle resolvedConsumer = mockRefreshBundle(8L, Bundle.RESOLVED, 0, null);
+        Bundle firstProvider = mockRefreshBundle(9L, Bundle.RESOLVED, 0, null);
+        Bundle secondProvider = mockRefreshBundle(10L, Bundle.RESOLVED, 0, null);
+        List<Object[]> refreshInvocations = new java.util.ArrayList<Object[]>();
+
+        FrameworkWiring frameworkWiring = EasyMock.createMock(FrameworkWiring.class);
+        frameworkWiring.refreshBundles(
+                EasyMock.<Collection<Bundle>>anyObject(),
+                EasyMock.<FrameworkListener[]>anyObject());
+        EasyMock.expectLastCall().andAnswer(() -> {
+            refreshInvocations.add(EasyMock.getCurrentArguments().clone());
+            return null;
+        }).times(2);
+        EasyMock.replay(frameworkWiring);
+
+        Bundle systemBundle = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(systemBundle.adapt(FrameworkWiring.class))
+                .andReturn(frameworkWiring).anyTimes();
+        EasyMock.replay(systemBundle);
+        BundleContext context = EasyMock.createNiceMock(BundleContext.class);
+        EasyMock.expect(context.getBundle()).andReturn(mediator).anyTimes();
+        EasyMock.expect(context.getBundle(0)).andReturn(systemBundle).anyTimes();
+        EasyMock.replay(context);
+        setBundleContext(context);
+
+        activator.registerStandardConsumer(consumer, null);
+        activator.registerStandardConsumer(resolvedConsumer, null);
+        BaseActivator.activator = activator;
+        try {
+            Object session = activator.getActiveSession();
+            activator.recordProviderUse(consumer, firstProvider, session);
+            activator.recordProviderUse(consumer, firstProvider, session);
+            activator.recordProviderUse(resolvedConsumer, firstProvider, session);
+            activator.recordProviderUse(consumer, secondProvider, session);
+            activator.providerBundleStopped(firstProvider);
+            assertEquals(1, refreshInvocations.size());
+
+            // The second stopped provider does not start a concurrent refresh of
+            // the same consumer. The pending refresh covers both stale objects.
+            activator.providerBundleStopped(secondProvider);
+            assertEquals(1, refreshInvocations.size());
+            notifyRefreshListener(refreshInvocations.get(0)[1]);
+
+            // A later provider use can request another refresh after the first
+            // callback has cleared the in-flight marker.
+            activator.recordProviderUse(consumer, secondProvider, session);
+            activator.providerBundleStopped(secondProvider);
+            notifyRefreshListener(refreshInvocations.get(1)[1]);
+        }
+        finally {
+            BaseActivator.activator = null;
+        }
+
+        assertEquals(Collections.singleton(consumer), refreshInvocations.get(0)[0]);
+        assertEquals(Collections.singleton(consumer), refreshInvocations.get(1)[0]);
+        EasyMock.verify(frameworkWiring);
+    }
+
+    private void notifyRefreshListener(Object listenerArgument) {
+        FrameworkEvent event = new FrameworkEvent(
+                FrameworkEvent.PACKAGES_REFRESHED, mediator, null);
+        if (listenerArgument instanceof FrameworkListener[]) {
+            for (FrameworkListener listener : (FrameworkListener[]) listenerArgument) {
+                listener.frameworkEvent(event);
+            }
+        }
+        else {
+            ((FrameworkListener) listenerArgument).frameworkEvent(event);
+        }
     }
 
     private BundleWiring mockConsumerWiring(List<BundleWire> extenderWires,

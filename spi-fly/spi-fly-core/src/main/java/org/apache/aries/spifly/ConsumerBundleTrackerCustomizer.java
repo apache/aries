@@ -50,12 +50,13 @@ public class ConsumerBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     @Override
     public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
-        removedBundle(bundle, event, object);
+        activator.removeWeavingData(bundle);
         addingBundle(bundle, event);
     }
 
     @Override
     public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
         activator.removeWeavingData(bundle);
+        activator.forgetConsumerProviderUses(bundle);
     }
 }

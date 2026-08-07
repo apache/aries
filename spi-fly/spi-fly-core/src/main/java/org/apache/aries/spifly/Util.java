@@ -328,7 +328,7 @@ public class Util {
                 && !bundles.isEmpty()) {
             return new ProviderAdvertisementClassLoader(
                     activator.findProviderAdvertisements(requestedClass, bundles),
-                    requestedClass, activator, session);
+                    requestedClass, consumerBundle, activator, session);
         }
 
         if (!isSessionActive(activator, session)) {
@@ -636,6 +636,7 @@ public class Util {
     private static class ProviderAdvertisementClassLoader extends ClassLoader {
         private final String serviceType;
         private final String providerConfiguration;
+        private final Bundle consumerBundle;
         private final BaseActivator activator;
         private final Object session;
         private final Map<String, List<BaseActivator.ProviderAdvertisement>>
@@ -644,9 +645,11 @@ public class Util {
 
         ProviderAdvertisementClassLoader(
                 List<BaseActivator.ProviderAdvertisement> advertisements,
-                String serviceType, BaseActivator activator, Object session) {
+                String serviceType, Bundle consumerBundle,
+                BaseActivator activator, Object session) {
             super(null);
             this.serviceType = serviceType;
+            this.consumerBundle = consumerBundle;
             this.activator = activator;
             this.session = session;
             providerConfiguration = "META-INF/services/" + serviceType;
@@ -695,7 +698,14 @@ public class Util {
                     continue;
                 }
                 try {
-                    return advertisement.getBundle().loadClass(name);
+                    Class<?> providerClass = advertisement.getBundle().loadClass(name);
+                    if (!isProviderAvailable(advertisement, serviceType,
+                            activator, session)) {
+                        throw new ClassNotFoundException(name);
+                    }
+                    activator.recordProviderUse(consumerBundle,
+                            advertisement.getBundle(), session);
+                    return providerClass;
                 }
                 catch (ClassNotFoundException e) {
                     last = e;

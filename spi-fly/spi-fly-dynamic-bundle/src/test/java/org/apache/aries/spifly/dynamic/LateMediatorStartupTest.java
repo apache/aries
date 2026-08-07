@@ -154,6 +154,87 @@ public class LateMediatorStartupTest {
     }
 
     @Test
+    public void stoppedProviderRefreshesConsumerThatLoadedItsProvider()
+            throws Exception {
+        Path storage = Files.createTempDirectory("spifly-provider-stop-");
+        Framework framework = null;
+        try {
+            Map<String, String> configuration = new HashMap<String, String>();
+            configuration.put(Constants.FRAMEWORK_STORAGE,
+                    storage.resolve("framework").toString());
+            configuration.put(Constants.FRAMEWORK_STORAGE_CLEAN,
+                    Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+            framework = newFramework(configuration);
+            framework.start();
+
+            BundleContext context = framework.getBundleContext();
+            installDependency(context, ClassReader.class);
+            installDependency(context, AdviceAdapter.class);
+            installDependency(context, ClassNode.class);
+            installDependency(context, Analyzer.class);
+            installDependency(context, CheckClassAdapter.class);
+            installDependency(context, BundleTracker.class);
+
+            Bundle mediator = context.installBundle(
+                    bundleFromClasses(storage, "spifly-dynamic.jar").toUri().toString());
+            Bundle api = context.installBundle(createApiBundle(storage).toUri().toString());
+            Bundle provider = context.installBundle(
+                    createProviderBundle(storage).toUri().toString());
+            Bundle consumer = context.installBundle(
+                    createConsumerBundle(storage).toUri().toString());
+
+            FrameworkWiring frameworkWiring = framework.adapt(FrameworkWiring.class);
+            assertTrue(frameworkWiring.resolveBundles(
+                    java.util.Arrays.asList(mediator, api, provider, consumer)));
+            mediator.start();
+            provider.start();
+            consumer.start();
+
+            Class<?> originalConsumerClass = consumer.loadClass(TestClient.class.getName());
+            assertEquals(Collections.singleton("olleh"),
+                    invokeConsumer(originalConsumerClass));
+
+            CountDownLatch consumerStopped = new CountDownLatch(1);
+            CountDownLatch consumerRestarted = new CountDownLatch(1);
+            BundleListener listener = event -> {
+                if (consumer.equals(event.getBundle())) {
+                    if (event.getType() == BundleEvent.STOPPED) {
+                        consumerStopped.countDown();
+                    }
+                    else if (event.getType() == BundleEvent.STARTED) {
+                        consumerRestarted.countDown();
+                    }
+                }
+            };
+            context.addBundleListener(listener);
+            try {
+                provider.stop();
+                assertTrue("The stale consumer should be stopped for refresh",
+                        consumerStopped.await(30, TimeUnit.SECONDS));
+                assertTrue("The stale consumer should restart after refresh",
+                        consumerRestarted.await(30, TimeUnit.SECONDS));
+            }
+            finally {
+                context.removeBundleListener(listener);
+            }
+
+            assertEquals(Bundle.RESOLVED, provider.getState());
+            Class<?> refreshedConsumerClass = consumer.loadClass(
+                    TestClient.class.getName());
+            assertNotSame(originalConsumerClass, refreshedConsumerClass);
+            assertEquals(Collections.emptySet(),
+                    invokeConsumer(refreshedConsumerClass));
+        }
+        finally {
+            if (framework != null) {
+                framework.stop();
+                framework.waitForStop(30000);
+            }
+            deleteRecursively(storage);
+        }
+    }
+
+    @Test
     public void providerDiscoveryUsesAttachedFragmentRevisionUntilRefresh()
             throws Exception {
         Path storage = Files.createTempDirectory("spifly-fragment-revision-");
@@ -210,7 +291,22 @@ public class LateMediatorStartupTest {
             assertNotSame("The host must remain attached to F1 before refresh",
                     fragment.adapt(BundleRevision.class), attachedF1);
 
-            provider.stop();
+            CountDownLatch consumerRefreshedAfterStop = new CountDownLatch(1);
+            BundleListener stopListener = event -> {
+                if (event.getType() == BundleEvent.STARTED
+                        && consumer.equals(event.getBundle())) {
+                    consumerRefreshedAfterStop.countDown();
+                }
+            };
+            context.addBundleListener(stopListener);
+            try {
+                provider.stop();
+                assertTrue("Consumer refresh after provider stop did not complete",
+                        consumerRefreshedAfterStop.await(30, TimeUnit.SECONDS));
+            }
+            finally {
+                context.removeBundleListener(stopListener);
+            }
             provider.start();
             assertSame("A stop/start must not change the effective host wiring",
                     originalWiring, provider.adapt(BundleWiring.class));
@@ -218,14 +314,29 @@ public class LateMediatorStartupTest {
                     invokeConsumer(consumer.loadClass(TestClient.class.getName())));
 
             CountDownLatch refreshed = new CountDownLatch(1);
-            frameworkWiring.refreshBundles(
-                    java.util.Arrays.asList(provider, fragment), event -> {
-                        if (event.getType() == FrameworkEvent.PACKAGES_REFRESHED) {
-                            refreshed.countDown();
-                        }
-                    });
-            assertTrue("Provider and fragment refresh did not complete",
-                    refreshed.await(30, TimeUnit.SECONDS));
+            CountDownLatch consumerRefreshedWithProvider = new CountDownLatch(1);
+            BundleListener refreshListener = event -> {
+                if (event.getType() == BundleEvent.STARTED
+                        && consumer.equals(event.getBundle())) {
+                    consumerRefreshedWithProvider.countDown();
+                }
+            };
+            context.addBundleListener(refreshListener);
+            try {
+                frameworkWiring.refreshBundles(
+                        java.util.Arrays.asList(provider, fragment), event -> {
+                            if (event.getType() == FrameworkEvent.PACKAGES_REFRESHED) {
+                                refreshed.countDown();
+                            }
+                        });
+                assertTrue("Provider and fragment refresh did not complete",
+                        refreshed.await(30, TimeUnit.SECONDS));
+                assertTrue("Consumer refresh with provider did not complete",
+                        consumerRefreshedWithProvider.await(30, TimeUnit.SECONDS));
+            }
+            finally {
+                context.removeBundleListener(refreshListener);
+            }
             BundleWiring refreshedWiring = provider.adapt(BundleWiring.class);
             assertNotSame(originalWiring, refreshedWiring);
             BundleRevision attachedF2 = refreshedWiring.getProvidedWires(
