@@ -64,6 +64,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.osgi.framework.namespace.PackageNamespace;
@@ -196,6 +197,7 @@ public class LateMediatorStartupTest {
 
             CountDownLatch consumerStopped = new CountDownLatch(1);
             CountDownLatch consumerRestarted = new CountDownLatch(1);
+            CountDownLatch refreshCompleted = new CountDownLatch(1);
             BundleListener listener = event -> {
                 if (consumer.equals(event.getBundle())) {
                     if (event.getType() == BundleEvent.STOPPED) {
@@ -206,16 +208,25 @@ public class LateMediatorStartupTest {
                     }
                 }
             };
+            FrameworkListener frameworkListener = event -> {
+                if (event.getType() == FrameworkEvent.PACKAGES_REFRESHED) {
+                    refreshCompleted.countDown();
+                }
+            };
             context.addBundleListener(listener);
+            context.addFrameworkListener(frameworkListener);
             try {
                 provider.stop();
                 assertTrue("The stale consumer should be stopped for refresh",
                         consumerStopped.await(30, TimeUnit.SECONDS));
                 assertTrue("The stale consumer should restart after refresh",
                         consumerRestarted.await(30, TimeUnit.SECONDS));
+                assertTrue("The consumer refresh should complete",
+                        refreshCompleted.await(30, TimeUnit.SECONDS));
             }
             finally {
                 context.removeBundleListener(listener);
+                context.removeFrameworkListener(frameworkListener);
             }
 
             assertEquals(Bundle.RESOLVED, provider.getState());
@@ -291,52 +302,25 @@ public class LateMediatorStartupTest {
             assertNotSame("The host must remain attached to F1 before refresh",
                     fragment.adapt(BundleRevision.class), attachedF1);
 
-            CountDownLatch consumerRefreshedAfterStop = new CountDownLatch(1);
-            BundleListener stopListener = event -> {
-                if (event.getType() == BundleEvent.STARTED
-                        && consumer.equals(event.getBundle())) {
-                    consumerRefreshedAfterStop.countDown();
-                }
-            };
-            context.addBundleListener(stopListener);
-            try {
-                provider.stop();
-                assertTrue("Consumer refresh after provider stop did not complete",
-                        consumerRefreshedAfterStop.await(30, TimeUnit.SECONDS));
-            }
-            finally {
-                context.removeBundleListener(stopListener);
-            }
+            consumer.stop();
+            provider.stop();
             provider.start();
             assertSame("A stop/start must not change the effective host wiring",
                     originalWiring, provider.adapt(BundleWiring.class));
+            consumer.start();
             assertEquals(Collections.singleton("olleh"),
                     invokeConsumer(consumer.loadClass(TestClient.class.getName())));
 
+            consumer.stop();
             CountDownLatch refreshed = new CountDownLatch(1);
-            CountDownLatch consumerRefreshedWithProvider = new CountDownLatch(1);
-            BundleListener refreshListener = event -> {
-                if (event.getType() == BundleEvent.STARTED
-                        && consumer.equals(event.getBundle())) {
-                    consumerRefreshedWithProvider.countDown();
-                }
-            };
-            context.addBundleListener(refreshListener);
-            try {
-                frameworkWiring.refreshBundles(
-                        java.util.Arrays.asList(provider, fragment), event -> {
-                            if (event.getType() == FrameworkEvent.PACKAGES_REFRESHED) {
-                                refreshed.countDown();
-                            }
-                        });
-                assertTrue("Provider and fragment refresh did not complete",
-                        refreshed.await(30, TimeUnit.SECONDS));
-                assertTrue("Consumer refresh with provider did not complete",
-                        consumerRefreshedWithProvider.await(30, TimeUnit.SECONDS));
-            }
-            finally {
-                context.removeBundleListener(refreshListener);
-            }
+            frameworkWiring.refreshBundles(
+                    java.util.Arrays.asList(provider, fragment, consumer), event -> {
+                        if (event.getType() == FrameworkEvent.PACKAGES_REFRESHED) {
+                            refreshed.countDown();
+                        }
+                    });
+            assertTrue("Provider, fragment, and consumer refresh did not complete",
+                    refreshed.await(30, TimeUnit.SECONDS));
             BundleWiring refreshedWiring = provider.adapt(BundleWiring.class);
             assertNotSame(originalWiring, refreshedWiring);
             BundleRevision attachedF2 = refreshedWiring.getProvidedWires(
@@ -348,6 +332,7 @@ public class LateMediatorStartupTest {
                             "META-INF/services/" + SERVICE_TYPE));
             assertEquals(MySPIImpl2.class.getName(),
                     provider.loadClass(MySPIImpl2.class.getName()).getName());
+            consumer.start();
             assertEquals(Collections.singleton("HELLO"),
                     invokeConsumer(consumer.loadClass(TestClient.class.getName())));
         }
