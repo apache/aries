@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -163,6 +164,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             serviceFileURLs = getServiceFileUrls(bundle,
                     discoveryMode == DiscoveryMode.SERVICELOADER_CAPABILITIES
                             ? providedServices : null);
+            if (discoveryMode == DiscoveryMode.SERVICELOADER_CAPABILITIES) {
+                serviceFileURLs = replaceUnusableExactServiceFiles(
+                        wiring, providedServices, serviceFileURLs);
+            }
         }
 
         final List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
@@ -276,6 +281,90 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
 
         return serviceDetails;
+    }
+
+    List<URL> replaceUnusableExactServiceFiles(BundleWiring wiring,
+            List<String> serviceTypes, List<URL> exactFiles) {
+        if (wiring == null || serviceTypes == null || serviceTypes.isEmpty()) {
+            return exactFiles;
+        }
+        ClassLoader classLoader = wiring.getClassLoader();
+        if (classLoader == null) {
+            return exactFiles;
+        }
+
+        Set<URL> result = new LinkedHashSet<URL>(exactFiles);
+        for (String serviceType : new LinkedHashSet<String>(serviceTypes)) {
+            List<URL> typeFiles = serviceFilesForType(result, serviceType);
+            if (hasLoadableProvider(typeFiles, serviceType, classLoader)) {
+                continue;
+            }
+
+            String resourceName = METAINF_SERVICES + "/" + serviceType;
+            Collection<String> localResources = wiring.listResources(
+                    METAINF_SERVICES, serviceType,
+                    BundleWiring.LISTRESOURCES_LOCAL);
+            if (localResources == null || !localResources.contains(resourceName)) {
+                continue;
+            }
+
+            List<URL> replacements = new ArrayList<URL>();
+            try {
+                Enumeration<URL> resources = classLoader.getResources(resourceName);
+                while (resources.hasMoreElements()) {
+                    URL resource = resources.nextElement();
+                    if (hasLoadableProvider(Collections.singletonList(resource),
+                            serviceType, classLoader)) {
+                        replacements.add(resource);
+                    }
+                }
+            }
+            catch (IOException | RuntimeException e) {
+                log(Level.FINE, "Could not recover local SPI resource "
+                        + resourceName + " from the effective wiring", e);
+            }
+            if (!replacements.isEmpty()) {
+                // Some framework URL handlers do not retain a revision in the URL
+                // returned by findEntries. Only replace an unusable exact result
+                // after the wiring confirms that this resource name is local.
+                result.removeAll(typeFiles);
+                result.addAll(replacements);
+            }
+        }
+        return new ArrayList<URL>(result);
+    }
+
+    private List<URL> serviceFilesForType(
+            Collection<URL> serviceFiles, String serviceType) {
+        List<URL> result = new ArrayList<URL>();
+        for (URL serviceFile : serviceFiles) {
+            String path = serviceFile.getPath();
+            int separator = path.lastIndexOf('/');
+            if (serviceType.equals(separator < 0
+                    ? path : path.substring(separator + 1))) {
+                result.add(serviceFile);
+            }
+        }
+        return result;
+    }
+
+    private boolean hasLoadableProvider(List<URL> serviceFiles,
+            String serviceType, ClassLoader classLoader) {
+        List<String> providers = readServiceProviderFiles(serviceFiles)
+                .get(serviceType);
+        if (providers == null) {
+            return false;
+        }
+        for (String provider : providers) {
+            try {
+                classLoader.loadClass(provider);
+                return true;
+            }
+            catch (ClassNotFoundException | LinkageError e) {
+                // Try the next provider configuration before using the fallback.
+            }
+        }
+        return false;
     }
 
     Map<String, List<String>> readServiceProviderFiles(List<URL> serviceFileURLs) {
