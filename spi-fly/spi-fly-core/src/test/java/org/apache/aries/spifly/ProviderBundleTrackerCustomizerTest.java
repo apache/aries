@@ -23,8 +23,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,9 +39,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.easymock.EasyMock;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -50,6 +59,9 @@ import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
 
 public class ProviderBundleTrackerCustomizerTest {
+
+    @Rule
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private BaseActivator activator = new BaseActivator() {
         @Override
@@ -140,44 +152,17 @@ public class ProviderBundleTrackerCustomizerTest {
         final URL embeddedF2 = getClass().getResource("/embedded2.jar");
         assertNotNull("precondition", embeddedF1);
         assertNotNull("precondition", embeddedF2);
-
-        BundleRevision fragmentF1 = EasyMock.createNiceMock(BundleRevision.class);
-        BundleRevision fragmentF2 = EasyMock.createNiceMock(BundleRevision.class);
-        AtomicReference<BundleRevision> currentFragment =
-                new AtomicReference<BundleRevision>(fragmentF1);
-        Bundle fragment = EasyMock.createNiceMock(Bundle.class);
-        Dictionary<String, String> fragmentHeaders =
-                new Hashtable<String, String>();
-        fragmentHeaders.put(Constants.BUNDLE_CLASSPATH, "embedded.jar");
-        EasyMock.expect(fragment.getHeaders()).andReturn(fragmentHeaders).anyTimes();
-        EasyMock.expect(fragment.adapt(BundleRevision.class))
-                .andAnswer(() -> currentFragment.get()).anyTimes();
-        EasyMock.expect(fragment.getEntry("embedded.jar"))
-                .andAnswer(() -> currentFragment.get() == fragmentF1
-                        ? embeddedF1 : embeddedF2).anyTimes();
-        EasyMock.replay(fragment);
-        EasyMock.expect(fragmentF1.getBundle()).andReturn(fragment).anyTimes();
-        EasyMock.replay(fragmentF1);
-        EasyMock.expect(fragmentF2.getBundle()).andReturn(fragment).anyTimes();
-        EasyMock.replay(fragmentF2);
-
-        BundleRevision hostRevision = EasyMock.createNiceMock(BundleRevision.class);
-        EasyMock.replay(hostRevision);
-        ClassLoader classLoaderF1 = new URLClassLoader(new URL[] {embeddedF1}, null);
-        ClassLoader classLoaderF2 = new URLClassLoader(new URL[] {embeddedF2}, null);
+        URL manifestF1 = createRevisionContent("fragment-f1", embeddedF1);
+        URL manifestF2 = createRevisionContent("fragment-f2", embeddedF2);
         BundleWiring wiringF1 = mockProviderWiring(
-                hostRevision, mockHostWire(fragmentF1), classLoaderF1, serviceType);
+                Collections.singletonList(manifestF1), serviceType);
         BundleWiring wiringF2 = mockProviderWiring(
-                hostRevision, mockHostWire(fragmentF2), classLoaderF2, serviceType);
+                Collections.singletonList(manifestF2), serviceType);
         AtomicReference<BundleWiring> currentWiring =
                 new AtomicReference<BundleWiring>(wiringF1);
         Bundle host = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(host.adapt(BundleWiring.class))
                 .andAnswer(() -> currentWiring.get()).anyTimes();
-        EasyMock.expect(host.adapt(BundleRevision.class))
-                .andReturn(hostRevision).anyTimes();
-        EasyMock.expect(host.getHeaders())
-                .andReturn(new Hashtable<String, String>()).anyTimes();
         EasyMock.replay(host);
 
         ProviderBundleTrackerCustomizer customizer =
@@ -185,90 +170,132 @@ public class ProviderBundleTrackerCustomizerTest {
         List<URL> f1 = customizer.getServiceFileUrls(
                 host, Collections.singletonList(serviceType));
         assertEquals(Collections.singletonList(
-                new URL("jar:" + embeddedF1 + "!/META-INF/services/" + serviceType)), f1);
+                embeddedServiceFile(manifestF1, serviceType)), f1);
 
-        currentFragment.set(fragmentF2);
         assertEquals("The unchanged host wiring must retain F1", f1,
                 customizer.getServiceFileUrls(
                         host, Collections.singletonList(serviceType)));
 
         currentWiring.set(wiringF2);
         assertEquals(Collections.singletonList(
-                new URL("jar:" + embeddedF2 + "!/META-INF/services/" + serviceType)),
+                embeddedServiceFile(manifestF2, serviceType)),
                 customizer.getServiceFileUrls(
                         host, Collections.singletonList(serviceType)));
     }
 
     @Test
-    public void testStandardDiscoveryUsesExactWiringForStaleFragment()
+    public void testStandardDiscoveryRecomputesSameEffectiveWiring()
             throws Exception {
         final String serviceType = "org.apache.aries.mytest.MySPI";
-        final String resourceName = "META-INF/services/" + serviceType;
         final URL embeddedF1 = getClass().getResource("/embedded.jar");
+        final URL embeddedF2 = getClass().getResource("/embedded2.jar");
         assertNotNull("precondition", embeddedF1);
+        assertNotNull("precondition", embeddedF2);
+        URL manifestF1 = createRevisionContent("attached-f1", embeddedF1);
+        URL manifestF2 = createRevisionContent("attached-f2", embeddedF2);
 
-        Bundle fragment = EasyMock.createNiceMock(Bundle.class);
-        BundleRevision fragmentF1 = EasyMock.createNiceMock(BundleRevision.class);
-        BundleRevision fragmentF2 = EasyMock.createNiceMock(BundleRevision.class);
-        EasyMock.expect(fragment.adapt(BundleRevision.class))
-                .andReturn(fragmentF2).anyTimes();
-        EasyMock.replay(fragment);
-        EasyMock.expect(fragmentF1.getBundle()).andReturn(fragment).anyTimes();
-        EasyMock.replay(fragmentF1);
-        EasyMock.replay(fragmentF2);
-
-        BundleRevision hostRevision = EasyMock.createNiceMock(BundleRevision.class);
-        EasyMock.replay(hostRevision);
-        ClassLoader exactClassLoader = new URLClassLoader(
-                new URL[] {embeddedF1}, null);
-        BundleWiring wiring = mockProviderWiring(hostRevision,
-                mockHostWire(fragmentF1), exactClassLoader, serviceType);
+        AtomicReference<List<URL>> manifests = new AtomicReference<List<URL>>(
+                Collections.singletonList(manifestF1));
+        BundleWiring wiring = mockProviderWiring(manifests, serviceType);
 
         Bundle host = EasyMock.createNiceMock(Bundle.class);
         EasyMock.expect(host.adapt(BundleWiring.class)).andReturn(wiring).anyTimes();
-        EasyMock.expect(host.adapt(BundleRevision.class))
-                .andReturn(hostRevision).anyTimes();
-        EasyMock.expect(host.getHeaders())
-                .andReturn(new Hashtable<String, String>()).anyTimes();
         EasyMock.replay(host);
 
         ProviderBundleTrackerCustomizer customizer =
                 new ProviderBundleTrackerCustomizer(activator, null);
         assertEquals(Collections.singletonList(
-                new URL("jar:" + embeddedF1 + "!/" + resourceName)),
+                embeddedServiceFile(manifestF1, serviceType)),
+                customizer.getServiceFileUrls(
+                        host, Collections.singletonList(serviceType)));
+
+        manifests.set(Arrays.asList(manifestF1, manifestF2));
+        assertEquals(Arrays.asList(
+                embeddedServiceFile(manifestF1, serviceType),
+                embeddedServiceFile(manifestF2, serviceType)),
                 customizer.getServiceFileUrls(
                         host, Collections.singletonList(serviceType)));
     }
 
-    private BundleWire mockHostWire(BundleRevision fragmentRevision) {
-        BundleRequirement requirement = EasyMock.createNiceMock(BundleRequirement.class);
-        EasyMock.expect(requirement.getRevision())
-                .andReturn(fragmentRevision).anyTimes();
-        EasyMock.replay(requirement);
-        BundleWire wire = EasyMock.createNiceMock(BundleWire.class);
-        EasyMock.expect(wire.getRequirement()).andReturn(requirement).anyTimes();
-        EasyMock.replay(wire);
-        return wire;
+    @Test
+    public void testStandardDiscoveryDoesNotConsultDependencyClassLoaders()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        final URL embedded = getClass().getResource("/embedded.jar");
+        assertNotNull("precondition", embedded);
+        URL manifest = createRevisionContent("cycle-local", embedded);
+
+        BundleWiring wiring = mockProviderWiring(
+                Collections.singletonList(manifest), serviceType);
+        Bundle host = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(host.adapt(BundleWiring.class)).andReturn(wiring).anyTimes();
+        EasyMock.replay(host);
+
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+        assertEquals(Collections.singletonList(
+                embeddedServiceFile(manifest, serviceType)),
+                customizer.getServiceFileUrls(
+                        host, Collections.singletonList(serviceType)));
     }
 
-    private BundleWiring mockProviderWiring(BundleRevision hostRevision,
-            BundleWire hostWire, ClassLoader classLoader, String serviceType) {
-        BundleWiring wiring = EasyMock.createNiceMock(BundleWiring.class);
-        EasyMock.expect(wiring.getRevision()).andReturn(hostRevision).anyTimes();
-        EasyMock.expect(wiring.getProvidedWires("osgi.wiring.host"))
-                .andReturn(Collections.singletonList(hostWire)).anyTimes();
+    @Test
+    public void testStandardDiscoveryExcludesForeignOnlyServiceFile()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        BundleWiring wiring = mockProviderWiring(
+                Collections.<URL>emptyList(), serviceType);
+        Bundle host = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(host.adapt(BundleWiring.class)).andReturn(wiring).anyTimes();
+        EasyMock.replay(host);
+
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+        assertEquals(Collections.emptyList(), customizer.getServiceFileUrls(
+                host, Collections.singletonList(serviceType)));
+    }
+
+    private BundleWiring mockProviderWiring(
+            List<URL> manifests, String serviceType) {
+        return mockProviderWiring(
+                new AtomicReference<List<URL>>(manifests), serviceType);
+    }
+
+    private BundleWiring mockProviderWiring(
+            AtomicReference<List<URL>> manifests, String serviceType) {
+        BundleWiring wiring = EasyMock.createMock(BundleWiring.class);
         EasyMock.expect(wiring.findEntries("META-INF/services", serviceType, 0))
                 .andReturn(Collections.emptyList()).anyTimes();
-        EasyMock.expect(wiring.getClassLoader()).andReturn(classLoader).anyTimes();
-        EasyMock.expect(wiring.getRequiredWires(null))
-                .andReturn(Collections.emptyList()).anyTimes();
-        EasyMock.expect(wiring.listResources("META-INF/services", serviceType,
-                BundleWiring.LISTRESOURCES_LOCAL)).andReturn(classLoader == null
-                        ? Collections.<String>emptyList()
-                        : Collections.singleton("META-INF/services/" + serviceType))
-                .anyTimes();
+        EasyMock.expect(wiring.findEntries("META-INF", "MANIFEST.MF", 0))
+                .andAnswer(() -> manifests.get()).anyTimes();
         EasyMock.replay(wiring);
         return wiring;
+    }
+
+    private URL createRevisionContent(String name, URL embedded)
+            throws Exception {
+        Path root = temporaryFolder.newFolder(name).toPath();
+        Path metaInf = Files.createDirectories(root.resolve("META-INF"));
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().put(
+                Attributes.Name.MANIFEST_VERSION, "1.0");
+        manifest.getMainAttributes().putValue(
+                Constants.BUNDLE_CLASSPATH, "embedded.jar");
+        try (OutputStream output = Files.newOutputStream(
+                metaInf.resolve("MANIFEST.MF"))) {
+            manifest.write(output);
+        }
+        try (InputStream input = embedded.openStream()) {
+            Files.copy(input, root.resolve("embedded.jar"),
+                    StandardCopyOption.REPLACE_EXISTING);
+        }
+        return metaInf.resolve("MANIFEST.MF").toUri().toURL();
+    }
+
+    private URL embeddedServiceFile(URL manifest, String serviceType)
+            throws Exception {
+        URL embedded = new URL(manifest, "../embedded.jar");
+        return new URL("jar:" + embedded + "!/META-INF/services/" + serviceType);
     }
 
     @Test
@@ -400,9 +427,6 @@ public class ProviderBundleTrackerCustomizerTest {
             "osgi.serviceloader;osgi.serviceloader='org.apache.aries.mytest.MySPI2';register:='org.apache.aries.spifly.impl4.MySPIImpl4c';foo='ccc'"
         );
         EasyMock.expect(implBundle.getHeaders()).andReturn(headers).anyTimes();
-        EasyMock.expect(implBundle.adapt(BundleWiring.class)).andReturn(
-                mockStandardProviderWiring("org.apache.aries.mytest.MySPI2", 25L)).anyTimes();
-
         // List the resources found at META-INF/services in the test bundle
         URL dir = getClass().getResource("impl4/META-INF/services");
         assertNotNull("precondition", dir);
@@ -411,6 +435,9 @@ public class ProviderBundleTrackerCustomizerTest {
         assertNotNull("precondition", resA);
         URL resB = getClass().getResource("impl4/META-INF/services/org.apache.aries.mytest.MySPI2");
         assertNotNull("precondition", resB);
+        EasyMock.expect(implBundle.adapt(BundleWiring.class)).andReturn(
+                mockStandardProviderWiring("org.apache.aries.mytest.MySPI2",
+                        25L, resB)).anyTimes();
         EasyMock.expect(implBundle.findEntries("META-INF/services", "*", false)).andReturn(
                 Collections.enumeration(Arrays.asList(resA, resB))).anyTimes();
         Class<?> cls = getClass().getClassLoader().loadClass("org.apache.aries.spifly.impl4.MySPIImpl4b");
@@ -421,7 +448,8 @@ public class ProviderBundleTrackerCustomizerTest {
         return implBundle;
     }
 
-    private BundleWiring mockStandardProviderWiring(String serviceType, long mediatorBundleId) {
+    private BundleWiring mockStandardProviderWiring(
+            String serviceType, long mediatorBundleId, URL serviceFile) {
         Map<String, Object> serviceAttributes = new HashMap<String, Object>();
         serviceAttributes.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, serviceType);
         BundleCapability serviceCapability = EasyMock.createNiceMock(BundleCapability.class);
@@ -454,6 +482,10 @@ public class ProviderBundleTrackerCustomizerTest {
                 .andReturn(Collections.singletonList(serviceCapability)).anyTimes();
         EasyMock.expect(wiring.getRequiredWires(SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE))
                 .andReturn(Collections.singletonList(extenderWire)).anyTimes();
+        EasyMock.expect(wiring.findEntries("META-INF/services", serviceType, 0))
+                .andReturn(Collections.singletonList(serviceFile)).anyTimes();
+        EasyMock.expect(wiring.findEntries("META-INF", "MANIFEST.MF", 0))
+                .andReturn(Collections.<URL>emptyList()).anyTimes();
         EasyMock.replay(wiring);
         return wiring;
     }

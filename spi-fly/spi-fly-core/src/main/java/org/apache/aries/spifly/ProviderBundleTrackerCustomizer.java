@@ -23,6 +23,7 @@ import static org.osgi.framework.wiring.BundleRevision.TYPE_FRAGMENT;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -30,10 +31,10 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -43,6 +44,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -78,9 +80,6 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     final BaseActivator activator;
     final Bundle spiBundle;
-    private final Map<BundleWiring, Map<String, List<URL>>> wiringServiceFiles =
-            Collections.synchronizedMap(
-                    new IdentityHashMap<BundleWiring, Map<String, List<URL>>>());
     private final ConcurrentMap<Bundle, BundleWiring> processedWirings =
             new ConcurrentHashMap<Bundle, BundleWiring>();
 
@@ -412,20 +411,6 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     private List<URL> getServiceFileUrls(Bundle bundle, BundleWiring wiring,
             String serviceType, List<URL> compatibilityEntries) {
-        synchronized (wiringServiceFiles) {
-            for (java.util.Iterator<BundleWiring> iterator =
-                    wiringServiceFiles.keySet().iterator(); iterator.hasNext();) {
-                BundleWiring cachedWiring = iterator.next();
-                if (cachedWiring != wiring && !cachedWiring.isInUse()) {
-                    iterator.remove();
-                }
-            }
-            Map<String, List<URL>> byService = wiringServiceFiles.get(wiring);
-            if (byService != null && byService.containsKey(serviceType)) {
-                return byService.get(serviceType);
-            }
-        }
-
         Set<URL> urls = new LinkedHashSet<URL>();
         List<URL> rootEntries = wiring.findEntries(
                 METAINF_SERVICES, serviceType, 0);
@@ -435,99 +420,74 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         if (urls.isEmpty() && compatibilityEntries != null) {
             urls.addAll(compatibilityEntries);
         }
-
-        addExactWiringServiceFile(wiring, serviceType, urls);
-
-        List<URL> result = Collections.unmodifiableList(
-                new ArrayList<URL>(urls));
-        synchronized (wiringServiceFiles) {
-            Map<String, List<URL>> byService = wiringServiceFiles.get(wiring);
-            if (byService == null) {
-                byService = new HashMap<String, List<URL>>();
-                wiringServiceFiles.put(wiring, byService);
-            }
-            List<URL> cached = byService.get(serviceType);
-            if (cached == null) {
-                byService.put(serviceType, result);
-                cached = result;
-            }
-            return cached;
+        if (!addExactBundleClassPathServiceFiles(wiring, serviceType, urls)) {
+            addBundleClassPathServiceFiles(bundle,
+                    Collections.singleton(serviceType), urls);
         }
+        return new ArrayList<URL>(urls);
     }
 
-    private void addExactWiringServiceFile(BundleWiring wiring,
+    private boolean addExactBundleClassPathServiceFiles(BundleWiring wiring,
             String serviceType, Set<URL> serviceFileURLs) {
-        String resourceName = METAINF_SERVICES + "/" + serviceType;
-        java.util.Collection<String> localResources = wiring.listResources(
-                METAINF_SERVICES, serviceType, BundleWiring.LISTRESOURCES_LOCAL);
-        if (localResources == null || !localResources.contains(resourceName)) {
-            return;
+        List<URL> manifests = wiring.findEntries("META-INF", "MANIFEST.MF", 0);
+        if (manifests == null || manifests.isEmpty()) {
+            return false;
         }
-
-        ClassLoader classLoader = wiring.getClassLoader();
-        if (classLoader == null) {
-            return;
-        }
-        Set<String> foreignUrls = getForeignResourceUrls(wiring, resourceName);
-        try {
-            Enumeration<URL> resources = classLoader.getResources(resourceName);
-            while (resources.hasMoreElements()) {
-                URL resource = resources.nextElement();
-                if (!foreignUrls.contains(resource.toExternalForm())) {
-                    serviceFileURLs.add(resource);
+        for (URL manifestUrl : manifests) {
+            try (InputStream stream = manifestUrl.openStream()) {
+                String bundleClassPath = new Manifest(stream).getMainAttributes()
+                        .getValue(Constants.BUNDLE_CLASSPATH);
+                if (bundleClassPath == null) {
+                    continue;
                 }
-            }
-        }
-        catch (IOException | RuntimeException e) {
-            log(Level.FINE, "Could not read local SPI resource " + resourceName
-                    + " from exact provider wiring", e);
-        }
-    }
-
-    private Set<String> getForeignResourceUrls(BundleWiring wiring,
-            String resourceName) {
-        Set<String> foreignUrls = new LinkedHashSet<String>();
-        try {
-            Enumeration<URL> systemResources =
-                    ClassLoader.getSystemResources(resourceName);
-            while (systemResources.hasMoreElements()) {
-                foreignUrls.add(systemResources.nextElement().toExternalForm());
-            }
-        }
-        catch (IOException | RuntimeException e) {
-            log(Level.FINE, "Could not identify system SPI resource "
-                    + resourceName, e);
-        }
-        List<BundleWire> requiredWires = wiring.getRequiredWires(null);
-        if (requiredWires == null) {
-            return foreignUrls;
-        }
-        for (BundleWire wire : requiredWires) {
-            BundleWiring providerWiring = wire.getProviderWiring();
-            if (providerWiring == null || providerWiring == wiring) {
-                continue;
-            }
-            ClassLoader providerLoader = providerWiring.getClassLoader();
-            if (providerLoader == null) {
-                continue;
-            }
-            try {
-                Enumeration<URL> resources = providerLoader.getResources(resourceName);
-                while (resources.hasMoreElements()) {
-                    foreignUrls.add(resources.nextElement().toExternalForm());
+                Parameters entries = new Parameters(bundleClassPath);
+                for (String key : entries.keySet()) {
+                    String entry = ConsumerHeaderProcessor.removeDuplicateMarker(key).trim();
+                    if (!".".equals(entry)) {
+                        addExactBundleClassPathEntry(manifestUrl, entry,
+                                serviceType, serviceFileURLs);
+                    }
                 }
             }
             catch (IOException | RuntimeException e) {
-                log(Level.FINE, "Could not identify non-local SPI resource "
-                        + resourceName, e);
+                log(Level.FINE, "Could not read exact bundle manifest "
+                        + manifestUrl, e);
             }
         }
-        return foreignUrls;
+        return true;
+    }
+
+    private void addExactBundleClassPathEntry(URL manifestUrl, String entry,
+            String serviceType, Set<URL> serviceFileURLs) {
+        try {
+            URL entryUrl = new URL(manifestUrl, "../" + entry);
+            List<URL> embedded = getMetaInfServiceURLsFromJar(
+                    entryUrl, Collections.singleton(serviceType));
+            if (!embedded.isEmpty()) {
+                serviceFileURLs.addAll(embedded);
+                return;
+            }
+
+            String separator = entry.endsWith("/") ? "" : "/";
+            URL resource = new URL(manifestUrl, "../" + entry + separator
+                    + METAINF_SERVICES + "/" + serviceType);
+            try (InputStream stream = resource.openStream()) {
+                serviceFileURLs.add(resource);
+            }
+        }
+        catch (IOException | RuntimeException e) {
+            log(Level.FINE, "Could not read SPI resource for " + serviceType
+                    + " from exact Bundle-ClassPath entry " + entry, e);
+        }
     }
 
     private void addBundleClassPathServiceFiles(Bundle bundle,
             Set<String> serviceTypes, Set<URL> serviceFileURLs) {
-        Object bcp = bundle.getHeaders().get(Constants.BUNDLE_CLASSPATH);
+        Dictionary<String, String> headers = bundle.getHeaders();
+        if (headers == null) {
+            return;
+        }
+        Object bcp = headers.get(Constants.BUNDLE_CLASSPATH);
         if (!(bcp instanceof String)) {
             return;
         }
