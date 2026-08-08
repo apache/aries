@@ -124,6 +124,38 @@ public class ResolvedWiringTest {
     }
 
     @Test
+    public void wiredProviderBundleContributesEveryPublishedServiceType()
+            throws Exception {
+        Bundle firstProvider = mockBundle(7L);
+        Bundle secondProvider = mockBundle(8L);
+        BundleRequirement serviceRequirement =
+                EasyMock.createNiceMock(BundleRequirement.class);
+        EasyMock.replay(serviceRequirement);
+        BundleWiring wiring = mockConsumerWiring(
+                Collections.singletonList(mockWire(
+                        SpiFlyConstants.EXTENDER_CAPABILITY_NAMESPACE,
+                        SpiFlyConstants.PROCESSOR_EXTENDER_NAME, mediator)),
+                Collections.singletonList(serviceRequirement),
+                Arrays.asList(
+                        mockWire(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE,
+                                SERVICE_TYPE, firstProvider),
+                        mockWire(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE,
+                                "org.example.OtherService", secondProvider),
+                        mockWire(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE,
+                                SERVICE_TYPE, firstProvider)));
+        Bundle consumer = mockConsumer(wiring);
+
+        activator.addConsumerWeavingData(
+                consumer, SpiFlyConstants.SPI_CONSUMER_HEADER);
+
+        Collection<Bundle> selected = activator.findConsumerRestrictions(
+                consumer, ServiceLoader.class.getName(), "load",
+                serviceArguments("org.example.ThirdService"));
+        assertEquals(new java.util.HashSet<Bundle>(
+                Arrays.asList(firstProvider, secondProvider)), selected);
+    }
+
+    @Test
     public void declaredButUnwiredServiceRequirementAllowsNoProviders() throws Exception {
         BundleRequirement serviceRequirement = EasyMock.createNiceMock(BundleRequirement.class);
         EasyMock.replay(serviceRequirement);

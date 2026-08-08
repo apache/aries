@@ -699,9 +699,7 @@ public abstract class BaseActivator implements BundleActivator {
         StandardConsumerWiring standardWiring = standardConsumerWirings.get(consumer);
         if (standardWiring != null && ServiceLoader.class.getName().equals(className)
                 && isServiceLoaderMethod(methodName)) {
-            String serviceType = args == null ? null
-                    : args.get(new Pair<Integer, String>(0, Class.class.getName()));
-            return standardWiring.getProviders(serviceType);
+            return standardWiring.getProviders();
         }
 
         Map<ConsumerRestriction, List<BundleDescriptor>> restrictions = consumerRestrictions.get(consumer);
@@ -782,40 +780,36 @@ public abstract class BaseActivator implements BundleActivator {
 
     private static final class StandardConsumerWiring {
         private final boolean restricted;
-        private final Map<String, Set<Bundle>> providersByServiceType;
+        private final Set<Bundle> providers;
 
-        private StandardConsumerWiring(boolean restricted, Map<String, Set<Bundle>> providersByServiceType) {
+        private StandardConsumerWiring(boolean restricted, Set<Bundle> providers) {
             this.restricted = restricted;
-            this.providersByServiceType = providersByServiceType;
+            this.providers = providers;
         }
 
         static StandardConsumerWiring from(BundleWiring wiring) {
             if (wiring == null) {
-                return new StandardConsumerWiring(true, Collections.<String, Set<Bundle>>emptyMap());
+                return new StandardConsumerWiring(true, Collections.<Bundle>emptySet());
             }
 
             if (!hasDeclaredServiceLoaderRequirement(wiring)) {
-                return new StandardConsumerWiring(false, Collections.<String, Set<Bundle>>emptyMap());
+                return new StandardConsumerWiring(false, Collections.<Bundle>emptySet());
             }
 
-            Map<String, Set<Bundle>> providers = new HashMap<String, Set<Bundle>>();
+            Set<Bundle> providers = new LinkedHashSet<Bundle>();
             for (BundleWire wire : wiring.getRequiredWires(
                     SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE)) {
-                Object serviceType = wire.getCapability().getAttributes().get(
-                        SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE);
                 BundleWiring providerWiring = wire.getProviderWiring();
-                if (serviceType instanceof String && providerWiring != null) {
-                    providers.computeIfAbsent((String) serviceType, key -> new HashSet<Bundle>())
-                            .add(providerWiring.getBundle());
+                if (providerWiring != null) {
+                    Bundle provider = providerWiring.getBundle();
+                    if (provider != null) {
+                        providers.add(provider);
+                    }
                 }
             }
 
-            Map<String, Set<Bundle>> immutableProviders = new HashMap<String, Set<Bundle>>();
-            for (Map.Entry<String, Set<Bundle>> entry : providers.entrySet()) {
-                immutableProviders.put(entry.getKey(), Collections.unmodifiableSet(entry.getValue()));
-            }
             return new StandardConsumerWiring(
-                    true, Collections.unmodifiableMap(immutableProviders));
+                    true, Collections.unmodifiableSet(providers));
         }
 
         private static boolean hasDeclaredServiceLoaderRequirement(BundleWiring wiring) {
@@ -859,15 +853,14 @@ public abstract class BaseActivator implements BundleActivator {
 
         static StandardConsumerWiring denied() {
             return new StandardConsumerWiring(
-                    true, Collections.<String, Set<Bundle>>emptyMap());
+                    true, Collections.<Bundle>emptySet());
         }
 
-        Collection<Bundle> getProviders(String serviceType) {
+        Collection<Bundle> getProviders() {
             if (!restricted) {
                 return null;
             }
-            Set<Bundle> providers = providersByServiceType.get(serviceType);
-            return providers == null ? Collections.<Bundle>emptySet() : providers;
+            return providers;
         }
     }
 
