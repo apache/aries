@@ -42,7 +42,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.aries.mytest.MySPI;
 import org.easymock.EasyMock;
 import org.junit.Rule;
 import org.junit.Test;
@@ -257,91 +256,54 @@ public class ProviderBundleTrackerCustomizerTest {
     }
 
     @Test
-    public void testStandardDiscoveryRecoversRevisionAmbiguousResourceUrl()
+    public void testStandardDiscoveryDoesNotReplaceExactResourceFromDependency()
             throws Exception {
-        final String serviceType = MySPI.class.getName();
+        final String serviceType = "org.apache.aries.mytest.MySPI";
         final String resourceName = "META-INF/services/" + serviceType;
-        URL staleJar = getClass().getResource("/embedded.jar");
-        URL currentJar = getClass().getResource("/embedded2.jar");
-        assertNotNull("precondition", staleJar);
-        assertNotNull("precondition", currentJar);
-        URL staleServiceFile = new URL(
-                "jar:" + staleJar + "!/" + resourceName);
-        URL currentServiceFile = new URL(
-                "jar:" + currentJar + "!/" + resourceName);
+        Path localRoot = temporaryFolder.newFolder("local-provider").toPath();
+        Path localService = Files.createDirectories(
+                localRoot.resolve("META-INF/services")).resolve(serviceType);
+        Files.write(localService, Collections.singletonList("p.Missing"));
+        URL exactLocal = localService.toUri().toURL();
 
-        ClassLoader apiLoader = new ClassLoader(null) {
-            @Override
-            protected Class<?> loadClass(String name, boolean resolve)
-                    throws ClassNotFoundException {
-                if (MySPI.class.getName().equals(name)) {
-                    return MySPI.class;
-                }
-                return super.loadClass(name, resolve);
-            }
-        };
-        URLClassLoader currentWiringLoader = new URLClassLoader(
-                new URL[] {currentJar}, apiLoader);
-        try {
-            BundleWiring wiring = EasyMock.createMock(BundleWiring.class);
-            EasyMock.expect(wiring.getClassLoader())
-                    .andReturn(currentWiringLoader).anyTimes();
-            EasyMock.expect(wiring.listResources(
-                    "META-INF/services", serviceType,
-                    BundleWiring.LISTRESOURCES_LOCAL))
-                    .andReturn(Collections.singleton(resourceName)).anyTimes();
-            EasyMock.replay(wiring);
+        URL foreignJar = getClass().getResource("/embedded2.jar");
+        assertNotNull("precondition", foreignJar);
+        try (URLClassLoader foreignLoader = new URLClassLoader(
+                new URL[] {foreignJar}, getClass().getClassLoader())) {
+            BundleWiring wiring = mockStandardProviderWiring(
+                    serviceType, 25L, exactLocal, foreignLoader, resourceName);
+
+            BundleContext providerContext = EasyMock.createMock(BundleContext.class);
+            EasyMock.replay(providerContext);
+
+            Bundle provider = EasyMock.createNiceMock(Bundle.class);
+            EasyMock.expect(provider.adapt(BundleWiring.class))
+                    .andReturn(wiring).anyTimes();
+            EasyMock.expect(provider.getHeaders())
+                    .andReturn(new Hashtable<String, String>()).anyTimes();
+            EasyMock.expect(provider.getBundleContext())
+                    .andReturn(providerContext).anyTimes();
+            EasyMock.expect(provider.hasPermission(
+                    EasyMock.isA(ServicePermission.class)))
+                    .andReturn(true).anyTimes();
+            EasyMock.expect(provider.loadClass("p.Missing"))
+                    .andThrow(new ClassNotFoundException("p.Missing"));
+            EasyMock.<Object>expect(provider.loadClass(
+                    "org.apache.aries.spifly.impl3.MySPIImpl3"))
+                    .andReturn(foreignLoader.loadClass(
+                            "org.apache.aries.spifly.impl3.MySPIImpl3"))
+                    .anyTimes();
+            EasyMock.replay(provider);
+
+            Bundle mediator = EasyMock.createNiceMock(Bundle.class);
+            EasyMock.expect(mediator.getBundleId()).andReturn(25L).anyTimes();
+            EasyMock.replay(mediator);
 
             ProviderBundleTrackerCustomizer customizer =
-                    new ProviderBundleTrackerCustomizer(activator, null);
-            assertEquals(Collections.singletonList(currentServiceFile),
-                    customizer.replaceUnusableExactServiceFiles(
-                            wiring, Collections.singletonList(serviceType),
-                            Collections.singletonList(staleServiceFile)));
-        }
-        finally {
-            currentWiringLoader.close();
-        }
-    }
-
-    @Test
-    public void testStandardDiscoveryKeepsUsableExactResourceWithoutFallback()
-            throws Exception {
-        final String serviceType = MySPI.class.getName();
-        final String resourceName = "META-INF/services/" + serviceType;
-        URL currentJar = getClass().getResource("/embedded2.jar");
-        assertNotNull("precondition", currentJar);
-        URL currentServiceFile = new URL(
-                "jar:" + currentJar + "!/" + resourceName);
-
-        ClassLoader apiLoader = new ClassLoader(null) {
-            @Override
-            protected Class<?> loadClass(String name, boolean resolve)
-                    throws ClassNotFoundException {
-                if (MySPI.class.getName().equals(name)) {
-                    return MySPI.class;
-                }
-                return super.loadClass(name, resolve);
-            }
-        };
-        URLClassLoader currentWiringLoader = new URLClassLoader(
-                new URL[] {currentJar}, apiLoader);
-        try {
-            BundleWiring wiring = EasyMock.createMock(BundleWiring.class);
-            EasyMock.expect(wiring.getClassLoader())
-                    .andReturn(currentWiringLoader);
-            EasyMock.replay(wiring);
-
-            ProviderBundleTrackerCustomizer customizer =
-                    new ProviderBundleTrackerCustomizer(activator, null);
-            assertEquals(Collections.singletonList(currentServiceFile),
-                    customizer.replaceUnusableExactServiceFiles(
-                            wiring, Collections.singletonList(serviceType),
-                            Collections.singletonList(currentServiceFile)));
-            EasyMock.verify(wiring);
-        }
-        finally {
-            currentWiringLoader.close();
+                    new ProviderBundleTrackerCustomizer(activator, mediator);
+            assertEquals("Dependency-visible metadata must not be registered",
+                    Collections.emptyList(), customizer.addingBundle(provider, null));
+            EasyMock.verify(providerContext);
         }
     }
 
@@ -540,6 +502,13 @@ public class ProviderBundleTrackerCustomizerTest {
 
     private BundleWiring mockStandardProviderWiring(
             String serviceType, long mediatorBundleId, URL serviceFile) {
+        return mockStandardProviderWiring(
+                serviceType, mediatorBundleId, serviceFile, null, null);
+    }
+
+    private BundleWiring mockStandardProviderWiring(
+            String serviceType, long mediatorBundleId, URL serviceFile,
+            ClassLoader classLoader, String localResource) {
         Map<String, Object> serviceAttributes = new HashMap<String, Object>();
         serviceAttributes.put(SpiFlyConstants.SERVICELOADER_CAPABILITY_NAMESPACE, serviceType);
         BundleCapability serviceCapability = EasyMock.createNiceMock(BundleCapability.class);
@@ -576,6 +545,16 @@ public class ProviderBundleTrackerCustomizerTest {
                 .andReturn(Collections.singletonList(serviceFile)).anyTimes();
         EasyMock.expect(wiring.findEntries("META-INF", "MANIFEST.MF", 0))
                 .andReturn(Collections.<URL>emptyList()).anyTimes();
+        if (classLoader != null) {
+            EasyMock.expect(wiring.getClassLoader())
+                    .andReturn(classLoader).anyTimes();
+        }
+        if (localResource != null) {
+            EasyMock.expect(wiring.listResources(
+                    "META-INF/services", serviceType,
+                    BundleWiring.LISTRESOURCES_LOCAL))
+                    .andReturn(Collections.singleton(localResource)).anyTimes();
+        }
         EasyMock.replay(wiring);
         return wiring;
     }
