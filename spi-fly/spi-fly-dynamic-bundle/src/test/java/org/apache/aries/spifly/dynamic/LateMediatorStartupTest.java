@@ -345,6 +345,63 @@ public class LateMediatorStartupTest {
         }
     }
 
+    @Test
+    public void providerDiscoveryUsesHostClassPathEntryFromFragment()
+            throws Exception {
+        Path storage = Files.createTempDirectory("spifly-fragment-host-entry-");
+        Framework framework = null;
+        try {
+            Map<String, String> configuration = new HashMap<String, String>();
+            configuration.put(Constants.FRAMEWORK_STORAGE,
+                    storage.resolve("framework").toString());
+            configuration.put(Constants.FRAMEWORK_STORAGE_CLEAN,
+                    Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+            framework = newFramework(configuration);
+            framework.start();
+
+            BundleContext context = framework.getBundleContext();
+            installDependency(context, ClassReader.class);
+            installDependency(context, AdviceAdapter.class);
+            installDependency(context, ClassNode.class);
+            installDependency(context, Analyzer.class);
+            installDependency(context, CheckClassAdapter.class);
+            installDependency(context, BundleTracker.class);
+
+            Bundle mediator = context.installBundle(
+                    bundleFromClasses(storage, "spifly-dynamic.jar").toUri().toString());
+            Bundle api = context.installBundle(createApiBundle(storage).toUri().toString());
+            Bundle fragment = context.installBundle(createProviderFragment(
+                    storage.resolve("host-entry-fragment.jar"),
+                    MySPIImpl1.class, "1.0.0", false).toUri().toString());
+            Bundle provider = context.installBundle(
+                    createProviderHost(storage, true).toUri().toString());
+            Bundle consumer = context.installBundle(
+                    createConsumerBundle(storage).toUri().toString());
+
+            FrameworkWiring frameworkWiring = framework.adapt(FrameworkWiring.class);
+            assertTrue(frameworkWiring.resolveBundles(java.util.Arrays.asList(
+                    mediator, api, fragment, provider, consumer)));
+            mediator.start();
+            provider.start();
+            consumer.start();
+
+            assertEquals("The mediated ServiceLoader must see the fragment entry",
+                    Collections.singleton("olleh"),
+                    invokeConsumer(consumer.loadClass(TestClient.class.getName())));
+            org.osgi.framework.ServiceReference<?>[] registrations =
+                    context.getAllServiceReferences(SERVICE_TYPE, null);
+            assertEquals("The registrar must publish the fragment provider",
+                    1, registrations == null ? 0 : registrations.length);
+        }
+        finally {
+            if (framework != null) {
+                framework.stop();
+                framework.waitForStop(30000);
+            }
+            deleteRecursively(storage);
+        }
+    }
+
     private Framework newFramework(Map<String, String> configuration) throws Exception {
         String factoryName = System.getProperty(
                 "spifly.test.frameworkFactory",
@@ -411,21 +468,37 @@ public class LateMediatorStartupTest {
     }
 
     private Path createProviderHost(Path directory) throws IOException {
+        return createProviderHost(directory, false);
+    }
+
+    private Path createProviderHost(Path directory,
+            boolean fragmentSuppliesClassPathEntry) throws IOException {
         Manifest manifest = bundleManifest("spifly.test.fragment.provider");
         manifest.getMainAttributes().putValue(
                 Constants.IMPORT_PACKAGE, "org.apache.aries.mytest;version=\"[1,2)\"");
+        if (fragmentSuppliesClassPathEntry) {
+            manifest.getMainAttributes().putValue(
+                    Constants.BUNDLE_CLASSPATH, "embedded.jar");
+        }
         return writeBundle(directory.resolve("provider-host.jar"), manifest,
                 Collections.<String, byte[]>emptyMap());
     }
 
     private Path createProviderFragment(Path path, Class<?> implementation,
             String version) throws IOException {
+        return createProviderFragment(path, implementation, version, true);
+    }
+
+    private Path createProviderFragment(Path path, Class<?> implementation,
+            String version, boolean declaresClassPath) throws IOException {
         Manifest manifest = bundleManifest("spifly.test.fragment");
         Attributes attributes = manifest.getMainAttributes();
         attributes.putValue(Constants.BUNDLE_VERSION, version);
         attributes.putValue(Constants.FRAGMENT_HOST,
                 "spifly.test.fragment.provider;bundle-version=\"[1,2)\"");
-        attributes.putValue(Constants.BUNDLE_CLASSPATH, ".,embedded.jar");
+        if (declaresClassPath) {
+            attributes.putValue(Constants.BUNDLE_CLASSPATH, ".,embedded.jar");
+        }
         attributes.putValue(Constants.REQUIRE_CAPABILITY,
                 "osgi.extender;filter:=\"(osgi.extender=osgi.serviceloader.registrar)\"");
         attributes.putValue(Constants.PROVIDE_CAPABILITY,

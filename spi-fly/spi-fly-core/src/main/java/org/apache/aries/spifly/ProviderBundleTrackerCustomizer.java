@@ -21,6 +21,7 @@ package org.apache.aries.spifly;
 import static java.util.stream.Collectors.toList;
 import static org.osgi.framework.wiring.BundleRevision.TYPE_FRAGMENT;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -413,6 +414,10 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     private List<URL> getServiceFileUrls(Bundle bundle, BundleWiring wiring,
             String serviceType, List<URL> compatibilityEntries) {
         Set<URL> urls = new LinkedHashSet<URL>();
+        if (addExactBundleClassPathServiceFiles(wiring, serviceType, urls)) {
+            return new ArrayList<URL>(urls);
+        }
+
         List<URL> rootEntries = wiring.findEntries(
                 METAINF_SERVICES, serviceType, 0);
         if (rootEntries != null) {
@@ -421,10 +426,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         if (urls.isEmpty() && compatibilityEntries != null) {
             urls.addAll(compatibilityEntries);
         }
-        if (!addExactBundleClassPathServiceFiles(wiring, serviceType, urls)) {
-            addBundleClassPathServiceFiles(bundle,
-                    Collections.singleton(serviceType), urls);
-        }
+        addBundleClassPathServiceFiles(bundle,
+                Collections.singleton(serviceType), urls);
         return new ArrayList<URL>(urls);
     }
 
@@ -434,51 +437,173 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         if (manifests == null || manifests.isEmpty()) {
             return false;
         }
+
+        List<ExactBundleContainer> containers =
+                new ArrayList<ExactBundleContainer>();
         for (URL manifestUrl : manifests) {
             try (InputStream stream = manifestUrl.openStream()) {
                 String bundleClassPath = new Manifest(stream).getMainAttributes()
                         .getValue(Constants.BUNDLE_CLASSPATH);
-                if (bundleClassPath == null) {
-                    continue;
-                }
-                Parameters entries = new Parameters(bundleClassPath);
-                for (String key : entries.keySet()) {
-                    String entry = ConsumerHeaderProcessor.removeDuplicateMarker(key).trim();
-                    if (!".".equals(entry)) {
-                        addExactBundleClassPathEntry(manifestUrl, entry,
-                                serviceType, serviceFileURLs);
-                    }
-                }
+                containers.add(new ExactBundleContainer(
+                        manifestUrl, parseBundleClassPath(bundleClassPath)));
             }
             catch (IOException | RuntimeException e) {
                 log(Level.FINE, "Could not read exact bundle manifest "
                         + manifestUrl, e);
+                containers.add(new ExactBundleContainer(
+                        manifestUrl, Collections.<String>emptyList()));
+            }
+        }
+
+        ExactBundleContainer host = containers.get(0);
+        for (String entry : host.bundleClassPath) {
+            if (isRootClassPathEntry(entry)) {
+                addExactRootServiceFile(
+                        host, serviceType, serviceFileURLs);
+                continue;
+            }
+            for (ExactBundleContainer candidate : containers) {
+                ExactClassPathEntry match = findExactBundleClassPathEntry(
+                        wiring, candidate, entry, serviceType);
+                if (match.exists) {
+                    serviceFileURLs.addAll(match.serviceFiles);
+                    break;
+                }
+            }
+        }
+
+        for (int i = 1; i < containers.size(); i++) {
+            ExactBundleContainer fragment = containers.get(i);
+            for (String entry : fragment.bundleClassPath) {
+                if (isRootClassPathEntry(entry)) {
+                    addExactRootServiceFile(
+                            fragment, serviceType, serviceFileURLs);
+                    continue;
+                }
+                ExactClassPathEntry match = findExactBundleClassPathEntry(
+                        wiring, fragment, entry, serviceType);
+                if (match.exists) {
+                    serviceFileURLs.addAll(match.serviceFiles);
+                }
             }
         }
         return true;
     }
 
-    private void addExactBundleClassPathEntry(URL manifestUrl, String entry,
+    private List<String> parseBundleClassPath(String bundleClassPath) {
+        if (bundleClassPath == null) {
+            return Collections.singletonList(".");
+        }
+
+        List<String> result = new ArrayList<String>();
+        Parameters entries = new Parameters(bundleClassPath);
+        for (String key : entries.keySet()) {
+            result.add(ConsumerHeaderProcessor.removeDuplicateMarker(key).trim());
+        }
+        return result;
+    }
+
+    private boolean isRootClassPathEntry(String entry) {
+        return ".".equals(entry) || "/".equals(entry);
+    }
+
+    private void addExactRootServiceFile(ExactBundleContainer container,
             String serviceType, Set<URL> serviceFileURLs) {
         try {
-            URL entryUrl = new URL(manifestUrl, "../" + entry);
-            List<URL> embedded = getMetaInfServiceURLsFromJar(
-                    entryUrl, Collections.singleton(serviceType));
-            if (!embedded.isEmpty()) {
-                serviceFileURLs.addAll(embedded);
-                return;
-            }
-
-            String separator = entry.endsWith("/") ? "" : "/";
-            URL resource = new URL(manifestUrl, "../" + entry + separator
-                    + METAINF_SERVICES + "/" + serviceType);
-            try (InputStream stream = resource.openStream()) {
+            URL resource = exactEntry(container,
+                    METAINF_SERVICES + "/" + serviceType);
+            if (canOpen(resource)) {
                 serviceFileURLs.add(resource);
             }
         }
         catch (IOException | RuntimeException e) {
+            log(Level.FINE, "Could not resolve exact root SPI resource for "
+                    + serviceType + " from " + container.manifest, e);
+        }
+    }
+
+    private ExactClassPathEntry findExactBundleClassPathEntry(
+            BundleWiring wiring, ExactBundleContainer container, String entry,
+            String serviceType) {
+        try {
+            URL entryUrl = exactEntry(container, entry);
+            if (isZip(entryUrl)) {
+                return new ExactClassPathEntry(true,
+                        getMetaInfServiceURLsFromJar(
+                                entryUrl, Collections.singleton(serviceType)));
+            }
+
+            String separator = entry.endsWith("/") ? "" : "/";
+            URL resource = exactEntry(container, entry + separator
+                    + METAINF_SERVICES + "/" + serviceType);
+            if (canOpen(resource)) {
+                return new ExactClassPathEntry(
+                        true, Collections.singletonList(resource));
+            }
+
+            return new ExactClassPathEntry(
+                    exactDirectoryExists(wiring, container, entry),
+                    Collections.<URL>emptyList());
+        }
+        catch (IOException | RuntimeException e) {
             log(Level.FINE, "Could not read SPI resource for " + serviceType
                     + " from exact Bundle-ClassPath entry " + entry, e);
+            return ExactClassPathEntry.NOT_FOUND;
+        }
+    }
+
+    private boolean exactDirectoryExists(BundleWiring wiring,
+            ExactBundleContainer container, String entry) throws IOException {
+        List<URL> contents = wiring.findEntries(
+                trimLeadingSlash(entry), "*", BundleWiring.FINDENTRIES_RECURSE);
+        if (contents == null) {
+            return false;
+        }
+        for (URL content : contents) {
+            String path = trimLeadingSlash(content.getPath());
+            if (canOpen(exactEntry(container, path))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private URL exactEntry(ExactBundleContainer container, String path)
+            throws IOException {
+        return new URL(container.manifest, "../" + trimLeadingSlash(path));
+    }
+
+    private String trimLeadingSlash(String path) {
+        int start = 0;
+        while (start < path.length() && path.charAt(start) == '/') {
+            start++;
+        }
+        return path.substring(start);
+    }
+
+    private boolean canOpen(URL resource) {
+        try (InputStream stream = resource.openStream()) {
+            return true;
+        }
+        catch (IOException | RuntimeException e) {
+            return false;
+        }
+    }
+
+    private boolean isZip(URL resource) {
+        try (InputStream raw = resource.openStream();
+                BufferedInputStream stream = new BufferedInputStream(raw)) {
+            int first = stream.read();
+            int second = stream.read();
+            int third = stream.read();
+            int fourth = stream.read();
+            return first == 0x50 && second == 0x4b
+                    && ((third == 0x03 && fourth == 0x04)
+                            || (third == 0x05 && fourth == 0x06)
+                            || (third == 0x07 && fourth == 0x08));
+        }
+        catch (IOException | RuntimeException e) {
+            return false;
         }
     }
 
@@ -682,6 +807,29 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     private void log(Level level, String message, Throwable th) {
         activator.log(level, message, th);
+    }
+
+    private static final class ExactBundleContainer {
+        private final URL manifest;
+        private final List<String> bundleClassPath;
+
+        private ExactBundleContainer(URL manifest, List<String> bundleClassPath) {
+            this.manifest = manifest;
+            this.bundleClassPath = bundleClassPath;
+        }
+    }
+
+    private static final class ExactClassPathEntry {
+        private static final ExactClassPathEntry NOT_FOUND =
+                new ExactClassPathEntry(false, Collections.<URL>emptyList());
+
+        private final boolean exists;
+        private final List<URL> serviceFiles;
+
+        private ExactClassPathEntry(boolean exists, List<URL> serviceFiles) {
+            this.exists = exists;
+            this.serviceFiles = serviceFiles;
+        }
     }
 
     enum DiscoveryMode {

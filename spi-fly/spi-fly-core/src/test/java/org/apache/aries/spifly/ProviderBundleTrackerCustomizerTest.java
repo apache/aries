@@ -307,6 +307,170 @@ public class ProviderBundleTrackerCustomizerTest {
         }
     }
 
+    @Test
+    public void testStandardDiscoveryUsesFragmentSuppliedHostClassPathEntry()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        URL embedded = getClass().getResource("/embedded.jar");
+        assertNotNull("precondition", embedded);
+
+        URL hostManifest = createRevisionContent(
+                "host-missing-entry", "embedded.jar",
+                Collections.<String, byte[]>emptyMap());
+        Map<String, byte[]> fragmentEntries = new HashMap<String, byte[]>();
+        fragmentEntries.put("embedded.jar", readBytes(embedded));
+        URL fragmentManifest = createRevisionContent(
+                "fragment-supplied-entry", null, fragmentEntries);
+
+        Bundle host = mockProviderBundle(Arrays.asList(
+                hostManifest, fragmentManifest), serviceType);
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+
+        assertEquals(Collections.singletonList(
+                embeddedServiceFile(fragmentManifest, serviceType)),
+                customizer.getServiceFileUrls(
+                        host, Collections.singletonList(serviceType)));
+    }
+
+    @Test
+    public void testStandardDiscoveryUsesFirstHostClassPathEntryMatch()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        URL embedded1 = getClass().getResource("/embedded.jar");
+        URL embedded2 = getClass().getResource("/embedded2.jar");
+        assertNotNull("precondition", embedded1);
+        assertNotNull("precondition", embedded2);
+
+        Map<String, byte[]> hostEntries = new HashMap<String, byte[]>();
+        hostEntries.put("embedded.jar", readBytes(embedded1));
+        URL hostManifest = createRevisionContent(
+                "host-first-entry", "embedded.jar", hostEntries);
+        Map<String, byte[]> fragmentEntries = new HashMap<String, byte[]>();
+        fragmentEntries.put("embedded.jar", readBytes(embedded2));
+        URL fragmentManifest = createRevisionContent(
+                "fragment-shadowed-entry", null, fragmentEntries);
+
+        Bundle host = mockProviderBundle(Arrays.asList(
+                hostManifest, fragmentManifest), serviceType);
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+        assertEquals("The host entry must shadow the fragment entry",
+                Collections.singletonList(
+                        embeddedServiceFile(hostManifest, serviceType)),
+                customizer.getServiceFileUrls(
+                        host, Collections.singletonList(serviceType)));
+
+        URL missingHost = createRevisionContent(
+                "host-first-fragment", "embedded.jar",
+                Collections.<String, byte[]>emptyMap());
+        URL firstFragment = createRevisionContent(
+                "first-fragment-entry", null, hostEntries);
+        URL secondFragment = createRevisionContent(
+                "second-fragment-entry", null, fragmentEntries);
+        Bundle fragmentedHost = mockProviderBundle(Arrays.asList(
+                missingHost, firstFragment, secondFragment), serviceType);
+        assertEquals("The first attached fragment entry must shadow later fragments",
+                Collections.singletonList(
+                        embeddedServiceFile(firstFragment, serviceType)),
+                customizer.getServiceFileUrls(
+                        fragmentedHost, Collections.singletonList(serviceType)));
+    }
+
+    @Test
+    public void testStandardDiscoveryKeepsFirstMatchingDirectory()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        Map<String, byte[]> hostEntries = new HashMap<String, byte[]>();
+        hostEntries.put("classes/host.txt", new byte[] {1});
+        URL hostManifest = createRevisionContent(
+                "host-directory", "classes", hostEntries);
+        Map<String, byte[]> fragmentEntries = new HashMap<String, byte[]>();
+        fragmentEntries.put("classes/META-INF/services/" + serviceType,
+                "org.apache.aries.spifly.impl3.MySPIImpl3\n".getBytes("UTF-8"));
+        URL fragmentManifest = createRevisionContent(
+                "fragment-directory", null, fragmentEntries);
+
+        Map<String, List<URL>> directoryContents =
+                new HashMap<String, List<URL>>();
+        directoryContents.put("classes", Arrays.asList(
+                new URL("file:/classes/host.txt"),
+                new URL("file:/classes/META-INF/services/" + serviceType)));
+        BundleWiring wiring = mockProviderWiring(
+                new AtomicReference<List<URL>>(Arrays.asList(
+                        hostManifest, fragmentManifest)),
+                serviceType, directoryContents);
+        Bundle host = mockProviderBundle(wiring);
+
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+        assertEquals("An existing host directory must shadow a later fragment directory",
+                Collections.emptyList(), customizer.getServiceFileUrls(
+                        host, Collections.singletonList(serviceType)));
+    }
+
+    @Test
+    public void testStandardDiscoveryHonorsRevisionRootClassPathEntries()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        Map<String, byte[]> hostEntries = providerRootEntry(
+                serviceType, "org.apache.aries.spifly.impl2.MySPIImpl2a");
+        Map<String, byte[]> fragmentEntries = providerRootEntry(
+                serviceType, "org.apache.aries.spifly.impl3.MySPIImpl3");
+
+        URL excludedHost = createRevisionContent(
+                "excluded-host-root", "missing.jar", hostEntries);
+        URL excludedFragment = createRevisionContent(
+                "excluded-fragment-root", "missing.jar", fragmentEntries);
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+        assertEquals("Roots omitted from Bundle-ClassPath must not be advertised",
+                Collections.emptyList(), customizer.getServiceFileUrls(
+                        mockProviderBundle(Arrays.asList(
+                                excludedHost, excludedFragment), serviceType),
+                        Collections.singletonList(serviceType)));
+
+        URL defaultHost = createRevisionContent(
+                "default-host-root", null, hostEntries);
+        URL defaultFragment = createRevisionContent(
+                "default-fragment-root", null, fragmentEntries);
+        assertEquals("A missing Bundle-ClassPath must default to each revision root",
+                Arrays.asList(
+                        new URL(defaultHost, "../META-INF/services/" + serviceType),
+                        new URL(defaultFragment, "../META-INF/services/" + serviceType)),
+                customizer.getServiceFileUrls(
+                        mockProviderBundle(Arrays.asList(
+                                defaultHost, defaultFragment), serviceType),
+                        Collections.singletonList(serviceType)));
+    }
+
+    @Test
+    public void testFragmentClassPathEntryStaysFragmentLocal()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        URL embedded = getClass().getResource("/embedded.jar");
+        assertNotNull("precondition", embedded);
+
+        URL hostManifest = createRevisionContent(
+                "fragment-local-host", ".",
+                Collections.<String, byte[]>emptyMap());
+        URL firstFragment = createRevisionContent(
+                "fragment-local-missing", "embedded.jar",
+                Collections.<String, byte[]>emptyMap());
+        Map<String, byte[]> secondEntries = new HashMap<String, byte[]>();
+        secondEntries.put("embedded.jar", readBytes(embedded));
+        URL secondFragment = createRevisionContent(
+                "fragment-local-later", null, secondEntries);
+
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+        assertEquals("A fragment entry must not search another fragment container",
+                Collections.emptyList(), customizer.getServiceFileUrls(
+                        mockProviderBundle(Arrays.asList(
+                                hostManifest, firstFragment, secondFragment), serviceType),
+                        Collections.singletonList(serviceType)));
+    }
+
     private BundleWiring mockProviderWiring(
             List<URL> manifests, String serviceType) {
         return mockProviderWiring(
@@ -315,33 +479,84 @@ public class ProviderBundleTrackerCustomizerTest {
 
     private BundleWiring mockProviderWiring(
             AtomicReference<List<URL>> manifests, String serviceType) {
-        BundleWiring wiring = EasyMock.createMock(BundleWiring.class);
+        return mockProviderWiring(manifests, serviceType,
+                Collections.<String, List<URL>>emptyMap());
+    }
+
+    private BundleWiring mockProviderWiring(
+            AtomicReference<List<URL>> manifests, String serviceType,
+            Map<String, List<URL>> directoryContents) {
+        BundleWiring wiring = EasyMock.createNiceMock(BundleWiring.class);
         EasyMock.expect(wiring.findEntries("META-INF/services", serviceType, 0))
                 .andReturn(Collections.emptyList()).anyTimes();
         EasyMock.expect(wiring.findEntries("META-INF", "MANIFEST.MF", 0))
                 .andAnswer(() -> manifests.get()).anyTimes();
+        for (Map.Entry<String, List<URL>> entry : directoryContents.entrySet()) {
+            EasyMock.expect(wiring.findEntries(
+                    entry.getKey(), "*", BundleWiring.FINDENTRIES_RECURSE))
+                    .andReturn(entry.getValue()).anyTimes();
+        }
         EasyMock.replay(wiring);
         return wiring;
     }
 
+    private Bundle mockProviderBundle(List<URL> manifests, String serviceType) {
+        return mockProviderBundle(mockProviderWiring(manifests, serviceType));
+    }
+
+    private Bundle mockProviderBundle(BundleWiring wiring) {
+        Bundle host = EasyMock.createNiceMock(Bundle.class);
+        EasyMock.expect(host.adapt(BundleWiring.class)).andReturn(wiring).anyTimes();
+        EasyMock.replay(host);
+        return host;
+    }
+
     private URL createRevisionContent(String name, URL embedded)
             throws Exception {
+        Map<String, byte[]> entries = new HashMap<String, byte[]>();
+        entries.put("embedded.jar", readBytes(embedded));
+        return createRevisionContent(name, "embedded.jar", entries);
+    }
+
+    private URL createRevisionContent(String name, String bundleClassPath,
+            Map<String, byte[]> entries) throws Exception {
         Path root = temporaryFolder.newFolder(name).toPath();
         Path metaInf = Files.createDirectories(root.resolve("META-INF"));
         Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(
                 Attributes.Name.MANIFEST_VERSION, "1.0");
-        manifest.getMainAttributes().putValue(
-                Constants.BUNDLE_CLASSPATH, "embedded.jar");
+        if (bundleClassPath != null) {
+            manifest.getMainAttributes().putValue(
+                    Constants.BUNDLE_CLASSPATH, bundleClassPath);
+        }
         try (OutputStream output = Files.newOutputStream(
                 metaInf.resolve("MANIFEST.MF"))) {
             manifest.write(output);
         }
-        try (InputStream input = embedded.openStream()) {
-            Files.copy(input, root.resolve("embedded.jar"),
-                    StandardCopyOption.REPLACE_EXISTING);
+        for (Map.Entry<String, byte[]> entry : entries.entrySet()) {
+            Path target = root.resolve(entry.getKey());
+            if (target.getParent() != null) {
+                Files.createDirectories(target.getParent());
+            }
+            Files.write(target, entry.getValue());
         }
         return metaInf.resolve("MANIFEST.MF").toUri().toURL();
+    }
+
+    private byte[] readBytes(URL resource) throws Exception {
+        try (InputStream input = resource.openStream()) {
+            Path copy = temporaryFolder.newFile().toPath();
+            Files.copy(input, copy, StandardCopyOption.REPLACE_EXISTING);
+            return Files.readAllBytes(copy);
+        }
+    }
+
+    private Map<String, byte[]> providerRootEntry(
+            String serviceType, String provider) throws Exception {
+        Map<String, byte[]> entries = new HashMap<String, byte[]>();
+        entries.put("META-INF/services/" + serviceType,
+                (provider + "\n").getBytes("UTF-8"));
+        return entries;
     }
 
     private URL embeddedServiceFile(URL manifest, String serviceType)
