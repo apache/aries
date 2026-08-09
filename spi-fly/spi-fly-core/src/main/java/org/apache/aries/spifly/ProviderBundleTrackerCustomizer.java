@@ -526,17 +526,23 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
             BundleWiring wiring, ExactBundleContainer container, String entry,
             String serviceType) {
         try {
-            URL entryUrl = exactEntry(container, entry);
-            if (isZip(entryUrl)) {
+            URL entryUrl = findExactRawEntry(wiring, container, entry);
+            if (entryUrl != null) {
+                if (entryUrl.getPath().endsWith("/")) {
+                    return exactDirectoryClassPathEntry(
+                            wiring, container, entry, serviceType);
+                }
+                if (!isZip(entryUrl)) {
+                    return ExactClassPathEntry.FOUND_EMPTY;
+                }
                 return new ExactClassPathEntry(true,
                         getMetaInfServiceURLsFromJar(
                                 entryUrl, Collections.singleton(serviceType)));
             }
 
-            if (exactDirectoryExists(wiring, container, entry)) {
-                return new ExactClassPathEntry(true,
-                        exactDirectoryServiceFiles(
-                                wiring, container, entry, serviceType));
+            if (inferredDirectoryExists(wiring, container, entry)) {
+                return exactDirectoryClassPathEntry(
+                        wiring, container, entry, serviceType);
             }
             return ExactClassPathEntry.NOT_FOUND;
         }
@@ -547,25 +553,52 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
         }
     }
 
-    private boolean exactDirectoryExists(BundleWiring wiring,
+    private URL findExactRawEntry(BundleWiring wiring,
             ExactBundleContainer container, String entry) throws IOException {
         String path = normalizedDirectoryPath(entry);
         if (path.isEmpty()) {
-            return false;
+            return null;
         }
 
         int separator = path.lastIndexOf('/');
         String parent = separator < 0 ? "/" : path.substring(0, separator);
         String name = path.substring(separator + 1);
-        List<URL> directories = wiring.findEntries(parent, name, 0);
-        if (directories != null) {
-            URL expected = exactEntry(container, path + "/");
-            for (URL directory : directories) {
-                if (directory.getPath().endsWith("/")
-                        && directory.sameFile(expected)) {
-                    return true;
-                }
+        List<URL> entries = wiring.findEntries(parent, name, 0);
+        if (entries == null) {
+            return null;
+        }
+
+        URL expected = exactEntry(container, path);
+        URL expectedDirectory = exactEntry(container, path + "/");
+        for (URL candidate : entries) {
+            if (candidate.sameFile(expected)
+                    || candidate.sameFile(expectedDirectory)) {
+                return candidate;
             }
+        }
+        return null;
+    }
+
+    private ExactClassPathEntry exactDirectoryClassPathEntry(
+            BundleWiring wiring, ExactBundleContainer container, String entry,
+            String serviceType) {
+        try {
+            return new ExactClassPathEntry(true,
+                    exactDirectoryServiceFiles(
+                            wiring, container, entry, serviceType));
+        }
+        catch (IOException | RuntimeException e) {
+            log(Level.FINE, "Could not enumerate SPI resource for " + serviceType
+                    + " from selected Bundle-ClassPath directory " + entry, e);
+            return ExactClassPathEntry.FOUND_EMPTY;
+        }
+    }
+
+    private boolean inferredDirectoryExists(BundleWiring wiring,
+            ExactBundleContainer container, String entry) throws IOException {
+        String path = normalizedDirectoryPath(entry);
+        if (path.isEmpty()) {
+            return false;
         }
 
         List<URL> contents = wiring.findEntries(
@@ -872,6 +905,8 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
     private static final class ExactClassPathEntry {
         private static final ExactClassPathEntry NOT_FOUND =
                 new ExactClassPathEntry(false, Collections.<URL>emptyList());
+        private static final ExactClassPathEntry FOUND_EMPTY =
+                new ExactClassPathEntry(true, Collections.<URL>emptyList());
 
         private final boolean exists;
         private final List<URL> serviceFiles;

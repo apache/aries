@@ -465,6 +465,68 @@ public class LateMediatorStartupTest {
         }
     }
 
+    @Test
+    public void ordinaryHostClassPathEntryShadowsFragmentProvider()
+            throws Exception {
+        Path storage = Files.createTempDirectory("spifly-ordinary-host-entry-");
+        Framework framework = null;
+        try {
+            Map<String, String> configuration = new HashMap<String, String>();
+            configuration.put(Constants.FRAMEWORK_STORAGE,
+                    storage.resolve("framework").toString());
+            configuration.put(Constants.FRAMEWORK_STORAGE_CLEAN,
+                    Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+            framework = newFramework(configuration);
+            framework.start();
+
+            BundleContext context = framework.getBundleContext();
+            installDependency(context, ClassReader.class);
+            installDependency(context, AdviceAdapter.class);
+            installDependency(context, ClassNode.class);
+            installDependency(context, Analyzer.class);
+            installDependency(context, CheckClassAdapter.class);
+            installDependency(context, BundleTracker.class);
+
+            Bundle mediator = context.installBundle(
+                    bundleFromClasses(storage, "spifly-dynamic.jar").toUri().toString());
+            Bundle api = context.installBundle(createApiBundle(storage).toUri().toString());
+            Bundle fragment = context.installBundle(
+                    createOrdinaryEntryProviderFragment(storage).toUri().toString());
+            Bundle provider = context.installBundle(
+                    createOrdinaryEntryProviderHost(storage).toUri().toString());
+            Bundle consumer = context.installBundle(
+                    createConsumerBundle(storage).toUri().toString());
+
+            FrameworkWiring frameworkWiring = framework.adapt(FrameworkWiring.class);
+            assertTrue(frameworkWiring.resolveBundles(java.util.Arrays.asList(
+                    mediator, api, fragment, provider, consumer)));
+            assertEquals(IMPLEMENTATION,
+                    provider.loadClass(IMPLEMENTATION).getName());
+            assertNull("The framework class path must stop at the ordinary host entry",
+                    provider.adapt(BundleWiring.class).getClassLoader().getResource(
+                            "META-INF/services/" + SERVICE_TYPE));
+
+            mediator.start();
+            provider.start();
+            consumer.start();
+
+            assertEquals("The mediated ServiceLoader must not see the fragment entry",
+                    Collections.emptySet(),
+                    invokeConsumer(consumer.loadClass(TestClient.class.getName())));
+            org.osgi.framework.ServiceReference<?>[] registrations =
+                    context.getAllServiceReferences(SERVICE_TYPE, null);
+            assertEquals("The registrar must not publish the shadowed fragment provider",
+                    0, registrations == null ? 0 : registrations.length);
+        }
+        finally {
+            if (framework != null) {
+                framework.stop();
+                framework.waitForStop(30000);
+            }
+            deleteRecursively(storage);
+        }
+    }
+
     private Framework newFramework(Map<String, String> configuration) throws Exception {
         String factoryName = System.getProperty(
                 "spifly.test.frameworkFactory",
@@ -574,6 +636,37 @@ public class LateMediatorStartupTest {
         entries.put("classes/META-INF/services/" + SERVICE_TYPE,
                 (IMPLEMENTATION + "\n").getBytes(StandardCharsets.UTF_8));
         return writeBundle(directory.resolve("empty-directory-provider-fragment.jar"),
+                manifest, entries);
+    }
+
+    private Path createOrdinaryEntryProviderHost(Path directory)
+            throws IOException {
+        Manifest manifest = bundleManifest("spifly.test.ordinary.entry.provider");
+        manifest.getMainAttributes().putValue(
+                Constants.IMPORT_PACKAGE, "org.apache.aries.mytest;version=\"[1,2)\"");
+        manifest.getMainAttributes().putValue(
+                Constants.BUNDLE_CLASSPATH, "classes,.");
+        Map<String, byte[]> entries = new LinkedHashMap<String, byte[]>();
+        entries.put("classes", new byte[] {1});
+        addClass(entries, MySPIImpl1.class);
+        return writeBundle(directory.resolve("ordinary-entry-provider-host.jar"),
+                manifest, entries);
+    }
+
+    private Path createOrdinaryEntryProviderFragment(Path directory)
+            throws IOException {
+        Manifest manifest = bundleManifest("spifly.test.ordinary.entry.fragment");
+        Attributes attributes = manifest.getMainAttributes();
+        attributes.putValue(Constants.FRAGMENT_HOST,
+                "spifly.test.ordinary.entry.provider;bundle-version=\"[1,2)\"");
+        attributes.putValue(Constants.REQUIRE_CAPABILITY,
+                "osgi.extender;filter:=\"(osgi.extender=osgi.serviceloader.registrar)\"");
+        attributes.putValue(Constants.PROVIDE_CAPABILITY,
+                "osgi.serviceloader;osgi.serviceloader=\"" + SERVICE_TYPE + "\"");
+        Map<String, byte[]> entries = new LinkedHashMap<String, byte[]>();
+        entries.put("classes/META-INF/services/" + SERVICE_TYPE,
+                (IMPLEMENTATION + "\n").getBytes(StandardCharsets.UTF_8));
+        return writeBundle(directory.resolve("ordinary-entry-provider-fragment.jar"),
                 manifest, entries);
     }
 
