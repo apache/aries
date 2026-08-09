@@ -533,17 +533,12 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
                                 entryUrl, Collections.singleton(serviceType)));
             }
 
-            String separator = entry.endsWith("/") ? "" : "/";
-            URL resource = exactEntry(container, entry + separator
-                    + METAINF_SERVICES + "/" + serviceType);
-            if (canOpen(resource)) {
-                return new ExactClassPathEntry(
-                        true, Collections.singletonList(resource));
+            if (exactDirectoryExists(wiring, container, entry)) {
+                return new ExactClassPathEntry(true,
+                        exactDirectoryServiceFiles(
+                                wiring, container, entry, serviceType));
             }
-
-            return new ExactClassPathEntry(
-                    exactDirectoryExists(wiring, container, entry),
-                    Collections.<URL>emptyList());
+            return ExactClassPathEntry.NOT_FOUND;
         }
         catch (IOException | RuntimeException e) {
             log(Level.FINE, "Could not read SPI resource for " + serviceType
@@ -554,18 +549,73 @@ public class ProviderBundleTrackerCustomizer implements BundleTrackerCustomizer 
 
     private boolean exactDirectoryExists(BundleWiring wiring,
             ExactBundleContainer container, String entry) throws IOException {
+        String path = normalizedDirectoryPath(entry);
+        if (path.isEmpty()) {
+            return false;
+        }
+
+        int separator = path.lastIndexOf('/');
+        String parent = separator < 0 ? "/" : path.substring(0, separator);
+        String name = path.substring(separator + 1);
+        List<URL> directories = wiring.findEntries(parent, name, 0);
+        if (directories != null) {
+            URL expected = exactEntry(container, path + "/");
+            for (URL directory : directories) {
+                if (directory.getPath().endsWith("/")
+                        && directory.sameFile(expected)) {
+                    return true;
+                }
+            }
+        }
+
         List<URL> contents = wiring.findEntries(
-                trimLeadingSlash(entry), "*", BundleWiring.FINDENTRIES_RECURSE);
+                path, "*", BundleWiring.FINDENTRIES_RECURSE);
         if (contents == null) {
             return false;
         }
         for (URL content : contents) {
-            String path = trimLeadingSlash(content.getPath());
-            if (canOpen(exactEntry(container, path))) {
+            if (isFromExactContainer(container, content)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private List<URL> exactDirectoryServiceFiles(BundleWiring wiring,
+            ExactBundleContainer container, String entry, String serviceType)
+            throws IOException {
+        String path = normalizedDirectoryPath(entry) + "/"
+                + METAINF_SERVICES + "/" + serviceType;
+        int separator = path.lastIndexOf('/');
+        List<URL> resources = wiring.findEntries(
+                path.substring(0, separator), path.substring(separator + 1), 0);
+        if (resources == null) {
+            return Collections.emptyList();
+        }
+
+        URL expected = exactEntry(container, path);
+        List<URL> exact = new ArrayList<URL>();
+        for (URL resource : resources) {
+            if (resource.sameFile(expected) && canOpen(resource)) {
+                exact.add(resource);
+            }
+        }
+        return exact;
+    }
+
+    private String normalizedDirectoryPath(String entry) {
+        String path = trimLeadingSlash(entry);
+        int end = path.length();
+        while (end > 0 && path.charAt(end - 1) == '/') {
+            end--;
+        }
+        return path.substring(0, end);
+    }
+
+    private boolean isFromExactContainer(
+            ExactBundleContainer container, URL resource) throws IOException {
+        return resource.toExternalForm().startsWith(
+                exactEntry(container, "").toExternalForm());
     }
 
     private URL exactEntry(ExactBundleContainer container, String path)

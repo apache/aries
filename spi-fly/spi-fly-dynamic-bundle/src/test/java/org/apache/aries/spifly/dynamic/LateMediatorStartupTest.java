@@ -20,6 +20,7 @@ package org.apache.aries.spifly.dynamic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -402,6 +403,68 @@ public class LateMediatorStartupTest {
         }
     }
 
+    @Test
+    public void explicitEmptyHostDirectoryShadowsFragmentProvider()
+            throws Exception {
+        Path storage = Files.createTempDirectory("spifly-empty-host-directory-");
+        Framework framework = null;
+        try {
+            Map<String, String> configuration = new HashMap<String, String>();
+            configuration.put(Constants.FRAMEWORK_STORAGE,
+                    storage.resolve("framework").toString());
+            configuration.put(Constants.FRAMEWORK_STORAGE_CLEAN,
+                    Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+            framework = newFramework(configuration);
+            framework.start();
+
+            BundleContext context = framework.getBundleContext();
+            installDependency(context, ClassReader.class);
+            installDependency(context, AdviceAdapter.class);
+            installDependency(context, ClassNode.class);
+            installDependency(context, Analyzer.class);
+            installDependency(context, CheckClassAdapter.class);
+            installDependency(context, BundleTracker.class);
+
+            Bundle mediator = context.installBundle(
+                    bundleFromClasses(storage, "spifly-dynamic.jar").toUri().toString());
+            Bundle api = context.installBundle(createApiBundle(storage).toUri().toString());
+            Bundle fragment = context.installBundle(
+                    createEmptyDirectoryProviderFragment(storage).toUri().toString());
+            Bundle provider = context.installBundle(
+                    createEmptyDirectoryProviderHost(storage).toUri().toString());
+            Bundle consumer = context.installBundle(
+                    createConsumerBundle(storage).toUri().toString());
+
+            FrameworkWiring frameworkWiring = framework.adapt(FrameworkWiring.class);
+            assertTrue(frameworkWiring.resolveBundles(java.util.Arrays.asList(
+                    mediator, api, fragment, provider, consumer)));
+            assertEquals(IMPLEMENTATION,
+                    provider.loadClass(IMPLEMENTATION).getName());
+            assertNull("The framework class path must stop at the empty host directory",
+                    provider.adapt(BundleWiring.class).getClassLoader().getResource(
+                            "META-INF/services/" + SERVICE_TYPE));
+
+            mediator.start();
+            provider.start();
+            consumer.start();
+
+            assertEquals("The mediated ServiceLoader must not see the fragment entry",
+                    Collections.emptySet(),
+                    invokeConsumer(consumer.loadClass(TestClient.class.getName())));
+            org.osgi.framework.ServiceReference<?>[] registrations =
+                    context.getAllServiceReferences(SERVICE_TYPE, null);
+            assertEquals("The registrar must not publish the shadowed fragment provider",
+                    0, registrations == null ? 0 : registrations.length);
+        }
+        finally {
+            if (framework != null) {
+                framework.stop();
+                framework.waitForStop(30000);
+            }
+            deleteRecursively(storage);
+        }
+    }
+
     private Framework newFramework(Map<String, String> configuration) throws Exception {
         String factoryName = System.getProperty(
                 "spifly.test.frameworkFactory",
@@ -482,6 +545,36 @@ public class LateMediatorStartupTest {
         }
         return writeBundle(directory.resolve("provider-host.jar"), manifest,
                 Collections.<String, byte[]>emptyMap());
+    }
+
+    private Path createEmptyDirectoryProviderHost(Path directory)
+            throws IOException {
+        Manifest manifest = bundleManifest("spifly.test.empty.directory.provider");
+        manifest.getMainAttributes().putValue(
+                Constants.IMPORT_PACKAGE, "org.apache.aries.mytest;version=\"[1,2)\"");
+        manifest.getMainAttributes().putValue(
+                Constants.BUNDLE_CLASSPATH, "classes,.");
+        Map<String, byte[]> entries = new LinkedHashMap<String, byte[]>();
+        addClass(entries, MySPIImpl1.class);
+        return writeBundle(directory.resolve("empty-directory-provider-host.jar"),
+                manifest, Collections.singletonList("classes/"), entries);
+    }
+
+    private Path createEmptyDirectoryProviderFragment(Path directory)
+            throws IOException {
+        Manifest manifest = bundleManifest("spifly.test.empty.directory.fragment");
+        Attributes attributes = manifest.getMainAttributes();
+        attributes.putValue(Constants.FRAGMENT_HOST,
+                "spifly.test.empty.directory.provider;bundle-version=\"[1,2)\"");
+        attributes.putValue(Constants.REQUIRE_CAPABILITY,
+                "osgi.extender;filter:=\"(osgi.extender=osgi.serviceloader.registrar)\"");
+        attributes.putValue(Constants.PROVIDE_CAPABILITY,
+                "osgi.serviceloader;osgi.serviceloader=\"" + SERVICE_TYPE + "\"");
+        Map<String, byte[]> entries = new LinkedHashMap<String, byte[]>();
+        entries.put("classes/META-INF/services/" + SERVICE_TYPE,
+                (IMPLEMENTATION + "\n").getBytes(StandardCharsets.UTF_8));
+        return writeBundle(directory.resolve("empty-directory-provider-fragment.jar"),
+                manifest, entries);
     }
 
     private Path createProviderFragment(Path path, Class<?> implementation,
@@ -588,9 +681,20 @@ public class LateMediatorStartupTest {
 
     private Path writeBundle(Path path, Manifest manifest, Map<String, byte[]> entries)
             throws IOException {
+        return writeBundle(path, manifest, Collections.<String>emptyList(), entries);
+    }
+
+    private Path writeBundle(Path path, Manifest manifest,
+            List<String> directories, Map<String, byte[]> entries)
+            throws IOException {
         JarOutputStream output = new JarOutputStream(Files.newOutputStream(
                 path, StandardOpenOption.CREATE_NEW), manifest);
         try {
+            for (String directory : directories) {
+                String name = directory.endsWith("/") ? directory : directory + "/";
+                output.putNextEntry(new JarEntry(name));
+                output.closeEntry();
+            }
             for (Map.Entry<String, byte[]> entry : entries.entrySet()) {
                 output.putNextEntry(new JarEntry(entry.getKey()));
                 output.write(entry.getValue());

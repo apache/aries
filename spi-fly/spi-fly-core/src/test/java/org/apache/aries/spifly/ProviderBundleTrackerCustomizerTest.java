@@ -394,8 +394,9 @@ public class ProviderBundleTrackerCustomizerTest {
         Map<String, List<URL>> directoryContents =
                 new HashMap<String, List<URL>>();
         directoryContents.put("classes", Arrays.asList(
-                new URL("file:/classes/host.txt"),
-                new URL("file:/classes/META-INF/services/" + serviceType)));
+                new URL(hostManifest, "../classes/host.txt"),
+                new URL(fragmentManifest,
+                        "../classes/META-INF/services/" + serviceType)));
         BundleWiring wiring = mockProviderWiring(
                 new AtomicReference<List<URL>>(Arrays.asList(
                         hostManifest, fragmentManifest)),
@@ -407,6 +408,78 @@ public class ProviderBundleTrackerCustomizerTest {
         assertEquals("An existing host directory must shadow a later fragment directory",
                 Collections.emptyList(), customizer.getServiceFileUrls(
                         host, Collections.singletonList(serviceType)));
+    }
+
+    @Test
+    public void testStandardDiscoveryKeepsExplicitEmptyHostDirectory()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        URL hostManifest = createRevisionContent(
+                "empty-host-directory", "classes",
+                Collections.<String, byte[]>emptyMap(),
+                Collections.singletonList("classes"));
+        Map<String, byte[]> fragmentEntries = new HashMap<String, byte[]>();
+        fragmentEntries.put("classes/META-INF/services/" + serviceType,
+                "org.apache.aries.spifly.impl3.MySPIImpl3\n".getBytes("UTF-8"));
+        URL fragmentManifest = createRevisionContent(
+                "populated-fragment-directory", null, fragmentEntries);
+
+        Map<String, List<URL>> directoryContents =
+                new HashMap<String, List<URL>>();
+        directoryContents.put("classes", Collections.singletonList(
+                new URL(fragmentManifest,
+                        "../classes/META-INF/services/" + serviceType)));
+        Map<String, List<URL>> exactEntries =
+                new HashMap<String, List<URL>>();
+        exactEntries.put("classes", Arrays.asList(
+                new URL(hostManifest, "../classes/"),
+                new URL(fragmentManifest, "../classes/")));
+        exactEntries.put("classes/META-INF/services/" + serviceType,
+                Collections.singletonList(new URL(fragmentManifest,
+                        "../classes/META-INF/services/" + serviceType)));
+        BundleWiring wiring = mockProviderWiring(
+                new AtomicReference<List<URL>>(Arrays.asList(
+                        hostManifest, fragmentManifest)),
+                serviceType, directoryContents, exactEntries);
+        Bundle host = mockProviderBundle(wiring);
+
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+        assertEquals("An explicit empty host directory must shadow a fragment directory",
+                Collections.emptyList(), customizer.getServiceFileUrls(
+                        host, Collections.singletonList(serviceType)));
+    }
+
+    @Test
+    public void testStandardDiscoveryUsesDirectoryWithoutExplicitEntry()
+            throws Exception {
+        final String serviceType = "org.apache.aries.mytest.MySPI";
+        Map<String, byte[]> entries = new HashMap<String, byte[]>();
+        entries.put("classes/META-INF/services/" + serviceType,
+                "org.apache.aries.spifly.impl3.MySPIImpl3\n".getBytes("UTF-8"));
+        URL manifest = createRevisionContent(
+                "omitted-directory-entry", "classes", entries);
+        URL serviceFile = new URL(manifest,
+                "../classes/META-INF/services/" + serviceType);
+
+        Map<String, List<URL>> directoryContents =
+                new HashMap<String, List<URL>>();
+        directoryContents.put("classes", Collections.singletonList(serviceFile));
+        Map<String, List<URL>> exactEntries =
+                new HashMap<String, List<URL>>();
+        exactEntries.put("classes/META-INF/services/" + serviceType,
+                Collections.singletonList(serviceFile));
+        BundleWiring wiring = mockProviderWiring(
+                new AtomicReference<List<URL>>(Collections.singletonList(manifest)),
+                serviceType, directoryContents, exactEntries);
+
+        ProviderBundleTrackerCustomizer customizer =
+                new ProviderBundleTrackerCustomizer(activator, null);
+        assertEquals("Descendants must establish a directory whose entry is omitted",
+                Collections.singletonList(serviceFile),
+                customizer.getServiceFileUrls(
+                        mockProviderBundle(wiring),
+                        Collections.singletonList(serviceType)));
     }
 
     @Test
@@ -486,6 +559,14 @@ public class ProviderBundleTrackerCustomizerTest {
     private BundleWiring mockProviderWiring(
             AtomicReference<List<URL>> manifests, String serviceType,
             Map<String, List<URL>> directoryContents) {
+        return mockProviderWiring(manifests, serviceType, directoryContents,
+                Collections.<String, List<URL>>emptyMap());
+    }
+
+    private BundleWiring mockProviderWiring(
+            AtomicReference<List<URL>> manifests, String serviceType,
+            Map<String, List<URL>> directoryContents,
+            Map<String, List<URL>> exactEntries) {
         BundleWiring wiring = EasyMock.createNiceMock(BundleWiring.class);
         EasyMock.expect(wiring.findEntries("META-INF/services", serviceType, 0))
                 .andReturn(Collections.emptyList()).anyTimes();
@@ -494,6 +575,14 @@ public class ProviderBundleTrackerCustomizerTest {
         for (Map.Entry<String, List<URL>> entry : directoryContents.entrySet()) {
             EasyMock.expect(wiring.findEntries(
                     entry.getKey(), "*", BundleWiring.FINDENTRIES_RECURSE))
+                    .andReturn(entry.getValue()).anyTimes();
+        }
+        for (Map.Entry<String, List<URL>> entry : exactEntries.entrySet()) {
+            String path = entry.getKey();
+            int separator = path.lastIndexOf('/');
+            String parent = separator < 0 ? "/" : path.substring(0, separator);
+            String name = path.substring(separator + 1);
+            EasyMock.expect(wiring.findEntries(parent, name, 0))
                     .andReturn(entry.getValue()).anyTimes();
         }
         EasyMock.replay(wiring);
@@ -520,6 +609,13 @@ public class ProviderBundleTrackerCustomizerTest {
 
     private URL createRevisionContent(String name, String bundleClassPath,
             Map<String, byte[]> entries) throws Exception {
+        return createRevisionContent(name, bundleClassPath, entries,
+                Collections.<String>emptyList());
+    }
+
+    private URL createRevisionContent(String name, String bundleClassPath,
+            Map<String, byte[]> entries, List<String> directories)
+            throws Exception {
         Path root = temporaryFolder.newFolder(name).toPath();
         Path metaInf = Files.createDirectories(root.resolve("META-INF"));
         Manifest manifest = new Manifest();
@@ -532,6 +628,9 @@ public class ProviderBundleTrackerCustomizerTest {
         try (OutputStream output = Files.newOutputStream(
                 metaInf.resolve("MANIFEST.MF"))) {
             manifest.write(output);
+        }
+        for (String directory : directories) {
+            Files.createDirectories(root.resolve(directory));
         }
         for (Map.Entry<String, byte[]> entry : entries.entrySet()) {
             Path target = root.resolve(entry.getKey());
