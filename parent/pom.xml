@@ -178,6 +178,7 @@
         <aries.osgi.remove.headers>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</aries.osgi.remove.headers>
         <aries.osgi.include.resource>{maven-resources}</aries.osgi.include.resource>
         <aries.javadoc.exclude.packages>${aries.osgi.private.pkg}</aries.javadoc.exclude.packages>
+        <aries.javadoc.doclint/>
         <lastReleaseVersion>RELEASE</lastReleaseVersion>
 
         <!--Dependencies-->
@@ -441,6 +442,7 @@
                 <configuration>
                     <source>${java.source.version}</source>
                     <quiet>true</quiet>
+                    <doclint>${aries.javadoc.doclint}</doclint>
                     <excludePackageNames>${aries.javadoc.exclude.packages}</excludePackageNames>
                     <!--
                         External links are deliberately omitted here: javadoc would fetch the
@@ -496,6 +498,22 @@
                         <tag>
                             <name>ThreadSafe</name>
                             <placement>t</placement>
+                        </tag>
+                        <tag>
+                            <name>org.apache.xbean.XBean</name>
+                            <placement>t</placement>
+                        </tag>
+                        <tag>
+                            <name>org.apache.xbean.Property</name>
+                            <placement>m</placement>
+                        </tag>
+                        <tag>
+                            <name>org.apache.xbean.InitMethod</name>
+                            <placement>m</placement>
+                        </tag>
+                        <tag>
+                            <name>org.apache.xbean.DestroyMethod</name>
+                            <placement>m</placement>
                         </tag>
                     </tags>
                 </configuration>
@@ -617,6 +635,7 @@
                 </reportSets>
                 <configuration>
                     <excludePackageNames>${aries.javadoc.exclude.packages}</excludePackageNames>
+                    <doclint>${aries.javadoc.doclint}</doclint>
                     <quiet>true</quiet>
                     <source>${java.source.version}</source>
                     <links>
@@ -671,6 +690,22 @@
                         <tag>
                             <name>ThreadSafe</name>
                             <placement>t</placement>
+                        </tag>
+                        <tag>
+                            <name>org.apache.xbean.XBean</name>
+                            <placement>t</placement>
+                        </tag>
+                        <tag>
+                            <name>org.apache.xbean.Property</name>
+                            <placement>m</placement>
+                        </tag>
+                        <tag>
+                            <name>org.apache.xbean.InitMethod</name>
+                            <placement>m</placement>
+                        </tag>
+                        <tag>
+                            <name>org.apache.xbean.DestroyMethod</name>
+                            <placement>m</placement>
                         </tag>
                     </tags>
                 </configuration>

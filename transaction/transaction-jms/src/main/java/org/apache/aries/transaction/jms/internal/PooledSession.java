@@ -486,7 +486,7 @@ public class PooledSession implements Session, TopicSession, QueueSession, XASes
 
     /**
      * Callback invoked when the consumer is closed.
-     * <p/>
+     * <p>
      * This is used to keep track of an explicit closed consumer created by this
      * session, by which we know do not need to keep track of the consumer, as
      * its already closed.

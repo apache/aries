@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -46,6 +46,7 @@
     </scm>
 
     <properties>
+        <aries.javadoc.doclint>none</aries.javadoc.doclint>
         <rat.excludesFile>${project.basedir}/rat-excludes.txt</rat.excludesFile>
         <aries.osgi.activator>
             org.apache.aries.blueprint.container.BlueprintExtender
@@ -288,13 +289,6 @@
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>${maven-release-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.1</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -68,7 +68,8 @@
         </aries.osgi.include.resource>
         <lastReleaseVersion>1.3.0</lastReleaseVersion>
         <aries.skip.version.check>false</aries.skip.version.check>
-        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
+        <!-- Excluding org.objectweb.howl additionall since entry from private package does not work fully-->
+        <aries.javadoc.exclude.packages>org.objectweb.howl*,${aries.osgi.private.pkg}</aries.javadoc.exclude.packages>
 
         <commons-io.version>2.22.0</commons-io.version>
         <geronimo-transaction.version>3.1.4</geronimo-transaction.version>
@@ -172,11 +173,11 @@
                     <execution>
                         <phase>generate-sources</phase>
                         <configuration>
-                            <tasks>
+                            <target name="copy-sources">
                                 <copy todir="${project.build.directory}/sources">
                                     <fileset dir="${basedir}/src/main/java"/>
                                 </copy>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -197,24 +198,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>package1</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <minmemory>128m</minmemory>
-                            <maxmemory>512m</maxmemory>
-                            <sourcepath>${project.build.directory}/sources</sourcepath>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

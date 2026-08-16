@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -45,6 +45,7 @@
     </scm>
 
     <properties>
+        <aries.javadoc.doclint>none</aries.javadoc.doclint>
         <aries.osgi.export.pkg>
             org.apache.aries.proxy;,
             org.apache.aries.proxy.weaving;,
@@ -166,13 +167,6 @@
                             osgi.service;objectClass:List&lt;String&gt;=org.apache.aries.proxy.ProxyManager
                         </Provide-Capability>
                     </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
             </plugin>
         </plugins>
