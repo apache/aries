@@ -100,7 +100,7 @@ public class EsaTask extends Zip {
 	}
 
 	/**
-	 * @param version
+	 * @param subsystemVersion
 	 *            the version to set
 	 */
 	public void setVersion(String subsystemVersion) {
@@ -109,7 +109,7 @@ public class EsaTask extends Zip {
 	}
 
 	/**
-	 * @param type
+	 * @param subsystemType
 	 *            the type to set
 	 */
 	public void setType(String subsystemType) {
@@ -118,7 +118,7 @@ public class EsaTask extends Zip {
 	}
 
 	/**
-	 * @param manifest
+	 * @param manifestFile
 	 *            file to use the manifest to set
 	 */
 	public void setManifest(File manifestFile) {

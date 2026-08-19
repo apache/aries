@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * Connections, sessions and producers are returned to a pool after use so that they can be reused later
  * without having to undergo the cost of creating them again.
  *
- * b>NOTE:</b> while this implementation does allow the creation of a collection of active consumers,
+ * <b>NOTE:</b> while this implementation does allow the creation of a collection of active consumers,
  * it does not 'pool' consumers. Pooling makes sense for connections, sessions and producers, which
  * are expensive to create and can remain idle a minimal cost. Consumers, on the other hand, are usually
  * just created at startup and left active, handling incoming messages as they come. When a consumer is
@@ -155,7 +155,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
 
     /**
      * Sets the ConnectionFactory used to create new pooled Connections.
-     * <p/>
+     * <p>
      * Updates to this value do not affect Connections that were previously created and placed
      * into the pool.  In order to allocate new Connections based off this new ConnectionFactory
      * it is first necessary to {@link #clear()} the pooled Connections.
@@ -365,7 +365,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
 
     /**
      * Gets the Idle timeout value applied to new Connection's that are created by this pool.
-     * <p/>
+     * <p>
      * The idle timeout is used determine if a Connection instance has sat to long in the pool unused
      * and if so is closed and removed from the pool.  The default value is 30 seconds.
      *
@@ -378,7 +378,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
     /**
      * Sets the idle timeout  value for Connection's that are created by this pool in Milliseconds,
      * defaults to 30 seconds.
-     * <p/>
+     * <p>
      * For a Connection that is in the pool but has no current users the idle timeout determines how
      * long the Connection can live before it is eligible for removal from the pool.  Normally the
      * connections are tested when an attempt to check one out occurs so a Connection instance can sit
@@ -417,7 +417,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
 
     /**
      * Whether to create a connection on starting this {@link PooledConnectionFactory}.
-     * <p/>
+     * <p>
      * This can be used to warm-up the pool on startup. Notice that any kind of exception
      * happens during startup is logged at WARN level and ignored.
      *
@@ -468,7 +468,7 @@ public class PooledConnectionFactory implements ConnectionFactory {
      * When non-positive, no idle object eviction thread will be run, and Connections will only be
      * checked on borrow to determine if they have sat idle for too long or have failed for some
      * other reason.
-     * <p/>
+     * <p>
      * By default this value is set to -1 and no expiration thread ever runs.
      *
      * @param timeBetweenExpirationCheckMillis

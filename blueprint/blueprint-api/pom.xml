@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -55,6 +55,8 @@
             org.osgi.framework
         </aries.osgi.import.pkg>
         <aries.osgi.private.pkg/>
+        <!-- Blueprint osgi javadoc has not closed code tag-->
+        <aries.javadoc.doclint>none</aries.javadoc.doclint>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
 
         <osgi.core.version>4.3.1</osgi.core.version>

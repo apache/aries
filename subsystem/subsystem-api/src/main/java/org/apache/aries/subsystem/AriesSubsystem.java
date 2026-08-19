@@ -32,7 +32,7 @@ public interface AriesSubsystem extends Subsystem {
 	 * will be allowed to resolve against matching capabilities that are visible 
 	 * to the parent subsystems.
 	 *
-	 * @param requirement The requirement to add to the sharing policy.
+	 * @param requirements The requirements to add to the sharing policy.
 	 * @throws SubsystemException If the requirement did not already exist and
 	 *         could not be added.
 	 * @throws UnsupportedOperationException If this is the root subsystem or 

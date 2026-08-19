@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.1</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -41,6 +41,7 @@
     </scm>
 
     <properties>
+        <aries.javadoc.doclint>none</aries.javadoc.doclint>
         <aries.osgi.export.pkg>
             org.apache.aries.transaction.jdbc;version="2.1"
         </aries.osgi.export.pkg>
@@ -65,8 +66,6 @@
             org.apache.aries.transaction.jdbc.internal.Activator
         </aries.osgi.activator>
         <lastReleaseVersion>1.0.0</lastReleaseVersion>
-
-        <additionalparam>-Xdoclint:none</additionalparam>
 
         <geronimo-connector.version>3.1.5</geronimo-connector.version>
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>

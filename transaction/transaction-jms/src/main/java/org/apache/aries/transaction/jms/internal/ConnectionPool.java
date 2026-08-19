@@ -30,7 +30,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 
 /**
  * Holds a real JMS connection along with the session pools associated with it.
- * <p/>
+     * <p>
  * Instances of this class are shared amongst one or more PooledConnection object and must
  * track the session objects that are loaned out for cleanup on close as well as ensuring
  * that the temporary destinations of the managed Connection are purged when all references
@@ -177,7 +177,7 @@ public class ConnectionPool {
 
     /**
      * Determines if this Connection has expired.
-     * <p/>
+ * <p>
      * A ConnectionPool is considered expired when all references to it are released AND either
      * the configured idleTimeout has elapsed OR the configured expiryTimeout has elapsed.
      * Once a ConnectionPool is determined to have expired its underlying Connection is closed.

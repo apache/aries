@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries</groupId>
         <artifactId>parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.1-SNAPSHOT</version>
         <relativePath>../../parent/pom.xml</relativePath>
     </parent>
 
@@ -38,6 +38,7 @@
     </description>
 
     <properties>
+        <aries.javadoc.doclint>none</aries.javadoc.doclint>
         <aries.osgi.activator>
             org.apache.aries.jmx.blueprint.impl.Activator
         </aries.osgi.activator>
@@ -193,7 +194,6 @@
                             <minmemory>128m</minmemory>
                             <maxmemory>512m</maxmemory>
                             <sourcepath>${project.build.directory}/sources</sourcepath>
-                            <additionalparam>-Xdoclint:none</additionalparam>
                         </configuration>
                     </plugin>
                 </plugins>
