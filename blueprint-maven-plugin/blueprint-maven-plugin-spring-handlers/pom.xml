@@ -41,7 +41,7 @@
     <properties>
         <blueprint-maven-plugin-spi.version>1.0.0</blueprint-maven-plugin-spi.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <guava.version>33.6.0-jre</guava.version>
+        <guava.version>33.7.0-jre</guava.version>
         <spring.version>5.3.39</spring.version>
     </properties>
 
