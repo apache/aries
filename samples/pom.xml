@@ -98,7 +98,7 @@
 
         <!-- Felix dependencies -->
         <jansi.version>2.4.3</jansi.version>
-        <jline.version>4.3.1</jline.version>
+        <jline.version>4.4.0</jline.version>
         <org.apache.felix.bundlerepository.version>2.0.10</org.apache.felix.bundlerepository.version>
         <org.apache.felix.configadmin.version>1.9.26</org.apache.felix.configadmin.version>
         <org.apache.felix.eventadmin.version>1.6.4</org.apache.felix.eventadmin.version>
