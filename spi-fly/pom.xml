@@ -45,7 +45,6 @@
     </scm>
 
     <properties>
-        <project.scm.id>apache.releases.https</project.scm.id>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <java.source.version>8</java.source.version>
