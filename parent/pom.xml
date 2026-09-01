@@ -32,7 +32,7 @@
     <groupId>org.apache.aries</groupId>
     <artifactId>parent</artifactId>
     <name>Aries :: Parent POM</name>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.2.0</version>
     <packaging>pom</packaging>
 
     <description>
@@ -52,7 +52,7 @@
         <connection>scm:git:git@github.com:apache/aries.git</connection>
         <developerConnection>scm:git:git@github.com:apache/aries.git</developerConnection>
         <url>https://github.com/apache/aries</url>
-        <tag>HEAD</tag>
+        <tag>parent-3.2.0</tag>
     </scm>
 
     <issueManagement>
@@ -178,7 +178,7 @@
         <aries.osgi.remove.headers>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</aries.osgi.remove.headers>
         <aries.osgi.include.resource>{maven-resources}</aries.osgi.include.resource>
         <aries.javadoc.exclude.packages>${aries.osgi.private.pkg}</aries.javadoc.exclude.packages>
-        <aries.javadoc.doclint/>
+        <aries.javadoc.doclint />
         <lastReleaseVersion>RELEASE</lastReleaseVersion>
 
         <!--Dependencies-->
