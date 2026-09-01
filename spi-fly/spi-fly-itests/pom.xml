@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.aries.spifly</groupId>
         <artifactId>spifly</artifactId>
-        <version>1.3.8</version>
+        <version>1.3.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -35,14 +35,14 @@
         <maven.deploy.skip>true</maven.deploy.skip>
         <maven.install.skip>true</maven.install.skip>
 
-        <org.apache.aries.spifly.examples.spi.bundle.version>1.3.8</org.apache.aries.spifly.examples.spi.bundle.version>
+        <org.apache.aries.spifly.examples.spi.bundle.version>1.3.9-SNAPSHOT</org.apache.aries.spifly.examples.spi.bundle.version>
     </properties>
 
     <scm>
         <connection>scm:git:git@github.com:apache/aries.git</connection>
         <developerConnection>scm:git:git@github.com:apache/aries.git</developerConnection>
         <url>https://github.com/apache/aries</url>
-        <tag>spifly-1.3.8</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>

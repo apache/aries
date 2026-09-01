@@ -24,7 +24,7 @@ under the License.
     <parent>
         <groupId>org.apache.aries.spifly.examples</groupId>
         <artifactId>spi-fly-examples</artifactId>
-        <version>1.3.8</version>
+        <version>1.3.9-SNAPSHOT</version>
     </parent>
 
     <artifactId>org.apache.aries.spifly.examples.provider3.fragment</artifactId>
