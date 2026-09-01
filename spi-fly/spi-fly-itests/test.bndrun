@@ -59,9 +59,9 @@
 	junit-platform-engine;version='[1.14.4,1.14.5)',\
 	junit-platform-launcher;version='[1.14.4,1.14.5)',\
 	net.bytebuddy.byte-buddy;version='[1.18.3,1.18.4)',\
-	org.apache.aries.spifly.dynamic.framework.extension;version='[1.3.8,1.3.9)',\
-	org.apache.aries.spifly.examples.spi.bundle;version='[1.0.6,1.0.7)',\
-	org.apache.aries.spifly.itests;version='[1.3.8,1.3.9)',\
+	org.apache.aries.spifly.dynamic.framework.extension;version='[1.3.9,1.3.10)',\
+	org.apache.aries.spifly.examples.spi.bundle;version='[1.3.9,1.3.10)',\
+	org.apache.aries.spifly.itests;version='[1.3.9,1.3.10)',\
 	org.apache.felix.log.extension;version='[1.0.0,1.0.1)',\
 	org.opentest4j;version='[1.3.0,1.3.1)',\
 	org.osgi.test.assertj.framework;version='[1.3.0,1.3.1)',\
