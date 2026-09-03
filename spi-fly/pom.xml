@@ -63,7 +63,7 @@
         <junit-jupiter.version>5.14.4</junit-jupiter.version>
         <junit-platform.version>1.14.4</junit-platform.version>
         <junit.version>4.13.2</junit.version>
-        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <aries.javadoc.exclude.packages />
         <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
